@@ -8,6 +8,8 @@ mod hia_native_allowed_prefixes;
 #[cfg(feature = "hia-native")]
 mod hia_native_network_domains;
 #[cfg(feature = "hia-native")]
+mod hia_native_network_host;
+#[cfg(feature = "hia-native")]
 mod hia_native_policy_summary;
 #[cfg(feature = "hia-native")]
 mod hia_native_prefix;

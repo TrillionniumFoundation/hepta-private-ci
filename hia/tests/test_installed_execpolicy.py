@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Exercise relocated native/default executables through execpolicy's real CLI.
 
-Require the statically linked HIA prefix matcher, then evaluate real rule files
+Require the statically linked HIA owners, then evaluate real rule files
 with both binaries from a different working directory. Complete JSON objects,
 raw stdout/stderr and exit statuses must agree; explicit expected decisions and
 rule lists keep a shared wrong result from passing. No commands in the rules
@@ -24,7 +24,7 @@ from test_installed_patch import inspect_binary, sha256
 
 
 ROOT = Path(__file__).resolve().parents[2]
-NATIVE_SYMBOLS = ("codex_hia_prefix_match", "codex_hia_prefix_admission", "codex_hia_policy_summary", "codex_hia_command_dispatch")
+NATIVE_SYMBOLS = ("codex_hia_prefix_match", "codex_hia_prefix_admission", "codex_hia_policy_summary", "codex_hia_command_dispatch", "codex_hia_network_host")
 
 
 def rule(prefix, decision, *, resolved=None, justification=None):
@@ -141,6 +141,34 @@ def fixtures_and_cases():
         ("invalid_negative_example", "expected example to not match rule"),
     ]:
         cases.append({"name": name, "rules": [name], "command": ["git", "status"], "error_contains": fragment})
+    fixtures["network_valid"] = (
+        'network_rule(host="  API.Example.COM.:443  ", protocol="https", decision="allow")\n'
+        'network_rule(host="[NOT:IP]:999999", protocol="socks5_tcp", decision="deny")\n'
+        'network_rule(host="é.EXAMPLE", protocol="http", decision="prompt")\n'
+        'prefix_rule(pattern=["git", "status"])\n'
+    )
+    fixtures["network_dot_space"] = (
+        'network_rule(host="[ . ]", protocol="https", decision="allow")\n'
+        'network_rule(host=":80", protocol="http", decision="allow")\n'
+        'network_rule(host="host:abc", protocol="socks5_udp", decision="deny")\n'
+    )
+    cases += [
+        {"name": "network_normalization_acceptance", "rules": ["network_valid"], "command": ["git", "status"],
+         "expected": expected("allow", rule(["git", "status"], "allow"))},
+        {"name": "network_original_dot_trim_and_port_acceptance", "rules": ["network_dot_space"], "command": ["git"],
+         "expected": expected(None)},
+    ]
+    for name, host, fragment in [
+        ("network_empty", " \t ", "network_rule host cannot be empty"),
+        ("network_scheme_before_bracket", "https://[a", "network_rule host must be a hostname or IP literal (without scheme or path)"),
+        ("network_bracket", "[abc", "network_rule host has an invalid bracketed IPv6 literal"),
+        ("network_suffix_original_raw", "  [abc]x  ", "network_rule host contains an unsupported suffix:   [abc]x  "),
+        ("network_normalized_empty", "...", "network_rule host cannot be empty"),
+        ("network_wildcard_before_whitespace", "[a *]", "network_rule host must be a specific host; wildcards are not allowed"),
+        ("network_internal_whitespace", "a\u2003b", "network_rule host cannot contain whitespace"),
+    ]:
+        fixtures[name] = f'network_rule(host={json.dumps(host, ensure_ascii=False)}, protocol="https", decision="allow")\n'
+        cases.append({"name": name, "rules": [name], "command": ["git"], "error_contains": fragment})
     return fixtures, cases
 
 

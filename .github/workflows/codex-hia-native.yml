@@ -18,6 +18,9 @@ on:
       - justfile
       - scripts/run-nextest.py
       - scripts/just-shell.py
+      - scripts/format.py
+      - scripts/test_hepta_format_scope.py
+      - patches/rama-dns_hermetic_toolchain.patch
       - .github/workflows/codex-hia-native.yml
   pull_request:
     paths:
@@ -36,6 +39,9 @@ on:
       - justfile
       - scripts/run-nextest.py
       - scripts/just-shell.py
+      - scripts/format.py
+      - scripts/test_hepta_format_scope.py
+      - patches/rama-dns_hermetic_toolchain.patch
       - .github/workflows/codex-hia-native.yml
   workflow_dispatch:
 
@@ -91,7 +97,7 @@ jobs:
       - name: Prepare Rust oracle and production caller compiler
         run: |
           set -euo pipefail
-          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          rustup toolchain install 1.96.1 --profile minimal --component rustfmt --no-self-update
           rustc_path="$(rustup which --toolchain 1.96.1 rustc)"
           test -x "$rustc_path"
           echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
@@ -106,6 +112,12 @@ jobs:
             git -C Hepta rev-parse HEAD
           } > "$RUNNER_TEMP/hia-toolchain.log"
           cat "$RUNNER_TEMP/hia-toolchain.log"
+
+      - name: Verify standalone Rust formatter editions and source stability
+        run: |
+          set -euo pipefail
+          python3 -B codex/scripts/test_hepta_format_scope.py \
+            2>&1 | tee "$RUNNER_TEMP/hia-formatter-scope.log"
 
       - name: Rebuild compiler generations and native components
         id: build
@@ -378,6 +390,29 @@ jobs:
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-command-dispatch.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-command-dispatch.log"
+
+      - name: Verify complete network-host ABI and atomic errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_network_host_abi.py \
+            --library "$RUNNER_TEMP/hia-native/network_host.so" \
+            --build-profile full-native17 \
+            --report "$RUNNER_TEMP/hia-network-host-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
+
+      - name: Compare network-host normalization with original Rust (two baselines)
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          # This checkout runs original/native17. The separate owner gate requires
+          # original/native16/native17 and an admitted published16 link bundle.
+          # That private bundle is not available on this GitHub runner.
+          python3 -B codex/hia/tests/test_native_network_host.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
+            --report "$RUNNER_TEMP/hia-network-host.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
 
       - name: Verify installed execution policy command
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -658,3 +693,13 @@ jobs:
             ${{ runner.temp }}/hia-command-dispatch-artifacts/*.stderr
             ${{ runner.temp }}/hia-command-dispatch-artifacts/capture_rustc.py
             ${{ runner.temp }}/hia-command-dispatch-artifacts/compiler-*.json
+            ${{ runner.temp }}/hia-formatter-scope.log
+            ${{ runner.temp }}/hia-network-host-abi.json
+            ${{ runner.temp }}/hia-network-host-abi.log
+            ${{ runner.temp }}/hia-network-host.json
+            ${{ runner.temp }}/hia-network-host.log
+            ${{ runner.temp }}/hia-network-host-artifacts/*.stdout
+            ${{ runner.temp }}/hia-network-host-artifacts/*.stderr
+            ${{ runner.temp }}/hia-network-host-artifacts/capture_rustc.py
+            ${{ runner.temp }}/hia-network-host-artifacts/compiler-*.json
+            ${{ runner.temp }}/hia-network-host-artifacts/public_owner.rs

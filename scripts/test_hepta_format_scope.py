@@ -172,6 +172,8 @@ class FormatterScopeTests(unittest.TestCase):
             "hia/tests/seek_sequence_oracle.rs",
             "hia/tests/native_future_caller.rs",
             "unrelated/native_command_dispatch.rs",
+            "unrelated/native_network_host.rs",
+            "hia/tests/native_network_host_future.rs",
         ):
             with self.subTest(path=relative):
                 source = self.write(relative, "pub fn entry() {}\n")
@@ -181,6 +183,78 @@ class FormatterScopeTests(unittest.TestCase):
                 )
                 self.assertEqual(command.args[-1], str(source))
                 self.assertEqual(command.cwd, source.parent)
+
+    def test_network_host_inputs_use_2024_through_the_scoped_formatter(self):
+        for name in (
+            "native_network_host.rs",
+            "native_network_host_allocations.rs",
+            "native_network_host_failures.rs",
+            "native_network_host_performance.rs",
+            "network_host_fixtures.rs",
+        ):
+            relative = f"hia/tests/{name}"
+            source = self.write(relative, "pub fn entry() {}\n")
+            for check in (False, True):
+                for parser in (FMT.tomllib, None):
+                    with self.subTest(
+                        name=name, check=check, tomllib=parser is not None
+                    ):
+                        with (
+                            patch.object(FMT, "tomllib", parser),
+                            patch.object(FMT.subprocess, "check_output") as cargo,
+                        ):
+                            (group,) = FMT.scoped_formatter_groups(
+                                [relative], check=check
+                            )
+                        cargo.assert_not_called()
+                        expected = [
+                            "rustfmt",
+                            "--edition",
+                            "2024",
+                            "--config",
+                            "imports_granularity=Item,skip_children=true",
+                        ]
+                        if check:
+                            expected.append("--check")
+                        expected += ["--", str(source)]
+                        self.assertEqual(group.name, "Rust")
+                        self.assertEqual(
+                            group.commands,
+                            (FMT.Command(tuple(expected), source.parent),),
+                        )
+
+    def test_actual_network_host_inputs_keep_their_bytes_under_rustfmt_check(self):
+        actual = Path(__file__).resolve().parents[1] / "hia/tests"
+        paths = [
+            "hia/tests/native_network_host.rs",
+            "hia/tests/native_network_host_allocations.rs",
+            "hia/tests/native_network_host_failures.rs",
+            "hia/tests/native_network_host_performance.rs",
+            "hia/tests/network_host_fixtures.rs",
+        ]
+        before = {}
+        for relative in paths:
+            source = self.write(relative, "")
+            source.write_bytes((actual / source.name).read_bytes())
+            before[relative] = hashlib.sha256(source.read_bytes()).hexdigest()
+        neighbor = self.write("hia/tests/unrelated.rs", "fn unchanged( ){}\n")
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(
+            {command.args[-1] for command in group.commands},
+            {str(self.root / relative) for relative in paths},
+        )
+        result = FMT.run_formatter_group(group)
+        self.assertEqual(result.returncode, 0, result.output)
+        self.assertEqual(
+            {
+                relative: hashlib.sha256(
+                    (self.root / relative).read_bytes()
+                ).hexdigest()
+                for relative in paths
+            },
+            before,
+        )
+        self.assertEqual(neighbor.read_text(), "fn unchanged( ){}\n")
 
     def test_standalone_mapping_defers_to_nearest_cargo_edition(self):
         self.write("hia/Cargo.toml", '[package]\nname="outer"\nedition="2024"\n')

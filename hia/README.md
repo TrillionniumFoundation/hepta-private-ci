@@ -1,28 +1,29 @@
 # Codex in HIA
 
-This directory contains sixteen native HIA modules compiled with
+This directory contains seventeen native HIA modules compiled with
 [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
-at `0de5657a80f96b138525ac7ee9ce11712a83a10d`: fifteen borrowed-buffer
+at `0de5657a80f96b138525ac7ee9ce11712a83a10d`: sixteen borrowed-buffer
 entries and one scalar count-admission entry. Their algorithms execute as
 machine code compiled from the checked-in `.hepta` sources.
 
 The opt-in `hia-native` Cargo feature connects the earlier eight components to
 existing Linux x86-64 GNU production paths. Execpolicy adds prefix matching,
 its scalar admission helper, RuleMatch reduction, network-domain reduction,
-allowed-prefix collection and complete command-rule dispatch. Thirteen
-production-path algorithms are configured; the scalar helper belongs to the
-prefix algorithm. The dispatcher now schedules exact/host routing, callbacks,
-allowlist comparison, result retention and heuristic invocation in HIA.
-Rust supplies the original containers, arbitrary callbacks, OS path services,
-owned objects, iterator effects and checked transport. Static archives are
-verified at build time and incorporated into the caller binary.
+allowed-prefix collection, complete command-rule dispatch and complete
+network-rule host normalization. Fourteen production-path algorithms are
+configured; the scalar helper belongs to the prefix algorithm. HIA owns the
+selected algorithms and dispatch decisions. Rust retains original containers,
+callbacks, OS services, owned values, iterator effects and checked transport.
+Verified static archives are incorporated into the caller binary.
 
-The dispatcher has source-bound local raw ABI and real public-owner execution,
-with final source/formatter reconciliation stated below. Current sixteen-module
-full CLI/Core/Protocol and previous-component gates require new CI. Published
-fifteen-module push/PR native CI passed at
-`ae39735ac801c33c2166f043ea1471c3c445460a`, while its broader blocking CI failed;
-both results remain source-specific history.
+The new normalization owner has source-bound local raw ABI, public, three
+baseline, crate, standalone CLI, strict Clippy and final-maintenance evidence.
+All 21 candidate source files retain their qualified bytes; the runtime inputs match their actual execution. Current
+seventeen-module full CLI/Core/Protocol, previous-component and platform CI
+remain pending. Published sixteen-module native CI passed at
+`b762fa3f20ed78f6567b6fca68a2ca0524733fff`; its broader blocking CI failed.
+Those results and the earlier local UNKNOWN maintenance job remain
+source-specific history.
 
 Two other components have narrower scopes. `utf8_boundaries` is a diagnostic
 full-input UTF-8 validator; production prefix selection uses `utf8_prefix`.
@@ -35,8 +36,8 @@ neither historical gate qualifies the current compiler and scalar helper.
 
 [`verification.json`](verification.json) records exact source, artifact and
 report identities. [`migration.json`](migration.json) tracks the remaining
-owners. Template, prefix-matcher, policy-summary, network-domain, allowed-prefix
-and command-dispatch performance
+owners. Template, prefix-matcher, policy-summary, network-domain, allowed-prefix,
+command-dispatch and network-host performance
 equivalence, complete owner migration, default native releases and other
 platforms remain open:
 
@@ -68,6 +69,7 @@ platforms remain open:
 | [`network_domains.hepta`](network_domains.hepta) | `Policy::compiled_network_domains` | Non-Prompt selection, exact raw-host last-winner decisions and ordered Allow/Forbidden host vectors. |
 | [`allowed_prefixes.hepta`](allowed_prefixes.hepta) | `Policy::get_allowed_prefixes` | Allow admission, exact Single/Alts rendering, vector ordering and deduplication of rendered prefixes. |
 | [`command_dispatch.hepta`](command_dispatch.hepta) | `Policy::matches_for_command` and its routing helpers | Exact/host/fallback routing, ordered callbacks, allowlist path equality, result retention and scheduled original host effects. |
+| [`network_host.hepta`](network_host.hepta) | `normalize_network_rule_host` | Complete Unicode trimming, bracket/port rules, original error precedence, ASCII lowercasing and normalized host bytes. |
 
 The template feature propagates through
 `codex-cli/hia-native` → `codex-login/hia-native` →
@@ -100,7 +102,7 @@ own incremental validation within their documented framing contracts.
 
 ### Native buffer interface
 
-The fourteen borrowed-buffer modules expose this HIA signature:
+The sixteen borrowed-buffer modules expose this HIA signature:
 
 ```text
 f0(source:readbuf, output:mutbuf, workspace:mutbuf) -> u32
@@ -394,6 +396,36 @@ Structurally valid semantic lies require the real HIA/original-owner comparison.
 Parser, rule callback implementations, OS path services, Core policy consumers,
 default releases and complete Policy ownership remain separate boundaries.
 
+### Complete network-rule host normalization
+
+`network_host` owns the complete original
+`normalize_network_rule_host` function. It applies Unicode trimming, preserves
+empty/scheme/path and bracket-suffix error precedence, removes a numeric port
+under the original conditions, strips trailing dots before the second trim,
+lowercases ASCII, and checks wildcard errors before internal whitespace.
+This preserves permissive inputs such as `a:abc`, `:123`, multiple colons,
+bracketed non-IP strings, NUL and numeric ports outside the usual range.
+It does not introduce IP parsing, DNS, IDNA or Unicode case folding.
+
+The source buffer borrows the original UTF-8 string. The workspace is a
+read-only 32-byte control frame containing four little-endian `u64` words:
+version `1`, mode, expected output length and reserved `0`. PLAN mode `0`
+requires expected length zero and writes a 16-byte semantic tag/length pair.
+RUN mode `1` requires a positive length bounded by the source, repeats
+validation and normalization, and writes exactly that many normalized bytes.
+Semantic tags 1–6 retain the original six errors; tag zero means success.
+Malformed control, invalid UTF-8 or inconsistent RUN input returns
+`0xffffffff`; insufficient output returns `0xfffffffe`. Native failures
+publish no output. Source/control and unused output bytes remain unchanged.
+
+Rust validates statuses, lengths and the unchanged control buffer, allocates
+the owned result and constructs the existing errors. Unsupported-suffix errors
+retain the exact untrimmed input in their message. Invalid native replies panic
+before a policy rule is pushed or an append directory/file is created.
+Original parser checks, including earlier protocol/decision/justification
+rejection, remain in their existing order. This moves normalization, while
+Policy, parsing, file effects and platform ownership remain separate.
+
 ### Scalar prefix admission
 
 `prefix_admission` uses the separate `u64-pair-to-u64-v1` entry profile,
@@ -522,6 +554,186 @@ The search suite also supports exporting its framed corpus and importing the
 original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
+
+### Network-host increment: recorded seventeen-module local qualification
+
+This increment starts from published16
+`b762fa3f20ed78f6567b6fca68a2ca0524733fff`, tree
+`9c670d2fb44b428f5e8d75a6558b803bcd5a8861`. The initial and final code tree,
+before these documentation changes, is
+`9c984a9f9be8dca17240233ae62973193d4beb03`. Initial formatting preceded the
+behavioral gates. Both scoped fixes and the last `just fmt` exited zero with
+no source delta; no product build or test ran after that maintenance.
+
+| Current local gate | Actual observation |
+| ------------------ | ------------------ |
+| Compiler and artifacts | Full native self-host build of 17 modules; B1/B2/B3 identity; 228 artifact files; 74 receipt checks. |
+| Raw ABI | 13,501 calls: 11,167 successful statuses and 2,334 errors without writes; 448 concurrent calls for 256 hosts are included. No skipped cases. This uses an independent Python wire model, not the Rust oracle. |
+| Complete original normalization | 9,519 comparisons, including 256 concurrent comparisons, 7,381 enumerated hosts and 828 Unicode cases. The full 393-token original function is pinned inside the 583-token network-types/normalization region; those counts overlap. |
+| Public entries and effects | 1,281 observations through direct addition, parser and file append, including output, metadata, error order and exact file/directory effects. Earlier parser rejection of a large ignored host remains earlier. |
+| Substituted callee | 15 corruption forms at three entrypoints each; six semantic-error probes, one positive probe and three earlier-parser/no-entry probes. This checks the real transport and callers with a fake callee; the real HIA gate remains separate. |
+| Frozen predecessor admission | One real published16 positive and 17 rejection checks passed before consumer compilation; original frozen inputs and old targets were not modified. |
+| Actual owner and standalone command | Default/native execpolicy tests each 34 passed, no skips; 39 installed cases in 78 processes, five native symbols; strict Clippy in both modes. |
+| Formatter and final identity | 34 formatter component tests passed. All 9,893 source entries retained the same inventory through the final three maintenance commands and export. |
+| Current product CI | Full CLI with 15 symbols, both Core filters, the Protocol consumer, prior component gates and broader platforms remain pending on the new source. |
+
+The complete public report is
+`f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c`.
+It records 58 source inputs and 26 actual commands. The original function and
+unchanged callers/errors come from `f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc`.
+Real original/native17 Cargo owners were built. The native16 owner came from
+the exact published16 promotion and immutable 1,306-file link bundle; its owner
+was not rebuilt. The new allocation and performance harnesses were freshly
+compiled against that owner and executed in separate processes. No prior
+command-dispatch timing executable was reused. The original bundle's pending
+field remains intact; a separate promotion binds its 54 compiled source inputs
+to the published tree. Rustc is bound by exact captured path and full verbose
+version; historical compiler executable bytes were not pinned, and the
+sysroot/CRT/system libraries remain external platform inputs.
+
+The subsequent data freeze copied 1,353 existing inputs independently
+(1,269,156,126 bytes); the complete package has 1,356 files and 64 directories.
+It retained the qualified performance binary and earlier compile/nm/run
+evidence without compiling, relinking or running a product after maintenance.
+The source/native/private metadata and protected inputs stayed unchanged.
+This is a link-input data package, not a complete Cargo rebuild environment.
+Its publication revision is still null, pending a separate promotion. A new
+consumer linked only from copied paths remains unqualified.
+
+#### Network-host timing and allocation observations
+
+These are one diagnostic observation per case with dev crate owners and
+optimized external harnesses. Fixture construction is outside the measured
+call. All 19 native17 timing rows are slower than original Rust. Seventeen
+are slower than native16; `wildcard-before-whitespace` and
+`internal-whitespace` are slightly faster than that measured baseline.
+The large early-scheme case records 3,051,661 ns for three native17 calls
+versus 1,870 ns original and 1,710 ns native16. The full-input native UTF-8
+contract still validates the supplied tail. No deadline or performance
+equivalence is established.
+
+| Case | Input bytes | Calls | Original ns | Native16 ns | Native17 ns |
+| ---- | ----------: | ----: | ----------: | ----------: | ----------: |
+| `lowercase` | 11 | 2,048 | 1,033,576 | 1,088,514 | 3,141,828 |
+| `uppercase` | 16 | 2,048 | 1,186,932 | 1,245,929 | 2,903,866 |
+| `unicode-trim` | 12 | 2,048 | 1,001,878 | 1,006,558 | 2,724,411 |
+| `ascii-port` | 16 | 2,048 | 1,363,486 | 1,339,186 | 2,626,994 |
+| `bracket-port` | 22 | 2,048 | 1,388,805 | 1,333,037 | 3,227,255 |
+| `trim-order` | 10 | 2,048 | 993,618 | 1,068,395 | 1,901,849 |
+| `non-numeric-port` | 11 | 2,048 | 1,205,211 | 1,217,391 | 2,514,928 |
+| `nul` | 3 | 2,048 | 548,682 | 683,017 | 1,407,824 |
+| `empty` | 0 | 2,048 | 163,355 | 186,664 | 249,231 |
+| `all-whitespace` | 7 | 2,048 | 303,570 | 327,579 | 638,299 |
+| `suffix-error` | 9 | 2,048 | 559,692 | 589,891 | 654,609 |
+| `wildcard-before-whitespace` | 4 | 2,048 | 663,328 | 733,706 | 719,257 |
+| `internal-whitespace` | 5 | 2,048 | 762,575 | 909,400 | 864,631 |
+| `large-valid` | 2,097,153 | 3 | 92,835,931 | 85,870,057 | 368,695,496 |
+| `large-early-scheme` | 2,097,160 | 3 | 1,870 | 1,710 | 3,051,661 |
+| `large-missing-bracket` | 2,097,154 | 3 | 12,599,780 | 12,619,339 | 52,932,948 |
+| `large-early-wildcard` | 2,097,154 | 3 | 20,127,285 | 19,916,112 | 52,969,237 |
+| `large-late-wildcard` | 2,097,154 | 3 | 20,326,059 | 20,207,633 | 164,523,767 |
+| `large-trimmed` | 393,226 | 3 | 6,770,350 | 6,644,044 | 60,310,538 |
+
+All 19 allocation rows per baseline follow. Each vector gives
+`[allocations, reallocations, deallocations, requested bytes, peak requested-live bytes, retained requested-live bytes, untracked releases]`.
+The raw input and an empty policy with one reserved rule slot are prepared
+outside measurement. Requested-live bytes are not RSS and do not model
+temporary overlap during reallocation. Each baseline's positive probe
+observed one allocation, one reallocation and a 24-byte peak.
+
+| Case | Original vector | Native16 vector | Native17 vector |
+| ---- | --------------- | --------------- | --------------- |
+| `lowercase` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` |
+| `uppercase` | `[1, 0, 0, 15, 15, 15, 0]` | `[1, 0, 0, 15, 15, 15, 0]` | `[1, 0, 0, 15, 15, 15, 0]` |
+| `unicode-trim` | `[1, 0, 0, 4, 4, 4, 0]` | `[1, 0, 0, 4, 4, 4, 0]` | `[1, 0, 0, 4, 4, 4, 0]` |
+| `ascii-port` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` |
+| `bracket-port` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` |
+| `trim-order` | `[1, 0, 0, 4, 4, 4, 0]` | `[1, 0, 0, 4, 4, 4, 0]` | `[1, 0, 0, 4, 4, 4, 0]` |
+| `non-numeric-port` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` | `[1, 0, 0, 11, 11, 11, 0]` |
+| `nul` | `[1, 0, 0, 3, 3, 3, 0]` | `[1, 0, 0, 3, 3, 3, 0]` | `[1, 0, 0, 3, 3, 3, 0]` |
+| `empty` | `[1, 0, 0, 33, 33, 33, 0]` | `[1, 0, 0, 33, 33, 33, 0]` | `[1, 0, 0, 33, 33, 33, 0]` |
+| `all-whitespace` | `[1, 0, 0, 33, 33, 33, 0]` | `[1, 0, 0, 33, 33, 33, 0]` | `[1, 0, 0, 33, 33, 33, 0]` |
+| `suffix-error` | `[1, 0, 0, 100, 100, 100, 0]` | `[1, 0, 0, 100, 100, 100, 0]` | `[1, 0, 0, 100, 100, 100, 0]` |
+| `wildcard-before-whitespace` | `[2, 0, 1, 72, 72, 68, 0]` | `[2, 0, 1, 72, 72, 68, 0]` | `[1, 0, 0, 68, 68, 68, 0]` |
+| `internal-whitespace` | `[2, 0, 1, 48, 48, 43, 0]` | `[2, 0, 1, 48, 48, 43, 0]` | `[1, 0, 0, 43, 43, 43, 0]` |
+| `large-valid` | `[1, 0, 0, 2097153, 2097153, 2097153, 0]` | `[1, 0, 0, 2097153, 2097153, 2097153, 0]` | `[1, 0, 0, 2097153, 2097153, 2097153, 0]` |
+| `large-early-scheme` | `[1, 0, 0, 75, 75, 75, 0]` | `[1, 0, 0, 75, 75, 75, 0]` | `[1, 0, 0, 75, 75, 75, 0]` |
+| `large-missing-bracket` | `[1, 0, 0, 55, 55, 55, 0]` | `[1, 0, 0, 55, 55, 55, 0]` | `[1, 0, 0, 55, 55, 55, 0]` |
+| `large-early-wildcard` | `[2, 0, 1, 2097222, 2097222, 68, 0]` | `[2, 0, 1, 2097222, 2097222, 68, 0]` | `[1, 0, 0, 68, 68, 68, 0]` |
+| `large-late-wildcard` | `[2, 0, 1, 2097222, 2097222, 68, 0]` | `[2, 0, 1, 2097222, 2097222, 68, 0]` | `[1, 0, 0, 68, 68, 68, 0]` |
+| `large-trimmed` | `[1, 0, 0, 3, 3, 3, 0]` | `[1, 0, 0, 3, 3, 3, 0]` | `[1, 0, 0, 3, 3, 3, 0]` |
+
+Four error cases avoid one original temporary allocation. The large wildcard
+cases retain a 68-byte error and record a 68-byte requested-live peak in
+native17, versus 2,097,222 bytes in both measured baselines. Other rows retain
+their observed values; no zero-allocation normalization row is claimed.
+The complete raw JSON rows, including large returned host strings, remain in
+the immutable public report. `verification.json` stores every numeric value,
+each complete-row digest and the full report identity.
+
+The checked-in CI runner deliberately measures two baselines,
+original/native17. Its private predecessor bundle is unavailable there;
+the local three-baseline result does not prefill a third CI execution.
+The previously reviewed resolver patch is included as an unchanged 99-line
+patch delta, SHA
+`45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3`.
+The independent PR6374 SDK/GNU successes remain separate historical evidence;
+the new source requires its own SDK and broader CI. The literal patch-context
+whitespace exception is explicit, not a claim that that patch passed strict
+whitespace validation. Full Policy/Core/workspace ownership, platform release,
+performance, default native release and legacy retirement remain unqualified.
+
+### Published sixteen-module CI: immutable history
+
+At `b762fa3f20ed78f6567b6fca68a2ca0524733fff`, push
+[43716443324](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716443324)
+and PR
+[43716486906](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486906)
+each completed 51 successful steps. The PR checkout was
+`67427c1c99269eb8e7ac3740a5c83b1400ecbd43` with the same `9c670d2f…` tree.
+Each run built 16 modules, passed 72 receipt checks and 123 scalar-artifact
+checks, and supplied a 211-member artifact with 106 raw streams. The full
+source audit bound 106 repository files; 96 were directly embedded report
+inputs, with 298 source bindings across the reports in each run.
+
+| Run | Artifact | ZIP SHA256 |
+| --- | -------: | ---------- |
+| Push | 14163634565 | `7faa7102f3fde58c80a87483d4dcc35f46f99c791a393a2a32a00a20c404d72e` |
+| PR | 14163573068 | `2af32e43e6e295bb16a5809fd76215d31df8c6148745636cc5317e11c6c25995` |
+
+Both runs observed dispatcher raw 148,057, public 33,311, 14 effect cases,
+24 allocation cases and 33 callee-rejection cases. Standalone checks covered
+30 cases/60 processes/four symbols; full CLI checks covered 34 cases plus
+two startup cases and 14 symbols. The native/default selected crate sets
+passed 198/185 tests. CLI/arg0/TUI passed 4,474 with six skips; that is not
+the whole workspace. Core filters passed 11 with 3,870 filtered and one
+with 3,880 filtered. The Protocol consumer passed one with 300 filtered.
+
+All 53 two-baseline diagnostic rows in each run were slower than original
+Rust. Every timing and allocation row remains in the source-bound CI report.
+The full CLI binary hashes differed between push and PR, although the
+sixteen reported module artifact identities matched; the binaries themselves
+were not members of the report ZIPs. This does not establish reproducible
+full-CLI bytes.
+
+Broader run
+[43716486788](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486788)
+failed with 37 jobs: 17 successful, 15 failed, one cancelled and four skipped.
+Architecture passed three jobs; canary passed one metadata job and skipped
+two builds. Saved raw logs include 14 actual checkout-bound jobs and one
+workflow-only aggregate. Three failure logs were unavailable, so their causes
+remain unknown. Intel Mac was cancelled without a final Bazel target summary.
+Windows release succeeded in this run. No paired base execution or inherited
+failure attribution was substituted for current evidence.
+
+Root's native/broader reviews are
+`c9716d478718d7cf30d72bfa4528ce4ff1fbd2009d3f746701b6f77a7719c035`
+and `3abd557131bcd900b7b43a130abd5436aa259eeb7b4447f50d46cfe981b0bd10`.
+The detailed immutable record is
+[`published_command_dispatch16_ci`](verification.json#published_command_dispatch16_ci).
+These results do not qualify seventeen-module CI. The following local
+dispatcher record retains its original prepublication pending statements,
+failed attempts and separate UNKNOWN maintenance job.
 
 ### Command-dispatch increment: actual v3 execution
 
@@ -1291,7 +1503,7 @@ pinned Git tree is the complete source-path inventory.
 | Threads and turns           | `core`, `core-api`, `protocol`, `thread-store`                                         | Turn state, ordered events, incremental context and concurrent ownership.                                                                                                                                                                                                 |
 | History and recovery        | `state`, `history`, `message-history`, `rollout`, `thread-store`                       | Existing session/database formats, atomic persistence, resume and crash recovery.                                                                                                                                                                                         |
 | Tools, processes and files  | `tools`, `exec`, `exec-server`, `shell-command`, `file-system`, code-mode crates       | Tool execution, PTY/pipes, process groups, cancellation and owned file effects.                                                                                                                                                                                           |
-| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap` | Prefix matching/scalar admission, RuleMatch and network-domain reduction, allowed-prefix collection and complete command routing are opt-in HIA algorithms. Parser, arbitrary callbacks, OS services and whole Policy/Core/platform ownership remain separate; current sixteen-module full CLI/Protocol/Core CI and performance remain open. |
+| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap` | Prefix/scalar admission, RuleMatch and network-domain reduction, allowed-prefix collection, command routing and complete host normalization are opt-in HIA algorithms. Remaining parser, callback, OS and whole Policy/Core/platform owners are separate; current seventeen-module full CLI/Protocol/Core/platform CI and performance remain open. |
 | MCP                         | `codex-mcp`, `rmcp-client`, `mcp-server`                                               | Initialization, catalogs, calls, notifications, cancellation and transports.                                                                                                                                                                                              |
 | App Server v2               | `app-server`, protocol/transport/client/daemon crates                                  | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations.                                                                                                                                                                                         |
 | CLI and TUI                 | `cli`, `tui`, `arg0`, terminal utilities                                               | Flags, exit status, terminal event/rendering paths and existing snapshots.                                                                                                                                                                                                |
@@ -1305,7 +1517,7 @@ pinned Git tree is the complete source-path inventory.
 All 15 complete capability migrations remain pending. The earlier eight
 connected components, the prefix matcher and its scalar helper, pure RuleMatch
 reduction, ordered network-domain reduction, allowed-prefix collection and complete
-command dispatch advance individual algorithms;
+command dispatch and complete host normalization advance individual algorithms;
 the helper does not add another complete owner.
 Their complete Rust owners and default release dispatch have not been migrated.
 Login template algorithms are connected, while login and credential ownership
@@ -1366,6 +1578,8 @@ python3 -B hia/tests/test_allowed_prefixes_abi.py --library "$native_output/allo
 python3 -B hia/tests/test_native_allowed_prefixes.py --library-dir "$native_output" --rustc "$rustc_binary" --target-dir "$build_parent/allowed-prefixes-target" --report "$build_parent/allowed-prefixes-public.json"
 python3 -B hia/tests/test_command_dispatch_abi.py --library "$native_output/command_dispatch.so" --report "$build_parent/command-dispatch-abi.json"
 python3 -B hia/tests/test_native_command_dispatch.py --library-dir "$native_output" --rustc "$rustc_binary" --target-dir "$build_parent/command-dispatch-target" --report "$build_parent/command-dispatch-public.json"
+python3 -B hia/tests/test_network_host_abi.py --library "$native_output/network_host.so" --build-profile full-native17 --report "$build_parent/network-host-abi.json"
+python3 -B hia/tests/test_native_network_host.py --library-dir "$native_output" --rustc "$rustc_binary" --target-dir "$build_parent/network-host-target" --report "$build_parent/network-host-public.json"
 
 "$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
 "$build_parent/patch-caller-tests"
@@ -1407,6 +1621,13 @@ exactly one verified `--predecessor-manifest` or
 consumer, both harness files and original Cargo capture identities; it records
 `compiled_now=false` explicitly and never reconstructs missing dependencies.
 Neither timing mode establishes performance acceptance.
+
+The network-host command uses the same two-baseline diagnostic scope as CI.
+For an independently qualified three-baseline run, pass `--require-predecessor`,
+`--predecessor-manifest` and `--predecessor-manifest-sha256` for the exact
+published16 promotion. It compiles this workload's new consumers against the
+verified frozen owner and all admitted link directories; it does not reuse a
+previous workload binary. Reports must be new and outside the source tree.
 
 The static callers need no HIA shared-library directory at runtime. Build-time
 artifact mismatches are errors; selecting `hia-native` on an unsupported target

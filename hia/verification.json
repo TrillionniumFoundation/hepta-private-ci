@@ -422,15 +422,63 @@
         ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
+    },
+    "network_host": {
+      "source_sha256": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+      "core_sha256": "5041dff01436a53d3ac0f592ee488ac0e6b82af8dfdf1e6b6a928d2e82e7d68a",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "library_sha256": "3f278af62de3adaf8910ad448a1ae0b7616f66579563bf682308d8bce40e6b2f",
+      "library_bytes": 33576,
+      "static_link": {
+        "symbol": "codex_hia_network_host",
+        "library": "libcodex_hia_network_host.so",
+        "object": "network_host.namespaced.o",
+        "archive": "libcodex_hia_network_host.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 22416,
+        "archive_sha256": "d03ed9eb11191e5ae4cd18e3cf4c95a7672b1c21f0f55b3551b6cef9417bd677",
+        "text_sha256": "04b4c29ba86c35f384aa94879407cf7a37402f4ebde510c957700266d32cb388",
+        "defined_symbols": [
+          "codex_hia_network_host"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "a04753a6a760d4a377ad5364abc0d5966e96602af73a3fd9b9820ad94e596a34",
+        "library_sha256": "bad214129de736912e494feddc89cff343b9b7198b6fe9f0ad62d650ccdc61f3",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_network_host",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.o",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o",
+          "-o",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/libcodex_hia_network_host.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
+    "toolchain_lock_sha256": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "ee2fae74cbb9dcad2d380d9efc3d653351cde067f43e5d01ffde032128d9d36e",
+  "build_report_sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
@@ -448,7 +496,8 @@
     "policy_summary": "Complete pure RuleMatch reduction for Evaluation and CLI summary: presence, strictest decision and explicit-match flag.",
     "network_domains": "Complete Policy::compiled_network_domains: HIA selects non-Prompt rules and computes ordered last-winner raw-host Allow/Forbidden vectors.",
     "allowed_prefixes": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication.",
-    "command_dispatch": "Complete Policy command-rule dispatch: exact/host/fallback routing, ordered callbacks, component path equality, retention and scheduled original host effects."
+    "command_dispatch": "Complete Policy command-rule dispatch: exact/host/fallback routing, ordered callbacks, component path equality, retention and scheduled original host effects.",
+    "network_host": "Complete normalize_network_rule_host; Rust retains owned allocation and original policy/parser/file effects."
   },
   "seek_sequence": {
     "schema": "codex.hia.seek-sequence-differential.v1",
@@ -1237,7 +1286,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "scope": "Exact twenty-file content freeze for scoped Draft publication: eighteen dispatcher files equal actual V3 execution inputs; two formatter files bind 32 component tests. The successful last V7 just fmt and all 9,883 unchanged source files establish the content identity. Additional maintenance job remains UNKNOWN, with no invented completion/staging/diff/tree result. No Codex product compilation/tests were rerun after final fix/fmt; formatter fixtures invoke real rustfmt and Cargo metadata. Current full CLI/Protocol/Core/prior-component and receipt-mutation CI, workspace, platform, performance, default-release and retirement qualification remain open.",
+  "scope": "Local qualification of the exact 21-source network-host increment on Linux GNU, from published16 b762/9c6. Initial formatting preceded all behavioral gates; the final scoped fixes and fmt exited 0 and left all 9,893 source files unchanged. No product build or test was run after final maintenance. Original/native16/native17 allocation and timing harnesses were separately compiled and executed; the frozen native16 owner itself was not rebuilt. Current seventeen-module full CLI, Protocol/Core/prior-component and platform CI remain pending. Complete Policy/Core/workspace, performance, default release and retirement are not qualified.",
   "evidence_reports": {
     "seek_sequence": {
       "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
@@ -1489,26 +1538,36 @@
       "file": "native-v2/build.json",
       "sha256": "cfa066b9abbf52781c15f0313301d3eea5b6bba41471358d5ebe8da7b4826016",
       "bytes": 159164
+    },
+    "network_host_public": {
+      "path": "network-host-root-review/observations-v1/network-host-public-v1.json",
+      "bytes": 13052765,
+      "sha256": "f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c"
+    },
+    "network_host_observations_archive": {
+      "path": "network-host-root-review/observations-v1/observations.tar.xz",
+      "bytes": 8725728,
+      "sha256": "26971981c45becb796b1dd8aade8af1e1853a27074df84ed0131b15ccc85e615"
     }
   },
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "4f2626f21959f1ff0ef86c37c47eba8976bbc5b6bfc411da1de02b3ca419397c",
+    ".github/workflows/codex-hia-native.yml": "216fdf2b7a3c2581bc45a8ac54b13fb0e0054605fd758228dae9a94a1be40c64",
     ".github/workflows/rusty-v8-release.yml": "25eb9da672e26f1da7f0c186c8f1b7395530f4f139aad6dcce5e234e9e3ced59",
     ".github/workflows/v8-canary.yml": "89f6a2bfeb3a6dbec431c64872c61dfb5e3f0f5444bf0c62a62237129734679d",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/cli/Cargo.toml": "b85af25d93b7994e9c7bc74ec8a29087be056f5cfe853f76ca63332b64275119",
     "codex-rs/execpolicy/BUILD.bazel": "1e5a7a8c87ce0a8f95fb482269d7f2624b94242f1a2082237f660f8386a3fdb8",
     "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
-    "codex-rs/execpolicy/build.rs": "78b10ea09beb3834b6ec7080ce41eab824028e7c11b52e5cec02c71f40a415dc",
+    "codex-rs/execpolicy/build.rs": "adc1a1911a74d09df3e2eef5f4b4c140d55204695b79fd7924befed39b49d423",
     "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
     "codex-rs/execpolicy/src/hia_native_allowed_prefixes.rs": "d00759c4308e11d16943480394c1573f8071cd887a9657bf7e1987503dfd3262",
     "codex-rs/execpolicy/src/hia_native_command_dispatch.rs": "1f492c5fcb9febf6da77658ee4db36f6502cfad4faca400bdb7bff264fd3a34a",
     "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
     "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
     "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
-    "codex-rs/execpolicy/src/lib.rs": "c720b4ad431822f5fdebb43de044b972870d29a14309a5e6557730e35a6e77f9",
+    "codex-rs/execpolicy/src/lib.rs": "e47234f22384dec734368c1c09c6f78ddc5e1b3e2cfe4f147fe9d16ae657db35",
     "codex-rs/execpolicy/src/policy.rs": "ef8ff4f7e23771dde26ba7082bc04f3ee3fe8fb272eee67788907c564d82dadd",
-    "codex-rs/execpolicy/src/rule.rs": "2bb6276d98078f67b67717b265b006c280ec503007c94daa1ec7f58ca4959221",
+    "codex-rs/execpolicy/src/rule.rs": "2e27abf0ab6c719c23fadcb2e95cb68af2004c73b1c624e7b99d7aa43a29bd68",
     "codex-rs/linux-sandbox/tests/suite/landlock.rs": "3301d411053aaf43bf60435261aef451b115a1ba775a19d395cc104a203a9fcd",
     "codex-rs/login/Cargo.toml": "09f35415c4cdd324a270eaa95d27a99f16c9bf5519c55c8c128207a9235f2f50",
     "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70",
@@ -1580,14 +1639,14 @@
     "hia/tests/test_allowed_prefixes_abi.py": "c1201cf6fe526bd71b8a4c9b26f0b2e27a3eae7f7756ac137f8a44e48728cd1c",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_command_dispatch_abi.py": "f528809a00e654dfe1c69c4985a5b31e9d41ef1efa12a080bfd1ee1dacc855f7",
-    "hia/tests/test_installed_codex.py": "53acf908b3de7c8c8c05991772737bd83a90fef9673db1d8d4d0e8c86bb15edf",
-    "hia/tests/test_installed_execpolicy.py": "1f752d7deebc8e3a49e81096c1da0c7adb3a8a5dc5447df9ea60b731aab6d843",
+    "hia/tests/test_installed_codex.py": "e072f0a095f67d62bd3275a5b6427ca6a8d6bd531e91272742a349a9db1c5e9d",
+    "hia/tests/test_installed_execpolicy.py": "27986b3a3d3bef975b2846239b28cf89e64575abb618e6f82be7c489cc52571e",
     "hia/tests/test_native_allowed_prefixes.py": "68d2ed564c9e9271179d5432d558ee12700026fd0869af0d82e1185e12a682e3",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
     "hia/tests/test_native_command_dispatch.py": "5f7da2f0ceb96205846118f905bfd43d73e8ac1a112f45bebb9fa6061bf521cd",
     "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe",
     "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
-    "hia/tests/test_native_network_domains.py": "d797d2315e00793ff7fac53e0cff3c2f3e551bff5ff2cc3b8c231dee89d35dde",
+    "hia/tests/test_native_network_domains.py": "47f3a82ba11d11746e0896bc2d90a34149ff9e69d4837ce176880cad9871e9d1",
     "hia/tests/test_native_policy_summary.py": "277d4215eb243555fc591c54fa050928d01fd1f9e38191919de46eb31879b377",
     "hia/tests/test_native_template_parser.py": "3442b35bae2e3620fcb9ff8c262307a131bd49e7c47ba2e5a6167d9a10917074",
     "hia/tests/test_native_uuid_caller.py": "a0dd3b0b6848a0ab9080839f562b918f9b5a8d75b1bb53400fec647badd50fb0",
@@ -1600,12 +1659,23 @@
     "hia/tests/test_template_parser_abi.py": "0c8b599c6792903891d9ee0abb88a6367661aef0b4c29a525c09dcc7efcab964",
     "hia/tests/test_template_render_abi.py": "a5a2ea257c35e3f8ce3589f03e23facc9c7fdd4daf12517862e9a253921558e7",
     "hia/tests/test_uuid_abi.py": "33d355c8fdcec9663f048f01e1e93184dce12c52177b32375e2ef656e8aaaaf8",
-    "hia/toolchain.json": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
+    "hia/toolchain.json": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
     "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
-    "scripts/format.py": "7d850af7e8dd5d664ff2359238041de91eaa8f64283fd0cdb79f3699ba2e2ecf",
-    "scripts/test_hepta_format_scope.py": "2f2b6d344c708bed4ed8681c78041a02fb1177bb1fcf9aaf84d879eee36ae46c"
+    "scripts/format.py": "5be1f8fa3ba123794debcdb49f42536e3ab5dd5737260b28a38c27a816b4bd53",
+    "scripts/test_hepta_format_scope.py": "97633a7d4163be146a33b9f632866467c601c04670a82e32e00d2a2e4ad5edb4",
+    "codex-rs/execpolicy/src/hia_native_network_host.rs": "2e4c32c076ff91c4130eb4f26e89cd4e069f911cecba5b7f584da28c1b25efa9",
+    "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+    "hia/tests/native_network_host.rs": "464e18c81372b7aac71b919c9e5cd378f5f54393ff00f3aaad4db8fc790af9db",
+    "hia/tests/native_network_host_allocations.rs": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+    "hia/tests/native_network_host_failures.rs": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50",
+    "hia/tests/native_network_host_performance.rs": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+    "hia/tests/network_host_fixtures.rs": "b03d89002a472730924575a8ba19d15f872bb10b559ae9ac2a64234a42aa9f6c",
+    "hia/tests/network_host_predecessor16.py": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428",
+    "hia/tests/test_native_network_host.py": "a0802a18144ae1bc8cb82ec2781799c0eb834ac24668f19a9ce925f5ce67a036",
+    "hia/tests/test_network_host_abi.py": "61f78166c8d003da19d4c8ca53c6f186692b779a990511ee51d14e717ac2e18e",
+    "patches/rama-dns_hermetic_toolchain.patch": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3"
   },
   "workspace_requalification": {
     "status": "passed",
@@ -1647,7 +1717,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "module_count": 16,
+  "module_count": 17,
   "public_api_components": {
     "uuid_matches": {
       "api": "codex_utils_string::find_uuids",
@@ -2625,8 +2695,8 @@
     "applies_to_current_prefix_increment": false,
     "evidence_rule": "Existing per-component reports retain their original hashes and scopes. Historical full CLI, Core consumers and workspace results are not a pass for the newly added prefix path."
   },
-  "production_callers_verification_scope": "Active local scope is command_dispatch_qualification. Published fifteen-module native CI and separate SDK follow-up remain immutable history. Current full CLI, Protocol/Core and previous-component execution requires new sixteen-module CI.",
-  "current_source_inputs_scope": "Exact published ae397 inputs plus twenty frozen files. Eighteen dispatcher files retain V3 execution identity; two formatter files bind their first 32 component checks. Workflow/full-CLI wiring still awaits current CI. Additional maintenance remains UNKNOWN; no product tests were rerun after fix/fmt.",
+  "production_callers_verification_scope": "Current local complete network-host normalization/public owner, standalone execpolicy and listed behavioral gates only. Whole product dispatch and current full CLI/Core/Protocol/prior-component CI remain separate.",
+  "current_source_inputs_scope": "Exact published b762 inputs plus 21 frozen candidate files, 125 total bindings. Actual public execution binds 58 source inputs; other wiring/formats carry their own stated gates. All tested candidate bytes survived final fixes/fmt unchanged. New seventeen-module product CI remains pending.",
   "prefix_match": {
     "schema": "codex.hia.prefix-match-qualification.v1",
     "status": "linux_gnu_component_and_standalone_passed",
@@ -3260,7 +3330,7 @@
       "artifact_admission": "current_qualification.gates.scalar_artifact"
     }
   },
-  "borrowed_module_count": 15,
+  "borrowed_module_count": 16,
   "scalar_module_count": 1,
   "entry_profile_rule": {
     "default": "borrowed-buffers-u32-v1",
@@ -3271,7 +3341,7 @@
   "historical_evidence_scopes": {
     "recorded_at_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
     "applies_to_current_compiler": false,
-    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification retains its recorded fifteen-module local scope; published_allowed_prefixes15_ci records its exact published CI. command_dispatch_qualification is the active sixteen-module local scope. Identity continuity does not transfer historical passes.",
+    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification retains its recorded fifteen-module local scope; published_allowed_prefixes15_ci records its exact published CI. command_dispatch_qualification retains its recorded sixteen-module local scope; published_command_dispatch16_ci records its exact published CI. network_host_qualification is the active seventeen-module local scope. Identity continuity does not transfer historical passes.",
     "fields": [
       "seek_sequence",
       "utf8_boundaries",
@@ -4333,7 +4403,7 @@
     },
     "scope": "Only the exact twelve-module d7/merge sources above. Counts are per run, not added together. All seven prefix timings in each run were slower than original Rust. The source-specific reports retain all timing rows, exact build/artifact identities and limitations; no historical pass qualifies the current thirteen-module source."
   },
-  "active_qualification": "command_dispatch_qualification",
+  "active_qualification": "network_host_qualification",
   "policy_summary_qualification": {
     "status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
     "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
@@ -7978,5 +8048,3018 @@
         "sha256": "0c8fd6e2c1cea0d0ee57565b5547ba20c96dc627ebbdb96ce2d2d076b186ebf6"
       }
     }
-  }
+  },
+  "published_command_dispatch16_ci": {
+    "status": "published_sixteen_module_native_passed_broader_failed",
+    "source_revision": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+    "source_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+    "merge_revision": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+    "merge_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+    "applies_to_current_network_host_increment": false,
+    "module_count": 16,
+    "borrowed_module_count": 15,
+    "scalar_module_count": 1,
+    "source_bindings_verified": 106,
+    "directly_embedded_report_source_files": 96,
+    "actual_report_source_bindings_per_run": 298,
+    "original_raw_streams_per_run": 106,
+    "native_runs": [
+      {
+        "run_id": 43716443324,
+        "event": "push",
+        "job_id": 132818906105,
+        "actual_checkout": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "successful_steps": 51,
+        "artifact_id": 14163634565,
+        "zip_bytes": 14276230,
+        "zip_sha256": "7faa7102f3fde58c80a87483d4dcc35f46f99c791a393a2a32a00a20c404d72e",
+        "all_members_verified": 211,
+        "build_report_sha256": "0cd060ac786a1d9852542c6d75a137871e045284a7820c5c252b62312d1b21a7",
+        "receipt_checks": 72,
+        "scalar_artifact_checks": 123,
+        "standalone": {
+          "cases": 30,
+          "processes": 60,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_command_dispatch",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match"
+          ],
+          "native_binary_sha256": "205f01fef02b487e49c8aa1d7ce99d0e1db6212b987a4e091e37ec82daffaa4f",
+          "reference_binary_sha256": "2097c32b22d45a6a8c49023a262c8f63a3eb62f2b8add9a4c6c449437e78cbf8",
+          "relocated_copies_match": true
+        },
+        "full_cli": {
+          "cases": 34,
+          "startup_cases": 2,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_allowed_prefixes",
+            "codex_hia_ascii_json_fragment",
+            "codex_hia_command_dispatch",
+            "codex_hia_markdown_location",
+            "codex_hia_metric_tag",
+            "codex_hia_network_domains",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match",
+            "codex_hia_seek_sequence",
+            "codex_hia_template_index",
+            "codex_hia_template_parser",
+            "codex_hia_template_render",
+            "codex_hia_utf8_prefix"
+          ],
+          "native_binary_sha256": "68476c9089ed42e32cebe6cee3dead30aacae067347d9e18981ad23c986bde25",
+          "reference_binary_sha256": "03329d56f3665cff3da5f05627adea9f276a36d7140dbc4407cfacf65ca01358",
+          "relocated_copies_match": true,
+          "case_dispatch_counts": {
+            "codex": 30,
+            "stdin": 2,
+            "codex_arg1": 2
+          }
+        },
+        "owner_tests": {
+          "hia-native-crates.log": {
+            "tests_run": 198,
+            "passed": 198,
+            "reported_skipped": 0,
+            "elapsed_seconds": 2.11,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-default-crates.log": {
+            "tests_run": 185,
+            "passed": 185,
+            "reported_skipped": 0,
+            "elapsed_seconds": 2.472,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-codex-owners.log": {
+            "tests_run": 4474,
+            "passed": 4474,
+            "reported_skipped": 6,
+            "elapsed_seconds": 131.571,
+            "whole_workspace": false,
+            "packages": [
+              "codex-cli",
+              "codex-arg0",
+              "codex-tui"
+            ]
+          },
+          "hia-core-execpolicy.log": {
+            "tests_run": 11,
+            "passed": 11,
+            "reported_skipped": 3870,
+            "elapsed_seconds": 2.549,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(suite::exec_policy::)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.646s] codex-core::all suite::exec_policy::deeply_nested_forced_rm_is_rejected_before_execution_when_approvals_are_disabled",
+              "        PASS [   0.699s] codex-core::all suite::exec_policy::execpolicy_blocks_shell_invocation",
+              "        PASS [   0.714s] codex-core::all suite::exec_policy::environment_command_restrictions_override_saved_prefix_approvals",
+              "        PASS [   0.662s] codex-core::all suite::exec_policy::granular_complex_forced_rm_denial_explains_why_the_command_was_rejected",
+              "        PASS [   0.673s] codex-core::all suite::exec_policy::granular_complex_forced_rm_requests_approval_when_allowed",
+              "        PASS [   0.760s] codex-core::all suite::exec_policy::git_status_requires_approval_under_unless_trusted",
+              "        PASS [   1.822s] codex-core::all suite::exec_policy::environment_command_policy_changes_invalidate_session_approvals",
+              "        PASS [   0.537s] codex-core::all suite::exec_policy::startup_migrates_default_policy_and_honors_ignore_rules",
+              "        PASS [   0.632s] codex-core::all suite::exec_policy::malformed_custom_rules_preserve_managed_forbidden_prefix",
+              "        PASS [   0.912s] codex-core::all suite::exec_policy::unified_exec_empty_script_with_collaboration_mode_does_not_panic",
+              "        PASS [   0.702s] codex-core::all suite::exec_policy::unified_exec_whitespace_script_with_collaboration_mode_does_not_panic"
+            ]
+          },
+          "hia-core-network-domains.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 3880,
+            "elapsed_seconds": 0.04,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.019s] codex-core config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-core --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-core-network-domains.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132818906105.log",
+              "bytes": 1631393,
+              "sha256": "7a24b152769a23f89210cf71a31ca68028ed6f55f790e47d0851f3d6c1c53905",
+              "actual_checkout": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "b20229a9e88a7a025e6a7edab503658d38651f2f29b636eeba456fff2a473cee"
+          },
+          "hia-protocol-allowed-prefixes.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 300,
+            "elapsed_seconds": 0.012,
+            "whole_workspace": false,
+            "packages": [
+              "codex-protocol"
+            ],
+            "explicit_filter": "test(=models::tests::format_allow_prefixes_limits_output)",
+            "whole_protocol_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.010s] codex-protocol models::tests::format_allow_prefixes_limits_output"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-protocol --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=models::tests::format_allow_prefixes_limits_output)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-protocol-allowed-prefixes.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132818906105.log",
+              "bytes": 1631393,
+              "sha256": "7a24b152769a23f89210cf71a31ca68028ed6f55f790e47d0851f3d6c1c53905",
+              "actual_checkout": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+          }
+        }
+      },
+      {
+        "run_id": 43716486906,
+        "event": "pull_request",
+        "job_id": 132819040560,
+        "actual_checkout": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+        "successful_steps": 51,
+        "artifact_id": 14163573068,
+        "zip_bytes": 14275670,
+        "zip_sha256": "2af32e43e6e295bb16a5809fd76215d31df8c6148745636cc5317e11c6c25995",
+        "all_members_verified": 211,
+        "build_report_sha256": "d49831c7115ea4c9ca0c40e9487797e19978912400113f890d09d0946e49e9a0",
+        "receipt_checks": 72,
+        "scalar_artifact_checks": 123,
+        "standalone": {
+          "cases": 30,
+          "processes": 60,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_command_dispatch",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match"
+          ],
+          "native_binary_sha256": "205f01fef02b487e49c8aa1d7ce99d0e1db6212b987a4e091e37ec82daffaa4f",
+          "reference_binary_sha256": "2097c32b22d45a6a8c49023a262c8f63a3eb62f2b8add9a4c6c449437e78cbf8",
+          "relocated_copies_match": true
+        },
+        "full_cli": {
+          "cases": 34,
+          "startup_cases": 2,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_allowed_prefixes",
+            "codex_hia_ascii_json_fragment",
+            "codex_hia_command_dispatch",
+            "codex_hia_markdown_location",
+            "codex_hia_metric_tag",
+            "codex_hia_network_domains",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match",
+            "codex_hia_seek_sequence",
+            "codex_hia_template_index",
+            "codex_hia_template_parser",
+            "codex_hia_template_render",
+            "codex_hia_utf8_prefix"
+          ],
+          "native_binary_sha256": "8f97c98d93e8cab162ad416eb1e443137375f3356836421e86f81c2137e19ad5",
+          "reference_binary_sha256": "82608b4fa5470d01a23c67885ed6b4fe42554d7fa4f5f68ab132f4f336d2a9f6",
+          "relocated_copies_match": true,
+          "case_dispatch_counts": {
+            "codex": 30,
+            "stdin": 2,
+            "codex_arg1": 2
+          }
+        },
+        "owner_tests": {
+          "hia-native-crates.log": {
+            "tests_run": 198,
+            "passed": 198,
+            "reported_skipped": 0,
+            "elapsed_seconds": 1.579,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-default-crates.log": {
+            "tests_run": 185,
+            "passed": 185,
+            "reported_skipped": 0,
+            "elapsed_seconds": 1.835,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-codex-owners.log": {
+            "tests_run": 4474,
+            "passed": 4474,
+            "reported_skipped": 6,
+            "elapsed_seconds": 102.778,
+            "whole_workspace": false,
+            "packages": [
+              "codex-cli",
+              "codex-arg0",
+              "codex-tui"
+            ]
+          },
+          "hia-core-execpolicy.log": {
+            "tests_run": 11,
+            "passed": 11,
+            "reported_skipped": 3870,
+            "elapsed_seconds": 2.142,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(suite::exec_policy::)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.479s] codex-core::all suite::exec_policy::deeply_nested_forced_rm_is_rejected_before_execution_when_approvals_are_disabled",
+              "        PASS [   0.527s] codex-core::all suite::exec_policy::environment_command_restrictions_override_saved_prefix_approvals",
+              "        PASS [   0.529s] codex-core::all suite::exec_policy::execpolicy_blocks_shell_invocation",
+              "        PASS [   0.689s] codex-core::all suite::exec_policy::granular_complex_forced_rm_requests_approval_when_allowed",
+              "        PASS [   0.728s] codex-core::all suite::exec_policy::granular_complex_forced_rm_denial_explains_why_the_command_was_rejected",
+              "        PASS [   0.829s] codex-core::all suite::exec_policy::git_status_requires_approval_under_unless_trusted",
+              "        PASS [   1.565s] codex-core::all suite::exec_policy::environment_command_policy_changes_invalidate_session_approvals",
+              "        PASS [   0.404s] codex-core::all suite::exec_policy::startup_migrates_default_policy_and_honors_ignore_rules",
+              "        PASS [   0.474s] codex-core::all suite::exec_policy::malformed_custom_rules_preserve_managed_forbidden_prefix",
+              "        PASS [   0.667s] codex-core::all suite::exec_policy::unified_exec_empty_script_with_collaboration_mode_does_not_panic",
+              "        PASS [   0.557s] codex-core::all suite::exec_policy::unified_exec_whitespace_script_with_collaboration_mode_does_not_panic"
+            ]
+          },
+          "hia-core-network-domains.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 3880,
+            "elapsed_seconds": 0.034,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.016s] codex-core config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-core --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-core-network-domains.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132819040560.log",
+              "bytes": 1631810,
+              "sha256": "b97c318910afedc7564f519ea57d1c548df62cec7c3c5a5b0df0cd264fdc1626",
+              "actual_checkout": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "b20229a9e88a7a025e6a7edab503658d38651f2f29b636eeba456fff2a473cee"
+          },
+          "hia-protocol-allowed-prefixes.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 300,
+            "elapsed_seconds": 0.01,
+            "whole_workspace": false,
+            "packages": [
+              "codex-protocol"
+            ],
+            "explicit_filter": "test(=models::tests::format_allow_prefixes_limits_output)",
+            "whole_protocol_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.008s] codex-protocol models::tests::format_allow_prefixes_limits_output"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-protocol --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=models::tests::format_allow_prefixes_limits_output)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-protocol-allowed-prefixes.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132819040560.log",
+              "bytes": 1631810,
+              "sha256": "b97c318910afedc7564f519ea57d1c548df62cec7c3c5a5b0df0cd264fdc1626",
+              "actual_checkout": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+          }
+        }
+      }
+    ],
+    "command_dispatch_counts_per_run": {
+      "raw_calls": 148057,
+      "raw_success": 141492,
+      "raw_errors_without_writes": 6565,
+      "completed_sessions": 37157,
+      "concurrent_calls_included": 2576,
+      "concurrent_sessions": 256,
+      "public_comparisons": 33311,
+      "concurrent_public_comparisons_included": 256,
+      "effect_cases": 14,
+      "allocation_cases": 24,
+      "zero_allocation_cases": 3,
+      "substituted_callee_rejections": 33
+    },
+    "timing_baselines": [
+      "original",
+      "native16"
+    ],
+    "three_baseline_execution": false,
+    "diagnostic_timing_rows_per_run": 53,
+    "slower_than_original_rows_per_run": 53,
+    "timing_rows_by_component": {
+      "prefix_match": 7,
+      "policy_summary": 5,
+      "network_domains": 11,
+      "allowed_prefixes": 14,
+      "command_dispatch": 16
+    },
+    "dispatcher_slowest_recorded_rows": [
+      {
+        "run_id": 43716443324,
+        "case": "many-exact-none",
+        "calls": 30,
+        "original_ns": 360763,
+        "native16_ns": 55477193
+      },
+      {
+        "run_id": 43716486906,
+        "case": "many-exact-none",
+        "calls": 30,
+        "original_ns": 332700,
+        "native16_ns": 38253537
+      }
+    ],
+    "complete_timing_and_allocation_rows_retained_in": "published16_native_ci report, each runs[].performance; no historical measurements removed from this file",
+    "performance_qualified": false,
+    "cross_run_full_cli_binary_equal": false,
+    "compiled_binary_bytes_in_archives": false,
+    "binary_hash_scope": "CI report identities; compiled binaries were not independently downloaded in the report ZIPs.",
+    "broader_runs": [
+      {
+        "kind": "blocking",
+        "run_id": 43716486788,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486788",
+        "head_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "event": "pull_request",
+        "conclusion": "failure",
+        "metadata_complete_per_page_100": true,
+        "job_counts": {
+          "total": 37,
+          "success": 17,
+          "failure": 15,
+          "cancelled": 1,
+          "skipped": 4
+        }
+      },
+      {
+        "kind": "architecture",
+        "run_id": 43716486703,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486703",
+        "head_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "event": "pull_request",
+        "conclusion": "success",
+        "metadata_complete_per_page_100": true,
+        "job_counts": {
+          "total": 3,
+          "success": 3
+        }
+      },
+      {
+        "kind": "canary",
+        "run_id": 43716486756,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486756",
+        "head_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "event": "pull_request",
+        "conclusion": "success",
+        "metadata_complete_per_page_100": true,
+        "job_counts": {
+          "total": 3,
+          "success": 1,
+          "skipped": 2
+        }
+      }
+    ],
+    "broader_failure_log_coverage": {
+      "actual_checkout_bound_saved_logs": 14,
+      "workflow_reference_only_saved_logs": 1,
+      "unavailable_failure_log_jobs": [
+        132819713254,
+        132819713273,
+        132819713317
+      ],
+      "unknown_causes_inferred": false,
+      "paired_base_execution": false,
+      "base_causal_attribution": false
+    },
+    "observed_failure_scope": {
+      "sdk_and_gnu_release": "Actual current logs reported undefined symbol res_nsearch; the separate SDK follow-up was not included in b762.",
+      "arm_mac": "Actual process_wrapper execution failures, exit126; ARM test target summary retained in the linked broader audit.",
+      "windows_clippy": "Actual incompatible hepta-agentd cognitive product qualification target.",
+      "windows_tests": "Four shards failed; target summaries and observed code87/automation/memory failures remain in the linked current logs.",
+      "intel_mac": "Cancelled; no final Bazel target summary was observed.",
+      "required": "Actual checkout-bound aggregate rejected bazel and sdk failures.",
+      "windows_release": "Success in this run: 1,030 targets and 5,244 actions.",
+      "architecture": "Three successful jobs. The base-merge job used synthetic 6f1edbe921e2c20e426e8b4f408406338d3fc980 with the same tree and did not require a second native execution.",
+      "canary": "One metadata job succeeded; two build jobs were skipped."
+    },
+    "remaining_limits": {
+      "whole_policy_migrated": false,
+      "whole_core_suite_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "whole_codex_rewritten": false,
+      "legacy_source_retired": false
+    },
+    "reports": [
+      {
+        "path": "ci-evidence/command-dispatch16/native-ci-summary.json",
+        "bytes": 947111,
+        "sha256": "da5bb772ec4a3076a46ea999b1f1aeb14fea57ac89cc996a1b5176892b1b4470"
+      },
+      {
+        "path": "ci-evidence/command-dispatch16/broader-final-audit.json",
+        "bytes": 112755,
+        "sha256": "d9f998a8d7b65545f957bfd7fe3d1cd5b5baeaebb12291f49036fa1f232f89e3"
+      },
+      {
+        "path": "ci-evidence/command-dispatch16/root-native-ci-verification.json",
+        "bytes": 162871,
+        "sha256": "c9716d478718d7cf30d72bfa4528ce4ff1fbd2009d3f746701b6f77a7719c035"
+      },
+      {
+        "path": "ci-evidence/command-dispatch16/root-broader-final-verification.json",
+        "bytes": 18194,
+        "sha256": "3abd557131bcd900b7b43a130abd5436aa259eeb7b4447f50d46cfe981b0bd10"
+      }
+    ],
+    "scope": "Immutable source-specific sixteen-module follow-up. The former local pending statements remain historical. These native successes do not qualify seventeen-module CI, whole Policy/Core/workspace, platform release, performance or retirement.",
+    "pull_request": 6378,
+    "source_observation": {
+      "observed_at": "2026-11-15T13:00:05.993Z",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "commits": 14,
+      "changed_files": 23,
+      "additions": 7132,
+      "deletions": 93
+    }
+  },
+  "network_host_qualification": {
+    "status": "exact_source_local_qualification_passed_new_product_ci_pending",
+    "base_revision": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+    "base_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+    "candidate_code_tree_before_documentation": "9c984a9f9be8dca17240233ae62973193d4beb03",
+    "published_revision": null,
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "target": "x86_64-unknown-linux-gnu",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\n",
+    "module_count": 17,
+    "borrowed_module_count": 16,
+    "scalar_module_count": 1,
+    "scope": "Local qualification of the exact 21-source network-host increment on Linux GNU, from published16 b762/9c6. Initial formatting preceded all behavioral gates; the final scoped fixes and fmt exited 0 and left all 9,893 source files unchanged. No product build or test was run after final maintenance. Original/native16/native17 allocation and timing harnesses were separately compiled and executed; the frozen native16 owner itself was not rebuilt. Current seventeen-module full CLI, Protocol/Core/prior-component and platform CI remain pending. Complete Policy/Core/workspace, performance, default release and retirement are not qualified.",
+    "whole_policy_migrated": false,
+    "performance_qualified": false,
+    "source_identity": {
+      "initial_source_manifest": {
+        "path": "network-host-root-review/execution-v1/initial-formatted-source-manifest.json",
+        "bytes": 18982,
+        "sha256": "413ef6fe5d1c2ace8cdee53cffa6ab95757b503ec0709798d60026d5561bdc7e"
+      },
+      "final_source_manifest": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/final-source/source-manifest.json",
+        "bytes": 18932,
+        "sha256": "5bfda2cd5ab431a4418430d3db8dc791a2e99e91ce449a06f153f8a55850a8cc"
+      },
+      "candidate_files": {
+        ".github/workflows/codex-hia-native.yml": "216fdf2b7a3c2581bc45a8ac54b13fb0e0054605fd758228dae9a94a1be40c64",
+        "codex-rs/execpolicy/build.rs": "adc1a1911a74d09df3e2eef5f4b4c140d55204695b79fd7924befed39b49d423",
+        "codex-rs/execpolicy/src/hia_native_network_host.rs": "2e4c32c076ff91c4130eb4f26e89cd4e069f911cecba5b7f584da28c1b25efa9",
+        "codex-rs/execpolicy/src/lib.rs": "e47234f22384dec734368c1c09c6f78ddc5e1b3e2cfe4f147fe9d16ae657db35",
+        "codex-rs/execpolicy/src/rule.rs": "2e27abf0ab6c719c23fadcb2e95cb68af2004c73b1c624e7b99d7aa43a29bd68",
+        "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+        "hia/tests/native_network_host.rs": "464e18c81372b7aac71b919c9e5cd378f5f54393ff00f3aaad4db8fc790af9db",
+        "hia/tests/native_network_host_allocations.rs": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+        "hia/tests/native_network_host_failures.rs": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50",
+        "hia/tests/native_network_host_performance.rs": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+        "hia/tests/network_host_fixtures.rs": "b03d89002a472730924575a8ba19d15f872bb10b559ae9ac2a64234a42aa9f6c",
+        "hia/tests/network_host_predecessor16.py": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428",
+        "hia/tests/test_installed_codex.py": "e072f0a095f67d62bd3275a5b6427ca6a8d6bd531e91272742a349a9db1c5e9d",
+        "hia/tests/test_installed_execpolicy.py": "27986b3a3d3bef975b2846239b28cf89e64575abb618e6f82be7c489cc52571e",
+        "hia/tests/test_native_network_domains.py": "47f3a82ba11d11746e0896bc2d90a34149ff9e69d4837ce176880cad9871e9d1",
+        "hia/tests/test_native_network_host.py": "a0802a18144ae1bc8cb82ec2781799c0eb834ac24668f19a9ce925f5ce67a036",
+        "hia/tests/test_network_host_abi.py": "61f78166c8d003da19d4c8ca53c6f186692b779a990511ee51d14e717ac2e18e",
+        "hia/toolchain.json": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
+        "patches/rama-dns_hermetic_toolchain.patch": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+        "scripts/format.py": "5be1f8fa3ba123794debcdb49f42536e3ab5dd5737260b28a38c27a816b4bd53",
+        "scripts/test_hepta_format_scope.py": "97633a7d4163be146a33b9f632866467c601c04670a82e32e00d2a2e4ad5edb4"
+      },
+      "actual_public_source_inputs": {
+        "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
+        "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
+        "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
+        "codex-rs/execpolicy/build.rs": "adc1a1911a74d09df3e2eef5f4b4c140d55204695b79fd7924befed39b49d423",
+        "codex-rs/execpolicy/src/amend.rs": "e0869236f00e7e96e13c8546c17120b8e7e4438c6e6d676831446707eda2d1eb",
+        "codex-rs/execpolicy/src/decision.rs": "9a706dbee5301bb81b2c89a69380dab15b68abafad4e102521d81b6009de2e03",
+        "codex-rs/execpolicy/src/error.rs": "7c952283b5c2a75d3a34669427dab79ef0a6ff26d401b8731bba9751822d81dc",
+        "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
+        "codex-rs/execpolicy/src/executable_name.rs": "85414e488db0dba6a0b077cc038cc8f7ad0aa5695f927fc1fb05886f4d8adf7b",
+        "codex-rs/execpolicy/src/hia_native_allowed_prefixes.rs": "d00759c4308e11d16943480394c1573f8071cd887a9657bf7e1987503dfd3262",
+        "codex-rs/execpolicy/src/hia_native_command_dispatch.rs": "1f492c5fcb9febf6da77658ee4db36f6502cfad4faca400bdb7bff264fd3a34a",
+        "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
+        "codex-rs/execpolicy/src/hia_native_network_host.rs": "2e4c32c076ff91c4130eb4f26e89cd4e069f911cecba5b7f584da28c1b25efa9",
+        "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
+        "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
+        "codex-rs/execpolicy/src/lib.rs": "e47234f22384dec734368c1c09c6f78ddc5e1b3e2cfe4f147fe9d16ae657db35",
+        "codex-rs/execpolicy/src/main.rs": "4d21dcd7566b4b55cd3118709ce82879d062dc975fdc48682e58965fc65b7710",
+        "codex-rs/execpolicy/src/parser.rs": "58b89a789c394cffa2412189b5acadf2110ab23229c91db5878b72d5aeb9fee8",
+        "codex-rs/execpolicy/src/policy.rs": "ef8ff4f7e23771dde26ba7082bc04f3ee3fe8fb272eee67788907c564d82dadd",
+        "codex-rs/execpolicy/src/rule.rs": "2e27abf0ab6c719c23fadcb2e95cb68af2004c73b1c624e7b99d7aa43a29bd68",
+        "codex-rs/execpolicy/src/sandbox_migration.rs": "64809294aae17e811ff742fadcc004a4176d8bf89fa80b8a28283319a7ebccf7",
+        "codex-rs/execpolicy/src/sandbox_migration_tests.rs": "ce737c7ce8a6507ce3d077fe3b574903617a29893f309a97a0ca6586a8f96578",
+        "codex-rs/execpolicy/tests/basic.rs": "5a26d154b4b1e448e6e358c2e19c9245cfe15d295f7519f77e5dc75a78eb0569",
+        "codex-rs/rust-toolchain.toml": "47f5c5c59856700915beeb7e5ff46a5eeed1c08420579af27698e6740f396a82",
+        "codex-rs/rustfmt.toml": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c",
+        "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7",
+        "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+        "hia/allowed_prefixes.hepta": "257184be5851e53a4c95deb70dc7e980a7dbafa131a4562cb9b6274c00116fc0",
+        "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+        "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
+        "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+        "hia/command_dispatch.hepta": "b45b7592b5df2df5fee21ccec693fc9c8e12f445c3883a96b1ab7581cdf4a9c7",
+        "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+        "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+        "hia/network_domains.hepta": "7ef166afa54278b0ec0957a9e210141cc58ca31652518a5d127ffff4a0eb9859",
+        "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+        "hia/policy_summary.hepta": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
+        "hia/prefix_admission.hepta": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb",
+        "hia/prefix_match.hepta": "5502f02c6b7e18cb88ca48323d3cebcd9bf95e43f8557556f52bfb39fad215ee",
+        "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+        "hia/template_index.hepta": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
+        "hia/template_parser.hepta": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
+        "hia/template_render.hepta": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
+        "hia/tests/native_network_host.rs": "464e18c81372b7aac71b919c9e5cd378f5f54393ff00f3aaad4db8fc790af9db",
+        "hia/tests/native_network_host_allocations.rs": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+        "hia/tests/native_network_host_failures.rs": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50",
+        "hia/tests/native_network_host_performance.rs": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+        "hia/tests/network_host_fixtures.rs": "b03d89002a472730924575a8ba19d15f872bb10b559ae9ac2a64234a42aa9f6c",
+        "hia/tests/network_host_predecessor16.py": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428",
+        "hia/tests/test_native_command_dispatch.py": "5f7da2f0ceb96205846118f905bfd43d73e8ac1a112f45bebb9fa6061bf521cd",
+        "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
+        "hia/tests/test_native_network_host.py": "a0802a18144ae1bc8cb82ec2781799c0eb834ac24668f19a9ce925f5ce67a036",
+        "hia/tests/test_native_policy_summary.py": "277d4215eb243555fc591c54fa050928d01fd1f9e38191919de46eb31879b377",
+        "hia/tests/test_network_host_abi.py": "61f78166c8d003da19d4c8ca53c6f186692b779a990511ee51d14e717ac2e18e",
+        "hia/toolchain.json": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
+        "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+        "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+        "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0"
+      },
+      "actual_public_source_count": 58,
+      "initial_and_final_code_tree_equal": true,
+      "complete_source_inventory": {
+        "files": 9893,
+        "bytes": 109917681,
+        "inventory_sha256": "12909d9288ad1185f7dc8d6c907719f212cc7a3bc975614803fe0309b0327598",
+        "scope": "complete regular/symlink bytes and Git modes"
+      },
+      "final_source_is_same_as_executed": true,
+      "post_final_maintenance_product_execution": false
+    },
+    "build_and_artifacts": {
+      "mode": "native-selfhost",
+      "full17_rebuilt": true,
+      "build_report_sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343",
+      "native_inventory": {
+        "files": 228,
+        "bytes": 27902926,
+        "inventory_sha256": "9c4940c3aadf42a2b906c7e403ddc6df6e84c046dc772f73e02ac62b3990adf8",
+        "scope": "complete regular/symlink bytes and Git modes"
+      },
+      "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "compiler_generations": [
+        "B1",
+        "B2",
+        "B3"
+      ],
+      "receipt_checks": 74,
+      "receipt_cases": [
+        "sha256-0",
+        "sha256-1",
+        "sha256-3",
+        "sha256-55",
+        "sha256-56",
+        "sha256-63",
+        "sha256-64",
+        "sha256-65",
+        "sha256-1000",
+        "sha256-1000000",
+        "feature-disabled-needs-no-files-or-target",
+        "accepted-seek_sequence",
+        "accepted-utf8_boundaries",
+        "accepted-utf8_prefix",
+        "accepted-metric_tag",
+        "accepted-markdown_location",
+        "accepted-ascii_json_fragment",
+        "accepted-uuid_matches",
+        "accepted-template_parser",
+        "accepted-template_render",
+        "accepted-template_index",
+        "accepted-prefix_match",
+        "accepted-prefix_admission",
+        "accepted-policy_summary",
+        "accepted-network_domains",
+        "accepted-allowed_prefixes",
+        "accepted-command_dispatch",
+        "accepted-network_host",
+        "changed-bytes-build.py",
+        "changed-bytes-cargo_build.rs",
+        "changed-bytes-toolchain.json",
+        "changed-bytes-seek_sequence.hepta",
+        "changed-bytes-utf8_boundaries.hepta",
+        "changed-bytes-utf8_prefix.hepta",
+        "changed-bytes-metric_tag.hepta",
+        "changed-bytes-markdown_location.hepta",
+        "changed-bytes-ascii_json_fragment.hepta",
+        "changed-bytes-uuid_matches.hepta",
+        "changed-bytes-template_parser.hepta",
+        "changed-bytes-template_render.hepta",
+        "changed-bytes-template_index.hepta",
+        "changed-bytes-prefix_match.hepta",
+        "changed-bytes-prefix_admission.hepta",
+        "changed-bytes-policy_summary.hepta",
+        "changed-bytes-network_domains.hepta",
+        "changed-bytes-allowed_prefixes.hepta",
+        "changed-bytes-command_dispatch.hepta",
+        "changed-bytes-network_host.hepta",
+        "changed-bytes-build.json",
+        "changed-bytes-seek_sequence.namespaced.o",
+        "changed-bytes-libcodex_hia_seek_sequence.a",
+        "changed-bytes-B1.image.bin",
+        "changed-bytes-B2.image.bin",
+        "changed-bytes-B3.image.bin",
+        "wrong-receipt-mode",
+        "wrong-receipt-symbol",
+        "wrong-receipt-object",
+        "wrong-receipt-archive",
+        "wrong-receipt-revision",
+        "invalid-build-state-status",
+        "invalid-build-state-build_mode",
+        "invalid-build-state-compiler_fixed_point",
+        "noncanonical-receipt-62",
+        "noncanonical-receipt-63",
+        "noncanonical-receipt-64",
+        "missing-libdir",
+        "unsupported-CARGO_CFG_TARGET_OS",
+        "unsupported-CARGO_CFG_TARGET_ARCH",
+        "unsupported-CARGO_CFG_TARGET_ENV",
+        "unsupported-CARGO_CFG_TARGET_POINTER_WIDTH",
+        "reject-rehashed-weak-symbol",
+        "reject-rehashed-undefined-symbol",
+        "duplicate-rehashed-archive-member",
+        "python-duplicate-archive-rejected"
+      ],
+      "receipt_report_sha256": "ff3ae3660d305cbc3dfd39a37ebb9d2a5f1a990c70c20d5f37834ecd2bf4d28c",
+      "previous_scalar_artifact_counts_not_transferred": true,
+      "current_scalar_artifact_gate": "pending_current_seventeen_module_ci",
+      "native_build_report": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "native-root-v1/build.json",
+        "bytes": 197185,
+        "sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343"
+      },
+      "new_module": {
+        "source_sha256": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+        "core_sha256": "5041dff01436a53d3ac0f592ee488ac0e6b82af8dfdf1e6b6a928d2e82e7d68a",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "library_sha256": "3f278af62de3adaf8910ad448a1ae0b7616f66579563bf682308d8bce40e6b2f",
+        "library_bytes": 33576,
+        "static_link": {
+          "symbol": "codex_hia_network_host",
+          "library": "libcodex_hia_network_host.so",
+          "object": "network_host.namespaced.o",
+          "archive": "libcodex_hia_network_host.a",
+          "archive_member": "hia.o",
+          "archive_bytes": 22416,
+          "archive_sha256": "d03ed9eb11191e5ae4cd18e3cf4c95a7672b1c21f0f55b3551b6cef9417bd677",
+          "text_sha256": "04b4c29ba86c35f384aa94879407cf7a37402f4ebde510c957700266d32cb388",
+          "defined_symbols": [
+            "codex_hia_network_host"
+          ],
+          "undefined_symbols": [],
+          "object_sha256": "a04753a6a760d4a377ad5364abc0d5966e96602af73a3fd9b9820ad94e596a34",
+          "library_sha256": "bad214129de736912e494feddc89cff343b9b7198b6fe9f0ad62d650ccdc61f3",
+          "objcopy_command": [
+            "objcopy",
+            "--redefine-sym=f0=codex_hia_network_host",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.o",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o"
+          ],
+          "link_command": [
+            "ld",
+            "-m",
+            "elf_x86_64",
+            "-shared",
+            "-z",
+            "defs",
+            "-z",
+            "noexecstack",
+            "-z",
+            "relro",
+            "-z",
+            "now",
+            "--build-id=none",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o",
+            "-o",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/libcodex_hia_network_host.so"
+          ],
+          "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+        }
+      },
+      "object_inventory": {
+        "format": "ELF64-ET_REL",
+        "machine": "EM_X86_64",
+        "exports": [
+          "f0"
+        ],
+        "undefined_symbols": [],
+        "external_relocations": [],
+        "nonexecuting_stack_note": true,
+        "text_offset": 64,
+        "text_bytes": 21652,
+        "text_sha256": "04b4c29ba86c35f384aa94879407cf7a37402f4ebde510c957700266d32cb388",
+        "entry_wrapper_bytes": 78,
+        "object_sha256": "8664e8c421ce2bd583caa448bafc185fae38004192d4641de6155f039f626912"
+      },
+      "previous16_source_core_object_text_archive_and_library_identities_equal": true,
+      "previous16_embedded_build_command_scope": "Earlier artifact records are retained unchanged, including their historical command paths. Their artifact identities were independently compared with this full17 build.",
+      "current_raw_artifact_checks": {
+        "schema": "codex.hia.native-build.v1",
+        "profile": "full-native17",
+        "module_count": 17,
+        "compiler_generations_verified": [
+          "B1",
+          "B2",
+          "B3"
+        ],
+        "full17_manifest_verified": true,
+        "scope": "Existing native-selfhost report, all seventeen module artifacts and three fixed-point image identities; no compilation performed by this raw gate."
+      }
+    },
+    "raw_abi": {
+      "schema": "codex.hia.network-host.raw-abi.v1",
+      "passed": true,
+      "requested_build_profile": "full-native17",
+      "semantic_reference": "Literal fixtures and independent Python contract/wire model",
+      "original_rust_oracle_executed": false,
+      "public_owner_qualified": false,
+      "performance_qualified": false,
+      "skipped": 0,
+      "compiler_bootstrap_executed_by_raw_gate": false,
+      "literal_fixtures": 31,
+      "enumerated_hosts": 7381,
+      "concurrent_hosts_included": 256,
+      "counts": {
+        "calls": 13501,
+        "returned_success": 11167,
+        "literal": 48,
+        "unicode": 278,
+        "enumerated": 9310,
+        "random": 1049,
+        "returned_error": 2334,
+        "malformed-control": 1080,
+        "malformed-utf8": 1136,
+        "output-boundary": 140,
+        "revalidated-run": 5,
+        "large": 7,
+        "concurrent": 448
+      },
+      "maximum_source_bytes": 2097160,
+      "inputs_unchanged": true
+    },
+    "public_owner": {
+      "complete_owner_comparisons": 9519,
+      "concurrent_comparisons_included": 256,
+      "enumerated_hosts": 7381,
+      "passed": true,
+      "performance_qualified": false,
+      "public_entry_observations": 1281,
+      "skipped": 0,
+      "unicode_hosts": 828,
+      "whole_policy_migrated": false,
+      "binary_sha256": "d2e454bc0a2eacbd1a4aeeea14822b4568fa11f8db239137313cb2bb9d641072",
+      "harness_sha256": "18d516021603da3a77857f587f822adb37f60106e99f68d8ef303b715ce161e9"
+    },
+    "original_oracle": {
+      "revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "owners": {
+        "policy": {
+          "token_count": 2372,
+          "token_sha256": "080a1946165e5555b5789e5705fdae77f117f4c0300f6159e682f1678ff79254"
+        },
+        "decision": {
+          "token_count": 134,
+          "token_sha256": "62c968bd0e18a20e2c4e4e814f115f7be66f5ddb69455679b28155be2a4dc9d2"
+        },
+        "execpolicycheck": {
+          "token_count": 491,
+          "token_sha256": "579b4542a2a063435c8f5ea7f9bea744f5140feb5aaaa294128cae948ec466e3"
+        },
+        "rule": {
+          "token_count": 208,
+          "token_sha256": "229f094dded61b39578ae0cdd453e12e14bb0720a3147082075d2c9997812e7f"
+        },
+        "dispatcher": {
+          "token_count": 459,
+          "token_sha256": "10c23ef41a88326d5ea451cf5a81a3f695063d64fedbb32879bfe2a282edd2e9",
+          "overlap": "subregion of the complete 2372-token Policy pin; not additive"
+        },
+        "original_path_services": {
+          "codex-rs/execpolicy/src/executable_name.rs": "85414e488db0dba6a0b077cc038cc8f7ad0aa5695f927fc1fb05886f4d8adf7b",
+          "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+          "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7"
+        },
+        "network_host": {
+          "token_count": 393,
+          "token_sha256": "a2bb25bf0604d951d60f92fef5c827467dc233ad4440de3571e6f9a8eb1ae5a5",
+          "overlap": "subregion of the 583-token network types/normalization pin; not additive"
+        },
+        "network_types_and_normalization": {
+          "token_count": 583,
+          "token_sha256": "775fddae2313f22890a6d395c67d98b96e273be7b514724ae4fcb0fadde07d70"
+        },
+        "unchanged_callers_and_errors": {
+          "parser.rs": "58b89a789c394cffa2412189b5acadf2110ab23229c91db5878b72d5aeb9fee8",
+          "amend.rs": "e0869236f00e7e96e13c8546c17120b8e7e4438c6e6d676831446707eda2d1eb",
+          "error.rs": "7c952283b5c2a75d3a34669427dab79ef0a6ff26d401b8731bba9751822d81dc"
+        }
+      }
+    },
+    "public_wrapper": {
+      "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/public_owner.rs",
+      "sha256": "18d516021603da3a77857f587f822adb37f60106e99f68d8ef303b715ce161e9",
+      "oracle_function_sha256": "80c521fe50c556517e33e3d53983fcf58c3de7876ce52d30d0da4100035b4550"
+    },
+    "public_execution": {
+      "actual_commands": 26,
+      "all_return_codes_zero": true,
+      "all_process_timeouts_false": true,
+      "standalone_edition": "2024",
+      "profile": "real dev crate owners; opt-level=3 external harnesses; one diagnostic timing observation per case",
+      "source_input_count": 58,
+      "actual_current_owner_builds": {
+        "reference": {
+          "rlib": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/libreference_execpolicy.rlib",
+          "rlib_sha256": "12f364e6d7616b80da019f2236fac216b0cb91bb35d2e8a07fb85bf82926239d",
+          "binary": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/reference-codex-execpolicy",
+          "binary_sha256": "b9ca2efea35c8ed9edf4db84ed701871d578e8b6402d02bfbfcfa5c6368e41ce"
+        },
+        "native": {
+          "rlib": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/libnative_execpolicy.rlib",
+          "rlib_sha256": "8a66797b69d228a91123d6b4eca1256393cb5b71a5964b22450b7a14f323463e",
+          "binary": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/native-codex-execpolicy",
+          "binary_sha256": "359cdf872abfb19dbf36f99b83d98640e850c19f0cf628aaf1035ea7f71e782f"
+        }
+      },
+      "raw_stream_count": 52,
+      "raw_stream_scope": "26 actual commands, each retaining stdout and stderr; full streams remain in the immutable exported observations.",
+      "native17_admission": {
+        "schema": "codex.hia.native-build.v1",
+        "profile": "full-native17",
+        "module_count": 17,
+        "compiler_generations_verified": [
+          "B1",
+          "B2",
+          "B3"
+        ],
+        "full17_manifest_verified": true,
+        "scope": "Existing native-selfhost report, all seventeen module artifacts and three fixed-point image identities; no compilation performed by this raw gate."
+      },
+      "all52_raw_stream_bytes_verified": true,
+      "all_eight_behavioral_stdout_completions_equal_reports": true,
+      "current_compiler_capture_files_verified": 4
+    },
+    "public_effect_scope": {
+      "entry_observations": 1281,
+      "direct_add_observations": 40,
+      "parser_observations": 1120,
+      "append_file_observations": 120,
+      "large_ignored_host_observations": 1,
+      "observations_compare": "Complete results, rule order/protocol/decision/justification metadata, error strings, files and directory existence.",
+      "earlier_parser_precedence_preserved": true,
+      "not_counted_as_additional_complete_owner_comparisons": true
+    },
+    "substituted_callee": {
+      "checked_entrypoints_per_corruption": 3,
+      "corruptions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "ignored_native_entry_probes": 3,
+      "native_hia_executed": false,
+      "passed": true,
+      "scope": "actual production transport and public callers with deliberately substituted callee; raw input pointer identity, no push/file creation after corruption, and original earlier parser validation retained",
+      "semantic_error_probes": 6,
+      "valid_positive_probes": 1,
+      "binary_sha256": "6ca60e5fd593aeab543e46871c3463480e5e82bce42ecd7611c83fd9a5ab7d5e",
+      "harness_sha256": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50"
+    },
+    "independent_baselines": {
+      "labels": [
+        "original",
+        "native16",
+        "native17"
+      ],
+      "three_required": true,
+      "three_executed": true,
+      "predecessor": {
+        "status": "validated_frozen_owner16_bundle",
+        "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\n",
+        "published_revision": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "published_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+        "manifest_path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/manifest.json",
+        "bundle_root": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3",
+        "manifest_sha256": "62d7c78ddd44d8dbe3f0b79c37e338ffc4d964b60aa7074bd3b51cfa24252a5b",
+        "public_report_sha256": "eef2ce2356eeeee04d6d1fe59aeb62b83ec6890c7e7dce51f15df1d28ea49192",
+        "original_manifest_pending_final_field": true,
+        "promotion_descriptor_sha256": "0480b6f9f6840d228df3af588abb02f87e819157001aa95d15f070d095526210",
+        "compiled_source_files_bound_to_published_tree": 54,
+        "independent_files_verified": 1306,
+        "native_module_count": 16,
+        "copy_mode_contract": "original freeze operation normalized executable files to 0755 and other files to 0644",
+        "owner_rlib": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/files/command-dispatch-public-v3-artifacts/libnative_execpolicy.rlib",
+        "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+        "owner_rebuilt_now": false,
+        "compiled_now": true,
+        "executed_now": true,
+        "compiled_now_scope": "new owner17 allocation and performance consumer harnesses; not a Cargo owner rebuild",
+        "compiler_identity_scope": "exact captured executable path and complete verbose version; historical executable bytes were not pinned",
+        "external_platform_dynamic_names": [
+          "ld-linux-x86-64.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ],
+        "external_platform_scope": "fixed rustc/sysroot/CRT/system dynamic libraries remain platform inputs; not supplied by native archives",
+        "existing_performance_binary_reused": false,
+        "inputs_unchanged_after_consumers": true,
+        "direct_dependency_units": [
+          "serde",
+          "serde_json",
+          "anyhow",
+          "multimap",
+          "codex_utils_absolute_path"
+        ],
+        "compiler_capture_sha256": {
+          "lib": "364c7f4483590eedb47acf05b6092cebc79363892e0e730ac268d3ee195052e1",
+          "bin": "8ed5dd07176e064808cdbf99d396fdcf9563b3363d3f7a03d8b74a2d371b2ac4"
+        },
+        "full_input_closure_count": 1311
+      },
+      "actual_consumer_identities": {
+        "original": {
+          "allocations": {
+            "label": "original",
+            "passed": true,
+            "performance_qualification": false,
+            "positive_probe": {
+              "allocations": 1,
+              "peak_requested_live_bytes": 24,
+              "reallocations": 1
+            },
+            "scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+            "skipped": 0,
+            "binary_sha256": "c5e9c5d6e14b3b1fb486b9662de912d4912308fbf35fb629d943e1610f66fc48",
+            "owner_rlib_sha256": "12f364e6d7616b80da019f2236fac216b0cb91bb35d2e8a07fb85bf82926239d",
+            "harness_sha256": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          },
+          "performance": {
+            "label": "original",
+            "passed": true,
+            "performance_qualification": false,
+            "scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+            "skipped": 0,
+            "binary_sha256": "1168e2b04a837e2964373d7e8ca061525755226407a67b814417039d90839735",
+            "owner_rlib_sha256": "12f364e6d7616b80da019f2236fac216b0cb91bb35d2e8a07fb85bf82926239d",
+            "harness_sha256": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          }
+        },
+        "native16": {
+          "allocations": {
+            "label": "native16",
+            "passed": true,
+            "performance_qualification": false,
+            "positive_probe": {
+              "allocations": 1,
+              "peak_requested_live_bytes": 24,
+              "reallocations": 1
+            },
+            "scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+            "skipped": 0,
+            "binary_sha256": "9aea04b1059795f2d2eb784c521114db1b7d0366189f580151f9b16ff208029a",
+            "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+            "harness_sha256": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          },
+          "performance": {
+            "label": "native16",
+            "passed": true,
+            "performance_qualification": false,
+            "scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+            "skipped": 0,
+            "binary_sha256": "751433e922258ee326b4d7e52dc1b932f282d1f347c27efa7dcaeee4bec82705",
+            "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+            "harness_sha256": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          }
+        },
+        "native17": {
+          "allocations": {
+            "label": "native17",
+            "passed": true,
+            "performance_qualification": false,
+            "positive_probe": {
+              "allocations": 1,
+              "peak_requested_live_bytes": 24,
+              "reallocations": 1
+            },
+            "scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+            "skipped": 0,
+            "binary_sha256": "a9885617d64db24a0a111a5e500561349db24e78b496432ca09ea0d501aff53a",
+            "owner_rlib_sha256": "8a66797b69d228a91123d6b4eca1256393cb5b71a5964b22450b7a14f323463e",
+            "harness_sha256": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          },
+          "performance": {
+            "label": "native17",
+            "passed": true,
+            "performance_qualification": false,
+            "scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+            "skipped": 0,
+            "binary_sha256": "6be7c2d718703e9989e97be7077bd5f437eba4f7158a1b910754c165785fb3a5",
+            "owner_rlib_sha256": "8a66797b69d228a91123d6b4eca1256393cb5b71a5964b22450b7a14f323463e",
+            "harness_sha256": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          }
+        }
+      },
+      "separate_processes": true,
+      "native16_cargo_owner_rebuilt": false,
+      "native16_new_harnesses_compiled_and_executed": true,
+      "old_workload_binary_reused": false,
+      "ci_scope": "Checked-in CI has two current-source baselines original/native17; it does not receive the private owner16 bundle. Its result is pending.",
+      "admission": {
+        "passed": true,
+        "completed_cases": 18,
+        "rejected_cases": 17,
+        "positive_cases": 1,
+        "cases": [
+          {
+            "case": "positive_after_publication",
+            "passed": true,
+            "scope": "actual immutable16 bundle and formal publication; admission only"
+          },
+          {
+            "case": "missing_required_descriptor",
+            "passed": true,
+            "observation": "frozen owner16: required published owner16 descriptor is missing",
+            "expected_substring": "required published owner16 descriptor is missing",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "descriptor_hash",
+            "passed": true,
+            "observation": "frozen owner16: promotion descriptor bytes differ",
+            "expected_substring": "promotion descriptor bytes differ",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "unpublished_owner",
+            "passed": true,
+            "observation": "frozen owner16: owner16 has not been published",
+            "expected_substring": "owner16 has not been published",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "raw_commit_identity",
+            "passed": true,
+            "observation": "frozen owner16: commit/tree mismatch",
+            "expected_substring": "commit/tree mismatch",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "partial_tree",
+            "passed": true,
+            "observation": "frozen owner16: complete published tree does not match inventory",
+            "expected_substring": "complete published tree does not match inventory",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "compiled_source_binding",
+            "passed": true,
+            "observation": "frozen owner16: compiled source is not in final published owner16 tree: codex-rs/execpolicy/src/policy.rs",
+            "expected_substring": "compiled source is not in final published owner16 tree",
+            "scope": "synthetic internally consistent Git descriptor; no real publication or Git mutation"
+          },
+          {
+            "case": "output_overlap",
+            "passed": true,
+            "observation": "frozen owner16: output overlaps frozen owner: /home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/DO-NOT-CREATE-network-host-target",
+            "expected_substring": "output overlaps frozen owner",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "compiler_identity",
+            "passed": true,
+            "observation": "frozen owner16: compiler identity differs",
+            "expected_substring": "compiler identity differs",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "frozen_file_hash",
+            "passed": true,
+            "observation": "frozen owner16: frozen file changed: /home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/files/command-dispatch-public-v3.json",
+            "expected_substring": "frozen file changed",
+            "scope": "read-only injected hash observation; frozen bytes never changed"
+          },
+          {
+            "case": "frozen_file_hardlink",
+            "passed": true,
+            "observation": "frozen owner16: not a regular independent frozen copy",
+            "expected_substring": "not a regular independent frozen copy",
+            "scope": "read-only injected stat observation"
+          },
+          {
+            "case": "cargo_unit",
+            "passed": true,
+            "observation": "frozen owner16: Cargo closure differs",
+            "expected_substring": "Cargo closure differs",
+            "scope": "read-only decoder fault on already hashed manifest; not a tampered-file claim"
+          },
+          {
+            "case": "link_closure",
+            "passed": true,
+            "observation": "frozen owner16: transitive search closure differs",
+            "expected_substring": "transitive search closure differs",
+            "scope": "read-only decoder fault on already hashed manifest; not a tampered-file claim"
+          },
+          {
+            "case": "thin_archive",
+            "passed": true,
+            "observation": "frozen owner16: thin archive requires an explicitly materialized closure",
+            "expected_substring": "thin archive",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "linker_script",
+            "passed": true,
+            "observation": "frozen owner16: archive is an unsupported linker script/input",
+            "expected_substring": "unsupported linker script/input",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "needed_path",
+            "passed": true,
+            "observation": "frozen owner16: path-qualified ELF dependency escapes the link plan",
+            "expected_substring": "path-qualified ELF dependency",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "external_rpath",
+            "passed": true,
+            "observation": "frozen owner16: ELF loader path leaves bundle and fixed compiler toolchain",
+            "expected_substring": "ELF loader path leaves",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "post_execution_inventory",
+            "passed": true,
+            "observation": "frozen owner16: frozen inventory changed",
+            "expected_substring": "frozen inventory changed",
+            "scope": "read-only injected final inventory observation"
+          }
+        ],
+        "consumer_compilation_or_execution": false,
+        "actual_frozen_input_mutation": false,
+        "old_target_used": false,
+        "loader_sha256": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428"
+      }
+    },
+    "measurements": {
+      "performance_qualified": false,
+      "baseline_order": [
+        "original",
+        "native16",
+        "native17"
+      ],
+      "allocation_metric_order": [
+        "allocations",
+        "reallocations",
+        "deallocations",
+        "requested_bytes",
+        "peak_requested_live_bytes",
+        "requested_live_at_return_bytes",
+        "untracked_releases"
+      ],
+      "row_count_per_baseline_per_metric": 19,
+      "all_timing_values": 57,
+      "all_allocation_vectors": 57,
+      "all_allocation_numeric_values": 399,
+      "native17_slower_than_original_rows": 19,
+      "native17_slower_than_native16_rows": 17,
+      "native17_faster_than_native16_rows": 2,
+      "rows": [
+        {
+          "case": "lowercase",
+          "raw_bytes": 11,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "7b2fd96f356b16f42febe2e0e142922774546d12fe790eedf0600c903b7c25fd",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1033576,
+            1088514,
+            3141828
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "eb5c5506c90e0a55451aa2bed80dc200d95fe62439b1326d4a8301405196a540",
+            "67ad4544e6f9f942e775112df42281bb0ca7a07711c2adaee1dde3dc4b0ba69e",
+            "0b12b17005c9bf78c75e98076b9885e2ce3372bf2726389e141c2b889c02a2cc"
+          ],
+          "complete_allocation_row_sha256": [
+            "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a",
+            "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a",
+            "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a"
+          ]
+        },
+        {
+          "case": "uppercase",
+          "raw_bytes": 16,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "471fe016cfe588db30f270823c2d5973f317166b792707adfef6933abae542d8",
+            "canonical_json_bytes": 46
+          },
+          "nanoseconds": [
+            1186932,
+            1245929,
+            2903866
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              15,
+              15,
+              15,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              15,
+              15,
+              15,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              15,
+              15,
+              15,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "18ba9a0f1e1247d1e283f5a3fc123ea5d3d5b8690d9e0a0661662bd1721ea20b",
+            "e99b7fe3aea8a82218a22b5f1c324224d69e20220956da67e4e813c781d9c390",
+            "8d79ae633b6f30ad88961c34a9c810c12caede789db18290b67e335fc94798ee"
+          ],
+          "complete_allocation_row_sha256": [
+            "37b3e3a2a0c118fd7a1c58906a1b440ea5fd29816642e9a7293a31345b9ee0c6",
+            "37b3e3a2a0c118fd7a1c58906a1b440ea5fd29816642e9a7293a31345b9ee0c6",
+            "37b3e3a2a0c118fd7a1c58906a1b440ea5fd29816642e9a7293a31345b9ee0c6"
+          ]
+        },
+        {
+          "case": "unicode-trim",
+          "raw_bytes": 12,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "19d89a3e46e3be90c9dc3b1e7b30e3b9e996f2e6f8ce75a38b32b7050c099780",
+            "canonical_json_bytes": 35
+          },
+          "nanoseconds": [
+            1001878,
+            1006558,
+            2724411
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "5d2ce4a678024a524b974c681e63a7bf38b799b9a3a87259c3ef127bc103c166",
+            "a961c0724f06a81c62e24d4ddea7e3f70593f73981b79b92f80ef3c78ba31a75",
+            "02cf068e6edfc76cc5c712c9b2af91f19ed41c293b5ccc05a0c80ea7ab59a46e"
+          ],
+          "complete_allocation_row_sha256": [
+            "c38193348067b892f7988c704c46e34fb022ab72c6345937bf1bb71e489a6127",
+            "c38193348067b892f7988c704c46e34fb022ab72c6345937bf1bb71e489a6127",
+            "c38193348067b892f7988c704c46e34fb022ab72c6345937bf1bb71e489a6127"
+          ]
+        },
+        {
+          "case": "ascii-port",
+          "raw_bytes": 16,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "7b2fd96f356b16f42febe2e0e142922774546d12fe790eedf0600c903b7c25fd",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1363486,
+            1339186,
+            2626994
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "966cfbfd511e24487d63b8eacccffce37c19a2c7cd93308fbc03af7964ea3fec",
+            "5a3fd64f7e1ac20148a733d700dc76714f49bae6152ca6168786645a38e5b121",
+            "8aef5c3ede0f4766f9deb76ac48a77c08c579590d653d3a683219968a83da5bf"
+          ],
+          "complete_allocation_row_sha256": [
+            "883ceb6496e7053094c82e404ae47a7c698fbe46d7e19acb4a66dbd8dfc470cb",
+            "883ceb6496e7053094c82e404ae47a7c698fbe46d7e19acb4a66dbd8dfc470cb",
+            "883ceb6496e7053094c82e404ae47a7c698fbe46d7e19acb4a66dbd8dfc470cb"
+          ]
+        },
+        {
+          "case": "bracket-port",
+          "raw_bytes": 22,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "6b6c756e1e47c02991756f8358b2901f46330de151072e7444355bbd323c38fc",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1388805,
+            1333037,
+            3227255
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "e58a2cf169ece661be981d1edc575d9d0e2141dc6d60e10e153561defe95a3c6",
+            "cf3be7a82a2cb68651e5661934627ebb8b7413958f19fbd2f05333ced1354a37",
+            "10d055d4c6cdf1ea8974384943ad3a4ad0f3557902b456417b52ffabc3a8a8b9"
+          ],
+          "complete_allocation_row_sha256": [
+            "8f5cfa639b41e62447b36ec87eeb8d7aaab1231c1d86717126d98c36795f19a8",
+            "8f5cfa639b41e62447b36ec87eeb8d7aaab1231c1d86717126d98c36795f19a8",
+            "8f5cfa639b41e62447b36ec87eeb8d7aaab1231c1d86717126d98c36795f19a8"
+          ]
+        },
+        {
+          "case": "trim-order",
+          "raw_bytes": 10,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "ff47df17e8e7c22b8a8861f241d4f03e1537d5ad9c015e754f896fdc6be6d2a8",
+            "canonical_json_bytes": 35
+          },
+          "nanoseconds": [
+            993618,
+            1068395,
+            1901849
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "1e1947a6d2ed82d55c8807222066b81c17251e61a43c76efe79ecc1315d57fe6",
+            "c0052b7f5686fc676654d7d96b53f2689914b15952ee9ce953df42fd34f61347",
+            "315943663d92fd8b552d69cca0eb166c755683a683e714fe2eaaf5e1890b6cbe"
+          ],
+          "complete_allocation_row_sha256": [
+            "3f1225f634c86c6eaf079017b69dbf6347cf5de22ffd06aa3dffefffe627724b",
+            "3f1225f634c86c6eaf079017b69dbf6347cf5de22ffd06aa3dffefffe627724b",
+            "3f1225f634c86c6eaf079017b69dbf6347cf5de22ffd06aa3dffefffe627724b"
+          ]
+        },
+        {
+          "case": "non-numeric-port",
+          "raw_bytes": 11,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "510160a172eaf607a60971f18d77c434eb90550caa41182583af22d566b8ffd9",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1205211,
+            1217391,
+            2514928
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "6d8b475b021f84c6cae0183ca6ee4b17c380e6a10e7b3fb6e055e7b4dfb77f0f",
+            "33213b8678d6e02a11daa5b2daa660c38ee35ecb487bea02d24673ba4c727558",
+            "2ddcdcc6c522ca0101883036b16dd050d4e710613a2848a82ca92cae453ba44b"
+          ],
+          "complete_allocation_row_sha256": [
+            "c16710066ccad1e432dbc337950ba2fcb0d975b1bbac301b87cf11f55aa89f79",
+            "c16710066ccad1e432dbc337950ba2fcb0d975b1bbac301b87cf11f55aa89f79",
+            "c16710066ccad1e432dbc337950ba2fcb0d975b1bbac301b87cf11f55aa89f79"
+          ]
+        },
+        {
+          "case": "nul",
+          "raw_bytes": 3,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "d828c8f559f3e9959a18c0e7b19105ce2dba4e34d84d22c59d729380dbcfb8c4",
+            "canonical_json_bytes": 39
+          },
+          "nanoseconds": [
+            548682,
+            683017,
+            1407824
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "da652cc41b318687386764d2b209b74389e37b75f3f305e5cf96fb4f37891b06",
+            "de2af748535c4b4d0ba26edef1dc43aa204cb4eaecb0b0f888db1222af222159",
+            "bea0b6f1ebb398ac695021b9da398813b19c7e4c8c1a56f23f54cba3332d9d1b"
+          ],
+          "complete_allocation_row_sha256": [
+            "6dc47fde4c5a787a5fe5f1420c9901b7717af6f457bf4b8146d36b1e9c07e933",
+            "6dc47fde4c5a787a5fe5f1420c9901b7717af6f457bf4b8146d36b1e9c07e933",
+            "6dc47fde4c5a787a5fe5f1420c9901b7717af6f457bf4b8146d36b1e9c07e933"
+          ]
+        },
+        {
+          "case": "empty",
+          "raw_bytes": 0,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host cannot be empty",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            163355,
+            186664,
+            249231
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "24f79f29cc335b61749c9f620b166f94ea068402ca8f3e37926b5bdee81fd0a3",
+            "050885e5aa74342a8ebdbab0eb1b763454eb703ebba08453f8e9df657f1d028b",
+            "99d1340dc46d0f7c06eeeb7d74e6a24a5f12eda452933df045c2e86c60bd30e4"
+          ],
+          "complete_allocation_row_sha256": [
+            "5c71d1aab10311282f2ffe069760f714ab907ae94a6b57110918380bd675fe42",
+            "5c71d1aab10311282f2ffe069760f714ab907ae94a6b57110918380bd675fe42",
+            "5c71d1aab10311282f2ffe069760f714ab907ae94a6b57110918380bd675fe42"
+          ]
+        },
+        {
+          "case": "all-whitespace",
+          "raw_bytes": 7,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host cannot be empty",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            303570,
+            327579,
+            638299
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "3307b67b8c9db46c8918751247be2ff0ee3abbda6715188f748b6cf372d185e0",
+            "06e5a187238ef0bfc4193a1f5720b381131c4d63135361b31b40fa7341aabce5",
+            "9cea9f7908fc16dfe37ba8cf048d29d30a58894f9b9c257c7685f0c1eb1d9f07"
+          ],
+          "complete_allocation_row_sha256": [
+            "87f0911f504406c222ce3f685a446e0c7c446e45143cc605b62b05e0536e3491",
+            "87f0911f504406c222ce3f685a446e0c7c446e45143cc605b62b05e0536e3491",
+            "87f0911f504406c222ce3f685a446e0c7c446e45143cc605b62b05e0536e3491"
+          ]
+        },
+        {
+          "case": "suffix-error",
+          "raw_bytes": 9,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host contains an unsupported suffix:  [A]oops ",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            559692,
+            589891,
+            654609
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              100,
+              100,
+              100,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              100,
+              100,
+              100,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              100,
+              100,
+              100,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "a452c419d32ad2b404625a689c505c5ceb670c59dbad1026fdae31f03d702733",
+            "2ca3b134edf0b8396d8e04e8b7ec9b5fddbcbd1458d92eaf6393aad71cce9a80",
+            "801868d1a580c25f63810cad1bc8a8f6e12d4f249fbd666835224a1d305c2dd7"
+          ],
+          "complete_allocation_row_sha256": [
+            "8eb3d72815290d2aff4622c1764681409968b91e07b928c96239f02bb4fcd908",
+            "8eb3d72815290d2aff4622c1764681409968b91e07b928c96239f02bb4fcd908",
+            "8eb3d72815290d2aff4622c1764681409968b91e07b928c96239f02bb4fcd908"
+          ]
+        },
+        {
+          "case": "wildcard-before-whitespace",
+          "raw_bytes": 4,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a specific host; wildcards are not allowed",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            663328,
+            733706,
+            719257
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              72,
+              72,
+              68,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              72,
+              72,
+              68,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              68,
+              68,
+              68,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "b539ef4cfe4d6c5165aa146bbdbdaa46a877a7ef560e7a4ecc5f119739fdbb34",
+            "0e8d506c44ecde6e8e3d082740d4cad92d088a11ee2c6a60afca90ec45ff14d5",
+            "3da60f9851965383d3d8c408d954f1381ad2ec49cf445fc255d564a7a2c6a65a"
+          ],
+          "complete_allocation_row_sha256": [
+            "23b0043e8cacf7ab9fa563d8840e93a622adbdafc4df41cb0e5eeb5e1247ceea",
+            "23b0043e8cacf7ab9fa563d8840e93a622adbdafc4df41cb0e5eeb5e1247ceea",
+            "c27c53eddab1a8276acd914abcae90a0f9715f62457df4400fa6d0016f9c4a8d"
+          ]
+        },
+        {
+          "case": "internal-whitespace",
+          "raw_bytes": 5,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host cannot contain whitespace",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            762575,
+            909400,
+            864631
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              48,
+              48,
+              43,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              48,
+              48,
+              43,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              43,
+              43,
+              43,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "e78ccd69296de90f4a288d0f219168d0bdbb277e0e971cdf641e681fa0dfa4b8",
+            "632c57887cbd62940c7572e256dfe60cd3682fd55c066eb3ad896bd00398de9b",
+            "050678177f7fbdae2be6e3da16bdb2719301910494ab42f55ef1c389a523bd95"
+          ],
+          "complete_allocation_row_sha256": [
+            "dbf6f346911d3edcf64e094acd466be2a265e437a6c6e24990fb01617303f568",
+            "dbf6f346911d3edcf64e094acd466be2a265e437a6c6e24990fb01617303f568",
+            "c53ff543f93f691c33da2cbd9edb15ef5606d8cc6f852f3787bff55a17d8e5cc"
+          ]
+        },
+        {
+          "case": "large-valid",
+          "raw_bytes": 2097153,
+          "iterations": 3,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "a33c1972ac239b0cdeaecb172839cb8d072515963e2bdeb6d9ff1fa999310725",
+            "canonical_json_bytes": 2097184
+          },
+          "nanoseconds": [
+            92835931,
+            85870057,
+            368695496
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              2097153,
+              2097153,
+              2097153,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              2097153,
+              2097153,
+              2097153,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              2097153,
+              2097153,
+              2097153,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "d6385f2b6eca1c88cf9708e84526f50c563b85b015491e8c523e973e658e15cd",
+            "8b2a2ee722f8dd99cb952a8bf3f17dd06edf348e4b8741cd10bb557451ce2a16",
+            "c76a74b464da608d12099b4a9687913aeacba56c340ebd9266a0e095d995f720"
+          ],
+          "complete_allocation_row_sha256": [
+            "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3",
+            "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3",
+            "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3"
+          ]
+        },
+        {
+          "case": "large-early-scheme",
+          "raw_bytes": 2097160,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a hostname or IP literal (without scheme or path)",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            1870,
+            1710,
+            3051661
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              75,
+              75,
+              75,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              75,
+              75,
+              75,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              75,
+              75,
+              75,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "cadfc75e80c3f655839015bb5edd13865fca08306c4d53cc1855e64a1f0b29be",
+            "a5ec940023eb389318732e031f65bef00bdda003afec4be10b8ae611572f4276",
+            "761b5fd79143e8af43b4e4303aa3f399a7702e455da2ade986d8797e7fd35e49"
+          ],
+          "complete_allocation_row_sha256": [
+            "bca949a7e9204d3b96e6d31c8478fc2f039f108e5439f22c13758a9a06c5fa48",
+            "bca949a7e9204d3b96e6d31c8478fc2f039f108e5439f22c13758a9a06c5fa48",
+            "bca949a7e9204d3b96e6d31c8478fc2f039f108e5439f22c13758a9a06c5fa48"
+          ]
+        },
+        {
+          "case": "large-missing-bracket",
+          "raw_bytes": 2097154,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host has an invalid bracketed IPv6 literal",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            12599780,
+            12619339,
+            52932948
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              55,
+              55,
+              55,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              55,
+              55,
+              55,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              55,
+              55,
+              55,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "63d1590da82e39d741f50e31e3ca98a42462c3870e7b6f11981a7ea02f562155",
+            "7fde49c1a68d347b82b5060812f333abfc9fbfd59d07f33a82bd357a8184c235",
+            "da9417ba56077c1a1c884853b122591993e5513a41bb37b9a21f1c2b2ebff35d"
+          ],
+          "complete_allocation_row_sha256": [
+            "29029f32f86736b7af47c9d7b9a5d3a43d95f805cae83087852e4b631b354b37",
+            "29029f32f86736b7af47c9d7b9a5d3a43d95f805cae83087852e4b631b354b37",
+            "29029f32f86736b7af47c9d7b9a5d3a43d95f805cae83087852e4b631b354b37"
+          ]
+        },
+        {
+          "case": "large-early-wildcard",
+          "raw_bytes": 2097154,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a specific host; wildcards are not allowed",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            20127285,
+            19916112,
+            52969237
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              68,
+              68,
+              68,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "03edce38cdc47b784d4dd9bbb480bc91ad545785772bf536a3155da959e42452",
+            "1e961b85023c4472327907524149eeda78fa680f0ae1df3828ced372f0d4ee4b",
+            "2e3e487ed2a825e1c3c26ca75e30076068e434bb2b49df8e54555e01c3993297"
+          ],
+          "complete_allocation_row_sha256": [
+            "d026280f1b90ed08093766b168db68b41d06fdf58e18e139648b36886823b2b0",
+            "d026280f1b90ed08093766b168db68b41d06fdf58e18e139648b36886823b2b0",
+            "e14814fd5de4adb58501439c2c649f5ae9be4568a29346580abdeda6e8260a5e"
+          ]
+        },
+        {
+          "case": "large-late-wildcard",
+          "raw_bytes": 2097154,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a specific host; wildcards are not allowed",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            20326059,
+            20207633,
+            164523767
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              68,
+              68,
+              68,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "12ab851a998102be03750250b3925a5d77330c8eef0ce200ac5536c0459b3ea1",
+            "0f1c123f0c77682bb9da5d348e6ba7feea3db6b78dccca2b692ecf669975684a",
+            "9d056d114fa7de38d258a02baa552c382d52fcc74081590c6f27315577af8c34"
+          ],
+          "complete_allocation_row_sha256": [
+            "6a24dd09c7810d420f2167db91ab3e5760560526672b560ffbb8bee78e816d06",
+            "6a24dd09c7810d420f2167db91ab3e5760560526672b560ffbb8bee78e816d06",
+            "e1bd7bd0c2d7247b3274770931236e939dc10a2933db8b22567af3a7391aa400"
+          ]
+        },
+        {
+          "case": "large-trimmed",
+          "raw_bytes": 393226,
+          "iterations": 3,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "3cb390f27f1fcabdcef1b8dbc7f7359380ca065d1ab045a79b3412e2c1254067",
+            "canonical_json_bytes": 34
+          },
+          "nanoseconds": [
+            6770350,
+            6644044,
+            60310538
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "642471baf9e531d1450140cbc21071ed1825729b5b5b51e000113766a1ad60f1",
+            "e891e609c1ce86e7dc65996b65ad59062dde6ff60035456e595609e2eb93d30f",
+            "674e0125e82582478016b5eca5afee631e738233698c03019b4c61c9b7064671"
+          ],
+          "complete_allocation_row_sha256": [
+            "d204ca982833ffed567618dce247ffde842241aab8028f67851a482e548cdcb6",
+            "d204ca982833ffed567618dce247ffde842241aab8028f67851a482e548cdcb6",
+            "d204ca982833ffed567618dce247ffde842241aab8028f67851a482e548cdcb6"
+          ]
+        }
+      ],
+      "canonical_row_digest_encoding": "UTF-8 JSON with sorted keys, ensure_ascii=false and separators comma/colon, no trailing newline.",
+      "raw_rows_preserved": {
+        "report": {
+          "path": "network-host-root-review/observations-v1/network-host-public-v1.json",
+          "bytes": 13052765,
+          "sha256": "f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c"
+        },
+        "timing": "performance.<baseline>.rows",
+        "allocation": "allocations.<baseline>.rows",
+        "scope": "Every complete raw row remains in this retained report. Large repeated rules strings are represented here by exact canonical bytes/SHA; no timing or allocation numeric field is omitted."
+      },
+      "allocation_scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+      "timing_scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+      "allocation_observation": "Four error cases avoid one temporary allocation; the other 15 measured allocation vectors equal both baselines. No zero-allocation row is claimed. This does not qualify performance.",
+      "timing_observation": "The early-scheme three-call row is 3,051,661 ns native17 versus 1,870 ns original and 1,710 ns native16; complete UTF-8 input validation remains in the raw contract.",
+      "inlined_measurement_rows": 19
+    },
+    "owner_and_installed": {
+      "owner_stage": {
+        "path": "network-host-root-review/execution-v1/owner-v1.json",
+        "bytes": 33552,
+        "sha256": "8d1fc2404305443f237fc43025fc7e5653b0b0678042a8bef16deeb8b7d35f3a"
+      },
+      "default_tests": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/owner-v1-default.junit.xml",
+        "bytes": 5927,
+        "sha256": "19ec7ab02101367ddb4e4e2c22b940de4e5c2f7356d6ba01d32ffbeb7f1eea1b",
+        "original_generated_path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/codex/codex-rs/target/nextest/local/junit.xml",
+        "testcases": 34,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0,
+        "flaky_failures": 0
+      },
+      "native_tests": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/owner-v1-native.junit.xml",
+        "bytes": 5927,
+        "sha256": "fb27ce7879a20e320e4147613568b914fed48c52ef5ba4f2625f56cc5b30188e",
+        "original_generated_path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/codex/codex-rs/target/nextest/local/junit.xml",
+        "testcases": 34,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0,
+        "flaky_failures": 0
+      },
+      "strict_default_and_native_passed": true,
+      "installed_report": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/installed-execpolicy-v1.json",
+        "bytes": 195461,
+        "sha256": "a7739a9faac74937bb18773920dbd1907753a8ae3b7c7de9144b0450468aa938"
+      },
+      "full_cli_or_core_retested_locally": false,
+      "standalone": {
+        "passed": true,
+        "cases": 39,
+        "processes": 78,
+        "skipped": 0,
+        "symbols": [
+          "codex_hia_prefix_match",
+          "codex_hia_prefix_admission",
+          "codex_hia_policy_summary",
+          "codex_hia_command_dispatch",
+          "codex_hia_network_host"
+        ],
+        "native_binary_sha256": "359cdf872abfb19dbf36f99b83d98640e850c19f0cf628aaf1035ea7f71e782f",
+        "reference_binary_sha256": "b9ca2efea35c8ed9edf4db84ed701871d578e8b6402d02bfbfcfa5c6368e41ce",
+        "relocated_copies_match": true,
+        "native_symbol_table_sha256": "0b1e0ce8038ea006bbebce2d08b1ebecad082f8c1d59b25012ea5a1548387d26",
+        "reference_native_definitions": 0,
+        "hia_dynamic_dependencies": []
+      }
+    },
+    "formatter_and_final_maintenance": {
+      "formatter_tests_passed": 34,
+      "formatter_scope": "Python formatter component, including real rustfmt and Cargo metadata/locate-project on temporary fixtures; no product compilation",
+      "initial_format_before_behavioral_gates": true,
+      "final_commands": [
+        {
+          "label": "just-fix-default",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "fix",
+            "-p",
+            "codex-execpolicy",
+            "--locked",
+            "--allow-no-vcs"
+          ],
+          "returncode": 0,
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-default.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-default.stderr",
+            "bytes": 1729,
+            "sha256": "3bf15f224bbb26d1b1d8e90f4409d4417277eab4ec1440a85cebe85d53b18709"
+          }
+        },
+        {
+          "label": "just-fix-native",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "fix",
+            "-p",
+            "codex-execpolicy",
+            "--locked",
+            "--allow-no-vcs",
+            "--features",
+            "hia-native"
+          ],
+          "returncode": 0,
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-native.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-native.stderr",
+            "bytes": 1574,
+            "sha256": "8532d92fb48b84c52de6b2414625d0fb3ae60d68e4749ea2014f96b919f8746e"
+          }
+        },
+        {
+          "label": "final-just-fmt",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "fmt"
+          ],
+          "returncode": 0,
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-final-just-fmt.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-final-just-fmt.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "final_source_unchanged": true,
+      "source_inventory": {
+        "files": 9893,
+        "bytes": 109917681,
+        "inventory_sha256": "12909d9288ad1185f7dc8d6c907719f212cc7a3bc975614803fe0309b0327598",
+        "scope": "complete regular/symlink bytes and Git modes"
+      },
+      "no_post_final_maintenance_product_execution": true,
+      "additional_sixteen_module_maintenance_still_unknown": true,
+      "additional_sixteen_module_maintenance_scope": "The older job 1a1df15c4ef-392-264f remains UNKNOWN in command_dispatch_qualification; the current final-maintenance success does not rewrite it.",
+      "source_scope": "Seven protected Git roots, two source-only owners, the frozen predecessor bundle and recorded older-target metadata were guarded by the actual stage reports.",
+      "sdk_patch_whitespace_exception": {
+        "path": "patches/rama-dns_hermetic_toolchain.patch",
+        "sha256": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+        "strict_whitespace_passed": false,
+        "literal_context_whitespace_verified": true
+      }
+    },
+    "sdk_resolver_patch": {
+      "path": "patches/rama-dns_hermetic_toolchain.patch",
+      "sha256": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+      "delta_added": 90,
+      "delta_removed": 9,
+      "separate_followup_pr": 6374,
+      "new_source_contains_patch": true,
+      "separate_sdk_ci_transferred_to_current_source": false,
+      "current_sdk_and_broader_ci": "pending_new_published_source"
+    },
+    "pending": {
+      "new_source_github_native_ci": true,
+      "new_source_broader_ci": true,
+      "full_cli_expected_native_symbols": 15,
+      "full_cli_qualified": false,
+      "core_execpolicy_and_network_consumers_qualified": false,
+      "protocol_allowed_prefix_consumer_qualified": false,
+      "prior_component_and_scalar_gates_qualified": false,
+      "whole_policy_migrated": false,
+      "whole_core_suite_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "legacy_source_retired": false,
+      "successor_consumer_bundle_qualified": false
+    },
+    "report_path_scope": {
+      "local": "Paths are relative to the root-owned review workspace, outside the repository.",
+      "remote": "Original report paths name the exact source qualification workspace; no generated products are committed.",
+      "immutable_older_history": "Existing command_dispatch_qualification and all earlier objects remain unchanged; published16 follow-up is separate."
+    },
+    "reports": {
+      "actual_public": {
+        "path": "network-host-root-review/observations-v1/network-host-public-v1.json",
+        "bytes": 13052765,
+        "sha256": "f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c"
+      },
+      "raw_abi": {
+        "path": "network-host-root-review/execution-v1/network-host-raw-v1.json",
+        "bytes": 21733,
+        "sha256": "0a87781751d3c6e2b73c479f715a87f3c82a9a4eea610c6363d5844d1400a664"
+      },
+      "build_receipt": {
+        "path": "network-host-root-review/execution-v1/build-receipt-v1.json",
+        "bytes": 2828,
+        "sha256": "ff3ae3660d305cbc3dfd39a37ebb9d2a5f1a990c70c20d5f37834ecd2bf4d28c"
+      },
+      "initial_source_manifest": {
+        "path": "network-host-root-review/execution-v1/initial-formatted-source-manifest.json",
+        "bytes": 18982,
+        "sha256": "413ef6fe5d1c2ace8cdee53cffa6ab95757b503ec0709798d60026d5561bdc7e"
+      },
+      "initial_format_stage": {
+        "path": "network-host-root-review/execution-v1/initial_format-v1.json",
+        "bytes": 32989,
+        "sha256": "a76605d70c85696bce261084974df1c9d1ead469f4ae206b56b07eb0f0444e43"
+      },
+      "initial_format_terminal": {
+        "path": "network-host-root-review/execution-v1/initial_format-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "8d06e36945f746b70abc472f1dd79af91e35c0d2ed7f92c8d947931cad9655e7"
+      },
+      "root_initial_format": {
+        "path": "network-host-root-review/execution-v1/root-initial_format-verification.json",
+        "bytes": 999,
+        "sha256": "c5642b2f0bc4270d8771f46cd01eeaeb35e96d767e403faf4843cb7d15d8ef39"
+      },
+      "formatter_stage": {
+        "path": "network-host-root-review/execution-v1/formatter-v1.json",
+        "bytes": 26628,
+        "sha256": "3bc4090a76bb4dc2218f0b2d6893fa27ec1025388393cd858582237117c531d4"
+      },
+      "formatter_terminal": {
+        "path": "network-host-root-review/execution-v1/formatter-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "dc3671266f8812d48e409a6390e2325615411b9db5499c54474b831fa69f8c2f"
+      },
+      "root_formatter": {
+        "path": "network-host-root-review/execution-v1/root-formatter-verification.json",
+        "bytes": 989,
+        "sha256": "4ada31f406d795066a7ce2e99883ae23f0161cb3590148e2a0579f0f15c03502"
+      },
+      "native_stage": {
+        "path": "network-host-root-review/execution-v1/native-v1.json",
+        "bytes": 29377,
+        "sha256": "652b0b2ec6c2213ac50e659ed1c81fa501920f97901442ae35dc2ea245902c0d"
+      },
+      "native_terminal": {
+        "path": "network-host-root-review/execution-v1/native-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "7cbb3cf74bdfad3bb3c378d29688dbb73268d30a9db6d2a371644660c71350a3"
+      },
+      "root_native": {
+        "path": "network-host-root-review/execution-v1/root-native-verification.json",
+        "bytes": 983,
+        "sha256": "301247545242d3091d11fb459140ca8af085a457f59835d1fa9ad8af4db4efd3"
+      },
+      "raw_stage": {
+        "path": "network-host-root-review/execution-v1/raw-v1.json",
+        "bytes": 27484,
+        "sha256": "6ae77a41afbc0aa4502c3ad6f6f6eb41d9a9122e5cd5a70a3188d28cda1fbf0b"
+      },
+      "raw_terminal": {
+        "path": "network-host-root-review/execution-v1/raw-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "ca9f97244cdc0182db99462d63b4394fef38c047b1c9551b9ff695979e02f354"
+      },
+      "root_raw": {
+        "path": "network-host-root-review/execution-v1/root-raw-verification.json",
+        "bytes": 977,
+        "sha256": "b8f16fb67a478fbabbe91f83146c1dfe3c9a276a95efadbf890e73af5a72ac92"
+      },
+      "admission_stage": {
+        "path": "network-host-root-review/execution-v1/admission-v1.json",
+        "bytes": 27175,
+        "sha256": "fb48103c5b9c74551e41c06cad686feec9e4ade1f89657392deefa4744d84ae1"
+      },
+      "admission_terminal": {
+        "path": "network-host-root-review/execution-v1/admission-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "effe7778f71385b7b23bdbe90ed911f5b6fd8bfa956e7a52e46017fcb71b3fe8"
+      },
+      "root_admission": {
+        "path": "network-host-root-review/execution-v1/root-admission-verification.json",
+        "bytes": 989,
+        "sha256": "bd77d7cc1b8f1d27678e5df37f5a20b6d125070266270f554cc80cabf378e5ea"
+      },
+      "public_stage": {
+        "path": "network-host-root-review/execution-v1/public-v1.json",
+        "bytes": 28885,
+        "sha256": "f6a9c0f30edc1c8ef6f63f3ff6971cedf31a4d54f9f4ed302c8c8fb01c88a95a"
+      },
+      "public_terminal": {
+        "path": "network-host-root-review/execution-v1/public-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "29aafcd2af994a1f7e6c245f7a199bf1baece20c6a15ca3cc7018b47b62c4113"
+      },
+      "root_public": {
+        "path": "network-host-root-review/execution-v1/root-public-verification.json",
+        "bytes": 983,
+        "sha256": "6846e72e810a6c01216ae07b635b2111f2192648a153ae3ad1857ca55bada0ee"
+      },
+      "owner_stage": {
+        "path": "network-host-root-review/execution-v1/owner-v1.json",
+        "bytes": 33552,
+        "sha256": "8d1fc2404305443f237fc43025fc7e5653b0b0678042a8bef16deeb8b7d35f3a"
+      },
+      "owner_terminal": {
+        "path": "network-host-root-review/execution-v1/owner-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "45c76e18b3e1c1d133e00289e21f005acfb3e3880d2f5e5df2e498fb263862f6"
+      },
+      "root_owner": {
+        "path": "network-host-root-review/execution-v1/root-owner-verification.json",
+        "bytes": 981,
+        "sha256": "d7cb4050c0e736ce98ba963a94fa596feec30695be292b9e894f5991dd9eb240"
+      },
+      "final_maintenance_stage": {
+        "path": "network-host-root-review/execution-v1/final_maintenance-v1.json",
+        "bytes": 31801,
+        "sha256": "8843805d908be346c618b3ab18d699319f9034033a125b42c4a89df2d822b013"
+      },
+      "final_maintenance_terminal": {
+        "path": "network-host-root-review/execution-v1/final_maintenance-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "8fea29418beb5532cab099f929b8a66b0d6351f2d1345bd84220f4abddf419c1"
+      },
+      "root_final_maintenance": {
+        "path": "network-host-root-review/execution-v1/root-final_maintenance-verification.json",
+        "bytes": 1005,
+        "sha256": "525af162994f02a4138eb9215c96c0ab0c4059d7a444bee4fb80b66f1a97d44e"
+      },
+      "export_stage": {
+        "path": "network-host-root-review/execution-v1/export-v1.json",
+        "bytes": 26988,
+        "sha256": "55047f808d7f6fc7e9390baedad624f06a4db90efc13796aa612bcadb2f5f658"
+      },
+      "export_terminal": {
+        "path": "network-host-root-review/execution-v1/export-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "7f4132a639855f4a3a69adb9fdfc9b604bf487a5c2456ae92d0def2af7128c66"
+      },
+      "root_export": {
+        "path": "network-host-root-review/execution-v1/root-export-verification.json",
+        "bytes": 983,
+        "sha256": "e31e855f956db3ca13c5e2519294aed5c25848ca69e764a178d24bef5f0f325c"
+      },
+      "observation_archive": {
+        "path": "network-host-root-review/observations-v1/observations.tar.xz",
+        "bytes": 8725728,
+        "sha256": "26971981c45becb796b1dd8aade8af1e1853a27074df84ed0131b15ccc85e615"
+      },
+      "final_source_manifest": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/final-source/source-manifest.json",
+        "bytes": 18932,
+        "sha256": "5bfda2cd5ab431a4418430d3db8dc791a2e99e91ce449a06f153f8a55850a8cc"
+      },
+      "native_build": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "native-root-v1/build.json",
+        "bytes": 197185,
+        "sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343"
+      },
+      "installed_execpolicy": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/installed-execpolicy-v1.json",
+        "bytes": 195461,
+        "sha256": "a7739a9faac74937bb18773920dbd1907753a8ae3b7c7de9144b0450468aa938"
+      },
+      "strict16_admission": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/strict16-admission-v1.json",
+        "bytes": 329457,
+        "sha256": "5286a804098b47bf436368fa0881b69e566d206ea31935b6b569dcfe8ad1e1d5"
+      },
+      "formatter_in_progress_observation": {
+        "path": "network-host-root-review/execution-v1/formatter-progress-reconciliation.json",
+        "bytes": 14340,
+        "sha256": "fbbaa0135a998bcbf07fd8def35f73f93777935fd6fe823e25e06fa2c55cb584"
+      },
+      "formatter_start_timeout_observation": {
+        "path": "network-host-root-review/execution-v1/formatter-start-timeout-observation.json",
+        "bytes": 4844,
+        "sha256": "39d892aa8fe20a46c59d4f4ec739aa93454022d7992468fbcd05e40b4db35b80"
+      },
+      "consumer_bundle_stage": {
+        "path": "network-host-root-review/execution-v1/consumer_bundle-v1.json",
+        "bytes": 33317,
+        "sha256": "a452d42fda6b8b67cad42352a919dee275aa4a48a7f7ce7e978bf1184952f188"
+      },
+      "root_observation_archive": {
+        "path": "network-host-root-review/observations-v1/root-archive-verification.json",
+        "bytes": 42578,
+        "sha256": "ba12b7bd21c79f7b507b32e5c863215a0e3dacb50477ea78572fc63ea54c1d1d"
+      },
+      "consumer_metadata_manifest": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/manifest.json",
+        "bytes": 1849757,
+        "sha256": "217f0496e83d8c4179aee7814d4b80a3c0f45a966eb34710c3733e1b97f9416d"
+      },
+      "consumer_metadata_link_proof": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/link-proof.json",
+        "bytes": 2113995,
+        "sha256": "1d439072d3deb8aac212ee16eb2fabf06eda8530feb6f261b95018cdbf456880"
+      },
+      "consumer_metadata_copy_plan": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/copy-plan.json",
+        "bytes": 1404771,
+        "sha256": "7e1ce7f5028246fd8e297ab25b61b9b80686ab06257ccbd6a4accb3c2f3c1dc5"
+      },
+      "consumer_metadata_root_byte_check": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/root-byte-check.json",
+        "bytes": 1209,
+        "sha256": "16aa7ddfb13bb335951458c937b8d9687e1e147142c29345e5d6bade18eac9c2"
+      }
+    },
+    "observations_archive": {
+      "path": "network-host-root-review/observations-v1/observations.tar.xz",
+      "bytes": 8725728,
+      "sha256": "26971981c45becb796b1dd8aade8af1e1853a27074df84ed0131b15ccc85e615",
+      "members": 191,
+      "original_files": 190,
+      "logical_bytes": 108627849,
+      "all_member_bytes_sizes_and_modes_verified": true,
+      "compiled_binaries_included": false,
+      "all_original_reports_and_attempts_retained": true,
+      "source_export_only_no_rerun_or_relink": true
+    },
+    "preserved_nonterminal_observation": {
+      "formatter_progress_passed": false,
+      "formatter_test_process_returncode": 0,
+      "later_authoritative_formatter_state": "succeeded",
+      "later_authoritative_formatter_exit_code": 0,
+      "original_progress_report_retained": true,
+      "start_response_timeout_not_a_product_failure": true,
+      "sixteen_module_unknown_job_unchanged": true
+    },
+    "successor_consumer_bundle": {
+      "data_frozen": true,
+      "source_tree": "9c984a9f9be8dca17240233ae62973193d4beb03",
+      "independent_copied_files": 1353,
+      "copied_bytes": 1269156126,
+      "complete_package_files": 1356,
+      "complete_package_directories": 64,
+      "manifest": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/manifest.json",
+        "bytes": 1849757,
+        "sha256": "217f0496e83d8c4179aee7814d4b80a3c0f45a966eb34710c3733e1b97f9416d"
+      },
+      "link_proof": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/link-proof.json",
+        "bytes": 2113995,
+        "sha256": "1d439072d3deb8aac212ee16eb2fabf06eda8530feb6f261b95018cdbf456880"
+      },
+      "copy_plan": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/copy-plan.json",
+        "bytes": 1404771,
+        "sha256": "7e1ce7f5028246fd8e297ab25b61b9b80686ab06257ccbd6a4accb3c2f3c1dc5"
+      },
+      "original_source_and_target_inputs_unchanged": true,
+      "existing_qualified_performance_binary_copied": true,
+      "new_bundle_only_consumer_relink_performed": false,
+      "new_bundle_only_consumer_relink_qualified": false,
+      "runtime_execution_during_freeze": false,
+      "publication_revision": null,
+      "publication_promotion_pending": true,
+      "scope": "Retained actual pre-maintenance compile/nm/run evidence and independently copied existing bytes. No fresh consumer was linked from copied paths; a separately authorized successor must qualify that operation.",
+      "cargo_units": 234,
+      "build_script_linkage_records": 35,
+      "captured_link_search_directories": [
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/native-root-v1",
+          "kind": "native"
+        },
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/target/debug/build/blake3-65cb2d83c1a7b85c/out",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/build/blake3-65cb2d83c1a7b85c/out",
+          "kind": "native"
+        },
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/target/debug/build/codex-execpolicy-5dca6ca7bae74ff4/out",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/build/codex-execpolicy-5dca6ca7bae74ff4/out",
+          "kind": "native"
+        },
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/target/debug/deps",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps",
+          "kind": "dependency"
+        }
+      ],
+      "complete_native_files": 228,
+      "capture_linkage": [
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_prefix_match"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_prefix_admission"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_policy_summary"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_network_domains"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_allowed_prefixes"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_command_dispatch"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_network_host"
+        }
+      ],
+      "resolved_named_static_library_records": 16,
+      "mapped_performance_compile_command_not_executed": [
+        "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "-C",
+        "opt-level=3",
+        "--extern",
+        "owner=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/network-host-public-v1-artifacts/libnative_execpolicy.rlib",
+        "-L",
+        "dependency=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps",
+        "-L",
+        "native=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/native-root-v1",
+        "--extern",
+        "serde=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libserde-816dfdce36d7bea6.rlib",
+        "--extern",
+        "serde_json=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libserde_json-7a352768cfad8961.rlib",
+        "--extern",
+        "anyhow=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libanyhow-5e4898099b49613e.rlib",
+        "--extern",
+        "multimap=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libmultimap-850b2c5308da4d49.rlib",
+        "--extern",
+        "codex_utils_absolute_path=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libcodex_utils_absolute_path-846c9e4cb9025266.rlib",
+        "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/codex/hia/tests/native_network_host_performance.rs",
+        "-o",
+        "<caller-owned-new-output>"
+      ],
+      "mapped_command_scope": "Exact recorded performance-consumer command only; two explicit -L flags. Four captured search directories are retained for separately admitted future consumers; this is not a new bundle-only link result.",
+      "external_platform_dependencies": "fixed rustc/sysroot/CRT and system dynamic libraries remain external platform inputs; this package does not contain them",
+      "root_independent_byte_check": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/root-byte-check.json",
+        "bytes": 1209,
+        "sha256": "16aa7ddfb13bb335951458c937b8d9687e1e147142c29345e5d6bade18eac9c2"
+      },
+      "root_all_original_copy_hash_size_mode_inode_and_original_mtime_checks": true,
+      "nested_empty_directories_preserved": true
+    }
+  },
+  "source_artifact_record_scope": "The first16 source/artifact records remain byte-preserved history; their source/Core/object/text/archive/library identities equal the current full17 build. Embedded historical command paths are not new executions. The network_host record comes from the actual full17 build."
 }
