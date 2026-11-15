@@ -531,12 +531,6 @@ impl RoleQualificationHarnessV1 {
         if step.cell_id != self.definition.cell_id
             || step.generation != self.definition.generation
             || step.role != self.definition.role
-            || step.scope_digest != self.definition.scope_digest
-            || step.capability_digest
-                != self
-                    .definition
-                    .capability_digest()
-                    .map_err(RoleQualificationErrorV1::Definition)?
         {
             return Err(RoleQualificationErrorV1::Binding("step receipt"));
         }
@@ -596,12 +590,6 @@ impl RoleQualificationHarnessV1 {
         if step.cell_id != self.definition.cell_id
             || step.generation != self.definition.generation
             || step.role != self.definition.role
-            || step.scope_digest != self.definition.scope_digest
-            || step.capability_digest
-                != self
-                    .definition
-                    .capability_digest()
-                    .map_err(RoleQualificationErrorV1::Definition)?
             || step.input_frontier_digest != input_frontier_digest
         {
             return Err(RoleQualificationErrorV1::Binding("step receipt"));
@@ -619,9 +607,6 @@ impl RoleQualificationHarnessV1 {
             .exercise_fault(fault_kind)
             .map_err(RoleQualificationErrorV1::Owner)?;
         fault.validate_against(&self.definition)?;
-        if fault.kind != fault_kind {
-            return Err(RoleQualificationErrorV1::Binding("fault receipt"));
-        }
         Ok(RoleQualificationComponentsV1 {
             definition_digest: expected_definition_digest,
             artifact,

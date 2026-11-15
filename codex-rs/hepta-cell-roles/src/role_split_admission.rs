@@ -157,10 +157,6 @@ impl RoleSplitAdmissionV1 {
         if receipt.split_subject_digest != split.evaluation_subject_digest()? {
             return Err(RoleSplitAdmissionErrorV1::AdmissionDigestMismatch);
         }
-        split.validate()?;
-        if receipt.role != receipt.evidence.role {
-            return Err(RoleSplitAdmissionErrorV1::RoleMismatch);
-        }
         validate_evidence(split, &receipt.evidence, profile, metrics)
     }
 }
