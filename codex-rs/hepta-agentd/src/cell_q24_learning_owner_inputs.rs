@@ -186,12 +186,12 @@ impl OriginalCellQ24TrainingInputsV1 {
         prepared
             .training_material_in_operation(dataset.clone(), prepared.scope().clone(), read)
             .map_err(|_| Error::WrongScope)?;
-        let (training, receipts) = match self {
+        let (mut training, receipts) = match self {
             Self::Files(files) => files.open_in_operation(prepared, dataset.clone(), mode, read)?,
             Self::Owners { training, receipts } => (training, receipts),
         };
         OriginalCellQ24TrainingStageV1::require_original_pair_with_source(
-            &training,
+            &mut training,
             &receipts,
             &dataset,
             prepared.scope(),
@@ -219,7 +219,7 @@ impl OriginalCellQ24TrainingFilesV1 {
         let material = prepared
             .training_material_in_operation(dataset.clone(), prepared.scope().clone(), read)
             .map_err(|_| Error::WrongScope)?;
-        let training: CellQ24TrainingOwnerV1<FileAnchorWitnessStore> = match mode {
+        let mut training: CellQ24TrainingOwnerV1<FileAnchorWitnessStore> = match mode {
             OriginalCellQ24LearningOpenV1::Create => CellQ24TrainingOwnerV1::create_with_source(
                 self.training,
                 self.training_witness,

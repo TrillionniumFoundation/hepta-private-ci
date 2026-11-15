@@ -208,11 +208,38 @@ async fn source_dataset_requires_live_experience_witness_before_claiming() -> an
         Err(Error::Owner(LearningOriginalOwnerErrorV1::Store(_)))
     ));
     assert_eq!(fs::read(d_root.path().join("source"))?, before);
-    experience.attest_experience()?;
+    let completed = experience.attest_experience()?;
+    let experience_bytes = fs::read(e_root.path().join("source"))?;
     unavailable.store(/*val*/ true, Ordering::SeqCst);
     assert!(dataset_owner.attest_dataset(&mut experience).is_err());
     assert_eq!(fs::read(d_root.path().join("source"))?, before);
     unavailable.store(/*val*/ false, Ordering::SeqCst);
+    // Availability returning cannot clear the original owner's uncertainty.
+    // Reopen the same journal and witness before consuming its retained receipt.
+    assert!(matches!(
+        experience.read_experience(),
+        Err(Error::Owner(LearningOriginalOwnerErrorV1::CommitUncertain))
+    ));
+    assert!(matches!(
+        dataset_owner.attest_dataset(&mut experience),
+        Err(Error::Owner(LearningOriginalOwnerErrorV1::CommitUncertain))
+    ));
+    assert_eq!(fs::read(d_root.path().join("source"))?, before);
+    assert_eq!(fs::read(e_root.path().join("source"))?, experience_bytes);
+    drop(experience);
+    let mut experience = Owner::recover(
+        file(e_root.path(), "source")?,
+        ControlledWitness {
+            inner: witness(e_root.path(), prepared.initial())?,
+            unavailable: Arc::clone(&unavailable),
+            fail_at_sequence: None,
+        },
+        Arc::clone(&prepared),
+        signing(&dataset, Stage::Experience),
+        SigningKey::from_bytes(&[2; 32]),
+    )?;
+    assert_eq!(experience.read_experience()?, completed);
+    assert_eq!(fs::read(e_root.path().join("source"))?, experience_bytes);
     dataset_owner.attest_dataset(&mut experience)?;
     session.stop().await?;
     Ok(())

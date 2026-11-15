@@ -88,7 +88,7 @@ impl TrainingFixture {
             .clone();
         let material = prepared.training_material(dataset.clone(), prepared.scope().clone())?;
         assert_eq!(&material.batch.encoded()[..8], b"HQ24T002");
-        let native = CellQ24TrainingOwnerV1::create(
+        let mut native = CellQ24TrainingOwnerV1::create(
             fixture::file(task.root.path(), "comparison-native")?,
             fixture::witness(task.root.path(), "comparison-native.witness", objective)?,
             material.plan,

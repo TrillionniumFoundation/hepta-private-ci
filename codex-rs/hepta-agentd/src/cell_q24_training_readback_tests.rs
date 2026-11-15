@@ -99,7 +99,7 @@ impl Fixture {
             .snapshot()
             .clone();
         let material = prepared.training_material(dataset_cut.clone(), prepared.scope().clone())?;
-        let training = crate::CellQ24TrainingOwnerV1::create(
+        let mut training = crate::CellQ24TrainingOwnerV1::create(
             file(&root.path().join("native"), "training")?,
             original_witness(&root.path().join("native"), &dataset_cut)?,
             material.plan,

@@ -148,6 +148,41 @@ class CodespellCustodyTests(unittest.TestCase):
             )
         self.assertEqual(destination.read_text(encoding="utf-8"), "previous=value\n")
 
+    def test_registered_qualification_input_requires_frozen_digest(self):
+        path = (
+            "qualification/hcsn_differentiable/evidence/"
+            "p0p5-ci-launch-closure-20261110/codespell-fix/original-red.stdout"
+        )
+        expected = "bb3963bb62ee320e71703f057b98c1e71ceae250421f0b076e838ed7704ddd13"
+        document = {"schema": codespell_custody.SCHEMA, "files": {path: expected}}
+        try:
+            actual = codespell_custody.parse_manifest(json.dumps(document))
+        except ValueError:
+            actual = None
+        self.assertEqual(actual, {path: expected})
+        for changed in ("0" * 64, expected[:-1] + "0"):
+            with self.subTest(digest=changed):
+                document["files"] = {path: changed}
+                with self.assertRaisesRegex(ValueError, "registered SHA-256"):
+                    codespell_custody.parse_manifest(json.dumps(document))
+
+    def test_qualification_registration_does_not_admit_adjacent_paths(self):
+        digest = "bb3963bb62ee320e71703f057b98c1e71ceae250421f0b076e838ed7704ddd13"
+        prefix = (
+            "qualification/hcsn_differentiable/evidence/"
+            "p0p5-ci-launch-closure-20261110/codespell-fix/"
+        )
+        for path in (
+            prefix + "new-result.stdout",
+            prefix + "original-red.stdout*",
+            prefix + "../original-red.stdout",
+            "qualification/current.py",
+        ):
+            with self.subTest(path=path):
+                document = {"schema": codespell_custody.SCHEMA, "files": {path: digest}}
+                with self.assertRaisesRegex(ValueError, "exact repository path"):
+                    codespell_custody.parse_manifest(json.dumps(document))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -46,17 +46,24 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .owners
             .try_lock()
             .map_err(|_| RuntimeError::CommitUncertain)?;
+        if owners.source_fenced
+            || self
+                .source_abandoned
+                .load(std::sync::atomic::Ordering::Acquire)
+        {
+            return Err(crate::LearningIterationRuntimeErrorV1::CommitUncertain);
+        }
         let scope = owners.receipts.config.scope.clone();
         super::super::validate_config(&owners.receipts.config, &owners.receipts.key)
             .map_err(owner_error)?;
         CellQ24TrainingOwnerV1::require_dataset_scope_with_source(
-            &owners.training,
+            &mut owners.training,
             dataset,
             &scope,
             source,
         )
         .map_err(owner_error)?;
-        CellQ24TrainingOwnerV1::require_original_dataset_source(&owners.training, source)
+        CellQ24TrainingOwnerV1::require_original_dataset_source(&mut owners.training, source)
             .map_err(owner_error)?;
         let result = work(&mut OriginalQ24TrainingOperationV1 {
             owners: &mut owners,
@@ -64,13 +71,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             source,
         });
         CellQ24TrainingOwnerV1::require_dataset_scope_with_source(
-            &owners.training,
+            &mut owners.training,
             dataset,
             &scope,
             source,
         )
         .map_err(owner_error)?;
-        CellQ24TrainingOwnerV1::require_original_dataset_source(&owners.training, source)
+        CellQ24TrainingOwnerV1::require_original_dataset_source(&mut owners.training, source)
             .map_err(owner_error)?;
         result
     }

@@ -81,6 +81,10 @@ impl CognitiveTestHost {
         model: &str,
         provider_base_url: &str,
     ) -> TestResult<Self> {
+        let codex_self_exe = codex_self_exe.canonicalize()?;
+        if !codex_self_exe.is_file() {
+            return Err("Agentd product test requires a real Codex executable".into());
+        }
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;

@@ -308,3 +308,26 @@ fn compatibility_owner_cannot_substitute_for_external_frontier_custody() {
         Err(FinalUseError::InvalidTrust)
     );
 }
+
+#[test]
+fn retained_classical_owner_rejects_pq_schema_with_a_classical_signature()
+-> Result<(), FinalUseError> {
+    let fixture = Fixture::new()?;
+    let authority = fixture.open()?;
+    let witness = fixture.enter(&authority)?;
+    let before = authority.current_external_frontier()?;
+    let mut wrong_profile = fixture.signed.clone();
+    wrong_profile.grant.schema_version = 2;
+    wrong_profile.signature = fixture
+        .issuer
+        .sign(&wrong_profile.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
+    assert_eq!(
+        authority.verify_retained_use(&wrong_profile, &wrong_profile.grant.binding, &witness,),
+        Err(FinalUseError::InvalidGrant),
+    );
+    assert_eq!(authority.current_external_frontier()?, before);
+    assert_eq!(authority.capacity()?.used_nonces, 1);
+    Ok(())
+}

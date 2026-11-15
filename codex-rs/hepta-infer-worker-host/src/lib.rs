@@ -20,6 +20,10 @@ pub mod model_worker;
 /// Composition-aware shared encoder residency seam (qualification only).
 pub mod composition;
 
+/// Explicit qualification bridge, available only with the optional legacy fixture.
+#[cfg(feature = "composition-model-driver-qualification")]
+pub mod composition_model_adapter;
+
 /// Identity data shared by composition and the optional legacy model driver.
 pub mod model_manifest;
 

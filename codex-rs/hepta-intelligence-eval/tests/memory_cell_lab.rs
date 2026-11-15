@@ -8,13 +8,13 @@ use data::Split;
 use model::Bundle;
 use model::Meter;
 
-fn corpus() -> Vec<Episode> {
-    data::parse(&data::smoke_corpus()).unwrap()
+fn corpus() -> Result<Vec<Episode>, String> {
+    data::parse(&data::smoke_corpus())
 }
 
 #[test]
-fn real_gradient_updates_and_loss_falls_without_test_labels() {
-    let rows = corpus();
+fn real_gradient_updates_and_loss_falls_without_test_labels() -> Result<(), String> {
+    let rows = corpus()?;
     let mut bundle = Bundle::new("lab-public".into(), &[8]).unwrap();
     let original = bundle.clone();
     let loss = |b: &Bundle| {
@@ -43,21 +43,23 @@ fn real_gradient_updates_and_loss_falls_without_test_labels() {
         .train(&poisoned, &mut Meter::default(), 8_000_000)
         .unwrap();
     assert_eq!(bundle, other);
+    Ok(())
 }
 
 #[test]
-fn source_groups_and_chronology_cannot_cross_holdout() {
-    let mut rows = corpus();
+fn source_groups_and_chronology_cannot_cross_holdout() -> Result<(), String> {
+    let mut rows = corpus()?;
     rows[64].root = rows[0].root.clone();
     assert!(data::validate(&rows).is_err());
-    rows = corpus();
+    rows = corpus()?;
     rows[64].time = 1;
     assert!(data::validate(&rows).is_err());
+    Ok(())
 }
 
 #[test]
-fn clean_bundle_has_no_events_and_rejects_wrong_scope_or_encoder() {
-    let rows = corpus();
+fn clean_bundle_has_no_events_and_rejects_wrong_scope_or_encoder() -> Result<(), String> {
+    let rows = corpus()?;
     let mut bundle = Bundle::new("lab-public".into(), &[8]).unwrap();
     bundle.train(&rows, &mut Meter::default(), 100_000).unwrap();
     let encoded = bundle.encode();
@@ -69,6 +71,7 @@ fn clean_bundle_has_no_events_and_rejects_wrong_scope_or_encoder() {
     assert!(clean.infer(&query).is_err());
     assert!(Bundle::decode(&encoded.replace(data::ENCODER, "different-encoder")).is_err());
     assert!(Bundle::decode(&(encoded + "unexpected\n")).is_err());
+    Ok(())
 }
 
 #[test]
@@ -80,8 +83,9 @@ fn static_and_shared_capacity_are_exactly_equal() {
 }
 
 #[test]
-fn duplicate_observations_do_not_hide_behind_new_root_names() {
-    let mut rows = corpus();
+fn duplicate_observations_do_not_hide_behind_new_root_names() -> Result<(), String> {
+    let mut rows = corpus()?;
     rows[64].query = rows[0].query.clone();
     assert!(data::validate(&rows).is_err());
+    Ok(())
 }

@@ -484,7 +484,7 @@ reqwest = { version = "0.12", features = ["cookies"] }
 reqwest-otel = { package = "reqwest", version = "=0.13.5" }
 rmcp = { version = "=3.9.0", default-features = false }
 runfiles = { git = "https://github.com/dzbarsky/rules_rust", rev = "b56cbaa8465e74127f1ea216f813cd377295ad81" }
-rustix = { version = "1.1.4", features = ["net"] }
+rustix = { version = "1.1.6", features = ["net"] }
 rustls = { version = "0.23.46", default-features = false, features = [
     "aws_lc_rs",
     "std",
@@ -667,6 +667,25 @@ opt-level = 3
 
 [profile.dev.package."curve25519-dalek:4.1.3"]
 opt-level = 3
+
+# Original-owner readback repeatedly authenticates CURRENT, Artifact and
+# FinalUse state. Optimize these concrete call sites and their instantiated
+# generic code while keeping every physical read, signature and deadline.
+# Level 1 retains development checks and cross-crate generic sharing.
+[profile.dev.package.codex-hepta-types]
+opt-level = 1
+
+[profile.dev.package.codex-hepta-contracts]
+opt-level = 1
+
+[profile.dev.package.codex-hepta-learning-artifacts]
+opt-level = 3
+
+[profile.dev.package.codex-hepta-neuron]
+opt-level = 1
+
+[profile.dev.package.codex-hepta-agentd]
+opt-level = 1
 
 [profile.dev-small]
 inherits = "dev"

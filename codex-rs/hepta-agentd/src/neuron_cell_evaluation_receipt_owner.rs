@@ -53,8 +53,12 @@ use crate::OriginalCellEvaluationSigningConfigV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
+use crate::neuron_cell_evaluation_qualification_owner::TrainingRead;
 use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
 use crate::prepare_cell_learning_evaluation_v1;
+
+#[path = "neuron_cell_evaluation_receipt_operation.rs"]
+mod operation;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellEvaluationReceiptErrorV1 {
@@ -88,15 +92,54 @@ mod sources;
 pub use sources::OriginalCellEvaluationReceiptSourcesV1;
 pub(crate) use sources::ReceiptSources;
 
+enum HostOrigin {
+    FreshCreate,
+    ReadbackOnly,
+}
+
 pub struct OriginalCellEvaluationReceiptOwnerV1<W: AnchorWitnessStore> {
     journal: LearningOwnerJournalV1<W>,
     config: OriginalCellEvaluationReceiptConfigV1,
     key: SigningKey,
     execution: ProductEvaluationExecutionKeyV1,
     saved: ProductEvaluationExecutionKeyV1,
+    host_origin: HostOrigin,
 }
 
 impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
+    // A shared host observation belongs only to its actual external Trainer
+    // connection. OriginalQ24 keeps its independent original-owner readback.
+    async fn original_training_evidence(
+        &self,
+        trainer: OriginalCellEvaluationTrainerReadbackV1<'_>,
+        snapshot: &LearningIterationSnapshotV1,
+        training: TrainingRead<'_>,
+    ) -> Result<SignedLearningEvidenceV1, Error> {
+        match (trainer, training) {
+            (OriginalCellEvaluationTrainerReadbackV1::External(client), training) => {
+                training
+                    .receipt_evidence(client, snapshot, &self.config)
+                    .await
+            }
+            (
+                original @ OriginalCellEvaluationTrainerReadbackV1::OriginalQ24(_),
+                TrainingRead::Independent,
+            ) => Ok(OriginalCellEvaluationTrainerReadbackV1::readback(
+                &original,
+                snapshot,
+                self.training()?,
+            )
+            .await?),
+            (
+                OriginalCellEvaluationTrainerReadbackV1::OriginalQ24(_),
+                TrainingRead::Operation(_),
+            ) => Err(OwnerError::Binding(
+                "shared external Trainer observation cannot replace original Q24 readback",
+            )
+            .into()),
+        }
+    }
+
     pub(crate) fn require_original_training(
         &self,
         training: &LearningIterationSnapshotV1,
@@ -164,6 +207,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             key,
             execution,
             saved,
+            host_origin: HostOrigin::FreshCreate,
         })
     }
 
@@ -183,6 +227,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             key,
             execution,
             saved,
+            host_origin: HostOrigin::ReadbackOnly,
         })
     }
 
@@ -196,56 +241,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E: ProductEvaluationExecutionStoreV1,
     >(
         &mut self,
-        mut source: ReceiptSources<'_, S, C, F, E>,
+        source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        if now()? >= self.config.training.request.envelope.expiry_unix_seconds {
-            return Err(OwnerError::Binding("new Evaluation attestation after deadline").into());
-        }
-        let prepared = self.prepare(&mut source)?;
-        let trainer: OriginalCellEvaluationTrainerReadbackV1<'_> = source.trainer;
-        let training = trainer.readback(source.snapshot, self.training()?).await?;
-        self.authenticate_roles(&source, &prepared.1, &training)?;
-        if self.prepare(&mut source)? != prepared {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        let payload = learning_iteration_receipt_signing_bytes_v1(&prepared.0)?;
-        let config = &self.config.signing;
-        let key = &self.key;
-        let identity = self.saved.binding_digest;
-        let bytes = self.journal.commit_once(&self.saved, || {
-            let issued_at = now()?;
-            if issued_at >= self.config.training.request.envelope.expiry_unix_seconds {
-                return Err(OwnerError::Binding(
-                    "new Evaluation attestation after deadline",
-                ));
-            }
-            let expires_at = issued_at
-                .checked_add(config.maximum_signature_lifetime_seconds)
-                .ok_or(OwnerError::Binding("signature deadline overflow"))?
-                .min(config.signer.principal.expires_at);
-            let mut signed = SignedLearningEvidenceV1 {
-                evidence_id: evidence_id(identity)?,
-                principal_id: config.signer.principal.principal_id.clone(),
-                role: LearningEvidenceRoleV1::Evaluator,
-                trust_digest: config.verifier.trust_digest(),
-                scope_digest: config.verifier.scope_digest(),
-                objective_digest: config.verifier.objective_digest(),
-                authority_epoch: config.signer.principal.authority_epoch,
-                issued_at,
-                expires_at,
-                payload_digest: Digest32::of_bytes(&payload),
-                signature: [0; 64],
-            };
-            signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-            config.verifier.verify(
-                LearningEvidenceRoleV1::Evaluator,
-                &signed,
-                &payload,
-                issued_at,
-            )?;
-            learning_owner_evidence::encode(&payload, &signed)
-        })?;
-        self.authenticate_completed(&mut source, prepared, &bytes)
+        self.attest_sources_with_training(source, TrainingRead::Independent)
             .await
     }
 
@@ -259,12 +257,32 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E: ProductEvaluationExecutionStoreV1,
     >(
         &mut self,
-        mut source: ReceiptSources<'_, S, C, F, E>,
+        source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        let prepared = self.prepare(&mut source)?;
-        let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(&mut source, prepared, &bytes)
+        self.readback_sources_with_training(source, TrainingRead::Independent)
             .await
+    }
+
+    pub(crate) fn original_host_profile(&self) -> (&OriginalCellEvaluationReceiptConfigV1, bool) {
+        (
+            &self.config,
+            matches!(self.host_origin, HostOrigin::ReadbackOnly),
+        )
+    }
+
+    /// Final physical read for the closed host, after its complete panel I/O.
+    /// This never claims, signs, restores missing state or renews a window.
+    pub(crate) fn require_original_host_completed(
+        &mut self,
+        receipt: &LearningIterationReceiptV1,
+        signed: &SignedLearningEvidenceV1,
+    ) -> Result<(), Error> {
+        let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
+        let expected = learning_owner_evidence::encode(&payload, signed)?;
+        if self.journal.read(&self.saved)? != expected {
+            return Err(OwnerError::CommitUncertain.into());
+        }
+        Ok(())
     }
 
     fn training(&self) -> Result<&LearningIterationReceiptV1, Error> {
@@ -397,44 +415,6 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         verify_signed_actor_separation(&generator, &evaluator, now)?;
         Ok(())
     }
-
-    async fn authenticate_completed<
-        S: FinalHoldoutCasStoreV1,
-        C: AnchorWitnessStore,
-        F: AnchorWitnessStore,
-        E: ProductEvaluationExecutionStoreV1,
-    >(
-        &mut self,
-        source: &mut ReceiptSources<'_, S, C, F, E>,
-        prepared: (LearningIterationReceiptV1, CellEvaluationReceiptV1),
-        bytes: &[u8],
-    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        let (payload, signed) = learning_owner_evidence::decode(bytes)?;
-        if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)? {
-            return Err(OwnerError::Binding("changed original Evaluation payload").into());
-        }
-        let trainer: OriginalCellEvaluationTrainerReadbackV1<'_> = source.trainer;
-        let training = trainer.readback(source.snapshot, self.training()?).await?;
-        if self.prepare(source)? != prepared {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        self.authenticate_roles(source, &prepared.1, &training)?;
-        let config = &self.config.signing;
-        let verified =
-            config
-                .verifier
-                .verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?;
-        if verified.principal() != &config.signer.principal
-            || verified.controller_id() != &config.signer.controller_id
-            || signed.evidence_id != evidence_id(self.saved.binding_digest)?
-        {
-            return Err(OwnerError::Binding("original Evaluation signature identity").into());
-        }
-        if self.journal.read(&self.saved)? != bytes {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        Ok((prepared.0, signed))
-    }
 }
 
 fn validate_config(
@@ -528,4 +508,48 @@ fn now() -> Result<u64, OwnerError> {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs())
         .map_err(|_| OwnerError::Binding("original owner clock"))
+}
+
+impl OriginalCellEvaluationReceiptOwnerV1<codex_hepta_neuron::FileAnchorWitnessStore> {
+    /// Move this original Evaluator capability into the fixed panel host.
+    /// The private create/recover/attempt history determines execution versus
+    /// readback. The caller cannot select or reset that history.
+    pub fn into_original_evaluation_host(
+        self,
+        panel: crate::OriginalCellEvaluationPanelOwnerV1<
+            codex_hepta_neuron::FileAnchorWitnessStore,
+            codex_hepta_neuron::FileAnchorWitnessStore,
+            codex_hepta_neuron::FileAnchorWitnessStore,
+            codex_hepta_neuron::FileAnchorWitnessStore,
+        >,
+    ) -> Result<crate::OriginalCellEvaluationHostV1, crate::OriginalCellEvaluationCommandErrorV1>
+    {
+        crate::OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
+    }
+}
+
+#[cfg(test)]
+impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
+    /// Fail the real original claim before any signature. This fixture seam
+    /// exercises durable Pending; it never creates a completed receipt.
+    pub(crate) fn fixture_pending_original_host(&mut self) -> anyhow::Result<()> {
+        anyhow::ensure!(matches!(
+            self.journal.read(&self.saved),
+            Err(OwnerError::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing
+            )),
+        ));
+        self.host_origin = HostOrigin::ReadbackOnly;
+        let result = self.journal.commit_once(&self.saved, || {
+            Err(OwnerError::Binding(
+                "explicit test failure after original claim",
+            ))
+        });
+        anyhow::ensure!(matches!(result, Err(OwnerError::Binding(_))));
+        anyhow::ensure!(matches!(
+            self.journal.read(&self.saved),
+            Err(OwnerError::Pending)
+        ));
+        Ok(())
+    }
 }

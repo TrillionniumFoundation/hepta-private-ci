@@ -163,6 +163,7 @@ impl Fixture {
             &target_config,
             &artifact_files,
             initial_operation,
+            live_clock.now_unix_ms()?,
         )?;
         let current_file = Arc::new(FileCas::create(
             &directory.path().join("current.json"),
@@ -334,6 +335,19 @@ impl Fixture {
             config: self.target_config.clone(),
             max_records: RECORDS,
         })
+    }
+
+    pub(crate) fn retained_publication_selection(
+        &self,
+    ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {
+        self.artifact_files
+            .retained_publication_selection(self.live_clock.now_unix_ms()?)
+    }
+
+    pub(crate) fn retained_artifact_checkpoint(
+        &self,
+    ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {
+        self.artifact_files.retained_artifact_checkpoint()
     }
 
     pub(crate) fn selection(&self) -> anyhow::Result<AgentdSelectedGenerationV1> {

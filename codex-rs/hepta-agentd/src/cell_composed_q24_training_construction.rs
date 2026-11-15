@@ -29,6 +29,8 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             batch,
             rule,
             key,
+            #[cfg(target_os = "linux")]
+            source: None,
             fenced: false,
         })
     }
@@ -69,12 +71,14 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             batch,
             rule,
             key,
+            #[cfg(target_os = "linux")]
+            source: None,
             fenced: false,
         })
     }
 }
 
-fn job_key(
+pub(super) fn job_key(
     plan: &CellQ24SingleHeadTrainingPlanV1,
     batch: &CellQ24TrainingBatchV1,
     rule: CellQ24SgdRuleV1,

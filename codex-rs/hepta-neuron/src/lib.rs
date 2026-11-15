@@ -58,6 +58,7 @@ mod cell_v13_generation;
 mod cell_v13_process;
 #[cfg(target_os = "linux")]
 mod cell_v13_protocol;
+mod continuous_time;
 mod deletion;
 mod feature_control;
 mod inference_control;
@@ -219,6 +220,16 @@ pub use cell_v13_generation::V13GenerationProcessWorkerV1;
 pub use cell_v13_protocol::V13LearningClosureV1;
 #[cfg(target_os = "linux")]
 pub use cell_v13_protocol::V13TaskInputV1;
+pub use continuous_time::HcsnClockCheckpointV1;
+pub use continuous_time::HcsnClockIdentityV1;
+pub use continuous_time::HcsnIntegrationV1;
+pub use continuous_time::HcsnIntervalPlanV1;
+pub use continuous_time::HcsnTimeError;
+pub use continuous_time::HcsnTimeProfileV1;
+pub use continuous_time::commit_hcsn_batch_v1;
+pub use continuous_time::commit_hcsn_interval_v1;
+pub use continuous_time::plan_hcsn_batch_v1;
+pub use continuous_time::plan_hcsn_interval_v1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;

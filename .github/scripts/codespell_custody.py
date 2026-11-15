@@ -19,6 +19,37 @@ SCHEMA = "hepta.codespell-custody.v1"
 MAX_MANIFEST_BYTES = 1024 * 1024
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
 
+# These retained qualification inputs admit only their registered original bytes.
+QUALIFICATION_SOURCE_SHA256 = {
+    (
+        "qualification/hcsn_differentiable/evidence/p0p5-20261110/review/"
+        "baseline36-c1-native-v1/v2/bootstrap/"
+        "6e1c204a063b39f1fff14c405c09d153fe3ca57f.json"
+    ): "1511fe97bec17637deef2dd336b97f8bb04dbc6421708d55909896e9f6bba6e6",
+    (
+        "qualification/hcsn_differentiable/evidence/"
+        "p0p5-ci-launch-closure-20261110/codespell-fix/original-red.stdout"
+    ): "bb3963bb62ee320e71703f057b98c1e71ceae250421f0b076e838ed7704ddd13",
+    (
+        "qualification/hcsn_differentiable/evidence/"
+        "p0p5-persistence-validation-20261111/native-first/COMMAND.sh"
+    ): "21487e097fbdef884fe979b8a2fcdfc59ebeed79fcc42fefea21f45e10135607",
+    (
+        "qualification/hcsn_differentiable/evidence/"
+        "p0p5-persistence-validation-20261111/native-first/LAUNCH-RECEIPT.json"
+    ): "a8e1c389662c60f512127826f927aba894793721276f62445ffa8746c58cac32",
+    (
+        "qualification/hcsn_differentiable/evidence/"
+        "p0p5-terminal-numerics-20261110/numerical-audit/collector-launch/"
+        "git-response.json"
+    ): "7aa48d5cc91d125540591b852b64ec4255e8a4002b5c890d18d515bb9a6c4121",
+    "qualification/hcsn_initial_vjp/evidence/native001/COMMAND.sh": "79d8d7bec29c774aeb094eb2ccceb02a5d6b44ebc1a239b33f26500758260945",
+    (
+        "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/"
+        "review_visited_l8_raw.py"
+    ): "d2397d0b3e2dfaea8f32e7ec12a580650131dc428ac4d6a117110045489d1450",
+}
+
 
 def unique_object(pairs):
     result = {}
@@ -79,7 +110,10 @@ def parse_manifest(raw):
     for path, expected in entries.items():
         if (
             not isinstance(path, str)
-            or not re.fullmatch(r"library-recovery/[A-Za-z0-9._/-]+", path)
+            or not (
+                re.fullmatch(r"library-recovery/[A-Za-z0-9._/-]+", path)
+                or path in QUALIFICATION_SOURCE_SHA256
+            )
             or str(PurePosixPath(path)) != path
             or any(part in {".", ".."} for part in path.split("/"))
             or len(PurePosixPath(path).parts) < 3
@@ -87,6 +121,11 @@ def parse_manifest(raw):
             raise ValueError("archive exemption must be an exact repository path")
         if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{64}", expected):
             raise ValueError("archive exemption requires an exact SHA-256")
+        if (
+            path in QUALIFICATION_SOURCE_SHA256
+            and expected != QUALIFICATION_SOURCE_SHA256[path]
+        ):
+            raise ValueError("qualification exemption requires its registered SHA-256")
     return entries
 
 

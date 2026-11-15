@@ -41,7 +41,19 @@ mod history;
 #[path = "circuit_task_source_data_tests.rs"]
 pub(crate) mod data;
 
-fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
+fn source_bytes<W: AnchorWitnessStore>(
+    owner: &DurableCircuitTaskSourceV1<W>,
+) -> anyhow::Result<Vec<u8>> {
+    let mut original = owner
+        .0
+        .lock()
+        .map_err(|_| anyhow::anyhow!("source fixture owner poisoned"))?;
+    Ok(original
+        .journal
+        .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)?)
+}
+
+pub(crate) fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)
         .write(true)
@@ -50,7 +62,7 @@ fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
         .open(root.join(name))?)
 }
 
-fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
+pub(crate) fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
     witness_from_file(opened(root, name)?, name)
 }
 
@@ -66,7 +78,7 @@ fn witness_from_file(file: File, name: &str) -> anyhow::Result<FileAnchorWitness
     )?)
 }
 
-fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
+pub(crate) fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
     let root = root.canonicalize()?;
     let agent_id = AgentId::parse(cell::scope("A").agent_id.as_str())?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -85,7 +97,7 @@ fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
     })
 }
 
-fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
+pub(crate) fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
     Ok(TaskFlowFence::new(
         identity.agent_id.clone(),
         "original-source-owner",
@@ -95,7 +107,7 @@ fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
     )?)
 }
 
-fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
+pub(crate) fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
     let input = cell::input(run);
     CircuitTaskSourceInputV1 {
         scope: input.scope,
@@ -110,7 +122,7 @@ fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
     }
 }
 
-fn record(run: &str) -> RunStartRecordV1 {
+pub(crate) fn record(run: &str) -> RunStartRecordV1 {
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             issuer_id: cell::id("fixture-issuer"),
@@ -162,21 +174,9 @@ fn cell_owner(
     root: &Path,
     inputs: &[CircuitTaskSourceInputV1],
 ) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
-    cell_owner_from_files(
-        opened(root, "cell-journal")?,
-        opened(root, "cell-witness")?,
-        inputs,
-    )
-}
-
-fn cell_owner_from_files(
-    journal_file: File,
-    witness_file: File,
-    inputs: &[CircuitTaskSourceInputV1],
-) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
     Ok(CellOwnerJournalV1::open(
-        journal_file,
-        witness_from_file(witness_file, "cell-witness")?,
+        opened(root, "cell-journal")?,
+        witness(root, "cell-witness")?,
         inputs
             .iter()
             .map(|input| CellJournalPartitionV1 {
@@ -190,7 +190,7 @@ fn cell_owner_from_files(
     )?)
 }
 
-fn time() -> crate::CircuitCellTimeV1 {
+pub(crate) fn time() -> crate::CircuitCellTimeV1 {
     crate::CircuitCellTimeV1 {
         circuit_millis: 20,
         cell_micros: 20,
@@ -294,19 +294,9 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         "cell-witness",
     ]
     .map(|name| fs::read(root.path().join(name)).expect("original files"));
-    let source_file = opened(root.path(), "source-journal")?;
-    let source_witness_file = opened(root.path(), "source-witness")?;
-    let cell_file = opened(root.path(), "cell-journal")?;
-    let cell_witness_file = opened(root.path(), "cell-witness")?;
-    let observers = [
-        source_file.try_clone()?,
-        source_witness_file.try_clone()?,
-        cell_file.try_clone()?,
-        cell_witness_file.try_clone()?,
-    ];
     let reopened = Source::recover(
-        source_file,
-        witness_from_file(source_witness_file, "source-witness")?,
+        opened(root.path(), "source-journal")?,
+        witness(root.path(), "source-witness")?,
         &identity,
         &fence,
         &registry()?,
@@ -329,7 +319,7 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         inputs: reopened.clone(),
         cells: AgentdCircuitCellOwnerV1::new(
             registry()?,
-            cell_owner_from_files(cell_file, cell_witness_file, &sources)?,
+            cell_owner(root.path(), &sources)?,
             model,
             cell::Encoder,
         ),
@@ -340,12 +330,42 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     assert_eq!(recovered, receipt);
     reopened.publish_result(&identity, &record("A"), &recovered)?;
     assert_eq!(recovered_calls.load(Ordering::SeqCst), 0);
+    // Compare every physical file after closing the replay owners, then reopen
+    // the exact retained state again before the distinct next input. No
+    // concurrent read through a second handle is used while Windows locks live.
+    drop(driver);
+    drop(reopened);
     assert_eq!(
-        observers
-            .each_ref()
-            .map(|file| { crate::test_support::read_file_bytes(file).expect("same files") }),
+        [
+            "source-journal",
+            "source-witness",
+            "cell-journal",
+            "cell-witness"
+        ]
+        .map(|name| fs::read(root.path().join(name)).expect("same files")),
         original_files
     );
+    let reopened = Source::recover(
+        opened(root.path(), "source-journal")?,
+        witness(root.path(), "source-witness")?,
+        &identity,
+        &fence,
+        &registry()?,
+        sources.clone(),
+    )?;
+    let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
+    let next_calls = Arc::clone(&model.calls);
+    let mut driver = CircuitTaskDriverV1 {
+        store: store.clone(),
+        fence: fence.clone(),
+        inputs: reopened.clone(),
+        cells: AgentdCircuitCellOwnerV1::new(
+            registry()?,
+            cell_owner(root.path(), &sources)?,
+            model,
+            cell::Encoder,
+        ),
+    };
     let next = reopened.build(&identity, &record("C"))?;
     let next_receipt = driver
         .execute(&next, CircuitTaskModeV1::Drive, || Ok(time()))
@@ -357,7 +377,7 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         next_publication.publication_digest(),
         published.publication_digest()
     );
-    assert_eq!(recovered_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(next_calls.load(Ordering::SeqCst), 1);
     {
         let observer = reopened.readback();
         assert_eq!(
@@ -407,10 +427,8 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
     let fence = fence(&identity)?;
     let store = AutomationStore::open(&identity.layout).await?;
     let sources = vec![source("A", b"source A")];
-    let source_file = opened(root.path(), "source-journal")?;
-    let source_observer = source_file.try_clone()?;
     let mut owner = Source::create(
-        source_file,
+        opened(root.path(), "source-journal")?,
         witness(root.path(), "source-witness")?,
         &identity,
         &fence,
@@ -420,7 +438,7 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
     let original = record("A");
     let request = owner.build(&identity, &original)?;
     let dispatch = dispatch(&store, &fence, &request).await?;
-    let before = crate::test_support::read_file_bytes(&source_observer)?;
+    let before = source_bytes(&owner)?;
     assert_eq!(
         owner.resolve(
             &request,
@@ -431,17 +449,14 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         Err(Error::ReconciliationRequired)
     );
     assert!(owner.read_publication(&identity, &original).is_err());
-    assert_eq!(
-        crate::test_support::read_file_bytes(&source_observer)?,
-        before
-    );
+    assert_eq!(source_bytes(&owner)?, before);
     let input = owner.resolve(
         &request,
         &dispatch,
         &BTreeMap::new(),
         CircuitTaskInputModeV1::Prepare,
     )?;
-    let retained = crate::test_support::read_file_bytes(&source_observer)?;
+    let retained = source_bytes(&owner)?;
     let alterations: [fn(&mut RunStartRecordV1); 5] = [
         |r: &mut RunStartRecordV1| r.authentication.signature[0] ^= 1,
         |r: &mut RunStartRecordV1| r.admission.admitted_source_digest = cell::d("replacement"),
@@ -474,12 +489,8 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         )?,
         input
     );
-    assert_eq!(
-        crate::test_support::read_file_bytes(&source_observer)?,
-        retained
-    );
+    assert_eq!(source_bytes(&owner)?, retained);
     drop(owner);
-    drop(source_observer);
     let mut substituted = sources.clone();
     substituted[0].candidates[0].allowed = false;
     assert!(
@@ -590,8 +601,7 @@ fn ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen() -> anyho
                 .read_run_publication(&identity, &cell::id("A"))
                 .is_err()
         );
-        drop(reopened);
-        assert_eq!(fs::read(root.path().join("source-journal"))?, bytes);
+        assert_eq!(source_bytes(&reopened)?, bytes);
     }
     Ok(())
 }
@@ -638,8 +648,7 @@ fn ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_
             assert!(recovered.build(&identity, &record("A")).is_ok());
         }
         assert!(recovered.read_publication(&identity, &record("A")).is_err());
-        drop(recovered);
-        assert_eq!(fs::read(root.path().join("source-journal"))?, bytes);
+        assert_eq!(source_bytes(&recovered)?, bytes);
     }
     Ok(())
 }
@@ -704,20 +713,15 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
         drop(driver);
         drop(owner);
         let unchanged = fs::read(root.path().join("source-journal"))?;
-        let source_file = opened(root.path(), "source-journal")?;
-        let source_observer = source_file.try_clone()?;
         let reopened = Source::recover(
-            source_file,
+            opened(root.path(), "source-journal")?,
             witness(root.path(), "source-witness")?,
             &identity,
             &fence,
             &registry()?,
             sources.clone(),
         )?;
-        assert_eq!(
-            crate::test_support::read_file_bytes(&source_observer)?,
-            unchanged
-        );
+        assert_eq!(source_bytes(&reopened)?, unchanged);
         let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
         let recovered_calls = Arc::clone(&model.calls);
         let mut driver = CircuitTaskDriverV1 {
@@ -768,10 +772,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
             usize::from(fail_sequence == 5)
         );
         if fail_sequence != 5 {
-            assert_eq!(
-                crate::test_support::read_file_bytes(&source_observer)?,
-                unchanged
-            );
+            assert_eq!(source_bytes(&reopened)?, unchanged);
         }
         drop(driver);
         drop(reopened);
@@ -779,3 +780,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
     }
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_current_tests.rs"]
+mod physical_current;

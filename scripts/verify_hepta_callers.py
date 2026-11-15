@@ -918,6 +918,122 @@ def _self_test_typed_field_cache() -> None:
                 raise VerificationFailure("typed cache accepted unbalanced fields")
 
 
+def _self_test_qualified_method_references() -> None:
+    """Exercise function items through the real scanner and boundary verifier."""
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        source = root / "src"
+        source.mkdir()
+        (source / "owner.rs").write_text(
+            "pub struct ActualAuthority;\n"
+            "impl ActualAuthority { pub fn run(&self) {} }\n"
+            "fn definition_reference() { let _ = ActualAuthority::run; }\n",
+            encoding="utf-8",
+        )
+        (root / "CALLERS.toml").write_text(
+            "schema_version = 2\n"
+            'plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"\n'
+            'source_roots = ["src"]\n'
+            'ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]\n'
+            "[authority]\nproduction = false\n"
+            "[privileged_inventory]\n"
+            'required_boundary_ids = ["actual_run"]\n'
+            "[[boundary]]\n"
+            'id = "actual_run"\n'
+            'symbol = "ActualAuthority::run"\n'
+            'receiver_type = "ActualAuthority"\n'
+            'definition_path = "src/owner.rs"\n'
+            'definition_markers = ["pub struct ActualAuthority;"]\n'
+            'product_callers = ["src/caller.rs"]\n'
+            'caller_markers = ["fn check("]\n'
+            '[[protected_file]]\npath = "src/owner.rs"\n'
+            'required = ["pub struct ActualAuthority;"]\nforbidden = ["unsafe"]\n',
+            encoding="utf-8",
+        )
+        (source / "decoys.rs").write_text(
+            "// ActualAuthority::run\n"
+            "/* ActualAuthority::run */\n"
+            "fn decoys() {\n"
+            '    let _ = "ActualAuthority::run";\n'
+            "    let _ = ActualAuthority::run_suffix;\n"
+            "    let _ = PrefixActualAuthority::run;\n"
+            "    let _ = ActualAuthoritySuffix::run;\n"
+            "}\n"
+            "#[cfg(test)] mod tests {\n"
+            "    fn test_reference() { let _ = ActualAuthority::run; }\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        ignored = source / "tests"
+        ignored.mkdir()
+        (ignored / "ignored.rs").write_text(
+            "fn ignored_reference() { let _ = ActualAuthority::run; }\n",
+            encoding="utf-8",
+        )
+        caller = source / "caller.rs"
+        versions = (
+            "fn check(owner: &ActualAuthority) { ActualAuthority::run(owner); }\n",
+            "fn check(owner: &ActualAuthority) { owner.run(); }\n",
+            "fn check(owner: Option<&ActualAuthority>) {\n"
+            "    let _ = owner.map(crate::ActualAuthority::run);\n"
+            "}\n",
+            "use crate::ActualAuthority as CurrentAlias;\n"
+            "fn check(owner: Option<&CurrentAlias>) {\n"
+            "    let _ = owner.map(CurrentAlias::run);\n"
+            "}\n",
+        )
+        for code in versions:
+            caller.write_text(code, encoding="utf-8")
+            receipt = verify(root)
+            if receipt["boundaries"][0]["productCallers"] != ["src/caller.rs"]:
+                raise VerificationFailure(
+                    "typed function-item caller was not preserved"
+                )
+
+        def require_rejection(expected: str) -> None:
+            try:
+                verify(root)
+            except VerificationFailure as error:
+                if str(error) != expected:
+                    raise VerificationFailure(
+                        "typed function-item rejection changed attribution"
+                    ) from error
+            else:
+                raise VerificationFailure(
+                    "typed function-item boundary accepted a bypass"
+                )
+
+        extra = source / "extra.rs"
+        extra.write_text(
+            "fn extra(owner: Option<&ActualAuthority>) {\n"
+            "    let _ = owner.map(ActualAuthority::run);\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        require_rejection(
+            "actual_run: caller set mismatch; missing=[], unexpected=['src/extra.rs']"
+        )
+        extra.unlink()
+        verify(root)
+
+        # Finding an explicit function item must not skip an opaque dot receiver.
+        caller.write_text(
+            "fn opaque(owner: &ActualAuthority) -> &ActualAuthority { owner }\n"
+            "fn check(owner: &ActualAuthority) {\n"
+            "    let _ = ActualAuthority::run;\n"
+            "    let unknown = opaque(owner);\n"
+            "    unknown.run();\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        require_rejection(
+            "actual_run: src/caller.rs: "
+            "unresolved possible ActualAuthority::run receiver"
+        )
+        caller.write_text(versions[2], encoding="utf-8")
+        verify(root)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -972,6 +1088,7 @@ def main() -> int:
             else:
                 raise VerificationFailure("protected code boundary self-test failed")
         _self_test_typed_field_cache()
+        _self_test_qualified_method_references()
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )

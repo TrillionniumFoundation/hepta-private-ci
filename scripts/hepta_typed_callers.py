@@ -201,7 +201,9 @@ def has_authority_call(
     type_names = {target, *(owner for owner, _ in fields)}
     if not any(re.search(rf"\b{re.escape(name)}\b", code) for name in type_names):
         return False
-    qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\s*\("
+    # A qualified method used as a function item carries the same authority.
+    # Match its complete identifier; same-name dot receivers still resolve below.
+    qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\b"
     found = bool(re.search(qualified, code))
     potential = re.compile(rf"\.\s*{re.escape(method)}\s*\(")
     for call in potential.finditer(code):

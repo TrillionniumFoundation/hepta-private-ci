@@ -351,3 +351,131 @@ fn model_manifest_normalizer_mismatch_is_rejected_before_driver_dispatch() {
     assert_eq!(worker.active_cell_count(), 0);
     assert_eq!(worker.resident_encoder_count(), 0);
 }
+
+#[test]
+fn logical_cell_scale_has_one_resident_encoder_and_exact_head_charges() {
+    // Logical lifecycle/ledger proof only. No physical GPU residency,
+    // model accuracy, feature cache or measured inference throughput.
+    for count in [8_usize, 64, 256, 1024] {
+        let mut worker = CompositionWorker::new(
+            SharedEncoderPool::new(1, count).expect("pool"),
+            WorkerDriver::default(),
+        );
+        let mut cell_ids = Vec::new();
+        for index in 0..count {
+            let cell_id = format!("cell-{index}");
+            worker
+                .attach_cell(key("cuda-0"), head(&cell_id, 20), 100)
+                .expect("attach");
+            cell_ids.push(cell_id);
+        }
+        assert_eq!(worker.driver.loads, 1, "{count} logical Cells");
+        assert_eq!(worker.resident_encoder_count(), 1);
+        assert_eq!(worker.active_cell_count(), count);
+        assert_eq!(
+            worker.total_resident_memory_bytes(),
+            Ok(100 + 20 * (count as u64)),
+        );
+
+        for cell_id in &cell_ids[..count - 1] {
+            worker.detach_cell(cell_id).expect("detach nonfinal");
+        }
+        assert_eq!(worker.driver.unloads, 0, "{count} logical Cells");
+        assert_eq!(worker.resident_encoder_count(), 1);
+        worker
+            .detach_cell(&cell_ids[count - 1])
+            .expect("detach final");
+        assert_eq!(worker.driver.unloads, 1);
+        assert_eq!(worker.active_cell_count(), 0);
+        assert_eq!(worker.resident_encoder_count(), 0);
+        assert_eq!(worker.total_resident_memory_bytes(), Ok(0));
+    }
+}
+
+struct FaultInjectingDriver {
+    fail_load: bool,
+    fail_unload: bool,
+    successful_loads: usize,
+}
+
+impl CompositionDriver for FaultInjectingDriver {
+    type Handle = String;
+
+    fn load_encoder(&mut self, _key: &CompositionKey) -> Result<Self::Handle, CompositionError> {
+        if self.fail_load {
+            return Err(CompositionError::DriverFailure("injected load failure"));
+        }
+        self.successful_loads += 1;
+        Ok("resident-handle".to_string())
+    }
+
+    fn unload_encoder(
+        &mut self,
+        _key: &CompositionKey,
+        _handle: Self::Handle,
+    ) -> Result<(), CompositionError> {
+        if self.fail_unload {
+            return Err(CompositionError::DriverFailure("injected unload failure"));
+        }
+        Ok(())
+    }
+
+    fn run_head(
+        &mut self,
+        _handle: &Self::Handle,
+        _head: &CellHeadManifest,
+        request: &CompositionRequest,
+    ) -> Result<CompositionRunObservation, CompositionError> {
+        Ok(CompositionRunObservation {
+            output_digest: format!("output:{}", request.input_digest),
+            consumed_tokens: request.maximum_tokens,
+        })
+    }
+}
+
+#[test]
+fn encoder_load_failure_rolls_back_new_cell_and_resident_record() {
+    let mut worker = CompositionWorker::new(
+        SharedEncoderPool::new(1, 2).expect("pool"),
+        FaultInjectingDriver {
+            fail_load: true,
+            fail_unload: false,
+            successful_loads: 0,
+        },
+    );
+    assert_eq!(
+        worker.attach_cell(key("cuda-0"), head("cell-a", 20), 100),
+        Err(CompositionError::DriverFailure("injected load failure"))
+    );
+    assert_eq!(worker.active_cell_count(), 0);
+    assert_eq!(worker.resident_encoder_count(), 0);
+    assert!(worker.handles.is_empty());
+    assert_eq!(worker.total_resident_memory_bytes(), Ok(0));
+}
+
+#[test]
+fn last_cell_unload_failure_preserves_cell_and_handle_for_retry() {
+    let mut worker = CompositionWorker::new(
+        SharedEncoderPool::new(1, 2).expect("pool"),
+        FaultInjectingDriver {
+            fail_load: false,
+            fail_unload: true,
+            successful_loads: 0,
+        },
+    );
+    worker
+        .attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("load");
+    assert_eq!(
+        worker.detach_cell("cell-a"),
+        Err(CompositionError::DriverFailure("injected unload failure"))
+    );
+    assert_eq!(worker.active_cell_count(), 1);
+    assert_eq!(worker.resident_encoder_count(), 1);
+    assert_eq!(worker.handles.len(), 1);
+    assert_eq!(worker.total_resident_memory_bytes(), Ok(120));
+    worker.driver.fail_unload = false;
+    worker.detach_cell("cell-a").expect("retry detach");
+    assert!(worker.handles.is_empty());
+    assert_eq!(worker.total_resident_memory_bytes(), Ok(0));
+}

@@ -58,6 +58,8 @@ pub use stage::OriginalCellQ24TrainingStageV1;
 pub(crate) use stage::OriginalQ24TrainingOperationEvidenceV1;
 #[cfg(target_os = "linux")]
 pub(crate) use stage::OriginalQ24TrainingOperationV1;
+#[cfg(target_os = "linux")]
+pub use stage::SourceBoundCellQ24TrainingStageV1;
 
 /// Original host configuration, fixed before requesting a training signature.
 /// Structural validation cannot manufacture Dataset custody or Root enrollment.

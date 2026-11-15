@@ -513,6 +513,14 @@ impl AgentdNotesLiteralAdapter {
         .await
         .map_err(|_| invalid("Notes observation worker failed"))??;
         self.check_available()?;
+        tokio::time::timeout(
+            end.saturating_duration_since(Instant::now()),
+            self.writer.validate_notes_document_read(&observed),
+        )
+        .await
+        .map_err(|_| invalid("Notes original-owner read floor check timed out"))?
+        .map_err(|error| invalid(&error.to_string()))?;
+        self.check_available()?;
         if expected_revision.is_some_and(|revision| revision != observed.revision) {
             return Err(invalid(
                 "original thread predecessor changed; no operation was prepared",

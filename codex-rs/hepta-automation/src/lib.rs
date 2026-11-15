@@ -13,6 +13,7 @@
 mod effect_executor;
 
 mod action_check;
+mod action_runtime;
 mod action_skill;
 mod action_skill_driver;
 #[cfg(test)]
@@ -36,8 +37,13 @@ mod circuit_store;
 mod circuit_task_readback;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
+mod hcsn_job;
+mod hcsn_supervisor;
+mod hcsn_taskflow;
 mod lifecycle;
 mod model;
+#[cfg(target_os = "linux")]
+mod native_process_wait;
 mod neural_circuit;
 mod operation_destination;
 mod schedule_v2;
@@ -58,6 +64,9 @@ pub use action_check::ActionCheckPlanV1;
 pub use action_check::ActionCheckReadbackV1;
 pub use action_check::ActionCheckRecommendationV1;
 pub use action_check::ActionCheckTimeV1;
+pub use action_runtime::ActionRuntimeObservationV1;
+pub use action_runtime::ActionRuntimeStateV1;
+pub use action_runtime::ActionTerminalOutcomeV1;
 pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
 pub use action_skill::ActionCancellationStateV1;
 pub use action_skill::ActionConditionV1;
@@ -124,6 +133,21 @@ pub use circuit_state::CircuitEventV2;
 pub use circuit_state::CircuitRunV2;
 pub use circuit_state::CircuitStartV2;
 pub use circuit_state::CircuitStopReasonV2;
+pub use hcsn_job::HCSN_MAX_TRAINING_PAYLOAD_BYTES;
+pub use hcsn_job::HCSN_SUPERVISOR_SCHEMA_VERSION;
+pub use hcsn_job::HcsnJobEvidenceV1;
+pub use hcsn_job::HcsnJobIdentityV1;
+pub use hcsn_job::HcsnJobObservationV1;
+pub use hcsn_job::HcsnJobStateV1;
+pub use hcsn_job::HcsnProcessIdentityV1;
+pub use hcsn_job::HcsnSupervisor;
+pub use hcsn_job::HcsnSupervisorActionV1;
+pub use hcsn_job::HcsnSupervisorCommandV1;
+pub use hcsn_job::HcsnSupervisorError;
+pub use hcsn_supervisor::HcsnProcessSupervisor;
+pub use hcsn_supervisor::HcsnProcessSupervisorConfig;
+pub use hcsn_taskflow::HcsnTaskFlowActionV1;
+pub use hcsn_taskflow::HcsnTaskFlowDriver;
 pub use lifecycle::AutomationMissedRunPolicy;
 pub use lifecycle::AutomationOccurrence;
 pub use lifecycle::AutomationOccurrenceState;
@@ -143,6 +167,14 @@ pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessInputWaitEvidenceV1;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessInputWaitObservationV1;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessInputWaitObserver;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessWaitError;
 pub use neural_circuit::CircuitCompilationReceiptV1;
 pub use neural_circuit::CircuitEdgeV1;
 pub use neural_circuit::CircuitNodeRoleV1;

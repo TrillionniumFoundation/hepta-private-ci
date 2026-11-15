@@ -92,6 +92,14 @@ pub use training_plan::OriginalCellQ24DatasetFreezeSigningConfigV1;
 #[cfg(target_os = "linux")]
 pub(crate) use training_plan::OriginalPreparedReadV1;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_candidate_material.rs"]
+mod candidate_material;
+#[cfg(target_os = "linux")]
+pub use candidate_material::OriginalCellQ24CandidateMaterialErrorV1;
+#[cfg(target_os = "linux")]
+pub use candidate_material::OriginalCellQ24CandidateMaterialV1;
+
 pub struct CellQ24ModelFilesV1 {
     pub base: File,
     pub organ_adapter: Option<File>,

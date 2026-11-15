@@ -70,7 +70,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     }
 
     fn admit_original_root(
-        &self,
+        &mut self,
         original: &OriginalRootModelMaterialV1<'_, '_>,
     ) -> Result<Admission, Error> {
         self.require_current()?;

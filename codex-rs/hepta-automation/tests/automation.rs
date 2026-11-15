@@ -1071,6 +1071,27 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     .execute(&mut *rewind)
     .await
     .expect("restore immutable trigger");
+    let legacy_objects: Vec<String> = sqlx::query_scalar(
+        "SELECT type || ':' || name FROM sqlite_schema
+         WHERE name NOT LIKE 'sqlite_%' AND name != '_sqlx_migrations'
+         ORDER BY type, name",
+    )
+    .fetch_all(&mut *rewind)
+    .await
+    .expect("inspect rewound v1 schema");
+    assert_eq!(
+        legacy_objects,
+        vec![
+            "index:automation_due_idx",
+            "index:automation_recovery_idx",
+            "table:automation_meta",
+            "table:automation_runs",
+            "table:automation_tasks",
+            "trigger:automation_meta_no_delete",
+            "trigger:automation_meta_no_update",
+        ],
+        "the migration fixture must contain only v1 schema objects"
+    );
     rewind.commit().await.expect("commit legacy schema rewind");
     pool.close().await;
 

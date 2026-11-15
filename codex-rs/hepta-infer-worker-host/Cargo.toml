@@ -9,6 +9,7 @@ publish = false
 default = []
 local-model-experimental = []
 legacy-local-model-boundary = []
+composition-model-driver-qualification = ["legacy-local-model-boundary"]
 
 [lib]
 name = "codex_hepta_infer_worker_host"

@@ -15,18 +15,23 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
 
-use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+use crate::FinalUseAuthenticationProfile;
 use crate::FinalUseAuthority;
 use crate::FinalUseError;
 use crate::FinalUseGrant;
 use crate::FinalUseRevocations;
 use crate::SignedFinalUseGrant;
+use crate::authority_authentication::PinnedAuthorityKey;
+
+#[path = "final_use_control_pq.rs"]
+mod pq;
+pub use pq::PqFinalUseRevocationNodeTrust;
 
 const APPROVAL_SCHEMA_VERSION: u32 = 1;
 const REVOCATION_FEED_SCHEMA_VERSION: u32 = 2;
@@ -50,7 +55,7 @@ pub struct FinalUseTrustKey {
 #[derive(Clone)]
 struct PinnedControlKey {
     key_id: String,
-    key: VerifyingKey,
+    key: PinnedAuthorityKey,
     not_before_authority_epoch: u64,
     not_after_authority_epoch: u64,
 }
@@ -76,7 +81,7 @@ fn pin_keys(keys: Vec<FinalUseTrustKey>) -> Result<Vec<PinnedControlKey>, FinalU
         }
         pinned.push(PinnedControlKey {
             key_id: candidate.key_id,
-            key,
+            key: PinnedAuthorityKey::Classical(key),
             not_before_authority_epoch: candidate.not_before_authority_epoch,
             not_after_authority_epoch: candidate.not_after_authority_epoch,
         });
@@ -106,7 +111,7 @@ impl FinalUseApproval {
         }
         let grant_sha256 = grant_digest(grant)?;
         Ok(Self {
-            schema_version: APPROVAL_SCHEMA_VERSION,
+            schema_version: grant.schema_version,
             approver_id,
             signer_id: grant.signer_id.clone(),
             grant_id: grant.grant_id.clone(),
@@ -116,7 +121,7 @@ impl FinalUseApproval {
     }
 
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseControlError> {
-        if self.schema_version != APPROVAL_SCHEMA_VERSION
+        if !matches!(self.schema_version, APPROVAL_SCHEMA_VERSION | 2)
             || !identifier(&self.approver_id)
             || !identifier(&self.signer_id)
             || !identifier(&self.grant_id)
@@ -125,7 +130,11 @@ impl FinalUseApproval {
         {
             return Err(FinalUseControlError::InvalidApproval);
         }
-        let mut bytes = b"hepta.kernel.authority.final-use-approval.v1\0".to_vec();
+        let mut bytes = match self.schema_version {
+            1 => b"hepta.kernel.authority.final-use-approval.v1\0".to_vec(),
+            2 => b"hepta.kernel.authority.final-use-approval.pq.v2\0".to_vec(),
+            _ => return Err(FinalUseControlError::InvalidApproval),
+        };
         bytes.extend(serde_json::to_vec(self).map_err(|_| FinalUseControlError::InvalidApproval)?);
         Ok(bytes)
     }
@@ -143,6 +152,7 @@ pub struct SignedFinalUseApproval {
 pub struct FinalUseApprovalVerifier {
     approver_id: String,
     keys: Vec<PinnedControlKey>,
+    profile: FinalUseAuthenticationProfile,
 }
 
 impl fmt::Debug for FinalUseApprovalVerifier {
@@ -152,6 +162,11 @@ impl fmt::Debug for FinalUseApprovalVerifier {
 }
 
 impl FinalUseApprovalVerifier {
+    /// Host-selected signature profile; composed authority owners must agree.
+    pub const fn authentication_profile(&self) -> FinalUseAuthenticationProfile {
+        self.profile
+    }
+
     pub fn new(approver_id: String, verifying_key: [u8; 32]) -> Result<Self, FinalUseControlError> {
         Self::new_with_keys(
             approver_id,
@@ -174,6 +189,7 @@ impl FinalUseApprovalVerifier {
         Ok(Self {
             approver_id,
             keys: pin_keys(keys)?,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
         })
     }
 
@@ -194,7 +210,9 @@ impl FinalUseApprovalVerifier {
         grant: &SignedFinalUseGrant,
         signed: &SignedFinalUseApproval,
     ) -> Result<&str, FinalUseControlError> {
-        if signed.approval.approver_id != self.approver_id
+        if signed.approval.schema_version != self.profile.grant_schema()
+            || grant.grant.schema_version != self.profile.grant_schema()
+            || signed.approval.approver_id != self.approver_id
             || signed.approval.signer_id != grant.grant.signer_id
             || signed.approval.grant_id != grant.grant.grant_id
             || signed.approval.authority_epoch != grant.grant.authority_epoch
@@ -203,13 +221,11 @@ impl FinalUseApprovalVerifier {
             return Err(FinalUseControlError::InvalidApproval);
         }
         let input = signed.approval.signing_bytes()?;
-        let signature = Signature::from_slice(&signed.signature)
-            .map_err(|_| FinalUseControlError::InvalidSignature)?;
         verify_key_ring(
             &self.keys,
             signed.approval.authority_epoch,
             &input,
-            &signature,
+            &signed.signature,
         )
     }
 }
@@ -244,11 +260,14 @@ impl FinalUseRevocationUpdate {
     }
 
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseControlError> {
-        if self.schema_version != REVOCATION_FEED_SCHEMA_VERSION
+        if !matches!(self.schema_version, REVOCATION_FEED_SCHEMA_VERSION | 3)
             || !identifier(&self.distributor_id)
             || self.head.authority_epoch == 0
             || self.head.revision == 0
             || self.head.revoked_grant_ids.len() > MAX_REVOCATIONS
+            || (self.schema_version == 3
+                && self.head.revoked_grant_ids.len()
+                    > FinalUseAuthenticationProfile::MlDsa65V2.max_revocations())
             || !self.head.revoked_grant_ids.iter().all(|id| identifier(id))
             || self.issued_at_unix_ms == 0
             || self.expires_at_unix_ms <= self.issued_at_unix_ms
@@ -256,7 +275,11 @@ impl FinalUseRevocationUpdate {
         {
             return Err(FinalUseControlError::InvalidRevocationUpdate);
         }
-        let mut bytes = b"hepta.kernel.authority.revocation-feed.v2\0".to_vec();
+        let mut bytes = match self.schema_version {
+            2 => b"hepta.kernel.authority.revocation-feed.v2\0".to_vec(),
+            3 => b"hepta.kernel.authority.revocation-feed.pq.v3\0".to_vec(),
+            _ => return Err(FinalUseControlError::InvalidRevocationUpdate),
+        };
         bytes.extend(
             serde_json::to_vec(self).map_err(|_| FinalUseControlError::InvalidRevocationUpdate)?,
         );
@@ -306,7 +329,11 @@ impl FinalUseRevocationAck {
             return Err(FinalUseControlError::InvalidRevocationAck);
         }
         let ack = Self {
-            schema_version: REVOCATION_ACK_SCHEMA_VERSION,
+            schema_version: match update.schema_version {
+                2 => 1,
+                3 => 2,
+                _ => return Err(FinalUseControlError::InvalidRevocationAck),
+            },
             node_id,
             distributor_id: update.distributor_id.clone(),
             authority_epoch: update.head.authority_epoch,
@@ -319,7 +346,7 @@ impl FinalUseRevocationAck {
     }
 
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseControlError> {
-        if self.schema_version != REVOCATION_ACK_SCHEMA_VERSION
+        if !matches!(self.schema_version, REVOCATION_ACK_SCHEMA_VERSION | 2)
             || !identifier(&self.node_id)
             || !identifier(&self.distributor_id)
             || self.authority_epoch == 0
@@ -329,7 +356,11 @@ impl FinalUseRevocationAck {
         {
             return Err(FinalUseControlError::InvalidRevocationAck);
         }
-        let mut bytes = b"hepta.kernel.authority.revocation-ack.v1\0".to_vec();
+        let mut bytes = match self.schema_version {
+            1 => b"hepta.kernel.authority.revocation-ack.v1\0".to_vec(),
+            2 => b"hepta.kernel.authority.revocation-ack.pq.v2\0".to_vec(),
+            _ => return Err(FinalUseControlError::InvalidRevocationAck),
+        };
         bytes.extend(
             serde_json::to_vec(self).map_err(|_| FinalUseControlError::InvalidRevocationAck)?,
         );
@@ -340,7 +371,7 @@ impl FinalUseRevocationAck {
         &self,
         update: &FinalUseRevocationUpdate,
     ) -> Result<(), FinalUseControlError> {
-        if self.schema_version != REVOCATION_ACK_SCHEMA_VERSION
+        if self.schema_version.checked_add(1) != Some(update.schema_version)
             || self.distributor_id != update.distributor_id
             || self.authority_epoch != update.head.authority_epoch
             || self.revision != update.head.revision
@@ -390,6 +421,7 @@ impl FinalUseRevocationConvergenceReport {
 /// Verifies signed host acknowledgements against a closed enrolled-node set.
 pub struct FinalUseRevocationConvergenceVerifier {
     nodes: BTreeMap<String, Vec<PinnedControlKey>>,
+    profile: FinalUseAuthenticationProfile,
 }
 
 impl fmt::Debug for FinalUseRevocationConvergenceVerifier {
@@ -414,7 +446,10 @@ impl FinalUseRevocationConvergenceVerifier {
         if pinned.is_empty() {
             return Err(FinalUseControlError::InvalidRevocationNodeTrust);
         }
-        Ok(Self { nodes: pinned })
+        Ok(Self {
+            nodes: pinned,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
+        })
     }
 
     /// Authenticate the distributor-signed update, then verify all supplied
@@ -427,6 +462,9 @@ impl FinalUseRevocationConvergenceVerifier {
         acknowledgements: &[SignedFinalUseRevocationAck],
         now_unix_ms: u64,
     ) -> Result<FinalUseRevocationConvergenceReport, FinalUseControlError> {
+        if self.profile != feed_verifier.profile {
+            return Err(FinalUseControlError::InvalidTrust);
+        }
         let distributor_trust_key_id = feed_verifier
             .verify_signed(signed_update, now_unix_ms)?
             .to_owned();
@@ -450,9 +488,8 @@ impl FinalUseRevocationConvergenceVerifier {
                 return Err(FinalUseControlError::DuplicateRevocationAck);
             }
             let input = signed.ack.signing_bytes()?;
-            let signature = Signature::from_slice(&signed.signature)
-                .map_err(|_| FinalUseControlError::InvalidSignature)?;
-            let key_id = verify_key_ring(keys, signed.ack.authority_epoch, &input, &signature)?;
+            let key_id =
+                verify_key_ring(keys, signed.ack.authority_epoch, &input, &signed.signature)?;
             acknowledged_key_ids.insert(signed.ack.node_id.clone(), key_id.to_owned());
         }
 
@@ -482,6 +519,7 @@ impl FinalUseRevocationConvergenceVerifier {
 pub struct FinalUseRevocationFeedVerifier {
     distributor_id: String,
     keys: Vec<PinnedControlKey>,
+    profile: FinalUseAuthenticationProfile,
 }
 
 /// Opaque evidence that one authenticated signed revocation update was
@@ -530,6 +568,11 @@ impl fmt::Debug for FinalUseRevocationFeedVerifier {
 }
 
 impl FinalUseRevocationFeedVerifier {
+    /// Host-selected signature profile; composed authority owners must agree.
+    pub const fn authentication_profile(&self) -> FinalUseAuthenticationProfile {
+        self.profile
+    }
+
     pub fn new(
         distributor_id: String,
         verifying_key: [u8; 32],
@@ -555,6 +598,7 @@ impl FinalUseRevocationFeedVerifier {
         Ok(Self {
             distributor_id,
             keys: pin_keys(keys)?,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
         })
     }
 
@@ -567,6 +611,9 @@ impl FinalUseRevocationFeedVerifier {
         signed: &SignedFinalUseRevocationUpdate,
         now_unix_ms: u64,
     ) -> Result<FinalUseRevocationReceipt, FinalUseControlError> {
+        if self.profile != authority.authentication_profile() {
+            return Err(FinalUseControlError::InvalidTrust);
+        }
         let key_id = self.verify_signed(signed, now_unix_ms)?.to_owned();
         authority
             .update_revocations(signed.update.head.clone())
@@ -586,7 +633,9 @@ impl FinalUseRevocationFeedVerifier {
         signed: &SignedFinalUseRevocationUpdate,
         now_unix_ms: u64,
     ) -> Result<&'a str, FinalUseControlError> {
-        if signed.update.distributor_id != self.distributor_id {
+        if signed.update.schema_version != self.profile.feed_schema()
+            || signed.update.distributor_id != self.distributor_id
+        {
             return Err(FinalUseControlError::InvalidRevocationUpdate);
         }
         let input = signed.update.signing_bytes()?;
@@ -596,13 +645,11 @@ impl FinalUseRevocationFeedVerifier {
         if now_unix_ms >= signed.update.expires_at_unix_ms {
             return Err(FinalUseControlError::RevocationFeedStale);
         }
-        let signature = Signature::from_slice(&signed.signature)
-            .map_err(|_| FinalUseControlError::InvalidSignature)?;
         verify_key_ring(
             &self.keys,
             signed.update.head.authority_epoch,
             &input,
-            &signature,
+            &signed.signature,
         )
     }
 }
@@ -611,7 +658,7 @@ fn verify_key_ring<'a>(
     keys: &'a [PinnedControlKey],
     authority_epoch: u64,
     input: &[u8],
-    signature: &Signature,
+    signature: &[u8],
 ) -> Result<&'a str, FinalUseControlError> {
     for candidate in keys {
         if authority_epoch < candidate.not_before_authority_epoch
@@ -619,7 +666,7 @@ fn verify_key_ring<'a>(
         {
             continue;
         }
-        if candidate.key.verify_strict(input, signature).is_ok() {
+        if candidate.key.verify(input, signature) {
             return Ok(&candidate.key_id);
         }
     }

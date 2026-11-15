@@ -1,3 +1,5 @@
+#![cfg(all(test, unix))]
+
 //! Real durable owner fixtures with explicit test signing and clock capabilities.
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;

@@ -1,3 +1,5 @@
+#![cfg(test)]
+
 //! Controlled source/receipt fixtures; these do not claim model execution.
 
 use crate::native_memory_types::*;
