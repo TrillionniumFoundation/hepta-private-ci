@@ -1,0 +1,337 @@
+{
+  "schema": "hepta.learn.isolated-source-preparation-rebinding.v1",
+  "status": "PREPARED_ONLY; no H operation or validation has been performed by this preparation",
+  "fixed_source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "ordinary_acceptance": 0
+  },
+  "old_preparations": {
+    "root29_maintenance_commit": "890c2d9c45e7ea097098be674457a46fb1acc48f",
+    "root29_runner": "82ed93d65b1401feff510688a5a9a5023bdaf388",
+    "root29_contract": "bc199ebef9498430d5db52eb7d4008bd8de5eef4",
+    "fullcaller_commit": "1cb4cefd51814736075af23519f878decf27563b",
+    "fullcaller_wrapper": "28d595a8fabaa7fbb250cc33f70d8e2ad246d346",
+    "fullcaller_recorder": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+    "fullcaller_request": "48430a3f517435ab55e2668bf91a048823b420f2",
+    "fullcaller_contract": "5d710eacf086ae35f08b535ed857b096b3443392",
+    "maintenance_binding": "413321628a957d3f9b3a4900aba60091dd968f84",
+    "existing_documents_modified": false
+  },
+  "isolation": {
+    "selected_repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "actual_creation_receipt": null,
+    "old_repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "required_old_source": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "required_old_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "boundary": "Root's separate reviewed worktree-creation preparation owns establishing the new actual checkout while retaining the old clean a671 checkout. These scripts neither create a checkout nor switch, reset, clean or remove the old one; their fixed source gate must reject any other actual HEAD/tree.",
+    "main_outer_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1",
+    "main_native_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-4537458b51b6-isolated-v1",
+    "actual_main_201_terminal_pass": null,
+    "no_source_result_or_ownership_inferred_from_preparation": true
+  },
+  "native_driver_dependency": {
+    "old": {
+      "sha": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+      "bytes": 13257,
+      "sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1"
+    },
+    "new": {
+      "sha": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+      "bytes": 13265,
+      "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+    },
+    "actual_API_full_readback_both": true,
+    "only_edit": {
+      "line": 9,
+      "before": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\": raise SystemExit(\"unexpected qualification repository\")",
+      "after": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\": raise SystemExit(\"unexpected qualification repository\")"
+    },
+    "entire_forward_and_inverse_equal": true,
+    "changed_semantics": "The existing exact Path(argv[1]).resolve(strict=True) equality is rebound to the explicitly selected new absolute repository. Its strict equality and all other native driver bytes remain.",
+    "original_target_V8_helpers_counts_and_budgets_unchanged": true,
+    "source_suite_driver_unchanged": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+    "native_driver_run_by_this_preparation": false
+  },
+  "root29": {
+    "runner": {
+      "sha": "07a7b440e3b6d8cd23a80ac43b84efbfdc3db392",
+      "bytes": 35123,
+      "sha256": "e2ea4e03052e5028c8e618f55c6625890ca163b5222c7b32e5035027f6a00970"
+    },
+    "diff": {
+      "sha": "07d91e9272064398172041ed8c22cb49f619d1c5",
+      "bytes": 902,
+      "sha256": "1305d30e15b52930a7c3745a12abb6575e4d8d28f3176357a2bba65216b1a0aa"
+    },
+    "exact_edits": [
+      {
+        "label": "repo",
+        "before": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")",
+        "after": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")",
+        "line": 21
+      },
+      {
+        "label": "main_native",
+        "before": "MAIN = EVIDENCE / \"live-owners-full-4537458b51b6-v1\"",
+        "after": "MAIN = EVIDENCE / \"live-owners-full-4537458b51b6-isolated-v1\"",
+        "line": 23
+      },
+      {
+        "label": "native_driver_path",
+        "before": "NATIVE_DRIVER = EVIDENCE / \"unified-4537458b51b6-validation-v1/native-runner.py\"",
+        "after": "NATIVE_DRIVER = EVIDENCE / \"unified-4537458b51b6-isolated-v1/native-runner.py\"",
+        "line": 33
+      },
+      {
+        "label": "actual_native_driver_hash",
+        "before": "NATIVE_DRIVER_SHA256 = \"af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1\"",
+        "after": "NATIVE_DRIVER_SHA256 = \"f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb\"",
+        "line": 34
+      },
+      {
+        "label": "exclusive_output_prefix",
+        "before": "out = EVIDENCE / (\"root-uid-29-4537458b51b6-\" + attempt)",
+        "after": "out = EVIDENCE / (\"root-29-4537458b51b6-isolated-\" + attempt)",
+        "line": 318
+      }
+    ],
+    "forward_and_inverse_entire_file_equal": true,
+    "actual_same_source_201_gate_unchanged": true,
+    "actual_201_pass_receipt": null,
+    "original_29_case_list": "ca34ea80fbc61aee41eebf7b9a996e95b5daa518",
+    "original_57_record_provenance": "65aafb23bf10704b90b2a367cacd98b714e5ce2c",
+    "source_and_tree_unchanged": true,
+    "output_prefix": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/root-29-4537458b51b6-isolated-",
+    "output_for_explicit_v1": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/root-29-4537458b51b6-isolated-v1",
+    "namespace_prefix": "/run/hepta-learn-root29-4537458b51b6-",
+    "namespace_for_explicit_v1": "/run/hepta-learn-root29-4537458b51b6-v1",
+    "namespace_v1_ascii_bytes": 39,
+    "namespace_and_ROOT_SETUP_and_ROOT_UNMOUNT_entire_bytes_unchanged": true,
+    "attempt_rule": "Keep the original mandatory vN argument and actual fresh owned-directory/mount checks. The shown v1 path is the requested intended name, not evidence that it is absent or created.",
+    "actual_namespace_absence_or_ownership_receipt": null,
+    "actual_Root_terminal_receipt": null,
+    "typed_Root29_request": null,
+    "scope": "Original just test/7200s/minimum1/single thread/no retry/strict JUnit29/environment and sudo scopes remain unchanged. Only actual matching root.json terminal evidence can unlock the original scoped cleanup; this document never grants cleanup."
+  },
+  "fullcaller": {
+    "recorder": {
+      "blob": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+      "bytes": 18927,
+      "sha256": "5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171",
+      "exact_embedded_bytes": true,
+      "old_repo_occurrences": 0
+    },
+    "wrapper": {
+      "sha": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+      "bytes": 30466,
+      "sha256": "04e43d69932573017a417f808c77fd72323a918e5b3cf64d9d79a2220f652fac"
+    },
+    "wrapper_diff": {
+      "sha": "1c02056bf1a2e4ed116d05bdfd5e8547277b4d26",
+      "bytes": 653,
+      "sha256": "7723fbad5e0846f50b7aa9bb5f73d067bb599afd08d37e75252f8d9395b14738"
+    },
+    "wrapper_exact_edits": [
+      {
+        "label": "repo",
+        "before": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")",
+        "after": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")",
+        "line": 14
+      },
+      {
+        "label": "exclusive_launch_directory",
+        "before": "LAUNCH = EVIDENCE_PARENT / \"fullcaller-4537458b51b6-launch-v1\"",
+        "after": "LAUNCH = EVIDENCE_PARENT / \"fullcaller-4537458b51b6-isolated-launch-v1\"",
+        "line": 16
+      },
+      {
+        "label": "exclusive_recorder_directory",
+        "before": "RECORDS = EVIDENCE_PARENT / \"fullcaller-4537458b51b6-v1\"",
+        "after": "RECORDS = EVIDENCE_PARENT / \"fullcaller-4537458b51b6-isolated-v1\"",
+        "line": 17
+      },
+      {
+        "label": "request_key",
+        "before": "KEY = \"learn-ce434-4537458b51b6-full-caller-v1\"",
+        "after": "KEY = \"learn-ce434-4537458b51b6-isolated-full-caller-v1\"",
+        "line": 18
+      }
+    ],
+    "wrapper_entire_class_functions_and_entrypoint_unchanged": true,
+    "typed_request": {
+      "sha": "d1ca12201454d42b628ddcbf2a13c9b094b52c93",
+      "bytes": 32962,
+      "sha256": "d5adac44222ba4daa07fdc2249ec6917bc35c02a4d34becdfb5be3f10e89fc6d"
+    },
+    "typed_request_field_changes": [
+      {
+        "field": "args[4]",
+        "before_blob": "28d595a8fabaa7fbb250cc33f70d8e2ad246d346",
+        "after_blob": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+        "full_embedded_wrapper_equal": true
+      },
+      {
+        "field": "idempotency_key",
+        "before": "learn-ce434-4537458b51b6-full-caller-v1",
+        "after": "learn-ce434-4537458b51b6-isolated-full-caller-v1"
+      }
+    ],
+    "typed_request_all_other_fields_unchanged": true,
+    "typed_request_cwd_unchanged": "/home/qian-qi",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "argv_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "launch_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-launch-v1",
+    "records_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1",
+    "request_key": "learn-ce434-4537458b51b6-isolated-full-caller-v1",
+    "actual_request_dispatched": false,
+    "actual_process_receipt": null,
+    "original_commands": [
+      [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ]
+    ],
+    "no_base_argument": true,
+    "original_phase_budgets_seconds": {
+      "self_test": 300,
+      "verify": 4800
+    },
+    "original_output_limit_bytes": 67108864,
+    "observation_polling_limit_seconds": 10800,
+    "exact_inventory": {
+      "source_root_rust_files": 6655,
+      "boundaries": 736,
+      "complete_protected_records": 506
+    },
+    "scope": "The unchanged recorder enforces the actual fixed SHA/tree, original source pins and complete inventory. It records gate failure at original budget/output limits and may continue observing the same child; a later zero exit never changes the earlier failure. The wrapper waits only its original recorder handle and does not claim that a returned recorder necessarily proves the verifier child is terminal.",
+    "original_observation_limit_qualification": "10800 seconds limits active observation. Final prefix hashing and source snapshot may require additional time. No new timeout, signal, kill, retry or process lookup is introduced; external H supervisor behavior is not inferred."
+  },
+  "maintenance": {
+    "binding": {
+      "sha": "7bfb863311ccac5ae2d8253fd868d00973c419db",
+      "bytes": 6538,
+      "sha256": "ea4cc7f5271bf7d4350defb2aa9ecd9a4bd1b917a45b3fbe168754ce6a478030"
+    },
+    "unchanged_static_contract": "c8de8bd8a54552972d73d96be087d9e909c322dc",
+    "unchanged_checklist": "a1c46fa5c0280fecae492b44f7d60803d5d1435e",
+    "exact_field_changes": [
+      {
+        "field": "pre_maintenance_source.worktree",
+        "before": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+        "after": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+      },
+      {
+        "field": "commands[0].cwd",
+        "before": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs",
+        "after": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1/codex-rs"
+      },
+      {
+        "field": "commands[1].cwd",
+        "before": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs",
+        "after": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1/codex-rs"
+      }
+    ],
+    "all_other_binding_bytes_equal_after_inverse": true,
+    "command_argv_unchanged": [
+      [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      [
+        "just",
+        "fmt",
+        "--base",
+        "be8adcbb5e9925f72e05330b8fb30509cba4544b"
+      ]
+    ],
+    "new_tests_after_fix_or_fmt": 0,
+    "actual_validation_receipts": null,
+    "actual_fix_exit": null,
+    "actual_fmt_exit": null,
+    "post_maintenance_source_sha": null,
+    "post_maintenance_source_tree": null,
+    "scope": "Complete all previously required validation first. Then preserve actual source/dirty status, original stdout/stderr/exit and full postimages for the five-package fix followed by fmt --base be8adcbb5e9925f72e05330b8fb30509cba4544b. Do not transfer earlier test passes to changed post-maintenance bytes."
+  },
+  "static_checks": {
+    "root29_5_line_forward_inverse": true,
+    "root29_preserved_blocks": [
+      {
+        "name": "ROOT_SETUP",
+        "byte_equal": true
+      },
+      {
+        "name": "ROOT_UNMOUNT",
+        "byte_equal": true
+      },
+      {
+        "name": "same_source_201_gate",
+        "byte_equal": true
+      },
+      {
+        "name": "root_namespace_and_explicit_attempt",
+        "byte_equal": true
+      },
+      {
+        "name": "actual_terminal_before_cleanup",
+        "byte_equal": true
+      },
+      {
+        "name": "unchanged_finalize_cleanup",
+        "byte_equal": true
+      },
+      {
+        "name": "original_target_v2",
+        "byte_equal": true
+      }
+    ],
+    "fullcaller_4_line_forward_inverse": true,
+    "fullcaller_entire_class_functions_and_entrypoint_equal": true,
+    "request_only_args4_and_key": true,
+    "request_top_level_cwd_unchanged": "/home/qian-qi",
+    "recorder_entire_file_and_embedded_bytes_equal": true,
+    "maintenance_exact_3_repo_values_inverse": true,
+    "original_driver_actual_API_bytes_inverse_equal": true,
+    "namespace_entire_block_equal": true,
+    "namespace_v1_ascii_bytes": 39,
+    "no_executions": true
+  },
+  "claims": {
+    "production_source_edited": false,
+    "PR_changed": false,
+    "H_dispatched": false,
+    "Python_or_Rust_executed": false,
+    "main201_pass": false,
+    "Root29_pass": false,
+    "fullcaller_pass": false,
+    "maintenance_complete": false,
+    "ordinary_acceptance": 0
+  }
+}
