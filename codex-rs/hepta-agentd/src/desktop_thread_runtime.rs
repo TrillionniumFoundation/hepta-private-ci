@@ -13,7 +13,7 @@ fn fenced_response(callback: Value, original_reference: Value, original_operatio
         "original_reference":original_reference,"original_operation":original_operation})
 }
 
-fn response_succeeded(tool: &str, value: &Value) -> bool {
+pub(crate) fn response_succeeded(tool: &str, value: &Value) -> bool {
     if matches!(
         value["status"].as_str(),
         Some("fenced" | "unknown" | "unavailable_or_unknown")
@@ -34,9 +34,60 @@ fn response_succeeded(tool: &str, value: &Value) -> bool {
                 && value["provenance"]["tool"] == original_tool
                 && value["state"] == "Committed"
                 && value["receipt_utf8"].is_string()
+                && current_goal_confirmed(original_tool, value)
         }
         _ => false,
     }
+}
+
+// The original writer has already authenticated this receipt against its
+// operation. Confirm its goal using only this call's independent readback;
+// historical commitment cannot stand in for an absent or changed application.
+fn current_goal_confirmed(original_tool: &str, value: &Value) -> bool {
+    if value["current_state_readback_available"] != true {
+        return false;
+    }
+    let Some(raw) = value["receipt_utf8"].as_str() else {
+        return false;
+    };
+    let (bound, digest_field) = match original_tool {
+        REPLACE_TOOL => (codex_hepta_memory::NOTES_RESPONSE_MAX_BYTES, "text_sha256"),
+        CALCULATOR_EVALUATE_TOOL => (
+            codex_hepta_memory::CALCULATOR_RESPONSE_MAX_BYTES,
+            "state_sha256",
+        ),
+        _ => return false,
+    };
+    if raw.len() > bound {
+        return false;
+    }
+    let Ok(receipt) = serde_json::from_str::<Value>(raw) else {
+        return false;
+    };
+    let result = &receipt["result"];
+    let current = &value["current_state"];
+    let Some(revision) = result["revision"].as_u64() else {
+        return false;
+    };
+    let Some(digest) = result[digest_field].as_str() else {
+        return false;
+    };
+    receipt["schema_version"] == 1
+        && receipt["target"].is_object()
+        && receipt["target"] == value["original_target"]
+        && current["target"] == receipt["target"]
+        && receipt["operation_id"].is_string()
+        && receipt["operation_id"] == value["operation_id"]
+        && result["status"] == "applied"
+        && result["previous_revision"]
+            .as_u64()
+            .and_then(|previous| previous.checked_add(1))
+            == Some(revision)
+        && current["revision"].as_u64() == Some(revision)
+        && codex_hepta_contracts::Sha256Digest::parse(digest).is_ok()
+        && current[digest_field].as_str() == Some(digest)
+        && (original_tool != CALCULATOR_EVALUATE_TOOL
+            || (result["state"].is_object() && current["state"] == result["state"]))
 }
 
 #[cfg(test)]

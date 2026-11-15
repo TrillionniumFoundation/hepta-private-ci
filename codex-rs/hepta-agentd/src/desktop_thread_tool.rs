@@ -31,7 +31,7 @@ mod proof;
 #[path = "desktop_thread_recovery_runtime.rs"]
 mod recovery;
 #[path = "desktop_thread_runtime.rs"]
-mod runtime;
+pub(crate) mod runtime;
 #[path = "desktop_thread_transport.rs"]
 mod transport;
 use arguments::CalculatorArguments;

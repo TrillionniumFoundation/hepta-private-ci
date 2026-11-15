@@ -2,6 +2,9 @@
 
 use super::*;
 use crate::AgentdNotesChannel;
+use crate::notes_action_observer::original_notes_tool_succeeded;
+use crate::notes_thread_tool::REPLACE_TOOL;
+use crate::notes_thread_tool::STATUS_TOOL;
 use codex_hepta_memory::NotesPrivateChannel;
 use pretty_assertions::assert_eq;
 use std::io::BufRead;
@@ -313,6 +316,8 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
     };
     let reply_loss = Arc::new(NotesReplyLossProbe::default());
     let channel_probe = reply_loss.clone();
+    let observation_channel = Arc::new(Mutex::new(None));
+    let retained_channel = Arc::clone(&observation_channel);
     let (operations, identity) = operations
         .with_notes_from_session_test_channel(
             &config,
@@ -320,13 +325,24 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             parent,
             final_use,
             move |effect, recovery| {
-                Ok(
-                    Arc::new(NotesLocalChannel::new(effect, recovery, channel_probe)?)
-                        as Arc<dyn NotesPrivateChannel>,
-                )
+                let channel = Arc::new(NotesLocalChannel::new(effect, recovery, channel_probe)?);
+                *retained_channel
+                    .lock()
+                    .map_err(|_| std::io::Error::other("fixture observation channel lock"))? =
+                    Some(Arc::clone(&channel));
+                Ok(channel as Arc<dyn NotesPrivateChannel>)
             },
         )
         .await?;
+    let channel = observation_channel
+        .lock()
+        .map_err(|error| error.to_string())?
+        .take()
+        .ok_or("missing actual Notes observation channel")?;
+    let observer = crate::AgentdNotesDocumentObserver::new(
+        codex_hepta_memory::ProductionNotesTarget::new(identity.clone(), channel)?
+            .document_observer(),
+    );
     session.instance = Some(identity.session_instance.clone());
     let (host, _) = operations.attach(Arc::new(host)).await?;
     // Private attachment precedes the App's first event-loop iteration. Wait
@@ -394,6 +410,38 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
                 "text_sha256":Sha256Digest::for_bytes(text.as_bytes()).as_str()}
         })
     );
+    let first_original = host
+        .writer()
+        .retained_operation(&queued.occurrence_key)
+        .await?
+        .ok_or("missing first actual Notes operation")?;
+    let first_terminal = host
+        .writer()
+        .retained_notes_terminal_receipt(&queued.occurrence_key)
+        .await?;
+    let first_current = observer.observe_document()?;
+    let first_observation = crate::notes_action_observer::original_notes_status(
+        &first_original,
+        first_terminal.as_deref(),
+        Some(&first_current),
+        /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_owner_actual_notes_application"}),
+        /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(
+        first_observation["action_observation"]["runtime_state"],
+        serde_json::json!({"state":"terminal","outcome":"succeeded"})
+    );
+    // Reuse the production predicate over the actual App readback. This does
+    // not exercise the complete model-facing callback/transport handler.
+    let tool_success = |value: &serde_json::Value| {
+        [
+            original_notes_tool_succeeded(REPLACE_TOOL, value),
+            original_notes_tool_succeeded(STATUS_TOOL, value),
+        ]
+    };
+    let first_tool_success = tool_success(&first_observation);
+    assert_eq!(first_tool_success, [true, true]);
     // A second actual edit proves the original writer's durable receipt ACK
     // released the first pending slot. No app-side receipt is overwritten.
     let second_text = "Hepta durable receipt retired -> second live Notes revision / 中文";
@@ -549,12 +597,173 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         Sha256Digest::for_bytes(&recovered_bytes).as_str()
     );
     assert_eq!(primary_device.installs.load(Ordering::SeqCst), 0);
+    let original = host
+        .writer()
+        .retained_operation(&third_queued.occurrence_key)
+        .await?
+        .ok_or("missing original actual Notes operation")?;
+    let terminal = host
+        .writer()
+        .retained_notes_terminal_receipt(&third_queued.occurrence_key)
+        .await?;
+    let current = observer.observe_document()?;
+    assert_eq!(
+        current,
+        codex_hepta_memory::NotesDocumentState {
+            target: identity.clone(),
+            revision: 3,
+            text_sha256: Sha256Digest::for_bytes(third_text.as_bytes()),
+            receipt_pending: false,
+        }
+    );
+    let act2 = crate::notes_action_observer::original_notes_status(
+        &original,
+        terminal.as_deref(),
+        Some(&current),
+        /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_owner_actual_notes_application"}),
+        /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(
+        act2["action_observation"]["runtime_state"],
+        serde_json::json!({"state":"terminal","outcome":"succeeded"})
+    );
+    let recovered_tool_success = tool_success(&act2);
+    assert_eq!(recovered_tool_success, [true, true]);
+    // Later edits changed the actual document. A historical receipt must not
+    // make the first operation's old goal appear current again.
+    let drift_current = observer.observe_document()?;
+    assert_eq!(drift_current, current);
+    let first_after_edits = crate::notes_action_observer::original_notes_status(
+        &first_original,
+        first_terminal.as_deref(),
+        Some(&drift_current),
+        /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_owner_actual_notes_application"}),
+        /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(
+        serde_json::json!({
+            "historical_effect":first_after_edits["action_observation"]["historical_effect"],
+            "current_goal":first_after_edits["action_observation"]["current_goal"],
+            "runtime_state":first_after_edits["action_observation"]["runtime_state"],
+            "readback_available":first_after_edits["current_document_readback_available"],
+            "receipt":first_after_edits["receipt_utf8"],
+        }),
+        serde_json::json!({
+            "historical_effect":"applied","current_goal":"unsatisfied",
+            "runtime_state":{"state":"unknown"},"readback_available":true,
+            "receipt":first_terminal,
+        })
+    );
+    let drifted_tool_success = tool_success(&first_after_edits);
+    assert_eq!(drifted_tool_success, [false, false]);
+    let mut repeated_observations = Vec::new();
+    let mut repeated_tool_success = Vec::new();
+    for _ in 0..3 {
+        let retained = host
+            .writer()
+            .retained_operation(&third_queued.occurrence_key)
+            .await?
+            .ok_or("missing original operation during repeated observation")?;
+        let retained_terminal = host
+            .writer()
+            .retained_notes_terminal_receipt(&third_queued.occurrence_key)
+            .await?;
+        let fresh = observer.observe_document()?;
+        let repeated = crate::notes_action_observer::original_notes_status(
+            &retained,
+            retained_terminal.as_deref(),
+            Some(&fresh),
+            /*request_sha256*/ None,
+            serde_json::json!({"kind":"fixture_owner_actual_notes_application"}),
+            /*sender_observation_retained*/ None,
+        )?;
+        assert_eq!(repeated, act2);
+        let current_tool_success = tool_success(&repeated);
+        assert_eq!(current_tool_success, [true, true]);
+        assert_eq!(
+            (
+                reply_loss.effect_attempts.load(Ordering::SeqCst),
+                issuer.requests.load(Ordering::SeqCst)
+            ),
+            (3, grants_before_reconciliation)
+        );
+        repeated_tool_success.push(current_tool_success);
+        repeated_observations.push(repeated);
+    }
+    // Close only this test's App, then attempt a real independent read. This
+    // is readback loss, not a durable cancellation or late-commit tombstone.
+    session.cancel_notes()?;
+    let readback_error = observer
+        .observe_document()
+        .err()
+        .ok_or("closed actual Notes App unexpectedly supplied current readback")?;
+    let after_close_original = host
+        .writer()
+        .retained_operation(&third_queued.occurrence_key)
+        .await?
+        .ok_or("missing original operation after App close")?;
+    let after_close_terminal = host
+        .writer()
+        .retained_notes_terminal_receipt(&third_queued.occurrence_key)
+        .await?;
+    assert_eq!(after_close_terminal, terminal);
+    let unavailable = crate::notes_action_observer::original_notes_status(
+        &after_close_original,
+        after_close_terminal.as_deref(),
+        /*current*/ None,
+        /*request_sha256*/ None,
+        serde_json::json!({"kind":"fixture_owner_actual_notes_application"}),
+        /*sender_observation_retained*/ None,
+    )?;
+    assert_eq!(
+        serde_json::json!({
+            "source_state":unavailable["state"],
+            "historical_effect":unavailable["action_observation"]["historical_effect"],
+            "current_goal":unavailable["action_observation"]["current_goal"],
+            "runtime_state":unavailable["action_observation"]["runtime_state"],
+            "readback_available":unavailable["current_document_readback_available"],
+            "current_document":unavailable["current_document"],
+            "receipt":unavailable["receipt_utf8"],
+        }),
+        serde_json::json!({
+            "source_state":"Committed","historical_effect":"applied",
+            "current_goal":"unknown","runtime_state":{"state":"unknown"},
+            "readback_available":false,"current_document":null,"receipt":terminal,
+        })
+    );
+    let unavailable_tool_success = tool_success(&unavailable);
+    assert_eq!(unavailable_tool_success, [false, false]);
+    assert_eq!(
+        (
+            reply_loss.effect_attempts.load(Ordering::SeqCst),
+            issuer.requests.load(Ordering::SeqCst)
+        ),
+        (3, grants_before_reconciliation)
+    );
     let evidence = serde_json::json!({
         "schema_version":1,"profile":"test-issuer-original-owner-real-session-notes",
         "production_authority":false,"native_kernel_qualified":false,"pixels_qualified":false,
         "session_sha256":session_sha256.as_str(),"app_sha256":app_sha256.as_str(),
         "ui_first_frame_unix_ms":first_frame_unix_ms,
         "source_state":receipt.state,"application_receipt":application,
+        "act2_original_owner_current_observation":act2,
+        "act2_first_operation_before_edits":first_observation,
+        "act2_first_operation_after_edits":first_after_edits,
+        "act2_repeated_current_observations":repeated_observations,
+        "act2_after_actual_app_close":unavailable,
+        "act2_actual_readback_error":readback_error.to_string(),
+        "act2_model_tool_success_projection":{
+            "tools":[REPLACE_TOOL,STATUS_TOOL],
+            "complete_model_facing_handler_exercised":false,
+            "first_current_goal":first_tool_success,
+            "recovered_current_goal":recovered_tool_success,
+            "historical_goal_after_edits":drifted_tool_success,
+            "repeated_current_goal":repeated_tool_success,
+            "current_readback_unavailable":unavailable_tool_success,
+        },
+        "notes_durable_tombstone_qualified":false,
         "second_application_receipt":second_application,"receipt_capacity_reused_after_durable_ack":true,
         "bootstrap_schema_version":2,"recovery_transport":"private_unix_datagram",
         "lost_reply_initial_source_state":lost_reply.state,
@@ -574,6 +783,5 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         fs::write(path, serde_json::to_vec_pretty(&evidence)?)?;
     }
     eprintln!("HEPTA_NOTES_ACTUAL_UI_QUALIFICATION={evidence}");
-    session.cancel_notes()?;
     Ok(())
 }
