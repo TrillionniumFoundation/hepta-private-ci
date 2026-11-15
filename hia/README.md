@@ -2,7 +2,7 @@
 
 This directory contains the current HIA implementation and its native build,
 contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **12 compiled modules covering ten algorithm groups**.
+candidate contains **14 compiled modules covering twelve algorithm groups**.
 Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
 The complete Codex rewrite, default release migration, required-platform
 qualification, whole-product performance and legacy retirement remain open.
@@ -28,21 +28,25 @@ complete workspace or a different source tree.
 | `file_update` | LF splitting, chunk/resume planning, search decisions, stable replacement order and reverse overlapping edits. | Rust transports HIA-selected searches and owns storage; preserving updates compose HIA SourceFile. |
 | `parser` | Batch normalization, patch grammar, streaming state, errors, events and affected/source path selection. | Rust materializes AST values; actual PathUri joins remain a host operation. |
 | `patch_effects` | Filesystem operation order, missing-parent retry, committed delta transitions, exactness and removal-error comparison. | Rust performs selected real filesystem calls with the original path, context and options. |
+| `unified_diff` | Line splitting, Myers/Compact/Replace transitions, grouping, context arithmetic and unified-diff bytes. | Rust transports valid strings and materializes HIA-selected output; actual compiler receipts select the supported arithmetic mode. |
+| `patch_summary` | Success header, A/M/D group order, path index and continuation selection. | Rust executes each original `writeln!` separately with the actual `Path::display` and `Write` implementation. |
 
 The patch path composes the native parser, file-update planner, matcher,
-SourceFile owner and effect state machine. The feature-selected adapters use HIA
-for these decisions. PathUri and real filesystem execution, symlink/sandbox
-enforcement, public summary formatting and `similar` unified-diff formatting
-remain host boundaries. The original Rust owners remain available to the
-default platform path and immutable parity tests.
+SourceFile owner, effect state machine, unified formatter and summary selector.
+The feature-selected adapters use HIA for these decisions. PathUri, real
+filesystem execution, symlink/sandbox enforcement, string allocation and the
+public writer's formatting/I/O remain host boundaries. The original Rust owners
+remain available to the default platform path and immutable parity tests.
 
-Eleven native symbols are required in installed full Codex checks, including
-five in apply_patch. The twelfth compiled module, `utf8_boundaries`, has a separate
-qualification entry.
+Thirteen native symbols are required in installed full Codex checks, including
+six in apply_patch. Standalone apply_patch does not call the unified formatter;
+the full Codex verification path does. `utf8_boundaries` has a separate
+qualification entry. These are required checks, not claims that the new installed
+combination has already passed.
 
 ## Native interfaces
 
-The four complete buffer contracts are normative:
+The six complete buffer contracts are normative:
 
 - [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
   trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
@@ -53,6 +57,11 @@ The four complete buffer contracts are normative:
   64-byte event records and explicit streaming state.
 - [Patch effects](patch_effects_buffer_contract.json): 176-byte request, 128-byte
   result, no workspace and explicit callback continuations.
+- [Unified diff](unified_diff_buffer_contract.json): strict and trusted query/emit
+  operations, checked line/span storage, explicit arithmetic policy and semantic
+  panic results.
+- [Patch summary](patch_summary_buffer_contract.json): 64-byte request and result,
+  no workspace, explicit group/index continuation and one selected write effect.
 
 All integer fields in these buffer interfaces are little-endian u64. Their
 capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
@@ -103,6 +112,31 @@ transport/framing errors conservatively mark the known delta prefix inexact;
 ordinary host errors retain the state machine's original exactness decision.
 Continuation validation checks structure and does not authenticate a caller's
 claimed filesystem observations.
+
+The unified formatter preserves Similar 2.7.0's complete line, edit and grouping
+behavior, including LF/CRLF/bare CR, missing final newlines, duplicate lines,
+nonmonotonic coordinates and arithmetic panics at extreme context radii. It does
+not clamp those coordinates or replace the original edit sequence with a
+different but visually similar diff. The source catalog, Apache-2.0 license and
+attribution accompany the native implementation.
+
+The pinned HIA assembly grammar has no comment form. The adjacent
+[adaptation notice](ATTRIBUTION.unified_diff.md), referenced by the contract and
+the repository NOTICE, identifies the translated module and its exact source.
+
+Arithmetic mode is derived from the real pinned compiler/codegen invocation and
+the admitted Similar artifact. Both owners checked and both owners wrapping are
+qualified modes. Mixed policies, unknown compiler chains and LTO are rejected.
+The workspace's default thin-LTO release path therefore remains open. Raw ABI
+coverage of a mode does not qualify that mode for production selection.
+
+The summary selector always requests the header, including for empty path lists,
+then visits added, modified and deleted paths in their original vector order.
+Each selected effect executes the same individual `writeln!` as the original.
+Custom `Write::write_fmt`, partial writes, Interrupted, WriteZero and other writer
+errors retain their original observations and accepted output prefix. The native
+continuation is structural caller-owned state; it does not authenticate a prior
+writer result.
 
 ### String interfaces
 
@@ -162,33 +196,103 @@ static objects or archives across build hosts.
 Selecting `hia-native` on an unsupported target is an error. With the feature
 disabled, the build helper does not read HIA sources or native artifacts.
 
+Before the first native Cargo build, generate the compiler-policy configuration
+for this exact checkout and build. Use absolute paths for the external outputs:
+
+```bash
+python3 -B hia/prepare_unified_diff_policy.py \
+  --repo "$PWD" --rustc "$rustc_binary" \
+  --config "$build_parent/unified-policy/config.json" \
+  --receipt-root "$build_parent/unified-policy/receipts" \
+  --bind-input "$native_output/build.json" \
+  --report "$build_parent/unified-policy/configuration-report.json"
+export RUSTC_WRAPPER="$PWD/hia/similar_policy.py"
+export RUSTC="$rustc_binary"
+export CODEX_HIA_SIMILAR_POLICY_CONFIG="$build_parent/unified-policy/config.json"
+```
+
+Keep this environment for native Cargo builds, `just test`, Clippy and scoped
+`just fix`. Configuration creation qualifies no compiler artifact by itself.
+The wrapper captures and validates the real compiler invocations; the policy
+gate separately checks cached reuse and rejected arrangements. A cached native
+artifact without its matching receipt is rejected. Bind additional effective
+Cargo configuration files with repeated `--bind-input` options.
+
+The repository `just fix` recipe uses the admitted compiler bridge for a
+configured native checkout. Cargo's fix proxy invokes the workspace wrapper
+directly, so the bridge runs the real pinned Clippy compiler through the policy
+helper and validates the artifacts produced by that fix invocation. Every
+compiler call has paired start/completion records; failures and incomplete calls
+are rejected even if Cargo returns zero after reverting an attempted repair.
+Compiler-log identities include the actual source and diagnostic bytes, since
+a repair can change diagnostics while leaving metadata bytes identical.
+
+To require the native owner during a scoped fix, from `codex-rs`:
+
+```bash
+CODEX_HIA_POLICY_FIX_REQUIRE_NATIVE=1 \
+  just fix --locked -p codex-apply-patch --features hia-native
+git diff --exit-code
+```
+
+The command prints the external evidence report path. CI also checks the actual
+fix artifact's arithmetic mode and separately reruns strict all-target Clippy.
+Without a policy configuration, the recipe forwards the original Cargo Clippy
+fix command. The small compiler-chain controls described below do not replace
+the complete Codex owner gates.
+
 ## Qualification
 
-The current twelve-module build reproduces the B1/B2/B3 fixed point. All eleven
-existing HIA sources and static archives match the qualified parent combination.
-The new effect archive also matches the archive exercised by the complete-crate
-prototype. The repository candidate passed `just fmt` without source changes.
+The current fourteen-module build reproduces the B1/B2/B3 fixed point. All twelve
+existing HIA sources and static archives match the qualified effect parent.
+The summary archive matches its exercised prototype. The unified formatter's
+raw and namespaced objects also match its exercised prototype; its canonical
+archive differs only in the ar member name, `hia.o` instead of `unified_diff.o`.
+The current receipt gates exercise that actual canonical archive.
 
-| Current effect qualification | Observed result |
+| Current combination | Observed result |
 | --- | --- |
-| Complete original and native prototype libraries | Thirteen unchanged root-owner tests on each side; native workspace lint/configuration with warnings denied. |
-| Real public API observations | 360 exact original/native pairs, 720 processes, zero skips or mismatches. |
-| Observation scope | Thirty fixed natural filesystem cases, two line-ending modes, two symlink options and three context states; exact output/errors/delta/order plus an independent final tree. |
-| Native transport-error regression | Fourteen public API cases; 95 planner attempts and 88 calls forwarded to the real HIA entry. |
-| Current namespaced raw ABI | 455 calls, 218 error/no-write cases and 128 concurrent calls using unaligned disjoint buffers. |
-| Current source/archive admission | 64 checks for the new module, including every locked module. |
-| Current shared scalar/build admission | 118 checks. |
-| Actual production owner Cargo | Both native and default builds; 101 native and 99 default `just test` cases, zero skips. |
-| Actual production owner lint/fix | Both all-target Clippy modes with warnings denied; scoped `just fix` changed no source. |
+| Native build | Fourteen B3 modules; three identical compiler generations; all twelve inherited static archives unchanged. |
+| Summary raw ABI | 1,328 calls, 157 error/no-write cases, 128 concurrent calls and 125 complete small-count traces; zero skips. |
+| Unified component ABI | 522,858 native calls against fresh complete Similar references, covering original corpora, raw contracts, frontend collisions and word boundaries; zero skips. |
+| Summary and unified source/archive admission | 68 checks for each mutation module, including admission of all fourteen modules. |
+| Shared scalar/build admission | 120 checks. |
+| Fix compiler-chain controls | Actual checked/wrapping `just fix`, each with 17 paired compiler records, two native helper calls and a real fixture repair; nine extended positive controls and eight small-control refusals. |
+| Complete public calls, Cargo, installed callers and CI | Separate gates on this final composition; prior component and parent results do not substitute for them. |
 
-The prototype public gate uses the complete immutable original library and the
-complete candidate library with the actual 666-unit Cargo dependency graph; it is
-a direct-rustc qualification. The current production owner separately passed
-native/default Cargo builds, tests, strict lint and scoped fix; all 9,853 producing
-source paths stayed unchanged. Each actual graph contains 666 library units and
-1,284 admitted artifact files. The portable public gate captures native/default
-Cargo artifacts before compiling observers. That public gate, installed
-executables, wider consumers and the complete CI composition qualify separately.
+The summary prototype passed the 13 unchanged root-owner tests and actual
+workspace lint/configuration with warnings denied. Its public writer matrix
+compared 1,002 complete original/native observations in 2,004 processes, with
+4,022 counted native calls and zero skips or mismatches. It covers the default
+writer and custom `write_fmt`, exact write attempts, partial accepted prefixes,
+all observed errors, duplicate/Unicode/invalid-UTF8 paths and large path values.
+Those complete libraries were compiled by direct rustc against the admitted
+666-unit, 1,284-file Cargo dependency graph; that is not a Cargo build of this
+new combined source tree.
+
+The frozen unified formatter separately passed actual checked and wrapping Cargo
+owner builds, cached receipt reuse, policy rejection tests and strict owner
+Clippy. Its complete immutable-original public comparison passed 3,974 fixtures
+under each of the two supported policies: 7,948 pairs and 15,864 native calls.
+The 1,417 outcomes that differ between checked and wrapping behavior are retained.
+These frozen-prototype results bind their exact source/artifact identities;
+the portable gates must separately qualify the final fourteen-module composition.
+
+The canonical component gate has also run on the actual fourteen-module build,
+binding the current source, contract, objects and archives. It rebuilt the complete
+73-file Similar release into two reference libraries and four observers. Its
+522,858 native calls comprise 109,152 original-corpus calls, 2,490 raw-contract
+calls, 3,136 frontend calls and 408,080 word-boundary calls. This includes 1,082
+error/no-write cases, real line-hash collisions, concurrent calls and the complete
+65-by-65 half-length byte-scan matrix. These are component observations; actual
+production Cargo policy selection and the final public file/chunk adapters remain
+separate gates.
+
+Final source cleanup removes only extra trailing line breaks from eight catalog
+and test files, with identical parsed JSON and Python AST. The helper and CI
+catalog digests are updated together to retain strict byte admission. Earlier
+component and compiler-control reports preserve their original source identities;
+the complete production CI separately qualifies the final source tree.
 
 The three context states are None, a present disabled context and a present
 restricted context without configured sandbox runtime paths. The last observes
@@ -197,12 +301,14 @@ The observer forwards filesystem return values unchanged and injects no filesyst
 or writer errors. Its only transcript normalization replaces exact temporary
 fixture paths, including their recorded hexadecimal encodings.
 
-The immutable parent `2ff44b608a202c25e7551edca67a7a5362f34d36` passed both native
-CI runs: 47/47 steps, 5,375 Cargo tests with six existing skips per run, complete
-original owner comparisons, installed callers, native/default strict lint and
-scoped fixes without source drift. Both uploaded artifact sets and the tested PR
-merge tree were audited. Those results qualify the parent; they do not qualify
-this candidate's newly added filesystem-effect dispatch.
+The immutable effect parent `aeb88f596b83186456caac577080bcb2f253ad32` passed both
+native CI runs: 50/50 steps and 5,375 Cargo tests with six existing skips per run.
+Each run includes 360 complete original/native filesystem-effect pairs, the 13
+unchanged root tests, installed apply_patch/full Codex, native/default strict lint
+and scoped fixes without source drift. Both uploaded artifact sets, their
+complete original snapshots and the tested PR merge tree were audited. Those
+results qualify that parent; the new summary/formatter composition requires its
+own Cargo, public-call, policy, installed and CI results.
 
 [`codex-hia-native.yml`](../.github/workflows/codex-hia-native.yml) is the complete
 executable gate inventory. It preserves existing sandbox checks and exercises
@@ -228,6 +334,8 @@ python3 -B hia/tests/test_file_update_abi.py \
   --library-dir "$native_output" --report "$build_parent/file-update-abi.json"
 python3 -B hia/tests/test_patch_effects_abi.py \
   --library-dir "$native_output" --report "$build_parent/patch-effects-abi.json"
+python3 -B hia/tests/test_patch_summary_abi.py \
+  --library-dir "$native_output" --report "$build_parent/patch-summary-abi.json"
 
 cd codex-rs
 just test -p codex-apply-patch -p codex-utils-string --features hia-native --locked
@@ -253,6 +361,11 @@ python3 -B hia/tests/test_native_patch_effects_caller.py \
   --library-dir "$native_output" --rustc "$rustc_binary" \
   --work-dir "$build_parent/patch-effects-caller" \
   --report "$build_parent/patch-effects-caller.json"
+python3 -B hia/tests/test_native_patch_summary_caller.py \
+  --producer "$PWD" --library-dir "$native_output" \
+  --effects-report "$build_parent/patch-effects-caller.json" \
+  --rustc "$rustc_binary" --work-dir "$build_parent/patch-summary-caller" \
+  --report "$build_parent/patch-summary-caller.json"
 ```
 
 The output directory must be new and outside both source checkouts. The oracle
@@ -260,6 +373,31 @@ compiles the complete pinned original library with actual dependencies and uses
 the actual filesystem API. It retains raw process observations and applies only
 the explicitly defined fixture-path/Debug normalization. Panic-precondition
 observations do not claim post-panic recovery equivalence.
+
+The unified formatter's complete original checkout contains the fixed effect
+parent `aeb88f596b83186456caac577080bcb2f253ad32`. Its public gate extracts all 109
+original crate files from that immutable Git tree. Run its policy and public gates
+serially against an exclusively owned external Cargo target:
+
+```bash
+python3 -B hia/tests/test_unified_diff_policy.py \
+  --library-dir "$native_output" --rustc "$rustc_binary" \
+  --target-dir "$CARGO_TARGET_DIR" \
+  --output-dir "$build_parent/unified-policy-gate" \
+  --report "$build_parent/unified-policy-report.json"
+python3 -B hia/tests/test_native_unified_diff_caller.py \
+  --library-dir "$native_output" --rustc "$rustc_binary" \
+  --original-root "$unified_original_checkout" \
+  --policy-report "$build_parent/unified-policy-report.json" \
+  --target-dir "$CARGO_TARGET_DIR" \
+  --output-dir "$build_parent/unified-public-gate" \
+  --report "$build_parent/unified-public-report.json"
+```
+
+Both supported policies use actual original/native owner libraries. The eight
+policy refusals execute real compiler or Cargo commands. Selected receipt indices
+and one selected metadata artifact are restored after their rejection tests;
+the target must have no concurrent Cargo user during this gate.
 
 The patch-effect oracle also verifies the actual Cargo fingerprint dependency
 chain shared by `serde_json` and the filesystem context type, runs the 13 unchanged
@@ -269,8 +407,10 @@ digits, underscores, dots and hyphens so temporary path normalization stays exac
 this is a test-output precondition, not a production patch-path restriction.
 
 Run `just fmt` after source changes and the scoped `just fix` gate before
-finalizing a large Rust change. Keep build products, logs, dependency snapshots,
-test corpora and publication manifests outside the repository.
+finalizing a large Rust change. Keep build products, logs, generated test corpora,
+runtime observations and publication manifests outside the repository. Retain the
+checksum-pinned original regression inputs and licenses required by the portable
+gates.
 
 ## Remaining work and retirement
 
@@ -278,9 +418,9 @@ All 15 complete capability migrations remain open. In particular, native patch
 computation does not migrate model transport, authentication, turns, persisted
 history, tools/process effects, permissions and sandboxing, MCP, App Server v2,
 CLI/TUI ownership, SDK/frontends, platform release paths or the entire HIA runtime.
-Unified-diff formatting, actual host filesystem execution and filesystem search
-remain outside the current HIA owners. The new state machine moves patch-effect
-decisions into HIA; it does not replace OS operations or sandbox enforcement.
+Actual host filesystem execution, writer formatting/I/O and filesystem search
+remain outside the current HIA owners. Native unified formatting also retains an
+explicit compiler-policy boundary; release/LTO and other platforms remain open.
 
 Retire an implementation only after its replacement owns the intended production
 path and passes original behavior, API/session compatibility, required-platform,
@@ -289,8 +429,9 @@ and build rules together, while retaining required regression fixtures, licenses
 and release assets. The current candidate does not authorize deleting active
 Rust implementations or enabling native dispatch by default.
 
-The parser's 2,480-line, file-update's 1,953-line and patch-effect's 1,365-line
-HIA programs are cohesive compiler inputs. Their documented review exceptions do not turn component
-qualification into whole-product completion. Earlier detailed process records
+The parser's 2,480-line, file-update's 1,953-line, patch-effect's 1,365-line and
+unified formatter's 4,378-line HIA programs are cohesive compiler inputs. Their
+documented review exceptions do not turn component qualification into
+whole-product completion. Earlier detailed process records
 remain bound to their published commits and external evidence; this directory's
 canonical documents describe the current candidate.
