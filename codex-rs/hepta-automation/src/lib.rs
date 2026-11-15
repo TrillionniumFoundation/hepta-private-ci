@@ -13,6 +13,7 @@
 mod effect_executor;
 
 mod action_check;
+mod action_runtime;
 mod action_skill;
 mod action_skill_driver;
 #[cfg(test)]
@@ -58,6 +59,9 @@ pub use action_check::ActionCheckPlanV1;
 pub use action_check::ActionCheckReadbackV1;
 pub use action_check::ActionCheckRecommendationV1;
 pub use action_check::ActionCheckTimeV1;
+pub use action_runtime::ActionRuntimeObservationV1;
+pub use action_runtime::ActionRuntimeStateV1;
+pub use action_runtime::ActionTerminalOutcomeV1;
 pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
 pub use action_skill::ActionCancellationStateV1;
 pub use action_skill::ActionConditionV1;
