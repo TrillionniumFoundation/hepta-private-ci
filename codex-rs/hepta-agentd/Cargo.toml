@@ -11,6 +11,7 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
+composition-model-driver-qualification = ["codex-hepta-infer-worker-host/composition-model-driver-qualification"]
 # Agentd is the named Hepta product host for scoped cognitive mutations. This
 # default is local to the Agentd crate; ordinary Codex/App Server binaries do
 # not enable HeptaCognitiveWrite by default.
@@ -145,3 +146,13 @@ pretty_assertions = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+[[test]]
+name = "generation_neuron_calibration"
+path = "tests/generation_neuron_calibration.rs"
+required-features = ["composition-model-driver-qualification"]
+
+[[test]]
+name = "generation_plasticity_rejection"
+path = "tests/generation_plasticity_rejection.rs"
+required-features = ["composition-model-driver-qualification"]

@@ -42,3 +42,8 @@ core_test_support = { workspace = true }
 
 tempfile = { workspace = true }
 codex-app-server-client = { workspace = true, features = ["test-support"] }
+
+[[test]]
+name = "generation_owner_execution"
+path = "tests/generation_owner_execution.rs"
+required-features = ["composition-model-driver-qualification"]

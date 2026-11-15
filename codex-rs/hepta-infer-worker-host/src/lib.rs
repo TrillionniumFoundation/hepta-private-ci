@@ -17,6 +17,10 @@ pub mod local_model;
 #[cfg(feature = "legacy-local-model-boundary")]
 pub mod model_worker;
 
+/// Registered generation backend using the explicit qualification-only legacy driver.
+#[cfg(feature = "legacy-local-model-boundary")]
+pub mod generation_driver;
+
 /// Composition-aware shared encoder residency seam (qualification only).
 pub mod composition;
 
