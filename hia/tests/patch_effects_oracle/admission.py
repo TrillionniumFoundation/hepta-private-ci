@@ -7,7 +7,13 @@ import re
 from file_update_oracle import cargo, identity
 
 MODULES = ("seek_sequence", "source_file", "file_update", "parser", "patch_effects",
-           "patch_summary")
+           "patch_summary", "patch_application")
+APPLICATION_ROUTING_BLOCKS = {
+    "native-module": "// BEGIN HIA PATCH APPLICATION ROUTING v1: native-module\n#[cfg(feature = \"hia-native\")]\nmod hia_native_patch_application;\n#[cfg(feature = \"hia-native\")]\nuse hia_native_patch_application::apply_hunks_with_options;\n#[cfg(feature = \"hia-native\")]\npub use hia_native_patch_application::apply_patch_with_options;\n// END HIA PATCH APPLICATION ROUTING v1: native-module\n",
+    "legacy-parse-error-import": "// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-parse-error-import\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA PATCH APPLICATION ROUTING v1: legacy-parse-error-import\n",
+    "legacy-patch-function": "// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-patch-function\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA PATCH APPLICATION ROUTING v1: legacy-patch-function\n",
+    "legacy-hunks-function": "// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-hunks-function\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA PATCH APPLICATION ROUTING v1: legacy-hunks-function\n"
+}
 ORIGINAL_LIB_SHA256 = "7daa1b1f7df70220bcc2bd45e5e169246261c689b388fbb030c6b60b9d5db07a"
 ORIGINAL_LIB_BLOB = "1450223f39c2ce2e3ec6709df58a612d681e4b0d"
 ORIGINAL_TESTS = frozenset((
@@ -54,6 +60,13 @@ def recover_lib(producer):
     source = producer / identity.CRATE / "src/lib.rs"
     data = source.read_bytes()
     restored = data
+    for name, block in APPLICATION_ROUTING_BLOCKS.items():
+        encoded = block.encode()
+        require(restored.count(encoded) == 1,
+                "application routing is absent or duplicated: " + name)
+        restored = restored.replace(encoded, b"", 1)
+    require(b"HIA PATCH APPLICATION ROUTING" not in restored,
+            "unreviewed application routing remains")
     native = '#[cfg(feature = "hia-native")]\n'
     legacy = '#[cfg(not(feature = "hia-native"))]\n'
     blocks = [
@@ -106,7 +119,7 @@ def recover_lib(producer):
             (47657, ORIGINAL_LIB_SHA256, ORIGINAL_LIB_BLOB),
             "inverse routing must recover the entire unchanged original lib.rs")
     return {"current_lib_sha256": hashlib.sha256(data).hexdigest(),
-            "exact_routing_rewrites": 26, "restored_bytes": len(restored),
+            "exact_routing_rewrites": 30, "restored_bytes": len(restored),
             "restored_sha256": digest, "restored_git_blob": blob}
 
 
@@ -135,6 +148,8 @@ def native_inputs(producer, library):
         "hia/patch_effects_buffer_contract.json",
         "codex-rs/apply-patch/src/hia_native_patch_summary.rs",
         "hia/patch_summary_buffer_contract.json",
+        "codex-rs/apply-patch/src/hia_native_patch_application.rs",
+        "hia/patch_application_buffer_contract.json",
     ):
         sources[relative] = identity.sha(producer / relative)
     return {"build_report_sha256": identity.sha(report_path),
