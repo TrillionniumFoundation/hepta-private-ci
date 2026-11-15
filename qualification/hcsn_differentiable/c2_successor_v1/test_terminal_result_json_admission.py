@@ -34,9 +34,12 @@ def sha(path):
 def terminal_gate():
     source = Path(__file__).with_name("c2_controller.py")
     tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-    node = next(item for item in tree.body if isinstance(item, ast.FunctionDef)
-                and item.name == "terminal_result_gate")
-    module = ast.Module(body=[node], type_ignores=[])
+    # Extract both real source functions: the terminal gate now requires the
+    # stricter parent/contract JSON decoder after policy-lineage convergence.
+    nodes = [item for item in tree.body if isinstance(item, ast.FunctionDef)
+             and item.name in ("strict_c2_json_object", "terminal_result_gate")]
+    assert any(item.name == "terminal_result_gate" for item in nodes)
+    module = ast.Module(body=nodes, type_ignores=[])
     ns = dict(Path=Path, json=json, math=math, traceback=traceback,
               identity=identity, sha=sha, require=require, hashlib=hashlib)
     exec(compile(module, str(source), "exec"), ns)

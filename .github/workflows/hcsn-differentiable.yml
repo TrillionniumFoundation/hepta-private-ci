@@ -181,6 +181,11 @@ jobs:
           raise SystemExit(0 if result.wasSuccessful() and result.testsRun > 0 and not result.skipped else 1)
           PY
 
+          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_controller_strict_terminal_json.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-controller-strict-terminal-json-tests.log"
+          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_frozen_policy_lineage.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-frozen-policy-lineage-tests.log"
+
       - name: Enforce the predeclared numerical error budget
         id: budget
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
