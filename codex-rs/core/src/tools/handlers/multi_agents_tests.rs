@@ -1509,18 +1509,33 @@ async fn multi_agent_v2_list_agents_returns_completed_status() {
         )
         .await;
 
-    let output = ListAgentsHandlerV2
-        .handle(invocation(
-            session,
-            turn,
-            "list_agents",
-            function_payload(json!({})),
-        ))
-        .await
-        .expect("list_agents should succeed");
-    let (content, success) = expect_text_output(output);
-    let result: ListAgentsResult =
-        serde_json::from_str(&content).expect("list_agents result should be json");
+    // TurnComplete reaches agent control asynchronously. Observe the public
+    // completed state before checking the full agent list, without accepting
+    // a worker that remains "running".
+    let (result, success) = tokio::time::timeout(std::time::Duration::from_secs(5), async {
+        loop {
+            let output = ListAgentsHandlerV2
+                .handle(invocation(
+                    session.clone(),
+                    turn.clone(),
+                    "list_agents",
+                    function_payload(json!({})),
+                ))
+                .await
+                .expect("list_agents should succeed");
+            let (content, success) = expect_text_output(output);
+            let result: ListAgentsResult =
+                serde_json::from_str(&content).expect("list_agents result should be json");
+            if result.agents.iter().any(|agent| {
+                agent.agent_name == "/root/worker" && agent.agent_status == json!({"completed": "done"})
+            }) {
+                break (result, success);
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("worker completion must become observable through list_agents");
 
     let agent_names = result
         .agents
