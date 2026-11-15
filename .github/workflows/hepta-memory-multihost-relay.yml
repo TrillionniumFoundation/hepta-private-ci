@@ -74,7 +74,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
-          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 'cryptography==50.0.2'
           python -m pip check
       - name: Acquire the pinned source decoder for the requested study
@@ -187,7 +187,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
-          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 'cryptography==50.0.2'
           python -m pip check
           python -B scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/base-b" --download

@@ -34,10 +34,11 @@ jobs:
       - name: Install exact previously observed worker package versions
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/previous-span/environment.txt
           mkdir -p /tmp/masked-evidence
           python3 -m venv /tmp/masked-python
-          /tmp/masked-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/masked-python/bin/pip install -r /tmp/previous-span/environment.txt
+          /tmp/masked-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/masked-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/previous-span/environment.txt
           /tmp/masked-python/bin/pip freeze > /tmp/masked-evidence/environment.txt
           diff -u /tmp/previous-span/environment.txt /tmp/masked-evidence/environment.txt
           /tmp/masked-python/bin/python --version > /tmp/masked-evidence/python-version.txt

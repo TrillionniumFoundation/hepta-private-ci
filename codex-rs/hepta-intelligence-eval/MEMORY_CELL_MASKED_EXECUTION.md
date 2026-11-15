@@ -31,13 +31,22 @@ no parameter updates or native recalibration after immutable head reload.
 
 ## Locked execution, not fixture inference
 
-`hepta-memory-masked-span.yml` uses the complete package-version freeze from the
-observed run `37919555733`, compares pip-freeze output exactly, and checks original
-SQuAD bytes plus full ranker and generator inventories against that run. The
-execution step launches a separate Python process with actual pretrained tensors,
+The archived `hepta-memory-masked-span.yml` route used the complete package-version
+freeze from observed run `37919555733`, compared pip-freeze output exactly, and
+checked original SQuAD bytes plus full ranker and generator inventories against
+that run. The execution step launches a separate Python process with actual
+pretrained tensors,
 not unit-test loader substitutes. Inference/optimization is offline after staging.
 Package versions and model/data bytes are pinned; different hosts, Python builds
 or CPU scheduling are not asserted bit-identical hardware environments.
+
+The archived reference freeze contains `torch==2.5.1+cpu`. The current workflow
+runs `scripts/memory_cell/torch_runtime_gate.py` before installing inherited
+requirements and enforces the reviewed Torch 2.10 CPU constraints. It therefore
+rejects this old freeze before installation. Preserve that freeze and its original
+results unchanged. A new executable run needs a reviewed registration with a
+compatible environment freeze and fresh source/model/data provenance; a package
+upgrade alone does not requalify or relabel the historical run.
 
 The planned questions are unchanged: 128 external training, 32 selection, 16
 external evaluation, eight LoCoMo and eight LongMemEval transfer questions. All

@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install 'Pillow==11.3.0'
           python -m unittest -v qualification/stem-cell-v1/test_scienceqa_image_intervention_v7.py
           python -O -m unittest -v qualification/stem-cell-v1/test_scienceqa_image_intervention_v7.py
@@ -95,7 +95,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install 'numpy==1.26.4' 'transformers==4.57.1' 'safetensors==0.6.2' \
             'huggingface-hub==0.35.3' 'tokenizers==0.22.1' 'datasets==3.6.0' \
             'pyarrow==19.0.1' 'Pillow==11.3.0' 'psutil==7.0.0' 'packaging==25.0'

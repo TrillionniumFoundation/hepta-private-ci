@@ -27,7 +27,7 @@ jobs:
           mkdir -p /tmp/memory-adjudication
           git rev-parse HEAD > /tmp/memory-adjudication/exporter-source.txt
           python3 -m venv /tmp/adjudication-python
-          /tmp/adjudication-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/adjudication-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/adjudication-python/bin/pip install -r scripts/memory_cell/requirements.txt
           /tmp/adjudication-python/bin/pip freeze > /tmp/memory-adjudication/python-lock.txt
       - name: Test strict native evidence and handoff boundaries

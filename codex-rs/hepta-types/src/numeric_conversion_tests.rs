@@ -307,3 +307,94 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
         Err(NumericConversionError::UnknownNormalization)
     );
 }
+
+#[test]
+fn registered_admission_receipt_requires_normalization_and_both_profile_definitions() {
+    let normalization = crate::RegistryDefinitionV1::new(
+        crate::RegistryKindV1::Normalization,
+        crate::validate_id("normalization:identity", crate::IdProfileV1::Normalization)
+            .unwrap_or_else(|error| panic!("normalization id fixture failed: {error}")),
+        1,
+        "scale=identity;clamp=none",
+    )
+    .unwrap_or_else(|error| panic!("normalization definition fixture failed: {error}"));
+    let normalization_digest = normalization.digest();
+    let registry = crate::ContractRegistryV1::new_with_numeric_profiles(
+        vec![normalization],
+        vec![
+            crate::NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+                .unwrap_or_else(|error| panic!("source profile fixture failed: {error}")),
+            crate::NumericProfileDefinitionV1::canonical(
+                NumericProfileV1::SignedQ24NearestTiesEven,
+            )
+            .unwrap_or_else(|error| panic!("target profile fixture failed: {error}")),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("contract registry fixture failed: {error}"));
+    let mut source = signal(NumericProfileV1::HnmfPpmTowardZero, vec![1, 2]);
+    source.schema.normalization_digest = normalization_digest;
+    let target = NumericSignalSchemaV1 {
+        profile: NumericProfileV1::SignedQ24NearestTiesEven,
+        ..source.schema.clone()
+    };
+    let (registered_output, registered_receipt) = checked(
+        crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(
+            &source, &target, &registry,
+        ),
+    );
+    assert_eq!(registered_output.schema, target);
+    assert_eq!(
+        registered_receipt.registry_digest,
+        checked(registry.registry_digest())
+    );
+    assert!(!registered_receipt.admission_digest.is_zero());
+    assert_eq!(
+        registered_receipt.conversion.source_profile,
+        NumericProfileV1::HnmfPpmTowardZero
+    );
+    assert_eq!(
+        registered_receipt.conversion.target_profile,
+        NumericProfileV1::SignedQ24NearestTiesEven
+    );
+    let pure_receipt = checked(rescale_signal(&source, &target)).1;
+    assert_eq!(registered_receipt.conversion, pure_receipt);
+
+    let missing_target_profile = crate::ContractRegistryV1::new_with_numeric_profiles(
+        registry.entries().to_vec(),
+        vec![
+            crate::NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+                .unwrap_or_else(|error| panic!("source profile fixture failed: {error}")),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("missing-target registry fixture failed: {error}"));
+    assert_eq!(
+        crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(
+            &source,
+            &target,
+            &missing_target_profile
+        ),
+        Err(NumericConversionError::UnregisteredProfile)
+    );
+
+    let empty = crate::ContractRegistryV1::new_with_numeric_profiles(
+        Vec::new(),
+        registry.numeric_profiles().to_vec(),
+    )
+    .unwrap_or_else(|error| panic!("empty registry fixture failed: {error}"));
+    assert_eq!(
+        crate::numeric_registry_v2::rescale_signal_registered_receipt_v1(&source, &target, &empty),
+        Err(NumericConversionError::UnknownNormalization)
+    );
+}
+
+type RegisteredCompatibilityApi =
+    fn(
+        &NumericSignalV1,
+        &NumericSignalSchemaV1,
+        &ContractRegistryV1,
+    ) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError>;
+
+#[test]
+fn registered_compatibility_api_retains_original_receipt_shape() {
+    let _api: RegisteredCompatibilityApi = rescale_signal_registered;
+}

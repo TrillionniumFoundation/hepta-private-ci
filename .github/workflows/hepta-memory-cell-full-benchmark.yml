@@ -34,7 +34,7 @@ jobs:
       - name: Install pinned worker environment
         run: |
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Stage immutable public inputs and freeze complete coverage before training
         id: plan
@@ -104,7 +104,7 @@ jobs:
           sha256sum -c /tmp/plans/input-archive.sha256
           tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Execute every assigned question using only offline staged models
         env:
@@ -164,7 +164,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
           mkdir -p /tmp/coverage-result
           status=0

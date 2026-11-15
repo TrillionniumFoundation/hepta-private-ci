@@ -149,7 +149,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
           python -m pip install 'transformers==4.57.1' 'peft==0.17.1' 'tokenizers==0.22.2' 'safetensors==0.6.2' 'numpy==1.26.4' 'huggingface-hub==0.35.3' 'accelerate==1.10.1' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-runtime.log"
           python -m pip freeze > "$NATIVE_ARTIFACT_ROOT/runtime-freeze.txt"
       - name: Fixed fresh training and actual Agentd control-socket probe

@@ -100,7 +100,7 @@ jobs:
       - name: Install pinned CPU model runtime
         run: |
           set -euo pipefail
-          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/parametric-metadata/runtime.txt"

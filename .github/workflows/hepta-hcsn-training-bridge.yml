@@ -66,9 +66,9 @@ jobs:
           HCSN_PYTHON="$RUNNER_TEMP/hcsn-training-venv/bin/python"
           echo "$RUNNER_TEMP/hcsn-training-venv/bin" >> "$GITHUB_PATH"
           "$HCSN_PYTHON" -m pip install numpy==2.3.5 scipy==1.17.0 2>&1 | tee "$HCSN_CI_EVIDENCE/numeric-install.log"
-          "$HCSN_PYTHON" -m pip install torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu 2>&1 | tee "$HCSN_CI_EVIDENCE/torch-install.log"
+          "$HCSN_PYTHON" -m pip install torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu 2>&1 | tee "$HCSN_CI_EVIDENCE/torch-install.log"
           "$HCSN_PYTHON" -m pip freeze > "$HCSN_CI_EVIDENCE/python-packages.txt"
-          "$HCSN_PYTHON" -c 'import torch,numpy,scipy; assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.8.0+cpu","2.3.5","1.17.0",None)'
+          "$HCSN_PYTHON" -c 'import torch,numpy,scipy; assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.10.0+cpu","2.3.5","1.17.0",None)'
       - name: Build exact native crates with the repository lockfile
         id: rust_build
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
@@ -250,9 +250,9 @@ jobs:
           HCSN_PYTHON="$RUNNER_TEMP/hcsn-pq-host-venv/bin/python"
           echo "$RUNNER_TEMP/hcsn-pq-host-venv/bin" >> "$GITHUB_PATH"
           "$HCSN_PYTHON" -m pip install numpy==2.3.5 scipy==1.17.0 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/numeric-install.log"
-          "$HCSN_PYTHON" -m pip install torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/torch-install.log"
+          "$HCSN_PYTHON" -m pip install torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/torch-install.log"
           "$HCSN_PYTHON" -m pip freeze > "$RUNNER_TEMP/hcsn-agentd/python-packages.txt"
-          "$HCSN_PYTHON" -c 'import torch,numpy,scipy; assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.8.0+cpu","2.3.5","1.17.0",None)'
+          "$HCSN_PYTHON" -c 'import torch,numpy,scipy; assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.10.0+cpu","2.3.5","1.17.0",None)'
       - name: Compile actual Agentd and exercise provider registration and existing HTTP owner
         id: agentd_tests
         working-directory: codex-rs

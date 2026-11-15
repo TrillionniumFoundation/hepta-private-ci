@@ -46,14 +46,15 @@ jobs:
       - name: Lock the recorded environment and execute every Python regression
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/environment/environment.txt
           mkdir /tmp/preference-evidence
           (cd /tmp/reference && sha256sum -c SHA256SUMS)
           (cd /tmp/factorial && sha256sum -c SHA256SUMS)
           test "$(cat /tmp/reference/tested-commit.txt)" = 40924865e23e5da028cc9a1c589e1a0fcb72adbe
           test "$(cat /tmp/factorial/tested-commit.txt)" = 71c6329b4bcf7febdfd6d97db1557f605ad1f0e1
           python3 -m venv /tmp/preference-python
-          /tmp/preference-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/preference-python/bin/pip install -r /tmp/environment/environment.txt
+          /tmp/preference-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/preference-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/environment/environment.txt
           /tmp/preference-python/bin/pip freeze > /tmp/preference-evidence/environment.txt
           diff -u /tmp/environment/environment.txt /tmp/preference-evidence/environment.txt
           /tmp/preference-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/preference-evidence/tests.log

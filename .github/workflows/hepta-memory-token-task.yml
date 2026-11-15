@@ -41,11 +41,12 @@ jobs:
       - name: Locked package environment and complete regression suite
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/prior-environment/environment.txt
           mkdir -p /tmp/token-evidence
           (cd /tmp/reference && sha256sum -c SHA256SUMS)
           python3 -m venv /tmp/token-python
-          /tmp/token-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/token-python/bin/pip install -r /tmp/prior-environment/environment.txt
+          /tmp/token-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/token-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/prior-environment/environment.txt
           /tmp/token-python/bin/pip freeze > /tmp/token-evidence/environment.txt
           diff -u /tmp/prior-environment/environment.txt /tmp/token-evidence/environment.txt
           /tmp/token-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/token-evidence/tests.log

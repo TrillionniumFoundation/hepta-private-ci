@@ -96,6 +96,8 @@ impl Fixture {
             evaluation_evidence_digest: d("eval"),
             evaluation_authentication_digest: d("auth"),
             evaluation_trust_digest: verifier.trust_digest(),
+            qualification_evidence_digest: d("qualification-evidence"),
+            qualification_publication_digest: d("qualification-publication"),
             frozen_plan_digest: d("plan"),
             minimum_dataset_records: 200,
             minimum_future_window_micros: 10,

@@ -117,9 +117,12 @@ existence is not proposition entailment: unmeasured citation precision is null,
 not 1.0. This unsigned lab keeps `production_qualified` and `superiority_claim`
 false even when a numeric screen passes.
 
-The initial corrected-fixture run at source `b1edf291aa2f76d7f3b9252e04c96e5a051a9ecd`
-(Actions run `37785256105`) found no dynamic-over-static or cell-over-retrieval
-advantage: static cells, dynamic cells and both retrieval arms scored 100% on the
+The initial corrected-fixture run (Actions run `37785256105`) used PR head
+`b1edf291aa2f76d7f3b9252e04c96e5a051a9ecd`. The archived `source-head.txt` records
+the tested merge commit `7e5a6764ff87c920eb7a1d264f99bba2f146ab9c`, and
+`source-tree.txt` records tree `7fdf70c8104b630e14bce7c5df45ad059c1300cb`.
+This run found no dynamic-over-static or cell-over-retrieval advantage: static
+cells, dynamic cells and both retrieval arms scored 100% on the
 synthetic future/retention windows; shared rank 8 scored 96.875%, 95.3125%, 98.4375%
 respectively. All arms scored 100% on the controlled compiler microbenchmark.
 This is a ceiling/insufficient-discrimination result, not a superiority finding.

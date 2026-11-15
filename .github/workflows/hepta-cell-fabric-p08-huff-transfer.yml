@@ -115,7 +115,7 @@ jobs:
       - name: Pin CPU-only Torch and reviewed model loader
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.7.1'
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'transformers==4.53.3' 'huggingface_hub==0.34.4' 'safetensors==0.5.3'
       - uses: actions/download-artifact@v4
         with:

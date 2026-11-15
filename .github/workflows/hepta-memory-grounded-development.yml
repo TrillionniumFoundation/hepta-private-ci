@@ -31,7 +31,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/grounded-evidence
           python3 -m venv /tmp/grounded-python
-          /tmp/grounded-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/grounded-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/grounded-python/bin/pip install -r scripts/memory_cell/requirements.txt
           /tmp/grounded-python/bin/pip freeze > /tmp/grounded-evidence/python-lock.txt
       - name: Run the complete regression set

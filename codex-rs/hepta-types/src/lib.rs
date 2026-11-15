@@ -78,3 +78,28 @@ pub use topology::RuntimeTopologyCandidateV1;
 pub use topology::RuntimeTopologyContractErrorV1;
 pub use topology::RuntimeTopologyDeltaV1;
 pub use topology::RuntimeTopologyOperationV1;
+
+mod ndu_snapshot_ref;
+pub use ndu_snapshot_ref::NduSnapshotRefErrorV1;
+pub use ndu_snapshot_ref::NduSnapshotRefV1;
+
+mod manifests;
+pub mod numeric_registry_v2;
+pub use manifests::ExternalSystemClassV1;
+pub use manifests::ExternalSystemManifestV1;
+pub use manifests::MAX_CLOCK_DOMAIN_BYTES_V1;
+pub use manifests::MAX_CONFIDENCE_PPM_V1;
+pub use manifests::MAX_MANIFEST_ENUM_BYTES_V1;
+pub use manifests::MAX_MANIFEST_TIMESTAMP_BYTES_V1;
+pub use manifests::MAX_MANIFEST_VERSION_BYTES_V1;
+pub use manifests::MAX_OPERATING_UNIT_BYTES_V1;
+pub use manifests::ManifestContractErrorV1;
+pub use manifests::RandomStreamManifestV1;
+pub use manifests::SensorCalibrationManifestV1;
+pub use manifests::SensorClassV1;
+pub use manifests::SensorFailurePolicyV1;
+pub use manifests::SensorOperatingRangeV1;
+pub use manifests::SensorUncertaintyProfileV1;
+pub use manifests::UncertaintyDistributionV1;
+pub use manifests::UtcTimestampV1;
+pub use numeric_conversion::RegisteredNumericConversionReceiptV1;

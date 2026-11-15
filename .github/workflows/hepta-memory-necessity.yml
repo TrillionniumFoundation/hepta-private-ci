@@ -34,10 +34,11 @@ jobs:
       - name: Execute all regressions in the existing locked environment
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/reference-environment/environment.txt
           mkdir -p /tmp/necessity-validation
           python3 -m venv /tmp/necessity-python
-          /tmp/necessity-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/necessity-python/bin/pip install -r /tmp/reference-environment/environment.txt
+          /tmp/necessity-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/necessity-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/reference-environment/environment.txt
           /tmp/necessity-python/bin/pip freeze > /tmp/necessity-validation/environment.txt
           diff -u /tmp/reference-environment/environment.txt /tmp/necessity-validation/environment.txt
           /tmp/necessity-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/necessity-validation/tests.log
@@ -88,6 +89,7 @@ jobs:
       - name: Verify original public corpus and stage immutable frozen reader
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/necessity-data/environment.txt
           (cd /tmp/necessity-data && sha256sum -c SHA256SUMS)
           (cd /tmp/necessity-data/bridge && python3 - <<'PY'
           from pathlib import Path
@@ -100,8 +102,8 @@ jobs:
           PY
           )
           python3 -m venv /tmp/necessity-reader-python
-          /tmp/necessity-reader-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/necessity-reader-python/bin/pip install -r /tmp/necessity-data/environment.txt
+          /tmp/necessity-reader-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/necessity-reader-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/necessity-data/environment.txt
           mkdir -p /tmp/necessity-reader-result
           /tmp/necessity-reader-python/bin/pip freeze > /tmp/necessity-reader-result/environment.txt
           diff -u /tmp/necessity-data/environment.txt /tmp/necessity-reader-result/environment.txt

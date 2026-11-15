@@ -31,7 +31,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/span-evidence
           python3 -m venv /tmp/span-python
-          /tmp/span-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/span-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/span-python/bin/pip install -r scripts/memory_cell/requirements.txt uv==0.8.22
           /tmp/span-python/bin/pip freeze > /tmp/span-evidence/environment.txt
       - name: Check formatting and execute the entire regression suite

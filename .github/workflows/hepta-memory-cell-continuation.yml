@@ -49,7 +49,7 @@ jobs:
       - name: Install pinned CPU model environment
         run: |
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Native adapters and leakage/ablation tests
         run: /tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
@@ -159,7 +159,7 @@ jobs:
           HF_HUB_DISABLE_XET: "1"
         run: |
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
           /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs
           PYTHONPATH=scripts/memory_cell /tmp/mcell-python/bin/python - <<'PY' >> "$GITHUB_ENV"
@@ -210,7 +210,7 @@ jobs:
           HF_HUB_DISABLE_XET: "1"
         run: |
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
           /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py laya /tmp/laya-inputs
       - name: Train actual Laya scorer tensors and retain held-out outputs

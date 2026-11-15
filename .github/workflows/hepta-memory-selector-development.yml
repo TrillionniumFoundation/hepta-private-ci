@@ -26,7 +26,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/selector-evidence
           python3 -m venv /tmp/selector-python
-          /tmp/selector-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/selector-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/selector-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
           /tmp/selector-python/bin/pip freeze > /tmp/selector-evidence/environment.txt
           /tmp/selector-python/bin/pip download --no-deps ruff==0.15.8 -d /tmp/selector-evidence/formatter

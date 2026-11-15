@@ -37,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Freeze all native questions, source identity and unchanged model budgets
         id: plan
@@ -120,7 +120,7 @@ jobs:
           printf '%s  %s\n' "$ARCHIVE_SHA" /tmp/memory-inputs.tar.gz | sha256sum -c -
           tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
           python3 -m venv /tmp/mcell-python
-          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Execute every assigned native question and retain failures
         env:

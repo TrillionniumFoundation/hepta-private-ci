@@ -44,6 +44,14 @@ not a claim of newly observed live memory. All model/package inventories are
 checked against the locked reference; both actual inference and training are
 offline after staging.
 
+The archived reference freeze contains `torch==2.5.1+cpu`. The current workflow
+runs `scripts/memory_cell/torch_runtime_gate.py` before installing inherited
+requirements and enforces the reviewed Torch 2.10 CPU constraints. It therefore
+rejects this old freeze before installation. Preserve that freeze and its original
+results unchanged. A new executable run needs a reviewed registration with a
+compatible environment freeze and fresh source/model/data provenance; a package
+upgrade alone does not requalify or relabel the historical run.
+
 Token training: 512 family/query-balanced steps, learning rate 0.002. Reader:
 192 steps at most, learning rate 0.0002, 65,536 input training tokens at most.
 The selection set is reserved and not used to tune this run. Hyperparameters

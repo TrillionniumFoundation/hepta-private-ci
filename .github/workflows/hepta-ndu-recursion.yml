@@ -59,6 +59,10 @@ jobs:
       - name: Reject new legacy NDU evaluator callers
         run: python3 scripts/hepta-ndu-source-policy.py
 
+      - name: SNG-R affine and nonlinear FBSDE shadow regressions (no activation)
+        run: |
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr*.py'
+
       - name: CTRL-1 finite decision and coordination regressions
         env:
           PYTHONPATH: scripts

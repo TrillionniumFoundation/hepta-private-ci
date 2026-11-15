@@ -36,10 +36,11 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/environment/environment.txt
           mkdir /tmp/bundle-validation
           python3 -m venv /tmp/bundle-python
-          /tmp/bundle-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/bundle-python/bin/pip install -r /tmp/environment/environment.txt
+          /tmp/bundle-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/bundle-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/environment/environment.txt
           /tmp/bundle-python/bin/pip freeze > /tmp/bundle-validation/environment.txt
           diff -u /tmp/environment/environment.txt /tmp/bundle-validation/environment.txt
           /tmp/bundle-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/bundle-validation/tests.log
@@ -103,11 +104,12 @@ jobs:
       - name: Lock packages and stage the immutable reader revision
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/bundle-plan/environment.txt
           (cd /tmp/bundle-plan && sha256sum -c SHA256SUMS)
           mkdir /tmp/bundle-result
           python3 -m venv /tmp/bundle-python
-          /tmp/bundle-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/bundle-python/bin/pip install -r /tmp/bundle-plan/environment.txt
+          /tmp/bundle-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/bundle-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/bundle-plan/environment.txt
           /tmp/bundle-python/bin/pip freeze > /tmp/bundle-result/environment.txt
           diff -u /tmp/bundle-plan/environment.txt /tmp/bundle-result/environment.txt
           /tmp/bundle-python/bin/python scripts/memory_cell/bundle_assets.py stage '${{ matrix.tier }}' /tmp/bundle-model
@@ -157,7 +159,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m venv /tmp/compare-python
-          /tmp/compare-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/compare-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
           for directory in /tmp/readers/*; do (cd "$directory" && sha256sum -c SHA256SUMS); done
           /tmp/compare-python/bin/python scripts/memory_cell/bundle_assets.py collect /tmp/readers /tmp/bundle-plan/plan.json /tmp/bundle-matrix.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

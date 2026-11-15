@@ -93,7 +93,7 @@ jobs:
           python -m pip install --disable-pip-version-check \
             "numpy==2.3.5" "scipy==1.16.3" "pillow==12.0.0"
           python -m pip install --disable-pip-version-check \
-            "torch==2.5.1+cpu" --index-url https://download.pytorch.org/whl/cpu
+            "torch==2.10.0+cpu" --index-url https://download.pytorch.org/whl/cpu
 
       - name: Record the actual runtime and kernel qualification
         run: |
@@ -130,7 +130,7 @@ jobs:
           print(json.dumps(record, sort_keys=True))
           assert sys.version_info[:2] == (3, 11) and platform.system() == "Linux"
           assert os.geteuid() != 0 and record["seccomp_library"]
-          assert torch.__version__ == "2.5.1+cpu" and torch.version.cuda is None
+          assert torch.__version__ == "2.10.0+cpu" and torch.version.cuda is None
           # The original native suite must fail if Landlock is unavailable.
           # This observation grants no skip, fallback, or permission change.
           PY

@@ -33,10 +33,11 @@ jobs:
       - name: Execute all regressions in the pinned reference environment
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/environment/environment.txt
           mkdir -p /tmp/composition-validation
           python3 -m venv /tmp/composition-python
-          /tmp/composition-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/composition-python/bin/pip install -r /tmp/environment/environment.txt
+          /tmp/composition-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/composition-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/environment/environment.txt
           /tmp/composition-python/bin/pip freeze > /tmp/composition-validation/environment.txt
           diff -u /tmp/environment/environment.txt /tmp/composition-validation/environment.txt
           /tmp/composition-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/composition-validation/tests.log
@@ -87,11 +88,12 @@ jobs:
       - name: Verify shared data and stage exact model and package versions
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/composition-data/environment.txt
           (cd /tmp/composition-data && sha256sum -c SHA256SUMS)
           mkdir /tmp/composition-result
           python3 -m venv /tmp/composition-python
-          /tmp/composition-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/composition-python/bin/pip install -r /tmp/composition-data/environment.txt
+          /tmp/composition-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/composition-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/composition-data/environment.txt
           /tmp/composition-python/bin/pip freeze > /tmp/composition-result/environment.txt
           diff -u /tmp/composition-data/environment.txt /tmp/composition-result/environment.txt
           /tmp/composition-python/bin/python scripts/memory_cell/bundle_assets.py stage '${{ matrix.tier }}' /tmp/composition-model

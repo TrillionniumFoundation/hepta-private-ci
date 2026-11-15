@@ -66,10 +66,11 @@ jobs:
       - name: Locked regressions; fixtures are separate from the actual model process
         run: |
           set -euo pipefail
+          python3 -I -S -B scripts/memory_cell/torch_runtime_gate.py --requirements /tmp/reference-environment/environment.txt
           mkdir /tmp/read-path-result
           python3 -m venv /tmp/read-path-python
-          /tmp/read-path-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/read-path-python/bin/pip install -r /tmp/reference-environment/environment.txt
+          /tmp/read-path-python/bin/pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/read-path-python/bin/pip install --constraint scripts/memory_cell/torch_runtime_constraints.txt -r /tmp/reference-environment/environment.txt
           /tmp/read-path-python/bin/pip freeze > /tmp/read-path-result/environment.txt
           diff -u /tmp/reference-environment/environment.txt /tmp/read-path-result/environment.txt
           /tmp/read-path-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/read-path-result/tests.log
