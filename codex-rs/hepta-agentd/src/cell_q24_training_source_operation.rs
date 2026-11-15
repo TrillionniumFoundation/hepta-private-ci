@@ -157,12 +157,16 @@ impl OriginalCellQ24TrainingSourceOperationV1<'_> {
             return Err(Error::Binding("source operation clock moved backwards"));
         }
         verify_original_evidence(&self.config, fresh_now)?;
+        #[cfg(test)]
+        let __root_freeze = crate::cell_q24_training_source::timing::Span::new(2);
         OriginalCellQ24DatasetV1::require_original_freeze_current(
             &self.source.material,
             &self.config,
             fresh_now,
         )
         .map_err(|_| Error::Binding("fresh original source freeze"))?;
+        #[cfg(test)]
+        drop(__root_freeze);
         Ok(())
     }
 }
@@ -197,8 +201,12 @@ impl LiveOwners {
             ));
         }
         verify_original_evidence(config, fresh_now)?;
+        #[cfg(test)]
+        let __root_material_freeze = crate::cell_q24_training_source::timing::Span::new(2);
         OriginalCellQ24DatasetV1::require_original_freeze_current(&material, config, fresh_now)
             .map_err(|_| Error::Binding("fresh original source freeze"))?;
+        #[cfg(test)]
+        drop(__root_material_freeze);
         Ok(material)
     }
 }

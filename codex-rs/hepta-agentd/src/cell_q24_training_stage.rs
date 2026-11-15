@@ -271,6 +271,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let worker_cancellation = SourceLaneCancellation::worker(&cancellation);
         let completed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
+            #[cfg(all(test, target_os = "linux"))]
+            let _root_timing_lane = crate::cell_q24_training_source::timing::Lane::new();
             let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
             #[cfg(target_os = "linux")]
             if owners.source_fenced
@@ -290,6 +292,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             if source.is_some() {
                 SourceLaneCancellationState::bind_source(&worker_cancellation)?;
             }
+            #[cfg(all(test, target_os = "linux"))]
+            let __root_before = crate::cell_q24_training_source::timing::Span::new(6);
             #[cfg(target_os = "linux")]
             let operation = source
                 .as_ref()
@@ -298,6 +302,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 })
                 .transpose()
                 .map_err(CellQ24TrainingOwnerErrorV1::from)?;
+            #[cfg(all(test, target_os = "linux"))]
+            drop(__root_before);
+            #[cfg(all(test, target_os = "linux"))]
+            let __root_work = crate::cell_q24_training_source::timing::Span::new(7);
             let result = {
                 #[cfg(target_os = "linux")]
                 let proof = SourceLaneProof::from_operation(operation.as_ref());
@@ -305,11 +313,15 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 let proof = SourceLaneProof::legacy();
                 work(&mut owners, &proof)
             };
+            #[cfg(all(test, target_os = "linux"))]
+            drop(__root_work);
             // Work or its acknowledgement may already have happened. Read each
             // original Source channel once after work, then physically reread
             // Native and Generator before consuming the borrowed operation.
             #[cfg(target_os = "linux")]
             if let (Some(source), Some(mut operation)) = (source.as_ref(), operation) {
+                #[cfg(all(test, target_os = "linux"))]
+                let __root_after = crate::cell_q24_training_source::timing::Span::new(8);
                 if OriginalCellQ24TrainingSourceOperationV1::read_after_native(
                     &mut operation,
                     source,
@@ -319,18 +331,28 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                     owners.source_fenced = true;
                     return Err(Error::CommitUncertain);
                 }
+                #[cfg(all(test, target_os = "linux"))]
+                drop(__root_after);
+                #[cfg(all(test, target_os = "linux"))]
+                let __root_tail = crate::cell_q24_training_source::timing::Span::new(9);
                 if owners.require_captured_tail_current().is_err()
                     || SourceLaneCancellationState::require_live(&worker_cancellation).is_err()
                 {
                     owners.source_fenced = true;
                     return Err(Error::CommitUncertain);
                 }
+                #[cfg(all(test, target_os = "linux"))]
+                drop(__root_tail);
+                #[cfg(all(test, target_os = "linux"))]
+                let __root_finish = crate::cell_q24_training_source::timing::Span::new(10);
                 OriginalCellQ24TrainingSourceOperationV1::finish(operation, source).map_err(
                     |_| {
                         owners.source_fenced = true;
                         Error::CommitUncertain
                     },
                 )?;
+                #[cfg(all(test, target_os = "linux"))]
+                drop(__root_finish);
             }
             result
         })
@@ -450,12 +472,20 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
         source: &impl OriginalQ24DatasetReadV1,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         let training: &mut CellQ24TrainingOwnerV1<TW> = &mut self.training;
+        #[cfg(all(test, target_os = "linux"))]
+        let __root_receipt = crate::cell_q24_training_source::timing::Span::new(11);
         let (receipt, attestation) = OriginalCellQ24TrainingReceiptOwnerV1::readback_with_source(
             &mut self.receipts,
             training,
             source,
         )?;
+        #[cfg(all(test, target_os = "linux"))]
+        drop(__root_receipt);
+        #[cfg(all(test, target_os = "linux"))]
+        let __root_native = crate::cell_q24_training_source::timing::Span::new(12);
         let outcome = CellQ24TrainingOwnerV1::readback_with_source(training, source)?;
+        #[cfg(all(test, target_os = "linux"))]
+        drop(__root_native);
         Ok(OriginalCellQ24TrainingCompletionV1 {
             outcome,
             receipt,
@@ -497,6 +527,8 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
             &completed.receipt,
         )
         .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+        #[cfg(all(test, target_os = "linux"))]
+        let __root_auth = crate::cell_q24_training_source::timing::Span::new(13);
         self.receipts
             .config
             .verifier
@@ -507,6 +539,8 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
                 super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?,
             )
             .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+        #[cfg(all(test, target_os = "linux"))]
+        drop(__root_auth);
         Ok(())
     }
 }
