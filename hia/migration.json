@@ -80,27 +80,27 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_15_modules_scoped_local_passed_current_ci_pending",
+    "qualification_status": "sixteen_module_artifacts_and_scoped_owner_execution_bound_to_exact_content_current_ci_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Actual fifteen-module local B1/B2/B3 build, exact transferred artifacts and scoped original allowed-prefix owner gates. Fourteen final code files match actual tested bytes; final fix/fmt changed no bytes and no post-fmt tests ran. Current fifteen-module full CLI, Protocol/Core consumers, previous component reruns, whole workspace and platforms remain pending; no whole Policy/Core, performance, default-release or retirement closure.",
+    "qualification_scope": "Exact twenty-file content freeze for scoped Draft publication: eighteen dispatcher files equal actual V3 execution inputs; two formatter files bind 32 component tests. The successful last V7 just fmt and all 9,883 unchanged source files establish the content identity. Additional maintenance job remains UNKNOWN, with no invented completion/staging/diff/tree result. No Codex product compilation/tests were rerun after final fix/fmt; formatter fixtures invoke real rustfmt and Cargo metadata. Current full CLI/Protocol/Core/prior-component and receipt-mutation CI, workspace, platform, performance, default-release and retirement qualification remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "module_count": 15,
+    "module_count": 16,
     "entry_profiles": {
-      "borrowed-buffers-u32-v1": 14,
+      "borrowed-buffers-u32-v1": 15,
       "u64-pair-to-u64-v1": 1
     },
-    "build_report_sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8",
+    "build_report_sha256": "ee2fae74cbb9dcad2d380d9efc3d653351cde067f43e5d01ffde032128d9d36e",
     "build_driver_source_revision": "7fe65ae990187e6ff1130c791f902728b4e50197",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The fourteen borrowed-buffer modules retain their profile."
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The fifteen borrowed-buffer modules retain their profile."
   },
   "candidate_modules": [
     {
@@ -1332,6 +1332,65 @@
         "full_policy_migrated": false,
         "performance_qualified": false
       }
+    },
+    {
+      "id": "command_dispatch",
+      "hia_source": "hia/command_dispatch.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::matches_for_command / check_matches / match_with_heuristics",
+      "implementation_status": "complete_dispatch_algorithm_with_scheduled_original_host_effects",
+      "qualification_status": "scoped_source_bound_local_passed_current_full_cli_core_and_protocol_pending_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_command_dispatch",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "source": "LE u64 version=1 and event tag, 160-byte continuation state, exact event payload. Nine event tags BEGIN through HEURISTIC_READY.",
+        "state": "Magic, phase, flags, command/rule/path counters and indices, resource bits, checked sequence and zero reserved words; no global state.",
+        "path_records": "Rust Path::components discriminant and raw Normal OsStr encoded bytes; HIA owns component/length/byte equality. Linux native profile only, no raw-path parser or UTF-8 normalization.",
+        "output": "Exactly 200 bytes: 160-byte next state, append disposition, cleanup mask, action, operand and zero reserved word.",
+        "success": 0,
+        "invalid_frame_or_state": 4294967295,
+        "short_output": 4294967294,
+        "validation": "Validate full source/state/event/component frame before checking output>=200, then before any output write. Reserved words, phase/action facts, booleans, indices, sequence overflow and exact frame end are checked. Errors do not write. Each accepted event increments sequence once; BEGIN starts at1.",
+        "workspace": "Untouched on every call; source, output and workspace are live disjoint ranges for the synchronous call.",
+        "transport": "512-byte stack frame with checked Vec spill; no native error becomes an unmatched result."
+      },
+      "behavior": {
+        "hia_owns": "Exact/host/fallback routing; ordered rule ordinals, all-path admission and component equality, first equal-path stop, match retention/annotation, cleanup scheduling and fallback invocation decision.",
+        "rust_retains": "Real containers/lookups, arbitrary Rule::matches and heuristic callbacks, owned results, original OS path services, Path::components encoding and check_multiple iterator/AsRef/Drop effects.",
+        "ordering": "Any exact Some suppresses host/fallback, but selected bucket callbacks stay exhaustive and ordered. Missing and present-empty buckets remain distinct. Fallback clones the original command before callback.",
+        "metadata": "Host PrefixRuleMatch gets the resolved program; HeuristicsRuleMatch metadata is retained. Returned owned objects remain independent.",
+        "failure": "Invalid statuses/state/structural replies panic without Rust fallback. Already performed callback effects cannot be rolled back; semantically wrong but structurally valid replies require the real HIA/original differential.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_command_dispatch_abi.py",
+        "hia/tests/test_native_command_dispatch.py",
+        "hia/tests/native_command_dispatch.rs",
+        "hia/tests/native_command_dispatch_effects.rs",
+        "hia/tests/native_command_dispatch_allocations.rs",
+        "hia/tests/native_command_dispatch_failures.rs",
+        "hia/tests/native_command_dispatch_performance.rs",
+        "hia/tests/command_dispatch_fixtures.rs"
+      ],
+      "validation": {
+        "report": "hia/verification.json#command_dispatch_qualification",
+        "raw_calls": 148057,
+        "raw_error_no_write": 6565,
+        "public_comparisons": 33311,
+        "concurrent_comparisons_included": 256,
+        "effect_cases": 14,
+        "allocation_cases": 24,
+        "zero_allocation_cases": 3,
+        "injected_callee_rejections": 33,
+        "prelinked_loader_rejections": 11,
+        "dispatcher_tokens": 459,
+        "whole_policy_tokens": 2372,
+        "token_scope": "Dispatcher tokens overlap the complete original Policy pin; the counts are not additive.",
+        "performance_qualified": false
+      }
     }
   ],
   "capabilities": [
@@ -1459,15 +1518,16 @@
         "filesystem and network isolation",
         "platform sandbox setup and denial behavior"
       ],
-      "next_implementation": "Run exact fifteen-module CI, including the full CLI thirteen-symbol gate, Protocol allowed-prefix consumer, both Core consumers and prior gates; close measured prefix/policy-summary/network-domain/allowed-prefix timing and memory regressions, then migrate remaining policy and platform effects while preserving denial behavior.",
+      "next_implementation": "Run exact sixteen-module full CLI fourteen-symbol, Protocol and Core consumer gates and prior components; close retained timing and allocation regressions, then migrate remaining parser, callback and platform owners without changing effects.",
       "candidate_modules": [
         "prefix_match",
         "prefix_admission",
         "policy_summary",
         "network_domains",
-        "allowed_prefixes"
+        "allowed_prefixes",
+        "command_dispatch"
       ],
-      "partial_scope": "Prefix matching/scalar admission, pure RuleMatch reduction and ordered network-domain reduction retain opt-in HIA owners. allowed_prefixes now owns complete pure Policy::get_allowed_prefixes admission, token rendering, vector ordering and rendered-vector deduplication. Rust retains checked transport, owned Strings, original rule traversal/callbacks, metadata and serialization. Current fifteen-module full CLI/Protocol/Core consumers remain pending CI; whole Policy/Core and platform sandbox ownership remain unmigrated."
+      "partial_scope": "Prefix matching/scalar admission, RuleMatch and network-domain reduction and allowed-prefix collection retain opt-in HIA owners. Command dispatch now owns routing, callback ordinals, path comparison, result retention and effect scheduling. Rust retains storage, callbacks, OS services, owned values and iterator effects. Current whole Policy/Core/platform ownership and full CLI/Protocol/Core qualification remain open."
     },
     {
       "id": "mcp",
@@ -2032,7 +2092,7 @@
       "rust_file_count": 13,
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
-      "partial_scope": "Prefix matching and its scalar count-admission helper have an opt-in native caller; parser, decisions, metadata, default release and complete owner retirement remain Rust-owned or unqualified."
+      "partial_scope": "Five opt-in algorithms cover prefix matching, RuleMatch reduction, network-domain reduction, allowed-prefix collection and command dispatch, with scalar count admission belonging to the prefix algorithm. Parser, arbitrary callbacks, OS services, complete Policy ownership, default release and retirement remain open."
     },
     {
       "manifest": "codex-rs/ext/agent/Cargo.toml",
@@ -3091,7 +3151,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_source_and_artifact_mutation_tests_passed",
+    "status": "current_cargo_link_admission_executed_separate_mutation_suite_pending_ci",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -3107,63 +3167,74 @@
       "prefix_admission",
       "policy_summary",
       "network_domains",
-      "allowed_prefixes"
+      "allowed_prefixes",
+      "command_dispatch"
     ],
     "checks_passed": 70,
-    "build_report_sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8",
+    "build_report_sha256": "ee2fae74cbb9dcad2d380d9efc3d653351cde067f43e5d01ffde032128d9d36e",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "entry_profiles": {
-      "borrowed-buffers-u32-v1": 14,
+      "borrowed-buffers-u32-v1": 15,
       "u64-pair-to-u64-v1": 1
     },
     "scalar_admission_tests": "hia/tests/test_scalar_build_admission.py",
     "scalar_admission_checks_passed": 119,
-    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The fourteen borrowed-buffer modules retain their profile.",
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The fifteen borrowed-buffer modules retain their profile.",
     "receipt_report_sha256": "6d06c6371c6bb98f3c85eaf8bf218a3d58e972caa697ff9b18cec89269b50e6e",
-    "scalar_admission_checks_scope": "119 is retained V4 local evidence; published thirteen-module CI executed 120 and fourteen-module CI 121. This fifteen-module increment executed 70 receipt checks, not the scalar artifact suite again."
+    "scalar_admission_checks_scope": "119 remains the recorded V4 local artifact check count. Published fifteen-module CI ran 122 checks on its exact source; current dispatcher build/link admission does not rerun the scalar artifact suite.",
+    "receipt_checks_recorded_at_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
+    "receipt_checks_apply_to_current_dispatcher_increment": false,
+    "current_receipt_mutation_checks": null,
+    "receipt_count_scope": "Existing checks_passed=70 and its receipt hash belong to the recorded fifteen-module checkpoint. No sixteen-module mutation-suite execution is inferred from actual Cargo link admission."
   },
   "current_qualification": {
-    "report": "hia/verification.json#allowed_prefixes_qualification",
-    "base_revision": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+    "report": "hia/verification.json#command_dispatch_qualification",
+    "base_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
-    "module_count": 15,
-    "borrowed_module_count": 14,
+    "module_count": 16,
+    "borrowed_module_count": 15,
     "scalar_module_count": 1,
-    "configured_production_path_algorithms": 12,
+    "configured_production_path_algorithms": 13,
     "scalar_helpers": [
       "prefix_admission"
     ],
-    "current_installed_standalone_symbols": 3,
-    "expected_full_codex_symbols": 13,
-    "build_receipt_checks": 70,
-    "allowed_prefix_raw_abi_calls": 6118,
-    "original_public_comparisons": 11270,
-    "concurrent_comparisons_included": 512,
-    "entry_observations": 16,
-    "effect_and_panic_cases": 6,
-    "allocation_cases": 31,
-    "zero_allocation_cases": 12,
-    "failure_injection_cases": 35,
-    "ignored_transport_cases": 5,
+    "current_installed_standalone_symbols": 4,
+    "expected_full_codex_symbols": 14,
+    "command_dispatch_raw_abi_calls": 148057,
+    "raw_completed_sessions": 37157,
+    "raw_error_no_write": 6565,
+    "original_public_comparisons": 33311,
+    "concurrent_comparisons_included": 256,
+    "effect_cases": 14,
+    "allocation_cases": 24,
+    "zero_allocation_cases": 3,
+    "failure_injection_cases": 33,
+    "prelinked_admission_rejections": 11,
     "native_execpolicy_tests": 34,
     "default_execpolicy_tests": 34,
     "installed_standalone_cases": 30,
     "installed_standalone_processes": 60,
-    "owner_original_aggregate_passed": false,
-    "owner_artifact_reconciliation_passed": true,
-    "final_source_bytes_match_execution": true,
-    "post_final_fix_fmt_tests_run": false,
+    "strict_default_and_native_passed": true,
+    "runtime_source_files_equal_actual_v3": 18,
+    "separately_checked_formatter_files": 2,
+    "formatter_component_tests": 32,
+    "content_frozen_for_scoped_draft": true,
+    "actual_last_just_fmt_passed": true,
+    "additional_final_maintenance_status": "UNKNOWN",
+    "additional_final_maintenance_passed": false,
+    "post_fix_fmt_product_tests_rerun": false,
     "final_source_ci_qualified": false,
-    "installed_full_codex_cli": "pending_current_fifteen_module_ci",
-    "protocol_allowed_prefix_consumer": "pending_current_fifteen_module_ci",
-    "core_execpolicy_and_network_consumers": "pending_current_fifteen_module_ci",
+    "current_receipt_mutation_suite": "pending_sixteen_module_ci",
+    "installed_full_codex_cli": "pending_current_sixteen_module_ci",
+    "protocol_allowed_prefix_consumer": "pending_current_sixteen_module_ci",
+    "core_execpolicy_and_network_consumers": "pending_current_sixteen_module_ci",
     "whole_workspace_qualified": false,
     "required_platforms_qualified": false,
     "whole_policy_migrated": false,
     "performance_qualified": false,
     "default_release_migrated": false,
     "retirement_ready": false,
-    "performance_scope": "All fourteen measured rows are slower than Rust; single_large takes about 123x total time and 3x logical requested-live peak. All prior negative records remain unchanged."
+    "performance_scope": "All sixteen current native16 timing rows are slower than both original and native15. Full elapsed timings, allocation vectors and historical negative reports remain recorded."
   },
   "historical_qualification": {
     "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
@@ -3230,7 +3301,7 @@
     "applies_to_current_stack_adapter": false,
     "scope": "Exact V3 source: full installed CLI 34+2 with 10 symbols, CLI/arg0/TUI 4474 passed with six reported skips, and Core exec-policy 11 passed with 3870 filtered out. Not current stack CI, complete Core/workspace or retirement evidence."
   },
-  "candidate_module_evidence_scope": "The first fourteen entries retain source-specific evidence. Published fourteen-module CI is immutable history, not behavioral qualification of this fifteen-module candidate. Active allowed-prefix local scope and pending full CLI/Protocol/Core gates are separate.",
+  "candidate_module_evidence_scope": "The first fifteen entries retain their recorded source-specific scope. Published fifteen-module CI is immutable history. Current dispatcher local execution and formatter reconciliation are separate from pending sixteen-module full CLI/Protocol/Core, workspace and platform CI.",
   "published_v4_qualification": {
     "source_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
     "source_tree": "08ca98a7ce509a29c59910c11e10d3a4cdbb1999",
