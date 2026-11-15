@@ -1,0 +1,17 @@
+{
+  "baseline_commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+  "negative_control": {
+    "status": "EXPECTED_FAILURE",
+    "exception": "AttributeError",
+    "message": "'list' object has no attribute 'get'"
+  },
+  "exact_original_source_pin": {
+    "status": "REFUSED",
+    "exception": "ValueError",
+    "message": "Artifact differs from the registered bytes",
+    "baseline_reader_sha256": "fc05736495909ffde054e3a320aae4f5b7b8219050ba4d2de1121fd210f26e57",
+    "baseline_reader_bytes": 31538
+  },
+  "history_rewritten": false,
+  "new_real_experiment_run": false
+}

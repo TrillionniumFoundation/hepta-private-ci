@@ -1,0 +1,180 @@
+{
+  "base_commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+  "full_workspace_checkout": false,
+  "latest_same_reader_and_tests": {
+    "head": "35d3b2f10a16be880a2bf62dca69cafe1c8ead60",
+    "pr": 5640,
+    "reader_and_tests_match_base": true
+  },
+  "lazy_fetch_used": false,
+  "materialized_exact_base_files": [
+    {
+      "git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "path": "AGENTS.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "git_blob_sha1": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "git_blob_sha1": "dbcd8633154a13966c231033a6c07ad8be169c73",
+      "path": ".gitignore",
+      "sha256": "cb7ad0c00bee003f77837a731bdea2539c999bce2333a1fda584f1860e3f5740"
+    },
+    {
+      "git_blob_sha1": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "path": "scripts/format.py",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "git_blob_sha1": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "path": "scripts/just-shell.py",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "git_blob_sha1": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+      "path": "scripts/pyproject.toml",
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+    },
+    {
+      "git_blob_sha1": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "path": "scripts/uv.lock",
+      "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+    },
+    {
+      "git_blob_sha1": "ed9838c71a198fd763913225e54fb7ea8e8d9625",
+      "path": "scripts/ndu_real_runtime/candidate_retention_report.py",
+      "sha256": "fc05736495909ffde054e3a320aae4f5b7b8219050ba4d2de1121fd210f26e57"
+    },
+    {
+      "git_blob_sha1": "5bc0268f4ab25654ec96dfe2d65c57dad1b71bdb",
+      "path": "scripts/ndu_real_runtime/test_candidate_retention_report.py",
+      "sha256": "11feecef4cac50911d77a7435543334f2b5b622f4bf14fbec3416105fca1e730"
+    }
+  ],
+  "prior_attempts": [
+    {
+      "job_id": "1a1c34f92ac-e62c-47a",
+      "status": {
+        "at_unix_ms": 1794278150548,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 1,
+        "job_id": "1a1c34f92ac-e62c-47a",
+        "launch_nonce": "93ebed4f823645bf95ade0b95ea0e135",
+        "log_bytes": {
+          "stderr": {
+            "seen": 118,
+            "stored": 118
+          },
+          "stdout": {
+            "seen": 0,
+            "stored": 0
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "failed",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "streams": {
+        "audit_recorded": true,
+        "job_id": "1a1c34f92ac-e62c-47a",
+        "stderr": {
+          "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737464696e3e222c206c696e6520372c20696e203c6d6f64756c653e0a417373657274696f6e4572726f723a207072656578697374696e6720776f726b74726565206368616e6765730a",
+          "eof": true,
+          "next_offset": 118,
+          "offset": 0,
+          "size": 118,
+          "text": "Traceback (most recent call last):\n  File \"<stdin>\", line 7, in <module>\nAssertionError: preexisting worktree changes\n"
+        },
+        "stdout": {
+          "bytes_hex": "",
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        }
+      }
+    },
+    {
+      "job_id": "1a1c3523e8c-e62c-48c",
+      "status": {
+        "at_unix_ms": 1794278414875,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 128,
+        "job_id": "1a1c3523e8c-e62c-48c",
+        "launch_nonce": "271f2893828f75d278810c619dbee8ab",
+        "log_bytes": {
+          "stderr": {
+            "seen": 273,
+            "stored": 273
+          },
+          "stdout": {
+            "seen": 775,
+            "stored": 775
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "failed",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "streams": {
+        "audit_recorded": true,
+        "job_id": "1a1c3523e8c-e62c-48c",
+        "stderr": {
+          "bytes_hex": "7373683a20636f6e6e65637420746f20686f7374206769746875622e636f6d20706f72742032323a204f7065726174696f6e2074696d6564206f75740d0a666174616c3a20436f756c64206e6f7420726561642066726f6d2072656d6f7465207265706f7369746f72792e0a0a506c65617365206d616b65207375726520796f7520686176652074686520636f727265637420616363657373207269676874730a616e6420746865207265706f7369746f7279206578697374732e0a666174616c3a20636f756c64206e6f7420666574636820633161316239343531373163646232303732336533393863616265366137383838666130616264622066726f6d2070726f6d69736f722072656d6f74650a",
+          "eof": true,
+          "next_offset": 273,
+          "offset": 0,
+          "size": 273,
+          "text": "ssh: connect to host github.com port 22: Operation timed out\r\nfatal: Could not read from remote repository.\n\nPlease make sure you have the correct access rights\nand the repository exists.\nfatal: could not fetch c1a1b945171cdb20723e398cabe6a7888fa0abdb from promisor remote\n"
+        },
+        "stdout": {
+          "bytes_hex": "4420202e62617a656c69676e6f72650a4420202e62617a656c72630a4420202e62617a656c76657273696f6e0a4420202e636f64657370656c6c69676e6f72650a4420202e636f64657370656c6c72630a4420202e636f6465782f656e7669726f6e6d656e74732f656e7669726f6e6d656e742e746f6d6c0a4420202e636f6465782f736b696c6c732f626162797369742d70722f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f626162797369742d70722f6167656e74732f6f70656e61692e79616d6c0a4420202e636f6465782f736b696c6c732f626162797369742d70722f7265666572656e6365732f6769746875622d6170692d6e6f7465732e6d640a4420202e636f6465782f736b696c6c732f626162797369742d70722f7265666572656e6365732f686575726973746963732e6d640a4420202e636f6465782f736b696c6c732f626162797369742d70722f736372697074732f67685f70725f77617463682e70790a4420202e636f6465782f736b696c6c732f626162797369742d70722f736372697074732f746573745f67685f70725f77617463682e70790a4420202e636f6465782f736b696c6c732f636f64652d7265766965772d627265616b696e672d6368616e6765732f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f636f64652d7265766965772d6368616e67652d73697a652f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f636f64652d7265766965772d636f6e746578742f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f636f64652d7265766965772d74657374696e672f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f636f64652d7265766965772f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f636f6465782d70722d626f64792f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f706174682d74797065732f534b494c4c2e6d640a4420202e636f6465782f736b696c6c732f72656d6f74652d74657374732f534b494c4c2e6d640a",
+          "eof": true,
+          "next_offset": 775,
+          "offset": 0,
+          "size": 775,
+          "text": "D  .bazelignore\nD  .bazelrc\nD  .bazelversion\nD  .codespellignore\nD  .codespellrc\nD  .codex/environments/environment.toml\nD  .codex/skills/babysit-pr/SKILL.md\nD  .codex/skills/babysit-pr/agents/openai.yaml\nD  .codex/skills/babysit-pr/references/github-api-notes.md\nD  .codex/skills/babysit-pr/references/heuristics.md\nD  .codex/skills/babysit-pr/scripts/gh_pr_watch.py\nD  .codex/skills/babysit-pr/scripts/test_gh_pr_watch.py\nD  .codex/skills/code-review-breaking-changes/SKILL.md\nD  .codex/skills/code-review-change-size/SKILL.md\nD  .codex/skills/code-review-context/SKILL.md\nD  .codex/skills/code-review-testing/SKILL.md\nD  .codex/skills/code-review/SKILL.md\nD  .codex/skills/codex-pr-body/SKILL.md\nD  .codex/skills/path-types/SKILL.md\nD  .codex/skills/remote-tests/SKILL.md\n"
+        }
+      }
+    }
+  ],
+  "schema": "hepta.reader-remote-recovery.v1"
+}
