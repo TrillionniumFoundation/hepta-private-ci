@@ -1,0 +1,87 @@
+{
+  "schema": "learn.fixed-source-fullcaller-actual-terminal-root-audit.v1",
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "request_blob": "d1ca12201454d42b628ddcbf2a13c9b094b52c93",
+  "wrapper_blob": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+  "recorder_blob": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+  "job_id": "1a1d0a29350-2564-1bac",
+  "idempotency_key": "learn-ce434-4537458b51b6-isolated-full-caller-v1",
+  "actual_status": "FAILED",
+  "self_test": {
+    "actual_child_exit": 0,
+    "original_process_complete": true,
+    "original_budget_seconds": 300
+  },
+  "verify": {
+    "actual_child_exit": 1,
+    "original_process_complete": true,
+    "actual_elapsed_seconds": 1318.145882239798,
+    "original_budget_seconds": 4800,
+    "full_stderr_bytes": 191,
+    "full_stderr_sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+    "original_stdout_recorded_bytes": 0,
+    "signals_sent": []
+  },
+  "h_terminal": {
+    "state": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "cancelled": false
+  },
+  "fixed_source_clean_before_after": true,
+  "whole_result_verify_phase_equals_original_terminal": true,
+  "launch_child_and_original_verifier_exit_distinguished": true,
+  "error": "FAIL_HEPTA_CALLER_PROOF: cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver",
+  "interpretation": "The actual original typed caller verifier rejected an unresolved possible CellQ24ModelProposalOwnerV1::readback receiver in cell_q24_model_current_owner.rs. This is an actual terminal failure within the unchanged 4800-second budget, not an observer cutoff. The complete 191-byte verifier stderr is retained. This record does not claim whole-verifier success, any Rust test execution, ordinary adoption, C consumption, cold restart, or validation of any child SHA.",
+  "ordinary_acceptance": 0,
+  "original_files": [
+    {
+      "key": "fullCallerVerifyStderr",
+      "sha": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d",
+      "bytes": 191,
+      "sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1/verify.stderr.log",
+      "version": "2050:16282225:191:1794502999601459982:1794502999601459982",
+      "filename": "verify.stderr.original.log"
+    },
+    {
+      "key": "fullCallerResult",
+      "sha": "95affec002c5589295c90df4bb943d16ba25ea5e",
+      "bytes": 8333,
+      "sha256": "efb362040344b183071df14dc73cd062eda62456a9a9a13ae7af096ef1d1365a",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1/result.json",
+      "version": "2050:16282327:8333:1794503001007304318:1794503001007304318",
+      "filename": "result.original.json"
+    },
+    {
+      "key": "fullCallerLaunchResult",
+      "sha": "b2cd9eb5354fa2d302d7057d9deee325e29422cd",
+      "bytes": 2705,
+      "sha256": "2842557c682e0c7dd39557063d93f373b863c86582dbb76cd7499be5db616c28",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-launch-v1/launch-result.json",
+      "version": "2050:16282329:2705:1794503001132298398:1794503001145433431",
+      "filename": "launch-result.original.json"
+    },
+    {
+      "key": "fullCallerVerifyTerminal",
+      "sha": "d442b61a89ce1ab3f41e2dac82a21f583fa00479",
+      "bytes": 1423,
+      "sha256": "6d42555a4666a725cb617845f0bb4c668bec243b6283e2fd0b3a99b3e88e0c73",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1/verify.original.json",
+      "version": "2050:16282322:1423:1794502999867425357:1794502999867425357",
+      "filename": "verify.original.json"
+    },
+    {
+      "key": "hStatus",
+      "sha": "e85ea8d9cae8ce3fe2344f7398edd8742b3b18e8",
+      "bytes": 905,
+      "sha256": "60197ee0ba4d917d7f55ec3eda432d2c8bb20a25270a8283c1819b00527c90c7",
+      "operation_id": "74850b4dbe22f1fcdbfb0d25a6894ff905378d7b9fbb5343504ca8b7aef65687",
+      "filename": "h-terminal-status.original-sdk.json"
+    }
+  ]
+}
