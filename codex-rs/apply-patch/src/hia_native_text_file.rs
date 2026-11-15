@@ -1,9 +1,10 @@
 //! Owned storage and byte framing for the HIA SourceFile implementation.
 //!
 //! The native entry owns parsing, preferred endings, replacement selection,
-//! logical-line identity and rendering order. Its query writes a 40-byte plan
-//! header; materialization repeats validation before writing that header and
-//! 32-byte span records. Returned errors write nothing. Both calls borrow live,
+//! logical-line identity and rendering order. A proven storage bound permits
+//! direct materialization; otherwise a 40-byte query header supplies the exact
+//! capacity. Materialization writes that header and 32-byte span records after
+//! complete validation. Returned errors write nothing. Calls borrow live,
 //! disjoint buffers and retain no pointers. All request fields are little-endian
 //! u64 values, and every successful status is zero.
 //!
@@ -11,7 +12,9 @@
 //! preferred, parse_text_id, zero], followed by pool lengths, old line records,
 //! replacement triples and inserted text IDs. Pool IDs 0/1/2 are LF/CRLF/CR.
 //! Parsing borrows the original string as pool 3. Other operations borrow the
-//! concatenated pool bytes. The HIA owner validates UTF-8 and all span boundaries.
+//! concatenated pool bytes. The trusted profile accepts only the valid UTF-8
+//! guaranteed by these Rust strings. HIA still validates the complete frame,
+//! every range and all pool/span boundaries; strict byte operations stay separate.
 //!
 //! Stored spans always refer to one owned text backing. After replacement,
 //! copying the native-selected spans compacts that backing and releases deleted
@@ -24,14 +27,21 @@ use crate::text_file::Replacement;
 const HEADER_SIZE: usize = 40;
 const RECORD_SIZE: usize = 32;
 const LITERALS: &str = "\n\r\n\r";
+const SMALL_PLAN_RECORDS: usize = 256;
 
 #[derive(Clone, Copy)]
 #[repr(u64)]
 enum Operation {
-    Parse = 0,
-    Apply = 2,
-    Texts = 4,
-    Contents = 6,
+    Parse = 8,
+    Apply = 10,
+    Texts = 12,
+    Contents = 14,
+}
+
+struct Request {
+    bytes: Vec<u8>,
+    operation: Operation,
+    record_capacity: Option<usize>,
 }
 
 struct Line {
@@ -85,7 +95,7 @@ fn request(
     lines: &[Line],
     replacements: &[Replacement],
     preferred: u64,
-) -> Vec<u8> {
+) -> Request {
     let inserted = replacements
         .iter()
         .try_fold(0_usize, |count, (_, _, segment)| {
@@ -96,7 +106,37 @@ fn request(
         Operation::Parse => 3,
         Operation::Apply | Operation::Texts | Operation::Contents => 0,
     };
-    let mut bytes = Vec::new();
+    // These bounds describe storage only. HIA still decides every output row.
+    // A parse row consumes at least one input byte, and replacement can retain
+    // at most all existing rows plus the explicitly framed inserted rows.
+    let record_capacity = match operation {
+        Operation::Parse => (pools[3].len() <= SMALL_PLAN_RECORDS).then_some(pools[3].len()),
+        Operation::Apply => lines
+            .len()
+            .checked_add(inserted)
+            .filter(|count| *count <= SMALL_PLAN_RECORDS),
+        Operation::Texts => Some(lines.len()),
+        Operation::Contents => Some(
+            lines
+                .len()
+                .checked_mul(2)
+                .expect("HIA contents record bound overflow"),
+        ),
+    };
+    let frame_size = [
+        (pools.len(), 8),
+        (lines.len(), 32),
+        (replacements.len(), 24),
+        (inserted, 8),
+    ]
+    .into_iter()
+    .try_fold(64_usize, |bytes, (count, width)| {
+        count
+            .checked_mul(width)
+            .and_then(|extra| bytes.checked_add(extra))
+    })
+    .expect("HIA request frame size overflow");
+    let mut bytes = Vec::with_capacity(frame_size);
     for value in [
         operation as u64,
         pools.len() as u64,
@@ -125,13 +165,20 @@ fn request(
     for id in 4..pools.len() {
         push_word(&mut bytes, id as u64);
     }
-    bytes
+    assert_eq!(bytes.len(), frame_size, "HIA request frame size");
+    Request {
+        bytes,
+        operation,
+        record_capacity,
+    }
 }
 
 fn invoke(source: &str, output: &mut [u8], request: &mut [u8]) {
     // SAFETY: these three disjoint allocations remain live and immutably
     // borrowed where required. HIA validates the declared lengths and all
-    // contents before writing any result and retains no pointer after return.
+    // ranges before writing any result and retains no pointer after return.
+    // The private Operation values select the trusted UTF-8 profile: source is
+    // always a valid &str, including concatenated String/Cow<str> pool storage.
     let status = unsafe {
         codex_hia_source_file(
             source.as_ptr(),
@@ -145,25 +192,43 @@ fn invoke(source: &str, output: &mut [u8], request: &mut [u8]) {
     assert_eq!(status, 0, "HIA SourceFile request failed");
 }
 
-fn plan(source: &str, operation: Operation, mut request: Vec<u8>) -> Plan {
-    let mut header = [0_u8; HEADER_SIZE];
-    invoke(source, &mut header, &mut request);
-    let needed = size(word(&header[..8]));
-    let count = size(word(&header[8..16]));
-    let expected = count
+fn plan_size(records: usize) -> usize {
+    records
         .checked_mul(RECORD_SIZE)
         .and_then(|records| records.checked_add(HEADER_SIZE))
-        .unwrap_or_else(|| panic!("HIA plan length overflow"));
-    assert_eq!(needed, expected, "HIA plan framing is invalid");
-    let mut bytes = vec![0_u8; needed];
-    request[..8].copy_from_slice(&(operation as u64 + 1).to_le_bytes());
-    invoke(source, &mut bytes, &mut request);
-    assert_eq!(
-        &bytes[..HEADER_SIZE],
-        &header,
-        "HIA plan changed after query"
-    );
-    let preferred = word(&header[32..40]);
+        .expect("HIA plan length overflow")
+}
+
+fn plan(source: &str, mut request: Request) -> Plan {
+    let emit = (request.operation as u64 + 1).to_le_bytes();
+    let mut bytes = if let Some(capacity) = request.record_capacity {
+        request.bytes[..8].copy_from_slice(&emit);
+        let mut output = vec![0_u8; plan_size(capacity)];
+        invoke(source, &mut output, &mut request.bytes);
+        output
+    } else {
+        let mut header = [0_u8; HEADER_SIZE];
+        invoke(source, &mut header, &mut request.bytes);
+        let needed = size(word(&header[..8]));
+        assert_eq!(needed, plan_size(size(word(&header[8..16]))));
+        let mut output = vec![0_u8; needed];
+        request.bytes[..8].copy_from_slice(&emit);
+        invoke(source, &mut output, &mut request.bytes);
+        assert_eq!(
+            &output[..HEADER_SIZE],
+            &header,
+            "HIA plan changed after query"
+        );
+        output
+    };
+    let needed = size(word(&bytes[..8]));
+    let count = size(word(&bytes[8..16]));
+    assert_eq!(needed, plan_size(count), "HIA plan framing is invalid");
+    assert!(needed <= bytes.len(), "HIA plan exceeded its storage bound");
+    bytes.truncate(needed);
+    let logical_count = size(word(&bytes[16..24]));
+    let total_bytes = size(word(&bytes[24..32]));
+    let preferred = word(&bytes[32..40]);
     assert!(
         (1..=3).contains(&preferred),
         "HIA preferred ending is invalid"
@@ -171,8 +236,8 @@ fn plan(source: &str, operation: Operation, mut request: Vec<u8>) -> Plan {
     Plan {
         bytes,
         count,
-        logical_count: size(word(&header[16..24])),
-        total_bytes: size(word(&header[24..32])),
+        logical_count,
+        total_bytes,
         preferred,
     }
 }
@@ -207,7 +272,7 @@ impl SourceFile {
     pub(super) fn parse(contents: &str) -> Self {
         let pools = ["\n", "\r\n", "\r", contents];
         let query = request(Operation::Parse, &pools, &[], &[], /*preferred*/ 0);
-        let plan = plan(contents, Operation::Parse, query);
+        let plan = plan(contents, query);
         assert_eq!(
             plan.count, plan.logical_count,
             "HIA parsed line count differs"
@@ -228,7 +293,13 @@ impl SourceFile {
             contents.len(),
             "HIA parse byte total differs"
         );
-        let mut backing = String::from(LITERALS);
+        let mut backing = String::with_capacity(
+            LITERALS
+                .len()
+                .checked_add(contents.len())
+                .expect("HIA backing size overflow"),
+        );
+        backing.push_str(LITERALS);
         backing.push_str(contents);
         Self {
             backing,
@@ -246,7 +317,7 @@ impl SourceFile {
             &[],
             self.preferred_ending,
         );
-        let plan = plan(&self.backing, Operation::Texts, query);
+        let plan = plan(&self.backing, query);
         assert_eq!(plan.count, plan.logical_count, "HIA text count differs");
         let mut texts = Vec::with_capacity(plan.count);
         for row in plan.records() {
@@ -261,10 +332,22 @@ impl SourceFile {
         for (_, _, segment) in replacements {
             pools.extend(segment.iter().map(String::as_str));
         }
-        let mut payload = Cow::Borrowed(self.backing.as_str());
-        for text in &pools[4..] {
-            payload.to_mut().push_str(text);
-        }
+        let payload = if pools.len() == 4 {
+            Cow::Borrowed(self.backing.as_str())
+        } else {
+            let capacity = pools[4..]
+                .iter()
+                .try_fold(self.backing.len(), |bytes, text| {
+                    bytes.checked_add(text.len())
+                })
+                .expect("HIA payload size overflow");
+            let mut bytes = String::with_capacity(capacity);
+            bytes.push_str(&self.backing);
+            for text in &pools[4..] {
+                bytes.push_str(text);
+            }
+            Cow::Owned(bytes)
+        };
         let query = request(
             Operation::Apply,
             &pools,
@@ -272,7 +355,7 @@ impl SourceFile {
             replacements,
             self.preferred_ending,
         );
-        let plan = plan(&payload, Operation::Apply, query);
+        let plan = plan(&payload, query);
         assert_eq!(
             plan.count, plan.logical_count,
             "HIA replacement line count differs"
@@ -281,7 +364,13 @@ impl SourceFile {
             plan.preferred, self.preferred_ending,
             "HIA preferred style changed"
         );
-        let mut backing = String::from(LITERALS);
+        let mut backing = String::with_capacity(
+            LITERALS
+                .len()
+                .checked_add(plan.total_bytes)
+                .expect("HIA backing size overflow"),
+        );
+        backing.push_str(LITERALS);
         let mut lines = Vec::with_capacity(plan.count);
         for row in plan.records() {
             assert!(row[0] >= 3, "HIA replacement selected a literal pool");
@@ -310,7 +399,7 @@ impl SourceFile {
             &[],
             self.preferred_ending,
         );
-        let plan = plan(&self.backing, Operation::Contents, query);
+        let plan = plan(&self.backing, query);
         assert_eq!(
             plan.logical_count,
             self.lines.len(),

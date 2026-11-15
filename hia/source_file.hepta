@@ -11,7 +11,13 @@ block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf)
   branch value_7 metadata(entry_source,entry_output,entry_workspace) short()
 block metadata(metadata_source:readbuf,metadata_output:mutbuf,metadata_workspace:mutbuf)
   valid_metadata_8:bool = call(metadata_source,metadata_workspace) {"function":"valid_metadata"}
-  branch valid_metadata_8 utf8(metadata_source,metadata_output,metadata_workspace) invalid()
+  branch valid_metadata_8 profile(metadata_source,metadata_output,metadata_workspace) invalid()
+block profile(profile_source:readbuf,profile_output:mutbuf,profile_workspace:mutbuf)
+  operation_offset:usize = const() {"value":0}
+  operation:u64 = buffer.load.u64.le(profile_workspace,operation_offset)
+  trusted_flag:u64 = const() {"value":8}
+  trusted:bool = compare.ge(operation,trusted_flag)
+  branch trusted boundaries(profile_source,profile_output,profile_workspace) utf8(profile_source,profile_output,profile_workspace)
 block utf8(utf8_source:readbuf,utf8_output:mutbuf,utf8_workspace:mutbuf)
   valid_utf8_9:bool = call(utf8_source) {"function":"valid_utf8"}
   branch valid_utf8_9 boundaries(utf8_source,utf8_output,utf8_workspace) bad_utf8()
@@ -44,8 +50,10 @@ block publish(publish_source:readbuf,publish_output:mutbuf,publish_workspace:mut
   constant_31:u64 = const() {"value":0}
   value_32:usize = int.cast(constant_31) {"mode":"wrap"}
   value_33:u64 = buffer.load.u64.le(publish_workspace,value_32)
+  operation_mask:u64 = const() {"value":7}
+  base_operation:u64 = bit.and(value_33,operation_mask)
   constant_34:u64 = const() {"value":6}
-  value_35:bool = compare.ge(value_33,constant_34)
+  value_35:bool = compare.ge(base_operation,constant_34)
   constant_36:u64 = const() {"value":16}
   value_37:usize = int.cast(constant_36) {"mode":"wrap"}
   value_38:u64 = buffer.load.u64.le(publish_workspace,value_37)
@@ -127,7 +135,7 @@ block entry(entry_source:readbuf,entry_workspace:mutbuf)
   value_25:usize = buffer.len(entry_workspace)
   value_26:u64 = int.cast(value_25) {"mode":"wrap"}
   constant_27:u64 = const() {"value":64}
-  constant_28:u64 = const() {"value":7}
+  constant_28:u64 = const() {"value":15}
   value_29:bool = compare.le(value_3,constant_28)
   value_30:bool = compare.eq(value_24,constant_1)
   value_31:bool = bool.and(value_29,value_30)
@@ -148,7 +156,9 @@ block entry(entry_source:readbuf,entry_workspace:mutbuf)
   constant_46:u64 = const() {"value":4}
   value_47:bool = compare.ge(value_6,constant_46)
   value_48:bool = bool.and(value_45,value_47)
-  branch value_48 header(entry_source,entry_workspace,value_3,value_6,value_9,value_12,value_15,value_18,value_21) invalid()
+  operation_mask:u64 = const() {"value":7}
+  base_operation:u64 = bit.and(value_3,operation_mask)
+  branch value_48 header(entry_source,entry_workspace,base_operation,value_6,value_9,value_12,value_15,value_18,value_21) invalid()
 block header(header_source:readbuf,header_workspace:mutbuf,header_op:u64,header_pools:u64,header_lines:u64,header_reps:u64,header_inserted:u64,header_pref:u64,header_pid:u64)
   constant_49:bool = const() {"value":true}
   constant_50:u64 = const() {"value":64}
@@ -614,8 +624,10 @@ block entry(entry_source:readbuf,entry_workspace:mutbuf)
   constant_1:u64 = const() {"value":0}
   value_2:usize = int.cast(constant_1) {"mode":"wrap"}
   value_3:u64 = buffer.load.u64.le(entry_workspace,value_2)
+  operation_mask:u64 = const() {"value":7}
+  base_operation:u64 = bit.and(value_3,operation_mask)
   constant_4:u64 = const() {"value":2}
-  value_5:bool = compare.lt(value_3,constant_4)
+  value_5:bool = compare.lt(base_operation,constant_4)
   branch value_5 valid() pools(entry_source,entry_workspace,constant_1,constant_1)
 block pools(pools_source:readbuf,pools_workspace:mutbuf,pools_index:u64,pools_end:u64)
   constant_6:u64 = const() {"value":8}
@@ -1121,9 +1133,11 @@ block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf,entr
   constant_1:u64 = const() {"value":0}
   value_2:usize = int.cast(constant_1) {"mode":"wrap"}
   value_3:u64 = buffer.load.u64.le(entry_workspace,value_2)
+  operation_mask:u64 = const() {"value":7}
+  base_operation:u64 = bit.and(value_3,operation_mask)
   constant_4:u64 = const() {"value":2}
-  value_5:bool = compare.lt(value_3,constant_4)
-  branch value_5 parse(entry_source,entry_output,entry_emit) state(entry_workspace,entry_output,entry_emit,value_3)
+  value_5:bool = compare.lt(base_operation,constant_4)
+  branch value_5 parse(entry_source,entry_output,entry_emit) state(entry_workspace,entry_output,entry_emit,base_operation)
 block parse(parse_source:readbuf,parse_output:mutbuf,parse_emit:bool)
   plan_parse_6:u64,plan_parse_7:u64,plan_parse_8:u64 = call(parse_source,parse_output,parse_emit) {"function":"plan_parse"}
   ret(plan_parse_6,plan_parse_7,plan_parse_8)
