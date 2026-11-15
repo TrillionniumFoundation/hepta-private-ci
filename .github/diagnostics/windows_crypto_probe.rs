@@ -226,6 +226,11 @@ fn panic(_: &core::panic::PanicInfo<'_>) -> ! {
 
 // LLVM may lower zeroing/copies to these symbols. Keep the probe independent of
 // the CRT, and use volatile byte accesses so these definitions do not recurse.
+/// Fills the destination with the low byte of `value`.
+///
+/// # Safety
+/// For nonzero `size`, `dst` must be valid for writes of `size` bytes, and no
+/// concurrent access may conflict with those writes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn memset(dst: *mut u8, value: i32, size: usize) -> *mut u8 {
     for index in 0..size {
@@ -234,6 +239,12 @@ pub unsafe extern "C" fn memset(dst: *mut u8, value: i32, size: usize) -> *mut u
     dst
 }
 
+/// Copies `size` bytes between nonoverlapping regions.
+///
+/// # Safety
+/// For nonzero `size`, `src` must be valid for reads and `dst` for writes of
+/// `size` bytes. The regions must not overlap, and no concurrent access may
+/// conflict with the reads or writes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn memcpy(dst: *mut u8, src: *const u8, size: usize) -> *mut u8 {
     for index in 0..size {

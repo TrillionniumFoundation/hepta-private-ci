@@ -151,20 +151,26 @@ struct HandleKey {
     handle: isize,
     object_type: u32,
     access: u32,
+    attributes: u32,
+    basic_available: bool,
 }
 
 const EMPTY: HandleKey = HandleKey {
     handle: 0,
     object_type: 0,
     access: 0,
+    attributes: 0,
+    basic_available: false,
 };
 const HANDLE_LIMIT: usize = 64;
 const REPORT_LIMIT: usize = 24;
+const QUERY_REPORT_LIMIT: usize = 8;
 
 pub(super) struct Handles {
     entries: [HandleKey; HANDLE_LIMIT],
     len: usize,
     complete: bool,
+    missing_basic: usize,
 }
 
 impl Handles {
@@ -173,6 +179,7 @@ impl Handles {
             entries: [EMPTY; HANDLE_LIMIT],
             len: 0,
             complete: false,
+            missing_basic: 0,
         };
         let mut snapshot = 0;
         // PSS_CAPTURE_HANDLES | PSS_CAPTURE_HANDLE_BASIC_INFORMATION only:
@@ -188,6 +195,7 @@ impl Handles {
         if status == 0 {
             let query = unsafe { GetProcAddress(ntdll, c"NtQueryObject".as_ptr().cast()) };
             let mut differences = 0;
+            let mut fallback_count = 0;
             loop {
                 // All fields, including unused union storage, start initialized.
                 let mut entry: HandleEntry = unsafe { core::mem::zeroed() };
@@ -212,12 +220,41 @@ impl Handles {
                     number(b"self_handles_capacity_exceeded", /*value*/ 1);
                     break;
                 }
-                // Access metadata is usable only with HAVE_BASIC_INFORMATION.
-                // Some kernel types have no PSS_OBJECT_TYPE enum representation.
+                // A successful walk can return a handle without basic metadata.
+                // Keep walking, and query only that self-captured handle. A failed
+                // query remains unknown; it must not become a zero-rights result.
                 if entry.flags & 4 == 0 {
-                    number(b"self_handles_metadata_flags_missing", entry.flags);
-                    break;
+                    fallback_count += 1;
+                    if !query.is_null() && entry.handle > 0 {
+                        // PUBLIC_OBJECT_BASIC_INFORMATION: four public ULONGs
+                        // followed by ten reserved ULONGs. No object content/name.
+                        let mut basic = [0_u32; 14];
+                        let mut returned = 0;
+                        let query = unsafe { core::mem::transmute::<*mut c_void, Query>(query) };
+                        let status = unsafe {
+                            query(
+                                entry.handle,
+                                /*kind: ObjectBasicInformation*/ 0,
+                                basic.as_mut_ptr().cast(),
+                                core::mem::size_of_val(&basic) as u32,
+                                &mut returned,
+                            )
+                        };
+                        if fallback_count <= QUERY_REPORT_LIMIT {
+                            number(b"self_handles_basic_query_ntstatus", status as u32);
+                            number(b"self_handles_basic_query_returned", returned);
+                        }
+                        if status >= 0 && returned as usize == core::mem::size_of_val(&basic) {
+                            entry.attributes = basic[0];
+                            entry.granted_access = basic[1];
+                            entry.flags |= 4;
+                        }
+                    } else if fallback_count <= QUERY_REPORT_LIMIT {
+                        number(b"self_handles_basic_query_unavailable", /*value*/ 1);
+                    }
                 }
+                let basic_available = entry.flags & 4 != 0;
+                result.missing_basic += usize::from(!basic_available);
                 let object_type_id = if entry.flags & 1 != 0 {
                     entry.object_type
                 } else {
@@ -226,7 +263,13 @@ impl Handles {
                 let key = HandleKey {
                     handle: entry.handle,
                     object_type: object_type_id,
-                    access: entry.granted_access,
+                    access: if basic_available {
+                        entry.granted_access
+                    } else {
+                        0
+                    },
+                    attributes: if basic_available { entry.attributes } else { 0 },
+                    basic_available,
                 };
                 result.entries[result.len] = key;
                 result.len += 1;
@@ -237,9 +280,12 @@ impl Handles {
                     if differences <= REPORT_LIMIT {
                         number(b"handle_delta_index", differences as u32);
                         number(b"handle_delta_object_type", object_type_id);
-                        number(b"handle_delta_granted_access", entry.granted_access);
-                        number(b"handle_delta_attributes", entry.attributes);
-                        if !query.is_null() {
+                        number(b"handle_delta_basic_available", basic_available as u32);
+                        if basic_available {
+                            number(b"handle_delta_granted_access", entry.granted_access);
+                            number(b"handle_delta_attributes", entry.attributes);
+                        }
+                        if !query.is_null() && entry.handle > 0 {
                             // SAFETY: named export; query only this currently owned handle's type.
                             let query =
                                 unsafe { core::mem::transmute::<*mut c_void, Query>(query) };
@@ -249,6 +295,11 @@ impl Handles {
                 }
             }
             number(b"self_handles_metadata_differences", differences as u32);
+            number(b"self_handles_basic_fallback_count", fallback_count as u32);
+            number(
+                b"self_handles_query_report_capacity_exceeded",
+                (fallback_count > QUERY_REPORT_LIMIT) as u32,
+            );
             number(
                 b"self_handles_report_capacity_exceeded",
                 (differences > REPORT_LIMIT) as u32,
@@ -262,9 +313,17 @@ impl Handles {
         });
         number(b"self_handles_count", result.len as u32);
         number(b"self_handles_complete", result.complete as u32);
+        number(b"self_handles_missing_basic", result.missing_basic as u32);
         number(
             b"self_handles_comparison_available",
-            before.is_some_and(|before| before.complete) as u32,
+            (result.complete && before.is_some_and(|before| before.complete)) as u32,
+        );
+        number(
+            b"self_handles_comparison_metadata_complete",
+            (result.complete
+                && result.missing_basic == 0
+                && before.is_some_and(|before| before.complete && before.missing_basic == 0))
+                as u32,
         );
         // This compares handle metadata, not kernel object identity. Reused handle
         // values with the same metadata and transient objects may be unobserved.

@@ -72,6 +72,8 @@ def main():
         args.rustc,
         "--edition=2024",
         "--crate-name=windows_crypto_probe",
+        "-D",
+        "warnings",
         "--target",
         args.target,
         "-C",

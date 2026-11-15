@@ -99,6 +99,15 @@ def main():
             raise ValueError(
                 "unrestricted kernel32-only baseline did not establish a usable crypto probe"
             )
+        if (
+            baseline.get("stdout", "")
+            .splitlines()
+            .count("self_handles_complete=0x00000001")
+            != 2
+        ):
+            raise ValueError(
+                "unrestricted before/after handle enumeration did not complete"
+            )
         # Restricted and broker results are observations. The unchanged complete
         # owner suite remains responsible for permission and runtime assertions.
 
