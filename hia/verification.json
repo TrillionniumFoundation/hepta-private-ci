@@ -7,27 +7,28 @@
   "build_status": "built",
   "compiler_fixed_point": true,
   "compiler_generations": 3,
-  "native_module_count": 17,
-  "production_algorithm_group_count": 15,
+  "native_module_count": 18,
+  "production_algorithm_group_count": 16,
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "whole_product_performance_qualified": false,
   "opt_in_production_callers_verified": false,
-  "scope": "Linux x86-64 GNU, opt-in hia-native. Seventeen B3 modules cover fifteen algorithm groups. The formal fixed-point build preserves all sixteen prior module sources and 48 namespaced artifacts; the three new UUID artifacts match the frozen prototype. The formal UUID ABI passed 19232 calls, including 370 atomic no-write failures, 9216 byte-position mutations and 128 sequential interleavings; this was not simultaneous-thread testing. The UUID receipt gate passed 74 checks and admitted all seventeen locked modules. Historical direct-rustc evidence binds the complete a201 fifteen-file utils/string crate and the complete 23-file locked regex-lite 0.1.8 crate: 26 original tests and 38 candidate tests passed without omissions, actual workspace Clippy passed for the candidate library, and 9609 public pairs returned 78778 matching strings with 14060 real native calls. Separate complete regex offsets agreed in 9609 query/emit pairs. These are recorded source-bound observations, not current Cargo or installed-product qualification. The portable real-Cargo public gate and its workflow are integrated but have not executed for this candidate. Parent eb439d69 includes the standalone CLI-argument repair; inherited records retain their exact scope and do not establish successful sixteen- or seventeen-module CI. Current owner Cargo, clean public comparisons, strict lint/fix, installed binaries and CI remain pending. All 15 complete capabilities, the 198-crate baseline, default dispatch, required platforms, whole-product performance and legacy retirement remain open.",
-  "current_evidence_record": "uuid_find_increment",
+  "scope": "Linux x86-64 GNU, opt-in hia-native. Eighteen B3 modules cover sixteen algorithm groups. The formal build preserves all seventeen prior module sources and 51 namespaced artifacts; the three template-parse artifacts match the frozen prototype. The formal template ABI passed 52179 real calls, including 9255 atomic no-write failures, and the template receipt gate passed 76 checks. Historical direct-rustc evidence compiled the complete unchanged four-file a201 template crate and complete candidate: all 14 original tests passed on each side, four uncapped strict Clippy invocations used the actual 37 workspace lint levels, and 13206 public pairs plus 21 constructed values agreed with 40287 real parse calls. Those observations used three genuine Cargo-produced dependency rlibs and all 54 locked registry source files; they are not a current Cargo owner or installation result. Rendering remains the original Rust algorithm. The formatted fifteen-file portable public gate and final owner workflow are integrated, but current Cargo/public execution remains pending. Actual owner tests, default/native uncapped strict lint, scoped string/template fix, six consumers, installed parse symbol checks and final-source CI remain pending. The corrected UUID parent is adopted; both initial failed CI runs and library-only positive UUID scope are preserved. The integrated eighteen-module installed gate requires sixteen reachable CLI symbols and all seventeen default-reference absences, including UUID; standalone apply_patch retains eight symbols. Source adoption and formatting do not qualify these runtime gates. All 15 complete capabilities, the 198-crate baseline, required platforms, default dispatch, whole-product performance and retirement remain open.",
+  "current_evidence_record": "template_parse_increment",
   "composition_sources": {
     "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
     "parser": "168080b72c4be242d14eadd47168f2a9326590f2",
     "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
     "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
-    "scope": "The repaired sixteen-module standalone parent plus complete find_uuids matching and native span selection; no default, platform or whole-product promotion.",
+    "scope": "The published seventeen-module UUID parent plus complete native template parsing. Rendering, required platforms, default release and the whole product remain outside this increment.",
     "patch_integration_parent": "2ff44b608a202c25e7551edca67a7a5362f34d36",
     "patch_effects_parent": "aeb88f596b83186456caac577080bcb2f253ad32",
     "patch_output_repaired_parent": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
     "patch_application_repaired_parent": "cae5db67213f2621910bf39ff048ee60c887317b",
-    "patch_standalone_repaired_parent": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231"
+    "patch_standalone_repaired_parent": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+    "uuid_find_published_parent": "c468f632201c39957d3fecb92f05b37aa650b45e"
   },
   "production_algorithms": {
     "seek_sequence": "patch context matching",
@@ -44,7 +45,8 @@
     "patch_summary": "Public summary header and A/M/D path selection; the exact individual original writeln!/Path::display/Write effects remain the host bridge.",
     "patch_application": "Application parser/effects/summary sequencing, diagnostic choice, writer-error priority and committed-delta result routing. Typed errors, exact original writeln!/Write effects, real filesystem calls and the existing asynchronous effects future remain host operations.",
     "patch_standalone": "Standalone argv/stdin branch selection, diagnostics and exit order, runtime/environment/parser/application routing, line-ending environment choice and success-flush selection. Actual OS arguments, I/O, Tokio runtime, typed errors and process exit remain host boundaries.",
-    "uuid_find": "Complete fixed-pattern UUID substring scan, byte classification, ordered non-overlapping match selection, count and span plan. Rust retains input borrowing, result allocation, plan validation and owned substring copies."
+    "uuid_find": "Complete fixed-pattern UUID substring scan, byte classification, ordered non-overlapping match selection, count and span plan. Rust retains input borrowing, result allocation, plan validation and owned substring copies.",
+    "template_parse": "Complete strict template delimiter parsing, escaped literal and placeholder span selection, Unicode trim, ordered errors and append instructions. Rust materializes owned segments and the sorted unique placeholder set; rendering remains original Rust."
   },
   "sources": {
     "seek_sequence": {
@@ -454,15 +456,39 @@
         "library_sha256": "6ab9ac41597293434f0a4d1ca94170154b4fe4e4403aad820f8ef856b98883ea",
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
+    },
+    "template_parse": {
+      "source_sha256": "7e9d067faf27c0fff4863b880e5f429a2e430bdedbe9c29268c1b0159f880f8b",
+      "core_sha256": "6a601a091d360176566729204ccb4a6ab0d6a5885cc11c87f39d8b08c6d93309",
+      "library_sha256": "ab2a4641486c3fe96dcc9ced32b28394359ea09727de271cf036daa5763b8518",
+      "library_bytes": 37672,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "static_link": {
+        "symbol": "codex_hia_template_parse",
+        "library": "libcodex_hia_template_parse.so",
+        "object": "template_parse.namespaced.o",
+        "archive": "libcodex_hia_template_parse.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 25490,
+        "archive_sha256": "dfbc5aa79a2ad7a658ecf068b9291a1724c85ab3619bf5f199cb744c454bf17c",
+        "text_sha256": "e7a535283934ea88cc2b5f400a7baed20169ff63d36bc0f3a32a8bebf209c160",
+        "defined_symbols": [
+          "codex_hia_template_parse"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "b705e69a817135eda74cf95758bf64436037bc7986f3c67a40e0debb9dda7284",
+        "library_sha256": "70cefca376aa50ad0349f7eec02502a66a6540d9cbdfc105b1e162c0e5b2dae9",
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "09d8052f8b4a6f0cb62806bfb76e4def18b9c16157222de2ecc997ae19f3312c",
+    "toolchain_lock_sha256": "bd11dcc4df8179dc9c36b0949122a059ffff090b3f461be920a4dfc7fdfb2a1a",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "387d743da370ca8ea5b005f6408621fff05eee188a10d077ccae0509716021c9",
+  "build_report_sha256": "0c140c429026fe168d114e37d03a49de241fccc41db237b5ef519ec51a2d348b",
   "compiler_generation_evidence": [
     {
       "case": "B1",
@@ -489,7 +515,7 @@
   "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
   "current_source_inputs_scope": "Named inherited producing inputs plus every current HIA program, contract, test, policy helper and native dispatch input. Excludes exactly hia/README.md, hia/migration.json and hia/verification.json to avoid metadata self-hashing. These byte identities do not claim execution of pending gates.",
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "b2b18a0ce9f6b4f207b66c50ffee364f3e1b02bbb230f2225ae272c395d289cd",
+    ".github/workflows/codex-hia-native.yml": "93e604b404277439579690b6f4cd16e8bc4b8404773375934336de72347b410b",
     "NOTICE": "b47d6a3bd64f5bbf9b3f9a14ea672dedbb1c483f1a3bf48c011d0782603c0854",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
     "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
@@ -608,11 +634,17 @@
     "codex-rs/apply-patch/tests/suite/scenarios.rs": "e813c9cad4f69550b8df20e0956076a671d5bab6babe3c2779544c5cdef715bd",
     "codex-rs/apply-patch/tests/suite/tool.rs": "1c6c784d9f4d1bca2bd3275b7143d228ac0a3930eadfa2de62d6a94fc9d4160f",
     "codex-rs/arg0/Cargo.toml": "d5d7c6d652ef06c623de0dafe121b3b4f41bb0f98ed8e8d946d9e6c68880a152",
-    "codex-rs/cli/Cargo.toml": "1ab01dc7d288e62af6c9e2eefcd2d88a29a384d067842f4258971e7f81085b77",
+    "codex-rs/cli/Cargo.toml": "0117ada4cdc3cea32cdeda56a76268acac26ee17774f2ae2f06ed0ae353a005c",
     "codex-rs/core/src/tools/handlers/apply_patch.rs": "b82b1d22be68fc9a11538e09f7c6363776e610c4f450a8447447e38358d601c2",
+    "codex-rs/ext/goal/Cargo.toml": "02a70145cd38af5f97c66ec9a7c6bfa52b16d109f4a5624649a908b9b4556fc2",
+    "codex-rs/ext/memories/Cargo.toml": "ae3b13d7906b7dabbf652ec1d3f0aecb429fa1f0b31b550ff0bab2bb0a0565b9",
+    "codex-rs/login/Cargo.toml": "09f35415c4cdd324a270eaa95d27a99f16c9bf5519c55c8c128207a9235f2f50",
+    "codex-rs/memories/write/Cargo.toml": "5a0b2b12fa44db7ad1566737344a8058b1851549008a290422e5b31be724d47e",
+    "codex-rs/models-manager/Cargo.toml": "14b3c3895fe3c986c8c53f9507d84853dff2b48defe8a89cc6b9e96f6157d6d6",
+    "codex-rs/prompts/Cargo.toml": "c5410426cea82e0cd4c98003c2a029d92879580bed1decdb6e62c04bf00fabb9",
     "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70",
     "codex-rs/rust-toolchain.toml": "47f5c5c59856700915beeb7e5ff46a5eeed1c08420579af27698e6740f396a82",
-    "codex-rs/tui/Cargo.toml": "a9949f5c09dcbf05c4c1feeab89d26cf1ca52c0cd0d364d51c732711085e24a5",
+    "codex-rs/tui/Cargo.toml": "ffcd13be38c37e69cba5a1372054bb4a7d1e64a91e8c49f63ebbf7ac340ef4ea",
     "codex-rs/utils/absolute-path/Cargo.toml": "ad98dc1a75333700db00f6bde0685ce7a3e0f5558b0520e7a09e9bbcc6576736",
     "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7",
     "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
@@ -641,6 +673,11 @@
     "codex-rs/utils/string/src/truncate.rs": "cfeba2400aa9e7439ece0c23d6a4291d4c106777f3159f2e5f8fd89e7ec24551",
     "codex-rs/utils/string/src/truncate/tests.rs": "c2b000b02eaa736362eb01f7dac0e981db4c8d081ed15710bda33bf3b437e1e0",
     "codex-rs/utils/string/src/truncate_native_tests.rs": "b6113c90f484104f909c3636fc08c29da7249007c693c88d0871034441f7fdbc",
+    "codex-rs/utils/template/BUILD.bazel": "ded11b9089f721ffc069f0166421f5e0eb52a65e47f3e31f496b9f8652da120b",
+    "codex-rs/utils/template/Cargo.toml": "5117cfb7207a9b768d19e0b12b3c9b521e3c589e2865fb438831d10504033280",
+    "codex-rs/utils/template/build.rs": "79b0a76594bad8b2785e533631e6cf4bd257a21d96e6b23a0f1e45e9c65af8bd",
+    "codex-rs/utils/template/src/hia_native_parse.rs": "c661129ad3fc09f97e27123b988199c2a218e053d8de6d5e14473e46a111c170",
+    "codex-rs/utils/template/src/lib.rs": "585a0f64beb68f9a06a27e975a278c002e4f1b4011c2acbd3c49fddcd5fe330e",
     "hia/ATTRIBUTION.unified_diff.md": "c6eccdebb9e1be3363d5328d90daa6c37056ed4b53f3e4b8d0ee1796b0c2fad6",
     "hia/BUILD.bazel": "b6250dc1eeac16684a35acc122775c51a3bb2e9c12968d41dd52be91f2b9e542",
     "hia/LICENSE.similar-2.7.0": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
@@ -667,6 +704,8 @@
     "hia/similar_policy.py": "ecf924330252841411abde51b138cbfc28b281d72d73337378a3ae4c5501a84c",
     "hia/source_file.hepta": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
     "hia/source_file_buffer_contract.json": "47d50172b6abd2a9449c8eb2e312c7a1588404e25e4480216b0d3241d5f54105",
+    "hia/template_parse.hepta": "7e9d067faf27c0fff4863b880e5f429a2e430bdedbe9c29268c1b0159f880f8b",
+    "hia/template_parse_buffer_contract.json": "824c63b3769d9c209011c1479150f85f981c3c2e607b5abf5c6f20072cfadea6",
     "hia/tests/file_update_oracle/__init__.py": "1a2b6ac67893128518bd6254f31f4d71c9b76f9bf56a5fb0f423e07c4945729b",
     "hia/tests/file_update_oracle/cargo.py": "d3a32a64ac878859ef237d656a571ea4c96b1086298ee237f9719443e2f20bce",
     "hia/tests/file_update_oracle/corpus.py": "ee95bce3930ad2409d61b9056c576c81ee18f2cb058a8eddc689d7d1036d4221",
@@ -709,10 +748,26 @@
     "hia/tests/patch_summary_oracle/driver.rs": "5a8e83b127ba52aa381188b8325f0e32ddab9776e27b422561343b62c90073b2",
     "hia/tests/patch_summary_oracle/observations.py": "597cbb9e7632570c6197e11f3598fb1602050684562b7b2fb1a902608589d187",
     "hia/tests/seek_sequence_oracle.rs": "a858319766e0e5a9c5ca9069f894c987895f3a7f28da6f61db547f24983554e0",
+    "hia/tests/template_parse_oracle/__init__.py": "80401fef9a1e82732fc3f99c4e07494c5afc87485b8bf3ac36e01a5f40cc7cf7",
+    "hia/tests/template_parse_oracle/admission.py": "31fc94aadbe092a1f762b1c63ccdf0cc090a5a64574ff69ea1b800f5cbf8e417",
+    "hia/tests/template_parse_oracle/artifacts.py": "dc53b7e2b32ca11dcec3ea3235490ec3dae6be4f329bdb016c90f98b61ddc20d",
+    "hia/tests/template_parse_oracle/cargo.py": "345f046edba19150cdd28eec884cf5a29d50efa447728302ed0eb047fa185859",
+    "hia/tests/template_parse_oracle/common.py": "6b3e0bcc59f6c79188231eb026348025d1a5e7fb872794078c3da2b1524baf66",
+    "hia/tests/template_parse_oracle/compiling.py": "aa564dca5beb4470eb27e9ae938f5d2e16700f0ab8dacc9820bbc3beb7db0653",
+    "hia/tests/template_parse_oracle/corpus.py": "a42de3bdcd008c941c294b818f9fcbae093734b50fcc669ff3128577d82265c8",
+    "hia/tests/template_parse_oracle/counter.rs": "008d58fb09438ec66a4027a7686ac1b8d9d26a7e22bfbeafbaeb2ca825376c4a",
+    "hia/tests/template_parse_oracle/fingerprints.py": "92398c196a0c42712c36660682d31be19acb367e62f481bb9c6f127c1f3c2fdb",
+    "hia/tests/template_parse_oracle/lifecycle.rs": "17e679e50c7c1f1e903396867177b69134682de0584e5bcad132e1c663893729",
+    "hia/tests/template_parse_oracle/observations.py": "8d1e83c1a4595123083a2bb2bda4ba19ab13b1372c1a077fea149fbb0930884b",
+    "hia/tests/template_parse_oracle/observer.rs": "c4f049a3e5148fbbeca47a15aa763a1120e40ca00d4452e8ded415930c8a1280",
+    "hia/tests/template_parse_oracle/original.py": "ecc3207d8c266a88d0cb6bbf0cc51ab6010820064a9d55cbded1222835dc218d",
+    "hia/tests/template_parse_oracle/public.py": "a1a39038fa90c63ff9dbd32fc79b5fdf65010d1832081863138b7c88fd76bfc0",
+    "hia/tests/template_parse_oracle/registry.py": "0e55df726c08f08ba7478c92b68d301b7f86b86b36c0e874b0af428b21b97df4",
+    "hia/tests/template_parse_oracle/sources.json": "a4b3009835516c1683cb1b28c8c8736c162c868dc4ea2d6bd5beae58277e49d8",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
     "hia/tests/test_file_update_abi.py": "d591e493a70ffc43923d9cd84341c72238aa6072d1c3403ca7bc1aade02930f5",
-    "hia/tests/test_installed_codex.py": "92e29d1f730026451047885fe402ff22f9091dc48616349b825d8ecdddd0f658",
+    "hia/tests/test_installed_codex.py": "8c8249cecbdfb6667e7693252b9abb4ca2478fe15929d0aacf8d9528f08c388e",
     "hia/tests/test_installed_patch.py": "91d674831a64bfac7bc97b57745ba88c84a8e6f25a25eec0ac27f142cab925dd",
     "hia/tests/test_markdown_location_abi.py": "bac67c99f75d4899571db903acd570a548ed62a7b3b2943f850c9d46ef06ca1d",
     "hia/tests/test_metric_tag_abi.py": "6d10774c87586c9ab428809acf9fa2007b2658cf074909d09b44b7851e3239be",
@@ -727,6 +782,7 @@
     "hia/tests/test_native_patch_summary_caller.py": "73409f498ee5cfdb6f069ccc21a5883d752e813d7d77700f935a0594bf6dd66d",
     "hia/tests/test_native_source_file_caller.py": "a7f00401280170a4b49adf7c5b73ff09526bd48e119190c6cebaca209690733e",
     "hia/tests/test_native_string_caller.py": "4dbe9843e6f04e3fabc40783bbf0402aa64e6b5da84f6202795905f273066636",
+    "hia/tests/test_native_template_parse_caller.py": "ab702c94169d70dc9a4be46848771391584008058af23f3a711a21aeb2ef4fe3",
     "hia/tests/test_native_truncate_caller.py": "48c85d7a30d0b261b8831eb46c83c16514eda1f2826c0c184384962aeaf0f9b6",
     "hia/tests/test_native_unified_diff_caller.py": "272a9984c3f2f028bcd83c2d9e6c088e0267fbeb5e41314b5a1480de2162ef6b",
     "hia/tests/test_native_uuid_find_caller.py": "b49f56a2c75b5d95f601ebe385bcb1c1268b2691c3f6141bf6a8485566dcfc94",
@@ -739,6 +795,7 @@
     "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
     "hia/tests/test_seek_sequence.py": "674df1a3014c764fc425e4ebcb8f19a3fa3ab6462e173eb2e71eaddacbc730bc",
     "hia/tests/test_source_file_abi.py": "6d0cd17d55a0c349c550bd88743f288cc12eb419b14c1dda069d86d8e58fb8ca",
+    "hia/tests/test_template_parse_abi.py": "ec2c9eafe73b033f21696c42d515679f0b520d2030c20b976f2149667b1afee6",
     "hia/tests/test_token_budget_abi.py": "af2b3e5cd8b12577175c07797917f28db6713ecc683bf081d2dcf7403359a4ba",
     "hia/tests/test_truncate_abi.py": "c9d7a2ade87809136d92e731681fba498a2cf3ad06942dc9364f3868bbd3049a",
     "hia/tests/test_unified_diff_abi.py": "d4f088ac7090d59c63b65c81299df6c228a6cfcc6c513d3551972f1ee7c54542",
@@ -783,8 +840,9 @@
     "hia/tests/uuid_find_oracle/registry.py": "5389bc165dcd8b11d773e2230b2fff10198139d535952de1a1cdf03de6c7c40f",
     "hia/tests/uuid_find_oracle/sources.json": "d43112f8dfeea832e674a87885211f6ee9bf0a72b092d6483a38a639bb37279b",
     "hia/tests/uuid_find_oracle/transport.py": "87848b83df41887447780dc70549b3d403ac2c2979944632a92c219d19c9c0a2",
+    "hia/tests/verify_scoped_owner_fix.py": "9516a75124df9b61dff047d5977b025862f17977c01227d1cb3dbf23b9c467a4",
     "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-    "hia/toolchain.json": "09d8052f8b4a6f0cb62806bfb76e4def18b9c16157222de2ecc997ae19f3312c",
+    "hia/toolchain.json": "bd11dcc4df8179dc9c36b0949122a059ffff090b3f461be920a4dfc7fdfb2a1a",
     "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
     "hia/unified_diff.hepta": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
     "hia/unified_diff_buffer_contract.json": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e",
@@ -1222,17 +1280,19 @@
     "performance_qualified": false
   },
   "current_product_ci": {
-    "status": "seventeen_module_uuid_portable_gates_integrated_current_ci_pending",
+    "status": "eighteen_module_source_and_owner_workflow_integrated_current_ci_pending",
     "qualified": false,
-    "candidate_parent": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
-    "parent_ci": "The inherited patch_standalone_increment retains the first sixteen-module invocation failure and exact CLI repair. No successful sixteen-module CI is claimed here, and parent evidence does not qualify the UUID candidate.",
+    "candidate_parent": "c468f632201c39957d3fecb92f05b37aa650b45e",
+    "final_source_binding_pending": false,
+    "scope": "The corrected published UUID parent and final owner/strict/fix/installed source are integrated and bound to the actual 9976-file snapshot. Source adoption and actual formatting passed; current owner Cargo, public, lint/fix, consumer and installed execution remain pending. No pending gate is promoted.",
     "pending_gates": [
-      "Fresh default/native Cargo --lib --tests graphs and actual whole-crate UUID public comparison on the final clean source.",
-      "Current actual owner/consumer tests, strict workspace lint, scoped just fix and final formatting without tested-source drift.",
-      "Installed full Codex with sixteen required symbols, including codex_hia_uuid_find; installed apply_patch retains eight.",
-      "Complete current consumer CI, required platforms, default dispatch, release/LTO and whole-product performance."
+      "Fresh actual default/native Cargo --lib --tests graphs and complete-original template public gate on the final clean producer.",
+      "Actual default/native just test for the template owner; current six-consumer test suite.",
+      "Uncapped default/native workspace strict Clippy, actual scoped string/template just fix, then final just fmt and clean diff.",
+      "Installed full Codex requires codex_hia_template_parse among sixteen reachable symbols, seventeen default-reference absences and unchanged startup/patch-dispatch parity; standalone apply_patch retains eight symbols.",
+      "Complete final-source CI, supported platforms, release/LTO, default dispatch and whole-product performance."
     ],
-    "historical_direct_rustc_scope": "UUID full-crate test and public results predate the portable Cargo gate and current parent/workflow adoption; their producing identities remain separately bound."
+    "historical_scope": "Inherited UUID and older increment records remain verbatim. The direct-rustc template prototype and integrated gate source do not establish current Cargo or product execution."
   },
   "historical_published_ci": {
     "scope": "Independent published candidate trees, not qualification of the current combined tree or a new adapter.",
@@ -3426,5 +3486,314 @@
       "default_dispatch_changed": false,
       "legacy_retirement_qualified": false
     }
-  ]
+  ],
+  "template_parse_increment": {
+    "status": "formal_parse_component_and_receipts_passed_historical_direct_rustc_parity_current_cargo_pending",
+    "parent": {
+      "head": "c468f632201c39957d3fecb92f05b37aa650b45e",
+      "tree": "cb960ed943a21f40afffd5d80a7d58498ebdb76f",
+      "scope": "Published UUID installed-scope correction, actually adopted into this source. Both initial failed CI runs and the inherited sixteen-symbol default-reference negative control are preserved. Template parsing adds the seventeenth absence assertion; corrected-parent CI is not promoted."
+    },
+    "native_module_count": 18,
+    "production_algorithm_group_count": 16,
+    "prior_seventeen_sources_and_51_namespaced_artifacts_unchanged": true,
+    "new_three_namespaced_artifacts_match_frozen_prototype": true,
+    "actual_formal_build_exit_code": 0,
+    "formal_raw_counts": {
+      "calls": 52179,
+      "query": 21464,
+      "emit": 21460,
+      "semantic_errors": 36160,
+      "errors_no_write": 9255,
+      "brace_cases": 16383,
+      "byte_position_mutations": 5888,
+      "sequential_interleavings": 128,
+      "largest_source_bytes": 2097159,
+      "largest_output_bytes": 1572952,
+      "tests_skipped": 0,
+      "simultaneous_threads_executed": false,
+      "invented_oversized_pointer_ranges_used": false
+    },
+    "admission_checks_passed": 76,
+    "historical_complete_original": {
+      "reference_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "crate_tree": "239023ac5b71e7cd40b23bff31cbf3e36c59a8c5",
+      "complete_original_files": 4,
+      "original_tests_passed": 14,
+      "candidate_tests_passed": 14,
+      "tests_ignored": 0,
+      "tests_filtered": 0,
+      "strict_clippy_invocations": 4,
+      "workspace_lint_levels": 37,
+      "cap_lints": [],
+      "complete_locked_registry_source_files": 54,
+      "genuine_cargo_produced_dependency_rlibs": 3,
+      "public_pairs_equal": 13206,
+      "constructed_values_equal": 21,
+      "actual_native_calls": 40287,
+      "actual_native_operations": {
+        "query": 32184,
+        "emit": 8103
+      },
+      "public_payloads_sha256": "054d5380ae5fa071e8170ae4195f18a6e223ab9e6cf896c5e008d32f93dc2c58",
+      "public_normalization": "none",
+      "maximum_source_bytes": 1050049,
+      "larger_than_one_mib_cases": 5,
+      "owned_templates_observed_after_source_drop": true,
+      "iteration_as_ref_drop_and_error_precedence_observed": true,
+      "render_implementation": "Original Rust; these complete-public results do not mean rendering has migrated.",
+      "preserved_failures": [
+        {
+          "report": "compile-report.json",
+          "cause": "Direct Clippy harness omitted cfg(test); original 14 tests passed; exact cfg declaration added only in v2 continuation."
+        },
+        {
+          "report": "public-report.json",
+          "cause": "After complete original 13206 exit0, candidate launch denied by disk guard before process creation; only candidate subsequently executed."
+        }
+      ],
+      "scope": "Complete unmodified a201 crate and complete candidate compiled by direct rustc using genuine individually admitted Cargo-produced dependencies. The candidate algorithm source matches current parse lib/adapter; current Cargo manifests, build entry, portable harness formatting and final workflow have separate unexecuted qualification boundaries."
+    },
+    "contract": {
+      "path": "hia/template_parse_buffer_contract.json",
+      "sha256": "824c63b3769d9c209011c1479150f85f981c3c2e607b5abf5c6f20072cfadea6",
+      "revision": 1,
+      "workspace_bytes": 32,
+      "header_bytes": 64,
+      "record_bytes": 24,
+      "operations": {
+        "0": "query",
+        "1": "emit"
+      },
+      "source": "Arbitrary bytes; the complete input is strictly validated as UTF-8 before parsing.",
+      "semantic_errors": [
+        "EmptyPlaceholder",
+        "NestedPlaceholder",
+        "UnmatchedClosingDelimiter",
+        "UnterminatedPlaceholder"
+      ],
+      "error_atomicity": "Nonzero transport status writes nothing. Semantic parse errors are successful transport with a 64-byte error header and no partial Template.",
+      "host_boundary": "Buffer allocation, plan validation, owned strings/BTreeSet/Vec and original traits/errors/rendering."
+    },
+    "portable_public_gate": {
+      "entry": "hia/tests/test_native_template_parse_caller.py",
+      "integrated_source_files": 15,
+      "actual_format_completed": true,
+      "actual_cargo_executed": false,
+      "actual_public_executed": false,
+      "scope": "The integrated formatted gate requires genuine default/native ordinary-lib and test-lib Cargo rows, complete fingerprints/hashed peer and alias identities, the whole original crate and all 54 registry files. Its source integration is not an executed Cargo graph."
+    },
+    "current_source_scope": {
+      "snapshot_before_metadata": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/owner-scope-integration-v1/source-after.json",
+        "bytes": 1879880,
+        "sha256": "e96779038c94f1aa8721f023153c174b9c9debbe5a978381d2772d23347b29ea"
+      },
+      "files": 9976,
+      "named_current_inputs": 343,
+      "final_source_binding_pending": false,
+      "metadata_base": {
+        "README.md": {
+          "path": "/workspace/scratch/9f380f39cb05/codex-hia-template/hia/README.md",
+          "bytes": 40423,
+          "sha256": "c3548e1360322956914daa8ba2fb57c96884875e3847f4a27355d75c384d7628",
+          "git_ref": "c468f632201c39957d3fecb92f05b37aa650b45e:hia/README.md",
+          "git_blob": "1e4f3387e068d23978fbdb1da7380932d917706a"
+        },
+        "migration.json": {
+          "path": "/workspace/scratch/9f380f39cb05/codex-hia-template/hia/migration.json",
+          "bytes": 109466,
+          "sha256": "03854597abd826608f9d23fc27fa77698e3f822299d0e5f57610b5867ff8b2d3",
+          "git_ref": "c468f632201c39957d3fecb92f05b37aa650b45e:hia/migration.json",
+          "git_blob": "c2973ef527503d696dc7498b0100cbe75725ce43"
+        },
+        "verification.json": {
+          "path": "/workspace/scratch/9f380f39cb05/codex-hia-template/hia/verification.json",
+          "bytes": 191287,
+          "sha256": "7b5ae8660e26e79b948ea964d91d2d8eb9fa8c342ffc528830d09b4a7b16f562",
+          "git_ref": "c468f632201c39957d3fecb92f05b37aa650b45e:hia/verification.json",
+          "git_blob": "8817d9ec191f8c87fae440a2e7dc2842b050d660"
+        }
+      },
+      "corrected_parent_adoption_passed": true,
+      "owner_scope_source_integration_passed": true,
+      "actual_integration_fmt_exit_code": 0,
+      "only_proposed_changes_after_snapshot": [
+        "hia/README.md",
+        "hia/migration.json",
+        "hia/verification.json"
+      ],
+      "metadata_excluded_from_hashes": [
+        "hia/README.md",
+        "hia/migration.json",
+        "hia/verification.json"
+      ],
+      "scope": "Current input hashes bind the actual source after corrected-parent adoption and final owner/installed integration. The only proposed changes after this snapshot are the three metadata files. Metadata hashes and the full proposed tree are recorded externally to avoid a self-hash cycle. Current source binding is not current Cargo or product execution; no nineteen-module evidence is included."
+    },
+    "integrated_owner_gate_scope": {
+      "direct_consumers": [
+        "codex-login",
+        "codex-models-manager",
+        "codex-prompts",
+        "codex-memories-write",
+        "codex-goal-extension",
+        "codex-memories-extension"
+      ],
+      "owner_and_consumers": "Default/native just test; all six native consumer features are selected explicitly.",
+      "lint": "Default/native workspace all-target uncapped Clippy; actual compiler receipts must establish the strict scope.",
+      "fix": "Actual scoped string/template just fix, paired bridge and source admission, then final just fmt and unchanged-source verification.",
+      "required_native_full_codex_symbols": 16,
+      "required_absent_default_reference_symbols": 17,
+      "standalone_apply_patch_symbols": 8,
+      "library_only_symbol": "codex_hia_uuid_find",
+      "library_positive_gate": "hia/tests/test_native_uuid_find_caller.py",
+      "new_production_reachable_cli_symbol": "codex_hia_template_parse",
+      "execution_qualified": false
+    },
+    "current_owner_cargo_qualified": false,
+    "current_portable_public_executed": false,
+    "current_owner_tests_qualified": false,
+    "current_six_consumers_qualified": false,
+    "current_strict_lint_and_fix_qualified": false,
+    "current_ci_qualified": false,
+    "installed_full_codex_qualified": false,
+    "whole_template_crate_native": false,
+    "render_migrated": false,
+    "performance_qualified": false,
+    "whole_product_qualified": false,
+    "global_default_changed": false,
+    "legacy_retirement_qualified": false,
+    "evidence": {
+      "build": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/production-native-v1/build.json",
+        "bytes": 200535,
+        "sha256": "0c140c429026fe168d114e37d03a49de241fccc41db237b5ef519ec51a2d348b"
+      },
+      "build_audit": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/production-native-audit-v1/report.json",
+        "bytes": 17538,
+        "sha256": "7b19d369a8f6891a38566804027df8dfca1969a5d27fb5c4376c44cbca612028"
+      },
+      "formal_abi": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/portable-abi-v1/actual-v1/report.json",
+        "bytes": 10514,
+        "sha256": "8bfe46ba9bd9f3ee6fd8c623ec1db43d13040656c593f3e9403999c8957fee77"
+      },
+      "formal_abi_command": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/portable-abi-v1/actual-v1/command.json",
+        "bytes": 1271,
+        "sha256": "6d9b36079a1676faf574568417d6df9df0815038fde3602cdb38faceb188d079"
+      },
+      "receipt": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/production-receipt-v1/report.json",
+        "bytes": 2884,
+        "sha256": "14db0395684100c1a560fb7c39e0bb5e7800936f6b757c3a0a0f649da5250027"
+      },
+      "receipt_command": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/production-receipt-v1/command.json",
+        "bytes": 2374,
+        "sha256": "603471326536d5d4d0762929e24d55e5d1e2f6b208e0feccd04f864cbb81f51d"
+      },
+      "prototype_build": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/native-build-v3/report.json",
+        "bytes": 10288,
+        "sha256": "9a4fb8a8ef3ee5598f1aef848aa305cdcd6e541a621d6a960a14c9d81165d6e6"
+      },
+      "historical_public": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-oracle/public-prototype-v1/final-report.json",
+        "bytes": 5434,
+        "sha256": "02fed67390b4267cdc88ca0494ed6ea7b3e1a9434ac1ee6bd65cc49f0d0e2ba1"
+      },
+      "historical_freeze": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-oracle/public-prototype-v1/manifest.json",
+        "bytes": 41291,
+        "sha256": "cc093f5a18c3de42d2ab33e1938a152430d460a3290582b17aff7503a07af45e"
+      },
+      "historical_preparation": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-oracle/public-prototype-v1/preparation.json",
+        "bytes": 39563,
+        "sha256": "6622b79d3086c283f4c81fd10c83f44d7e4fc736ed22d1e3752d99ac257fe2be"
+      },
+      "historical_compile": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-oracle/public-prototype-v1/compile-continuation-v2-report.json",
+        "bytes": 37224,
+        "sha256": "14fdc02da0099fa8fb10d127e3c0b404133a11f93a2410a46d999d2e6da2376e"
+      },
+      "historical_public_continuation": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-oracle/public-prototype-v1/public-continuation-v2-report.json",
+        "bytes": 45242,
+        "sha256": "b13ff8a4f3c50b2bf85055e89a855705faec59caa4bf711208a09529b47cb281"
+      },
+      "historical_public_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/template-ci/prepublication-review/public-evidence-v1.json",
+        "bytes": 9429,
+        "sha256": "a56579aa919b4cebc5b92521efbafab2792f54df3190cb3ffbf73df5c501a98b"
+      },
+      "contract": {
+        "path": "/workspace/scratch/9f380f39cb05/codex-hia-template/hia/template_parse_buffer_contract.json",
+        "bytes": 8089,
+        "sha256": "824c63b3769d9c209011c1479150f85f981c3c2e607b5abf5c6f20072cfadea6"
+      },
+      "portable_raw_integration": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/portable-integration-v1/report.json",
+        "bytes": 9786,
+        "sha256": "ac57c6846bfe02a3d14e54996b0948fbbea787999349eeea4631f9bfc01a96bf"
+      },
+      "portable_public_integration": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/portable-public-integration-v1/report.json",
+        "bytes": 30358,
+        "sha256": "4a8770b2708e6f2c16381392e8e8ce26b1d2e5b7b1ef0f81f26c69118eb8f424"
+      },
+      "portable_format_delta": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/portable-public-integration-preparation-v1/format-delta-review.json",
+        "bytes": 29014,
+        "sha256": "aa5a2efdc7214e822c8a13d17556d096b68d0f5af94d160abebc3323dfac3267"
+      },
+      "portable_public_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/template-ci/prepublication-review/portable-public-v2.json",
+        "bytes": 10710,
+        "sha256": "0b6202b3c3ebc33c847fc481b8f57c7c58db0115cd894974aa9372357acb0dab"
+      },
+      "parent_adoption": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/parent-uuid-adoption-v3/report.json",
+        "bytes": 20773,
+        "sha256": "57ce375a64f4abba9122631588c0d4ae6ce2353edb3c3a2009d9bd15ef210210"
+      },
+      "source_map": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/owner-scope-integration-v1/source-after.json",
+        "bytes": 1879880,
+        "sha256": "e96779038c94f1aa8721f023153c174b9c9debbe5a978381d2772d23347b29ea"
+      },
+      "corrected_uuid_integration": {
+        "path": "/workspace/scratch/9f380f39cb05/next-uuid/installed-scope-integration-v1/report.json",
+        "bytes": 14748,
+        "sha256": "fbb70c5b069c4c3bceabb6936d3b02211be145b4a4ec530666bb45e396ebbe53"
+      },
+      "corrected_uuid_source_map": {
+        "path": "/workspace/scratch/9f380f39cb05/next-uuid/installed-scope-integration-v1/source-after.json",
+        "bytes": 1875890,
+        "sha256": "1d26b8765a5c6582170812cb1683f754928add349cfe09bcfe06fd766e594949"
+      },
+      "corrected_uuid_publication": {
+        "path": "/workspace/scratch/9f380f39cb05/next-uuid/installed-scope-publication-v1/actual-publication.json",
+        "bytes": 54360,
+        "sha256": "3617c7f749073157b5cebf0d37e379052aa8ccb5421307a7a096d565c08db818"
+      },
+      "feature_forwarding_addendum": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-oracle/feature-forwarding-addendum-v1/report.json",
+        "bytes": 64543,
+        "sha256": "29917e4c64450396f5b0d012062895c47a055bf7ebc1e7058aedf2dbf9798ee6"
+      },
+      "parent_scope_repair_adoption": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/parent-uuid-scope-repair-adoption-v1/report.json",
+        "bytes": 25839,
+        "sha256": "8b8dc4e4f7249f2ff47b1c0bd5290b7d8e05856d9202ef5b68d9f042580bda0d"
+      },
+      "owner_scope_integration": {
+        "path": "/workspace/scratch/9f380f39cb05/next-template-native/owner-scope-integration-v1/report.json",
+        "bytes": 22195,
+        "sha256": "c4dee3aa79262b4dc1bb3a594503e7da817687f6cfd25ce7072d4b30b495bb92"
+      }
+    }
+  }
 }
