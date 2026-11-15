@@ -486,3 +486,48 @@ The bootstrap source-location obligation for `learning.ledger` is implemented by
 - `codex-rs/hepta-learning-ledger`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### 2026-11-05 candidate: committed acknowledgement and witness recovery sync
+
+The source candidate adds `LedgerWriter::reconcile_committed_append` in
+`codex-rs/hepta-learning-ledger/src/production_reconciliation.rs`. Its
+`CommittedLearningAppendV1` reference binds the ledger, exact record ID, event
+digest and predecessor chain digest. The writer resolves an existing canonical
+authenticated DecisionV2 or OutcomeV2 and replays that stored event through its
+existing commit path. A missing or mismatched reference cannot append a new
+event. Poison, predecessor and independent-witness checks remain active; a
+one-record witness lag permits only the exact tail replay.
+
+This operation recovers historical acknowledgement after the original signing
+proof expires. It does not renew append authority, restore a revoked decision,
+admit a new event body or establish current-use authority. Ordinary signed
+append remains subject to current evidence validity. Default daemon
+Decision/Outcome composition and durable pending-intent recovery remain open.
+
+The same candidate makes `LedgerWitnessStore::recover` sync recovered data
+before exposing a frontier, including a complete frame whose prior owner's sync
+was not confirmed. A failed recovery sync returns `Indeterminate` without
+returning an owner. The recovery fixture uses a real witness file; a private
+test-only fault hook models the failed witness write while retaining the
+original file and lock. This is distinct from physical power-loss qualification.
+
+| Regression boundary | Required native observation |
+| --- | --- |
+| Committed Decision/Outcome ACK | Ordinary expired-proof append still rejects; exact historical replay completes the witness without adding ledger records. |
+| Exact identity and inactive history | Missing/mismatched references, poison, disallowed event kinds and non-tail witness lag reject; a revoked decision remains inactive after historical ACK recovery. |
+| Complete-frame recovery sync | An injected recovery-sync failure returns no owner; a later real sync recovers the same frontier without adding a frame. |
+
+The fixture sources are `production_reconciliation_tests.rs` and
+`witness_tests.rs` under the ledger crate. Their presence and this source review
+are not execution receipts. Native RED/GREEN and full-suite results are recorded
+separately under their actual execution commit/tree, command, terminal status and
+raw artifacts; this addendum does not assert an execution result. Existing historical
+source pins and qualification records remain at their original identities;
+`productionImplementation`, product execution, activation and release claims
+remain false. This addendum also grants no segmented-backend or target-host
+power-loss qualification.
+
+The sourceReviewAddendum reviewedPostimages entries retain the bytes inspected
+during the pre-format review and its historical integration base. They are not
+final candidate or execution hashes; current source-object observations and
+execution receipts are bound separately.

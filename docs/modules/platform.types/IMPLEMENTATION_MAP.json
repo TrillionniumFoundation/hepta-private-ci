@@ -39,7 +39,8 @@
       "publicSymbols": [
         "BoundedText",
         "BoundedBytes"
-      ]
+      ],
+      "sourceBlob": "5b8afd7be362d5383283d03b785b57b6128fa28d"
     },
     {
       "operation": "validate_id",
@@ -59,7 +60,8 @@
         "IdProfileV1",
         "IdNamespaceV1",
         "validate_id"
-      ]
+      ],
+      "sourceBlob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
     },
     {
       "operation": "raw_authority_ingress",
@@ -78,7 +80,8 @@
         "AuthorityFlagsV1",
         "AuthorityPosture",
         "NonAuthorizingPosture"
-      ]
+      ],
+      "sourceBlob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
     },
     {
       "operation": "canonical_digest_v1",
@@ -98,7 +101,8 @@
       "publicSymbols": [
         "canonical_encode_v1",
         "canonical_digest_v1"
-      ]
+      ],
+      "sourceBlob": "331d16b144b559d170c5e2919b6c042b45289f61"
     },
     {
       "operation": "canonical_validate_v1",
@@ -117,7 +121,8 @@
       "delegatedCallees": [],
       "publicSymbols": [
         "canonical_validate_v1"
-      ]
+      ],
+      "sourceBlob": "331d16b144b559d170c5e2919b6c042b45289f61"
     },
     {
       "operation": "fixed_q32",
@@ -136,7 +141,8 @@
         "FixedQ32",
         "ProbabilityQ32",
         "FIXED_Q32_ARITHMETIC_PROFILE_V1"
-      ]
+      ],
+      "sourceBlob": "3c2674dce405fd20f254f5f1816654aae99d7c13"
     },
     {
       "operation": "contract_registry_v1",
@@ -155,7 +161,8 @@
         "ContractRegistryV1",
         "RegistryDefinitionV1",
         "RegistryKindV1"
-      ]
+      ],
+      "sourceBlob": "b9af7af31f2eb6dda29f78701ccc608563920f87"
     },
     {
       "operation": "numeric_profile_definition_v1",
@@ -173,7 +180,8 @@
       "publicSymbols": [
         "NumericProfileV1",
         "NumericProfileDefinitionV1"
-      ]
+      ],
+      "sourceBlob": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
     },
     {
       "operation": "rescale_signal",
@@ -192,7 +200,8 @@
         "NumericSignalV1",
         "NumericConversionReceiptV1",
         "rescale_signal"
-      ]
+      ],
+      "sourceBlob": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7"
     },
     {
       "operation": "rescale_signal_registered",
@@ -209,7 +218,8 @@
       "delegatedCallees": [],
       "publicSymbols": [
         "rescale_signal_registered"
-      ]
+      ],
+      "sourceBlob": "03f4df15838b6c71fc0017fdb75cb179fb1b70a7"
     },
     {
       "operation": "generated_bindings_v1",
@@ -229,7 +239,8 @@
         "generated/python/hepta_platform_types_v1.py",
         "generated/javascript/hepta_platform_types_v1.mjs",
         "generated/typescript/hepta_platform_types_v1.d.ts"
-      ]
+      ],
+      "sourceBlob": "f8f2d0ceb0d84d79cbf0121a727259b140f7b2f2"
     }
   ],
   "ownedTargetProtocols": [
@@ -277,8 +288,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
-    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -290,5 +301,6 @@
     "record": "platform.types",
     "previousMapBlob": "ec940aa0d3b29400b8e7b9ff471d686139588086",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }
