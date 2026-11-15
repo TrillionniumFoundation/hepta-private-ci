@@ -1,0 +1,122 @@
+hia-asm.v1 hepta.hia.program.v8 codex_uuid_matches
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  entry_size:usize = buffer.len(source)
+  entry_maximum:usize = const() {"value":4096}
+  entry_valid:bool = compare.le(entry_size,entry_maximum)
+  branch entry_valid capacity(source,output,workspace) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf,c_workspace:mutbuf)
+  capacity_output:usize = buffer.len(c_output)
+  capacity_workspace:usize = buffer.len(c_workspace)
+  capacity_uuid:usize = const() {"value":36}
+  capacity_state:usize = const() {"value":1}
+  capacity_output_ok:bool = compare.ge(capacity_output,capacity_uuid)
+  capacity_workspace_ok:bool = compare.ge(capacity_workspace,capacity_state)
+  capacity_ok:bool = bool.and(capacity_output_ok,capacity_workspace_ok)
+  branch capacity_ok final_flag(c_source,c_output,c_workspace) short_output()
+block final_flag(f_source:readbuf,f_output:mutbuf,f_workspace:mutbuf)
+  final_flag_zero:usize = const() {"value":0}
+  final_flag_byte:u8 = buffer.load(f_workspace,final_flag_zero)
+  final_flag_one:u8 = const() {"value":1}
+  final_flag_valid:bool = compare.le(final_flag_byte,final_flag_one)
+  final_flag_last:bool = compare.eq(final_flag_byte,final_flag_one)
+  branch final_flag_valid scan(f_source,f_output,final_flag_zero,final_flag_last) invalid()
+block scan(s_source:readbuf,s_output:mutbuf,s_index:usize,s_final:bool)
+  scan_size:usize = buffer.len(s_source)
+  scan_remaining:usize = int.sub.checked(scan_size,s_index)
+  scan_uuid:usize = const() {"value":36}
+  scan_enough:bool = compare.ge(scan_remaining,scan_uuid)
+  branch scan_enough candidate_hyphen(s_source,s_output,s_index,s_final) tail(s_source,s_index,s_final)
+block candidate_hyphen(candidate_source:readbuf,candidate_output:mutbuf,candidate_index:usize,candidate_final:bool)
+  candidate_hyphen_offset:usize = const() {"value":8}
+  candidate_hyphen_position:usize = int.add.checked(candidate_index,candidate_hyphen_offset)
+  candidate_hyphen_value:u8 = buffer.load(candidate_source,candidate_hyphen_position)
+  candidate_hyphen_expected:u8 = const() {"value":45}
+  candidate_hyphen_valid:bool = compare.eq(candidate_hyphen_value,candidate_hyphen_expected)
+  candidate_hyphen_zero:usize = const() {"value":0}
+  branch candidate_hyphen_valid match_byte(candidate_source,candidate_output,candidate_index,candidate_final,candidate_hyphen_zero) next_candidate(candidate_source,candidate_output,candidate_index,candidate_final)
+block match_byte(m_source:readbuf,m_output:mutbuf,m_index:usize,m_final:bool,m_at:usize)
+  match_byte_position:usize = int.add.checked(m_index,m_at)
+  match_byte_value:u8 = buffer.load(m_source,match_byte_position)
+  match_byte_hyphen_a:usize = const() {"value":8}
+  match_byte_hyphen_b:usize = const() {"value":13}
+  match_byte_hyphen_c:usize = const() {"value":18}
+  match_byte_hyphen_d:usize = const() {"value":23}
+  match_byte_a:bool = compare.eq(m_at,match_byte_hyphen_a)
+  match_byte_b:bool = compare.eq(m_at,match_byte_hyphen_b)
+  match_byte_c:bool = compare.eq(m_at,match_byte_hyphen_c)
+  match_byte_d:bool = compare.eq(m_at,match_byte_hyphen_d)
+  match_byte_ab:bool = bool.or(match_byte_a,match_byte_b)
+  match_byte_cd:bool = bool.or(match_byte_c,match_byte_d)
+  match_byte_hyphen:bool = bool.or(match_byte_ab,match_byte_cd)
+  branch match_byte_hyphen hyphen(m_source,m_output,m_index,m_final,m_at,match_byte_value) hexadecimal(m_source,m_output,m_index,m_final,m_at,match_byte_value)
+block hyphen(h_source:readbuf,h_output:mutbuf,h_index:usize,h_final:bool,h_at:usize,h_value:u8)
+  hyphen_expected:u8 = const() {"value":45}
+  hyphen_valid:bool = compare.eq(h_value,hyphen_expected)
+  branch hyphen_valid advance_match(h_source,h_output,h_index,h_final,h_at) next_candidate(h_source,h_output,h_index,h_final)
+block hexadecimal(x_source:readbuf,x_output:mutbuf,x_index:usize,x_final:bool,x_at:usize,x_value:u8)
+  hexadecimal_zero:u8 = const() {"value":48}
+  hexadecimal_nine:u8 = const() {"value":57}
+  hexadecimal_upper_a:u8 = const() {"value":65}
+  hexadecimal_upper_f:u8 = const() {"value":70}
+  hexadecimal_lower_a:u8 = const() {"value":97}
+  hexadecimal_lower_f:u8 = const() {"value":102}
+  hexadecimal_digit_start:bool = compare.ge(x_value,hexadecimal_zero)
+  hexadecimal_digit_end:bool = compare.le(x_value,hexadecimal_nine)
+  hexadecimal_upper_start:bool = compare.ge(x_value,hexadecimal_upper_a)
+  hexadecimal_upper_end:bool = compare.le(x_value,hexadecimal_upper_f)
+  hexadecimal_lower_start:bool = compare.ge(x_value,hexadecimal_lower_a)
+  hexadecimal_lower_end:bool = compare.le(x_value,hexadecimal_lower_f)
+  hexadecimal_digit:bool = bool.and(hexadecimal_digit_start,hexadecimal_digit_end)
+  hexadecimal_upper:bool = bool.and(hexadecimal_upper_start,hexadecimal_upper_end)
+  hexadecimal_lower:bool = bool.and(hexadecimal_lower_start,hexadecimal_lower_end)
+  hexadecimal_letter:bool = bool.or(hexadecimal_upper,hexadecimal_lower)
+  hexadecimal_valid:bool = bool.or(hexadecimal_digit,hexadecimal_letter)
+  branch hexadecimal_valid advance_match(x_source,x_output,x_index,x_final,x_at) next_candidate(x_source,x_output,x_index,x_final)
+block advance_match(a_source:readbuf,a_output:mutbuf,a_index:usize,a_final:bool,a_at:usize)
+  advance_match_one:usize = const() {"value":1}
+  advance_match_next:usize = int.add.checked(a_at,advance_match_one)
+  advance_match_size:usize = const() {"value":36}
+  advance_match_complete:bool = compare.eq(advance_match_next,advance_match_size)
+  advance_match_zero:usize = const() {"value":0}
+  branch advance_match_complete emit(a_source,a_output,a_index,advance_match_zero) match_byte(a_source,a_output,a_index,a_final,advance_match_next)
+block next_candidate(n_source:readbuf,n_output:mutbuf,n_index:usize,n_final:bool)
+  next_candidate_one:usize = const() {"value":1}
+  next_candidate_index:usize = int.add.checked(n_index,next_candidate_one)
+  jump scan(n_source,n_output,next_candidate_index,n_final)
+block emit(e_source:readbuf,e_output:mutbuf,e_index:usize,e_at:usize)
+  emit_position:usize = int.add.checked(e_index,e_at)
+  emit_value:u8 = buffer.load(e_source,emit_position)
+  _ = buffer.store(e_output,e_at,emit_value)
+  emit_one:usize = const() {"value":1}
+  emit_next:usize = int.add.checked(e_at,emit_one)
+  emit_size:usize = const() {"value":36}
+  emit_complete:bool = compare.eq(emit_next,emit_size)
+  branch emit_complete matched(e_index) emit(e_source,e_output,e_index,emit_next)
+block matched(r_index:usize)
+  matched_size:usize = const() {"value":36}
+  matched_end:usize = int.add.checked(r_index,matched_size)
+  matched_consumed:u32 = int.cast(matched_end) {"mode":"wrap"}
+  matched_tag:u32 = const() {"value":65536}
+  matched_result:u32 = int.add.checked(matched_tag,matched_consumed)
+  ret(matched_result)
+block tail(t_source:readbuf,t_index:usize,t_final:bool)
+  branch t_final exhausted(t_source) more(t_index)
+block exhausted(d_source:readbuf)
+  exhausted_size:usize = buffer.len(d_source)
+  exhausted_consumed:u32 = int.cast(exhausted_size) {"mode":"wrap"}
+  exhausted_tag:u32 = const() {"value":131072}
+  exhausted_result:u32 = int.add.checked(exhausted_tag,exhausted_consumed)
+  ret(exhausted_result)
+block more(b_index:usize)
+  more_consumed:u32 = int.cast(b_index) {"mode":"wrap"}
+  more_tag:u32 = const() {"value":196608}
+  more_result:u32 = int.add.checked(more_tag,more_consumed)
+  ret(more_result)
+block invalid()
+  invalid_code:u32 = const() {"value":4294967295}
+  ret(invalid_code)
+block short_output()
+  short_output_code:u32 = const() {"value":4294967294}
+  ret(short_output_code)
+end

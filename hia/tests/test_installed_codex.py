@@ -26,6 +26,9 @@ NATIVE_SYMBOLS = (
     "codex_hia_metric_tag",
     "codex_hia_markdown_location",
     "codex_hia_ascii_json_fragment",
+    "codex_hia_template_parser",
+    "codex_hia_template_render",
+    "codex_hia_template_index",
 )
 
 

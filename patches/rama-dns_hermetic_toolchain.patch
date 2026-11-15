@@ -1,0 +1,38 @@
+# Forward Bazel target C toolchain headers into Rama bindgen and use the
+# canonical lowercase Windows import-library name for Linux cross-linking.
+diff --git a/build.rs b/build.rs
+--- a/build.rs
++++ b/build.rs
+@@ -7,6 +7,7 @@
+
+ fn main() {
+     println!("cargo::rerun-if-changed=build.rs");
++    println!("cargo::rerun-if-env-changed=CFLAGS");
+     println!("cargo::rerun-if-changed=src/client/linux/resolv_wrapper.h");
+
+     let target_os = env::var("CARGO_CFG_TARGET_OS").ok();
+@@ -22,7 +23,12 @@
+
+     let out_path = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR")).join("resolv_bindings.rs");
+
++    // Bazel supplies target sysroots and system headers through its C toolchain.
++    // Parse shell quoting so paths containing spaces remain single arguments.
++    let cflags = env::var("CFLAGS").unwrap_or_default();
++    let clang_args = shlex::split(&cflags).expect("parse target toolchain CFLAGS");
+     let bindings = bindgen::Builder::default()
++        .clang_args(clang_args)
+         .header("src/client/linux/resolv_wrapper.h")
+         .allowlist_type("__res_state")
+         .generate_comments(true)
+diff --git a/src/client/windows.rs b/src/client/windows.rs
+--- a/src/client/windows.rs
++++ b/src/client/windows.rs
+@@ -775,7 +775,7 @@
+         pub(super) strings: [*const u16; 1],
+     }
+
+-    #[link(name = "Dnsapi")]
++    #[link(name = "dnsapi")]
+     unsafe extern "system" {
+         /// DnsQueryEx:
+         /// Official docs:

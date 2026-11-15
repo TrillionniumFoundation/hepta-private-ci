@@ -32,6 +32,9 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    # The signature fixtures and verifier require the host's /usr/bin/ssh-keygen.
+    # Keep sandboxing while preventing execution in an image without OpenSSH.
+    tags = ["no-remote-exec"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",

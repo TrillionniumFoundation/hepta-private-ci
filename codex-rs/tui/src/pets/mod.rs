@@ -276,6 +276,7 @@ fn clear_sixel_area(writer: &mut impl Write, area: SixelClearArea) -> std::io::R
 
 #[cfg(test)]
 mod tests {
+    use base64::Engine as _;
     use std::error::Error as _;
     use std::io;
     use std::path::PathBuf;
@@ -349,6 +350,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let frame = dir.path().join("frame.png");
         std::fs::write(&frame, b"png").unwrap();
+        let path_payload =
+            base64::engine::general_purpose::STANDARD.encode(frame.to_string_lossy().as_bytes());
         let request = AmbientPetDraw {
             frame,
             protocol: ImageProtocol::KittyLocalFile,
@@ -366,11 +369,14 @@ mod tests {
         render_ambient_pet_image(&mut output, &mut state, Some(request)).unwrap();
 
         let output = String::from_utf8(output).unwrap();
-        assert!(output.contains("a=d,d=I,i=49374,q=2;"));
-        assert!(output.contains("\x1b[4;3H"));
-        assert!(output.contains("a=T,t=f,f=100,c=4,r=2,q=2,i=49374;"));
-        assert!(!output.contains("cG5n"));
-        assert!(output.contains("\x1b8"));
+        // The encoded filename can itself contain base64("png"). Check the
+        // complete protocol packet to prove that only the path is transmitted.
+        assert_eq!(
+            output,
+            format!(
+                "\x1b_Ga=d,d=I,i=49374,q=2;\x1b\\\x1b7\x1b[4;3H\x1b_Ga=T,t=f,f=100,c=4,r=2,q=2,i=49374;{path_payload}\x1b\\\x1b8"
+            )
+        );
     }
 
     #[test]
