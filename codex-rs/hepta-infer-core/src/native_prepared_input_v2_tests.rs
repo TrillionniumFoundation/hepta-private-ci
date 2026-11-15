@@ -250,3 +250,6 @@ fn v2_process_loss_retains_original_input_and_uncertain_slot() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[path = "native_compaction_v3_tests.rs"]
+mod compaction_tests;

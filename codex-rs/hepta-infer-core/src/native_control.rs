@@ -19,7 +19,15 @@ pub use prepared_input_v2::NativeIntelligenceInputBindingV2;
 pub use prepared_input_v2::NativePreparedInputV2;
 pub use prepared_input_v2::NativeRunSnapshotV2;
 
+#[path = "native_checkpoint.rs"]
+mod checkpoint;
+use checkpoint::record_headroom;
+
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
+pub(super) const CHECKPOINT_PREFIX: &str = "native-checkpoint-v2|";
+pub(super) const LEGACY_CHECKPOINT_PREFIX: &str = "native-checkpoint-v1|";
+const USAGE_HEADROOM_BYTES: u64 = 4 * 1024;
+const TERMINAL_HEADROOM_BYTES: u64 = super::MAX_JOURNAL_LINE_BYTES as u64 + 128 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -229,6 +237,8 @@ pub struct NativeRunRecord {
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
+    // Rebuilt by semantic replay; terminal refinement cannot release twice.
+    active_reservations: usize,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
 }
 
@@ -271,6 +281,30 @@ enum Event {
         request_id: String,
         output: NativeRunOutput,
     },
+    // Immutable terminal bodies need not be copied for monotonic usage alone.
+    RefineUsage {
+        request_id: String,
+        expected_revision: u64,
+        observed_output_tokens: u64,
+    },
+}
+
+impl Event {
+    fn request_id(&self) -> &str {
+        match self {
+            Self::Reserve { request, .. } | Self::ReservePreparedV2 { request, .. } => {
+                &request.request_id
+            }
+            Self::Dispatch { request_id, .. }
+            | Self::Started { request_id, .. }
+            | Self::RejectBeforeStart { request_id, .. }
+            | Self::Cancel { request_id }
+            | Self::Stop { request_id, .. }
+            | Self::AbortBeforeEffect { request_id, .. }
+            | Self::Observe { request_id, .. }
+            | Self::RefineUsage { request_id, .. } => request_id,
+        }
+    }
 }
 
 impl DurableInferenceControl {
@@ -335,7 +369,6 @@ impl DurableInferenceControl {
         {
             return Err(Error::CapacityExceeded);
         }
-        self.ensure_native_dispatch_space()?;
         let id = request.request_id.clone();
         let event = match input {
             Some(input) => Event::ReservePreparedV2 {
@@ -357,7 +390,6 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
-        self.ensure_native_dispatch_space()?;
         self.commit_native(
             request_id,
             Event::Dispatch {
@@ -495,7 +527,7 @@ impl DurableInferenceControl {
     pub fn settle_native(
         &mut self,
         request_id: &str,
-        output: NativeRunOutput,
+        mut output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
         let record = self
             .native
@@ -504,6 +536,25 @@ impl DurableInferenceControl {
             .ok_or(Error::RequestNotFound)?;
         if record.observation.as_ref() == Some(&output) {
             return Ok(record.clone());
+        }
+        if let Some(previous) = &record.observation
+            && previous.terminal_observed
+            && let Some(tokens) = output.observed_output_tokens
+        {
+            // Compare every non-usage field without cloning the output body.
+            output.observed_output_tokens = previous.observed_output_tokens;
+            let usage_only = previous == &output;
+            output.observed_output_tokens = Some(tokens);
+            if usage_only {
+                return self.commit_native(
+                    request_id,
+                    Event::RefineUsage {
+                        request_id: request_id.to_string(),
+                        expected_revision: record.revision,
+                        observed_output_tokens: tokens,
+                    },
+                );
+            }
         }
         self.commit_native(
             request_id,
@@ -518,41 +569,57 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
-    fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
-        // dispatch/cancel metadata and the next maximal observed output before
-        // admitting a new external execution. This is not an archival policy.
-        if self
-            .journal_bytes
-            .checked_add(self.generation.reserved_bytes()?)
-            .ok_or(Error::ArithmeticOverflow)?
-            > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
-        {
-            return Err(Error::CapacityExceeded);
-        }
-        Ok(())
-    }
-
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
-        let mut next = self.native.clone();
-        next.apply(event.clone())?;
+        if request_id != event.request_id() {
+            return Err(Error::Conflict);
+        }
+        // Preserve the global admission count, but stage only this identity.
+        // Historical output bodies must not be copied by an unrelated update.
+        let mut staged = NativeJournal {
+            maximum_in_flight: self.native.maximum_in_flight,
+            active_reservations: self.native.active_reservations,
+            records: BTreeMap::new(),
+        };
+        if let Some(previous) = self.native.records.get(request_id) {
+            staged
+                .records
+                .insert(request_id.to_string(), previous.clone());
+        }
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
-        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
-        self.native = next;
-        self.native
+        staged.apply(event)?;
+        let prepared = staged
+            .records
+            .remove(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let result = prepared.clone();
+        let previous_headroom = self
+            .native
             .records
             .get(request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+            .map_or(0, record_headroom);
+        let next_headroom = record_headroom(&prepared);
+        let headroom_after = super::replace_headroom(
+            self.reserved_headroom_bytes,
+            previous_headroom,
+            next_headroom,
+        )?;
+        self.append_preserving_headroom(&format!("{JOURNAL_PREFIX}{json}\n"), headroom_after)?;
+        self.native.records.insert(request_id.to_string(), prepared);
+        self.native.maximum_in_flight = staged.maximum_in_flight;
+        self.native.active_reservations = staged.active_reservations;
+        self.reserved_headroom_bytes = headroom_after;
+        Ok(result)
     }
 }
 
 impl NativeJournal {
-    pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
-        let event =
+    pub(super) fn replay(&mut self, json: &str) -> Result<String, Error> {
+        let event: Event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
-        self.apply(event)
+        let request_id = event.request_id().to_string();
+        self.apply(event)?;
+        Ok(request_id)
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
@@ -598,15 +665,13 @@ impl NativeJournal {
             {
                 return Err(Error::Conflict);
             }
-            if self
-                .records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                >= maximum_in_flight
-            {
+            if self.active_reservations >= maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
+            self.active_reservations = self
+                .active_reservations
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
             self.maximum_in_flight = Some(maximum_in_flight);
             self.records.insert(
                 request.request_id.clone(),
@@ -635,9 +700,11 @@ impl NativeJournal {
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::AbortBeforeEffect { request_id, .. }
-            | Event::Observe { request_id, .. } => request_id,
+            | Event::Observe { request_id, .. }
+            | Event::RefineUsage { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
+        let was_active = record.state != NativeReservationState::Released;
         match event {
             Event::Reserve { .. } | Event::ReservePreparedV2 { .. } => {
                 return Err(Error::InvalidTransition);
@@ -809,8 +876,35 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::RefineUsage {
+                expected_revision,
+                observed_output_tokens,
+                ..
+            } => {
+                if record.state != NativeReservationState::Released
+                    || record.revision != expected_revision
+                {
+                    return Err(Error::Conflict);
+                }
+                let observation = record
+                    .observation
+                    .as_mut()
+                    .ok_or(Error::TerminalObservationMissing)?;
+                if !observation.terminal_observed
+                    || observation
+                        .observed_output_tokens
+                        .is_some_and(|previous| observed_output_tokens <= previous)
+                {
+                    return Err(Error::Conflict);
+                }
+                observation.observed_output_tokens = Some(observed_output_tokens);
+            }
             Event::Observe { output, .. } => {
-                if record.dispatch_rejection.is_some() {
+                if record
+                    .dispatch_rejection
+                    .as_ref()
+                    .is_some_and(|rejection| rejection.retry_safe_before_admission)
+                {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
@@ -820,6 +914,12 @@ impl NativeJournal {
             .revision
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
+        if was_active && record.state == NativeReservationState::Released {
+            self.active_reservations = self
+                .active_reservations
+                .checked_sub(1)
+                .ok_or(Error::CorruptJournal("native active reservations"))?;
+        }
         Ok(())
     }
 }

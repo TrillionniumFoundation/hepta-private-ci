@@ -14,6 +14,9 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 #[path = "generation_control.rs"]
 pub mod generation;
 #[path = "native_control.rs"]
@@ -22,12 +25,28 @@ pub mod native;
 #[path = "durable_control_file.rs"]
 mod owned_file;
 
+#[path = "journal_checkpoint_frame.rs"]
+mod checkpoint_frame;
+#[path = "journal_maintenance.rs"]
+mod maintenance;
+use maintenance::compaction_path;
+use maintenance::legacy_record_headroom;
+use maintenance::push_image_line;
+use maintenance::replace_headroom;
+use maintenance::replay_legacy_checkpoint;
+use maintenance::required_headroom;
+
+const LEGACY_CHECKPOINT_PREFIX: &str = "legacy-checkpoint-v1|";
+const LEGACY_TERMINAL_HEADROOM_BYTES: u64 = 16 * 1024;
+const COMPACTION_TEMP_SUFFIX: &str = ".compact.tmp";
+
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RequestState {
     Pending,
     Reserved,
@@ -75,7 +94,8 @@ impl RequestState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct InferenceRequest {
     pub request_id: String,
     pub principal_id: String,
@@ -86,7 +106,8 @@ pub struct InferenceRequest {
     pub semantic_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Reservation {
     pub reservation_id: String,
     pub quota_units: u64,
@@ -95,14 +116,16 @@ pub struct Reservation {
     pub valid_until_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Assignment {
     pub worker_id: String,
     pub worker_generation: u64,
     pub assignment_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -117,7 +140,8 @@ pub struct TerminalObservation {
     pub usage_units: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RequestRecord {
     pub request: InferenceRequest,
     pub revision: u64,
@@ -136,6 +160,27 @@ pub struct ControlReceipt {
     pub state: RequestState,
     pub idempotent: bool,
     pub terminal_observed: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct JournalCompactionReceipt {
+    pub before_bytes: u64,
+    pub after_bytes: u64,
+    pub legacy_records: usize,
+    pub native_records: usize,
+    pub generation_records: usize,
+    pub reserved_headroom_bytes: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct JournalCapacityStatus {
+    pub journal_bytes: u64,
+    pub maximum_journal_bytes: u64,
+    pub reserved_headroom_bytes: u64,
+    pub admissible_bytes: u64,
+    pub legacy_records: usize,
+    pub native_records: usize,
+    pub generation_records: usize,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -177,11 +222,15 @@ impl From<std::io::Error> for Error {
 pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
+    // Only path constructors own directory-entry replacement capability.
+    _writer_lock: Option<File>,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
     generation: generation::GenerationJournal,
     capacity: usize,
     journal_bytes: u64,
+    // Legacy/native liabilities; generation retains its independently derived reserve.
+    reserved_headroom_bytes: u64,
     poisoned: bool,
 }
 
@@ -190,6 +239,9 @@ impl Drop for DurableInferenceControl {
         // A concurrent fork can retain the open file description until exec.
         // Release this owner's lock even while such a descriptor is still open.
         let _ = self.file.unlock();
+        if let Some(writer_lock) = &self._writer_lock {
+            let _ = writer_lock.unlock();
+        }
     }
 }
 
@@ -209,8 +261,30 @@ impl DurableInferenceControl {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
+        // A path owner must have an actual durable containing directory. This
+        // preflight also keeps diagnostic procfs aliases from creating locks.
+        #[cfg(unix)]
+        {
+            let parent = path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
+        }
+        let mut lock_path = path.as_os_str().to_os_string();
+        lock_path.push(".writer.lock");
+        let writer_lock = options.open(PathBuf::from(lock_path))?;
+        writer_lock.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        // Open the data inode only after the stable ownership lock is held.
         let file = options.open(&path)?;
-        let control = Self::replay_file(file, path, capacity)?;
+        let control = Self::replay_file(file, path, capacity, Some(writer_lock))?;
+        // Preserve recovery evidence if replay failed. Descriptor-only owners
+        // never enter this pathname cleanup or rename path.
+        match fs::remove_file(compaction_path(&control.path)) {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
         #[cfg(unix)]
         {
             let parent = control
@@ -233,10 +307,10 @@ impl DurableInferenceControl {
     #[cfg(target_os = "linux")]
     pub fn open_file(file: File, path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         owned_file::validate_read_append(&file)?;
-        Self::replay_file(file, path, capacity)
+        Self::replay_file(file, path, capacity, /*writer_lock*/ None)
     }
 
-    fn replay_file(mut file: File, path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+    fn replay_file(mut file: File, path: impl AsRef<Path>, capacity: usize, writer_lock: Option<File>) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);
         }
@@ -247,13 +321,32 @@ impl DurableInferenceControl {
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         file.rewind()?;
+        if file.metadata()?.len() > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut generation = generation::GenerationJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
+        let mut checkpoint_frame = checkpoint_frame::CheckpointFrame::default();
         loop {
+            // Empty historical lines carry no state. Consume a whole buffered
+            // run instead of entering the semantic parser once per byte.
+            let blank_bytes = reader
+                .fill_buf()?
+                .iter()
+                .take_while(|byte| **byte == b'\n')
+                .count();
+            if blank_bytes > 0 {
+                journal_bytes += blank_bytes as u64;
+                if journal_bytes > MAX_JOURNAL_BYTES {
+                    return Err(Error::CapacityExceeded);
+                }
+                reader.consume(blank_bytes);
+                continue;
+            }
             line.clear();
             // Bound actual reads and allocation, including files whose metadata
             // races with open. One extra byte distinguishes EOF from overflow.
@@ -277,21 +370,37 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
-                native.replay(json)?;
-            } else if let Some(json) = line.strip_prefix(generation::JOURNAL_PREFIX) {
-                generation.replay(json)?;
-            } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+            if checkpoint_frame.observe(line, capacity)? {
+                continue;
             }
+            // Each validated frame changes one identity. Previously accepted
+            // frames are already disjoint, so inspect only this frame's ID.
+            let collision = if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                let id = native.replay_checkpoint(json)?;
+                records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(native::LEGACY_CHECKPOINT_PREFIX) {
+                let id = native.replay_legacy_checkpoint(json)?;
+                records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let id = replay_legacy_checkpoint(&mut records, json)?;
+                native.records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(generation::CHECKPOINT_PREFIX) {
+                let id = generation.replay_checkpoint(json)?;
+                records.contains_key(&id) || native.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                let id = native.replay(json)?;
+                records.contains_key(&id) || generation.records.contains_key(&id)
+            } else if let Some(json) = line.strip_prefix(generation::JOURNAL_PREFIX) {
+                let id = generation.replay(json)?;
+                records.contains_key(&id) || native.records.contains_key(&id)
+            } else {
+                let event = decode_event(line)?;
+                apply_event(&mut records, &event, /*replay*/ true)?;
+                native.records.contains_key(event.request_id())
+                    || generation.records.contains_key(event.request_id())
+            };
             if records.len() + native.records.len() + generation.records.len() > capacity
-                || records.keys().any(|id| {
-                    native.records.contains_key(id) || generation.records.contains_key(id)
-                })
-                || native
-                    .records
-                    .keys()
-                    .any(|id| generation.records.contains_key(id))
+                || collision
                 || journal_bytes
                     .checked_add(generation.reserved_bytes()?)
                     .ok_or(Error::ArithmeticOverflow)?
@@ -300,6 +409,8 @@ impl DurableInferenceControl {
                 return Err(Error::CapacityExceeded);
             }
         }
+        checkpoint_frame.finish()?;
+        let reserved_headroom_bytes = required_headroom(&records, &native)?;
         if journal_bytes
             .checked_add(generation.reserved_bytes()?)
             .ok_or(Error::ArithmeticOverflow)?
@@ -310,11 +421,13 @@ impl DurableInferenceControl {
         Ok(Self {
             path,
             file,
+            _writer_lock: writer_lock,
             records,
             native,
             generation,
             capacity,
             journal_bytes,
+            reserved_headroom_bytes,
             poisoned: false,
         })
     }
@@ -500,19 +613,33 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
-        let encoded = format!("{}\n", encode_event(&event));
-        self.append(&encoded)?;
+        // Validate only the affected immutable predecessor. Events have no
+        // cross-record transitions; global capacity/namespace admission remains
+        // with submit. A rejected event or uncertain append leaves every live
+        // record untouched, without cloning unrelated historical payloads.
         let request_id = event.request_id().to_string();
-        self.records = next;
-        let record = self
+        let mut staged = BTreeMap::new();
+        if let Some(previous) = self.records.get(&request_id) {
+            staged.insert(request_id.clone(), previous.clone());
+        }
+        apply_event(&mut staged, &event, /*replay*/ false)?;
+        let prepared = staged.remove(&request_id).ok_or(Error::RequestNotFound)?;
+        let result = receipt(&prepared, /*idempotent*/ false);
+        let previous_headroom = self
             .records
             .get(&request_id)
-            .ok_or(Error::RequestNotFound)?;
-        Ok(receipt(record, /*idempotent*/ false))
+            .map_or(0, legacy_record_headroom);
+        let next_headroom = legacy_record_headroom(&prepared);
+        let headroom_after = replace_headroom(
+            self.reserved_headroom_bytes,
+            previous_headroom,
+            next_headroom,
+        )?;
+        let encoded = format!("{}\n", encode_event(&event));
+        self.append_preserving_headroom(&encoded, headroom_after)?;
+        self.records.insert(request_id, prepared);
+        self.reserved_headroom_bytes = headroom_after;
+        Ok(result)
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
@@ -527,19 +654,17 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        let next_bytes = self
-            .journal_bytes
-            .checked_add(encoded.len() as u64)
+        let required = self.reserved_headroom_bytes
+            .checked_add(generation_reserved)
             .ok_or(Error::ArithmeticOverflow)?;
         if encoded.len() > MAX_JOURNAL_LINE_BYTES
-            || next_bytes
-                .checked_add(generation_reserved)
-                .ok_or(Error::ArithmeticOverflow)?
-                > MAX_JOURNAL_BYTES
+            || !self.append_fits(self.journal_bytes, encoded.len() as u64, required)?
         {
             return Err(Error::CapacityExceeded);
         }
-        Ok(next_bytes)
+        self.journal_bytes
+            .checked_add(encoded.len() as u64)
+            .ok_or(Error::ArithmeticOverflow)
     }
 
     fn append_with_generation_reserve(
@@ -547,15 +672,51 @@ impl DurableInferenceControl {
         encoded: &str,
         generation_reserved: u64,
     ) -> Result<(), Error> {
-        let next_bytes = self.ensure_append_capacity(encoded, generation_reserved)?;
-        let persisted = self
-            .file
-            .write_all(encoded.as_bytes())
+        self.append_with_reserves(encoded, self.reserved_headroom_bytes, generation_reserved)
+    }
+
+    pub(super) fn append_preserving_headroom(
+        &mut self,
+        encoded: &str,
+        required_headroom_after: u64,
+    ) -> Result<(), Error> {
+        self.append_with_reserves(encoded, required_headroom_after, self.generation.reserved_bytes()?)
+    }
+
+    fn append_with_reserves(
+        &mut self,
+        encoded: &str,
+        required_headroom_after: u64,
+        generation_reserved: u64,
+    ) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        let encoded_bytes = encoded.len() as u64;
+        let required = required_headroom_after
+            .checked_add(generation_reserved)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if !self.append_fits(self.journal_bytes, encoded_bytes, required)? {
+            // A diagnostic pathname is not a directory-entry capability.
+            if self._writer_lock.is_none() {
+                return Err(Error::CapacityExceeded);
+            }
+            let image = self.checkpoint_image()?;
+            if !self.append_fits(image.len() as u64, encoded_bytes, required)? {
+                return Err(Error::CapacityExceeded);
+            }
+            self.replace_with_checkpoint_image(&image)?;
+        }
+        let next_bytes = self.journal_bytes
+            .checked_add(encoded_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let persisted = self.file.write_all(encoded.as_bytes())
             .and_then(|()| self.file.flush())
             .and_then(|()| self.file.sync_all());
         if let Err(error) = persisted {
-            // A partial write or failed sync has an unknown durable outcome.
-            // Keep this owner fenced until explicit inspection and reopen.
             self.poisoned = true;
             return Err(error.into());
         }
