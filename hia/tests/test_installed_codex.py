@@ -36,6 +36,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_patch_effects",
     "codex_hia_patch_summary",
     "codex_hia_patch_application",
+    "codex_hia_patch_standalone",
     "codex_hia_unified_diff",
 )
 

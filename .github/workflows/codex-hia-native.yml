@@ -139,6 +139,28 @@ jobs:
             --report "$RUNNER_TEMP/unified-component-receipts.json" \
             2>&1 | tee "$RUNNER_TEMP/unified-component-receipts.log"
 
+      - name: Verify standalone continuation and no-write contracts
+        id: standalone_abi
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_patch_standalone_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-patch-standalone-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-standalone-abi.log"
+
+      - name: Verify standalone source and archive receipts
+        id: standalone_receipts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module patch_standalone \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-patch-standalone-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-standalone-receipt.log"
+
       - name: Verify application continuation and no-write contracts
         id: application_abi
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -612,6 +634,20 @@ jobs:
             --report "$RUNNER_TEMP/hia-patch-effects-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-caller.log"
 
+      - name: Compare complete original and native standalone programs
+        id: standalone_caller
+        if: ${{ always() && steps.effects_caller.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_patch_standalone_caller.py \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --effects-report "$RUNNER_TEMP/hia-patch-effects-caller.json" \
+            --rustc "$RUSTC" \
+            --work-dir "$RUNNER_TEMP/hia-patch-standalone-caller" \
+            --report "$RUNNER_TEMP/hia-patch-standalone-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-standalone-caller.log"
+
       - name: Compare complete original and native public patch application
         id: application_caller
         if: ${{ always() && steps.effects_caller.outcome == 'success' }}
@@ -760,6 +796,11 @@ jobs:
             ${{ runner.temp }}/unified-*.jsonl
             ${{ runner.temp }}/unified-*.log
             ${{ runner.temp }}/unified-*.stderr
+            ${{ runner.temp }}/hia-patch-standalone-abi.json
+            ${{ runner.temp }}/hia-patch-standalone-abi.calls.jsonl
+            ${{ runner.temp }}/hia-patch-standalone-abi.log
+            ${{ runner.temp }}/hia-patch-standalone-receipt.json
+            ${{ runner.temp }}/hia-patch-standalone-receipt.log
             ${{ runner.temp }}/hia-patch-application-abi.json
             ${{ runner.temp }}/hia-patch-application-abi.log
             ${{ runner.temp }}/hia-patch-application-receipt.json
@@ -780,6 +821,10 @@ jobs:
             ${{ runner.temp }}/hia-patch-effects-abi.log
             ${{ runner.temp }}/hia-patch-effects-receipt.json
             ${{ runner.temp }}/hia-patch-effects-receipt.log
+            ${{ runner.temp }}/hia-patch-standalone-caller.json
+            ${{ runner.temp }}/hia-patch-standalone-caller.log
+            ${{ runner.temp }}/hia-patch-standalone-caller/commands/
+            ${{ runner.temp }}/hia-patch-standalone-caller/process-observations/
             ${{ runner.temp }}/hia-patch-effects-caller.json
             ${{ runner.temp }}/hia-patch-effects-caller.log
             ${{ runner.temp }}/hia-patch-effects-caller/original/

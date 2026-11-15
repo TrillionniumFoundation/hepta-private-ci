@@ -80,19 +80,19 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "native_components_and_owner_preflight_passed_targeted_fixture_repair_passed_full_public_pending",
+    "qualification_status": "current_native_components_and_owner_preflight_passed_complete_public_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Fifteen B3 modules cover thirteen algorithm groups. The current fixed-point build preserves all fourteen prior source/archive/object/shared-library identities. Current application continuation tests executed 2790 native calls, including 1841 error/no-write cases, 512 concurrent calls and all 25 legal transitions; its actual 70-check source/archive receipt gate passed. An independent H build reproduced all 45 namespaced machine artifacts. The actual prepublication owner preflight passed native/default Cargo, 101/99 just tests with zero skips, both strict all-target workspace Clippy modes and compiler receipt admissions. That prepublication e23-plus-21-path record predates the final three metadata documents, two-import formatting follow-up and this six-file fixture repair; its original results and hashes remain unchanged. The first clean 08df public run passed the effects comparison with 121 original inputs, 13 unchanged root tests and 360 pairs, then stopped at application fixture 756 after 756 matching pairs: 1512 successful observations and one failed original attempt. Literal PATCH heredoc parsing failed before apply_hunks; the native counterpart did not execute. Eighteen materialized fixtures now use EOF, while two default/no-context/normal-writer string-API cases retain the original PATCH rejection bytes. Targeted 20-pair/40-process and 7-delimiter-pair/2-process probes passed; the repaired full 1470-pair/2940-process gate has not run. Final fix/format, installation, current complete consumer CI, required platforms, default dispatch, release/LTO, whole-product performance and retirement remain pending. Inherited fourteen-module CI remains bound to its own sources, including both failed 0339 attempts and the two complete successful e23 parent runs. All 15 complete capabilities and the 198-crate baseline inventory remain open. The subsequent clean 1083727e public attempt passed the fresh complete effects prerequisite, then rejected the stale DRIVER_SHA256 before compiling or executing an application observer. This correction changes only that constant to match the published driver, preserves the strict guard and corpus, and does not qualify the complete matrix.",
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Sixteen B3 modules cover fourteen algorithm groups. The current fixed-point build preserves all fifteen prior sources and 45 namespaced machine artifacts. The standalone ABI executed 6310 native calls: 5097 error/no-write and 1213 successful calls, covering 25 transition keys, 27 source-condition outcomes, 17 actions and 13 complete callback traces. The 128 interleaved instances ran on a single worker and do not establish concurrent execution. The actual 72-check standalone source/archive admission passed for all sixteen locked modules. All 994 paired process fixtures were materialized and checked, but no complete standalone original/native program comparison has executed. An independent H build reproduced all 48 namespaced machine artifacts. The original setup wrapper failed after 24 successful commands; a separate successful read-only completion verified its unchanged source, empty target and native artifacts without relabeling that failure. A subsequent independent empty-target owner preflight passed all 20 commands: native/default Cargo graphs each bind 666 units and 1284 files, actual just tests passed 101/99 with zero skips, both strict all-target workspace Clippy modes passed and native fresh/cached/strict receipts were admitted. That prepublication record binds cae5db67 plus eighteen code/test/build overlays and 9933 files, with source map 3eeeb56c unchanged before and after; the three final metadata documents were outside the tested source. Complete clean-source effects/application/standalone comparisons, final fix/format and installed executables remain pending. Earlier fifteen-module results and failures retain their original source identities and are not sixteen-module qualification. Required platforms, default dispatch, release/LTO, whole-product performance, all 15 complete capabilities, the 198-crate baseline and legacy retirement remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json#patch_application_increment",
+    "report": "hia/verification.json#patch_standalone_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "scope": "Linux x86-64 GNU, opt-in hia-native. Fifteen B3 modules cover thirteen algorithm groups. The current fixed-point build preserves all fourteen prior source/archive/object/shared-library identities. Current application continuation tests executed 2790 native calls, including 1841 error/no-write cases, 512 concurrent calls and all 25 legal transitions; its actual 70-check source/archive receipt gate passed. An independent H build reproduced all 45 namespaced machine artifacts. The actual prepublication owner preflight passed native/default Cargo, 101/99 just tests with zero skips, both strict all-target workspace Clippy modes and compiler receipt admissions. That prepublication e23-plus-21-path record predates the final three metadata documents, two-import formatting follow-up and this six-file fixture repair; its original results and hashes remain unchanged. The first clean 08df public run passed the effects comparison with 121 original inputs, 13 unchanged root tests and 360 pairs, then stopped at application fixture 756 after 756 matching pairs: 1512 successful observations and one failed original attempt. Literal PATCH heredoc parsing failed before apply_hunks; the native counterpart did not execute. Eighteen materialized fixtures now use EOF, while two default/no-context/normal-writer string-API cases retain the original PATCH rejection bytes. Targeted 20-pair/40-process and 7-delimiter-pair/2-process probes passed; the repaired full 1470-pair/2940-process gate has not run. Final fix/format, installation, current complete consumer CI, required platforms, default dispatch, release/LTO, whole-product performance and retirement remain pending. Inherited fourteen-module CI remains bound to its own sources, including both failed 0339 attempts and the two complete successful e23 parent runs. All 15 complete capabilities and the 198-crate baseline inventory remain open. The subsequent clean 1083727e public attempt passed the fresh complete effects prerequisite, then rejected the stale DRIVER_SHA256 before compiling or executing an application observer. This correction changes only that constant to match the published driver, preserves the strict guard and corpus, and does not qualify the complete matrix."
+    "scope": "Linux x86-64 GNU, opt-in hia-native. Sixteen B3 modules cover fourteen algorithm groups. The current fixed-point build preserves all fifteen prior sources and 45 namespaced machine artifacts. The standalone ABI executed 6310 native calls: 5097 error/no-write and 1213 successful calls, covering 25 transition keys, 27 source-condition outcomes, 17 actions and 13 complete callback traces. The 128 interleaved instances ran on a single worker and do not establish concurrent execution. The actual 72-check standalone source/archive admission passed for all sixteen locked modules. All 994 paired process fixtures were materialized and checked, but no complete standalone original/native program comparison has executed. An independent H build reproduced all 48 namespaced machine artifacts. The original setup wrapper failed after 24 successful commands; a separate successful read-only completion verified its unchanged source, empty target and native artifacts without relabeling that failure. A subsequent independent empty-target owner preflight passed all 20 commands: native/default Cargo graphs each bind 666 units and 1284 files, actual just tests passed 101/99 with zero skips, both strict all-target workspace Clippy modes passed and native fresh/cached/strict receipts were admitted. That prepublication record binds cae5db67 plus eighteen code/test/build overlays and 9933 files, with source map 3eeeb56c unchanged before and after; the three final metadata documents were outside the tested source. Complete clean-source effects/application/standalone comparisons, final fix/format and installed executables remain pending. Earlier fifteen-module results and failures retain their original source identities and are not sixteen-module qualification. Required platforms, default dispatch, release/LTO, whole-product performance, all 15 complete capabilities, the 198-crate baseline and legacy retirement remain open."
   },
   "candidate_modules": [
     {
@@ -773,6 +773,43 @@
       "validation": {
         "current": "hia/verification.json#patch_application_increment"
       }
+    },
+    {
+      "id": "patch_standalone",
+      "hia_source": "hia/patch_standalone.hepta",
+      "source_path": "codex-rs/apply-patch/src/standalone_executable.rs",
+      "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "source_functions": [
+        "main",
+        "run_main",
+        "line_ending_mode_from_env"
+      ],
+      "production_algorithm_group": "patch_standalone",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_native_components_and_owner_preflight_passed_complete_public_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_patch_standalone",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/patch_standalone_buffer_contract.json",
+        "contract_sha256": "460ce32e9abfa8f5853715c3e44ebcc5c44aabf6eaba9ae6bfc9808fbf4ca84d"
+      },
+      "behavior": [
+        "Preserve argument/stdin/error/diagnostic/exit ordering, including non-UTF8 first arguments and extra-argument priority.",
+        "Select runtime, environment, parser and actual application callbacks without changing the original host effects.",
+        "Select exact environment line-ending behavior and one ignored-error success flush; retain original result lifetimes before process exit."
+      ],
+      "tests": [
+        "hia/tests/test_patch_standalone_abi.py",
+        "hia/tests/test_native_patch_standalone_caller.py",
+        "hia/tests/test_build_receipt.py",
+        "hia/tests/test_installed_patch.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "current": "hia/verification.json#patch_standalone_increment"
+      }
     }
   ],
   "capabilities": [
@@ -977,7 +1014,7 @@
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Qualify this fifteen-module composition through actual native/default Cargo, complete original application/effect/summary/unified observations, compiler-policy negatives, installed executables and strict lint/fix. Then complete standalone orchestration, filesystem/search and writer host boundaries, release/LTO, default dispatch and required platforms.",
+      "next_implementation": "Qualify the sixteen-module composition through actual native/default Cargo, complete original effects/application/standalone/summary/unified observations, compiler-policy negatives, installed executables and strict lint/fix. Then complete filesystem/search, OS/runtime and writer host boundaries, release/LTO, default dispatch and required platforms.",
       "candidate_modules": [
         "seek_sequence",
         "source_file",
@@ -986,7 +1023,8 @@
         "patch_effects",
         "unified_diff",
         "patch_summary",
-        "patch_application"
+        "patch_application",
+        "patch_standalone"
       ]
     },
     {
@@ -2524,7 +2562,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_fifteen_module_application_admission_passed_other_current_gates_pending",
+    "status": "current_sixteen_module_standalone_admission_passed_other_current_gates_pending",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2540,16 +2578,17 @@
       "patch_effects",
       "unified_diff",
       "patch_summary",
-      "patch_application"
+      "patch_application",
+      "patch_standalone"
     ],
-    "checks_passed": 70,
+    "checks_passed": 72,
     "scalar_build_admission_checks_passed": 120,
     "shared_cargo_helper_changed": false,
-    "report": "hia/verification.json#patch_application_increment",
-    "checks_passed_scope": "70 current patch_application checks admit all fifteen locked modules. The inherited summary/unified and scalar mutation results remain scoped to their actual fourteen-module source tree.",
+    "report": "hia/verification.json#patch_standalone_increment",
+    "checks_passed_scope": "72 current patch_standalone checks admit all sixteen locked modules; inherited mutation results retain their original source scopes.",
     "mutation_modules": [
-      "patch_application"
+      "patch_standalone"
     ],
-    "scalar_build_admission_checks_scope": "Historical fourteen-module 120-check result; current fifteen-module scalar gate pending."
+    "scalar_build_admission_checks_scope": "Historical fourteen-module 120-check result; current sixteen-module scalar gate pending."
   }
 }

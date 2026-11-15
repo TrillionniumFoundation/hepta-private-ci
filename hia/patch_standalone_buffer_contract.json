@@ -1,0 +1,409 @@
+{
+  "schema": "codex.hia.patch-standalone-buffer-contract.v1",
+  "module": "patch_standalone",
+  "symbol": "codex_hia_patch_standalone",
+  "status": "normative candidate; component qualification does not imply whole-process Cargo equivalence",
+  "revision": 1,
+  "c_abi": "(source:*const u8,source_len:u64,output:*mut u8,output_capacity:u64,workspace:*mut u8,workspace_len:u64)->u64; HIA f0 returns zero-extended u32",
+  "platform": "Borrowed-buffer ELF64 x86_64 primitive profile of pinned Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "source": {
+    "kind": "borrowed opaque bytes; never written",
+    "allowed_nonempty": [
+      "RUN phase STDIN event STDIN_OK",
+      "ENV phase INITIAL event ENV_VALUE"
+    ],
+    "otherwise": "source_len must be zero",
+    "interpretation": "STDIN_OK only inspects length. ENV_VALUE selects Preserve only for length 1 and byte 0x31; every other byte string selects Normalize. The raw ABI intentionally accepts opaque bytes, not UTF-8 strings, and performs no text parsing. A non-UTF8 raw value cannot equal the sole preserving value. Rust only passes env::var Ok String bytes to ENV_VALUE; every VarError uses ENV_UNAVAILABLE with an empty source.",
+    "capacity_limit": "No copy, allocation, hard cap or index arithmetic; at most the sole byte is read after source_len==1."
+  },
+  "workspace": {
+    "bytes": 64,
+    "access": "read-only despite borrowed mutbuf transport type",
+    "words_u64_le": [
+      "revision=1",
+      "entry",
+      "phase",
+      "event",
+      "reserved=0",
+      "reserved=0",
+      "reserved=0",
+      "reserved=0"
+    ]
+  },
+  "output": {
+    "minimum_capacity": 64,
+    "written_bytes_on_success": 64,
+    "words_u64_le": [
+      "revision=1",
+      "entry echo",
+      "next_phase",
+      "action",
+      "value",
+      "input phase echo",
+      "input event echo",
+      "reserved=0"
+    ],
+    "value": "RETURN_EXIT carries 0,1,2; RETURN_MODE carries 0 NormalizeToLf or 1 PreserveLineEndings. All other actions carry 0.",
+    "tail": "Bytes at offsets >=64 stay unchanged."
+  },
+  "statuses": {
+    "0": "exactly one valid continuation result",
+    "4294967294": "SHORT",
+    "4294967295": "INVALID"
+  },
+  "validation_order": [
+    "If workspace_len<64 or output_capacity<64, return SHORT before reading any request or source byte.",
+    "If workspace_len!=64, return INVALID. Output may be larger than64.",
+    "Read the eight workspace words. Require revision1, entry0..1, phase0..16, event0..18 and all four reserved words0; otherwise INVALID.",
+    "If source_len!=0 outside RUN/STDIN/STDIN_OK or ENV/INITIAL/ENV_VALUE, return INVALID without reading source bytes.",
+    "Look up a listed legal transition and its specified source condition; no listed transition means INVALID. TERMINAL always rejects further events. For the env value equality check, read source[0] only if source_len==1.",
+    "After every validation and choice succeeds, publish all eight response words. There are no output/workspace stores on any nonzero return."
+  ],
+  "memory_contract": {
+    "preconditions": "Every nonempty advertised buffer is a live accessible allocation of at least its advertised length; source/output/workspace do not overlap. Pointer ownership stays with the caller.",
+    "nonzero_return": "All source, output and workspace bytes are unchanged, including output tails and caller canaries.",
+    "zero_return": "Source and workspace remain byte-identical; only output[0:64] changes.",
+    "state": "No global state, retained pointers, allocations, host imports or side effects. Independent calls are reentrant. Replaying a valid request returns the same plan; this is not an anti-replay protocol. The Rust route executes each native-selected host action once."
+  },
+  "entries": {
+    "RUN": 0,
+    "ENV": 1
+  },
+  "phases": {
+    "INITIAL": 0,
+    "ARGUMENT": 1,
+    "ARGUMENT_UTF8": 2,
+    "STDIN": 3,
+    "EXTRA_ARGUMENT": 4,
+    "CURRENT_DIRECTORY": 5,
+    "RUNTIME": 6,
+    "MODE": 7,
+    "APPLICATION": 8,
+    "FLUSH": 9,
+    "BAD_ARGUMENT_DIAGNOSTIC": 10,
+    "USAGE_DIAGNOSTIC": 11,
+    "STDIN_DIAGNOSTIC": 12,
+    "EXTRA_ARGUMENT_DIAGNOSTIC": 13,
+    "CWD_DIAGNOSTIC": 14,
+    "RUNTIME_DIAGNOSTIC": 15,
+    "TERMINAL": 16
+  },
+  "events": {
+    "START": 0,
+    "ARGUMENT_PRESENT": 1,
+    "ARGUMENT_MISSING": 2,
+    "ARGUMENT_UTF8_OK": 3,
+    "ARGUMENT_UTF8_ERROR": 4,
+    "STDIN_OK": 5,
+    "STDIN_ERROR": 6,
+    "NO_EXTRA_ARGUMENT": 7,
+    "EXTRA_ARGUMENT": 8,
+    "CWD_OK": 9,
+    "CWD_ERROR": 10,
+    "RUNTIME_OK": 11,
+    "RUNTIME_ERROR": 12,
+    "MODE_READY": 13,
+    "APPLICATION_OK": 14,
+    "APPLICATION_ERROR": 15,
+    "COMPLETE": 16,
+    "ENV_VALUE": 17,
+    "ENV_UNAVAILABLE": 18
+  },
+  "actions": {
+    "READ_ARGUMENTS": 1,
+    "DECODE_ARGUMENT": 2,
+    "READ_STDIN": 3,
+    "CHECK_EXTRA_ARGUMENT": 4,
+    "OPEN_HANDLES_AND_CWD": 5,
+    "BUILD_RUNTIME": 6,
+    "RESOLVE_PATH_AND_MODE": 7,
+    "APPLY_PATCH": 8,
+    "FLUSH": 9,
+    "DIAG_BAD_ARGUMENT": 10,
+    "DIAG_USAGE": 11,
+    "DIAG_STDIN": 12,
+    "DIAG_EXTRA_ARGUMENT": 13,
+    "DIAG_CWD": 14,
+    "DIAG_RUNTIME": 15,
+    "RETURN_EXIT": 16,
+    "RETURN_MODE": 17
+  },
+  "transitions": [
+    {
+      "entry": 0,
+      "phase": 0,
+      "event": 0,
+      "source_condition": "empty",
+      "next_phase": 1,
+      "action": 1,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 1,
+      "event": 1,
+      "source_condition": "empty",
+      "next_phase": 2,
+      "action": 2,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 1,
+      "event": 2,
+      "source_condition": "empty",
+      "next_phase": 3,
+      "action": 3,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 2,
+      "event": 3,
+      "source_condition": "empty",
+      "next_phase": 4,
+      "action": 4,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 2,
+      "event": 4,
+      "source_condition": "empty",
+      "next_phase": 10,
+      "action": 10,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 3,
+      "event": 5,
+      "source_condition": "empty",
+      "next_phase": 11,
+      "action": 11,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 3,
+      "event": 5,
+      "source_condition": "nonempty",
+      "next_phase": 4,
+      "action": 4,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 3,
+      "event": 6,
+      "source_condition": "empty",
+      "next_phase": 12,
+      "action": 12,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 4,
+      "event": 7,
+      "source_condition": "empty",
+      "next_phase": 5,
+      "action": 5,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 4,
+      "event": 8,
+      "source_condition": "empty",
+      "next_phase": 13,
+      "action": 13,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 5,
+      "event": 9,
+      "source_condition": "empty",
+      "next_phase": 6,
+      "action": 6,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 5,
+      "event": 10,
+      "source_condition": "empty",
+      "next_phase": 14,
+      "action": 14,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 6,
+      "event": 11,
+      "source_condition": "empty",
+      "next_phase": 7,
+      "action": 7,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 6,
+      "event": 12,
+      "source_condition": "empty",
+      "next_phase": 15,
+      "action": 15,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 7,
+      "event": 13,
+      "source_condition": "empty",
+      "next_phase": 8,
+      "action": 8,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 8,
+      "event": 14,
+      "source_condition": "empty",
+      "next_phase": 9,
+      "action": 9,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 8,
+      "event": 15,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 1
+    },
+    {
+      "entry": 0,
+      "phase": 9,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 0
+    },
+    {
+      "entry": 0,
+      "phase": 10,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 1
+    },
+    {
+      "entry": 0,
+      "phase": 11,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 2
+    },
+    {
+      "entry": 0,
+      "phase": 12,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 1
+    },
+    {
+      "entry": 0,
+      "phase": 13,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 2
+    },
+    {
+      "entry": 0,
+      "phase": 14,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 1
+    },
+    {
+      "entry": 0,
+      "phase": 15,
+      "event": 16,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 16,
+      "value": 1
+    },
+    {
+      "entry": 1,
+      "phase": 0,
+      "event": 17,
+      "source_condition": "exact_ascii_1",
+      "next_phase": 16,
+      "action": 17,
+      "value": 1
+    },
+    {
+      "entry": 1,
+      "phase": 0,
+      "event": 17,
+      "source_condition": "not_exact_ascii_1",
+      "next_phase": 16,
+      "action": 17,
+      "value": 0
+    },
+    {
+      "entry": 1,
+      "phase": 0,
+      "event": 18,
+      "source_condition": "empty",
+      "next_phase": 16,
+      "action": 17,
+      "value": 0
+    }
+  ],
+  "coverage_units": {
+    "unique_entry_phase_event_keys": 25,
+    "source_condition_outcomes": 27,
+    "actions": 17
+  },
+  "host_boundary": [
+    "Preserve original args_os and args.next calls, retaining argv0; native chooses argument conversion or stdin. OsString::into_string is the actual host conversion, not a Rust policy fallback.",
+    "Preserve actual stdin Read::read_to_string into String and its partial buffer/error. Native checks only the returned buffer length to choose empty-input usage.",
+    "Execute the six original eprintln expressions with their original argument values, macro formatting and panic behavior; do not buffer, merge, replace or catch their output.",
+    "Create stdout then stderr handles before AbsolutePathBuf::current_dir. Native chooses cwd diagnostic versus the original new_current_thread/enable_all/build call.",
+    "After runtime creation, perform PathUri::from_abs_path and the shared actual env reader. Its ENV entry alone owns the exact byte comparison and returns the typed update mode.",
+    "Execute runtime.block_on of the actual apply_patch_with_options with original default follow_symlinks, LOCAL_FS and sandbox None. Retain its Result until after the selected arm, including successful flush, to preserve payload destruction timing.",
+    "Success selects exactly one stdout.flush. Its Result is discarded without classification; COMPLETE selects exit0. Application failure selects exit1 without another diagnostic or explicit flush.",
+    "Return native-selected i32 from run_main, allowing its locals to drop. Only then does the unchanged main wrapper call process::exit."
+  ],
+  "source_identity": {
+    "published_parent_head": "0339bd5f863ba2459084115906a875b10595a704",
+    "candidate15_lib_preimage_sha256": "194db2080c322f653605499effa094df2945c17b5a63c3f073c2a7c570419d1c",
+    "complete_standalone_sha256": "33d7979c976a21b57fbb0c576ccf45b38127fef4cca4bf7af62077ce78d0c8ab",
+    "complete_standalone_git_blob": "7f2627beca0c2d0c18c09ab02988f0d872a74adc",
+    "complete_original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+    "meaning": "Exact original source records and routing preimage, not a hash of future modified toolchain sources."
+  },
+  "not_qualified_by_raw_abi": [
+    "complete original/native process behavior",
+    "whole-crate Cargo typechecking and workspace lint",
+    "runtime initialization failure in a real process",
+    "stdout flush failure in a real process",
+    "performance",
+    "whole-product migration",
+    "default switch",
+    "legacy retirement"
+  ]
+}
