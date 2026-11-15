@@ -3,15 +3,17 @@
 This directory contains HIA implementations of Codex's patch-line matching,
 UTF-8 prefix selection, metric-tag sanitizing, Markdown location suffix
 normalization, ASCII JSON string-fragment encoding, middle truncation and token
-arithmetic. The compiler is
+arithmetic, and the complete SourceFile text-state owner. The compiler is
 pinned to [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
 at `0de5657a80f96b138525ac7ee9ce11712a83a10d`. These algorithms execute as
 native machine code compiled from `.hepta` source.
 
-The current build contains 8 HIA modules for 6 production algorithm groups.
+The current build contains 9 HIA modules for 7 production algorithm groups.
 Token arithmetic uses a separate typed scalar entry, and character counting
 uses checked unaligned 64-bit reads. These changes optimize the existing five
-truncation APIs; they do not add another migrated owner.
+truncation APIs. SourceFile adds the complete `parse`, `line_texts`,
+`apply_replacements` and `into_contents` owner behind the existing preserving-mode
+patch-update caller.
 The `hia-native` Cargo feature connects these routines to HIA machine code on
 Linux x86-64 GNU. Rust adapters frame borrowed inputs, check native results
 and preserve the surrounding public interfaces. Static
@@ -43,6 +45,7 @@ dispatch still need migration. The whole-product state is therefore:
 | [`ascii_json_fragment.hepta`](ascii_json_fragment.hepta) | [`AsciiJsonFormatter::write_string_fragment`](../codex-rs/utils/string/src/json.rs) | ASCII preservation and lowercase Unicode escapes, including surrogate pairs, with canonical UTF-8 validation and bounded borrowed windows. Serde still owns the surrounding JSON format.                            |
 | [`truncate.hepta`](truncate.hepta) | [`truncate.rs`](../codex-rs/utils/string/src/truncate.rs) | UTF-8 middle truncation, removed Unicode-scalar counts and token markers; strict byte and trusted string entries. |
 | [`token_budget.hepta`](token_budget.hepta) | The three public token/byte arithmetic helpers | Full-width saturating arithmetic through a typed `u64, u64 -> u64` native entry, without buffer framing. |
+| [`source_file.hepta`](source_file.hepta) | [`SourceFile`](../codex-rs/apply-patch/src/text_file.rs) | Parse, line-text projection, ordered replacements and final contents; mixed endings, persistent preferred style, repeated edits and logical inserted lines. |
 
 The truncation APIs are `truncate_middle_chars`,
 `truncate_middle_with_token_budget`, `approx_token_count`,
@@ -52,14 +55,14 @@ The UTF-8 input checks reject overlong encodings, surrogate encodings, values
 above U+10FFFF, lone continuation bytes and truncated sequences. They scan the
 entire input before publishing a result, including bytes beyond the requested
 prefix. These full-input checks belong to `utf8_boundaries` and strict truncation
-operations 0/1; the production prefix and metric callers accept already-valid
+operations 0/1, and every SourceFile operation; the production prefix and metric callers accept already-valid
 Rust strings. The JSON fragment
 encoder performs its own incremental validation. All listed component algorithms
 are implemented in HIA; the surrounding Rust owners remain tracked separately.
 
 ### Native buffer interface
 
-The seven buffer components expose this HIA signature:
+The eight buffer components expose this HIA signature:
 
 ```text
 f0(source:readbuf, output:mutbuf, workspace:mutbuf) -> u32
@@ -88,16 +91,17 @@ these low-bit results:
 | `0..4096` for `markdown_location`                     | Current-frame output length.                                                          |
 | `8..12296` for `ascii_json_fragment`                  | Eight-byte consumed-length header plus escaped fragment.                              |
 | `40` for `truncate`                                  | Five little-endian `u64` result fields.                                                |
+| `0` for `source_file` | A complete 40-byte query header or the complete emitted span plan; see its operation-specific contract below. |
 | `0xffffffff`                                          | Invalid frame/state; also invalid UTF-8 for the original matching/validation entries. |
 | `0xfffffffe`                                          | Insufficient output or workspace capacity.                                            |
-| `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in JSON fragments or strict truncation.      |
+| `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in JSON fragments, strict truncation or SourceFile.      |
 
 Caller allocations must stay live for the call and mutable ranges must be
 disjoint. The direct seed wrapper and bootstrap compiler profile have a
 1,048,576-byte capacity. The production B3 ELF entry receives the actual live
 buffer extent; that compiler capacity is not a maximum file size. The patch
 adapter checks all length arithmetic and uses fallible allocation. All modules
-leave the source unchanged. The patch and UTF-8 modules leave workspace
+leave the source unchanged. The matching and UTF-8 modules leave workspace
 unchanged, reserve it for future use and accept length zero. Their successful
 calls preserve output bytes beyond the result length. The metric module uses
 its workspace and output buffer as streaming state, as described below.
@@ -200,6 +204,55 @@ nothing, and successful calls preserve bytes beyond the 40-byte result.
 Markers do not consume the prefix/suffix budget. Character markers count Unicode
 scalars; token markers use the original byte-budget arithmetic. Saturation and
 the original `None` result when rendered text equals the input are preserved.
+
+### SourceFile owner and buffer interface
+
+`source_file` exports `codex_hia_source_file`. Its four operations own
+parsing, preferred endings, replacement selection and output order. The Rust
+adapter owns one text backing, frames requests, checks native-selected spans
+and compacts retained text after edits. It does not parse lines, choose
+replacements or render and reparse intermediate state.
+
+The exact ABI is [`source_file_buffer_contract.json`](source_file_buffer_contract.json).
+All fields are little-endian `u64`. The read-only workspace starts with a
+64-byte header `[operation, pool_count, line_count, replacement_count,
+inserted_count, preferred_ending, parse_text_id, reserved_zero]`, followed by
+pool lengths, 32-byte old-line records, 24-byte replacement triples and
+inserted text IDs. Its length must match these tables exactly.
+
+| Operation | Query / emit |
+| --- | --- |
+| `0` / `1` | Parse original contents into logical lines. |
+| `2` / `3` | Apply ordered replacements to existing logical lines. |
+| `4` / `5` | Project each logical line's text. |
+| `6` / `7` | Select text and ending spans for final contents. |
+
+Parsing borrows the original contents as text pool 3; its four declared pool
+lengths are `[1, 2, 1, source.len]`. Other operations borrow the concatenation
+of all declared pool strings. Pool IDs 0/1/2 are fixed LF/CRLF/CR, and every
+actual text ID is at least 3. HIA validates the complete source as canonical
+UTF-8 and checks pool and subspan boundaries. Ending codes are none (`0`),
+LF (`1`), CRLF (`2`) and CR (`3`).
+
+Success returns `0`. Every query writes exactly the 40-byte header
+`[required_full_plan_bytes, record_count, logical_line_count, total_text_bytes,
+preferred_ending]`; emit writes that header and all 32-byte span records.
+The byte total includes endings for parse, apply and contents, and excludes
+them for line-text projection. Minimum output/workspace capacity checks
+precede frame validation, UTF-8 validation, span/count checks and final emit
+capacity. Statuses `0xfffffffe`, `0xffffffff` and `0xfffffffd` respectively
+mean short capacity, invalid frame/order/range/arithmetic, and malformed
+UTF-8. Every returned error leaves source, workspace and output unchanged;
+success preserves output beyond its complete header or plan.
+
+The first observed ending selects the preferred style, defaulting to LF.
+That style survives total deletion and later insertion. Inserted strings with
+internal CR/LF remain one logical line across subsequent edits. Even an empty
+replacement list repairs absent endings on surviving lines. Legal
+`usize::MAX` skips/deletes consume only the finite remaining line table;
+nonmonotonic order and `start + old_length` overflow are separate invalid
+preconditions. The surrounding patch grammar, `compute_replacements`,
+normalizing update path and filesystem effects remain Rust owners.
 
 ### Typed scalar interface
 
@@ -318,13 +371,68 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Current eight-module component validation
+### Current nine-module SourceFile increment
 
-The current v9 B1/B2/B3 build and component checks ran on Linux x86-64 GNU
-with Rust 1.96.1. The truncation oracle binds all 815 original production tokens
-to the source at `a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095`.
+The formal v9 B1/B2/B3 build and SourceFile qualification ran on Linux x86-64
+GNU with Rust 1.96.1. The 9,828-path source snapshot and exact compiled
+source/Core/archive identities are recorded in
+[`verification.json`](verification.json#source_file_increment). A separate
+identity report confirms all 40 compiled artifacts of the eight inherited
+modules are unchanged from the published `7fe65ae` checkpoint.
 
 | Current check | Observed result |
+| --- | --- |
+| Complete original SourceFile | 8 tests; 224,253 original-Rust comparisons; zero skips. The independent rlib includes the complete original 3,851-byte file from `a3f319cf`, bound by SHA256 and Git blob. |
+| Separate invalid preconditions | Nonmonotonic ordering and index-addition overflow both fail; no post-panic state or release-overflow equivalence is claimed. |
+| Raw SourceFile ABI | 5,631 calls; 4,423 error/no-write cases, 604 query calls, 604 emit calls and 1,024 concurrent native calls. Includes 2.2 MB sources and a 1,120,040-byte plan. |
+| Cargo artifact admission | 58 checks with `source_file` as mutation target, including acceptance and source binding for all nine modules. |
+| Scalar build admission | 115 checks on this nine-module build; the separate typed scalar profile remains unchanged. |
+| Current Cargo / installed executables | Pending the published nine-module workflow; earlier local `rama-net` SIGKILL attempts do not establish a pass. |
+
+The full original-file oracle checks initial and repeated-edit states through
+all four actual feature-selected methods. Its coverage includes mixed endings,
+all Unicode scalars, owned input/projection storage, embedded newline strings,
+total deletion and reinsertion, finite MAX requests, large line tables and
+concurrency. The raw ABI gate separately verifies exact frames, UTF-8 and span
+boundaries, queries, capacities, canaries and error atomicity.
+
+After those local gates, publication changes are limited to these three HIA
+metadata documents and the CI workflow. The workflow adds scoped
+`just fix --locked -p codex-apply-patch --features hia-native` and a clean-diff
+check after its test/lint steps. Implementation, tests and ABI-contract bytes
+remain unchanged. This is not a claim that the final published tree has
+already passed Cargo or installed-executable CI.
+
+The bounded public-API benchmark used the genuine development full B3 build
+whose SourceFile source, Core and linked artifacts are identical to the
+formal build. The recorded binding report verifies the five compiled
+SourceFile artifacts and the benchmark input, compiler and executable hashes.
+Each of its nine histories used identical Rust optimization,
+equal iterations per pair and three alternating samples. All cases stayed
+within three seconds. The earlier and optimized runs retain their original
+reports and hashes.
+
+| API history | Earlier HIA | Optimized HIA | Original Rust in optimized run | Optimized / Rust |
+| --- | ---: | ---: | ---: | ---: |
+| 2 MiB single-line roundtrip | 289.83 ms | 10.16 ms | 0.988 ms | 10.28x |
+| 2 MiB single-line empty update | 366.07 ms | 13.30 ms | 1.201 ms | 11.07x |
+| 786,432-byte ASCII line update | 257.78 ms | 59.69 ms | 2.633 ms | 22.67x |
+| 786,432-byte Unicode line update | 419.75 ms | 234.15 ms | 4.656 ms | 50.29x |
+| 131,072 short lines, empty update | 524.09 ms | 200.23 ms | 9.140 ms | 21.91x |
+
+The two long-line histories improved by 28.52x and 27.52x between recorded
+runs. Small histories retain proportionally larger overhead: the empty
+roundtrip takes 2.568 microseconds versus 0.0201 microseconds, or 127.91x.
+Across all nine cases the remaining ratio is approximately 10–128x.
+`whole_product_performance_qualified` remains `false`.
+
+### Published eight-module checkpoint: 7fe65ae
+
+The following component and string-owner results belong to the eight-module
+checkpoint, before SourceFile. The truncation oracle binds all 815 original
+production tokens to the source at `a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095`.
+
+| Checkpoint check | Observed result |
 | --- | --- |
 | Original Rust truncation oracle | 7 tests; 229,173 public-API comparisons, including Unicode boundaries, saturation, marker collisions, large inputs and concurrency. |
 | Truncation ABI | 2,888 calls; 757 error/no-write cases, 288 strict/trusted plan comparisons and 1,024 concurrent calls. |
@@ -335,10 +443,15 @@ to the source at `a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095`.
 | Unchanged components | All five compiled artifacts for each of the six unchanged buffer modules and the scalar module are byte-identical between the f33 and v9 builds. |
 | Development build | The explicit seed-only path built all eight modules; it remains separate from production selfhost qualification. |
 
-Current eight-module consumers and installed-CLI CI must run on the published
-source. The completed seven-module CI below does not replace that gate. The
-local consumer attempt remains a recorded `rama-net` compiler SIGKILL; no local
-consumer pass is claimed.
+The exact published `7fe65ae990187e6ff1130c791f902728b4e50197`
+[push workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43653376966)
+and [PR workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43653380224)
+both completed successfully. They passed 139 native patch/string tests, 319
+native truncation-consumer tests, 4,473 native CLI/arg0/TUI tests with six
+existing skips, and 444 default owner/consumer tests. The PR run recorded one
+flaky retry. Relocated patch and full Codex executable gates also passed.
+These are eight-module checkpoint results; they do not qualify the new
+nine-module SourceFile owner or whole-product performance.
 
 The bounded optimized public-API benchmark records scalar helpers at 6.24–9.28 ns
 versus 0.56–0.88 ns for the original Rust. Approximately 1 MiB character
@@ -366,15 +479,15 @@ retained the required truncation symbol and checked startup and large patch
 behavior; it did not execute every linked algorithm.
 
 This is source-bound evidence for the seven-module checkpoint. It does not
-qualify the current scalar entry, current compiler pin, full workspace,
-default native dispatch or other platforms.
+qualify the nine-module SourceFile increment, full workspace, default native
+dispatch or other platforms.
 
 ### Inherited six-module checkpoint: a2014bc6
 
 The following results belong to published commit
 `a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095`, with 6 HIA modules and 5 connected
 production algorithms. They are historical evidence, not a rerun against the
-current eight-module candidate. [`verification.json`](verification.json)
+current nine-module candidate. [`verification.json`](verification.json)
 retains the separately scoped source, artifact and report identities.
 
 | Component                          | Observed checks                                                                                                                                                                                                                |
@@ -432,7 +545,7 @@ pinned Git tree is the complete source-path inventory.
 | App Server v2               | `app-server`, protocol/transport/client/daemon crates                                  | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations.                                                                                                                                |
 | CLI and TUI                 | `cli`, `tui`, `arg0`, terminal utilities                                               | Flags, exit status, terminal event/rendering paths and existing snapshots.                                                                                                                                       |
 | SDK and frontends           | `sdk/`, `codex-cli/`, `apps/`                                                          | Public client interfaces, frontend lifecycle and packaging.                                                                                                                                                      |
-| Patch application           | `apply-patch`, `file-search`                                                           | Matching is connected behind `hia-native`; parser and file-update owners still need migration.                                                                                                                   |
+| Patch application           | `apply-patch`, `file-search`                                                           | Matching and the complete SourceFile owner are connected behind `hia-native`; patch grammar, replacement planning, normalized updates and filesystem/search effects still need migration.                                                                                                                   |
 | String utilities            | `utils/string`                                                                         | Prefix, metric, Markdown, JSON-fragment and truncation/token routines are connected behind `hia-native`; truncation performance, UUID helpers and complete owner/default/platform qualification remain open. |
 | Hepta cells and adapters    | `hepta-*` crates                                                                       | Existing cell, Agentd, Codex adapter, identity, recovery and learning/adoption boundaries.                                                                                                                       |
 | Platforms and release       | Linux/macOS/Windows integrations, build and release paths                              | Supported architectures, packages, clean installation and end-to-end platform tests.                                                                                                                             |
@@ -479,8 +592,11 @@ python3 -B hia/tests/test_ascii_json_abi.py --library-dir "$native_output" --rep
 python3 -B hia/tests/test_native_truncate_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/truncate-caller-tests.json"
 python3 -B hia/tests/test_truncate_abi.py --library-dir "$native_output" --report "$build_parent/truncate-abi-tests.json"
 python3 -B hia/tests/test_token_budget_abi.py --library-dir "$native_output" --report "$build_parent/token-budget-abi-tests.json"
+python3 -B hia/tests/test_native_source_file_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/source-file-caller-tests.json"
+python3 -B hia/tests/test_source_file_abi.py --library-dir "$native_output" --report "$build_parent/source-file-abi-tests.json"
 python3 -B hia/tests/test_scalar_build_admission.py --artifacts "$native_output" --report "$build_parent/scalar-admission-tests.json"
 python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --mutation-module token_budget --report "$build_parent/scalar-receipt-tests.json"
+python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --mutation-module source_file --report "$build_parent/source-file-receipt-tests.json"
 
 "$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
 "$build_parent/patch-caller-tests"
