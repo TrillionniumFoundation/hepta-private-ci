@@ -212,5 +212,55 @@ class RetirementGateTest(unittest.TestCase):
         self.assertIn("claimed retired without", "\n".join(validate(migration, verification)))
 
 
+    def test_cross_platform_retirement_names_reject_devices_and_streams(self):
+        migration, verification = incomplete()
+        invalid = (
+            "C:relative.rs", "codex-rs/file.rs:alternate_stream",
+            "codex-rs/CON.rs", "codex-rs/AUX/file.rs",
+            "codex-rs/COM1.txt", "codex-rs/LPT9",
+            "codex-rs/trailing.", "codex-rs/trailing ",
+            "codex-rs/has?.rs", "codex-rs/a|b.rs",
+            "codex-rs/control\x1f.rs",
+        )
+        for path in invalid:
+            with self.subTest(path=path):
+                migration["retirement"]["approved_paths"] = [path]
+                self.assertIn(
+                    "unsafe approved source path",
+                    "\n".join(validate(migration, verification)),
+                )
+
+    def test_case_and_unicode_aliases_cannot_double_approve_deletion(self):
+        migration, verification = incomplete()
+        for paths in (
+            ["codex-rs/Cache.rs", "codex-rs/cache.rs"],
+            ["codex-rs/café.rs", "codex-rs/cafe\u0301.rs"],
+        ):
+            with self.subTest(paths=paths):
+                migration["retirement"]["approved_paths"] = paths
+                self.assertIn(
+                    "cross-platform path aliases",
+                    "\n".join(validate(migration, verification)),
+                )
+
+    def test_per_path_evidence_aliases_cannot_obscure_conflicting_records(self):
+        migration, verification = incomplete()
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        record = {
+            "source_tree": "a" * 40,
+            "qualification_sha256": "b" * 64,
+            "verified_platforms": ["linux-x86_64-gnu"],
+        }
+        migration["retirement"]["per_path_qualification"] = [
+            dict(record, path="codex-rs/sample.rs"),
+            dict(record, path="codex-rs/SAMPLE.rs",
+                 qualification_sha256="c" * 64),
+        ]
+        self.assertIn(
+            "ambiguous per_path_qualification path aliases",
+            "\n".join(validate(migration, verification)),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
