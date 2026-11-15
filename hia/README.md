@@ -2,7 +2,7 @@
 
 This directory contains the current HIA implementation and its native build,
 contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **15 compiled modules covering thirteen algorithm groups**.
+candidate contains **16 compiled modules covering fourteen algorithm groups**.
 Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
 The complete Codex rewrite, default release migration, required-platform
 qualification, whole-product performance and legacy retirement remain open.
@@ -31,24 +31,25 @@ complete workspace or a different source tree.
 | `unified_diff` | Line splitting, Myers/Compact/Replace transitions, grouping, context arithmetic and unified-diff bytes. | Rust transports valid strings and materializes HIA-selected output; actual compiler receipts select the supported arithmetic mode. |
 | `patch_summary` | Success header, A/M/D group order, path index and continuation selection. | Rust executes each original `writeln!` separately with the actual `Path::display` and `Write` implementation. |
 | `patch_application` | Parser/effects/summary order, diagnostic choice, writer-error priority and committed-delta result selection. | Rust retains original typed errors, individual writer calls and the existing asynchronous effects future. |
+| `patch_standalone` | Standalone argument/stdin, diagnostic/exit, runtime/environment and application sequencing. | Rust performs the original OS, I/O, Tokio and process-exit callbacks; HIA selects their order and results. |
 
 The patch path composes the native parser, file-update planner, matcher,
 SourceFile owner, effect state machine, unified formatter, summary selector and
-application result routing.
+application result routing, followed by standalone entry orchestration.
 The feature-selected adapters use HIA for these decisions. PathUri, real
 filesystem execution, symlink/sandbox enforcement, string allocation and the
 public writer's formatting/I/O remain host boundaries. The original Rust owners
 remain available to the default platform path and immutable parity tests.
 
-Fourteen native symbols are required in installed full Codex checks, including
-seven in apply_patch. Standalone apply_patch does not call the unified formatter;
+Fifteen native symbols are required in installed full Codex checks, including
+eight in apply_patch. Standalone apply_patch does not call the unified formatter;
 the full Codex verification path does. `utf8_boundaries` has a separate
 qualification entry. These are required checks, not claims that the new installed
 combination has already passed.
 
 ## Native interfaces
 
-The seven complete buffer contracts are normative:
+The eight complete buffer contracts are normative:
 
 - [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
   trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
@@ -66,6 +67,8 @@ The seven complete buffer contracts are normative:
   no workspace, explicit group/index continuation and one selected write effect.
 - [Patch application](patch_application_buffer_contract.json): 64-byte request and
   result, no workspace, two entries and 25 explicit result-routing transitions.
+- [Patch standalone](patch_standalone_buffer_contract.json): 64-byte read-only
+  continuation workspace and 64-byte result, with 17 selected host actions.
 
 All integer fields in these buffer interfaces are little-endian u64. Their
 capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
@@ -255,7 +258,39 @@ the complete Codex owner gates.
 
 ## Qualification
 
-### Current fifteen-module application candidate
+### Current sixteen-module standalone candidate
+
+The B3 build contains all sixteen locked modules and preserves the preceding
+45 namespaced machine artifacts. The standalone ABI gate executed 6,310 native
+calls: 5,097 error/no-write cases and 1,213 successes, with 25 transition keys,
+27 source-condition outcomes, 17 actions and 13 complete callback traces. Its
+128 interleaved instances ran on one worker. The actual 72-check receipt gate
+admits all sixteen modules.
+
+The portable comparison has 994 independently materialized paired fixtures.
+Its complete original and native programs have not yet executed. The required
+gate observes all 1,988 process launches and terminals, exact argv/stdin/env/cwd,
+stdout/stderr/status and filesystem bytes, with no missing or skipped pair.
+Fresh complete effects360 and application1470 results from the same clean
+producing source are prerequisites.
+
+An independent H build reproduces all 48 namespaced machine artifacts. The
+original setup wrapper failed after its 24 successful commands; a separate
+read-only completion verified those artifacts and the empty target. A new
+owner preflight then passed all 20 commands, including native/default Cargo,
+101/99 actual `just test` cases with zero skips, both strict workspace Clippy
+modes and their native compiler receipt checks. Each Cargo graph binds
+666 units and 1,284 files. This prepublication scope is parent `cae5db67` plus
+18 overlays; its 9,933-file source map remained unchanged. These three final
+metadata documents were outside the tested source.
+
+Clean-source public comparisons, final scoped fix/format and installed
+executables remain pending. Runtime-initialization failure, isolated final-flush
+failure, internal write traces, cancellation and destructor order remain open.
+The earlier application records below describe their original published scope;
+they do not qualify this sixteen-module source.
+
+### Fifteen-module application parent history
 
 The current build reproduces the B1/B2/B3 fixed point and preserves every prior
 HIA source, namespaced object, archive and shared-library identity. A separate
