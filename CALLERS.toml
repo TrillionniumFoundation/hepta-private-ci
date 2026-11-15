@@ -101,7 +101,7 @@ symbol = "RevalidatingCandidate::with_current"
 call_pattern = '\bcandidate\s*\.\s*with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs","codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs","codex-rs/hepta-agentd/src/cell_split_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs","codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs","codex-rs/hepta-agentd/src/cell_split_owner.rs", "codex-rs/hepta-learning-artifacts/src/selected.rs"]
 caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
 
 [[boundary]]
@@ -958,7 +958,7 @@ id = "root_desktop_original_issuer_pair_policy_cas"
 symbol = "DeploymentFinalUseIssuer::replace_registered_desktop_policy"
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_desktop_policy\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/deployment_desktop.rs"
-definition_markers = ["pub fn replace_registered_desktop_policy(", "libc::getuid()", "libc::geteuid()", "self.replace_desktop_policy(", "registration.local_lease_generation <= 1", "self.with_live_issuer_and_writer(registration", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "current != [&previous_policies[0], &previous_policies[1]]", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)", "issuer_lease.authority_epoch != state.head.authority_epoch", "after < issuer_lease.issued_at_unix_ms", "after >= issuer_lease.expires_at_unix_ms"]
+definition_markers = ["pub fn replace_registered_desktop_policy(", "libc::getuid()", "libc::geteuid()", "self.replace_desktop_policy(", "registration.local_lease_generation <= 1", "self.with_live_issuer_and_writer(registration", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "current != [&previous_policies[0], &previous_policies[1]]", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, now)", "issuer_lease.authority_epoch != state.head.authority_epoch", "now < issuer_lease.issued_at_unix_ms", "now >= issuer_lease.expires_at_unix_ms", "let validate_time = |now|", "validate_time(self.clock.now_unix_ms().map_err(io::Error::other)?)?;", "validate_time(after)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs"]
 caller_markers = []
 

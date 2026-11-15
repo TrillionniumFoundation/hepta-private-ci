@@ -68,9 +68,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.matrix.restart_attempt = matrix_attempts;
         slot.matrix.restart_window_started_at = matrix_started;
         slot.matrix.restart_window_started_unix_millis = matrix_wall;
-        slot.matrix.retry_at = None;
+        // The companion journal has no retry deadline. Preserve a conservative
+        // backoff before allowing another Matrix start after recovery.
+        slot.matrix.retry_at = if matrix_attempts > 0 && !matrix_exhausted {
+            Some(crate::runtime::deadline(
+                now,
+                crate::restart_policy::restart_delay(matrix_attempts),
+            )?)
+        } else {
+            None
+        };
         slot.matrix.restart_after_exit = false;
         slot.matrix.restart_exhausted = matrix_exhausted;
+        if matrix_exhausted {
+            slot.matrix.degraded = true;
+            slot.matrix.last_error =
+                Some("Matrix restart budget exhausted during recovery".to_string());
+        }
 
         let normalized_matrix = DurableRestartWindow {
             attempts: matrix_attempts,
