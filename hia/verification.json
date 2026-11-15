@@ -351,15 +351,38 @@
         "object_sha256": "8f88d43dc15d6decbbcbe7ee3148b4596284237765740d231d1734fd21364ff8",
         "library_sha256": "c3c9797bf1e35bb65089dac773e319b07e6af023d9726a239268aa084001b6eb"
       }
+    },
+    "allowed_prefixes": {
+      "source_sha256": "257184be5851e53a4c95deb70dc7e980a7dbafa131a4562cb9b6274c00116fc0",
+      "core_sha256": "2094f1a9e2244845219ebfb58e117e01125291a10b7d94512f89af9fec722abd",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "library_sha256": "35ccef9cb840e610e120ff6ac02a1e4c6862308bc56004fccbd3923850066ff0",
+      "library_bytes": 49960,
+      "static_link": {
+        "symbol": "codex_hia_allowed_prefixes",
+        "library": "libcodex_hia_allowed_prefixes.so",
+        "object": "allowed_prefixes.namespaced.o",
+        "archive": "libcodex_hia_allowed_prefixes.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 37980,
+        "archive_sha256": "60f7f986a2c3645c70c2fa7ab62e1c2c244ec36749d539eec10183db517242c6",
+        "text_sha256": "93c41c3825f94f06d2a77253517f0f3d64b23300c651a7b8685c58ddbf76911a",
+        "defined_symbols": [
+          "codex_hia_allowed_prefixes"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "62b17705ee393f4fd12b07eefc65b2dd76c066e64ca352fdc89323aa1173bb78",
+        "library_sha256": "ffc1238130508620f6cf6885d9a5d5406339d7177e271095d84ff01a909943f7"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "f2f707c2715183c891f57220300ab26147704929e4815f51bbc62b0e4f6d12ef",
+    "toolchain_lock_sha256": "f79b9e1280eb54cf0ef0a71c52c5f63fbe4f6710b9a75521f85b6cb21b80236e",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "1778e399fb88386c104c21028980975a34464a119692c7058b32437cb44fcbc4",
+  "build_report_sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
@@ -375,7 +398,8 @@
     "template_index": "template AVL ordering, deduplication, lookup and usage tracking",
     "prefix_match": "Complete PrefixPattern matching, alternative byte equality and scalar count admission through the opt-in execpolicy caller; HIA owns both decisions.",
     "policy_summary": "Complete pure RuleMatch reduction for Evaluation and CLI summary: presence, strictest decision and explicit-match flag.",
-    "network_domains": "Complete Policy::compiled_network_domains: HIA selects non-Prompt rules and computes ordered last-winner raw-host Allow/Forbidden vectors."
+    "network_domains": "Complete Policy::compiled_network_domains: HIA selects non-Prompt rules and computes ordered last-winner raw-host Allow/Forbidden vectors.",
+    "allowed_prefixes": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication."
   },
   "seek_sequence": {
     "schema": "codex.hia.seek-sequence-differential.v1",
@@ -1164,7 +1188,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "scope": "Actual fresh fourteen-module B1/B2/B3 build and scoped network-domain raw ABI, complete original public owner, allocation, injected-callee, execpolicy owner and standalone gates. Final fix/fmt changed no source bytes. New fourteen-module full Codex CLI, Core network consumer, previous component reruns, workspace and required platforms remain pending; no performance, default-release or retirement closure is claimed.",
+  "scope": "Actual fifteen-module local B1/B2/B3 build, exact transferred artifacts and scoped original allowed-prefix owner gates. Fourteen final code files match actual tested bytes; final fix/fmt changed no bytes and no post-fmt tests ran. Current fifteen-module full CLI, Protocol/Core consumers, previous component reruns, whole workspace and platforms remain pending; no whole Policy/Core, performance, default-release or retirement closure.",
   "evidence_reports": {
     "seek_sequence": {
       "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
@@ -1419,16 +1443,21 @@
     }
   },
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "8e2ade2c398c61761a8d010451b3e670e4217c630360de432dbc859da871af87",
+    ".github/workflows/codex-hia-native.yml": "9078f6f27a37e7b164ced2034e6fa0ae7ee3dbb5f1761e925c7c46b364236b66",
     ".github/workflows/rusty-v8-release.yml": "25eb9da672e26f1da7f0c186c8f1b7395530f4f139aad6dcce5e234e9e3ced59",
     ".github/workflows/v8-canary.yml": "89f6a2bfeb3a6dbec431c64872c61dfb5e3f0f5444bf0c62a62237129734679d",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/cli/Cargo.toml": "b85af25d93b7994e9c7bc74ec8a29087be056f5cfe853f76ca63332b64275119",
     "codex-rs/execpolicy/BUILD.bazel": "1e5a7a8c87ce0a8f95fb482269d7f2624b94242f1a2082237f660f8386a3fdb8",
     "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
-    "codex-rs/execpolicy/build.rs": "f168c02d67a54710780dd7518f572e3016caeca5e860142531e5c3b0cc5bb294",
+    "codex-rs/execpolicy/build.rs": "a1eebc438f0000fc025e9de44fe3c2ba4adb4671f1b3ebf1c23c5d8afd0fc7a9",
+    "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
+    "codex-rs/execpolicy/src/hia_native_allowed_prefixes.rs": "d00759c4308e11d16943480394c1573f8071cd887a9657bf7e1987503dfd3262",
+    "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
+    "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
     "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
-    "codex-rs/execpolicy/src/lib.rs": "24c4082abb065393b48b471339843b759b4d509e3700fb58664dc3899f00e8cd",
+    "codex-rs/execpolicy/src/lib.rs": "83f34b8a77ee2e7aef43f30f622bf5fca813785b352c87476f5dca8663e536d7",
+    "codex-rs/execpolicy/src/policy.rs": "82683563297d7379bde5593662482042525554145816ebf9cbaf5c81f995b10b",
     "codex-rs/execpolicy/src/rule.rs": "2bb6276d98078f67b67717b265b006c280ec503007c94daa1ec7f58ca4959221",
     "codex-rs/linux-sandbox/tests/suite/landlock.rs": "3301d411053aaf43bf60435261aef451b115a1ba775a19d395cc104a203a9fcd",
     "codex-rs/login/Cargo.toml": "09f35415c4cdd324a270eaa95d27a99f16c9bf5519c55c8c128207a9235f2f50",
@@ -1458,62 +1487,64 @@
     "codex-rs/utils/template/src/lib.rs": "53e5df9cd7cc38a2779623b88b18e282c6d749d10288fac9f4b83cfcea449d1a",
     "codex-rs/utils/template/src/parser_native_tests.rs": "b43b621a0940524a4cd8a8ed9ae2dca57b83174123ee6cb9555011f42cf3b7f1",
     "codex-rs/utils/template/src/render_native_tests.rs": "149e6879badd3130fd017f24e4f4fea40963dfaf1e53860c48e8e788aee258aa",
+    "hia/allowed_prefixes.hepta": "257184be5851e53a4c95deb70dc7e980a7dbafa131a4562cb9b6274c00116fc0",
     "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
     "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
     "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+    "hia/network_domains.hepta": "7ef166afa54278b0ec0957a9e210141cc58ca31652518a5d127ffff4a0eb9859",
+    "hia/policy_summary.hepta": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
+    "hia/prefix_admission.hepta": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb",
     "hia/prefix_match.hepta": "5502f02c6b7e18cb88ca48323d3cebcd9bf95e43f8557556f52bfb39fad215ee",
     "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
     "hia/template_index.hepta": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
     "hia/template_parser.hepta": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
     "hia/template_render.hepta": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
+    "hia/tests/native_allowed_prefixes.rs": "e918da1f2dfb3a6ab26ae906f8224a138c5bef6d67718b7bb4db87f13349616a",
+    "hia/tests/native_allowed_prefixes_allocations.rs": "8be873261d160e41d19ca888541684905fd294c1dd53cbc5b13c71b24262f0f8",
+    "hia/tests/native_allowed_prefixes_failures.rs": "d1cf8b55b9f2b04119336fd7c57fd5ca925747fd0bdd1e82d1879a2af89f6155",
     "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
+    "hia/tests/native_execpolicy_allocations.rs": "7510b8911787fd638becdd63b70ec9df86228f11b62125e12cf7649e88b1c358",
     "hia/tests/native_execpolicy_caller.rs": "67760e2fb3ec5103a548b746c0e49f5978a05b4d5ca59e3785aea79d805e3b6f",
     "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
     "hia/tests/native_metric_caller.rs": "3ddb875dbca6480d340f04e2df777e4b380294366107d05d238b3be3c9b60c64",
+    "hia/tests/native_network_domains.rs": "b89b90d505058e8e25c43d5b52356f8bf06028c466c0e41f6ae5a9cfaf7cb51c",
+    "hia/tests/native_network_domains_allocations.rs": "55e9351db80ae9235d9f72bb8c45f64bdfca547ab3d59a394fc7fa4a7f31856d",
+    "hia/tests/native_network_domains_failures.rs": "abf3a7deb01e346f4b71bf34702125406ec7d4ca57879b3b684c89c87c5dcca2",
+    "hia/tests/native_policy_summary.rs": "323290da9790073f08e66871ba888ac9fa15a1dc24aad89490678437a22faf7b",
+    "hia/tests/native_policy_summary_allocations.rs": "8e26f419fbe1395023ad179d3cc2819d8762772ae58d83b4606ec95578842b31",
+    "hia/tests/native_policy_summary_failures.rs": "9e19cd091a0bccd8825c15201818ae9d1ec10b5b99479b45e7bb7ed718938bfb",
     "hia/tests/native_string_caller.rs": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
     "hia/tests/native_template_parser.rs": "1a23ad4137ca445c8fbd919233e14de6e57692f9337ed4e31e81b471d3e9eab3",
     "hia/tests/native_template_placeholders.rs": "55e4e7927a6c7e44c906cec9bef7c82ed8af7aee49f12e7f0883072adb4f9a72",
     "hia/tests/native_template_render.rs": "5520be3887d16d6a219b3ff97953e310c02c55a68767d48e5ec3d31802ec867b",
     "hia/tests/native_uuid_caller.rs": "ea5abc5c9efe0f3c09a257d23853b572ec266ef9358b39296f1e221fc7bff81f",
+    "hia/tests/test_allowed_prefixes_abi.py": "c1201cf6fe526bd71b8a4c9b26f0b2e27a3eae7f7756ac137f8a44e48728cd1c",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
-    "hia/tests/test_installed_codex.py": "2c9079f63b3f2fce03917683f154ae37e63faf8cbac0ca83c3177d31d532b5f8",
+    "hia/tests/test_installed_codex.py": "a3e763e5ac7b8c230c42523f3e9b1065ffa2dc2bc5f5086c8b6a5a0a5fe976a5",
     "hia/tests/test_installed_execpolicy.py": "cde069eecea4b0b1e470aa3ee94e456a49b3dfd763fc4be19638e87d2cbc8e66",
+    "hia/tests/test_native_allowed_prefixes.py": "68d2ed564c9e9271179d5432d558ee12700026fd0869af0d82e1185e12a682e3",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
+    "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe",
     "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
+    "hia/tests/test_native_network_domains.py": "d797d2315e00793ff7fac53e0cff3c2f3e551bff5ff2cc3b8c231dee89d35dde",
+    "hia/tests/test_native_policy_summary.py": "c4475772e34ca24d0d32b5f30b2ca5589924c2b43d935f0196cf248d96c1c8e4",
     "hia/tests/test_native_template_parser.py": "3442b35bae2e3620fcb9ff8c262307a131bd49e7c47ba2e5a6167d9a10917074",
     "hia/tests/test_native_uuid_caller.py": "a0dd3b0b6848a0ab9080839f562b918f9b5a8d75b1bb53400fec647badd50fb0",
+    "hia/tests/test_network_domains_abi.py": "77bed8474ea1859d7f0b071069c8ec34c9a36882b8cb756652dd87b9e15d32da",
+    "hia/tests/test_policy_summary_abi.py": "3d4bcd9dd76abccb9acf09a6f1111ddeb9e3408caba6bbd6cf36489f0bf20d4c",
+    "hia/tests/test_prefix_admission_abi.py": "e43f76b0990e8a64db0f7603fd9a5dbc8df91a46236b2edb6129e645227e5921",
     "hia/tests/test_prefix_match_abi.py": "28d2614618975ee14cb492ab79d95749795d71453c741ad74c37d981fa5934d4",
+    "hia/tests/test_scalar_build_admission.py": "705cbbab65b52f92102824c0c8abd80302dedb6fa390400cb276cc6195b2f685",
     "hia/tests/test_template_index_abi.py": "68e3668e4997332f2026836623e4357c69ecd730322b253b7dfd7fbb3bcf005d",
     "hia/tests/test_template_parser_abi.py": "0c8b599c6792903891d9ee0abb88a6367661aef0b4c29a525c09dcc7efcab964",
     "hia/tests/test_template_render_abi.py": "a5a2ea257c35e3f8ce3589f03e23facc9c7fdd4daf12517862e9a253921558e7",
     "hia/tests/test_uuid_abi.py": "33d355c8fdcec9663f048f01e1e93184dce12c52177b32375e2ef656e8aaaaf8",
-    "hia/toolchain.json": "f2f707c2715183c891f57220300ab26147704929e4815f51bbc62b0e4f6d12ef",
+    "hia/toolchain.json": "f79b9e1280eb54cf0ef0a71c52c5f63fbe4f6710b9a75521f85b6cb21b80236e",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-    "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
-    "hia/prefix_admission.hepta": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb",
-    "hia/tests/test_prefix_admission_abi.py": "e43f76b0990e8a64db0f7603fd9a5dbc8df91a46236b2edb6129e645227e5921",
-    "hia/tests/test_scalar_build_admission.py": "705cbbab65b52f92102824c0c8abd80302dedb6fa390400cb276cc6195b2f685",
-    "hia/tests/native_execpolicy_allocations.rs": "7510b8911787fd638becdd63b70ec9df86228f11b62125e12cf7649e88b1c358",
-    "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe",
-    "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
-    "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
-    "codex-rs/execpolicy/src/policy.rs": "6f04c2b359957483a09ce1675b0fb9f2f7d02617b51dc1b0622cde16463de1dd",
-    "hia/policy_summary.hepta": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
-    "hia/tests/native_policy_summary.rs": "323290da9790073f08e66871ba888ac9fa15a1dc24aad89490678437a22faf7b",
-    "hia/tests/native_policy_summary_allocations.rs": "8e26f419fbe1395023ad179d3cc2819d8762772ae58d83b4606ec95578842b31",
-    "hia/tests/native_policy_summary_failures.rs": "9e19cd091a0bccd8825c15201818ae9d1ec10b5b99479b45e7bb7ed718938bfb",
-    "hia/tests/test_native_policy_summary.py": "aa6c901f7718af15ffbe4816a1b63a162f94bffdd2ec2ccbc02164404c867dec",
-    "hia/tests/test_policy_summary_abi.py": "3d4bcd9dd76abccb9acf09a6f1111ddeb9e3408caba6bbd6cf36489f0bf20d4c",
-    "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
-    "hia/network_domains.hepta": "7ef166afa54278b0ec0957a9e210141cc58ca31652518a5d127ffff4a0eb9859",
-    "hia/tests/native_network_domains.rs": "b89b90d505058e8e25c43d5b52356f8bf06028c466c0e41f6ae5a9cfaf7cb51c",
-    "hia/tests/native_network_domains_allocations.rs": "55e9351db80ae9235d9f72bb8c45f64bdfca547ab3d59a394fc7fa4a7f31856d",
-    "hia/tests/native_network_domains_failures.rs": "abf3a7deb01e346f4b71bf34702125406ec7d4ca57879b3b684c89c87c5dcca2",
-    "hia/tests/test_native_network_domains.py": "d797d2315e00793ff7fac53e0cff3c2f3e551bff5ff2cc3b8c231dee89d35dde",
-    "hia/tests/test_network_domains_abi.py": "77bed8474ea1859d7f0b071069c8ec34c9a36882b8cb756652dd87b9e15d32da"
+    "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0"
   },
   "workspace_requalification": {
     "status": "passed",
@@ -1555,7 +1586,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "module_count": 14,
+  "module_count": 15,
   "public_api_components": {
     "uuid_matches": {
       "api": "codex_utils_string::find_uuids",
@@ -2533,8 +2564,8 @@
     "applies_to_current_prefix_increment": false,
     "evidence_rule": "Existing per-component reports retain their original hashes and scopes. Historical full CLI, Core consumers and workspace results are not a pass for the newly added prefix path."
   },
-  "production_callers_verification_scope": "Active local scope is network_domains_qualification; published thirteen-module native CI is immutable history. The new full CLI/Core network consumer and wider scopes remain pending.",
-  "current_source_inputs_scope": "Exact published 7b51 source inputs plus fourteen frozen network-domain files. All changed hashes bind the actually executed final source; final fix/fmt changed no bytes.",
+  "production_callers_verification_scope": "Active local scope is allowed_prefixes_qualification. Published fourteen-module CI is immutable history; current full CLI, exact Protocol consumer, Core consumers and prior component reruns remain pending.",
+  "current_source_inputs_scope": "Exact published b39 source inputs plus fourteen frozen allowed-prefix files. Every changed hash binds actual execution; final fix/fmt changed zero bytes.",
   "prefix_match": {
     "schema": "codex.hia.prefix-match-qualification.v1",
     "status": "linux_gnu_component_and_standalone_passed",
@@ -3168,7 +3199,7 @@
       "artifact_admission": "current_qualification.gates.scalar_artifact"
     }
   },
-  "borrowed_module_count": 13,
+  "borrowed_module_count": 14,
   "scalar_module_count": 1,
   "entry_profile_rule": {
     "default": "borrowed-buffers-u32-v1",
@@ -3179,7 +3210,7 @@
   "historical_evidence_scopes": {
     "recorded_at_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
     "applies_to_current_compiler": false,
-    "rule": "The listed objects retain historical source scopes. current_qualification records V3 local execution; published_v3_ci_history records V3 CI; stack_frame_qualification records the V4 local checkpoint; published_v4_ci_history records exact d7 CI. Active thirteen-module evidence is policy_summary_qualification. New identities do not requalify historical reports. policy_summary_qualification retains its thirteen-module local pre-CI checkpoint; published_policy_summary13_ci_history records that exact published CI. network_domains_qualification is the current fourteen-module local scope.",
+    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification is the active fifteen-module local scope. Identity continuity does not transfer historical passes.",
     "fields": [
       "seek_sequence",
       "utf8_boundaries",
@@ -4241,7 +4272,7 @@
     },
     "scope": "Only the exact twelve-module d7/merge sources above. Counts are per run, not added together. All seven prefix timings in each run were slower than original Rust. The source-specific reports retain all timing rows, exact build/artifact identities and limitations; no historical pass qualifies the current thirteen-module source."
   },
-  "active_qualification": "network_domains_qualification",
+  "active_qualification": "allowed_prefixes_qualification",
   "policy_summary_qualification": {
     "status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
     "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
@@ -5199,5 +5230,421 @@
     },
     "performance_qualified": false,
     "report_path_scope": "External immutable evidence: published14/* copies ci-evidence/network-domains14/*; reports are not source-tree artifacts."
+  },
+  "allowed_prefixes_qualification": {
+    "status": "local_scoped_qualification_passed_exact_final_source_current_ci_pending",
+    "base_revision": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+    "base_tree": "641cdf1111cc346da3ede2ee45bafc8a3fbdcd05",
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "evidence_root": "ai395:/home/qq/codex-hia-work/9f0b-allowed-prefixes-source-qualification-20261115",
+    "report_path_scope": "Report file fields are relative to the separate document-evidence package, whose aliases preserve exact report bytes. evidence_root identifies the remote execution directory and is not a prefix for those labels. Only the three canonical documents belong in the repository.",
+    "module_count": 15,
+    "borrowed_module_count": 14,
+    "scalar_module_count": 1,
+    "configured_production_path_algorithms": 12,
+    "installed_standalone_symbols": 3,
+    "expected_full_codex_symbols": 13,
+    "ownership": {
+      "complete_algorithm": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication.",
+      "hia_owns": "ADMIT decides Allow; PLAN sizes the rendered representation; RUN renders Single/Alts tokens, stably mergesorts vector indices and chooses unique rendered vectors.",
+      "rust_retains": "Original rule iteration, as_any callbacks/downcasts, decision encoding, checked transport and structural output/UTF-8 validation, then owned result Strings. No Rust token rendering, sorting or deduplication.",
+      "effect_order": "Each admitted prefix is encoded before the next callback. Non-PrefixRule, Prompt and Forbidden patterns are not inspected; callback/panic prefixes, shared-Arc inputs and independent owned outputs are preserved.",
+      "rendering": "Single bytes are unchanged; Alts render exactly [ plus alternatives joined by | plus ]. Empty alternatives and delimiter-containing strings can collide; equality and ordering are on complete rendered vectors.",
+      "error_scope": "Invalid native status or structural output panics with no Rust algorithm or empty-list fallback. Structurally valid wrong semantic results require the actual HIA/original-owner differential.",
+      "whole_policy_migrated": false
+    },
+    "build": {
+      "mode": "native-selfhost",
+      "B1_B2_B3_identical": true,
+      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "report_sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8",
+      "receipt_checks_passed": 70,
+      "producer": "Local native build; remote owner reused an exact verified 204-file transfer, without rebuilding HIA.",
+      "transfer": {
+        "files": 204,
+        "bytes": 25357414,
+        "manifest_sha256": "7616aa0815f381ff5e3756644b9402489b2ee380198ab954a149672c8e8e312d",
+        "build_report_sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8"
+      },
+      "previous_fourteen_identity_scope": "Prior source/Core/profile/namespaced object/text/static archive identities match the recorded fourteen-module build. Identity equality does not transfer behavioral passes; shared-library hashes need not match."
+    },
+    "raw_abi": {
+      "native_calls": 6118,
+      "success": 3810,
+      "error_no_write": 2308,
+      "concurrent": 256,
+      "maximum_input_bytes": 8388773,
+      "skipped": 0
+    },
+    "public_execution": {
+      "comparisons_total": 11270,
+      "concurrent_comparisons_included": 512,
+      "entry_observations": 16,
+      "effect_and_panic_cases": 6,
+      "hasher_binding": "same cloned RandomState and identical key insertion order; single-key panic cases also assert exact event prefixes",
+      "oracle_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "oracle_owners": {
+        "policy": {
+          "token_count": 2372,
+          "token_sha256": "080a1946165e5555b5789e5705fdae77f117f4c0300f6159e682f1678ff79254"
+        },
+        "decision": {
+          "token_count": 134,
+          "token_sha256": "62c968bd0e18a20e2c4e4e814f115f7be66f5ddb69455679b28155be2a4dc9d2"
+        },
+        "execpolicycheck": {
+          "token_count": 491,
+          "token_sha256": "579b4542a2a063435c8f5ea7f9bea744f5140feb5aaaa294128cae948ec466e3"
+        },
+        "rule": {
+          "token_count": 208,
+          "token_sha256": "229f094dded61b39578ae0cdd453e12e14bb0720a3147082075d2c9997812e7f"
+        },
+        "allowed_prefixes": {
+          "token_count": 215,
+          "token_sha256": "e4c4fc1720c4c14eac86dbb4d73354cbb9549357ea6aab2fe21eb7804a13261f"
+        }
+      },
+      "oracle_overlap": "The 215-token allowed-prefix extraction is part of the unchanged 2372-token whole-policy oracle; overlapping pins are not added.",
+      "actual_cargo_binding": "Both locked actual owner crates; captured rustc extern/features, 47 source hashes, archive/build identities and checked complete ordered Vec<Vec<String>> results.",
+      "public_binary_sha256": "88b5dc07e9face27d33dc165fb1bda7c18c967834a0ee8bea935ddd2eb243e38",
+      "allocation_cases": 31,
+      "zero_allocation_cases": 12,
+      "positive_allocation_probe": [
+        1,
+        1,
+        1026,
+        1025,
+        1025
+      ],
+      "injected_callee_failures": 35,
+      "ignored_transport_cases": 5,
+      "failure_scope": "35 rejection cases and five ignored-pattern transport cases are separate. They exercise the actual adapter with substituted results, not actual HIA execution."
+    },
+    "owner_execution": {
+      "default_tests": {
+        "tests_run": 34,
+        "passed": 34,
+        "skipped": 0
+      },
+      "native_tests": {
+        "tests_run": 34,
+        "passed": 34,
+        "skipped": 0
+      },
+      "original_owner_aggregate_passed": false,
+      "artifact_reconciliation_passed": true,
+      "strict_clippy": "Both codex-execpolicy --all-targets modes with --locked and -D warnings returned zero.",
+      "installed_standalone": {
+        "passed": true,
+        "cases": 30,
+        "processes": 60,
+        "skipped": 0,
+        "scope": "standalone check parity and original three symbols; not collection behavior"
+      },
+      "installed_scope": "Three-symbol standalone command does not exercise get_allowed_prefixes.",
+      "final_fix_fmt_diff_check_passed": true
+    },
+    "source_reconciliation": {
+      "final_code_files": 14,
+      "manifest_sha256": "2f9b47f940b30c7e298d4cf771a027479f9212eb01553578b488fc28389d254e",
+      "source_payload_sha256": "6c344a85c968c87949a897226aadad6a59d3374f895039aed4012c817a7c6abf",
+      "candidate_tree_without_new_canonical_docs": "2b66ee5a4fd00552038ec393ac990959e7c2fba6",
+      "all_final_bytes_match_actual_execution": true,
+      "initial_rustfmt_scope": "Seven Rust files formatted before actual public/owner tests; pre-format files are not the executed source.",
+      "final_fix_fmt_changed_bytes": 0,
+      "post_fix_fmt_tests_executed": false,
+      "six_protected_roots_unchanged": true,
+      "source_baseline_blobs_verified": 9866
+    },
+    "performance": {
+      "qualified": false,
+      "profile": "real dev crate artifacts; opt-level=3 external harness; diagnostic timings only",
+      "all_fourteen_rows_slower_than_rust": true,
+      "rows": [
+        {
+          "calls": 10000,
+          "case": "empty",
+          "native_ns": 2516141,
+          "rust_ns": 283450
+        },
+        {
+          "calls": 10000,
+          "case": "one_prompt",
+          "native_ns": 2935035,
+          "rust_ns": 418745
+        },
+        {
+          "calls": 10000,
+          "case": "one_forbidden",
+          "native_ns": 2940526,
+          "rust_ns": 417815
+        },
+        {
+          "calls": 1000,
+          "case": "many_prompt",
+          "native_ns": 2213841,
+          "rust_ns": 547731
+        },
+        {
+          "calls": 1000,
+          "case": "ignored_large_pattern",
+          "native_ns": 299260,
+          "rust_ns": 41878
+        },
+        {
+          "calls": 10000,
+          "case": "ordinary_single",
+          "native_ns": 14498855,
+          "rust_ns": 1265195
+        },
+        {
+          "calls": 10000,
+          "case": "ordinary_alternatives",
+          "native_ns": 17384381,
+          "rust_ns": 2688735
+        },
+        {
+          "calls": 1000,
+          "case": "rendering_collisions",
+          "native_ns": 9234641,
+          "rust_ns": 1810116
+        },
+        {
+          "calls": 100,
+          "case": "reverse_unique",
+          "native_ns": 13678354,
+          "rust_ns": 1545125
+        },
+        {
+          "calls": 100,
+          "case": "sorted_unique",
+          "native_ns": 13636315,
+          "rust_ns": 1532836
+        },
+        {
+          "calls": 3,
+          "case": "single_large",
+          "native_ns": 10700629,
+          "rust_ns": 86867
+        },
+        {
+          "calls": 3,
+          "case": "repeated_large",
+          "native_ns": 81054018,
+          "rust_ns": 1184868
+        },
+        {
+          "calls": 3,
+          "case": "first_byte_difference",
+          "native_ns": 21547354,
+          "rust_ns": 223632
+        },
+        {
+          "calls": 3,
+          "case": "last_byte_difference",
+          "native_ns": 30378530,
+          "rust_ns": 452294
+        }
+      ],
+      "allocation_cases_preserved_in_report": 31,
+      "allocation_metric_order": [
+        "allocations",
+        "reallocations",
+        "requested_bytes",
+        "peak_requested_live_bytes",
+        "retained_requested_bytes"
+      ],
+      "allocation_metric_semantics": "logical requested layouts during call; realloc subtracts old then adds new; excludes allocator transient dual buffers and process RSS",
+      "single_large": {
+        "case": "single_large",
+        "native": [
+          5,
+          0,
+          6291603,
+          6291603,
+          2097201
+        ],
+        "reference": [
+          3,
+          0,
+          2097273,
+          2097273,
+          2097273
+        ],
+        "result_vectors": 1,
+        "rules": 1
+      },
+      "single_large_scope": "Three calls take 10700629 versus 86867 ns, about 123x. Logical requested-live peak 6291603 versus 2097273 bytes is about 3x; not RSS or allocator transient double-buffer peak.",
+      "complete_allocation_evidence": "All 31 original allocation rows, including 12 zero-allocation cases, remain verbatim in public-allowed-v1.json and qualification-summary-v2.json. No resource or timing equivalence is claimed."
+    },
+    "remaining_gates": {
+      "published_native_ci_qualified": false,
+      "installed_full_codex_cli_qualified": false,
+      "full_cli_thirteen_symbol_gate": "Wired only; pending actual current-source execution.",
+      "protocol_consumer_qualified": false,
+      "protocol_consumer_test": "models::tests::format_allow_prefixes_limits_output",
+      "protocol_consumer_filter": "test(=models::tests::format_allow_prefixes_limits_output)",
+      "protocol_consumer_feature": "codex-execpolicy/hia-native",
+      "core_execpolicy_consumers_qualified": false,
+      "core_network_consumer_qualified": false,
+      "prior_components_reexecuted_on_current_source": false,
+      "whole_core_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "whole_policy_migrated": false,
+      "whole_codex_rewritten": false,
+      "retirement_ready": false
+    },
+    "reports": [
+      {
+        "file": "root-native/build.json",
+        "sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8",
+        "bytes": 185391
+      },
+      {
+        "file": "raw-abi-v1.json",
+        "sha256": "107fded0824efa641a5de9eb914f0d03d0689a40f4baf5da4d79a00302a3affe",
+        "bytes": 2714
+      },
+      {
+        "file": "build-receipt-v1.json",
+        "sha256": "6d06c6371c6bb98f3c85eaf8bf218a3d58e972caa697ff9b18cec89269b50e6e",
+        "bytes": 2682
+      },
+      {
+        "file": "public-allowed-v1.json",
+        "sha256": "4d38466856d7a090f18f953d4eb68af658546e83f268251d366dff8c16e30589",
+        "bytes": 58226
+      },
+      {
+        "file": "native-prepare-v1.json",
+        "sha256": "5958a214afa659b8451085080c5b74ddc52c4b5fe7875d758521a73a13e496c2",
+        "bytes": 13385
+      },
+      {
+        "file": "owner-public-v1.json",
+        "sha256": "96aa763cde2bd745a26017d512ed2bba66f6fdd680537cdf5148c7d6dcdc41f5",
+        "bytes": 12481
+      },
+      {
+        "file": "owner-reconciliation-v1.json",
+        "sha256": "62f659c02b2a75febec8262b4911bb304f0f85543b49eab68410be8ab4d28682",
+        "bytes": 8004
+      },
+      {
+        "file": "installed-execpolicy-v1.json",
+        "sha256": "a099f15842655af73e33a702a67a86e2974ee85aa75d37fede897d2061dd0917",
+        "bytes": 119648
+      },
+      {
+        "file": "installed-strict-v1.json",
+        "sha256": "c19cdb80f9a2860f66e561afdd4599f0d4ad29d63c93b5091677fdf71425811a",
+        "bytes": 143301
+      },
+      {
+        "file": "final-maintenance-v1.json",
+        "sha256": "45c6c5813ce0917d873fd6386749d93dc6b6003c1be750d01cd096d5b0620e9c",
+        "bytes": 13456
+      },
+      {
+        "file": "final-maintenance-v2.json",
+        "sha256": "ec0796a904da8ca01eaafb2ade7d4fdfb7e396c0aa04deeadd8c85a39b35c233",
+        "bytes": 20054
+      },
+      {
+        "file": "source-manifest.json",
+        "sha256": "2f9b47f940b30c7e298d4cf771a027479f9212eb01553578b488fc28389d254e",
+        "bytes": 7346
+      },
+      {
+        "file": "qualification-summary-v2.json",
+        "sha256": "a0c01523e4cd234caf4f7ac228262523c39c625b66057379b48ab2349f309e68",
+        "bytes": 36204
+      },
+      {
+        "file": "runtime-terminal-evidence.json",
+        "sha256": "242d9149e03d4b881161fa5d0f9c9ec239c195c96730398173203bd3caff2c85",
+        "bytes": 16298
+      }
+    ],
+    "preserved_negative_evidence": [
+      {
+        "scope": "original worktree setup",
+        "job_id": "1a1de42b5cc-392-2372",
+        "state": "unknown",
+        "replayed": false,
+        "detail": "No authoritative terminal state; source-only qualification is a separately approved operation."
+      },
+      {
+        "scope": "owner aggregate",
+        "job_id": "1a1de6dc50e-392-23d8",
+        "state": "failed",
+        "exit_code": 1,
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f0b-allowed-prefixes-source-qualification-20261115/owner-public-v1.json",
+          "bytes": 12481,
+          "sha256": "96aa763cde2bd745a26017d512ed2bba66f6fdd680537cdf5148c7d6dcdc41f5"
+        },
+        "detail": "All four actual commands returned 0; final extra-file guard rejected existing nextest local JUnit. Exact JUnit relocated and source state reconciled, without test rerun.",
+        "reconciliation": {
+          "path": "/home/qq/codex-hia-work/9f0b-allowed-prefixes-source-qualification-20261115/owner-reconciliation-v1.json",
+          "bytes": 8004,
+          "sha256": "62f659c02b2a75febec8262b4911bb304f0f85543b49eab68410be8ab4d28682"
+        }
+      },
+      {
+        "scope": "final maintenance v1",
+        "job_id": "1a1de75932b-392-23ef",
+        "state": "failed",
+        "exit_code": 1,
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f0b-allowed-prefixes-source-qualification-20261115/final-maintenance-v1.json",
+          "bytes": 13456,
+          "sha256": "45c6c5813ce0917d873fd6386749d93dc6b6003c1be750d01cd096d5b0620e9c"
+        },
+        "detail": "cargo fix VCS discovery rejected source-only snapshot (101). Subsequent scoped fix uses explicit --allow-no-vcs; no source changes."
+      },
+      {
+        "scope": "performance",
+        "qualification": false,
+        "detail": "All 14 measured timing cases are slower in this run; keep all raw values. No statistical or production-performance closure."
+      },
+      {
+        "scope": "allocation",
+        "qualification": false,
+        "detail": "Large selected patterns incur frame/render copying and higher requested-live bytes; all 31 rows retained. These are logical requested layouts, not RSS or allocator transient peaks."
+      }
+    ],
+    "derived_summary_correction": {
+      "prior_summary": {
+        "path": "/home/qq/codex-hia-work/9f0b-allowed-prefixes-source-qualification-20261115/qualification-summary.json",
+        "bytes": 33561,
+        "sha256": "5c4756cf418017938df733e37befaf47c4b0cc48b667760af8863a0ed3b0f4b6"
+      },
+      "reason": "The first derived summary filtered command labels for clippy, but the actual labels are strict-default-v1 and strict-native-v1. Include both original completed command records; no source or test changes."
+    },
+    "scope": "Actual fifteen-module local B1/B2/B3 build, exact transferred artifacts and scoped original allowed-prefix owner gates. Fourteen final code files match actual tested bytes; final fix/fmt changed no bytes and no post-fmt tests ran. Current fifteen-module full CLI, Protocol/Core consumers, previous component reruns, whole workspace and platforms remain pending; no whole Policy/Core, performance, default-release or retirement closure.",
+    "independent_review": {
+      "report": {
+        "file": "root-frozen-verification.json",
+        "sha256": "59d94f7945ebb4f19700a1f6e7b5f421776a193282d198e6febfdef4eaefd606",
+        "bytes": 7484
+      },
+      "frozen_code_files": 14,
+      "baseline_git_entries": 9866,
+      "evidence_members_rehashed": 112,
+      "public_source_inputs_rehashed": 47,
+      "compiler_captures_verified": 4,
+      "runtime_dependencies_verified": 4,
+      "public_command_streams_rehashed": 22,
+      "native_artifacts_rehashed": 204,
+      "durable_jobs_verified": 8,
+      "durable_job_successes": 6,
+      "durable_job_failures": 2,
+      "scope": "Independent source/blob/preimage/archive/log/capture/runtime-status review, not new test execution. Unknown earlier worktree-setup terminal state remains unknown; failed owner/maintenance jobs remain failed."
+    }
   }
 }
