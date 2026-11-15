@@ -132,15 +132,12 @@ async fn tcp_listener_opens_a_grpc_session() -> Result<()> {
         .context("gRPC code-mode host stdout is unavailable")?;
     let mut stdout = BufReader::new(stdout);
     let mut endpoint = String::new();
-    let endpoint_read = async {
-        timeout(TEST_TIMEOUT, stdout.read_line(&mut endpoint))
-            .await
-            .context("gRPC code-mode host did not publish its endpoint")?
-            .context("failed to read gRPC code-mode host endpoint")
-    }
-    .await;
-    if let Err(error) = endpoint_read {
-        return Err(error.context(host::startup_diagnostics(&mut host).await));
+    let published = timeout(TEST_TIMEOUT, stdout.read_line(&mut endpoint))
+        .await
+        .context("gRPC code-mode host did not publish its endpoint")
+        .and_then(|result| result.map_err(anyhow::Error::from));
+    if let Err(error) = published {
+        return Err(host::with_startup_failure_diagnostics(error, &mut host).await);
     }
     let endpoint = Endpoint::from_shared(endpoint.trim().to_string())
         .context("gRPC code-mode host published an invalid endpoint")?

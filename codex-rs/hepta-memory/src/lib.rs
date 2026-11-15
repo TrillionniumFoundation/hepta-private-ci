@@ -35,6 +35,9 @@ mod cognitive_retrieval_adapter;
 mod cognitive_runtime;
 mod cognitive_store;
 mod compact_persistence;
+mod episodic_source;
+#[cfg(test)]
+mod episodic_test_support;
 mod framing;
 mod h7_feedback;
 mod h7_runtime;
@@ -242,6 +245,8 @@ pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
 #[cfg(target_os = "linux")]
 pub use cognitive_store::InstalledRootCheckpointImage;
+#[cfg(any(test, feature = "qualification-lease-clock"))]
+pub use cognitive_store::QualificationLeaseClock;
 pub use cognitive_store::RecoveredCognitiveReadOnly;
 pub use compact_persistence::COMPACT_PERSISTENCE_EXTERNAL_EFFECTS;
 pub use compact_persistence::COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY;
@@ -257,6 +262,12 @@ pub use compact_persistence::CompactPersistenceState;
 pub use compact_persistence::CompactReconcileOutcome;
 pub use compact_persistence::CompactRehydrationRecord;
 pub use compact_persistence::checkpoint_digest;
+pub use episodic_source::AdmittedEpisodicSnapshot;
+pub use episodic_source::EpisodicImportReceipt;
+pub use episodic_source::EpisodicMemoryBinding;
+pub use episodic_source::EpisodicRecordAdmission;
+pub use episodic_source::EpisodicSnapshotAdmission;
+pub use episodic_source::EpisodicSnapshotVerifier;
 pub use framing::workspace_binding_digest;
 pub use h7_feedback::H7_FEEDBACK_BPS_SCALE;
 pub use h7_feedback::H7_FEEDBACK_DEFAULT_WEIGHT_CAP_SCALED;

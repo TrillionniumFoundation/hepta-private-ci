@@ -18,6 +18,8 @@ from pathlib import Path
 import shutil
 import struct
 import subprocess
+import sys
+import time
 import wave
 
 import torch
@@ -32,6 +34,13 @@ from scripts.joint_generation_v4_io import (
 )
 from scripts.joint_generation_v4_model import ACTIONS, JointGeneratorV4, public_packet
 from scripts.joint_generation_v4_ndu import FiniteProfile, choose
+from scripts.joint_generation_v4_receipt import (
+    InvocationCost,
+    artifact_binding,
+    build_attestation,
+    digest,
+    source_binding,
+)
 
 
 def _assert_state(encoded, state):
@@ -130,6 +139,11 @@ def _decode_files(prefix, directory):
         "image": {"format": "PPM", "width": 16, "height": 16},
         "audio": {"format": "PCM16-WAV", "sample_rate": 16000, "samples": 1024},
         "video": {"format": "Y4M", "pixel_format": stream["pix_fmt"], "frames": 4},
+        "decoder_identity": {
+            "pillow": Image.__version__,
+            "ffprobe": artifact_binding(probe),
+            "semantic_quality_evaluator": False,
+        },
         "text": {"encoding": "UTF-8", "unicode_scalars": 128},
         "files": {
             path.name: {
@@ -146,22 +160,72 @@ def native_episode(generator, public, owner, weights, binary, directory):
     state_bytes, prefix = b"", b""
     public_bytes = public_packet(public)
     observation = replace(owner, budget_remaining=owner.budget_total)
-    phase_times, comparisons = [], []
+    phase_times, comparisons, invocations = [], [], []
 
     def invoke(command):
         request = request_bytes(
             weights, public_bytes, state_bytes, prefix, command, observation
         )
-        process = subprocess.run(
-            [str(binary)], input=request, capture_output=True, timeout=120, check=False
-        )
-        if process.returncode:
-            raise AssertionError(
-                f"Native execution failed: {process.stderr.decode('utf-8', errors='replace')}"
+        # This fixture makes at most nine bounded native calls. Keep originals,
+        # including those preceding a later failure, without an unbounded log.
+        if len(invocations) >= 9 or len(request) > 10 * 1024 * 1024:
+            raise ValueError("Native diagnostic request inventory exceeds its bound")
+        stem = directory / f"native-call-{len(invocations):04d}"
+        request_path = stem.with_suffix(".request.bin")
+        request_path.write_bytes(request)
+        receipt = {
+            "request": artifact_binding(request_path),
+            "executable_path": str(binary),
+            "status": "started",
+            "returncode": None,
+            "streams_observed": False,
+            "wall_scope": "nested invocation and stream retention; not additive to enclosing cost",
+        }
+        invocations.append(receipt)
+        stdout, stderr, started = b"", b"", time.perf_counter()
+        try:
+            process = subprocess.run(
+                [str(binary)],
+                input=request,
+                capture_output=True,
+                timeout=120,
+                check=False,
             )
-        response = read_response(process.stdout)
-        phase_times.append(response["phase_micros"])
-        return response
+            stdout, stderr = process.stdout, process.stderr
+            receipt.update(returncode=process.returncode, streams_observed=True)
+            if max(len(stdout), len(stderr)) > 256 * 1024:
+                raise ValueError("Native diagnostic stream exceeds retention bound")
+            if process.returncode:
+                raise AssertionError(
+                    f"Native execution failed: {stderr.decode('utf-8', errors='replace')}"
+                )
+            response = read_response(stdout)
+            phase_times.append(response["phase_micros"])
+            receipt["status"] = "response_parsed"
+            return response
+        except BaseException as error:
+            if isinstance(error, subprocess.TimeoutExpired):
+                stdout, stderr = error.output or b"", error.stderr or b""
+                receipt["streams_observed"] = "partial_timeout_capture"
+            receipt.update(
+                status="interrupted" if not isinstance(error, Exception) else "failed",
+                failure=f"{type(error).__name__}: {error}",
+            )
+            raise
+        finally:
+            for name, raw in (("stdout", stdout), ("stderr", stderr)):
+                stream_path = stem.with_suffix("." + name + ".bin")
+                stream_path.write_bytes(raw[: 256 * 1024])
+                receipt[name] = {
+                    **artifact_binding(stream_path),
+                    "observed_bytes": len(raw),
+                    "observed_sha256": hashlib.sha256(raw).hexdigest(),
+                    "truncated": len(raw) > 256 * 1024,
+                }
+            receipt["wall_seconds"] = time.perf_counter() - started
+            stem.with_suffix(".json").write_text(
+                json.dumps(receipt, indent=2, allow_nan=False) + "\n"
+            )
 
     response = invoke(b"\x00" + struct.pack("<Q", 17) + b"\x00")  # Native Mean law.
     state_bytes = response["state"]
@@ -198,6 +262,10 @@ def native_episode(generator, public, owner, weights, binary, directory):
             or tensors["planning.scored"].bool().tolist() != list(plan.scored)
             or metadata["planning.profile"] != "ndu-finite-deterministic-v1"
             or metadata["planning.noise"] != "single-particle-fixed-emission-seed-v1"
+            or float(metadata["planning.risk_parameter"]) != plan.configured_risk
+            or metadata["planning.risk_semantics"] != "inactive-single-particle"
+            or int(metadata["planning.support_particles"]) != plan.support_particles
+            or plan.risk_effective
         ):
             raise AssertionError(
                 "Native finite planning receipt differs from the trained model mirror"
@@ -241,16 +309,15 @@ def native_episode(generator, public, owner, weights, binary, directory):
         "native_auto_calls": comparisons,
         "state_max_abs_error": state_error,
         "phase_wall_micros_codec_encode_infer_plan": phase_times,
+        "native_invocations": invocations,
         "owner_budget_origin": "synthetic fixed microseconds, not host wall clock measurements",
         "duration_forecast_origin": "checkpoint constant 1000 microseconds per action",
         "decoded": _decode_files(prefix, directory),
     }
 
 
-def run(output, binary):
+def _execute(directory, binary, report):
     torch.set_num_threads(1)
-    directory = Path(output).resolve()
-    directory.mkdir(parents=True, exist_ok=True)
     generator, public, owner, training = train_fixture()
     weights = generator.export_weights()
     metadata, tensors = read_packet(weights)
@@ -267,58 +334,118 @@ def run(output, binary):
         raise AssertionError("Checkpoint changed after export/reload")
     (directory / "trained-v4.heptapk").write_bytes(weights)
     (directory / "public-v4.heptapk").write_bytes(public_packet(public))
-    source_names = (
-        "joint_generation_v4_io.py",
-        "joint_generation_v4_model.py",
-        "joint_generation_v4_codecs.py",
-        "joint_generation_v4_ndu.py",
-        "joint_generation_v4_gradients.py",
-        "joint_generation_v4_diagnostic.py",
+    report.update(
+        {
+            "status": "training_complete_native_pending",
+            "fixture": "synthetic-width32-depth1-fp64-seed811",
+            "inference_profile": "ndu-finite-deterministic-v1",
+            "finite_profile": asdict(FiniteProfile()),
+            "noise": "deterministic Mean emission; one particle; risk has no effect",
+            "training": training,
+            "candidate_identity": {
+                "checkpoint": artifact_binding(directory / "trained-v4.heptapk"),
+                "public_packet": artifact_binding(directory / "public-v4.heptapk"),
+                "owner_wire_sha256": hashlib.sha256(owner.wire()).hexdigest(),
+                "owner_authority": "synthetic fixture; no production owner acceptance",
+                "state_codec": "HEPTAPK3 with native bridge-state and observed owner fields",
+                "checkpoint_profiles": metadata,
+                "finite_profile_sha256": digest(asdict(FiniteProfile())),
+                "frozen_training_evaluator_sha256": training[
+                    "frozen_reference_sha256_before"
+                ],
+                "independent_quality_evaluator": False,
+                "runtime": {"python": sys.version, "torch": torch.__version__},
+            },
+            "limitations": [
+                "No semantic model capability or NDU scientific benefit is measured",
+                "Reference critics are uncalibrated synthetic predictions",
+                "128 Unicode scalars, 16x16 image, 64ms audio, 4 video frames",
+                "NDU gradients do not pass through discrete emitted bytes",
+                "Native parity uses the trained candidate, not the frozen training evaluator",
+            ],
+        }
     )
+    with torch.no_grad():
+        report["native"] = native_episode(
+            reloaded, public, owner, weights, binary, directory
+        )
+    report["candidate_identity"]["terminal_artifacts"] = {
+        name: artifact_binding(directory / name)
+        for name in ("native-final-state.heptapk", "native-committed-prefix.hgc2")
+    }
+
+
+def run(output, binary, *, expected_source_commit=None, build_receipt=None):
+    cost = InvocationCost()
+    directory = Path(output).resolve()
+    directory.mkdir(parents=True, exist_ok=False)
+    path = directory / "diagnostic.json"
+    root = Path(__file__).resolve().parents[1]
     report = {
         "schema": "hepta.joint-v4.ndu-training-native-diagnostic.v1",
-        "status": "training_complete_native_pending",
-        "fixture": "synthetic-width32-depth1-fp64-seed811",
-        "inference_profile": "ndu-finite-deterministic-v1",
-        "finite_profile": asdict(FiniteProfile()),
-        "noise": "deterministic Mean emission; one particle; risk has no effect",
-        "training": training,
-        "source_sha256": {
-            name: hashlib.sha256(
-                Path(__file__).with_name(name).read_bytes()
-            ).hexdigest()
-            for name in source_names
-        },
-        "limitations": [
-            "No semantic model capability or NDU scientific benefit is measured",
-            "Reference critics are uncalibrated synthetic predictions",
-            "128 Unicode scalars, 16x16 image, 64ms audio, 4 video frames",
-            "NDU gradients do not pass through discrete emitted bytes",
-            "Native parity uses the trained candidate, not the frozen training evaluator",
+        "status": "preflight",
+        "expected_source_commit": expected_source_commit,
+        "qualification": "HOLD_NO_GO",
+        "scientific_closure": False,
+        "open_gates": [
+            "independent semantic and retention evaluation",
+            "calibrated conditional action/STOP values and effective risk",
+            "budget/information-matched frozen factorial confirmation",
+            "production adoption and successor use",
+            "energy and provider cost measurement",
         ],
     }
-    path = directory / "diagnostic.json"
-    path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     try:
-        with torch.no_grad():
-            report["native"] = native_episode(
-                reloaded, public, owner, weights, binary, directory
+        source = report["source"] = source_binding(root)
+        executable = report["executable"] = artifact_binding(binary)
+        if expected_source_commit is not None and (
+            source["commit"] != expected_source_commit
+            or not source["required_sources_match_commit"]
+        ):
+            raise ValueError(
+                "Expected source commit differs or required source bytes are dirty"
             )
+        report["local_build_attestation"] = build_attestation(
+            build_receipt, source, executable
+        )
+        _execute(directory, executable["path"], report)
+        final_source = source_binding(root)
+        final_binary = artifact_binding(binary)
+        report["source_binary_bindings_match_before_after"] = (
+            final_source["commit"] == source["commit"]
+            and final_source["source_inventory_sha256"]
+            == source["source_inventory_sha256"]
+            and final_binary == executable
+        )
+        report["source_binding_scope"] = (
+            "before/after filesystem bytes; not authentication of loaded Python code or a trusted build"
+        )
+        if not report["source_binary_bindings_match_before_after"]:
+            raise ValueError("Tested source or executable changed during the run")
         report["status"] = "passed"
-    except Exception as error:
+    except BaseException as error:
         report["status"], report["failure"] = (
-            "failed",
+            "interrupted" if not isinstance(error, Exception) else "failed",
             f"{type(error).__name__}: {error}",
         )
         raise
     finally:
-        path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+        report["native_invocation_receipts"] = [
+            artifact_binding(attempt)
+            for attempt in sorted(directory.glob("native-call-*.json"))
+        ]
+        report["invocation_cost"] = cost.finish()
+        path.write_text(
+            json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
+        )
     print(
         json.dumps(
             {
                 "status": report["status"],
-                "checkpoint_sha256": training["trained_checkpoint_sha256"],
-                "central_difference_checks": len(training["central_differences"]),
+                "checkpoint_sha256": report["training"]["trained_checkpoint_sha256"],
+                "central_difference_checks": len(
+                    report["training"]["central_differences"]
+                ),
                 "native_auto_calls": len(report["native"]["native_auto_calls"]),
                 "report": str(path),
             }
@@ -333,10 +460,17 @@ def main():
     parser.add_argument(
         "--native-binary", default=os.environ.get("JOINT_V4_NATIVE_BINARY")
     )
+    parser.add_argument("--expected-source-commit")
+    parser.add_argument("--build-attestation", type=Path)
     args = parser.parse_args()
     if not args.native_binary:
         parser.error("A real --native-binary or JOINT_V4_NATIVE_BINARY is mandatory")
-    run(args.output, args.native_binary)
+    run(
+        args.output,
+        args.native_binary,
+        expected_source_commit=args.expected_source_commit,
+        build_receipt=args.build_attestation,
+    )
 
 
 if __name__ == "__main__":

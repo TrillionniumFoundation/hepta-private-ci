@@ -17,7 +17,12 @@ import sys
 import numpy as np
 import torch
 
-from .controllers import ACTIONS, ControlPlan, Controller, PublicState
+from .action_effects import observation_key, public_actions
+from .candidate_memory import CandidateMemoryError, CandidateScope
+from .candidate_runtime import CandidateRuntime, validate_activation, validate_profile
+from .candidate_selector import validate_profile as validate_selector_profile
+from .selector_runtime import SelectorRuntime
+from .controllers import ControlPlan, Controller, PublicState
 from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical_sha
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .objective import utility_profile
@@ -133,6 +138,28 @@ def checkpoint_result(args, binding, memory, state, action, ocr_pins, meter):
         }
 
 
+def candidate_result(
+    runtime, state, action, meter, selected_index=None, *, selector=None
+):
+    if runtime is None:
+        return {}
+    with meter.stage("sync", "persist candidate selection audit"):
+        result = {
+            "candidate_memory_profile_sha256": runtime.profile_sha256,
+            "candidate_audit": runtime.record(
+                Path.cwd(), state, action, selected_index
+            ),
+        }
+        if selector is not None:
+            result.update(
+                candidate_selector_profile_sha256=selector.profile_sha256,
+                selector_audit=selector.record(
+                    Path.cwd(), state, action, result["candidate_audit"]
+                ),
+            )
+        return result
+
+
 def run():
     global _active_meter
     parser = argparse.ArgumentParser(description=__doc__)
@@ -158,6 +185,9 @@ def run():
     parser.add_argument("--resume-checkpoint", type=Path)
     parser.add_argument("--expected-checkpoint-sha256")
     parser.add_argument("--expected-continuation-sha256")
+    parser.add_argument("--candidate-memory-profile")
+    parser.add_argument("--candidate-selector-profile")
+    parser.add_argument("--source-image-sha256")
     args = parser.parse_args()
     resume = (
         args.resume_checkpoint,
@@ -170,6 +200,32 @@ def run():
         )
     if args.checkpoint_dir is not None and not args.checkpoint_dir.is_dir():
         raise ValueError("Checkpoint directory must be prepared by the host")
+    if (args.candidate_memory_profile is None) != (args.source_image_sha256 is None):
+        raise ValueError(
+            "Candidate memory and immutable source binding must be supplied together"
+        )
+    candidate_profile = None
+    if args.candidate_memory_profile is not None:
+        if len(args.candidate_memory_profile.encode()) > 4096:
+            raise ValueError("Candidate memory profile exceeds its bound")
+        candidate_profile = validate_profile(json.loads(args.candidate_memory_profile))
+        validate_activation(
+            start_step=args.start_step,
+            checkpoint_requested=args.checkpoint_dir is not None or any(resume),
+            training_exploration=args.training_exploration,
+        )
+    selector_profile = None
+    if args.candidate_selector_profile is not None:
+        if (
+            candidate_profile is None
+            or len(args.candidate_selector_profile.encode()) > 4096
+        ):
+            raise ValueError(
+                "Selector comparison requires bounded candidate memory and profile"
+            )
+        selector_profile = validate_selector_profile(
+            json.loads(args.candidate_selector_profile)
+        )
     torch.set_num_threads(1)
     if torch.get_num_interop_threads() != 1:
         torch.set_num_interop_threads(1)
@@ -258,7 +314,30 @@ def run():
     ):
         raise ValueError("Decision window exceeds the frozen episode bound")
     baseline_parameters = parameter_sha(model)
-    cache, memory = {}, None
+    candidate_runtime = None
+    if candidate_profile is not None:
+        candidate_runtime = CandidateRuntime(
+            candidate_profile,
+            CandidateScope(
+                args.operation_id,
+                packet["case_id"],
+                args.source_image_sha256,
+                packet["source_size"]["width"],
+                packet["source_size"]["height"],
+            ),
+            {
+                "weights_sha256": args.expected_weights_sha256,
+                "parameters_sha256": baseline_parameters,
+                "control_profile_sha256": control_digest,
+                "public_case_sha256": file_sha(root / "case.json"),
+            },
+        )
+    selector_runtime = (
+        SelectorRuntime(selector_profile, candidate_runtime)
+        if selector_profile is not None
+        else None
+    )
+    cache, ocr_cache, memory = {}, {}, None
     binding, pending, ocr_pins = None, None, {}
     if args.checkpoint_dir is not None or args.resume_checkpoint is not None:
         binding = checkpoint_binding(
@@ -296,6 +375,16 @@ def run():
                 "memory_mode": plan.memory_mode,
                 "control_profile_sha256": control_digest,
                 "parameters_sha256": baseline_parameters,
+                "candidate_selector_profile_sha256": selector_runtime.profile_sha256
+                if selector_runtime is not None
+                else None,
+                **(
+                    {
+                        "candidate_memory_profile_sha256": candidate_runtime.profile_sha256
+                    }
+                    if candidate_runtime is not None
+                    else {}
+                ),
             }
         ),
         flush=True,
@@ -360,6 +449,17 @@ def run():
                         "utility_profile_sha256": profile_digest,
                         "memory_mode": plan.memory_mode,
                         "control_profile_sha256": control_digest,
+                        **candidate_result(
+                            candidate_runtime,
+                            public_input,
+                            {
+                                "schema": "ndu.real.actor-action.v1",
+                                "action": "STOP",
+                                "arguments": {},
+                            },
+                            meter,
+                            selector=selector_runtime,
+                        ),
                         **checkpoint_result(
                             args,
                             binding,
@@ -393,7 +493,8 @@ def run():
         with meter.stage("codec", "current image binding"):
             if file_sha(image_path) != observed["sha256"]:
                 raise ValueError("Current image bytes changed")
-        if observed["sha256"] not in cache:
+        content_key = observation_key(packet, observed)
+        if observed["sha256"] not in ocr_cache:
             with meter.stage("encoder", "actual pixel OCR"):
                 lines, ocr_record = extract_ocr(
                     image_path,
@@ -403,6 +504,9 @@ def run():
                     evidence_dir=Path.cwd(),
                     evidence_prefix=f"ocr-{sequence:02d}",
                 )
+            ocr_cache[observed["sha256"]] = (lines, ocr_record)
+        if content_key not in cache:
+            lines, ocr_record = ocr_cache[observed["sha256"]]
             with meter.stage("encoder", "public content features"):
                 candidates, features = candidate_features(
                     lines,
@@ -415,19 +519,25 @@ def run():
                     observation_bbox=observed["bbox"],
                     public_text=packet["public_text"],
                 )
-            cache[observed["sha256"]] = (candidates, features, len(lines), ocr_record)
+            cache[content_key] = (candidates, features, len(lines), ocr_record)
             if binding is not None:
                 with meter.stage("codec", "verify reconstructed OCR content"):
                     content_pin = canonical_sha(
                         [candidates, features.tolist(), len(lines)]
                     )
-                    previous_pin = ocr_pins.get(observed["sha256"])
+                    previous_pin = ocr_pins.get(content_key)
                     if previous_pin is not None and previous_pin != content_pin:
                         raise ValueError(
                             "Recomputed OCR differs from checkpoint content"
                         )
-                    ocr_pins[observed["sha256"]] = content_pin
-        candidates, features, line_count, ocr_record = cache[observed["sha256"]]
+                    ocr_pins[content_key] = content_pin
+        candidates, features, line_count, ocr_record = cache[content_key]
+        if candidate_runtime is not None:
+            with meter.stage("planning", "bounded candidate memory admission"):
+                candidates, retained_features = candidate_runtime.offer(
+                    sequence, candidates, features.tolist()
+                )
+                features = np.asarray(retained_features, dtype=features.dtype)
         state["ocr_line_count"] = line_count
         meta = metadata(packet, state, plan_json["episode_wall_seconds"])
         with torch.inference_mode():
@@ -439,19 +549,16 @@ def run():
                 meter=meter,
             )
             selected_index = int(logits.argmax().item())
-        legal = tuple(
-            action
-            for action in ACTIONS
-            if not (action == "READ_ROI" and state["prepared_roi"] is None)
-            and not (action == "WRITE_TEXT" and state["text_committed"])
-            and not (
-                action == "RENDER_IMAGE"
-                and (
-                    not packet["requirements"]["image"]
-                    or packet["initial_delivery"]["image"] is not None
+        if selector_runtime is not None:
+            with meter.stage("planning", "fixed support paired candidate selection"):
+                selected_index = selector_runtime.select(
+                    sequence,
+                    requested_field(packet["prompt"]),
+                    candidates,
+                    features.tolist(),
+                    logits.tolist(),
                 )
-            )
-        )
+        legal = public_actions(packet, state)
         public_state = PublicState(
             tuple(float(v) for v in public.tolist()),
             state["remaining_seconds"],
@@ -503,6 +610,14 @@ def run():
             "ocr": ocr_record,
             "weights_sha256": args.expected_weights_sha256,
             "parameters_unchanged": parameter_sha(model) == baseline_parameters,
+            **candidate_result(
+                candidate_runtime,
+                public_input,
+                output,
+                meter,
+                selected_index,
+                selector=selector_runtime,
+            ),
             **checkpoint_result(
                 args, binding, memory, public_input, output, ocr_pins, meter
             ),
@@ -538,6 +653,11 @@ def main():
                 "error_type": type(error).__name__,
                 "message": str(error),
                 "meter": measured,
+                **(
+                    {"candidate_memory_receipt": asdict(error.receipt)}
+                    if isinstance(error, CandidateMemoryError)
+                    else {}
+                ),
             },
         )
         raise

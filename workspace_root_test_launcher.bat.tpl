@@ -21,23 +21,70 @@ if not defined test_bin (
 
 __WORKSPACE_ROOT_SETUP__
 
+set "CODEX_TEST_SANDBOX_BUNDLE_DIR="
+__WINDOWS_SANDBOX_BUNDLE_SETUP__
+
 set "TOTAL_SHARDS=%RULES_RUST_TEST_TOTAL_SHARDS%"
 if not defined TOTAL_SHARDS set "TOTAL_SHARDS=%TEST_TOTAL_SHARDS%"
 if defined TESTBRIDGE_TEST_ONLY if "%~1"=="" (
   "%test_bin%" "%TESTBRIDGE_TEST_ONLY%"
-  exit /b !ERRORLEVEL!
+  set "launcher_test_exit=!ERRORLEVEL!"
+  goto :finish_test
 )
 if defined CODEX_BAZEL_TEST_SKIP_FILTERS (
   call :run_selected_libtest %*
-  exit /b !ERRORLEVEL!
+  set "launcher_test_exit=!ERRORLEVEL!"
+  goto :finish_test
 )
 if defined TOTAL_SHARDS if not "%TOTAL_SHARDS%"=="0" (
   call :run_selected_libtest %*
-  exit /b !ERRORLEVEL!
+  set "launcher_test_exit=!ERRORLEVEL!"
+  goto :finish_test
 )
 
 "%test_bin%" %*
-exit /b %ERRORLEVEL%
+set "launcher_test_exit=%ERRORLEVEL%"
+
+:finish_test
+if defined CODEX_TEST_SANDBOX_BUNDLE_DIR (
+  rmdir /s /q "!CODEX_TEST_SANDBOX_BUNDLE_DIR!" 2>nul
+  if exist "!CODEX_TEST_SANDBOX_BUNDLE_DIR!" (
+    >&2 echo failed to remove the owned Windows sandbox test bundle
+    if "!launcher_test_exit!"=="0" set "launcher_test_exit=1"
+  )
+)
+exit /b !launcher_test_exit!
+
+:stage_windows_sandbox_helpers
+rem The original test binary and both declared runfiles remain immutable.
+rem Run this same executable from a private installed layout so current_exe()
+rem finds the real sandbox helpers, including for in-process native sessions.
+set "CODEX_TEST_SANDBOX_TEMP_ROOT=%TEST_TMPDIR%"
+if not defined CODEX_TEST_SANDBOX_TEMP_ROOT set "CODEX_TEST_SANDBOX_TEMP_ROOT=%TEMP%"
+if not defined CODEX_TEST_SANDBOX_TEMP_ROOT (
+  >&2 echo Windows sandbox tests require TEST_TMPDIR or TEMP
+  exit /b 1
+)
+set "CODEX_TEST_SANDBOX_CANDIDATE_DIR=!CODEX_TEST_SANDBOX_TEMP_ROOT!\codex_test_windows_bundle_!RANDOM!_!RANDOM!_!RANDOM!_!RANDOM!"
+mkdir "!CODEX_TEST_SANDBOX_CANDIDATE_DIR!" 2>nul
+if errorlevel 1 (
+  >&2 echo failed to create a private Windows sandbox test bundle
+  exit /b 1
+)
+set "CODEX_TEST_SANDBOX_BUNDLE_DIR=!CODEX_TEST_SANDBOX_CANDIDATE_DIR!"
+powershell.exe -NoProfile -NonInteractive -Command ^
+  "$ErrorActionPreference = 'Stop';" ^
+  "$entries = @(@{ Source = $env:test_bin; Name = [IO.Path]::GetFileName($env:test_bin) }, @{ Source = [Environment]::GetEnvironmentVariable('CARGO_BIN_EXE_codex-command-runner'); Name = 'codex-command-runner.exe' }, @{ Source = [Environment]::GetEnvironmentVariable('CARGO_BIN_EXE_codex-windows-sandbox-setup'); Name = 'codex-windows-sandbox-setup.exe' });" ^
+  "foreach ($entry in $entries) { if (-not [IO.File]::Exists($entry.Source)) { throw ('missing declared sandbox test executable: ' + $entry.Name) } };" ^
+  "foreach ($entry in $entries) { $destination = [IO.Path]::Combine($env:CODEX_TEST_SANDBOX_BUNDLE_DIR, $entry.Name); try { New-Item -ItemType HardLink -Path $destination -Value $entry.Source -ErrorAction Stop | Out-Null } catch { [IO.File]::Copy($entry.Source, $destination, $false) } };" ^
+  "exit 0"
+if errorlevel 1 (
+  rmdir /s /q "!CODEX_TEST_SANDBOX_BUNDLE_DIR!" 2>nul
+  set "CODEX_TEST_SANDBOX_BUNDLE_DIR="
+  exit /b 1
+)
+for %%I in ("%test_bin%") do set "test_bin=!CODEX_TEST_SANDBOX_BUNDLE_DIR!\%%~nxI"
+exit /b 0
 
 :run_selected_libtest
 if defined TEST_SHARD_STATUS_FILE if defined TEST_TOTAL_SHARDS if not "%TEST_TOTAL_SHARDS%"=="0" (

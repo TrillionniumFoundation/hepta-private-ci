@@ -12,6 +12,9 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+qualification-lease-clock = []
+
 [dependencies]
 base64 = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }

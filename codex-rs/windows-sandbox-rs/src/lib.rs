@@ -59,6 +59,9 @@ mod audit;
 #[cfg(target_os = "windows")]
 mod cap;
 #[cfg(all(test, target_os = "windows"))]
+#[path = "delete_permission_control_tests.rs"]
+mod delete_permission_control;
+#[cfg(all(test, target_os = "windows"))]
 #[path = "delete_permission_matrix_tests.rs"]
 mod delete_permission_matrix;
 #[cfg(target_os = "windows")]

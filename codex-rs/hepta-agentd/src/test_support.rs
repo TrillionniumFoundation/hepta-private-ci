@@ -81,6 +81,45 @@ impl CognitiveTestHost {
         model: &str,
         provider_base_url: &str,
     ) -> TestResult<Self> {
+        Self::start_with_profile(
+            root,
+            codex_self_exe,
+            agent_id,
+            model,
+            provider_base_url,
+            crate::app_runtime::AppServerModelToolProfile::Standard,
+        )
+        .await
+    }
+
+    /// Use the product's existing explicit-context profile for attribution tests;
+    /// retain the real store while suppressing alternate model memory paths.
+    pub async fn start_explicit_context_only(
+        root: PathBuf,
+        codex_self_exe: PathBuf,
+        agent_id: AgentId,
+        model: &str,
+        provider_base_url: &str,
+    ) -> TestResult<Self> {
+        Self::start_with_profile(
+            root,
+            codex_self_exe,
+            agent_id,
+            model,
+            provider_base_url,
+            crate::app_runtime::AppServerModelToolProfile::ExplicitContextOnly,
+        )
+        .await
+    }
+
+    async fn start_with_profile(
+        root: PathBuf,
+        codex_self_exe: PathBuf,
+        agent_id: AgentId,
+        model: &str,
+        provider_base_url: &str,
+        model_tools: crate::app_runtime::AppServerModelToolProfile,
+    ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -148,7 +187,7 @@ impl CognitiveTestHost {
             Arc::clone(&state),
             /*production_writer_host*/ None,
             crate::app_runtime::AppServerSocket::Bind,
-            crate::app_runtime::AppServerModelToolProfile::Standard,
+            model_tools,
         ));
 
         let deadline = Instant::now() + READY_TIMEOUT;

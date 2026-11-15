@@ -58,6 +58,11 @@ mod gate;
 pub(crate) use gate::CheckpointAttempt;
 pub(crate) use gate::CognitiveCommitGate;
 
+#[path = "cognitive_lease_clock.rs"]
+mod lease_clock;
+#[cfg(any(test, feature = "qualification-lease-clock"))]
+pub use lease_clock::QualificationLeaseClock;
+
 #[path = "cognitive_checkpoint_bind.rs"]
 mod checkpoint_bind;
 
@@ -264,6 +269,7 @@ pub struct CognitiveStore {
     path: PathBuf,
     pub(crate) commit_gate: CognitiveCommitGate,
     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
+    local_lease_clock: lease_clock::LocalLeaseClock,
 }
 
 #[derive(Debug)]
@@ -361,6 +367,7 @@ impl CognitiveStore {
             path,
             commit_gate: CognitiveCommitGate::default(),
             _open_guard: None,
+            local_lease_clock: lease_clock::LocalLeaseClock::default(),
         }
     }
 
@@ -371,6 +378,14 @@ impl CognitiveStore {
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
+        Self::open_guarded(layout, root, open_guard).await
+    }
+
+    async fn open_guarded(
+        layout: &HeptaAgentLayout,
+        root: PathBuf,
+        open_guard: Arc<CognitiveStoreOpenGuard>,
+    ) -> Result<Self, CognitiveStoreError> {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
@@ -401,6 +416,7 @@ impl CognitiveStore {
             path,
             commit_gate,
             _open_guard: Some(open_guard),
+            local_lease_clock: lease_clock::LocalLeaseClock::default(),
         })
     }
 

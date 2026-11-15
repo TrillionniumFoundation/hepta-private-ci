@@ -4,11 +4,8 @@ use std::collections::BTreeSet;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::ffi::c_void;
-use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::Stdio;
 use std::sync::Arc;
 use std::sync::Condvar;
 use std::sync::Mutex;
@@ -45,6 +42,12 @@ use windows_sys::Win32::Security::AllocateAndInitializeSid;
 use windows_sys::Win32::Security::CheckTokenMembership;
 use windows_sys::Win32::Security::FreeSid;
 use windows_sys::Win32::Security::SECURITY_NT_AUTHORITY;
+
+#[path = "setup_process.rs"]
+mod isolated_process;
+
+use isolated_process::SetupHelperWindow;
+use isolated_process::run_setup_helper;
 
 pub const SETUP_VERSION: u32 = 5;
 pub const OFFLINE_USERNAME: &str = "CodexSandboxOffline";
@@ -371,11 +374,6 @@ fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
         }
     };
     // Refresh should never request elevation; ensure verb isn't set and we don't trigger UAC.
-    let mut cmd = Command::new(&exe);
-    cmd.arg(b64)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null());
     let cwd = std::env::current_dir().unwrap_or_else(|_| codex_home.to_path_buf());
     log_note(
         &format!(
@@ -386,7 +384,7 @@ fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
         ),
         Some(&sbx_dir),
     );
-    let status = cmd.status().map_err(|err| {
+    let status = run_setup_helper(&exe, b64, SetupHelperWindow::Default).map_err(|err| {
         let message = format!(
             "setup refresh failed to launch helper: helper={}, cwd={}, log={}, error={err}",
             exe.display(),
@@ -936,14 +934,8 @@ fn run_setup_exe_payload(
     };
 
     if !needs_elevation {
-        let status = Command::new(&exe)
-            .arg(payload_b64)
-            .creation_flags(0x08000000) // CREATE_NO_WINDOW
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .map_err(|err| {
+        let status =
+            run_setup_helper(&exe, payload_b64, SetupHelperWindow::Hidden).map_err(|err| {
                 failure(
                     SetupErrorCode::OrchestratorHelperLaunchFailed,
                     format!("failed to launch setup helper (non-elevated): {err}"),

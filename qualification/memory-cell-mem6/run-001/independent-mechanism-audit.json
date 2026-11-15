@@ -1,0 +1,762 @@
+{
+  "schema": "hepta.mem6.independent-mechanism-audit.v1",
+  "document_kind": "post_execution_read_only_review",
+  "auditor_role": "/root/mem_runtime_audit",
+  "created_at_utc": "2026-11-10T13:30:19.517414+00:00",
+  "audit_scope": {
+    "reviewed": [
+      "实际机制 REPORT 内嵌的 18 行结果和 read receipt",
+      "本地实现与契约、PROTOCOL、ACCEPTANCE",
+      "相关删除和 fresh-process 单测源码"
+    ],
+    "independent_checks": [
+      "18 个 receipt 摘要独立重算",
+      "18 行 actual_texts 与 expected_texts 比较",
+      "实际开关、来源范围、更新及撤销行与实现语义核对"
+    ],
+    "not_reexecuted": [
+      "机制实验",
+      "actor 实验",
+      "单元测试"
+    ],
+    "source_modified": false,
+    "raw_artifact_hashes_independently_verified_in_this_review": false,
+    "raw_archive_status_at_parent_message": "无损去重及传回进行中；本审计未逐文件检查原始 archive",
+    "raw_archive_parent_reported_files": 10365,
+    "raw_archive_parent_reported_bytes": 243281645,
+    "raw_archive_parent_counts_independently_verified": false,
+    "raw_followup_required": "对归档 PLAN、producer requests/responses、consumer requests/responses、delivery、SQLite authority 和 before-update snapshot 逐项复核 report pins；保留实际 PID、退出顺序和交付字节证据。"
+  },
+  "evidence_inputs": {
+    "report": {
+      "path": "mem6-results/mechanism-REPORT.json",
+      "bytes": 37060,
+      "sha256": "c1554e96ab40ee00301d246233b5676ede53aace65a55085c8633f859c710b1e"
+    },
+    "reviewed_local_source_and_contract_files": [
+      {
+        "path": "qualification/memory-cell-mem6/PROTOCOL.md",
+        "bytes": 13112,
+        "sha256": "8744514f3bfb1e1117ecfa8f13f5850a64aa350c831b382114a5ba6982abff92"
+      },
+      {
+        "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
+        "bytes": 7952,
+        "sha256": "d77624e729b02213eec9bc808b94ee27c839a66883d63ede3455a3ca4f6f14ea"
+      },
+      {
+        "path": "qualification/memory-cell-mem6/CONTRACT.md",
+        "bytes": 6913,
+        "sha256": "ce31621b4dad184aea0a112cab283cd27d64cd726a5e6810196be7a7064d3143"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/run_episodic_qualification.py",
+        "bytes": 14079,
+        "sha256": "2a65f40e6ce750a9ff7a619486f68dffaf6f481425adb5e2a62813a84ed7a71e"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/episodic_memory.py",
+        "bytes": 17748,
+        "sha256": "444d62981292d346161b9f77d143920b6625473c07098414530e59043281d92c"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/episodic_retrieval.py",
+        "bytes": 10963,
+        "sha256": "6a01b5a8a1b15c1aefbdd3878347a96d51d5f8da3c13c77c18a720331cb06a52"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/test_episodic_memory.py",
+        "bytes": 7919,
+        "sha256": "62f4d973b253880ccf7317fe3ef0de6532b92aed65bfad60b0c98e86b8f69b4b"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/test_episodic_retrieval.py",
+        "bytes": 6705,
+        "sha256": "8e08779b8b598d37f6c680ce5bd7bdef52ef6f5fa9317c47331b2c9369a5bf89"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/test_episodic_qualification.py",
+        "bytes": 1755,
+        "sha256": "8fe95a63caff5a78a74b6393645dcc26934808985b7daea107aa16f7a0dd62a4"
+      }
+    ],
+    "source_pin_scope_note": "这些 pin 绑定审计所读本地字节；原运行 source_pins_unchanged 目前按 REPORT 与冻结实现契约核对，原运行 source pins 及 raw 再验证单列待办。"
+  },
+  "ledger_recommendation": {
+    "mechanism_suite_status": "PASS",
+    "mechanism_suite_passed": 18,
+    "mechanism_suite_planned": 18,
+    "fresh_process_path_scope": "same_host_same_authority_fixture_delivery",
+    "episodic_mechanism_gate": "PARTIAL",
+    "real_successor_task_gate": "NOT_EVALUATED",
+    "neural_association_gate": "NOT_EVALUATED",
+    "full_owner_cold_recovery": false,
+    "independent_trust_domain": false,
+    "scientific_acceptance": "HOLD",
+    "production_adoption": false,
+    "adoption_action": "NoUpdate"
+  },
+  "reported_execution": {
+    "fresh_process_invocations": 18,
+    "distinct_observed_pids": 18,
+    "producer_count": 3,
+    "all_producers_exited_before_successor": true,
+    "source_pins_unchanged": true,
+    "status": "PASS",
+    "scientific_acceptance": "HOLD",
+    "wall_seconds": 0.6632341858930886,
+    "parent_cpu_seconds": 0.016179963000000002,
+    "model_calls_in_pinned_worker": 0,
+    "raw_pid_and_delivery_reverification_pending": true
+  },
+  "independent_report_checks": {
+    "rows_checked": 18,
+    "receipt_digests_verified": 18,
+    "actual_texts_match_expected": 18,
+    "mismatches": [],
+    "row_checks": [
+      {
+        "scenario": "exact_on",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Cedar Street."
+        ],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "persistence_off",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "off",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 0,
+        "store_read": false,
+        "retrieval_executed": false,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": null,
+        "snapshot_sha256": null,
+        "snapshot_rejections": null
+      },
+      {
+        "scenario": "retrieval_off",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "retrieval_off",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": false,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "delivery_off",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "delivery_off",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "association_unavailable",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Cedar Street."
+        ],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "association_disabled",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Cedar Street."
+        ],
+        "mode": "association_off",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "association_called": false,
+        "association_status": "disabled",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "bm25",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Cedar Street."
+        ],
+        "mode": "on",
+        "strategy": "bm25",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "uniform_replay",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Cedar Street."
+        ],
+        "mode": "on",
+        "strategy": "uniform_replay",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "icl_context",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Cedar Street."
+        ],
+        "mode": "on",
+        "strategy": "icl",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "delivered_ids": [
+          "6f2bc3415f014c9eb9d36acf6a85b80815a1cf3489f994d83bf0abf1c61bebd9"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "irrelevant_source",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "absent-source"
+        ],
+        "eligible_count": 0,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "other_namespace",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 0,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "similar_other_flow",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Review the request before submitting."
+        ],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-flow"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "21c0ac95b9693e99f638691c603db22513251bda9213214d661c14da363b75c3"
+        ],
+        "delivered_ids": [
+          "21c0ac95b9693e99f638691c603db22513251bda9213214d661c14da363b75c3"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 3,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "updated_fact",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Delivery address is Maple Street."
+        ],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "d7b92e76f4a9ddaeddc585b10d1684e8f97549d44cc102e8dd5e687d352e73f0"
+        ],
+        "delivered_ids": [
+          "d7b92e76f4a9ddaeddc585b10d1684e8f97549d44cc102e8dd5e687d352e73f0"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 4,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "stale_snapshot",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 0,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 4,
+        "snapshot_sha256": "057dcec3b1caf4b3232cf10609b9388e23bdc32473d9583bc164e7f9945b4531",
+        "snapshot_rejections": 2
+      },
+      {
+        "scenario": "dependent_fact_invalidated",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-derived"
+        ],
+        "eligible_count": 0,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 4,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "revoked_fact",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 0,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 5,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      },
+      {
+        "scenario": "revoked_snapshot",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-address"
+        ],
+        "eligible_count": 0,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [],
+        "delivered_ids": [],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 5,
+        "snapshot_sha256": "057dcec3b1caf4b3232cf10609b9388e23bdc32473d9583bc164e7f9945b4531",
+        "snapshot_rejections": 2
+      },
+      {
+        "scenario": "unrelated_fact_preserved",
+        "reported_pass": true,
+        "returncode": 0,
+        "actual_matches_expected": true,
+        "receipt_digest_verified": true,
+        "actual_texts": [
+          "Review the request before submitting."
+        ],
+        "mode": "on",
+        "strategy": "exact_kv",
+        "source_ids": [
+          "source-flow"
+        ],
+        "eligible_count": 1,
+        "store_read": true,
+        "retrieval_executed": true,
+        "retrieved_ids": [
+          "21c0ac95b9693e99f638691c603db22513251bda9213214d661c14da363b75c3"
+        ],
+        "delivered_ids": [
+          "21c0ac95b9693e99f638691c603db22513251bda9213214d661c14da363b75c3"
+        ],
+        "association_called": false,
+        "association_status": "unavailable",
+        "authority_generation": 5,
+        "snapshot_sha256": null,
+        "snapshot_rejections": 0
+      }
+    ]
+  },
+  "supported_bounded_claims": [
+    "在同一 host、同一权限域和固定实现下，writer 正常退出后，新进程可从持久 SQLite authority 读取先前写入证据，并经 read_memory 写入 delivery.json。",
+    "consumer 新建空 WorkingState；closed request 不传 prior chat、working state 或 expected_texts。这不是 OS 级标签隔离保证。",
+    "off 不读 store；retrieval_off 读 authority 但不检索；delivery_off 检索到事实但交付为空。",
+    "当前地址更新可见；旧快照记录及依赖旧身份的条目失效；当前地址直接撤销后读取为空；无关流程条目仍被保留。",
+    "本组实例中明确指定的 source 与 namespace 范围得到遵守。"
+  ],
+  "deletion_unit_test_qualification": {
+    "campaign_attribution_limit": "本次撤销快照在 update 阶段已经失效，依赖链也在 revoke 前已失效；不能把相应行解释为独立 revoke 效应。",
+    "implementation_not_supported_claim_is_incorrect": true,
+    "source_regressions_present": [
+      {
+        "path": "scripts/ndu_real_runtime/test_episodic_memory.py",
+        "test": "test_revoke_removes_payload_and_old_snapshot_never_reactivates_it",
+        "coverage": "活动 fact 与 dependent 直接撤销，payload 置空，重新打开后拒绝旧快照；新写入不会复活旧 snapshot record。"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/test_episodic_retrieval.py",
+        "test": "test_new_process_cli_reads_then_rejects_revoked_snapshot",
+        "coverage": "同一快照先经新 CLI 进程读取成功，再 revoke，后继新 CLI 进程读取为空并记录 snapshot rejection。"
+      },
+      {
+        "path": "scripts/ndu_real_runtime/test_episodic_memory.py",
+        "test": "test_update_revokes_transitive_dependencies_and_filters_old_snapshot",
+        "coverage": "更新使两跳依赖传递失效，过滤旧快照并保留无关事实。"
+      }
+    ],
+    "test_execution_claim": "本审计检查了测试源码，未重跑测试；引用通过结论应链接本次已保存的测试日志，并与 18 场景 campaign 结果分开。"
+  },
+  "blockers": [
+    {
+      "id": "MEM6-EPISODIC-SUCCESSOR-BENEFIT",
+      "status": "HOLD",
+      "finding": "18 场景均为合成机制 fixture；consumer 的 model_calls=0，确定性读取后写 delivery.json，没有真实 agent 在未见后继任务上的配对 memory on/off 收益。任务内 retention 与 selector 两组 actor 实验不能填补跨会话 episodic 收益缺口。",
+      "evidence": [
+        "run_episodic_qualification.worker 固定 model_calls=0",
+        "REPORT.unseen_task_benefit_evaluated=false",
+        "REPORT.actual_effect=local fixture delivery file only"
+      ],
+      "closure_required": "预先冻结真实前序经验到未见后继任务协议；新会话进入实际 agent/tool 入口；保持模型、授权历史与预算一致；采用内容删除、替换及交付关闭对照证明因果使用。"
+    },
+    {
+      "id": "MEM6-BASELINE-COMPARISON",
+      "status": "HOLD",
+      "finding": "本次 exact KV、BM25、uniform replay、ICL 场景的 eligible_count 都是 1，输出同一事实，没有检索竞争或任务效益比较。ICL 为活动记录的有界时序拼接，uniform replay 为读取采样，BM25 到文件的交付并非完整 RAG 任务评测。",
+      "evidence": [
+        "rows.exact_on.eligible_count=1",
+        "rows.bm25.eligible_count=1",
+        "rows.uniform_replay.eligible_count=1",
+        "rows.icl_context.eligible_count=1",
+        "CONTRACT.md Baselines and intervention semantics"
+      ],
+      "closure_required": "在同授权历史、上下文预算和真实后继任务上保留四种基线，加入相关及干扰记录，报告预注册来源级主对比；不得将存储采样称为优化器回放。"
+    },
+    {
+      "id": "MEM6-ASSOCIATION-AND-CROSS-DOCUMENT",
+      "status": "HOLD",
+      "finding": "所有实际行 association_called=false；unavailable 与 disabled 仅区分状态，不能构成真实关联 head 消融。route 文本及依赖由 producer 直接写定，consumer 未自行形成多文档关联或联合推理。",
+      "evidence": [
+        "all rows.receipt.association_called=false",
+        "REPORT.neural_association_evaluated=false",
+        "producer learn 显式给出派生文本及 depends_on"
+      ],
+      "closure_required": "冻结真实关联组件并验证实际调用和旁路；设置必须联合多文档才能完成的后继任务，做关联关闭与来源替换对照。"
+    },
+    {
+      "id": "MEM6-SIMILAR-WORKFLOW-AND-INTERFERENCE",
+      "status": "HOLD",
+      "finding": "similar_other_flow 由 harness 明确选择 source-flow 且只有一个候选，证明同 key 的来源范围读取，未证明相似问题的流程判别。irrelevant_source 为不存在的来源，other_namespace 为空 namespace，尚未形成有竞争内容的抗干扰测试。",
+      "evidence": [
+        "rows.similar_other_flow.source_ids=[source-flow], eligible_count=1",
+        "rows.irrelevant_source.eligible_count=0",
+        "rows.other_namespace.eligible_count=0"
+      ],
+      "closure_required": "让相似、冲突、无关流程同时可见，任务不提供答案式 source 选择；验证正确路由、错误来源拒绝和扰动后行为。"
+    },
+    {
+      "id": "MEM6-REVOCATION-CAMPAIGN-ATTRIBUTION",
+      "status": "PARTIAL",
+      "finding": "stale_snapshot 与 revoked_snapshot 使用同一 before-update 快照且均拒绝 2 条记录；快照在 revoke 之前已因 update 失效，因此 revoked_snapshot 不能独立归因于撤销更新后的事实。route 也先因 update 失效，本次 campaign 未单独展示撤销仍活动的派生链。直接读取的 revoked_fact 已验证当前地址撤销生效；相关单测源码已有直接 revoke 及新 CLI 进程快照撤销覆盖，不能表述为实现不支持或完全未测。",
+      "evidence": [
+        "stale_snapshot 与 revoked_snapshot 的 snapshot_sha256 均为 057dcec3b1caf4b3232cf10609b9388e23bdc32473d9583bc164e7f9945b4531",
+        "两行 snapshot_rejections 均为 2，authority_generation 从 4 到 5",
+        "dependent_fact_invalidated 在 revoke 前已返回空",
+        "revoked_fact 在 generation=5 返回空",
+        "deletion_unit_test_qualification"
+      ],
+      "closure_required": "后续独立预冻结实例在 update 后、revoke 前导出快照，并建立仍活动的依赖链；同一快照和依赖分别在 revoke 前后以新进程读取。保持现有冻结结果原样。"
+    },
+    {
+      "id": "MEM6-ANSWER-LEVEL-ABSTENTION",
+      "status": "HOLD",
+      "finding": "空 records/context 仅表明读取路径无可交付内容，没有验证真实 agent 在无答案、撤销或来源不匹配时会正确拒答、澄清或停止动作。",
+      "evidence": [
+        "consumer 仅写 fixture delivery，不调用模型或执行真实任务",
+        "ACCEPTANCE.episodic_mechanism_gate.required_interventions 包含 unanswerable_abstention"
+      ],
+      "closure_required": "通过实际 agent 的无答案任务验证行为级 abstention，审计是否存在旁路、先验或标签泄漏。"
+    },
+    {
+      "id": "MEM6-SOURCE-PROVENANCE-AUTHENTICATION",
+      "status": "HOLD",
+      "finding": "来源 URI、source_sha256、source_version 和 episode_id 由调用方提供；本次为 fixture URI 与 supplied text 摘要。内容摘要和版本不认证来源所有权、独立来源时间线或全局 exposure；store 不验证 URI 实际内容。",
+      "evidence": [
+        "CONTRACT.md Ownership and state layers",
+        "实际 provenance 使用 fixture://mem6/learn-* 和 fixture://mem6/update-1"
+      ],
+      "closure_required": "独立绑定原始来源字节、当前来源权威和可校验时间线；针对真实后继实验保留并审计来源 exposure 与排除证据。"
+    },
+    {
+      "id": "MEM6-AUTHORITY-AND-TRUST-DOMAIN",
+      "status": "HOLD",
+      "finding": "authority、快照、namespace 和 allowlist 均处于同 owner/权限域；尚未证明恶意 owner 回滚 authority 数据库的抵抗能力。worker request 不传 expected_texts，但没有 OS 边界保证 worker 无法读取 fixture 源码或 evaluator 材料。摘要及 receipt 验证为一致性检查，不是可信执行认证。",
+      "evidence": [
+        "REPORT.independent_trust_domain=false",
+        "所有非空 view_receipt.malicious_owner_rollback_protected=false",
+        "run_episodic_qualification 模块说明明确不是 OS trust-domain boundary",
+        "CONTRACT.md verify_read_receipt 不认证执行诚实性"
+      ],
+      "closure_required": "独立认证当前 authority，冻结并核实实际隔离和调用权限；另行验证 authority 回滚与独立信任域读取。"
+    },
+    {
+      "id": "MEM6-DELETION-SCOPE-AND-COMMIT-BARRIER",
+      "status": "HOLD",
+      "finding": "删除覆盖 live logical payload 和后续受控读取；旧快照仍保留旧文本，备份、日志、先前交付上下文及模型参数未被擦除。读取只对其 authority generation 一致，未验证外部动作 commit 边界的撤销重检。",
+      "evidence": [
+        "REPORT.deletion_scope=logical read exclusion, not physical snapshot erasure",
+        "CONTRACT.md Authority, snapshots, updates, and deletion"
+      ],
+      "closure_required": "明确删除适用范围，验证真实消费方缓存及下游依赖传播；需要撤销屏障的动作在 commit 边界重检并做并发撤销对照。不承诺物理擦除时持续标为未建立。"
+    },
+    {
+      "id": "MEM6-FULL-OWNER-COLD-RECOVERY",
+      "status": "HOLD",
+      "finding": "writer 正常退出后重新打开同一个可用数据库，不覆盖完整 owner 状态、权限、凭据、真实 effects、幂等、fencing、异常中断或独立目录/信任域行为恢复。",
+      "evidence": [
+        "REPORT.full_owner_cold_recovery=false",
+        "REPORT.actual_effect=local fixture delivery file only",
+        "三个 producer 在正常返回后才启动后继 consumer"
+      ],
+      "closure_required": "在完整 owner/effect 状态不可直接沿用的条件下执行冷恢复，以独立后继任务和真实效果状态验证。"
+    },
+    {
+      "id": "MEM6-END-TO-END-COST",
+      "status": "HOLD",
+      "finding": "parent_cpu_seconds 仅为父进程 CPU；局部读取 CPU 与 consumer wall 不能代替完整 producer/consumer、模型、上下文 token、物理存储/I/O、失败恢复、能源和服务费成本。逻辑容量上限不等于物理资源测量。",
+      "evidence": [
+        "REPORT.parent_cpu_seconds=0.016179963000000002",
+        "REPORT.wall_seconds=0.6632341858930886",
+        "各 receipt.decision_cpu_seconds 是局部读取范围",
+        "CONTRACT.md Bounded storage and context"
+      ],
+      "closure_required": "保存全部适用成本来源和缺失项，区分重叠计时范围；未测成本保持 unknown，按真实任务收益计算完整增量成本。"
+    },
+    {
+      "id": "MEM6-SEMANTIC-SKILL-CONSOLIDATION",
+      "status": "NOT_IMPLEMENTED",
+      "finding": "慢速语义/技能整合有分层契约，但没有自动训练、单独版本化候选与独立采用证据。未实现的 expiry 或 consolidation 不得以机制套件通过代替其验证。",
+      "evidence": [
+        "CONTRACT.md Ownership and state layers 标明 future separately evaluated candidate",
+        "ACCEPTANCE.episodic_mechanism_gate.unimplemented_expiry_or_consolidation_may_pass=false"
+      ],
+      "closure_required": "若需该能力，将其作为独立候选实现、冻结并验证；不可由 episodic store 或机制 PASS 自动晋级。"
+    }
+  ],
+  "interpretation_limits": [
+    "18/18 是同 authority 上少量预制事实的契约检查，不是 18 个独立未见任务的成功率。",
+    "零观察失败不能证明绝对删除安全、来源认证、抗干扰或完整恢复能力。",
+    "工程 suite PASS 不能替代 ACCEPTANCE 的 cross_document_association、真实相似流程判别、行为级 abstention 和后继任务收益门槛。",
+    "此审计的 episodic 边界不否认另两组 actor 实验在各自冻结协议下的观测结果；三类结果不得混合归因。",
+    "不得为补全归因而修改现有冻结计划或重解释既有结果；补充场景应独立预冻结。"
+  ]
+}

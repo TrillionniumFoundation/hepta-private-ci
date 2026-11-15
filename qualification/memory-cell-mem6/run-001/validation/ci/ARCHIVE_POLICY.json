@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.mem6.archive-publication-policy-inspection.v1",
+  "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c",
+  "inputs_from_parent": {
+    "logical_files": 10365,
+    "logical_bytes": 243281645,
+    "cas_tar_xz_bytes": 61412948
+  },
+  "policy": {
+    "max_bytes_per_changed_git_blob": 512000,
+    "threshold_inclusive": true,
+    "applies_to_binary_and_non_binary": true,
+    "qualification_directory_exempt": false,
+    "allowlist_matches_exact_path": true,
+    "allowlist_optional_sha256_pin": true,
+    "mem6_allowlist_entry_present": false,
+    "aggregate_bytes_limit_in_this_checker": null,
+    "file_count_limit_in_this_checker": null
+  },
+  "chunk_arithmetic": [
+    {
+      "chunk_bytes": 512000,
+      "chunks": 120,
+      "last_chunk_bytes": 484948
+    },
+    {
+      "chunk_bytes": 500000,
+      "chunks": 123,
+      "last_chunk_bytes": 412948
+    },
+    {
+      "chunk_bytes": 480000,
+      "chunks": 128,
+      "last_chunk_bytes": 452948
+    }
+  ],
+  "interpretation": [
+    "512000 bytes equals 500 KiB; 512 KiB is 524288 and exceeds the policy.",
+    "Split binary tar.xz bytes losslessly; the actual decoded Git blob is what the checker measures.",
+    "If base64 text is committed, its expansion counts; API base64 transport decoded into a binary Git blob does not add stored blob bytes.",
+    "Each manifest, index, log and documentation blob is also checked; no qualification directory exemption.",
+    "Pin full archive size/digest plus ordered part sizes/digests and verify reconstruction/member inventory separately.",
+    "The policy finding does not modify the frozen execution source or assert the real scientific or recovery gate has passed."
+  ],
+  "source_files": [
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "sha": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "sha": "ee0a3f9dfa81a84be93f46a3d0fe92daf48df043"
+    },
+    {
+      "path": "scripts/check_blob_size.py",
+      "sha": "18bc6175c274abaeabe3ef0c32d82627d498bbe7"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "sha": "f92be9ae284090e1ce112ae24af95384a1b45f8a"
+    },
+    {
+      "path": "scripts/tests/test_blob_size_policy.py",
+      "sha": "71f726876ee37adab36594e53eedb144934da3f1"
+    }
+  ],
+  "release_capability": {
+    "github_connector_write_tool_available": false,
+    "ai395": {
+      "git": "2.53.0",
+      "gh_in_checked_path": false
+    },
+    "desktop": {
+      "git": "2.43.0",
+      "gh": "2.45.0",
+      "upload_command_client_available": true
+    },
+    "release_write_authority_verified": false,
+    "credentials_read": false,
+    "upload_attempted": false,
+    "git_push_uploads_release_asset": false
+  },
+  "official_sources": [
+    "https://cli.github.com/manual/gh_release_upload",
+    "https://docs.github.com/en/rest/releases/assets#upload-a-release-asset"
+  ]
+}

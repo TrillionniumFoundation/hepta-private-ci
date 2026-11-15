@@ -41,6 +41,9 @@ const EVENT_PLAN: u8 = 1;
 
 #[path = "fenced_holdout_file_replay.rs"]
 mod physical;
+#[cfg(feature = "qualification-owned-file-read")]
+#[path = "fenced_holdout_file_observation.rs"]
+mod observation;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {

@@ -1,0 +1,602 @@
+{
+  "schema": "hepta.mem15.continuation02-readonly-recovery.v1",
+  "archive": {
+    "file": "capture-bbbcc630-02.tar.xz",
+    "bytes": 48456,
+    "sha256": "f01514d24b24efc457ddda28dec880c5f292293b71ac4b534f4d5403d7b80fe4",
+    "complete": true,
+    "version": "66306:46185494:48456:1794478008343316812:1794478008343316812",
+    "binary_chunks": 1,
+    "whole_file_in_single_bounded_versioned_read": true,
+    "original_sdk_transport": {
+      "operation_id": "10702d9c4b5ecefdf610f2da6c48e769c79acdc8108d248440acfbb67ba82f58",
+      "bytes": 65030,
+      "sha256": "4516c316afec1f84ad79239c9cd3631c41f28a06a94d511f57eea17bac88fc65",
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "sha256": "e5497e786d0fc31b242c81e4897836b78581672ef45eeb71e26e2e30b529d832"
+        },
+        {
+          "offset": 16384,
+          "bytes": 16384,
+          "sha256": "1f88ccc38c38c89471756d3f5d6b9dccbb05b48c744c8291cdeea99977e92789"
+        },
+        {
+          "offset": 32768,
+          "bytes": 16384,
+          "sha256": "a55f03e1fc6e42ac41308b49826467c524cc5c33802f217980c6684c5db8929c"
+        },
+        {
+          "offset": 49152,
+          "bytes": 15878,
+          "sha256": "1459381854fa87e2909b24000897695024003e74f1b36829ae22e729e627b884"
+        }
+      ]
+    }
+  },
+  "publication": {
+    "file": "CAPTURE_BBBCC630_02_PUBLICATION.json",
+    "bytes": 306,
+    "sha256": "54a67224adb93546db1eb9da51e3fe6a7793915e91255c85bf6ee77faaf197f9",
+    "matches_archive": true,
+    "original_sdk_transport": {
+      "operation_id": "2d29803c94b0b1e33cba466c122f1f39af1b059ac83fe78fa4d855cd3ce0aa06",
+      "bytes": 865,
+      "sha256": "a52ebda524eac1e152d319e8d444a31c6422a9a201a83a7d2a5738c220dcf5fe",
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 865,
+          "sha256": "a52ebda524eac1e152d319e8d444a31c6422a9a201a83a7d2a5738c220dcf5fe"
+        }
+      ]
+    }
+  },
+  "tar_safety": {
+    "members": 111,
+    "regular_files": 111,
+    "unsafe_paths": 0,
+    "links": 0,
+    "special_files": 0,
+    "duplicate_paths": 0
+  },
+  "original_member_manifest": {
+    "file": "extracted/MEMBER_MANIFEST.json",
+    "bytes": 14015,
+    "sha256": "f15859da673b54f103f07d22f6a612a52268da271672c2d54e55d5b684b6613d",
+    "entries": 110,
+    "covers_all_other_files": true,
+    "all_hashes_verified": true
+  },
+  "original_result": {
+    "file": "RESULT.json",
+    "bytes": 34720,
+    "sha256": "8f50331059d7890928b93f500d7d48ae16911b495fa87b89dc6cc589b241b9d6",
+    "status": "incomplete",
+    "original_bytes_preserved": true,
+    "matches_original_sdk": true
+  },
+  "original_terminal_sdk": {
+    "file": "TERMINAL.original-sdk-payload.json",
+    "bytes": 907,
+    "sha256": "82e81218baf2c954f0c1babfd7d5e5bc4805a756c87e39af524187e7d769c0e0",
+    "basis": "Byte-identical copy of root original authoritative-terminal SDK readback; no duplicate terminal query."
+  },
+  "terminal": {
+    "job_id": "1a1cf2a93ea-2564-19b5",
+    "state": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "cancelled": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "source": {
+    "commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+    "tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+    "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+    "before_after_clean": true,
+    "source_unchanged_recorded": true,
+    "rewrite_patch_bytes": 0,
+    "recorded_postimage_pins_match_verified_first_attempt_files": 14,
+    "continuation02_archive_contains_source_postimages": false,
+    "basis": "Original before/after RESULT and all phase receipts; repeated 14 postimage pins equal the first-attempt archived source files."
+  },
+  "new_controls": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "reports": [
+      {
+        "phase": "ack-controls",
+        "selected_tests": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "uuid": "4bd8c2ec-419b-4c1c-8753-e7478c9f0a74",
+        "junit": {
+          "bytes": 835,
+          "sha256": "51bb3dc8282e9221be6264ae447637f3de5ed40ec9f1f8bece5a71aff3410e40"
+        },
+        "case_names": [
+          "production_composition::tests::episodic_control::provider::process::child::tests::imported_ack_requires_successful_original_process_exit_and_exact_input",
+          "production_composition::tests::episodic_control::provider::process::child::tests::missing_or_repeated_ack_cannot_start_c"
+        ],
+        "uuid_in_original_log": true,
+        "fresh_from_previous_junit": true,
+        "all_case_timestamps_and_durations_within_original_receipt": true,
+        "source_bound_by_original_receipt": true
+      },
+      {
+        "phase": "cli-control",
+        "selected_tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "uuid": "bafddb91-f7d8-4994-a7b5-cd27af78a49a",
+        "junit": {
+          "bytes": 608,
+          "sha256": "6f7f622518517f6d07eb53fdb144fdb7ec140f57583816266b42b0d2a2989291"
+        },
+        "case_names": [
+          "context_delivery_tests::delivery_rejects_ambiguous_modes_before_authority_or_journal_open"
+        ],
+        "uuid_in_original_log": true,
+        "fresh_from_previous_junit": true,
+        "all_case_timestamps_and_durations_within_original_receipt": true,
+        "source_bound_by_original_receipt": true
+      }
+    ]
+  },
+  "capture_tests": {
+    "executed": 4,
+    "passed": 0,
+    "failed": 4,
+    "reports": [
+      {
+        "phase": "attach-capture",
+        "selected_tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "uuid": "fd3a8614-76a3-4453-94c4-e54e5d86f9f8",
+        "junit": {
+          "bytes": 746,
+          "sha256": "ea2bb83831e7edab8e21c5f18d4b8fa302696eaa6ead738440b9dcc062f17fa6"
+        },
+        "case_names": [
+          "production_composition::tests::episodic_control::provider::process::episodic_native_a_exit_capture"
+        ],
+        "uuid_in_original_log": true,
+        "fresh_from_previous_junit": true,
+        "all_case_timestamps_and_durations_within_original_receipt": true,
+        "source_bound_by_original_receipt": true
+      },
+      {
+        "phase": "reader-off-capture",
+        "selected_tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "uuid": "2027e515-c7ad-4fff-bf5d-1e80b69d602b",
+        "junit": {
+          "bytes": 746,
+          "sha256": "ed1dfb17dcbd7ffe638cb94c1588dab0c0da38023415061ce4147741d1ff42b8"
+        },
+        "case_names": [
+          "production_composition::tests::episodic_control::provider::process::episodic_native_a_exit_capture"
+        ],
+        "uuid_in_original_log": true,
+        "fresh_from_previous_junit": true,
+        "all_case_timestamps_and_durations_within_original_receipt": true,
+        "source_bound_by_original_receipt": true
+      },
+      {
+        "phase": "withhold-capture",
+        "selected_tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "uuid": "77d65fb0-d83f-4904-8a61-5e78a49f2a74",
+        "junit": {
+          "bytes": 746,
+          "sha256": "34ac5cfc366ac9ae6245f75f5a8c76444d361b5a3aa81b6f03950ba55c291540"
+        },
+        "case_names": [
+          "production_composition::tests::episodic_control::provider::process::episodic_native_a_exit_capture"
+        ],
+        "uuid_in_original_log": true,
+        "fresh_from_previous_junit": true,
+        "all_case_timestamps_and_durations_within_original_receipt": true,
+        "source_bound_by_original_receipt": true
+      },
+      {
+        "phase": "tombstone-capture",
+        "selected_tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "uuid": "9a4f0210-0ea9-4961-b361-91cc0e2ca9cf",
+        "junit": {
+          "bytes": 746,
+          "sha256": "6a7d31f4b15d3c6ce15a26cdd0fc3cbd6a7032a0f782f688078ff68c8946f266"
+        },
+        "case_names": [
+          "production_composition::tests::episodic_control::provider::process::episodic_native_a_exit_capture"
+        ],
+        "uuid_in_original_log": true,
+        "fresh_from_previous_junit": true,
+        "all_case_timestamps_and_durations_within_original_receipt": true,
+        "source_bound_by_original_receipt": true
+      }
+    ],
+    "original_collection_errors_preserved": true,
+    "interpretation": "Four genuine test failures with exit 100 and worker NotFound; not merely an absent successful JUnit."
+  },
+  "phase_receipts": [
+    {
+      "phase": "ack-controls",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1853,
+        "sha256": "7e199493694f39d1716584ad68fde775028c9537836b051d0e837037e9fde150"
+      },
+      "log": {
+        "bytes": 58347,
+        "sha256": "5d61f6f71eb92c5b0511959e19744d38a0c32569cf0d7f88f3aa5db0094717e1"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "cli-control",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1695,
+        "sha256": "3ccc3a48a8f9b4608f940df84bcb870fff4c760d777ec7d7ba03eb38b132731a"
+      },
+      "log": {
+        "bytes": 33557,
+        "sha256": "2d654888abe19e3355b3f59d80577f20597c79722ae0226a5e94b697c74f0ebb"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "attach-prepare",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1881,
+        "sha256": "4cb39129e2f79c54fe73c04e8a768f4376731449a4cfbc8da67d78afc32b1604"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "49e11bacb871af53c3376192fe63196089d3b3765ea3c2b9f91cafcba5cd47c5"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "attach-capture",
+      "exit_code": 100,
+      "status": "failed",
+      "receipt": {
+        "bytes": 1765,
+        "sha256": "8c20ef28faa4fdefebf34a29a45346e2999dbfd7f2dc7ce2662fea5bc39999e5"
+      },
+      "log": {
+        "bytes": 32345,
+        "sha256": "85e8d207c3518b3b0b5a18212e65aa4d935f49839f8546b4e5cfb9d6a1f91b49"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "reader-off-prepare",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1893,
+        "sha256": "d893c852e6949b365afde84ceb5b16c1d7cfb2be6bb36c99621606bd606f5e60"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "febb7981b8654680c14ecbbf9961ec246b3ff8fac472cb512f94d59847d80454"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "reader-off-capture",
+      "exit_code": 100,
+      "status": "failed",
+      "receipt": {
+        "bytes": 1769,
+        "sha256": "e1d47752fdf34f60ba93b43dfdb5ce533c54f85d0879ab61bb3fa85455d9e642"
+      },
+      "log": {
+        "bytes": 32345,
+        "sha256": "b9013bc687b1db91ab391f59c73196bfe71f5a969debd572e3ff0c6c9008e721"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "withhold-prepare",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1887,
+        "sha256": "a62b87f18d5296fb40e1937e22524a9991b7a68d1c816a35ed1a2de70fa22918"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "057500fef74e8596b124bce64d407e18b3163359bbc73590094c6dd85657da90"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "withhold-capture",
+      "exit_code": 100,
+      "status": "failed",
+      "receipt": {
+        "bytes": 1767,
+        "sha256": "83a09f6b27c06f498b4d44b2242d42ddd583343b379d19b2a2d4d6e175648a2e"
+      },
+      "log": {
+        "bytes": 32345,
+        "sha256": "9615f48846a2e765b422f08a6968d96143fdad564d46d081726f54b8cf38789c"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "tombstone-prepare",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1889,
+        "sha256": "e45ddd09880b104f976fe0e394f6f7eca3ad4173ede176d51c63f28d86bedfb9"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "aec725ad462f2862b9a3a488fc6489a6a340fbbe23647225643deb4ad2862b88"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "tombstone-capture",
+      "exit_code": 100,
+      "status": "failed",
+      "receipt": {
+        "bytes": 1768,
+        "sha256": "7231c6e807c94ea12d5b3d505081c7572ed58853d29450e7edc8f5d1c20549a3"
+      },
+      "log": {
+        "bytes": 32345,
+        "sha256": "fa3a35f4a373138d79bb8c5da66cb87375bf21e2efba2a757f3de0b5a3cd1bc7"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "scoped-fix",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1530,
+        "sha256": "a0c57270cae2e78dc92266451afa20d124f6aa2c66bad29e1bc8c472dd2b6838"
+      },
+      "log": {
+        "bytes": 62815,
+        "sha256": "a8bbb104da055952a9c536ae6de58635ba7fd830c2297c273c954e21d68f60d4"
+      },
+      "source_before_after_clean": true
+    },
+    {
+      "phase": "final-format",
+      "exit_code": 0,
+      "status": "passed",
+      "receipt": {
+        "bytes": 1493,
+        "sha256": "e8c7ca0f5795c001ecdc5e057062be645254e8468666ae46ad568832ec55b657"
+      },
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_before_after_clean": true
+    }
+  ],
+  "arms": [
+    {
+      "arm": "attach",
+      "request_id": "mem15-bbbcc630-attach-ef0c-v1",
+      "capture_test_exit_code": 100,
+      "capture_test_failed": true,
+      "error": "hepta-infer-worker binary lookup NotFound before first child::observe(A)",
+      "native_files": [
+        "attach/native/INTENT.json"
+      ],
+      "adapter_files": [
+        "attach/adapter/PLAN.json",
+        "attach/adapter/SERVER.json",
+        "attach/adapter/STOPPED.json"
+      ],
+      "A_or_C_artifacts_present": false,
+      "native_started_exit_ack_artifacts_present": false,
+      "dispatch_input_or_native_result_present": false,
+      "http_attempt_or_provider_artifacts_present": false,
+      "listener_stopped_reports_connections": 0,
+      "listener_observer_authenticated": false,
+      "listener_exit_code": 0,
+      "listener_timed_out": false,
+      "listener_window_contains_capture_test": true,
+      "original_model_generation_count": null,
+      "original_physical_native_http_count": null,
+      "original_physical_provider_request_count": null
+    },
+    {
+      "arm": "reader-off",
+      "request_id": "mem15-bbbcc630-reader-off-ef0c-v1",
+      "capture_test_exit_code": 100,
+      "capture_test_failed": true,
+      "error": "hepta-infer-worker binary lookup NotFound before first child::observe(A)",
+      "native_files": [
+        "reader-off/native/INTENT.json"
+      ],
+      "adapter_files": [
+        "reader-off/adapter/PLAN.json",
+        "reader-off/adapter/SERVER.json",
+        "reader-off/adapter/STOPPED.json"
+      ],
+      "A_or_C_artifacts_present": false,
+      "native_started_exit_ack_artifacts_present": false,
+      "dispatch_input_or_native_result_present": false,
+      "http_attempt_or_provider_artifacts_present": false,
+      "listener_stopped_reports_connections": 0,
+      "listener_observer_authenticated": false,
+      "listener_exit_code": 0,
+      "listener_timed_out": false,
+      "listener_window_contains_capture_test": true,
+      "original_model_generation_count": null,
+      "original_physical_native_http_count": null,
+      "original_physical_provider_request_count": null
+    },
+    {
+      "arm": "withhold",
+      "request_id": "mem15-bbbcc630-withhold-ef0c-v1",
+      "capture_test_exit_code": 100,
+      "capture_test_failed": true,
+      "error": "hepta-infer-worker binary lookup NotFound before first child::observe(A)",
+      "native_files": [
+        "withhold/native/INTENT.json"
+      ],
+      "adapter_files": [
+        "withhold/adapter/PLAN.json",
+        "withhold/adapter/SERVER.json",
+        "withhold/adapter/STOPPED.json"
+      ],
+      "A_or_C_artifacts_present": false,
+      "native_started_exit_ack_artifacts_present": false,
+      "dispatch_input_or_native_result_present": false,
+      "http_attempt_or_provider_artifacts_present": false,
+      "listener_stopped_reports_connections": 0,
+      "listener_observer_authenticated": false,
+      "listener_exit_code": 0,
+      "listener_timed_out": false,
+      "listener_window_contains_capture_test": true,
+      "original_model_generation_count": null,
+      "original_physical_native_http_count": null,
+      "original_physical_provider_request_count": null
+    },
+    {
+      "arm": "tombstone",
+      "request_id": "mem15-bbbcc630-tombstone-ef0c-v1",
+      "capture_test_exit_code": 100,
+      "capture_test_failed": true,
+      "error": "hepta-infer-worker binary lookup NotFound before first child::observe(A)",
+      "native_files": [
+        "tombstone/native/INTENT.json"
+      ],
+      "adapter_files": [
+        "tombstone/adapter/PLAN.json",
+        "tombstone/adapter/SERVER.json",
+        "tombstone/adapter/STOPPED.json"
+      ],
+      "A_or_C_artifacts_present": false,
+      "native_started_exit_ack_artifacts_present": false,
+      "dispatch_input_or_native_result_present": false,
+      "http_attempt_or_provider_artifacts_present": false,
+      "listener_stopped_reports_connections": 0,
+      "listener_observer_authenticated": false,
+      "listener_exit_code": 0,
+      "listener_timed_out": false,
+      "listener_window_contains_capture_test": true,
+      "original_model_generation_count": null,
+      "original_physical_native_http_count": null,
+      "original_physical_provider_request_count": null
+    }
+  ],
+  "A_C_boundary": {
+    "source_proof": [
+      {
+        "file": "source-proof/production_episodic_process.rs",
+        "bytes": 10580,
+        "sha256": "56a13536ac49c6a9b55a0b18eefee849de7892531310971d5b52a1082aa23261",
+        "source_commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+        "basis": "Byte-identical source postimage from verified first-attempt archive; its pin repeats in continuation02 original RESULT."
+      },
+      {
+        "file": "source-proof/production_episodic_process_child.rs",
+        "bytes": 9547,
+        "sha256": "0cf402e5c461f1e47c2ce5c8a150f1a785febf3da7e78bfa692b45b0de19118b",
+        "source_commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+        "basis": "Byte-identical source postimage from verified first-attempt archive; its pin repeats in continuation02 original RESULT."
+      }
+    ],
+    "worker_lookup_before_first_A_observe": true,
+    "worker_lookup_uses_error_propagating_question_mark": true,
+    "A_role_directory_creation_occurs_inside_unreached_observe": true,
+    "A_or_C_native_start_not_reached": true,
+    "basis": "Identical worker NotFound in each original failed-test log, frozen source call order, native subtrees containing only INTENT, and listener STOPPED records with zero observed connections.",
+    "absence_scope": "No A/C files, native STARTED/EXIT/ACK, DISPATCH_INPUT/native RESULT, HTTP/ATTEMPT/provider files in the complete archive. Tar contains only regular files, so empty-directory absence is inferred from unreached observe rather than claimed from tar directory inventory alone.",
+    "listener_processes_did_start_and_exit": true
+  },
+  "scoped_fix_passed": true,
+  "final_format_passed": true,
+  "recorded_binaries_before": {
+    "codex": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/codex",
+      "pin": {
+        "bytes": 560467144,
+        "sha256": "d1d7220a54e11f3bd8d96dd997e45db7184939961c8aa433c9eb8d95ee2e91fe"
+      }
+    },
+    "hepta-infer-worker": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/hepta-infer-worker",
+      "pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      }
+    }
+  },
+  "recorded_binaries_after": {
+    "codex": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/codex",
+      "pin": {
+        "bytes": 560467144,
+        "sha256": "d1d7220a54e11f3bd8d96dd997e45db7184939961c8aa433c9eb8d95ee2e91fe"
+      }
+    },
+    "hepta-infer-worker": {
+      "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/hepta-infer-worker",
+      "pin": {
+        "bytes": 95515416,
+        "sha256": "3659f3d490105ae60778821602a92c138c169b323bc2864512a3d5e87ed304b5"
+      }
+    }
+  },
+  "recorded_binaries_unchanged": true,
+  "binary_basis": "Original runner before/after pins; binary bytes were not downloaded.",
+  "original_measurements": {
+    "model_generation_count": null,
+    "physical_native_http_count": null,
+    "observer_authenticated": false,
+    "all_arm_model_and_http_counts_remain_null": true,
+    "all_native_intent_provider_counts_remain_null": true,
+    "scored_memory_benefit_episodes": 0,
+    "scientific_acceptance": "HOLD",
+    "null_counts_were_not_replaced_with_zero": true
+  },
+  "token_preflight": {
+    "all_four_entries": "NOT_EXECUTED_NO_MAPPED_REQUEST",
+    "original_assets_and_runtime_pins_unchanged": true
+  },
+  "prior_failed_result_and_terminal_bytes_preserved": true,
+  "recovery_actions": {
+    "native_jobs_started": 0,
+    "tests_or_controls_run": 0,
+    "model_calls_started": 0,
+    "code_changes": 0,
+    "publication_or_pr": false
+  }
+}

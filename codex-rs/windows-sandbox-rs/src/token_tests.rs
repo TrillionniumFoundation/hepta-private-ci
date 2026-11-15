@@ -1,8 +1,23 @@
 use super::*;
+use crate::acl::add_deny_write_ace;
+use crate::acl::ensure_allow_mask_aces;
+use crate::acl::ensure_allow_write_aces;
+use crate::acl::fetch_dacl_handle;
 use crate::legacy_admission_tests::assert_unavailable;
+use crate::legacy_admission_tests::snapshot;
 use pretty_assertions::assert_eq;
+use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
+use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
+use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfoW;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
+use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
+use windows_sys::Win32::Security::ImpersonateLoggedOnUser;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
+use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TokenRestrictedSids;
+use windows_sys::Win32::Storage::FileSystem::DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
 struct OwnedToken(HANDLE);
 
@@ -10,6 +25,29 @@ impl Drop for OwnedToken {
     fn drop(&mut self) {
         unsafe {
             CloseHandle(self.0);
+        }
+    }
+}
+
+struct Impersonation;
+
+impl Impersonation {
+    unsafe fn enter(token: HANDLE) -> Result<Self> {
+        if ImpersonateLoggedOnUser(token) == 0 {
+            return Err(anyhow!(
+                "ImpersonateLoggedOnUser failed: {}",
+                GetLastError()
+            ));
+        }
+        Ok(Self)
+    }
+}
+
+impl Drop for Impersonation {
+    fn drop(&mut self) {
+        if unsafe { RevertToSelf() } == 0 {
+            // Continuing on a reused test thread with the wrong token is unsafe.
+            std::process::abort();
         }
     }
 }
@@ -56,6 +94,106 @@ unsafe fn token_has_restricting_sid(token: HANDLE, expected_sid: *mut c_void) ->
         .any(|entry| EqualSid(entry.Sid, expected_sid) != 0))
 }
 
+// Diagnostics are restricted to this test's owned fixture objects. They do not
+// change ACLs, token rights, impersonation, operation order or acceptance checks.
+fn record_windows_boundary_diagnostic(detail: std::fmt::Arguments<'_>) {
+    use std::io::Write;
+
+    let _ = writeln!(std::io::stderr().lock(), "windows_boundary_diag {detail}");
+}
+
+fn observe_fixture_dacl(label: &str, path: &std::path::Path) {
+    use windows_sys::Win32::Security::ACE_HEADER;
+    use windows_sys::Win32::Security::GetAce;
+
+    struct Descriptor(*mut c_void);
+    impl Drop for Descriptor {
+        fn drop(&mut self) {
+            // SAFETY: fetch_dacl_handle returns this LocalAlloc-owned descriptor.
+            unsafe {
+                LocalFree(self.0 as HLOCAL);
+            }
+        }
+    }
+
+    let observed_at = std::time::Instant::now();
+    // SAFETY: callers supply only live paths within their owned temporary fixture.
+    let result = unsafe { fetch_dacl_handle(path) };
+    let (acl, descriptor) = match result {
+        Ok(value) => value,
+        Err(error) => {
+            record_windows_boundary_diagnostic(format_args!(
+                "dacl={label} path={path:?} read_error={error:#}"
+            ));
+            return;
+        }
+    };
+    let _descriptor = Descriptor(descriptor);
+    if acl.is_null() {
+        record_windows_boundary_diagnostic(format_args!("dacl={label} null_dacl=true"));
+        return;
+    }
+    // SAFETY: the OS-returned ACL remains inside the live descriptor above.
+    let (bytes, count) = unsafe { ((*acl).AclSize as usize, (*acl).AceCount as usize) };
+    record_windows_boundary_diagnostic(format_args!(
+        "dacl={label} path={path:?} bytes={bytes} ace_count={count} truncated={}",
+        count > 64,
+    ));
+    let acl_start = acl as usize;
+    let Some(acl_end) = acl_start.checked_add(bytes) else {
+        return;
+    };
+    for index in 0..count.min(64) {
+        let mut ace = std::ptr::null_mut();
+        // SAFETY: GetAce receives the live OS ACL and an in-range ACE index.
+        if unsafe { GetAce(acl, index as u32, &mut ace) } == 0 {
+            record_windows_boundary_diagnostic(format_args!(
+                "dacl={label} ace={index} get_ace_error={}",
+                unsafe { GetLastError() },
+            ));
+            continue;
+        }
+        let ace_start = ace as usize;
+        if ace.is_null()
+            || ace_start < acl_start
+            || ace_start
+                .checked_add(std::mem::size_of::<ACE_HEADER>())
+                .is_none_or(|end| end > acl_end)
+        {
+            record_windows_boundary_diagnostic(format_args!(
+                "dacl={label} ace={index} invalid_header_bounds=true"
+            ));
+            continue;
+        }
+        // SAFETY: the header bounds are inside the owned OS ACL; unaligned read
+        // avoids making a stronger alignment assumption than the byte bounds.
+        let header = unsafe { std::ptr::read_unaligned(ace.cast::<ACE_HEADER>()) };
+        let size = header.AceSize as usize;
+        if size < std::mem::size_of::<ACE_HEADER>()
+            || ace_start.checked_add(size).is_none_or(|end| end > acl_end)
+        {
+            record_windows_boundary_diagnostic(format_args!(
+                "dacl={label} ace={index} invalid_ace_bounds=true"
+            ));
+            continue;
+        }
+        // SAFETY: the complete ACE lies within the live descriptor. Observe at
+        // most 512 bytes; this includes the native mask and SID for normal ACEs.
+        let raw = unsafe { std::slice::from_raw_parts(ace.cast::<u8>(), size.min(512)) };
+        let mask = (raw.len() >= 8).then(|| u32::from_le_bytes([raw[4], raw[5], raw[6], raw[7]]));
+        record_windows_boundary_diagnostic(format_args!(
+            "dacl={label} ace={index} type={} flags={:#04x} size={size} mask={mask:?} truncated={} raw={raw:02x?}",
+            header.AceType,
+            header.AceFlags,
+            size > raw.len(),
+        ));
+    }
+    record_windows_boundary_diagnostic(format_args!(
+        "dacl={label} observation_us={}",
+        observed_at.elapsed().as_micros(),
+    ));
+}
+
 #[test]
 fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
     let capability_sid = LocalSid::from_string("S-1-5-21-10-20-30-40")?;
@@ -77,6 +215,284 @@ fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
     }
 
     assert!(has_network_proxy_sid?);
+    Ok(())
+}
+
+#[test]
+fn legacy_refuses_before_partial_delete_deny_repair_mechanism_fixture() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    // SAFETY: the existing fixture and validated SIDs remain live for both grants.
+    unsafe {
+        ensure_allow_mask_aces(fixture.path(), &[everyone.as_ptr()], FILE_ALL_ACCESS)?;
+        ensure_allow_write_aces(fixture.path(), &[capability.as_ptr()])?;
+    }
+    let existing = fixture.path().join("existing.txt");
+    let created = fixture.path().join("created.txt");
+    std::fs::write(&existing, "original")?;
+    let entry = EXPLICIT_ACCESS_W {
+        grfAccessPermissions: DELETE,
+        grfAccessMode: DENY_ACCESS,
+        grfInheritance: OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
+        Trustee: TRUSTEE_W {
+            pMultipleTrustee: std::ptr::null_mut(),
+            MultipleTrusteeOperation: 0,
+            TrusteeForm: TRUSTEE_IS_SID,
+            TrusteeType: TRUSTEE_IS_UNKNOWN,
+            ptstrName: capability.as_ptr().cast(),
+        },
+    };
+    // SAFETY: the fixture exists and all SID/ACL allocations live through their
+    // calls. Both returned allocations are freed after the named setter copies.
+    let code = unsafe {
+        let (dacl, descriptor) = fetch_dacl_handle(fixture.path())?;
+        let mut partial_dacl = std::ptr::null_mut();
+        let code = SetEntriesInAclW(
+            /*ccountofexplicitentries*/ 1,
+            &entry,
+            dacl,
+            &mut partial_dacl,
+        );
+        let code = if code == ERROR_SUCCESS {
+            SetNamedSecurityInfoW(
+                to_wide(fixture.path()).as_ptr() as *mut u16,
+                SE_FILE_OBJECT,
+                DACL_SECURITY_INFORMATION,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                partial_dacl,
+                std::ptr::null_mut(),
+            )
+        } else {
+            code
+        };
+        if !partial_dacl.is_null() {
+            LocalFree(partial_dacl as HLOCAL);
+        }
+        LocalFree(descriptor as HLOCAL);
+        code
+    };
+    anyhow::ensure!(code == ERROR_SUCCESS, "seed partial delete deny: {code}");
+    // SAFETY: the base token stays owned until restricted-token creation completes.
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let before = crate::legacy_admission_tests::snapshot(fixture.path())?;
+    crate::legacy_admission_tests::assert_unavailable(unsafe {
+        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()]).map(OwnedToken)
+    });
+    assert_eq!(
+        crate::legacy_admission_tests::snapshot(fixture.path())?,
+        before
+    );
+    // SAFETY: this cfg(test) token is used only for the owned fixture below.
+    // It preserves the native ACL-repair assertions without admitting a legacy
+    // sandbox or launching any process under the token.
+    let token = OwnedToken(unsafe {
+        mechanism_fixture::workspace_token_for_owned_objects(base.0, &[capability.as_ptr()])?
+    });
+    {
+        // SAFETY: token remains owned throughout this impersonation scope.
+        let _impersonation = unsafe { Impersonation::enter(token.0)? };
+        std::fs::write(&existing, "before repair")?;
+    }
+    observe_fixture_dacl("partial_directory_before_repair", fixture.path());
+    observe_fixture_dacl("partial_file_before_repair", &existing);
+    // SAFETY: the fixture and validated capability SID are live for the repair.
+    let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
+    observe_fixture_dacl("partial_directory_after_first_repair", fixture.path());
+    observe_fixture_dacl("partial_file_after_directory_repair", &existing);
+    // SAFETY: the same objects remain live. Check native directory and file
+    // storage retains the constructor's complete mask and inheritance scope.
+    let repeated_repairs = unsafe {
+        (
+            {
+                let result = add_deny_write_ace(fixture.path(), capability.as_ptr())?;
+                observe_fixture_dacl("partial_directory_after_repeat", fixture.path());
+                result
+            },
+            {
+                let result = add_deny_write_ace(&existing, capability.as_ptr())?;
+                observe_fixture_dacl("partial_file_after_first_direct_repair", &existing);
+                result
+            },
+            {
+                let result = add_deny_write_ace(&existing, capability.as_ptr())?;
+                observe_fixture_dacl("partial_file_after_repeat", &existing);
+                result
+            },
+        )
+    };
+    let (read, denied) = {
+        // SAFETY: token remains owned throughout this impersonation scope.
+        let _impersonation = unsafe { Impersonation::enter(token.0)? };
+        let read = std::fs::read_to_string(&existing)?;
+        let denied = [
+            std::fs::write(&existing, "after repair"),
+            std::fs::write(&created, "created"),
+        ]
+        .map(|result| result.err().map(|error| error.kind()));
+        (read, denied)
+    };
+    assert_eq!(
+        (repaired, denied),
+        (true, [Some(std::io::ErrorKind::PermissionDenied); 2]),
+    );
+    assert_eq!(repeated_repairs, (false, true, false));
+    assert_eq!(read, "before repair");
+    assert_eq!(
+        (std::fs::read_to_string(&existing)?, created.exists()),
+        ("before repair".to_owned(), false),
+    );
+    Ok(())
+}
+
+#[test]
+fn legacy_workspace_capabilities_refuse_broad_identity_delete_routes() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
+    let cap_b = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
+    let other_cap = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
+    let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
+    let mut everyone = unsafe { world_sid()? };
+    // Deliberately grant broad inherited DELETE and parent DELETE_CHILD inside
+    // this owned fixture. Neither identity may substitute for a workspace cap.
+    unsafe {
+        ensure_allow_mask_aces(
+            fixture.path(),
+            &[logon.as_mut_ptr().cast(), everyone.as_mut_ptr().cast()],
+            FILE_ALL_ACCESS,
+        )?;
+    }
+    let allowed = [
+        fixture.path().join("workspace"),
+        fixture.path().join("temp"),
+    ];
+    for (path, cap) in allowed.iter().zip([&cap_a, &cap_b]) {
+        std::fs::create_dir(path)?;
+        unsafe {
+            ensure_allow_write_aces(path, &[cap.as_ptr()])?;
+        }
+        std::fs::write(path.join("delete.txt"), "inside")?;
+        std::fs::create_dir(path.join("delete-dir"))?;
+    }
+    let outside = fixture.path().join("outside");
+    std::fs::create_dir(&outside)?;
+    // A stale capability for another root must not authorize this token either.
+    unsafe {
+        ensure_allow_write_aces(&outside, &[other_cap.as_ptr()])?;
+    }
+    std::fs::write(outside.join("keep.txt"), "outside")?;
+    std::fs::create_dir(outside.join("keep-dir"))?;
+    // The ordinary caller really has the dangerous ambient rights. Keep this
+    // positive control separate from the subsequent unchanged-fixture check.
+    std::fs::write(outside.join("keep.txt"), "host-overwrite")?;
+    assert_eq!(
+        std::fs::read_to_string(outside.join("keep.txt"))?,
+        "host-overwrite"
+    );
+    std::fs::write(outside.join("keep.txt"), "outside")?;
+    let host_file = outside.join("host-delete-control.txt");
+    let host_directory = outside.join("host-delete-control");
+    std::fs::write(&host_file, "host")?;
+    std::fs::create_dir(&host_directory)?;
+    std::fs::remove_file(&host_file)?;
+    std::fs::remove_dir(&host_directory)?;
+    let before = snapshot(fixture.path())?;
+    // This remains the real same-user constructor. A dedicated-account test
+    // must never be simulated by passing the current user's SID to its API.
+    assert_unavailable(unsafe {
+        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])
+            .map(OwnedToken)
+    });
+    assert_eq!(snapshot(fixture.path())?, before);
+    assert_eq!(
+        std::fs::read_to_string(outside.join("keep.txt"))?,
+        "outside"
+    );
+    assert!(outside.join("keep-dir").is_dir());
+    for path in &allowed {
+        assert_eq!(std::fs::read_to_string(path.join("delete.txt"))?, "inside");
+        assert!(path.join("delete-dir").is_dir());
+    }
+    Ok(())
+}
+
+#[test]
+fn legacy_workspace_capability_refuses_all_four_native_delete_routes() -> Result<()> {
+    use crate::delete_permission_matrix::DeleteMatrix;
+    use crate::delete_permission_matrix::DeleteOutcome;
+    use crate::delete_permission_matrix::DeleteRoute;
+
+    let fixture = tempfile::tempdir()?;
+    let host = DeleteMatrix::new(&fixture.path().join("host"))?;
+    let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
+    host.assert_same_acls(&restricted);
+    let host_access_context = host.access_diagnostics();
+    let host_errors = crate::delete_permission_control::native(&host)?;
+    let host_outcomes = host.finish("ordinary-host")?;
+    eprintln!("delete_matrix host_native_errors={host_errors:?}");
+    assert_eq!(
+        host_errors,
+        vec![
+            [Some((std::io::ErrorKind::PermissionDenied, Some(5))); 2],
+            [None; 2],
+            [None; 2],
+            [None; 2],
+        ],
+        "{host_access_context}"
+    );
+    assert_eq!(
+        host_outcomes,
+        [
+            DeleteRoute::Neither,
+            DeleteRoute::TargetOnly,
+            DeleteRoute::ParentOnly,
+            DeleteRoute::Both
+        ]
+        .map(|route| DeleteOutcome {
+            route,
+            file_deleted: route != DeleteRoute::Neither,
+            directory_deleted: route != DeleteRoute::Neither
+        }),
+        "{host_access_context}"
+    );
+
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let capability = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
+    let second_capability = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
+    let allowed = fixture.path().join("allowed");
+    std::fs::create_dir(&allowed)?;
+    unsafe { ensure_allow_write_aces(&allowed, &[capability.as_ptr()])? };
+    std::fs::write(allowed.join("file"), "allowed")?;
+    std::fs::create_dir(allowed.join("directory"))?;
+    let before = snapshot(fixture.path())?;
+    assert_unavailable(unsafe {
+        create_workspace_write_token_with_caps_from(
+            base.0,
+            &[capability.as_ptr(), second_capability.as_ptr()],
+        )
+        .map(OwnedToken)
+    });
+    assert_eq!(snapshot(fixture.path())?, before);
+    // finish checks original object identity and exact four-cell native DACLs.
+    let outcomes = restricted.finish("legacy-refused-before-impersonation")?;
+    assert_eq!(std::fs::read_to_string(allowed.join("file"))?, "allowed");
+    assert!(allowed.join("directory").is_dir());
+    assert_eq!(
+        outcomes,
+        [
+            DeleteRoute::Neither,
+            DeleteRoute::TargetOnly,
+            DeleteRoute::ParentOnly,
+            DeleteRoute::Both
+        ]
+        .map(|route| DeleteOutcome {
+            route,
+            file_deleted: false,
+            directory_deleted: false
+        })
+    );
     Ok(())
 }
 

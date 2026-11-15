@@ -1,0 +1,33 @@
+{
+  "archive": {
+    "bytes": 12224,
+    "file": "software-controls.tar.xz",
+    "indexed_originals": 11,
+    "readback_verified": true,
+    "sha256": "e314e30548032ddc9e892761209cd08c5ac9e5a9f087f565aaaa6ca6599a3e25"
+  },
+  "native_real_provider_calls": 0,
+  "production_adoption": false,
+  "python_controls": {
+    "failed": 0,
+    "fixture_only": true,
+    "passed": 5,
+    "real_model_calls": 0,
+    "skipped": 0,
+    "unittest_seconds": 0.402
+  },
+  "python_format": {
+    "ast_preserved": true,
+    "root_python_only_just_fmt_exit_code": 0,
+    "ruff_check_passed": true,
+    "ruff_format_check_passed": true
+  },
+  "rust": {
+    "compiled": false,
+    "executed": false,
+    "just_fmt_exit_code": 1,
+    "reason": "local rustfmt and cargo unavailable; no claim of native qualification"
+  },
+  "schema": "hepta.mem13.native-adapter-controls.v1",
+  "scientific_acceptance": "HOLD"
+}

@@ -345,6 +345,7 @@ mod config;
 mod control;
 #[cfg(target_os = "linux")]
 mod deployment_frontier;
+mod episodic_import;
 #[cfg(target_os = "linux")]
 pub use deployment_frontier::DeploymentFrontierStore;
 #[cfg(target_os = "linux")]
@@ -955,6 +956,7 @@ pub use codex_hepta_agent_protocol::CognitiveContextItem;
 pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextRevalidation;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
+pub use codex_hepta_agent_protocol::EpisodicSnapshotImportResult;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;
 pub use codex_hepta_agent_protocol::KernelEvidenceAppendIngress;

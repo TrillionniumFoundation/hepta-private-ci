@@ -23,6 +23,9 @@ use support::request;
 #[path = "planner_tests.rs"]
 mod planner;
 
+#[path = "planner_legacy_tests.rs"]
+mod planner_legacy;
+
 #[path = "observed_tests.rs"]
 mod observed;
 

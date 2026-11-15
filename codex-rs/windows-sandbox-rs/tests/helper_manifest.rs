@@ -32,10 +32,10 @@ fn locate_setup_executable() -> Result<PathBuf> {
         return Ok(declared);
     }
 
-    if let Some(manifest) = std::env::var_os("RUNFILES_MANIFEST_FILE") {
-        if let Some(resolved) = find_exact_manifest_runfile(&PathBuf::from(manifest), &declared)? {
-            return Ok(resolved);
-        }
+    if let Some(manifest) = std::env::var_os("RUNFILES_MANIFEST_FILE")
+        && let Some(resolved) = find_exact_manifest_runfile(&PathBuf::from(manifest), &declared)?
+    {
+        return Ok(resolved);
     }
 
     anyhow::bail!(

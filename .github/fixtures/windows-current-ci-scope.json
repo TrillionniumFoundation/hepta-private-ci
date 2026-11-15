@@ -115,7 +115,7 @@
         "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
         "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh"
       ],
-      "filter": "package(codex-hepta-operator-acceptance)"
+      "filter": "test(=ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child) | test(=durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write) | test(=durable::windows::private_tests::private_sidecar_roundtrip_preserves_atomic_replace_and_refuses_duplicate) | test(=durable::windows::private_tests::retained_parent_refuses_replacement_and_missing_parent_is_not_created) | test(=durable::windows::private_tests::sidecar_lock_is_exclusive_until_its_original_guard_drops) | test(=durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing) | test(=durable::windows::tests::hardlinks_added_after_open_are_rejected) | test(=durable::windows::tests::path_replacement_after_open_is_rejected) | test(=g5_trust::tests::exact_head_and_predecessor_binding_is_required) | test(=g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance) | test(=g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority) | test(=g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted) | test(=g5_trust::tests::policy_and_revocation_files_must_be_canonical) | test(=g5_trust::tests::revocation_digest_change_invalidates_existing_challenge) | test(=g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance) | test(=manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths) | test(=manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks) | test(=openssh_windows::tests::frozen_private_inputs_deny_writes_deletes_and_directory_replacement) | test(=openssh_windows::tests::hardlink_added_to_frozen_input_is_refused) | test(=openssh_windows::tests::retained_unknown_verifier_reconciles_only_its_original_child) | test(=preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected) | test(=tests::durable_time_watermark_rejects_clock_rollback) | test(=tests::exact_challenge_boundary_accepts_only_operator_acceptance) | test(=tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails) | test(=tests::final_consumption_at_expiry_creates_no_claim_or_receipt) | test(=tests::read_only_lock_never_creates_missing_state) | test(=tests::receipt_repeated_authority_must_match_exact_boundary) | test(=tests::unknown_or_noncanonical_stored_json_is_rejected) | test(=tests::validity_window_is_half_open_and_policy_bounded) | test(=trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy) | test(=trust::tests::trust_policy_digest_is_external_and_fail_closed) | test(=trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers) | test(=trust::tests::weak_ed25519_public_key_is_rejected_before_openssh)"
     },
     {
       "id": "shadow-native",
@@ -158,12 +158,12 @@
         "trial_tests::rejects_an_unbounded_trial_before_creating_runtime_state",
         "value_learning_tests::objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable"
       ],
-      "filter": "package(codex-hepta-shadow-qualification)"
+      "filter": "test(=child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream) | test(=child_tests::persists_inbound_wire_before_rejecting_invalid_json) | test(=driver_tests::app_and_mcp_fsm_persist_before_every_sample_write) | test(=driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm) | test(=durable::windows::tests::private_artifact_flush_and_bounded_read_preserve_original_bytes) | test(=durable::windows::tests::private_artifacts_reject_foreign_acl_without_repair) | test(=durable::windows::tests::private_artifacts_reject_native_hard_links) | test(=durable::windows::tests::private_readback_never_initializes_missing_state) | test(=importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint) | test(=importer_tests::inventories_all_broken_samples_before_checkpointing_failure) | test(=lane_e_closure_tests::lane_e_causal_candidate_chain_is_digest_bound_and_deny_all) | test(=loopback_tests::persists_exact_http_requests_and_responses) | test(=observer_tests::rejects_noncanonical_input_before_writing_an_artifact) | test(=observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens) | test(=observer_tests::returns_tokens_only_after_four_private_durable_pairs) | test(=oracle_tests::loads_the_embedded_frozen_oracle) | test(=oracle_tests::rejects_nonofficial_or_mutated_oracle_bytes) | test(=product_receipts_tests::validates_exact_row_and_rejects_index_drift) | test(=report_tests::inventories_import_semantic_duplicate_and_missing_failures) | test(=report_tests::writes_an_exact_report_with_no_authority) | test(=request_tests::parses_the_frozen_app_server_pair) | test(=request_tests::parses_the_frozen_mcp_pair) | test(=request_tests::rejects_noncanonical_or_multiline_requests) | test(=runtime_tests::creates_private_surface_layouts_and_strict_configs) | test(=runtime_tests::rejects_an_unpinned_product_binary) | test(=sealer_tests::rejects_a_checkpoint_changed_before_sealing) | test(=sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled) | test(=sealer_tests::seals_a_failed_checkpoint_without_losing_failures) | test(=semantic_verifier_tests::normalizes_dynamic_identity_and_matches_oracle_bytes) | test(=semantic_verifier_tests::rejects_semantic_or_identity_divergence) | test(=session_tests::extracts_only_bounded_dynamic_identifiers) | test(=session_tests::requires_an_explicit_response_result) | test(=transport_tests::detects_transport_artifact_changes_after_capture) | test(=trial_tests::rejects_an_unbounded_trial_before_creating_runtime_state) | test(=value_learning_tests::objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable)"
     },
     {
       "id": "sandbox-original-failures",
       "package": "codex-windows-sandbox",
-      "expectedTestCount": 7,
+      "expectedTestCount": 13,
       "requiredTests": [
         "token::tests::workspace_token_refuses_multiple_capabilities_before_native_access",
         "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
@@ -171,19 +171,27 @@
         "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
         "unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch",
         "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
-        "unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes"
+        "unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes",
+        "token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes",
+        "unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup",
+        "unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup",
+        "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+        "unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup",
+        "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots"
       ],
-      "filter": "test(=token::tests::workspace_token_refuses_multiple_capabilities_before_native_access) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes)"
+      "filter": "test(=token::tests::workspace_token_refuses_multiple_capabilities_before_native_access) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_cmd_refuses_before_child_launch) | test(=unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides) | test(=unified_exec::tests::legacy_workspace_request_refuses_before_file_or_directory_changes) | test(=token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup) | test(=unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots)"
     },
     {
       "id": "sandbox-legacy-delete-admission",
       "package": "codex-windows-sandbox",
-      "expectedTestCount": 2,
+      "expectedTestCount": 4,
       "requiredTests": [
         "token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets",
-        "unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion"
+        "unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion",
+        "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary"
       ],
-      "filter": "test(=token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets) | test(=unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion)"
+      "filter": "test(=token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets) | test(=unified_exec::tests::delete_permission_tests::legacy_workspace_capability_request_refuses_before_native_deletion) | test(=token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes) | test(=unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary)"
     },
     {
       "id": "retained-windows-materialization",

@@ -1219,7 +1219,8 @@ async fn assert_remote_windows_sandbox_rejects_unqualified_legacy_policy() -> Re
         SandboxPolicy::new_read_only_policy(),
         cwd.clone(),
     )?;
-    sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    // Preserve the read-only policy; only the test's backend selection changes.
+    sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
 
     let error = match context
         .backend

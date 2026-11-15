@@ -4418,10 +4418,10 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
         .with_sandbox_mode("read-only")
         .write(&codex_home)?;
 
-    let mut mcp = TestAppServer::builder()
-        .with_codex_home(&codex_home)
-        .build_initialized()
-        .await?;
+    let builder = TestAppServer::builder().with_codex_home(&codex_home);
+    #[cfg(windows)]
+    let builder = builder.with_elevated_windows_sandbox();
+    let mut mcp = builder.build_initialized().await?;
 
     let ThreadStartResponse { thread, .. } = mcp
         .start_thread(ThreadStartParams {

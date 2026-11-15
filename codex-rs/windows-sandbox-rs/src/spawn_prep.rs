@@ -528,17 +528,23 @@ mod tests {
     }
 
     #[test]
-    fn legacy_spawn_refusal_keeps_environment_unchanged() {
-        let codex_home = TempDir::new().expect("tempdir");
-        let cwd = TempDir::new().expect("tempdir");
-        let mut env_map = HashMap::new();
-        let workspace_roots = workspace_roots_for(cwd.path());
+    fn legacy_spawn_refuses_before_offline_network_rewrite() {
+        let fixture = TempDir::new().expect("tempdir");
+        let cwd = fixture.path().join("workspace");
+        std::fs::create_dir(&cwd).expect("owned workspace");
+        std::fs::write(cwd.join("kept.txt"), "unchanged").expect("fixture content");
+        let codex_home = fixture.path().join("home-must-not-be-created");
+        let mut env_map = HashMap::from([("FIXTURE_SENTINEL".to_owned(), "unchanged".to_owned())]);
+        let env_before = env_map.clone();
+        let before =
+            crate::legacy_admission_tests::snapshot(fixture.path()).expect("snapshot fixture");
+        let workspace_roots = workspace_roots_for(&cwd);
 
         let result = prepare_legacy_spawn_context(
             &PermissionProfile::workspace_write(),
             workspace_roots.as_slice(),
-            codex_home.path(),
-            cwd.path(),
+            &codex_home,
+            &cwd,
             &mut env_map,
             &["cmd.exe".to_string()],
             SpawnPrepOptions {
@@ -546,14 +552,16 @@ mod tests {
                 add_git_safe_directory: false,
             },
         );
+
         crate::legacy_admission_tests::assert_unavailable(result);
-        assert!(env_map.is_empty());
+        assert_eq!(env_map, env_before);
+        assert_eq!(env_map.get("SBX_NONET_ACTIVE"), None);
+        assert_eq!(env_map.get("HTTP_PROXY"), None);
         assert_eq!(
-            std::fs::read_dir(codex_home.path())
-                .expect("read home")
-                .count(),
-            0
+            crate::legacy_admission_tests::snapshot(fixture.path()).expect("read back fixture"),
+            before,
         );
+        assert!(!codex_home.exists());
     }
 
     #[test]
@@ -735,5 +743,34 @@ mod tests {
         assert!(roots.contains(&dunce::canonicalize(&active_root).expect("active root")));
         assert!(!roots.contains(&dunce::canonicalize(&codex_home).expect("codex home")));
         assert!(!roots.contains(&dunce::canonicalize(&sandbox_root).expect("sandbox root")));
+    }
+
+    #[test]
+    fn legacy_spawn_refusal_keeps_environment_unchanged() {
+        let codex_home = TempDir::new().expect("tempdir");
+        let cwd = TempDir::new().expect("tempdir");
+        let mut env_map = HashMap::new();
+        let workspace_roots = workspace_roots_for(cwd.path());
+
+        let result = prepare_legacy_spawn_context(
+            &PermissionProfile::workspace_write(),
+            workspace_roots.as_slice(),
+            codex_home.path(),
+            cwd.path(),
+            &mut env_map,
+            &["cmd.exe".to_string()],
+            SpawnPrepOptions {
+                inherit_path: true,
+                add_git_safe_directory: false,
+            },
+        );
+        crate::legacy_admission_tests::assert_unavailable(result);
+        assert!(env_map.is_empty());
+        assert_eq!(
+            std::fs::read_dir(codex_home.path())
+                .expect("read home")
+                .count(),
+            0
+        );
     }
 }

@@ -1261,8 +1261,12 @@ impl LocalLeaseOutbox {
 
         let now = match now_override {
             Some(now) => now,
-            None => u64::try_from(now_unix_seconds()?)
-                .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?,
+            None => u64::try_from(
+                self.store
+                    .local_lease_now_unix_i64()
+                    .map_err(LocalLeaseOutboxError::Clock)?,
+            )
+            .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?,
         };
         if now < persisted_binding.lease_expires_at_unix_seconds {
             return Err(LocalLeaseOutboxError::StaleFence(format!(
@@ -3425,7 +3429,10 @@ impl CognitiveStore {
                             let expiry = i64::try_from(expiry).map_err(|_| {
                                 LocalLeaseOutboxError::Clock("lease expiry overflow".to_string())
                             })?;
-                            expiry <= now_unix_seconds()?
+                            expiry
+                                <= self
+                                    .local_lease_now_unix_i64()
+                                    .map_err(LocalLeaseOutboxError::Clock)?
                         }
                         None => false,
                     };
@@ -5338,8 +5345,13 @@ fn ensure_current_active(
 ) -> Result<(), LocalLeaseOutboxError> {
     ensure_current_identity(lease, handle)?;
     if let Some(expires_at) = lease.lease_expires_at_unix_seconds {
-        let now = u64::try_from(now_unix_seconds()?)
-            .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?;
+        let now = u64::try_from(
+            handle
+                .store
+                .local_lease_now_unix_i64()
+                .map_err(LocalLeaseOutboxError::Clock)?,
+        )
+        .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?;
         if now >= expires_at {
             return Err(LocalLeaseOutboxError::StaleFence(
                 "local lease has expired".to_string(),

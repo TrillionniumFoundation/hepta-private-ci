@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.mem12.native-original-archive-verification.v1",
+  "archive": {
+    "file": "native-811e0e27.tar.xz",
+    "bytes": 149224,
+    "sha256": "5c04dd9bef70c43b6a338f44a254e4b28f4e0533c756a4cba733aeb47882ed7a"
+  },
+  "tar_safety": {
+    "member_count": 101,
+    "regular_files": 75,
+    "directories": 26,
+    "all_paths_relative_without_traversal": true,
+    "all_members_regular_or_directory": true,
+    "symlinks": 0,
+    "hardlinks": 0,
+    "special_files": 0,
+    "duplicate_paths": 0,
+    "uncompressed_bytes": 2667058
+  },
+  "original_member_manifest": {
+    "path": "final-811e0e27/MEMBER_MANIFEST.json",
+    "bytes": 14497,
+    "sha256": "3b9138e9dbb8258a4c8e050fcabc68987faab39da1387a55b7e135e7c138cc96",
+    "entries": 74,
+    "covers_every_other_regular_file": true,
+    "all_member_hashes_verified": true
+  },
+  "source": {
+    "commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+    "before_equal_after": true,
+    "clean_before_and_after": true,
+    "postimages": 25,
+    "all_archived_postimages_verified_against_result": true,
+    "rewrite_patch_bytes": 0
+  },
+  "original_result_identical_to_previously_recovered_sdk_bytes": true,
+  "original_logs_identical_to_previously_recovered_sdk_bytes": true,
+  "all_phase_receipt_logs_verified": true,
+  "strict_isolation_case_lines": [
+    "test_closed_inputs_reject_bad_modes_sizes_and_timeouts (ndu_real_runtime.test_episodic_isolation.IsolationAdmissionTests.test_closed_inputs_reject_bad_modes_sizes_and_timeouts) ... ok",
+    "test_disk_changes_cannot_relabel_loaded_launcher (ndu_real_runtime.test_episodic_isolation.IsolationAdmissionTests.test_disk_changes_cannot_relabel_loaded_launcher) ... ok",
+    "test_existing_run_cannot_be_overwritten_or_replayed (ndu_real_runtime.test_episodic_isolation.IsolationAdmissionTests.test_existing_run_cannot_be_overwritten_or_replayed) ... ok",
+    "test_missing_bwrap_retains_failed_attempt_and_cannot_start_actor (ndu_real_runtime.test_episodic_isolation.IsolationAdmissionTests.test_missing_bwrap_retains_failed_attempt_and_cannot_start_actor) ... ok",
+    "test_off_rejects_context_before_launch_or_output_creation (ndu_real_runtime.test_episodic_isolation.IsolationAdmissionTests.test_off_rejects_context_before_launch_or_output_creation) ... ok",
+    "test_sealed_inputs_and_source_changes_keep_failed_receipts (ndu_real_runtime.test_episodic_isolation.IsolationAdmissionTests.test_sealed_inputs_and_source_changes_keep_failed_receipts) ... ok",
+    "test_on_off_block_original_files_descriptors_tools_and_caches (ndu_real_runtime.test_episodic_isolation.LinuxNamespaceTests.test_on_off_block_original_files_descriptors_tools_and_caches) ... ok",
+    "test_timeout_and_output_overflow_cannot_qualify (ndu_real_runtime.test_episodic_isolation.LinuxNamespaceTests.test_timeout_and_output_overflow_cannot_qualify) ... ok"
+  ],
+  "sdk_download": {
+    "bytes": 149224,
+    "sha256": "5c04dd9bef70c43b6a338f44a254e4b28f4e0533c756a4cba733aeb47882ed7a",
+    "chunks": [
+      {
+        "offset": 0,
+        "bytes": 65536,
+        "sha256": "1a78db1788cf77374b7ea1a594b3976b51019bb42208429a9873f85b1c072a36",
+        "version": "66306:75807064:149224:1794468453040924280:1794468453040924280",
+        "operation_id": "bffe9952d0c092c2506929407e3e8ffbffee3536bf7343e4aaaaeb9b7697ab9b",
+        "native_sdk_bytes": 87805,
+        "native_sdk_sha256": "f9b44b92655a7775fb9f1937858415b05dd3c9677268f069cca32fdafc280975",
+        "sdk_pages": [
+          {
+            "file": "page-000000.json",
+            "offset": 0,
+            "bytes": 8192,
+            "sha256": "b7445efe97d0375227b6f87074272f28a52c90ff59401f2ec6cfd1c891ccf668"
+          },
+          {
+            "file": "page-008192.json",
+            "offset": 8192,
+            "bytes": 16384,
+            "sha256": "30b635f3a1300ae6f350c60d9b2a01dffb37b1ea9c8047c37e2b780a4a7597f2"
+          },
+          {
+            "file": "page-024576.json",
+            "offset": 24576,
+            "bytes": 16384,
+            "sha256": "3cd9a5cb8af1e6d4ad0f59ff4e7df95ebb910fd5cd305671364093daf6f61b49"
+          },
+          {
+            "file": "page-040960.json",
+            "offset": 40960,
+            "bytes": 16384,
+            "sha256": "45bf850ea368df98576cef64ba181c9619f171c858189d994dab863f8b9e7df7"
+          },
+          {
+            "file": "page-057344.json",
+            "offset": 57344,
+            "bytes": 8192,
+            "sha256": "d7bd76ad8fa108b9ee46781a60479b5590441347f1dd889147fdf2afa0b411db"
+          },
+          {
+            "file": "page-065536.json",
+            "offset": 65536,
+            "bytes": 8192,
+            "sha256": "94ee5cbc0a3b32a9cf659016b1ea3a16d796bd3e46a472ea1cc4c359697baa19"
+          },
+          {
+            "file": "page-073728.json",
+            "offset": 73728,
+            "bytes": 8192,
+            "sha256": "777aeade8dfc2220398d0141bb531ac50d10fd8a1c92eb59c422d3000c35c7f3"
+          },
+          {
+            "file": "page-081920.json",
+            "offset": 81920,
+            "bytes": 5885,
+            "sha256": "d15b395e9f4aa04eedbaed65c052d6ff81cdaf3545dc43dce2fdc021d458d67d"
+          }
+        ]
+      },
+      {
+        "offset": 65536,
+        "bytes": 65536,
+        "sha256": "d230e3996dd423b37271a1651808d2a287925a960ddfea87c60dd8ff6a84c065",
+        "version": "66306:75807064:149224:1794468453040924280:1794468453040924280",
+        "operation_id": "f179a02feee88724690fb577b46b85c198d2d22c047fbca3b3e5c266b4ee5c87",
+        "native_sdk_bytes": 87810,
+        "native_sdk_sha256": "ac83358af7f597f4b4b9e8a2257d9e28c9097ac493607b12f04a1bc761eb95b8",
+        "sdk_pages": [
+          {
+            "file": "page-000000.json",
+            "offset": 0,
+            "bytes": 8192,
+            "sha256": "dbe2dc98e3b015f4faf782f40d98e6071b291466b98ad4b198370a7177b870af"
+          },
+          {
+            "file": "page-008192.json",
+            "offset": 8192,
+            "bytes": 8192,
+            "sha256": "005bade1e897dfbe4da1bd64830c904cc095edbb34e8b823414206e46a2ea4d6"
+          },
+          {
+            "file": "page-016384.json",
+            "offset": 16384,
+            "bytes": 16384,
+            "sha256": "99f12db6d976d3403d5f9606624fcdb75cfe8c8d7b26a078a17d95350ffe1f6f"
+          },
+          {
+            "file": "page-032768.json",
+            "offset": 32768,
+            "bytes": 16384,
+            "sha256": "cc6a86ce28a953f2ff498d3006c713805d849242dfb5e2d41f5e91de2b63c78a"
+          },
+          {
+            "file": "page-049152.json",
+            "offset": 49152,
+            "bytes": 16384,
+            "sha256": "73ea91fc89afff85f4e85ac893f0f53a24181e00349a2ada1cf82199fcb4bd1d"
+          },
+          {
+            "file": "page-065536.json",
+            "offset": 65536,
+            "bytes": 16384,
+            "sha256": "f0db4bb7b02ee0ee671aefb00ca7ed02b97cdaa0b491ab1295e693aa25a8b7e9"
+          },
+          {
+            "file": "page-081920.json",
+            "offset": 81920,
+            "bytes": 5890,
+            "sha256": "4a83a3f3fbe1661bacdd8bca6ce597a5c5b01a255b9135d04583da76d4d19668"
+          }
+        ]
+      },
+      {
+        "offset": 131072,
+        "bytes": 18152,
+        "sha256": "91e3528e98459ba22acc09a0df3da2a5c285fe60ccf691fd8b1d3be6580f4a1d",
+        "version": "66306:75807064:149224:1794468453040924280:1794468453040924280",
+        "operation_id": "4f1ad5aaa4f716b324f07dbfe4af99851a57d78d322b31523bc97a92935d39b2",
+        "native_sdk_bytes": 24630,
+        "native_sdk_sha256": "59f169d059f165ef410a4862fce92529d371c47f4e5d456192ffe34adf55f08b",
+        "sdk_pages": [
+          {
+            "file": "page-000000.json",
+            "offset": 0,
+            "bytes": 16384,
+            "sha256": "4ebbb5aa0196be2cbf1e36cbec4226dd5e299bafe837f0de08a2300a8ea08195"
+          },
+          {
+            "file": "page-016384.json",
+            "offset": 16384,
+            "bytes": 8246,
+            "sha256": "b96cb864ffbca35ead3b4871945ea2e0a1b710a7dfb9e777daed3b807c7fde0d"
+          }
+        ]
+      }
+    ]
+  },
+  "validation_scope": "read-only integrity verification; no source execution, test execution, or model invocation"
+}

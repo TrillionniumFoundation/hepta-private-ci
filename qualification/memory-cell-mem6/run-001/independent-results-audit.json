@@ -1,0 +1,2732 @@
+{
+  "schema": "hepta.mem6.independent-results-audit.v1",
+  "review_stage": "aggregate reports and source implementation; one of four requested raw trajectory pairs verified from complete prefix CAS objects; complete archive restore pending",
+  "source_reports": {
+    "retention": {
+      "path": "/workspace/scratch/484c2ed46043/mem6-results/retention-REPORT.json",
+      "bytes": 353031,
+      "sha256": "75a2a8d9b12fcea304719b6d36361701d07b8ebd93f28a2908023b2e56df9adc"
+    },
+    "selector": {
+      "path": "/workspace/scratch/484c2ed46043/mem6-results/selector-REPORT.json",
+      "bytes": 197097,
+      "sha256": "59f4400b94aa78c4d5a74788b4d72b56d46c21da7be07cdd101b097f8a339616"
+    },
+    "mechanism": {
+      "path": "/workspace/scratch/484c2ed46043/mem6-results/mechanism-REPORT.json",
+      "bytes": 37060,
+      "sha256": "c1554e96ab40ee00301d246233b5676ede53aace65a55085c8633f859c710b1e"
+    }
+  },
+  "retention": {
+    "modes_in_contrast_order": [
+      "bounded",
+      "current_only"
+    ],
+    "pairs": 84,
+    "source_groups": 20,
+    "outcomes": {
+      "win": 2,
+      "tie": 82,
+      "loss": 0
+    },
+    "pair_mean_difference": 0.023809523809523808,
+    "arms": {
+      "bounded": {
+        "episodes": 84,
+        "successes": 30,
+        "initially_correct": 16,
+        "no_op_successes": 16,
+        "bypass_successes": 0,
+        "candidate_mediated_delivered": 14,
+        "initially_incorrect": 68,
+        "successes_when_initially_incorrect": 14,
+        "evidence_statuses": {
+          "VERIFIED": 84
+        },
+        "failure_stages": {
+          "initial_no_op_success": 16,
+          "delivery_failure": 14,
+          "unknown": 16,
+          "candidate_success": 14,
+          "perception_unavailable": 16,
+          "selection_error": 8
+        }
+      },
+      "current_only": {
+        "episodes": 84,
+        "successes": 28,
+        "initially_correct": 16,
+        "no_op_successes": 16,
+        "bypass_successes": 0,
+        "candidate_mediated_delivered": 12,
+        "initially_incorrect": 68,
+        "successes_when_initially_incorrect": 12,
+        "evidence_statuses": {
+          "VERIFIED": 84
+        },
+        "failure_stages": {
+          "initial_no_op_success": 16,
+          "delivery_failure": 6,
+          "unknown": 16,
+          "candidate_unavailable_at_decision": 13,
+          "candidate_success": 12,
+          "perception_unavailable": 16,
+          "selection_error": 5
+        }
+      }
+    },
+    "by_source": [
+      {
+        "role": "development",
+        "source_group_id": "merchant-0ec9b20fec81fde958d52f41",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-143c44441eb6c25249d329d6",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "retention_validation",
+        "source_group_id": "merchant-20f29f2880c79bc698f88cb5",
+        "pairs": 1,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-27fe434bec09f1cff315788c",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-40000ee38b8e44e580be8b82",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-46c96e9b64457b54c6a33d79",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "retention_validation",
+        "source_group_id": "merchant-58a28471023079b3c7ced730",
+        "pairs": 1,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 1.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-6a4a837bcc1b5893d524a641",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-7c62fa25b9287465a7fc11da",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-8762f77c6ce5e119d41674f4",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-8be0cc526665e1b3713e88d9",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-9fc0870d20ab74956b64a0a1",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "retention_validation",
+        "source_group_id": "merchant-ad12105d1feff544266fd3fc",
+        "pairs": 1,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "retention_validation",
+        "source_group_id": "merchant-bcea7cef234c903b8657e3b2",
+        "pairs": 1,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 1.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-ca7395355245b835c2c11b08",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-cf223dbfd79ff6a9279d17b5",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-dad04fa0b1f8b4f71295ac14",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-f1ec6e62d3d92ac03e6ce52f",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": "development",
+        "source_group_id": "merchant-fb9a1918a17fa4a134d3a07a",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      }
+    ],
+    "discordant_pairs": [
+      {
+        "pair_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+        "difference": 1,
+        "arms": {
+          "bounded": {
+            "anchor_step": 2,
+            "attempt_terminal_status": "Completed",
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "case_id": "case-25169c3b7a4bb89231cd56aa",
+            "costs": {
+              "attempt_cpu_seconds": 1.1990979999999922,
+              "attempt_wall_seconds": 1.2719088348094374,
+              "deployment_wall_seconds": 1.184371896
+            },
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "fixed_selector_audit_verified": true,
+            "initial_correct": false,
+            "intervention_verified": true,
+            "mode": "bounded",
+            "no_op_success": false,
+            "observed_terminal_success": true,
+            "original_operation_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded",
+            "pair_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "source_group_id": "merchant-bcea7cef234c903b8657e3b2",
+            "split": "retention_validation",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          },
+          "current_only": {
+            "anchor_step": 2,
+            "attempt_terminal_status": "Completed",
+            "available": false,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "case_id": "case-25169c3b7a4bb89231cd56aa",
+            "costs": {
+              "attempt_cpu_seconds": 1.2024539999999888,
+              "attempt_wall_seconds": 1.2684352570213377,
+              "deployment_wall_seconds": 1.182990025
+            },
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": false,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_unavailable_at_decision",
+            "final_content_correct": false,
+            "fixed_selector_audit_verified": true,
+            "initial_correct": false,
+            "intervention_verified": true,
+            "mode": "current_only",
+            "no_op_success": false,
+            "observed_terminal_success": false,
+            "original_operation_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only",
+            "pair_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "source_group_id": "merchant-bcea7cef234c903b8657e3b2",
+            "split": "retention_validation",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+        "difference": 1,
+        "arms": {
+          "bounded": {
+            "anchor_step": 2,
+            "attempt_terminal_status": "Completed",
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "costs": {
+              "attempt_cpu_seconds": 1.3428639999999916,
+              "attempt_wall_seconds": 1.4121695938520133,
+              "deployment_wall_seconds": 1.3239960979999998
+            },
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "fixed_selector_audit_verified": true,
+            "initial_correct": false,
+            "intervention_verified": true,
+            "mode": "bounded",
+            "no_op_success": false,
+            "observed_terminal_success": true,
+            "original_operation_id": "mem6-retention-484c-v1-686fc2e67e7000826e40-bounded",
+            "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "source_group_id": "merchant-58a28471023079b3c7ced730",
+            "split": "retention_validation",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          },
+          "current_only": {
+            "anchor_step": 2,
+            "attempt_terminal_status": "Completed",
+            "available": false,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "costs": {
+              "attempt_cpu_seconds": 1.2889720000000295,
+              "attempt_wall_seconds": 1.3600679019000381,
+              "deployment_wall_seconds": 1.2685658929999999
+            },
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": false,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_unavailable_at_decision",
+            "final_content_correct": false,
+            "fixed_selector_audit_verified": true,
+            "initial_correct": false,
+            "intervention_verified": true,
+            "mode": "current_only",
+            "no_op_success": false,
+            "observed_terminal_success": false,
+            "original_operation_id": "mem6-retention-484c-v1-686fc2e67e7000826e40-current_only",
+            "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "source_group_id": "merchant-58a28471023079b3c7ced730",
+            "split": "retention_validation",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          }
+        }
+      }
+    ],
+    "bypass_pairs": [],
+    "inference": {
+      "pair_equal_weight_difference": 0.023809523809523808,
+      "source_equal_weight_difference_recomputed": 0.1,
+      "role_summary": {
+        "development": {
+          "sources": 16,
+          "pairs": 80,
+          "difference_sum": 0
+        },
+        "retention_validation": {
+          "sources": 4,
+          "pairs": 4,
+          "difference_sum": 2
+        }
+      },
+      "reported_one_sided_95pct_source_bootstrap_lower": 0.0,
+      "exact_zero_gain_bootstrap_probability_for_observed_two_of_four_validation_sources": 0.0625,
+      "numerical_benefit_threshold_met": false,
+      "interpretation": "The 16 development sources have mean zero; two of four one-pair retention-validation sources have mean one. Equal-source mean 0.10 differs from equal-pair mean 2/84. Under the frozen stratified empirical bootstrap, resampling four validation sources yields no positive source with probability 0.0625, so a 5th-percentile lower bound of zero is expected. This is not a coverage guarantee; source independence remains unauthenticated."
+    }
+  },
+  "selector": {
+    "modes_in_contrast_order": [
+      "public_rule",
+      "frozen_neural"
+    ],
+    "pairs": 54,
+    "source_groups": 14,
+    "outcomes": {
+      "win": 9,
+      "tie": 44,
+      "loss": 1
+    },
+    "pair_mean_difference": 0.14814814814814814,
+    "arms": {
+      "public_rule": {
+        "episodes": 54,
+        "successes": 21,
+        "initially_correct": 10,
+        "no_op_successes": 10,
+        "bypass_successes": 1,
+        "candidate_mediated_delivered": 10,
+        "initially_incorrect": 44,
+        "successes_when_initially_incorrect": 11,
+        "evidence_statuses": {
+          "VERIFIED": 54
+        },
+        "failure_stages": {
+          "initial_no_op_success": 10,
+          "perception_unavailable": 11,
+          "unknown": 9,
+          "delivery_failure": 8,
+          "candidate_success": 10,
+          "selection_error": 5,
+          "bypass_success": 1
+        }
+      },
+      "frozen_neural": {
+        "episodes": 54,
+        "successes": 13,
+        "initially_correct": 10,
+        "no_op_successes": 10,
+        "bypass_successes": 0,
+        "candidate_mediated_delivered": 3,
+        "initially_incorrect": 44,
+        "successes_when_initially_incorrect": 3,
+        "evidence_statuses": {
+          "VERIFIED": 54
+        },
+        "failure_stages": {
+          "initial_no_op_success": 10,
+          "perception_unavailable": 11,
+          "unknown": 10,
+          "delivery_failure": 2,
+          "candidate_success": 3,
+          "selection_error": 18
+        }
+      }
+    },
+    "by_source": [
+      {
+        "role": null,
+        "source_group_id": "merchant-1b4f4efe95f973e1c7955066",
+        "pairs": 5,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 0.2
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-27813152ee91ca56f6d38d0d",
+        "pairs": 1,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-3e1515ab7dcb8dad3526c693",
+        "pairs": 5,
+        "paired_difference_sum": 2,
+        "paired_difference_mean": 0.4
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-3ea54da562d82061cc8465e2",
+        "pairs": 5,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 0.2
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-5abe0c5d2298868e4807b706",
+        "pairs": 5,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 0.2
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-7d8d9fb52ebdf19d8e099b90",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-9e2843170e0f93404747e4c4",
+        "pairs": 1,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 1.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-a5f42dc70a133ddb164056ec",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-afaa542fce979f3b39916d11",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-dcc87cfccc27c7b64eab3013",
+        "pairs": 5,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-e93dd6b28c210477bc84d47c",
+        "pairs": 1,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 1.0
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-f07092fa0b3e8197ed902118",
+        "pairs": 5,
+        "paired_difference_sum": 1,
+        "paired_difference_mean": 0.2
+      },
+      {
+        "role": null,
+        "source_group_id": "merchant-fc5ebb29a36a2eb47936d5e2",
+        "pairs": 1,
+        "paired_difference_sum": 0,
+        "paired_difference_mean": 0.0
+      }
+    ],
+    "discordant_pairs": [
+      {
+        "pair_id": "mem6-selector-484c-v1-6b24eaa87ab590e9d5ed",
+        "difference": 1,
+        "arms": {
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-05fba36e63c92bdb707c4c25",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-6b24eaa87ab590e9d5ed-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-6b24eaa87ab590e9d5ed",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-f07092fa0b3e8197ed902118",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          },
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-05fba36e63c92bdb707c4c25",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-6b24eaa87ab590e9d5ed-public_rule",
+            "pair_id": "mem6-selector-484c-v1-6b24eaa87ab590e9d5ed",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": true,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-f07092fa0b3e8197ed902118",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-1aaa888bfe8ecf5191b2",
+        "difference": 1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-a43a0784776e35fd0dc332f1",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-1aaa888bfe8ecf5191b2-public_rule",
+            "pair_id": "mem6-selector-484c-v1-1aaa888bfe8ecf5191b2",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-1b4f4efe95f973e1c7955066",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          },
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-a43a0784776e35fd0dc332f1",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-1aaa888bfe8ecf5191b2-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-1aaa888bfe8ecf5191b2",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-1b4f4efe95f973e1c7955066",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+        "difference": 1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 3,
+            "available": null,
+            "bypass_success": true,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-e2393ca0b9c3d9ba481aca2a",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": false,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "bypass_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule",
+            "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+            "raw_observed": true,
+            "reason": null,
+            "selected": null,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": null,
+              "frozen_neural": null,
+              "public_rule": null
+            },
+            "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": false
+          },
+          "frozen_neural": {
+            "anchor_step": 3,
+            "available": null,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-e2393ca0b9c3d9ba481aca2a",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": false,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "unknown",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+            "raw_observed": true,
+            "reason": null,
+            "selected": null,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": null,
+              "frozen_neural": null,
+              "public_rule": null
+            },
+            "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": false
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+        "difference": -1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-bee0bc299bb38ad94d80fd94",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 3
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 4
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "delivery_failure",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule",
+            "pair_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": true,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          },
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-bee0bc299bb38ad94d80fd94",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 3
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 4
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": true,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-bdbc1732afcd34c4ddb3",
+        "difference": 1,
+        "arms": {
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-412ab50b986200796d4f2167",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-bdbc1732afcd34c4ddb3-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-bdbc1732afcd34c4ddb3",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-5abe0c5d2298868e4807b706",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          },
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-412ab50b986200796d4f2167",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-bdbc1732afcd34c4ddb3-public_rule",
+            "pair_id": "mem6-selector-484c-v1-bdbc1732afcd34c4ddb3",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-5abe0c5d2298868e4807b706",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-db6d4eb40880b55db572",
+        "difference": 1,
+        "arms": {
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-1d92c3b0cc0e54c3f3e261fe",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 3
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 4
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-db6d4eb40880b55db572-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-db6d4eb40880b55db572",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-3e1515ab7dcb8dad3526c693",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          },
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-1d92c3b0cc0e54c3f3e261fe",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 3
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 4
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-db6d4eb40880b55db572-public_rule",
+            "pair_id": "mem6-selector-484c-v1-db6d4eb40880b55db572",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-3e1515ab7dcb8dad3526c693",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-d71808126b2be6ae315e",
+        "difference": 1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-176ef654a0d326f9a1cef453",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-d71808126b2be6ae315e-public_rule",
+            "pair_id": "mem6-selector-484c-v1-d71808126b2be6ae315e",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-3e1515ab7dcb8dad3526c693",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          },
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-176ef654a0d326f9a1cef453",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-d71808126b2be6ae315e-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-d71808126b2be6ae315e",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-3e1515ab7dcb8dad3526c693",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-aa1a78b30bc4dfacee92",
+        "difference": 1,
+        "arms": {
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-bf7020fc35c8c36f8fb5e35c",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-aa1a78b30bc4dfacee92-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-aa1a78b30bc4dfacee92",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-3ea54da562d82061cc8465e2",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          },
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-bf7020fc35c8c36f8fb5e35c",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-aa1a78b30bc4dfacee92-public_rule",
+            "pair_id": "mem6-selector-484c-v1-aa1a78b30bc4dfacee92",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-3ea54da562d82061cc8465e2",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-396cbae8fae6c221c88a",
+        "difference": 1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-15d6044c173391ac56ac0fda",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-396cbae8fae6c221c88a-public_rule",
+            "pair_id": "mem6-selector-484c-v1-396cbae8fae6c221c88a",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-9e2843170e0f93404747e4c4",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          },
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-15d6044c173391ac56ac0fda",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-396cbae8fae6c221c88a-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-396cbae8fae6c221c88a",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-9e2843170e0f93404747e4c4",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          }
+        }
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-5d8585a73c8b131b6bf5",
+        "difference": 1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": true,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-d8c63669766265b72cc7f2ba",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "candidate_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-5d8585a73c8b131b6bf5-public_rule",
+            "pair_id": "mem6-selector-484c-v1-5d8585a73c8b131b6bf5",
+            "raw_observed": true,
+            "reason": null,
+            "selected": true,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-e93dd6b28c210477bc84d47c",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": true
+          },
+          "frozen_neural": {
+            "anchor_step": 2,
+            "available": true,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-d8c63669766265b72cc7f2ba",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": false,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": true,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "selection_error",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-5d8585a73c8b131b6bf5-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-5d8585a73c8b131b6bf5",
+            "raw_observed": true,
+            "reason": null,
+            "selected": false,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": true,
+              "frozen_neural": false,
+              "public_rule": true
+            },
+            "source_group_id": "merchant-e93dd6b28c210477bc84d47c",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": true
+          }
+        }
+      }
+    ],
+    "bypass_pairs": [
+      {
+        "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+        "difference": 1,
+        "arms": {
+          "public_rule": {
+            "anchor_step": 3,
+            "available": null,
+            "bypass_success": true,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-e2393ca0b9c3d9ba481aca2a",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": false,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "bypass_success",
+            "final_content_correct": true,
+            "initial_correct": false,
+            "mode": "public_rule",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule",
+            "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+            "raw_observed": true,
+            "reason": null,
+            "selected": null,
+            "selector_mode": "public_rule",
+            "shadow": {
+              "available": null,
+              "frozen_neural": null,
+              "public_rule": null
+            },
+            "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": true,
+            "wrote_selected_candidate": false
+          },
+          "frozen_neural": {
+            "anchor_step": 3,
+            "available": null,
+            "bypass_success": false,
+            "candidate_mediated_delivered": false,
+            "candidate_memory_mode": "bounded",
+            "case_id": "case-e2393ca0b9c3d9ba481aca2a",
+            "decision_diagnostics": [
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 0
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 1
+              },
+              {
+                "available": true,
+                "raw_observed": true,
+                "selected": true,
+                "step": 2
+              },
+              {
+                "available": null,
+                "raw_observed": true,
+                "selected": null,
+                "step": 3
+              }
+            ],
+            "did_write_text": false,
+            "evidence_status": "VERIFIED",
+            "failure_stage": "unknown",
+            "final_content_correct": false,
+            "initial_correct": false,
+            "mode": "frozen_neural",
+            "no_op_success": false,
+            "original_operation_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural",
+            "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+            "raw_observed": true,
+            "reason": null,
+            "selected": null,
+            "selector_mode": "frozen_neural",
+            "shadow": {
+              "available": null,
+              "frozen_neural": null,
+              "public_rule": null
+            },
+            "source_group_id": "merchant-5c29904ee2eb4422e25f9030",
+            "terminal_status": "Completed",
+            "timeout_reported": false,
+            "unconditional_success": false,
+            "wrote_selected_candidate": false
+          }
+        }
+      }
+    ]
+  },
+  "source_overlap_between_campaigns": [],
+  "mechanism": {
+    "status": "PASS",
+    "passed_scenarios": 18,
+    "fresh_process_invocations": 18,
+    "distinct_observed_pids": 18,
+    "source_pins_unchanged": true,
+    "full_owner_cold_recovery": false,
+    "independent_trust_domain": false,
+    "neural_association_evaluated": false,
+    "unseen_task_benefit_evaluated": false,
+    "actual_effect": "local fixture delivery file only",
+    "deletion_scope": "logical read exclusion, not physical snapshot erasure",
+    "writer_count": 3,
+    "writer_returncodes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "limitations": [
+    "Retention contrast measures within-episode working-state candidate retention, not cross-session source-memory benefit.",
+    "The 84 pairs include correlated cases within 20 sources; 16 development sources contribute five pairs each and four retention-validation sources one pair each.",
+    "Each retention arm has 16 initial-correct no-op successes; initially-incorrect results are 14/68 versus 12/68. Neither retention win is no-op or bypass.",
+    "Selector results include 10 no-op successes in each arm and one public-rule bypass success; candidate-mediated deliveries are 10 versus 3, not 21 versus 13.",
+    "The selector loss has correct candidate selection in both arms and is classified as delivery_failure in public_rule; raw action and artifact inspection is needed before claiming a rendering, OCR, or writing cause.",
+    "Report bounds with identical endpoints describe missing-label identification bounds, not sampling confidence intervals.",
+    "Selector paired report explicitly does not estimate sampling uncertainty and retains source-group dependence; do not infer significance from the 54-pair denominator.",
+    "Source rosters are disjoint between these campaigns, but provider authenticity, source independence, and sealed confirmatory status are not established.",
+    "Full costs, provider charges, energy, production adoption, and complete independent-owner recovery remain unqualified.",
+    "Mechanism revoked_snapshot uses the same before-update snapshot as stale_snapshot; it confirms persistence of invalidation after both operations, not an isolated latest-version revoke-snapshot effect."
+  ],
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false,
+  "raw_trajectory_review": {
+    "schema": "hepta.mem6.partial-raw-trajectory-audit.v1",
+    "archive_complete": false,
+    "full_archive_restore_completed": false,
+    "evidence_boundary": "Complete CAS objects obtained from a truncated but version-pinned prefix; every reviewed file matched the independently supplied manifest SHA256 and byte count. The complete archive SHA256 has not been verified.",
+    "requested_pair_coverage": [
+      {
+        "pair_id": "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+        "campaign": "retention",
+        "manifest_files": 68,
+        "verified_prefix_files": 8,
+        "verified_prefix_paths": [
+          "retention-run-001/attempts/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded.json",
+          "retention-run-001/attempts/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded/actor-output/ocr-00.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded/actor-output/ocr-02.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-bounded/delivery-04/evaluation.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only/actor-output/ocr-00.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only/actor-output/ocr-02.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-bd1daa4059274fa7d85d-current_only/delivery-04/evaluation.stderr"
+        ],
+        "both_trajectories_available": false,
+        "raw_causal_review_completed": false
+      },
+      {
+        "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+        "campaign": "retention",
+        "manifest_files": 68,
+        "verified_prefix_files": 68,
+        "verified_prefix_paths": [
+          "retention-run-001/attempts/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded.json",
+          "retention-run-001/attempts/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-00.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-01.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-02.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-03.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-00.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-01.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-02.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/decision-03.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-00.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-00.tsv",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-02.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/ocr-02.tsv",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-00.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-01.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-02.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-03.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-00/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-01/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-02/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-03/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.stdout",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/deployment.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/evaluation-meter.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/evaluation.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/launch.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/case.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/observed-01.png",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/overview.png",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/result.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/trajectory.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-00.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-01.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-02.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-03.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-00.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-01.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-02.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/decision-03.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-00.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-00.tsv",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-02.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/ocr-02.tsv",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-00.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-01.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-02.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-03.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-00/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-01/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-02/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-03/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/delivery.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.stderr",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.stdout",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/deployment.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/evaluation-meter.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/evaluation.meter.jsonl",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/launch.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/case.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/observed-01.png",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/overview.png",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/result.json",
+          "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/trajectory.json"
+        ],
+        "both_trajectories_available": true,
+        "raw_causal_review_completed": true
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+        "campaign": "selector",
+        "manifest_files": 82,
+        "verified_prefix_files": 6,
+        "verified_prefix_paths": [
+          "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural/actor-output/ocr-00.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural/actor-output/ocr-02.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-frozen_neural/delivery-05/evaluation.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule/actor-output/ocr-00.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule/actor-output/ocr-02.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-f63a25fb9bbcebb0c93c-public_rule/delivery-05/evaluation.stderr"
+        ],
+        "both_trajectories_available": false,
+        "raw_causal_review_completed": false
+      },
+      {
+        "pair_id": "mem6-selector-484c-v1-716b97bac5758ef3f2a5",
+        "campaign": "selector",
+        "manifest_files": 74,
+        "verified_prefix_files": 6,
+        "verified_prefix_paths": [
+          "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural/actor-output/ocr-00.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural/actor-output/ocr-02.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-frozen_neural/delivery-04/evaluation.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule/actor-output/ocr-00.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule/actor-output/ocr-02.stderr",
+          "selector-run-001/episodes/mem6-selector-484c-v1-716b97bac5758ef3f2a5-public_rule/delivery-04/evaluation.stderr"
+        ],
+        "both_trajectories_available": false,
+        "raw_causal_review_completed": false
+      }
+    ],
+    "completed_pair_reviews": [
+      {
+        "pair_id": "mem6-retention-484c-v1-686fc2e67e7000826e40",
+        "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+        "source_group_id": "merchant-58a28471023079b3c7ced730",
+        "input_and_control_checks": {
+          "public_case_exact_match": true,
+          "first_two_executed_actions_exact_match": true,
+          "all_processed_raw_candidate_sets_exact_match": true,
+          "processed_observation_metadata_exact_match": true,
+          "ocr_stdout_hashes_exact_match": true,
+          "control_selector_and_weights_pins_match": true,
+          "trajectory_candidate_and_selector_file_references_match_manifest": true,
+          "audited_actions_match_executed_trajectory": true
+        },
+        "arms": {
+          "bounded": {
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "requirements": {
+              "image": false,
+              "text": true
+            },
+            "initial_delivery": {
+              "image": null,
+              "text": null
+            },
+            "candidate_memory": {
+              "max_entries": 128,
+              "max_serialized_bytes": 524288,
+              "mode": "bounded",
+              "schema": "ndu.real.candidate-memory-profile.v1"
+            },
+            "candidate_selector": {
+              "mode": "public_rule",
+              "profile_sha256": "c9b56f198abd1737a9883326fd0c66f411e46218b126aec1e4b6f4f48e66870e",
+              "schema": "ndu.real.candidate-selector-profile.v1"
+            },
+            "actions": [
+              {
+                "step": 0,
+                "action": {
+                  "action": "PREPARE_ROI",
+                  "arguments": {
+                    "bbox": [
+                      4,
+                      445,
+                      526,
+                      470
+                    ]
+                  },
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [
+                  "preparation"
+                ],
+                "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+                "observation_processed": true,
+                "observation": {
+                  "bbox": [
+                    0,
+                    0,
+                    588,
+                    1728
+                  ],
+                  "kind": "overview",
+                  "path": "overview.png",
+                  "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+                },
+                "raw_count": 41,
+                "offered_count": 41,
+                "selected_index": 9,
+                "selected_candidate": {
+                  "bbox": [
+                    0,
+                    451,
+                    524,
+                    478
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "11/08/2017"
+                },
+                "selected_candidate_observed_step": 0,
+                "resident_entries": 41,
+                "scope_reset": true
+              },
+              {
+                "step": 1,
+                "action": {
+                  "action": "READ_ROI",
+                  "arguments": {},
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [
+                  "observation"
+                ],
+                "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+                "observation_processed": true,
+                "observation": {
+                  "bbox": [
+                    0,
+                    0,
+                    588,
+                    1728
+                  ],
+                  "kind": "overview",
+                  "path": "overview.png",
+                  "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+                },
+                "raw_count": 41,
+                "offered_count": 41,
+                "selected_index": 9,
+                "selected_candidate": {
+                  "bbox": [
+                    0,
+                    451,
+                    524,
+                    478
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "11/08/2017"
+                },
+                "selected_candidate_observed_step": 1,
+                "resident_entries": 41,
+                "scope_reset": false
+              },
+              {
+                "step": 2,
+                "action": {
+                  "action": "WRITE_TEXT",
+                  "arguments": {
+                    "text": "11/08/2017"
+                  },
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [
+                  "text"
+                ],
+                "ocr_stdout_sha256": "e9458299e5f6c448e6270b454fae902f627d6d1fd540d1a1998f6991acc2072c",
+                "observation_processed": true,
+                "observation": {
+                  "bbox": [
+                    4,
+                    445,
+                    526,
+                    470
+                  ],
+                  "kind": "roi",
+                  "path": "observed-01.png",
+                  "sha256": "37f3ed181672beff58b35a1d8ec10e81c0926f49d81bf7dd00eef72171679407"
+                },
+                "raw_count": 1,
+                "offered_count": 42,
+                "selected_index": 10,
+                "selected_candidate": {
+                  "bbox": [
+                    0,
+                    451,
+                    524,
+                    478
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "11/08/2017"
+                },
+                "selected_candidate_observed_step": 1,
+                "resident_entries": 42,
+                "scope_reset": false,
+                "raw_candidates": [
+                  {
+                    "bbox": [
+                      51,
+                      457,
+                      524,
+                      470
+                    ],
+                    "origin": "pixel_ocr",
+                    "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                  }
+                ]
+              },
+              {
+                "step": 3,
+                "action": {
+                  "action": "STOP",
+                  "arguments": {},
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [],
+                "ocr_stdout_sha256": null,
+                "observation_processed": false
+              }
+            ],
+            "final_delivery": {
+              "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+              "image": null,
+              "schema": "ndu.real.delivery.v1",
+              "text": "11/08/2017"
+            },
+            "evaluation": {
+              "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+              "source_group": "merchant-58a28471023079b3c7ced730",
+              "episode_group": "X51006555570",
+              "role": "retention_validation",
+              "text_quality": 1.0,
+              "image_pass": false,
+              "committed_output_preserved": true,
+              "quality": 1.0,
+              "reference_sha256": "eef25a46b232fb3de64e8accb5ae047e81ce71f8f6b4198574ad9cde643e80aa",
+              "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+            }
+          },
+          "current_only": {
+            "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+            "requirements": {
+              "image": false,
+              "text": true
+            },
+            "initial_delivery": {
+              "image": null,
+              "text": null
+            },
+            "candidate_memory": {
+              "max_entries": 128,
+              "max_serialized_bytes": 524288,
+              "mode": "current_only",
+              "schema": "ndu.real.candidate-memory-profile.v1"
+            },
+            "candidate_selector": {
+              "mode": "public_rule",
+              "profile_sha256": "c9b56f198abd1737a9883326fd0c66f411e46218b126aec1e4b6f4f48e66870e",
+              "schema": "ndu.real.candidate-selector-profile.v1"
+            },
+            "actions": [
+              {
+                "step": 0,
+                "action": {
+                  "action": "PREPARE_ROI",
+                  "arguments": {
+                    "bbox": [
+                      4,
+                      445,
+                      526,
+                      470
+                    ]
+                  },
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [
+                  "preparation"
+                ],
+                "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+                "observation_processed": true,
+                "observation": {
+                  "bbox": [
+                    0,
+                    0,
+                    588,
+                    1728
+                  ],
+                  "kind": "overview",
+                  "path": "overview.png",
+                  "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+                },
+                "raw_count": 41,
+                "offered_count": 41,
+                "selected_index": 9,
+                "selected_candidate": {
+                  "bbox": [
+                    0,
+                    451,
+                    524,
+                    478
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "11/08/2017"
+                },
+                "selected_candidate_observed_step": 0,
+                "resident_entries": 41,
+                "scope_reset": true
+              },
+              {
+                "step": 1,
+                "action": {
+                  "action": "READ_ROI",
+                  "arguments": {},
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [
+                  "observation"
+                ],
+                "ocr_stdout_sha256": "7102d5b683052b6b42a576adb0646e61389f9f2d9fc73aa721a3bd3a65a83ab8",
+                "observation_processed": true,
+                "observation": {
+                  "bbox": [
+                    0,
+                    0,
+                    588,
+                    1728
+                  ],
+                  "kind": "overview",
+                  "path": "overview.png",
+                  "sha256": "ed5e049508ae32c17d4b17a1a32c1a9272992bc21b7fe35385846b579384319f"
+                },
+                "raw_count": 41,
+                "offered_count": 41,
+                "selected_index": 9,
+                "selected_candidate": {
+                  "bbox": [
+                    0,
+                    451,
+                    524,
+                    478
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "11/08/2017"
+                },
+                "selected_candidate_observed_step": 1,
+                "resident_entries": 41,
+                "scope_reset": true
+              },
+              {
+                "step": 2,
+                "action": {
+                  "action": "WRITE_TEXT",
+                  "arguments": {
+                    "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                  },
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [
+                  "text"
+                ],
+                "ocr_stdout_sha256": "e9458299e5f6c448e6270b454fae902f627d6d1fd540d1a1998f6991acc2072c",
+                "observation_processed": true,
+                "observation": {
+                  "bbox": [
+                    4,
+                    445,
+                    526,
+                    470
+                  ],
+                  "kind": "roi",
+                  "path": "observed-01.png",
+                  "sha256": "37f3ed181672beff58b35a1d8ec10e81c0926f49d81bf7dd00eef72171679407"
+                },
+                "raw_count": 1,
+                "offered_count": 1,
+                "selected_index": 0,
+                "selected_candidate": {
+                  "bbox": [
+                    51,
+                    457,
+                    524,
+                    470
+                  ],
+                  "origin": "pixel_ocr",
+                  "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                },
+                "selected_candidate_observed_step": 2,
+                "resident_entries": 1,
+                "scope_reset": true,
+                "raw_candidates": [
+                  {
+                    "bbox": [
+                      51,
+                      457,
+                      524,
+                      470
+                    ],
+                    "origin": "pixel_ocr",
+                    "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+                  }
+                ]
+              },
+              {
+                "step": 3,
+                "action": {
+                  "action": "STOP",
+                  "arguments": {},
+                  "schema": "ndu.real.actor-action.v1"
+                },
+                "action_effect_changed": [],
+                "ocr_stdout_sha256": null,
+                "observation_processed": false
+              }
+            ],
+            "final_delivery": {
+              "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+              "image": null,
+              "schema": "ndu.real.delivery.v1",
+              "text": "OPPCIOT BO. CCNAGAATIA NATO. 14/790/59N09"
+            },
+            "evaluation": {
+              "case_id": "case-b96281f1dd3b51dc9bb69ab7",
+              "source_group": "merchant-58a28471023079b3c7ced730",
+              "episode_group": "X51006555570",
+              "role": "retention_validation",
+              "text_quality": 0.0,
+              "image_pass": false,
+              "committed_output_preserved": true,
+              "quality": 0.0,
+              "reference_sha256": "eef25a46b232fb3de64e8accb5ae047e81ce71f8f6b4198574ad9cde643e80aa",
+              "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+            }
+          }
+        },
+        "interpretation": "In this date-only task, both arms begin with empty output and execute the same preparation and ROI read. The ROI OCR loses the correct date present in the overview. At step 2 bounded offers 42 candidates and selects the date 11/08/2017 retained from step 1; current_only offers only the one incorrect current OCR string. Each writes its selected text; the frozen evaluator scores the bounded text correct and the current-only text incorrect. This is within-episode candidate retention and is neither an initial no-op nor a text-delivery bypass. It is not evidence of cross-session episodic/source-memory benefit.",
+        "reviewed_source_files": [
+          {
+            "bytes": 700,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/public/case.json",
+            "sha256": "fc2f43a5635549eaff7ddc2531d407e875233bbba1c64d8effc9965f8416cb10"
+          },
+          {
+            "bytes": 22573,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/trajectory.json",
+            "sha256": "be75acc30448af5b123da896725853eefe24686874f85b2bcf17b1219b7a9132"
+          },
+          {
+            "bytes": 37666,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/result.json",
+            "sha256": "2862b093293b4a7e7a66ba2baa0eff5eaced7bb2108bbecd55a540a07cf619cb"
+          },
+          {
+            "bytes": 126,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/delivery.json",
+            "sha256": "0a4871b046b57991521514fe5541d25c227f9e41e5b2a26adaac105e45b73bce"
+          },
+          {
+            "bytes": 1103,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/delivery-04/evaluation.json",
+            "sha256": "fa7453708d0c421673119cb13c66de73140f3a97a08fe7ef51dbde1ae4d0532c"
+          },
+          {
+            "bytes": 8316,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-00.json",
+            "sha256": "e44af5e7cb8b1b804ba217de9a73f4258b768675cc8c140462d702a691776f73"
+          },
+          {
+            "bytes": 59608,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-00.json",
+            "sha256": "9c3afdeb3fd7f440da7283d067909eec3ec00d436fd1230336a508934ce18f31"
+          },
+          {
+            "bytes": 8355,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-01.json",
+            "sha256": "69997511d79ac53489f20bcc24f9289f450ad8c49147ab07d2c63129ced36fe5"
+          },
+          {
+            "bytes": 59645,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-01.json",
+            "sha256": "90516ea9fe4b5776bbdc46eb07c97afb5a98fcb04e0f0a36d497476f62f599e5"
+          },
+          {
+            "bytes": 5406,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-02.json",
+            "sha256": "936631c26186bae385b824015c9b60cdbd4dce3c29ed36e576c050a5d9827e57"
+          },
+          {
+            "bytes": 61215,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-02.json",
+            "sha256": "f70cda6769911a06432b296b582d6e359397bb8787afeba9170642441633add9"
+          },
+          {
+            "bytes": 1425,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/candidate-audit-03.json",
+            "sha256": "9b5671c004a8e7c5357eb99bf97fa955db973bc0fc091c553136f2e234d6d149"
+          },
+          {
+            "bytes": 1469,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-bounded/actor-output/selector-audit-03.json",
+            "sha256": "8a85c9c501d230a522cc3ad516be3cd464f233a38794261403e7f593f4a55c4a"
+          },
+          {
+            "bytes": 700,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/public/case.json",
+            "sha256": "fc2f43a5635549eaff7ddc2531d407e875233bbba1c64d8effc9965f8416cb10"
+          },
+          {
+            "bytes": 22603,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/trajectory.json",
+            "sha256": "6bed68a8993799bf7b4bb87e3555916b659a24000a2d676f75fc476c25c78141"
+          },
+          {
+            "bytes": 37997,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/result.json",
+            "sha256": "f73454f048ba12a3d27af15b4194a532b4230043315494437be8ccf0960de600"
+          },
+          {
+            "bytes": 157,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/delivery.json",
+            "sha256": "6ddb77a4de35271049585fc0b82da6a78291277ed6843b3009c4eec013e23e55"
+          },
+          {
+            "bytes": 1112,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/delivery-04/evaluation.json",
+            "sha256": "9efd65baf099bddfc4780ff462d708c1a35b8cd2b5688a64ceb1d14e29733f9a"
+          },
+          {
+            "bytes": 8326,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-00.json",
+            "sha256": "045807e4364559008aba28d9b3289ce1daa370530207677daf5ed912de23a8bb"
+          },
+          {
+            "bytes": 59616,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-00.json",
+            "sha256": "f57e39dab149f77f31fed9bf443c496106b3399b2e706c6a3a9e1a3889f4c632"
+          },
+          {
+            "bytes": 8363,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-01.json",
+            "sha256": "490bf96ff60c64647710958c88555d7cb24f98d7c1e62ef2b13b6e697ee52dd0"
+          },
+          {
+            "bytes": 59656,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-01.json",
+            "sha256": "ac882ece17960062371419b389b3754605660c3e23d2d641a6704749c1f832a8"
+          },
+          {
+            "bytes": 2178,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-02.json",
+            "sha256": "08b81127347f11e763eb5062485249f3064149ff8e5c6f338a1de9d18ba2a695"
+          },
+          {
+            "bytes": 4639,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-02.json",
+            "sha256": "f6e5a03f39181301749dfcf547fa88af64d5a3223b7ef4fe5fadb6601ca762cf"
+          },
+          {
+            "bytes": 1435,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/candidate-audit-03.json",
+            "sha256": "8b205c93f6e4c6ad28e070723ccbe3bc81e119f4a4cec9ed34ca1a004c851cdf"
+          },
+          {
+            "bytes": 1474,
+            "path": "retention-run-001/episodes/mem6-retention-484c-v1-686fc2e67e7000826e40-current_only/actor-output/selector-audit-03.json",
+            "sha256": "e1518bd01ea676b225bbdfb217a3f1a9bbc67476becc01aa40c4575364429366"
+          }
+        ]
+      }
+    ],
+    "unreviewed_pairs": [
+      "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+      "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+      "mem6-selector-484c-v1-716b97bac5758ef3f2a5"
+    ],
+    "selector_loss_and_bypass_action_cause": "UNRESOLVED: their raw trajectories are unavailable in the verified prefix. Aggregate reports still support delivery_failure for the loss and non-text-write success for the bypass; do not infer a crop, OCR, rendering, or write cause.",
+    "scientific_acceptance": "HOLD"
+  },
+  "archive_transfer": {
+    "status": "PAUSED_SERVICE_UNAVAILABLE",
+    "checkpoint": "TRANSFER_CHECKPOINT.json",
+    "verified_chunks": 371,
+    "expected_chunks": 938,
+    "contiguous_prefix_bytes": 24117248,
+    "extra_verified_bytes": 196608,
+    "archive_restore_status": "PENDING",
+    "full_archive_sha256_verified": false,
+    "full_owner_cold_recovery": false
+  }
+}

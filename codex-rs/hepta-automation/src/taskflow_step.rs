@@ -30,6 +30,7 @@ use crate::TaskFlowError;
 use crate::TaskFlowFence;
 use crate::TaskFlowReconcileOutcome;
 use crate::TaskFlowRun;
+use crate::taskflow::diagnostics::storage_unavailable;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
@@ -550,7 +551,9 @@ impl AutomationStore {
         validate_step_node(&definition, step_id)?;
         let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
         if events.is_empty() {
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit()
+                .await
+                .map_err(|error| storage_unavailable("step.read.empty.commit", error))?;
             return Ok(None);
         }
         let receipt = reconstruct_step(
@@ -600,11 +603,15 @@ impl AutomationStore {
                     TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
                 )
             {
-                tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+                tx.commit()
+                    .await
+                    .map_err(|error| storage_unavailable("step.read.nonterminal.commit", error))?;
                 return Ok(None);
             }
         }
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit()
+            .await
+            .map_err(|error| storage_unavailable("step.read.commit", error))?;
         Ok(Some(receipt))
     }
 
@@ -742,7 +749,9 @@ impl AutomationStore {
                 attempt,
                 &events,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit()
+                .await
+                .map_err(|error| storage_unavailable("step.command.duplicate.commit", error))?;
             return Ok(TaskFlowStepCommandResult {
                 status: TaskFlowStepCommandStatus::AlreadyApplied,
                 receipt: receipt_with_seq(receipt, existing.event_seq),
@@ -812,7 +821,9 @@ impl AutomationStore {
             now_ms,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit()
+            .await
+            .map_err(|error| storage_unavailable("step.command.commit", error))?;
         let mut all_events = events;
         all_events.push(event);
         Ok(TaskFlowStepCommandResult {
@@ -831,7 +842,7 @@ impl AutomationStore {
         self.taskflow_pool()
             .begin()
             .await
-            .map_err(|_| TaskFlowError::Unavailable)
+            .map_err(|error| storage_unavailable("step.transaction.begin", error))
     }
 }
 
@@ -933,7 +944,7 @@ async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("step.schema.table", error))?;
     sqlx::query(
         "CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update
          BEFORE UPDATE ON taskflow_step_outbox
@@ -941,7 +952,7 @@ async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("step.schema.no_update_trigger", error))?;
     sqlx::query(
         "CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_delete
          BEFORE DELETE ON taskflow_step_outbox
@@ -949,14 +960,14 @@ async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("step.schema.no_delete_trigger", error))?;
     sqlx::query(
         "CREATE INDEX IF NOT EXISTS taskflow_step_outbox_lookup
          ON taskflow_step_outbox(owner_agent_id, run_id, step_id, attempt, event_seq)",
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("step.schema.lookup_index", error))?;
     Ok(())
 }
 
@@ -1007,7 +1018,7 @@ async fn load_step_events(
     .bind(i64::from(attempt))
     .fetch_all(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("step.events.read", error))?;
     let mut events = Vec::with_capacity(rows.len());
     for row in rows {
         let event_kind = TaskFlowStepState::parse(
@@ -1110,7 +1121,7 @@ async fn append_step_event(
     .bind(i64::from(attempt))
     .fetch_optional(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?
+    .map_err(|error| storage_unavailable("step.event.previous_digest", error))?
     .unwrap_or_else(|| ZERO_DIGEST.to_string());
     let previous_seq = sqlx::query_scalar::<_, Option<i64>>(
         "SELECT MAX(event_seq) FROM taskflow_step_outbox
@@ -1122,7 +1133,7 @@ async fn append_step_event(
     .bind(i64::from(attempt))
     .fetch_one(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("step.event.previous_sequence", error))?;
     let event_seq = to_u64(previous_seq.unwrap_or(0))?
         .checked_add(1)
         .ok_or_else(|| corrupt("step event sequence overflow"))?;
@@ -1179,7 +1190,7 @@ async fn append_step_event(
         if is_constraint(&error) {
             TaskFlowError::Conflict("duplicate or conflicting step command".to_string())
         } else {
-            TaskFlowError::Unavailable
+            storage_unavailable("step.event.insert", error)
         }
     })?;
     Ok(StepEvent {

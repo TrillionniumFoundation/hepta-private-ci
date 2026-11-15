@@ -50,6 +50,7 @@ async fn apply_run(
 
 async fn execute(owner: AgentId, run: &StableId, objective: Digest32) -> ExecutedCircuit {
     let directory = checked(tempfile::tempdir());
+    let canonical_directory = checked(directory.path().canonicalize());
     let fence = checked(TaskFlowFence::new(
         owner.clone(),
         "owner",
@@ -57,8 +58,7 @@ async fn execute(owner: AgentId, run: &StableId, objective: Digest32) -> Execute
         /*generation*/ 1,
         "fence",
     ));
-    let root = checked(directory.path().canonicalize());
-    let layout = checked(HeptaFleetRoot::parse(root.join("fleet")))
+    let layout = checked(HeptaFleetRoot::parse(canonical_directory.join("fleet")))
         .layout()
         .agent(&owner);
     let store = checked(AutomationStore::open(&layout).await);

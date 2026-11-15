@@ -1,0 +1,300 @@
+{
+  "schema": "hepta-mem-later-ci-readback-v1",
+  "observed_at_utc": "2026-11-10T02:17:23.678173+00:00",
+  "source_head": "56d4330beb785017b161fc6f0b6cee38259a0368",
+  "source_tree": "2610c944fd64e65fba0201d8205d50ba1c308acd",
+  "dedicated": {
+    "run_id": 42623193194,
+    "job_id": 129180236433,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623193194/job/129180236433",
+    "status": "completed",
+    "conclusion": "success",
+    "tested_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+    "passed_by_group": [
+      17,
+      6,
+      7,
+      7
+    ],
+    "failed_by_group": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "receipts": [
+      {
+        "after": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "base_sha": "0000000000000000000000000000000000000000",
+        "before": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_candidate_memory",
+          "ndu_real_runtime.test_candidate_runtime",
+          "ndu_real_runtime.test_candidate_retention_report"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 8.179956531000002,
+        "exit_code": 0,
+        "finished_at": "2026-11-09T13:20:00.309055+00:00",
+        "job": "python",
+        "lane": "source-head",
+        "log_bytes": 3598,
+        "log_file": "candidate-tests.json.7696b28920754f8fb9c3840ae7dd56d6.log",
+        "log_sha256": "fb0205c651b63992acd1a97e26185f283f631478f7cf5bfb84f8e8bb517e2b6c",
+        "minimum_tests": 17,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 17,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": "1",
+        "run_id": "42623193194",
+        "schema_version": 1,
+        "source_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "started_at": "2026-11-09T13:19:52.128438+00:00",
+        "status": "passed",
+        "tested_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      {
+        "after": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "base_sha": "0000000000000000000000000000000000000000",
+        "before": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/memory_cell_mem1",
+          "-p",
+          "test_coverage_control.py",
+          "-v"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.8356736500000039,
+        "exit_code": 0,
+        "finished_at": "2026-11-09T13:20:01.215735+00:00",
+        "job": "python",
+        "lane": "source-head",
+        "log_bytes": 1235,
+        "log_file": "replay-tests.json.fe27f90b99c543be904efe1571f40d89.log",
+        "log_sha256": "611152b0c15d8351532a41207bbd2a67481a51f3976b592ea56ac51a348997bc",
+        "minimum_tests": 6,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 6,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": "1",
+        "run_id": "42623193194",
+        "schema_version": 1,
+        "source_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "started_at": "2026-11-09T13:20:00.379529+00:00",
+        "status": "passed",
+        "tested_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      {
+        "after": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "base_sha": "0000000000000000000000000000000000000000",
+        "before": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "ndu_real_runtime.test_run_candidate_retention"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 2.6648316050000034,
+        "exit_code": 0,
+        "finished_at": "2026-11-09T13:20:03.950788+00:00",
+        "job": "python",
+        "lane": "source-head",
+        "log_bytes": 1573,
+        "log_file": "candidate-runner-tests.json.c04fb9362e874478b8c28e134d078ec7.log",
+        "log_sha256": "e5a8ffd6eb8afc2ebb1d7fa8e098d34822cc27aa6055402f24dabdbf9d5b62cc",
+        "minimum_tests": 7,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 7,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": "1",
+        "run_id": "42623193194",
+        "schema_version": 1,
+        "source_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "started_at": "2026-11-09T13:20:01.283882+00:00",
+        "status": "passed",
+        "tested_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      {
+        "after": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "base_sha": "0000000000000000000000000000000000000000",
+        "before": {
+          "commit": "56d4330beb785017b161fc6f0b6cee38259a0368",
+          "dirty": false,
+          "parents": [
+            "3aa6e746e86667fe42e294e434219bcd8e9cb9f8"
+          ],
+          "tree": "2610c944fd64e65fba0201d8205d50ba1c308acd"
+        },
+        "command": [
+          "python",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/memory_cell_mem3",
+          "-p",
+          "test_mechanism.py",
+          "-v"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.3506192350000106,
+        "exit_code": 0,
+        "finished_at": "2026-11-09T13:20:04.371758+00:00",
+        "job": "python",
+        "lane": "source-head",
+        "log_bytes": 1437,
+        "log_file": "composition-tests.json.91a86dc3e2ad49a99461d79aa6859dca.log",
+        "log_sha256": "28a6b3cf419d38cc99a274df727d2c28fcfcf94231c32850405616a0d8eac691",
+        "minimum_tests": 7,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 7,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": "1",
+        "run_id": "42623193194",
+        "schema_version": 1,
+        "source_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "started_at": "2026-11-09T13:20:04.020678+00:00",
+        "status": "passed",
+        "tested_sha": "56d4330beb785017b161fc6f0b6cee38259a0368",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      }
+    ]
+  },
+  "blocking": {
+    "run_id": 42623199935,
+    "tested_merge_commit": "7be4df3f6ab6aa77ca085b24e2ee5217ee38b5f5",
+    "conclusion": "failure",
+    "prettier_warned_file": ".github/workflows/hcsn-differentiable.yml",
+    "cargo_deny": {
+      "job_id": 129186321431,
+      "failed_step": "Run cargo-deny",
+      "no_suppression_policy_step": "success",
+      "log_retrieval_attempts": 2,
+      "log_retrieval_result": "connector tool error; no decoded job log returned",
+      "cause": "UNKNOWN"
+    },
+    "failures": [
+      {
+        "job_id": 129186321293,
+        "name": "repo-checks / build-test",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186321293"
+      },
+      {
+        "job_id": 129186321431,
+        "name": "cargo-deny / cargo-deny",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186321431"
+      },
+      {
+        "job_id": 129186322445,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186322445"
+      },
+      {
+        "job_id": 129186322460,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186322460"
+      },
+      {
+        "job_id": 129186322484,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186322484"
+      },
+      {
+        "job_id": 129186322582,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186322582"
+      },
+      {
+        "job_id": 129186322636,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935/job/129186322636"
+      }
+    ],
+    "baseline_reproduction_performed": false
+  },
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false,
+  "note": "Later observation supersedes queued status only; existing experiments, scores and failure observations are unchanged."
+}

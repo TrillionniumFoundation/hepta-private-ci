@@ -56,6 +56,9 @@ class Plan:
     forecasts: int
     exhausted: bool
     trace_sha256: str
+    configured_risk: float
+    risk_effective: bool = False
+    support_particles: int = 1
 
 
 class _Search:
@@ -96,7 +99,7 @@ class _Search:
         return following, observation
 
     def value(self, state, observation, depth):
-        inspection = self.generator.inspect(state, observation)
+        inspection = self.generator.inspect(state, observation, self.public)
         if state.stopped:
             return inspection["delivery_critic"].sigmoid().reshape(())
         if depth == 0 or observation.budget_remaining == 0:
@@ -127,7 +130,7 @@ def choose(generator, state, observation, public, profile=FiniteProfile()):
     Callers choose whether generator parameters are frozen. Training freezes the
     reference; native parity uses the trained candidate's own full kernel.
     """
-    inspection = generator.inspect(state, observation)
+    inspection = generator.inspect(state, observation, public)
     legal = inspection["policy.legal_mask"].detach().flatten().bool().tolist()
     search = _Search(generator, public, profile)
     roots = []
@@ -164,6 +167,7 @@ def choose(generator, state, observation, public, profile=FiniteProfile()):
         search.calls,
         search.exhausted,
         trace_sha256,
+        profile.risk,
     )
 
 
@@ -175,13 +179,15 @@ def live_state(generator, public):
     return state
 
 
-def policy_improvement_loss(generator, state, observation, target_scores, scored):
+def policy_improvement_loss(
+    generator, state, observation, target_scores, scored, *, public
+):
     """Exact finite-action policy gradient for a fixed model-based Q target.
 
     Finite-difference checks MUST hold target_scores and scored fixed while varying
     the actor/encoder. Re-evaluating detached Q would check another derivative.
     """
-    logits = generator.inspect(state, observation)["actor.logits"].flatten()
+    logits = generator.inspect(state, observation, public)["actor.logits"].flatten()
     mask = torch.tensor(scored, dtype=torch.bool, device=logits.device)
     probabilities = logits.masked_fill(~mask, -torch.inf).softmax(0)
     return -(probabilities * target_scores.detach()).sum()
@@ -195,7 +201,7 @@ def loss_terms(generator, frozen_reference, public, observation, target="HeptaðŸ
     return {
         "recursive": -plan.scores[plan.action],
         "policy": policy_improvement_loss(
-            generator, state, observation, plan.scores, plan.scored
+            generator, state, observation, plan.scores, plan.scored, public=public
         ),
         "teacher_forced": generator.text_loss(state, target)[0],
     }, plan

@@ -39,7 +39,7 @@ pub(crate) struct AgentFixture {
 }
 
 pub(crate) struct FleetHarness {
-    _temp: tempfile::TempDir,
+    _temp: Option<tempfile::TempDir>,
     root: PathBuf,
     fleet_root: HeptaFleetRoot,
     pub(crate) registry: FleetRegistry,
@@ -73,7 +73,7 @@ impl FleetHarness {
             recovery.faults
         );
         Ok(Self {
-            _temp: temp,
+            _temp: Some(temp),
             root,
             fleet_root,
             registry,
@@ -82,6 +82,32 @@ impl FleetHarness {
             agent_ids: Vec::new(),
             started: false,
         })
+    }
+
+    /// Retain an opt-in real-provider fixture for reconciliation after an
+    /// unknown request outcome. Process cleanup still runs in Drop.
+    #[allow(dead_code)]
+    pub(crate) fn retain_fixture_root(&mut self) -> Result<PathBuf> {
+        use std::os::unix::fs::PermissionsExt;
+
+        ensure!(
+            !self.started,
+            "retain the fixture before starting any agent"
+        );
+        let metadata = std::fs::symlink_metadata(&self.root)?;
+        ensure!(
+            metadata.is_dir() && metadata.permissions().mode() & 0o7777 == 0o700,
+            "retained fixture root must be a private 0700 directory"
+        );
+        let Some(temp) = self._temp.take() else {
+            bail!("fixture root was already retained");
+        };
+        let kept = temp.keep();
+        ensure!(
+            kept.canonicalize()? == self.root,
+            "retained fixture root changed"
+        );
+        Ok(self.root.clone())
     }
 
     #[allow(dead_code)]

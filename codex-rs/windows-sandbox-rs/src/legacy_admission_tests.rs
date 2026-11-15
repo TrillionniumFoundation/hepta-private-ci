@@ -30,13 +30,13 @@ impl Drop for OwnedToken {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-struct EntrySnapshot {
+pub(crate) struct EntrySnapshot {
     path: PathBuf,
     bytes: Option<Vec<u8>>,
     dacl: Vec<u16>,
 }
 
-fn snapshot(root: &Path) -> Result<Vec<EntrySnapshot>> {
+pub(crate) fn snapshot(root: &Path) -> Result<Vec<EntrySnapshot>> {
     let mut pending = vec![root.to_path_buf()];
     let mut entries = Vec::new();
     while let Some(path) = pending.pop() {

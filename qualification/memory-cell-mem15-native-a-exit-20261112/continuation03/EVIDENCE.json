@@ -1,0 +1,225 @@
+{
+  "schema": "hepta.mem15.native-capture-recovered-evidence.v1",
+  "status": "capture_fixture_artifacts_verified; outer_job_terminal_unknown",
+  "original_result_status": "capture_controls_passed",
+  "authoritative_outer_job_id": null,
+  "authoritative_outer_terminal": "UNKNOWN_PENDING_SEPARATE_READBACK",
+  "source": {
+    "commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+    "tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+    "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+    "before_after_clean": true,
+    "source_unchanged_recorded": true,
+    "rewrite_patch_bytes": 0,
+    "recorded_postimage_pins_match_prior_verified_source_files": 14,
+    "postimage_bytes_not_repeated_in_this_archive": true
+  },
+  "archive": {
+    "file": "capture-bbbcc630-03.tar.xz",
+    "bytes": 83100,
+    "sha256": "147bd82bd791c0df8376fc14678a892313de3403884b54be2c176f112917beac",
+    "complete": true,
+    "original_member_manifest": {
+      "bytes": 31319,
+      "sha256": "0cc210352a0275db21270a6ea696418cf0ef7d64a3364a992f1ff63d5b809581"
+    },
+    "regular_files": 244,
+    "original_manifest_entries": 243,
+    "all_manifest_hashes_verified": true
+  },
+  "original_result": {
+    "file": "RESULT.json",
+    "bytes": 47948,
+    "sha256": "e67f4e4220995704db06f27d86743021e4fa4308b6daf4cb6b150312fcffa6ca"
+  },
+  "publication": {
+    "file": "CAPTURE_BBBCC630_03_PUBLICATION.json",
+    "bytes": 319,
+    "sha256": "c0d2af62a716516f5b7ba29b0369a70e3943193d87734ea4d8f7b653c2986c0d"
+  },
+  "controls": {
+    "reused_prior_passed": 3,
+    "executed_here": 0,
+    "prior_result_terminal_junit_receipt_log_bytes_verified": true
+  },
+  "capture_junit": {
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "each_uuid_source_and_receipt_window_verified": true
+  },
+  "arms": [
+    {
+      "arm": "attach",
+      "request_id": "mem15-bbbcc630-attach-ef0c-v1",
+      "A_pid": 296752,
+      "C_pid": 297201,
+      "A_exit_code": 0,
+      "C_exit_code": 1,
+      "A_exit_precedes_C_start": true,
+      "gap_seconds": 8.198998469,
+      "source_read_delta": 4,
+      "physical_native_http_count": 1,
+      "nonce_in_http_body": true,
+      "capture_side_model_generation_count": 0,
+      "process_outcome": "observed failed 409 capture terminal; no successful inference",
+      "native_revocation_rejected": false,
+      "listener_window_seconds": 16.431766891,
+      "C_namespace_isolated": false,
+      "original_native_model_and_provider_counts_remain_null": true
+    },
+    {
+      "arm": "reader-off",
+      "request_id": "mem15-bbbcc630-reader-off-ef0c-v1",
+      "A_pid": 297684,
+      "C_pid": 297743,
+      "A_exit_code": 0,
+      "C_exit_code": 1,
+      "A_exit_precedes_C_start": true,
+      "gap_seconds": 8.114178881,
+      "source_read_delta": 0,
+      "physical_native_http_count": 1,
+      "nonce_in_http_body": false,
+      "capture_side_model_generation_count": 0,
+      "process_outcome": "observed failed 409 capture terminal; no successful inference",
+      "native_revocation_rejected": false,
+      "listener_window_seconds": 16.268825645,
+      "C_namespace_isolated": false,
+      "original_native_model_and_provider_counts_remain_null": true
+    },
+    {
+      "arm": "withhold",
+      "request_id": "mem15-bbbcc630-withhold-ef0c-v1",
+      "A_pid": 298228,
+      "C_pid": 298245,
+      "A_exit_code": 0,
+      "C_exit_code": 1,
+      "A_exit_precedes_C_start": true,
+      "gap_seconds": 8.157452955,
+      "source_read_delta": 4,
+      "physical_native_http_count": 1,
+      "nonce_in_http_body": false,
+      "capture_side_model_generation_count": 0,
+      "process_outcome": "observed failed 409 capture terminal; no successful inference",
+      "native_revocation_rejected": false,
+      "listener_window_seconds": 16.323056081,
+      "C_namespace_isolated": false,
+      "original_native_model_and_provider_counts_remain_null": true
+    },
+    {
+      "arm": "tombstone",
+      "request_id": "mem15-bbbcc630-tombstone-ef0c-v1",
+      "A_pid": 298753,
+      "C_pid": 298785,
+      "A_exit_code": 0,
+      "C_exit_code": 1,
+      "A_exit_precedes_C_start": true,
+      "gap_seconds": 8.132516032,
+      "source_read_delta": 3,
+      "physical_native_http_count": 0,
+      "nonce_in_http_body": null,
+      "capture_side_model_generation_count": 0,
+      "process_outcome": "native final-use abort before turn; no successful inference",
+      "native_revocation_rejected": true,
+      "listener_window_seconds": 120.093767174,
+      "C_namespace_isolated": false,
+      "original_native_model_and_provider_counts_remain_null": true
+    }
+  ],
+  "C_exit_interpretation": "All four C processes exited 1. Three received the intentional capture-only 409 response; tombstone retained native AbortBeforeEffect/canonical-head-changed. The capture Rust cases passed because those are the expected capture and revocation outcomes. No successful inference is claimed.",
+  "source_read_deltas": [
+    4,
+    0,
+    4,
+    3
+  ],
+  "native_http_counts": [
+    1,
+    1,
+    1,
+    0
+  ],
+  "capture_side_model_generation_count": 0,
+  "model_zero_basis": "Capture OBSERVED records and diagnostic 409 responses for three HTTP arms; full tombstone listener window plus native rejection for zero-HTTP arm. Token-only outputs are not used as generation-entry proof.",
+  "original_native_model_and_provider_counts_remain_null": true,
+  "mapping": {
+    "exact_native_body_utf8_preserved_in_mapped_request_input": true,
+    "discarded_fields": [],
+    "native_role_semantics_preserved": false,
+    "constructed_mapped_request_is_not_a_model_generation_request_that_was_sent": true
+  },
+  "reader_off_vs_withhold": {
+    "left": {
+      "bytes": 26576,
+      "sha256": "0caa5271bfbda34be46cfd243ef4c782e6d5440c384a3c32312ef0e8b46b4e84"
+    },
+    "right": {
+      "bytes": 26576,
+      "sha256": "1d2040122f59fc4068d0b17b3193d22f329d4b38e384e047575cbfe27bce3089"
+    },
+    "raw_body_equal": false,
+    "parsed_json_equal": false,
+    "differing_top_level_fields": [
+      "client_metadata",
+      "input",
+      "prompt_cache_key"
+    ],
+    "normalization_or_dynamic_field_removal": false
+  },
+  "token_only_preflight": {
+    "scope": "Post-capture tokenizer-only preflight, not generation-entry validation.",
+    "arms": [
+      "attach",
+      "reader-off",
+      "withhold"
+    ],
+    "prompt_tokens": [
+      7565,
+      7007,
+      7029
+    ],
+    "input_limit": 1024,
+    "statuses": [
+      "REJECTED_INPUT_TOKEN_BUDGET",
+      "REJECTED_INPUT_TOKEN_BUDGET",
+      "REJECTED_INPUT_TOKEN_BUDGET"
+    ],
+    "budget_admitted": [
+      false,
+      false,
+      false
+    ],
+    "truncation": false,
+    "model_weights_loaded": false,
+    "model_generation_count": 0,
+    "tombstone": "NOT_EXECUTED_NO_MAPPED_REQUEST",
+    "complete_original_outputs_and_tensors_preserved": true
+  },
+  "scoped_fix_passed": true,
+  "final_format_passed": true,
+  "recorded_binaries_unchanged": true,
+  "observer_authenticated": false,
+  "C_namespace_isolated": false,
+  "full_memory_off_demonstrated": false,
+  "retention_off_implemented": false,
+  "unseen_source_benefit_evaluated": false,
+  "scored_memory_benefit_episodes": 0,
+  "scientific_acceptance": "HOLD",
+  "verification_files": [
+    "VERIFY.json",
+    "ARTIFACT_VERIFICATION.json",
+    "INDEPENDENT_PROCESS_REVIEW.json"
+  ],
+  "prior_history": {
+    "first_attempt": "native build passed; capture precompile argument conflict; zero new controls/captures executed; failed outer terminal preserved.",
+    "continuation02": "Three controls passed; four capture tests failed at worker metadata lookup before A/C; raw null counts and failed terminal preserved.",
+    "continuation03": "Continued only the A/C paths proven unstarted; prior three controls/build/V8 were not repeated."
+  },
+  "publication_task_executions": {
+    "native_jobs": 0,
+    "reconcile": 0,
+    "tests": 0,
+    "models": 0,
+    "tokenizer": 0
+  }
+}

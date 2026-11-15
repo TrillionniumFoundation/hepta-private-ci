@@ -268,7 +268,15 @@ class StateCodecTests(unittest.TestCase):
             self.args.ocr_library_dir,
         ]
         # OCR is an explicit synthetic fixture; the actual neural and CLI paths execute.
-        script = "from ndu_real_runtime import actor; actor.extract_ocr=lambda *a,**k:([],{}); actor.main()"
+        script = (
+            "from ndu_real_runtime import actor\n"
+            "calls = []\n"
+            "def fixture_ocr(*args, **kwargs):\n"
+            "    calls.append(1)\n"
+            "    return [], {'calls': len(calls)}\n"
+            "actor.extract_ocr = fixture_ocr\n"
+            "actor.main()\n"
+        )
 
         def run(name, states, flags=(), success=True):
             cwd = self.root / name
@@ -318,6 +326,24 @@ class StateCodecTests(unittest.TestCase):
             ["--start-step", "1", "--max-decisions", "1"],
             success=False,
         )
+        # Same pixels can be mapped to distinct source locations. The actor
+        # should reuse raw OCR once, but re-encode the new source geometry.
+        roi = copy.deepcopy(first)
+        roi["observation"].update(kind="roi", bbox=[0, 0, 16, 32])
+        roi["forced_action"] = "WRITE_TEXT"
+        shifted = copy.deepcopy(second)
+        shifted["observation"].update(kind="roi", bbox=[16, 0, 32, 32])
+        shifted["forced_action"] = "WRITE_TEXT"
+        observed = run(
+            "cache-context",
+            [roi, shifted],
+            ["--max-decisions", "2", "--training-exploration"],
+        )[1:]
+        self.assertEqual(
+            [row["candidate_metadata"][0]["bbox"] for row in observed],
+            [[0, 0, 16, 32], [16, 0, 32, 32]],
+        )
+        self.assertEqual([row["ocr"]["calls"] for row in observed], [1, 1])
 
 
 if __name__ == "__main__":

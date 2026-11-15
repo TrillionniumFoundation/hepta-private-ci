@@ -1,6 +1,7 @@
 use super::*;
 use crate::native_app_server::NativeWorkerConfig;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_infer_core::durable_control::Error as ControlError;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -310,4 +311,95 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
             .unwrap()
         )
     );
+}
+
+#[tokio::test]
+async fn context_delivery_is_bound_before_connection_and_preserves_legacy_admission() {
+    let (driver, path) = fixture("delivery-identity");
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
+    let cancelled = CancellationToken::new();
+    cancelled.cancel();
+    let query = Some("private query".to_string());
+    let expected = native_source_payload_digest(
+        "prompt",
+        &query,
+        &driver.config.agentd_socket,
+        driver.config.timeout.as_millis(),
+        /*intelligence*/ None,
+    )
+    .unwrap();
+    for (request_id, delivery) in [
+        ("attached", NativeContextDelivery::Attach),
+        ("withheld", NativeContextDelivery::Withhold),
+    ] {
+        let error = driver
+            .run_with_context_delivery(
+                &mut control,
+                NativeAdmission {
+                    request_id: request_id.to_string(),
+                    maximum_in_flight: 1,
+                },
+                "prompt".to_string(),
+                "private query".to_string(),
+                delivery,
+                &cancelled,
+            )
+            .await
+            .unwrap_err();
+        assert!(error.to_string().contains("cancelled before admission"));
+        assert!(
+            control
+                .native_record(request_id)
+                .unwrap()
+                .dispatch
+                .is_none()
+        );
+    }
+    assert_eq!(
+        control
+            .native_record("attached")
+            .unwrap()
+            .request
+            .payload_digest,
+        expected
+    );
+    let withheld = control.native_record("withheld").unwrap().clone();
+    assert_ne!(withheld.request.payload_digest, expected);
+    let error = driver
+        .run(
+            &mut control,
+            NativeAdmission {
+                request_id: "withheld".to_string(),
+                maximum_in_flight: 1,
+            },
+            "prompt".to_string(),
+            query,
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap_err();
+    assert_eq!(
+        error.downcast_ref::<ControlError>(),
+        Some(&ControlError::Conflict)
+    );
+    assert_eq!(control.native_record("withheld"), Some(&withheld));
+    assert!(
+        driver
+            .run_with_context_delivery(
+                &mut control,
+                NativeAdmission {
+                    request_id: "empty".to_string(),
+                    maximum_in_flight: 1
+                },
+                "prompt".to_string(),
+                String::new(),
+                NativeContextDelivery::Withhold,
+                &cancelled,
+            )
+            .await
+            .is_err()
+    );
+    assert!(control.native_record("empty").is_none());
+    drop(control);
+    std::fs::remove_file(path).unwrap();
 }

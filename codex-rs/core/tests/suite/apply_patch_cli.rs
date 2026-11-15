@@ -1178,6 +1178,8 @@ async fn apply_patch_cli_preserves_existing_hard_link_outside_workspace() -> Res
     let harness_work_dir = work_dir.clone();
     let harness = apply_patch_harness_with(move |builder| {
         builder.with_config(move |config| {
+            #[cfg(windows)]
+            config.set_windows_elevated_sandbox_enabled(/*value*/ true);
             config.workspace_roots = vec![harness_work_dir.clone()];
             config
                 .permissions

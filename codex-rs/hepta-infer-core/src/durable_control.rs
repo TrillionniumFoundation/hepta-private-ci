@@ -22,6 +22,10 @@ pub mod native;
 #[path = "durable_control_file.rs"]
 mod owned_file;
 
+#[cfg(feature = "qualification-owned-file-read")]
+#[path = "durable_control_observation.rs"]
+mod observation;
+
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;

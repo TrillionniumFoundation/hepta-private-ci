@@ -114,6 +114,7 @@ impl DerefMut for HeldFile {
 
 impl Drop for HeldFile {
     fn drop(&mut self) {
+        // This releases ownership, not durability. File close remains the fallback.
         let _ = self.0.unlock();
     }
 }

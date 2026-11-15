@@ -11,7 +11,6 @@ from dataclasses import asdict
 import io
 import json
 from pathlib import Path
-import resource
 import shutil
 import subprocess
 import time
@@ -21,6 +20,12 @@ from PIL import Image
 
 from ndu_real_materials.common import read_bound, strict_json
 from ndu_real_materials.isolate import run_actor
+from .action_effects import action_effect, public_actions, public_content
+from .candidate_memory import CandidateScope
+from .candidate_runtime import read_audit, validate_activation, validate_profile
+from .candidate_selector import validate_profile as validate_selector_profile
+from .selector_runtime import read_selector_audit
+from .ocr import requested_field
 from .controllers import ACTIONS, ControlPlan
 from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
@@ -75,6 +80,36 @@ class EpisodeHost:
                 "Training exploration accepts registered train sources only"
             )
         self.operation_id = profile["original_operation_id"]
+        self.candidate_profile = (
+            validate_profile(profile["candidate_memory"])
+            if "candidate_memory" in profile
+            else None
+        )
+        self.candidate_profile_sha256 = (
+            canonical_sha(self.candidate_profile)
+            if self.candidate_profile is not None
+            else None
+        )
+        self.selector_profile = (
+            validate_selector_profile(profile["candidate_selector"])
+            if "candidate_selector" in profile
+            else None
+        )
+        if self.selector_profile is not None and self.candidate_profile is None:
+            raise ValueError("Paired selector requires candidate memory evidence")
+        self.selector_profile_sha256 = (
+            canonical_sha(self.selector_profile)
+            if self.selector_profile is not None
+            else None
+        )
+        self.selector_audit_tail = None
+        self.candidate_audit_tail = None
+        if self.candidate_profile is not None:
+            validate_activation(
+                start_step=0,
+                checkpoint_requested=False,
+                training_exploration=training,
+            )
         self.meter = Meter(
             self.operation_id, journal_path=self.output / "deployment.meter.jsonl"
         )
@@ -150,6 +185,16 @@ class EpisodeHost:
             }
         size = self.packet["source_size"]
         self.source_size = (size["width"], size["height"])
+        self.candidate_scope = (
+            CandidateScope(
+                self.operation_id,
+                case["id"],
+                self.source_binding["sha256"],
+                *self.source_size,
+            )
+            if self.candidate_profile is not None
+            else None
+        )
         self.observation = {
             "path": "overview.png",
             "sha256": self.packet["overview"]["sha256"],
@@ -233,6 +278,10 @@ class EpisodeHost:
                 or value.get("utility_profile_sha256") != self.utility_profile_sha256
                 or value.get("control_profile_sha256") != self.control_profile_sha256
                 or value.get("memory_mode") != self.control.memory_mode
+                or value.get("candidate_memory_profile_sha256")
+                != self.candidate_profile_sha256
+                or value.get("candidate_selector_profile_sha256")
+                != self.selector_profile_sha256
             ):
                 raise ValueError("Invalid actor readiness or actual model pin")
             self.ready = True
@@ -250,6 +299,10 @@ class EpisodeHost:
             or value.get("control_profile_sha256") != self.control_profile_sha256
             or value.get("memory_mode") != self.control.memory_mode
             or value.get("parameters_unchanged") is not True
+            or value.get("candidate_memory_profile_sha256")
+            != self.candidate_profile_sha256
+            or value.get("candidate_selector_profile_sha256")
+            != self.selector_profile_sha256
         ):
             raise ValueError("Unexpected actor message or model mutation")
         if self.training != (
@@ -258,25 +311,10 @@ class EpisodeHost:
             raise ValueError(
                 "Deployment/training feature disclosure differs from the locked phase"
             )
+        legal = public_actions(self.packet, self.last_public)
         if self.training:
-            legal = [
-                action
-                for action in ACTIONS
-                if not (action == "READ_ROI" and self.prepared is None)
-                and not (
-                    action == "WRITE_TEXT"
-                    and self.packet["initial_delivery"]["text"] is not None
-                )
-                and not (
-                    action == "RENDER_IMAGE"
-                    and (
-                        not self.packet["requirements"]["image"]
-                        or self.packet["initial_delivery"]["image"] is not None
-                    )
-                )
-            ]
             if (
-                value.get("legal_actions") != legal
+                value.get("legal_actions") != list(legal)
                 or value.get("remaining_seconds")
                 != self.last_public["remaining_seconds"]
             ):
@@ -290,6 +328,8 @@ class EpisodeHost:
         name, arguments = action["action"], action["arguments"]
         if name not in ACTIONS or not isinstance(arguments, dict):
             raise ValueError("Unknown action")
+        if name not in legal:
+            raise ValueError("Action has no executable effect in the public support")
         expected = (
             {"text"}
             if name == "WRITE_TEXT"
@@ -299,6 +339,62 @@ class EpisodeHost:
         )
         if set(arguments) != expected:
             raise ValueError("Action contains unexpected arguments")
+        if self.candidate_profile is not None:
+            with self.meter.stage(
+                "sync", "bind candidate audit to original actor action"
+            ):
+                memory_audit = read_audit(
+                    self.actor_output,
+                    value.get("candidate_audit"),
+                    {
+                        "scope": asdict(self.candidate_scope),
+                        "step": len(self.steps),
+                        "profile": self.candidate_profile,
+                        "profile_sha256": self.candidate_profile_sha256,
+                        "weights_sha256": self.profile["model_sha256"],
+                        "parameters_sha256": self.ready_receipt.get(
+                            "parameters_sha256"
+                        ),
+                        "control_profile_sha256": self.control_profile_sha256,
+                        "public_case_sha256": self.case["packet"]["sha256"],
+                        "observation": self.last_public["observation"],
+                        "action": action,
+                        "previous_audit_sha256": self.candidate_audit_tail,
+                    },
+                )
+                if self.selector_profile is not None:
+                    selector = read_selector_audit(
+                        self.actor_output,
+                        value.get("selector_audit"),
+                        {
+                            "scope": asdict(self.candidate_scope),
+                            "bindings": {
+                                "weights_sha256": self.profile["model_sha256"],
+                                "parameters_sha256": self.ready_receipt.get(
+                                    "parameters_sha256"
+                                ),
+                                "control_profile_sha256": self.control_profile_sha256,
+                                "public_case_sha256": self.case["packet"]["sha256"],
+                            },
+                            "step": len(self.steps),
+                            "profile": self.selector_profile,
+                            "profile_sha256": self.selector_profile_sha256,
+                            "observation": self.last_public["observation"],
+                            "action": action,
+                            "memory_audit_sha256": value["candidate_audit"]["sha256"],
+                            "previous_audit_sha256": self.selector_audit_tail,
+                        },
+                        memory_audit,
+                    )
+                    if selector["observation_processed"] and selector["receipt"][
+                        "field"
+                    ] != requested_field(self.packet["prompt"]):
+                        raise ValueError(
+                            "Selector public field differs from the original task"
+                        )
+                    self.selector_audit_tail = value["selector_audit"]["sha256"]
+                self.candidate_audit_tail = value["candidate_audit"]["sha256"]
+        before = public_content(self.prepared, self.observation, self.delivery)
         with self.meter.stage("codec", "execute real " + name):
             if name in {"PREPARE_ROI", "RENDER_IMAGE"}:
                 box = arguments["bbox"]
@@ -342,6 +438,11 @@ class EpisodeHost:
                 self.delivery["text"] = text
             else:
                 self.stopped = True
+        value["action_effect"] = action_effect(
+            name,
+            before,
+            public_content(self.prepared, self.observation, self.delivery),
+        )
         self.steps.append(value)
         with self.meter.stage("sync", "persist actual delivery snapshot"):
             self.snapshot()
@@ -391,6 +492,22 @@ class EpisodeHost:
             command += ["--training-exploration"]
         if self.deployment_profile.exists():
             command += ["--deployment-profile", str(self.deployment_profile)]
+        if self.candidate_profile is not None:
+            command += [
+                "--candidate-memory-profile",
+                json.dumps(
+                    self.candidate_profile, sort_keys=True, separators=(",", ":")
+                ),
+                "--source-image-sha256",
+                self.source_binding["sha256"],
+            ]
+        if self.selector_profile is not None:
+            command += [
+                "--candidate-selector-profile",
+                json.dumps(
+                    self.selector_profile, sort_keys=True, separators=(",", ":")
+                ),
+            ]
         return command
 
     def run(self):
@@ -478,6 +595,22 @@ class EpisodeHost:
             "split": self.case["role"],
             "task_family": self.case["task_family"],
             "source_sha256": self.source_binding["sha256"],
+            **(
+                {
+                    "candidate_memory_profile_sha256": self.candidate_profile_sha256,
+                    "candidate_audit_chain_sha256": self.candidate_audit_tail,
+                }
+                if self.candidate_profile is not None
+                else {}
+            ),
+            **(
+                {
+                    "candidate_selector_profile_sha256": self.selector_profile_sha256,
+                    "selector_audit_chain_sha256": self.selector_audit_tail,
+                }
+                if self.selector_profile is not None
+                else {}
+            ),
             "terminal_status": "Failed"
             if error
             else "BudgetStop"

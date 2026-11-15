@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.mem14.launch-recovery.v1",
+  "status": "LAUNCH_CONFIRMED_RESULTS_PENDING",
+  "original_key": "mem14-causal-execute-20261112-ef0c-v1",
+  "job_id": "1a1ced26052-2564-186f",
+  "reused": false,
+  "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+  "source_tree": "491484a45e05d05d2b72fec472f96405c37decac",
+  "plan_sha256": "1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0",
+  "run_helper_sha256": "3329cecaabcaed30d733e40af322942f5486cc53db387e804416e1d9c10524f2",
+  "previous_timeout_is_not_execution_proof": true,
+  "previous_read_observations": {
+    "helper_missing_before_and_after_initial_timeout": true,
+    "summary_missing_before_initial_timeout": true
+  },
+  "results_or_model_calls_at_this_checkpoint": null,
+  "acceptance": "HOLD",
+  "local_workspace_reset": "recovered exact registered helper and plan before same-key reconciliation"
+}

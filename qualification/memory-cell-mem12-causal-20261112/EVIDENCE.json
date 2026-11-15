@@ -1,0 +1,48 @@
+{
+  "archive": {
+    "bytes": 74244,
+    "file": "checkpoint.tar.xz",
+    "indexed_members": 49,
+    "readback_verified": true,
+    "sha256": "0f950ea225f41d38c1c21e1e20cb3826037e5841386750a25832e1ca5d5c7af8"
+  },
+  "as_of_utc": "2026-11-12T07:05:36Z",
+  "campaign": {
+    "benefit_effect": null,
+    "job_id": null,
+    "launch_acknowledgement": "UNKNOWN",
+    "new_model_calls": null,
+    "operation_key": "mem12-causal-execute-20261112-ef0c-v1",
+    "outer_deadline_seconds": 7200,
+    "per_model_process_deadline_seconds": 60,
+    "planned_generation_rows": 80,
+    "planned_sources": 8,
+    "remote_root": "/home/qq/work/mem12-causal-20261112-ef0c",
+    "replayed_with_new_key": false,
+    "returned_rows": null,
+    "scientific_acceptance": "HOLD",
+    "task_templates": 1,
+    "verified_scored_rows": 0
+  },
+  "native_final": {
+    "contracts_passed": null,
+    "new_model_calls": 0,
+    "operation_key": "mem12-native-final-811e0e27-20261112-ef0c-v1",
+    "status": "UNKNOWN",
+    "strict_eight_passed": null
+  },
+  "plan": {
+    "bytes": 10624,
+    "sha256": "f623a23197fe94b3d5434ffac1f02cb3d99398ca4c69aad18716dbeeef1b2d82"
+  },
+  "preparation": {
+    "exit_code": 0,
+    "job_id": "1a1ce87be7a-2564-16e3",
+    "new_model_calls": 0,
+    "status": "PREPARED"
+  },
+  "schema": "hepta.mem12.causal-checkpoint.v1",
+  "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+  "source_tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+  "status": "HOLD_REMOTE_EXECUTION_UNKNOWN"
+}

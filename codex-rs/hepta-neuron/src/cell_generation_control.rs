@@ -4,6 +4,8 @@
 use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
+#[cfg(test)]
+use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
 use std::thread;
@@ -59,16 +61,26 @@ pub struct ControlledCellGenerationConfigV2 {
     pub rpc_timeout: Duration,
 }
 
+#[cfg(test)]
+#[derive(Default)]
+struct QualificationRpcProgress {
+    actor_entered: AtomicBool,
+    operations_received: AtomicUsize,
+    operation_replies_ready: AtomicUsize,
+}
+
 /// One control actor and at most one independently running computation. A
 /// timed-out RPC does not revoke its durable admission. Reopen uses the same
 /// binding and clock epoch, and never recreates a dispatch token.
 pub struct ControlledCellGenerationPortV2 {
     config: Arc<ControlledCellGenerationConfigV2>,
-    commands: Option<mpsc::SyncSender<Command>>,
+    commands: Option<mpsc::SyncSender<ActorCommand>>,
     stopping: Arc<AtomicBool>,
     closed: Arc<AtomicBool>,
     completion: mpsc::Receiver<Result<(), CellGenerationErrorV2>>,
     terminal: Option<Result<(), CellGenerationErrorV2>>,
+    #[cfg(test)]
+    qualification_progress: Arc<QualificationRpcProgress>,
 }
 
 impl ControlledCellGenerationPortV2 {
@@ -104,6 +116,8 @@ impl ControlledCellGenerationPortV2 {
         let closed = Arc::new(AtomicBool::new(false));
         let (sender, commands) = mpsc::sync_channel(config.queue_capacity);
         let (finished, completion) = mpsc::sync_channel(1);
+        #[cfg(test)]
+        let qualification_progress = Arc::new(QualificationRpcProgress::default());
         let mut actor = Actor {
             control,
             config: Arc::clone(&config),
@@ -112,6 +126,8 @@ impl ControlledCellGenerationPortV2 {
             commands,
             stopping: Arc::clone(&stopping),
             active: None,
+            #[cfg(test)]
+            qualification_progress: Arc::clone(&qualification_progress),
         };
         let actor_closed = Arc::clone(&closed);
         drop(
@@ -134,6 +150,8 @@ impl ControlledCellGenerationPortV2 {
             closed,
             completion,
             terminal: None,
+            #[cfg(test)]
+            qualification_progress,
         })
     }
 
@@ -157,8 +175,63 @@ impl ControlledCellGenerationPortV2 {
         result
     }
 
+    // Independent atomic observations, not a coherent actor snapshot or a reply.
+    // This has no command, journal, file, or owner access.
+    #[cfg(test)]
+    fn qualification_rpc_progress(&self) -> (bool, usize, usize) {
+        (
+            self.qualification_progress
+                .actor_entered
+                .load(Ordering::Acquire),
+            self.qualification_progress
+                .operations_received
+                .load(Ordering::Acquire),
+            self.qualification_progress
+                .operation_replies_ready
+                .load(Ordering::Acquire),
+        )
+    }
+
     pub fn is_closed(&self) -> bool {
         self.closed.load(Ordering::Acquire)
+    }
+
+    /// Qualification reads run on this same actor, without retaining a file
+    /// handle. Shutdown still sets `stopping` and releases the owner even while
+    /// this read-only sender exists.
+    #[cfg(feature = "qualification-owned-file-read")]
+    pub fn qualification_file_reader(
+        &self,
+        max_bytes: usize,
+    ) -> Result<
+        impl Fn() -> Result<Vec<u8>, CellGenerationErrorV2> + Send + Sync + use<>,
+        CellGenerationErrorV2,
+    > {
+        if !(1..=1024 * 1024).contains(&max_bytes) {
+            return Err(CellGenerationErrorV2::Capacity);
+        }
+        let commands = self
+            .commands
+            .as_ref()
+            .ok_or(CellGenerationErrorV2::Unavailable)?
+            .clone();
+        let stopping = Arc::clone(&self.stopping);
+        let timeout = self.config.rpc_timeout;
+        Ok(move || {
+            if stopping.load(Ordering::Acquire) {
+                return Err(CellGenerationErrorV2::Unavailable);
+            }
+            let (reply, response) = mpsc::sync_channel(/*bound*/ 1);
+            commands
+                .try_send(ActorCommand::QualificationFileBytes { max_bytes, reply })
+                .map_err(|error| match error {
+                    mpsc::TrySendError::Full(_) => CellGenerationErrorV2::Capacity,
+                    mpsc::TrySendError::Disconnected(_) => CellGenerationErrorV2::Unavailable,
+                })?;
+            response
+                .recv_timeout(timeout)
+                .map_err(|_| CellGenerationErrorV2::Unavailable)?
+        })
     }
 
     fn rpc(&mut self, kind: CommandKind, request: &CellGenerationRequestV2) -> Reply {
@@ -175,10 +248,12 @@ impl ControlledCellGenerationPortV2 {
             queued_at: Instant::now(),
             reply,
         };
+        #[cfg(feature = "qualification-owned-file-read")]
+        let command = Box::new(command);
         self.commands
             .as_ref()
             .ok_or(CellGenerationErrorV2::Unavailable)?
-            .try_send(command)
+            .try_send(ActorCommand::Operation(command))
             .map_err(|error| match error {
                 mpsc::TrySendError::Full(_) => CellGenerationErrorV2::Capacity,
                 mpsc::TrySendError::Disconnected(_) => CellGenerationErrorV2::Unavailable,
@@ -239,6 +314,18 @@ struct Command {
     reply: mpsc::SyncSender<Reply>,
 }
 
+enum ActorCommand {
+    #[cfg(not(feature = "qualification-owned-file-read"))]
+    Operation(Command),
+    #[cfg(feature = "qualification-owned-file-read")]
+    Operation(Box<Command>),
+    #[cfg(feature = "qualification-owned-file-read")]
+    QualificationFileBytes {
+        max_bytes: usize,
+        reply: mpsc::SyncSender<Result<Vec<u8>, CellGenerationErrorV2>>,
+    },
+}
+
 struct Running {
     binding: GenerationBindingV1,
     request: Box<CellGenerationRequestV2>,
@@ -254,13 +341,19 @@ struct Actor {
     config: Arc<ControlledCellGenerationConfigV2>,
     worker: Arc<dyn CellGenerationWorkerV2>,
     clock: Clock,
-    commands: mpsc::Receiver<Command>,
+    commands: mpsc::Receiver<ActorCommand>,
     stopping: Arc<AtomicBool>,
     active: Option<Running>,
+    #[cfg(test)]
+    qualification_progress: Arc<QualificationRpcProgress>,
 }
 
 impl Actor {
     fn run(&mut self) {
+        #[cfg(test)]
+        self.qualification_progress
+            .actor_entered
+            .store(true, Ordering::Release);
         loop {
             self.collect();
             if self.stopping.load(Ordering::Acquire) {
@@ -277,7 +370,11 @@ impl Actor {
                 }
             }
             match self.commands.recv_timeout(Duration::from_millis(5)) {
-                Ok(command) => {
+                Ok(ActorCommand::Operation(command)) => {
+                    #[cfg(test)]
+                    self.qualification_progress
+                        .operations_received
+                        .fetch_add(1, Ordering::AcqRel);
                     let result = if self.stopping.load(Ordering::Acquire) {
                         Err(CellGenerationErrorV2::Unavailable)
                     } else {
@@ -287,7 +384,22 @@ impl Actor {
                             CommandKind::Cancel => self.cancel(&command),
                         }
                     };
+                    #[cfg(test)]
+                    self.qualification_progress
+                        .operation_replies_ready
+                        .fetch_add(1, Ordering::AcqRel);
                     let _ = command.reply.try_send(result);
+                }
+                #[cfg(feature = "qualification-owned-file-read")]
+                Ok(ActorCommand::QualificationFileBytes { max_bytes, reply }) => {
+                    let observed = if self.stopping.load(Ordering::Acquire) {
+                        Err(CellGenerationErrorV2::Unavailable)
+                    } else {
+                        self.control
+                            .qualification_file_bytes(max_bytes)
+                            .map_err(control_error)
+                    };
+                    let _ = reply.try_send(observed);
                 }
                 Err(mpsc::RecvTimeoutError::Timeout) => {}
                 Err(mpsc::RecvTimeoutError::Disconnected) => {

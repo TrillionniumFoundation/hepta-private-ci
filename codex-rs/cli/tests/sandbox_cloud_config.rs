@@ -43,10 +43,15 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
     }]);
 
     let codex_home = TempDir::new()?;
+    let windows_config = if cfg!(windows) {
+        "\n[windows]\nsandbox = \"elevated\"\n"
+    } else {
+        ""
+    };
     std::fs::write(
         codex_home.path().join("config.toml"),
         format!(
-            "cli_auth_credentials_store = \"file\"\nchatgpt_base_url = \"{chatgpt_base_url}\"\n",
+            "cli_auth_credentials_store = \"file\"\nchatgpt_base_url = \"{chatgpt_base_url}\"\n{windows_config}",
         ),
     )?;
     let bootstrap_config = load_config_toml_with_layer_stack(

@@ -712,8 +712,10 @@ zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-ke
 # Matrix SDK exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }
-# Align Matrix's rusqlite and SQLx on libsqlite3-sys 0.39.1 with manifest-only
-# compatibility patches. Upstream Rust and SQL are unchanged.
+# Align Matrix's rusqlite and SQLx on libsqlite3-sys 0.39.1 with manifest
+# compatibility patches. Matrix source bytes are unchanged. The SQLx vendor
+# also carries formatting and import-order changes; its Rust syntax and
+# comments were compared separately with the published 0.9.0 crate.
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
 sqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }
 # Uncomment to debug local changes.
