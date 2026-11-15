@@ -154,23 +154,30 @@ impl FileAnchorWitnessStore {
 impl AnchorWitnessStore for FileAnchorWitnessStore {
     #[cfg(any(test, feature = "qualification-owned-file-read"))]
     fn qualification_file_bytes(&mut self, max_bytes: usize) -> Result<Vec<u8>, WitnessStoreError> {
-        if self.poisoned {
+        if self.poisoned.load(Ordering::Acquire) {
             return Err(WitnessStoreError::Poisoned);
         }
-        let bytes = crate::journal_lock::qualification_file_bytes(&mut self.file, max_bytes)
-            .map_err(|error| match error {
-                crate::journal_lock::QualificationFileReadError::InvalidLimit => {
-                    WitnessStoreError::InvalidLimit
+        let bytes = (|| {
+            let file = self
+                .file
+                .get_mut()
+                .map_err(|_| WitnessStoreError::Indeterminate)?;
+            crate::journal_lock::qualification_file_bytes(file, max_bytes).map_err(|error| {
+                match error {
+                    crate::journal_lock::QualificationFileReadError::InvalidLimit => {
+                        WitnessStoreError::InvalidLimit
+                    }
+                    crate::journal_lock::QualificationFileReadError::Capacity => {
+                        WitnessStoreError::Capacity
+                    }
+                    crate::journal_lock::QualificationFileReadError::Io(error) => {
+                        WitnessStoreError::from(error)
+                    }
                 }
-                crate::journal_lock::QualificationFileReadError::Capacity => {
-                    WitnessStoreError::Capacity
-                }
-                crate::journal_lock::QualificationFileReadError::Io(error) => {
-                    WitnessStoreError::from(error)
-                }
-            });
+            })
+        })();
         if bytes.is_err() {
-            self.poisoned = true;
+            self.poisoned.store(true, Ordering::Release);
         }
         bytes
     }
