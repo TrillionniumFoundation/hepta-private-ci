@@ -5,6 +5,7 @@ This is a declaration-consistency gate, not executed behavioral or platform proo
 """
 import argparse
 import json
+import unicodedata
 from pathlib import Path
 
 CAPABILITIES = frozenset({
@@ -21,6 +22,31 @@ def _lower_hex(value: object, length: int) -> bool:
     """Check an identity's wire format, not the authenticity of its evidence."""
     return (isinstance(value, str) and len(value) == length
             and all(c in "0123456789abcdef" for c in value))
+
+
+_INVALID_WINDOWS_COMPONENT_CHARS = frozenset('<>:"|?*')
+_RESERVED_WINDOWS_NAMES = frozenset({"con", "prn", "aux", "nul"} | {
+    f"{prefix}{n}" for prefix in ("com", "lpt") for n in range(1, 10)
+})
+
+
+def _unsafe_source_path(path: str) -> bool:
+    """Reject lexical aliases and path forms unsafe on any supported host."""
+    if path.startswith("/") or "\\" in path or "\0" in path:
+        return True
+    for component in path.split("/"):
+        if (component in ("", ".", "..") or component.casefold() == ".git"
+                or component.endswith((" ", "."))
+                or any(ord(ch) < 32 or ch in _INVALID_WINDOWS_COMPONENT_CHARS
+                       for ch in component)
+                or component.split(".", 1)[0].casefold() in _RESERVED_WINDOWS_NAMES):
+            return True
+    return False
+
+
+def _portable_path_identity(path: str) -> str:
+    """Conservative collision key for case-insensitive/normalized filesystems."""
+    return unicodedata.normalize("NFC", path).casefold()
 
 
 def validate(migration: dict, verification: dict) -> list[str]:
@@ -76,10 +102,10 @@ def validate(migration: dict, verification: dict) -> list[str]:
         errors.append("approved_paths must be a list of nonempty paths")
     if len(set(approved)) != len(approved):
         errors.append("approved_paths contains duplicates")
+    if len({_portable_path_identity(p) for p in approved}) != len(approved):
+        errors.append("approved_paths contains cross-platform path aliases")
     for path in approved:
-        if (path.startswith("/") or "\\" in path or "\0" in path
-                or path == ".git" or path.startswith(".git/")
-                or any(part in ("", ".", "..") or part.casefold() == ".git" for part in path.split("/"))):
+        if _unsafe_source_path(path):
             errors.append(f"{path}: unsafe approved source path")
     for flag in ("production_dispatch_migrated", "whole_codex_rewritten"):
         mv, vv = migration.get(flag), verification.get(flag)
@@ -128,6 +154,8 @@ def validate(migration: dict, verification: dict) -> list[str]:
                         and isinstance(r.get("path"), str)]
         if len(record_paths) != len(set(record_paths)):
             errors.append("duplicate per_path_qualification records")
+        if len({_portable_path_identity(p) for p in record_paths}) != len(record_paths):
+            errors.append("ambiguous per_path_qualification path aliases")
         for path in approved:
             record = by_path.get(path)
             if not record or not all(isinstance(record.get(k), str) and record[k]
