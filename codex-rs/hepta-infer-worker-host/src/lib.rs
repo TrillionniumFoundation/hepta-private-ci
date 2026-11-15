@@ -311,3 +311,11 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+// Uses the same explicit qualification-only legacy driver contract.
+#[cfg(feature = "legacy-local-model-boundary")]
+mod memory_cell_driver;
+#[cfg(feature = "legacy-local-model-boundary")]
+pub use memory_cell_driver::MemoryCellBindingV1;
+#[cfg(feature = "legacy-local-model-boundary")]
+pub use memory_cell_driver::MemoryCellDriver;

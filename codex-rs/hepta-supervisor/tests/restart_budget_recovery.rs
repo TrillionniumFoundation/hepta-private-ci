@@ -320,6 +320,17 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
     );
+    assert!(
+        supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot")
+            .events
+            .iter()
+            .any(|event| matches!(
+                &event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+            ))
+    );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
         TickReport::default()
@@ -360,6 +371,25 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             attempts: 3,
             pending: true,
         }
+    );
+    assert!(
+        supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot")
+            .events
+            .iter()
+            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
+    );
+    assert!(
+        supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot")
+            .events
+            .iter()
+            .any(|event| matches!(
+                &event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+            ))
     );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(999)),

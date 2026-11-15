@@ -51,6 +51,8 @@ pub struct LedgerWitnessStore {
     length: u64,
     history_digest: Digest32,
     poisoned: bool,
+    #[cfg(test)]
+    fail_next_advance_write: bool,
 }
 
 impl LedgerWitnessStore {
@@ -74,12 +76,24 @@ impl LedgerWitnessStore {
             length: HEADER as u64,
             history_digest: Digest32::of_bytes(&header),
             poisoned: false,
+            #[cfg(test)]
+            fail_next_advance_write: false,
         })
     }
 
     /// Recover the independently retained witness. Only an incomplete final
-    /// frame can be truncated; complete invalid history is corruption.
+    /// frame can be truncated; complete invalid history is corruption. Sync all
+    /// recovered data before serving a frontier: a previous owner may have
+    /// written a complete frame without completing its sync.
     pub fn recover(file: File, binding: Digest32) -> Result<Self, DurableLedgerError> {
+        Self::recover_with_sync(file, binding, File::sync_all)
+    }
+
+    fn recover_with_sync(
+        file: File,
+        binding: Digest32,
+        sync: impl FnOnce(&File) -> std::io::Result<()>,
+    ) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
         let mut file = LockedFile::acquire(file)?;
         let length = file.metadata()?.len();
@@ -113,9 +127,9 @@ impl LedgerWitnessStore {
         }
         if cursor != length {
             file.set_len(cursor)
-                .and_then(|()| file.sync_all())
                 .map_err(|_| DurableLedgerError::Indeterminate)?;
         }
+        sync(&file).map_err(|_| DurableLedgerError::Indeterminate)?;
         file.seek(SeekFrom::Start(cursor))?;
         Ok(Self {
             file,
@@ -124,6 +138,8 @@ impl LedgerWitnessStore {
             length: cursor,
             history_digest,
             poisoned: false,
+            #[cfg(test)]
+            fail_next_advance_write: false,
         })
     }
 
@@ -248,6 +264,10 @@ impl LedgerWitnessStore {
         self.poisoned = true;
         if self.file.seek(SeekFrom::End(0))? != self.length {
             return Err(DurableLedgerError::Corrupt);
+        }
+        #[cfg(test)]
+        if std::mem::take(&mut self.fail_next_advance_write) {
+            return Err(DurableLedgerError::Indeterminate);
         }
         self.file
             .write_all(&frame)

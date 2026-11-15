@@ -159,11 +159,13 @@ fn open_directory_for_sync(path: &std::path::Path) -> std::io::Result<File> {
         const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
         const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
         // LedgerWriter still verifies and synchronizes this actual directory.
-        OpenOptions::new()
+        let directory = OpenOptions::new()
             .read(true)
             .write(true)
             .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-            .open(path)
+            .open(path)?;
+        assert!(directory.metadata()?.is_dir());
+        Ok(directory)
     }
     #[cfg(not(windows))]
     {

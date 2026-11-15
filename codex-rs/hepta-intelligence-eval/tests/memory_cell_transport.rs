@@ -13,6 +13,7 @@ fn transfer_contains_no_replay_labels_and_new_revocation_blocks_old_artifact() {
     bundle
         .train(&rows, &mut model::Meter::default(), 500_000)
         .unwrap();
+    assert_eq!(bundle.parameters(), 320);
     let root = std::env::temp_dir().join(format!("mcell-transport-{}", std::process::id()));
     fs::create_dir(&root).unwrap();
     let input = root.join("transfer");

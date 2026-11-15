@@ -181,6 +181,7 @@ pub use neural_circuit::CircuitNodeRoleV1;
 pub use neural_circuit::CircuitNodeV1;
 pub use neural_circuit::CircuitProgramV1;
 pub use neural_circuit::NEURAL_CIRCUIT_SCHEMA_VERSION;
+pub use neural_circuit::NeuralCircuitCandidateInputV1;
 pub use neural_circuit::NeuralCircuitCandidateV1;
 pub use neural_circuit::validate_circuit_successor_v1;
 pub use operation_destination::AUTOMATION_OPERATION_DESTINATION;

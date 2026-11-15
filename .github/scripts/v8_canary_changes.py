@@ -35,6 +35,7 @@ CANARY_PATH_PATTERNS = {
     # V8 adapter Bazel features (including Windows sandbox selection) affect the linked artifact.
     "codex-rs/v8-poc/BUILD.bazel",
     "codex-rs/Cargo.toml",
+    "codex-rs/v8-poc/**",
     "patches/BUILD.bazel",
     "patches/llvm_*.patch",
     "patches/rules_cc_*.patch",

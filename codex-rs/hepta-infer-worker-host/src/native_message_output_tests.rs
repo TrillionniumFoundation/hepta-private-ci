@@ -213,26 +213,36 @@ fn oversized_complete_item_preserves_previous_output_and_pending_state() {
 
 #[test]
 fn empty_items_cannot_retain_unbounded_metadata() {
-    let mut output = String::new();
+    let mut output = output();
     let mut messages = NativeMessageOutput::default();
     let suffix = "x".repeat(MAX_OUTPUT_BYTES / 16);
     let mut rejected = false;
     for index in 0..=16 {
         let id = format!("{index}{suffix}");
-        if messages.start(&id).is_err() {
+        let notification = ServerNotification::ItemStarted(ItemStartedNotification {
+            item: message(&id, ""),
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            started_at_ms: 0,
+        });
+        if messages.observe(&notification, &mut output).is_err() {
             rejected = true;
             break;
         }
     }
     assert!(rejected);
     messages
-        .complete(
-            &format!("0{suffix}"),
-            "existing item still fits",
+        .observe(
+            &completed(
+                "thread-a",
+                "turn-a",
+                &format!("0{suffix}"),
+                "existing item still fits",
+            ),
             &mut output,
         )
         .unwrap();
-    assert_eq!(output, "existing item still fits");
+    assert_eq!(output.output, "existing item still fits");
 }
 
 #[test]

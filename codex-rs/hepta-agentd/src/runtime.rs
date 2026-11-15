@@ -26,6 +26,9 @@ use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
 
+#[path = "memory_runtime_bootstrap.rs"]
+mod memory_bootstrap;
+
 #[cfg(target_os = "linux")]
 #[path = "runtime_source_capture.rs"]
 pub(crate) mod source_capture;
@@ -48,9 +51,26 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
 /// same as `run`; completing the future requests the existing drain sequence
 /// and does not bypass outstanding owners or grant model/effect authority.
 pub async fn run_with_shutdown(
+    config: AgentdConfig,
+    arg0_paths: Arg0DispatchPaths,
+    shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
+) -> Result<(), AgentdError> {
+    run_composed_with_shutdown(config, arg0_paths, shutdown, /*memory_bootstrap*/ None).await
+}
+
+async fn run_composed(
+    config: AgentdConfig,
+    arg0_paths: Arg0DispatchPaths,
+    memory_bootstrap: Option<memory_bootstrap::MemoryRuntimeBootstrapV1>,
+) -> Result<(), AgentdError> {
+    run_composed_with_shutdown(config, arg0_paths, shutdown_signal(), memory_bootstrap).await
+}
+
+async fn run_composed_with_shutdown(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
     shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
+    mut memory_bootstrap: Option<memory_bootstrap::MemoryRuntimeBootstrapV1>,
 ) -> Result<(), AgentdError> {
     #[cfg(target_os = "linux")]
     config.require_root_learning_assembled()?;
@@ -424,8 +444,14 @@ pub async fn run_with_shutdown(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
+    if let Some(bootstrap) = memory_bootstrap.as_mut() {
+        // Restore cannot reuse a selected cache without current source, trust,
+        // citation, fleet and registry checks. No control or app task exists yet.
+        bootstrap.preflight(&state).await?;
+    }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
+    let memory_ready = memory_bootstrap::startup_readiness_gate_v1();
     let _native_memory_registration_lifetime = native_memory_registration
         .map(|registration| {
             let writer = production_writer_host.as_ref().ok_or_else(|| {
@@ -480,6 +506,12 @@ pub async fn run_with_shutdown(
         .transpose()?;
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(mut bootstrap) = memory_bootstrap {
+            // The memory factory remains gated while any startup registration
+            // can still fail. Its already-queued requests cannot run early.
+            bootstrap.preflight(&state).await?;
+            bootstrap.attach(&mut tasks, memory_ready.clone())?;
+        }
         if let Some(owner) = circuit_task {
             tasks.spawn_required(
                 "circuit-task-owner",
@@ -621,6 +653,13 @@ pub async fn run_with_shutdown(
         tasks.shutdown().await;
         return Err(error);
     }
+    if let Err(error) = state.refresh_generation() {
+        tasks.shutdown().await;
+        return Err(error);
+    }
+    // Release only after all registrations and a final process fence. Every
+    // memory request still needs current owners and independent final-use proof.
+    memory_ready.cancel();
     #[cfg(target_os = "linux")]
     if let Some((capture, close)) = original_source_capture {
         let joined = original_control_join.ok_or_else(|| {
@@ -795,7 +834,7 @@ async fn run_operation_reconciler(
     }
 }
 
-async fn monitor_runtime(
+pub(crate) async fn monitor_runtime(
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {

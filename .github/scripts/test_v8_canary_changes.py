@@ -65,6 +65,15 @@ version = "149.2.0"
         self.assertTrue(canary_required(paths, "149.2.0", "149.2.0"))
         self.assertTrue(windows_source_required(paths, "149.2.0", "149.2.0"))
 
+    def test_v8_poc_changes_require_canary(self) -> None:
+        for path in (
+            "codex-rs/v8-poc/BUILD.bazel",
+            "codex-rs/v8-poc/Cargo.toml",
+            "codex-rs/v8-poc/src/lib.rs",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(canary_required({path}, "149.2.0", "149.2.0"))
+
     def test_manual_dispatch_requires_source_build(self) -> None:
         self.assertTrue(
             windows_source_required(

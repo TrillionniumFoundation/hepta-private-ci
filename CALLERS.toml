@@ -14545,7 +14545,7 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["operations.attach(", "production_writer_host.as_ref()", "attach_production_operations", "run_production_operation_reconciler", "let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "                app_server_model_tools,"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
-required_function_order = [{function = "fn run(", sequence = ["run_with_shutdown(config, arg0_paths, shutdown_signal())", ".await"], top_level = ["run_with_shutdown(config, arg0_paths, shutdown_signal()).await"]}, {function = "fn run_with_shutdown(", sequence = ["let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "run_app_server(", "app_server_model_tools,"]}]
+required_function_order = [{function = "fn run(", sequence = ["run_with_shutdown(config, arg0_paths, shutdown_signal())", ".await"], top_level = ["run_with_shutdown(config, arg0_paths, shutdown_signal()).await"]}, {function = "fn run_composed_with_shutdown(", sequence = ["let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "run_app_server(", "app_server_model_tools,"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
@@ -15489,7 +15489,7 @@ required_function_order = [{ function = "fn with_root_learning_inputs(", sequenc
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["config.require_root_learning_assembled()?"]
 forbidden = ["AllowVerifier", "permit_all"]
-required_function_order = [{ function = "fn run_with_shutdown(", top_level = ["config.require_root_learning_assembled()?"], sequence = ["config.require_root_learning_assembled()?", "config.take_circuit_task_bootstrap()?", "config.take_production_operations()"] }]
+required_function_order = [{ function = "fn run_composed_with_shutdown(", top_level = ["config.require_root_learning_assembled()?"], sequence = ["config.require_root_learning_assembled()?", "config.take_circuit_task_bootstrap()?", "config.take_production_operations()"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
@@ -17149,7 +17149,7 @@ required_function_order = [{ function = "fn install_original_task_ledger(", sequ
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["let original_q24_outcome = config.take_original_q24_outcome_control();", "AgentdState::attach_original_q24_outcome_control(&state, producer)?;"]
 forbidden = []
-required_function_order = [{ function = "fn run_with_shutdown(", sequence = ["config.take_circuit_task_bootstrap()?", "config.take_original_q24_outcome_control()", "let state = Arc::new(", ".circuit_task\n            .set(bootstrap.handle())", ".circuit_task_invocation\n            .set(invocation)", "if let Some(producer) = original_q24_outcome", "AgentdState::attach_original_q24_outcome_control(&state, producer)?;"] }]
+required_function_order = [{ function = "fn run_composed_with_shutdown(", sequence = ["config.take_circuit_task_bootstrap()?", "config.take_original_q24_outcome_control()", "let state = Arc::new(", ".circuit_task\n            .set(bootstrap.handle())", ".circuit_task_invocation\n            .set(invocation)", "if let Some(producer) = original_q24_outcome", "AgentdState::attach_original_q24_outcome_control(&state, producer)?;"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/state_control.rs"
@@ -17343,7 +17343,7 @@ forbidden = []
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["fn run_with_shutdown("]
-required_function_order = [{ function = "fn run_with_shutdown(", sequence = ["fn run_with_shutdown(","config.take_original_source_capture()?","control.original_source_capture_join()","source_capture::run_until_original_source_drain(&mut tasks, state, shutdown, joined)","close.close_after_drain(drained)?","capture.capture_after_close(closed).await"] }]
+required_function_order = [{ function = "fn run_composed_with_shutdown(", sequence = ["fn run_composed_with_shutdown(","config.take_original_source_capture()?","control.original_source_capture_join()","source_capture::run_until_original_source_drain(&mut tasks, state, shutdown, joined)","close.close_after_drain(drained)?","capture.capture_after_close(closed).await"] }]
 forbidden = []
 
 [[protected_file]]
@@ -17564,7 +17564,7 @@ required_function_order = [{ function = "fn run(", sequence = ["config.require_r
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = []
 forbidden = []
-required_function_order = [{ function = "fn run_with_shutdown(", sequence = ["config.take_original_source_capture()?", "config.take_original_run_start_retention()", "ObjectiveRuntimeHost::open(", "host.with_original_run_start_retention(retained)?", "let host = Arc::new(host)", "host.reconcile(", "state\n            .objective_runtime\n            .set(host)"] }]
+required_function_order = [{ function = "fn run_composed_with_shutdown(", sequence = ["config.take_original_source_capture()?", "config.take_original_run_start_retention()", "ObjectiveRuntimeHost::open(", "host.with_original_run_start_retention(retained)?", "let host = Arc::new(host)", "host.reconcile(", "state\n            .objective_runtime\n            .set(host)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"
@@ -19726,7 +19726,7 @@ required_function_order = [{ function = "fn original_q24_completed_history(", se
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["config.take_original_q24_completed_history()", "AgentdState::attach_original_q24_completed_history(&state, completed)?;"]
 forbidden = []
-required_function_order = [{ function = "fn run_with_shutdown(", sequence = ["config.take_original_q24_completed_history()", "let state = Arc::new(AgentdState::new(", "if let Some(completed) = original_q24_completed_history", "AgentdState::attach_original_q24_completed_history(&state, completed)?;"] }]
+required_function_order = [{ function = "fn run_composed_with_shutdown(", sequence = ["config.take_original_q24_completed_history()", "let state = Arc::new(AgentdState::new(", "if let Some(completed) = original_q24_completed_history", "AgentdState::attach_original_q24_completed_history(&state, completed)?;"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/state_control.rs"
@@ -22357,7 +22357,7 @@ required_function_order = [{function = "fn into_original_retained_version_issuer
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["let resident_learning = config.take_root_resident_learning_delivery()"]
 forbidden = []
-required_function_order = [{function = "fn run_with_shutdown(", sequence = ["config.take_root_resident_learning_delivery()", "resident_learning.is_some() && (learning_iteration.is_some() || circuit_task.is_none())", "return Err(", "if let Some(delivery) = resident_learning", "state.objective_runtime.get().is_none()", "return Err(", "automation_store.clone().ok_or_else(||", "tasks.spawn_required(", "crate::AgentdRootResidentDeliveryV3::run_original_resident_delivery(", "delivery,\n                    store,\n                    Arc::clone(&state),\n                    cancellation.clone()"]}]
+required_function_order = [{function = "fn run_composed_with_shutdown(", sequence = ["config.take_root_resident_learning_delivery()", "resident_learning.is_some() && (learning_iteration.is_some() || circuit_task.is_none())", "return Err(", "if let Some(delivery) = resident_learning", "state.objective_runtime.get().is_none()", "return Err(", "automation_store.clone().ok_or_else(||", "tasks.spawn_required(", "crate::AgentdRootResidentDeliveryV3::run_original_resident_delivery(", "delivery,\n                    store,\n                    Arc::clone(&state),\n                    cancellation.clone()"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_host_store.rs"
@@ -22858,6 +22858,12 @@ required = ["self.writer.validate_notes_document_read(&observed)"]
 forbidden = []
 required_function_order = [{function = "fn refresh_ui_document(", sequence = ["publish_document_readback(view, async {", "observer.observe_document()", ".await", ".map_err(", "self.check_available()?;", "tokio::time::timeout(", "end.saturating_duration_since(Instant::now()),", "self.writer.validate_notes_document_read(&observed)", ".await", ".map_err(", ".map_err(|error| invalid(&error.to_string()))?;", "self.check_available()?;", "Ok(observed)"]}, {function = "fn publish_document_readback(", sequence = ["view.notes_document = None;", "let observed = read.await?;", "observed", ".target", ".validate()", "view.notes_document = Some(NotesDocumentObservation {"]}]
 source_sha256 = "8b0afee112eaf83d08275b6db9c7d295be045a3370afce4a7ecba19751b1a3ea"
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn run(", sequence = ["fn run(", "config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {\n    run_with_shutdown(config, arg0_paths, shutdown_signal()).await\n}"], top_level = ["run_with_shutdown(config, arg0_paths, shutdown_signal()).await"] }, { function = "fn run_with_shutdown(", sequence = ["fn run_with_shutdown(", "\n    config: AgentdConfig,\n    arg0_paths: Arg0DispatchPaths,\n    shutdown: impl Future<Output = Result<(), AgentdError>> + Send,\n) -> Result<(), AgentdError> {\n    run_composed_with_shutdown(config, arg0_paths, shutdown,                      None).await\n}"], top_level = ["run_composed_with_shutdown(config, arg0_paths, shutdown,                      None).await"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
