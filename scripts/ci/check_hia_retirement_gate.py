@@ -21,6 +21,15 @@ EXPECTED_CAPABILITIES = frozenset({
     "patch_application", "string_utilities", "hepta_cells_and_adapters",
     "platforms_build_release", "hia_toolchain",
 })
+EXPECTED_MANIFEST_COUNT = 198
+EXPECTED_BASELINE_INVENTORY_SHA256 = "9df5ab92ad68f36293bba6b1198c9074689f0acb09f7717f5554bb41f169dfd8"
+EXPECTED_MODULE_IDS = frozenset({
+    "seek_sequence", "utf8_boundaries", "utf8_prefix", "metric_tag",
+    "markdown_location", "ascii_json_fragment", "uuid_matches",
+    "template_parser", "template_render", "template_index", "prefix_match",
+    "prefix_admission", "policy_summary", "network_domains",
+    "allowed_prefixes", "command_dispatch", "network_host",
+})
 REQUIRED_FLAGS = (
     "whole_codex_rewritten", "production_dispatch_migrated",
     "default_release_migrated", "workspace_qualified",
@@ -31,6 +40,14 @@ REQUIRED_PLATFORMS = frozenset({
     "macos-x86_64", "macos-aarch64",
     "windows-x86_64-msvc", "windows-aarch64-msvc",
 })
+REQUIRED_RETIREMENT_REQUIREMENTS = (
+    "HIA owns the actual production dispatch and effects for the replaced scope",
+    "original Rust behavior and malformed-input cases pass without skipped or substituted oracles",
+    "existing protocol, CLI, configuration, persisted-session and SDK interfaces remain compatible",
+    "required platforms and app/exec host combinations pass",
+    "clean build, package installation and end-to-end use pass on the resulting source tree",
+    "regression fixtures, licensing and required release assets remain available",
+)
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
@@ -84,17 +101,34 @@ def _has_exact_qualified_ids(rows: object, expected: frozenset[str], *, kind: st
             problems.append(f"{kind}/{row.get('id')}: production dispatch not migrated")
 
 
+def _safe_retirement_path(value: object) -> bool:
+    if not isinstance(value, str) or not value or "\\" in value or "\x00" in value:
+        return False
+    candidate = PurePosixPath(value)
+    if (candidate.is_absolute() or value != candidate.as_posix()
+            or value in (".", "..") or not candidate.parts
+            or any(part in (".", "..", ".git") for part in candidate.parts)
+            or candidate.parts[0] in ("hia", ".github", "AGENTS.md", "LICENSE", "NOTICE")):
+        return False
+    return ":" not in candidate.parts[0]
+
+
 def check(repo: Path, migration_path: Path, evidence_path: Path) -> dict:
     problems: list[str] = []
     try:
         migration = _json(migration_path)
-        evidence = _json(evidence_path)
         head = _git(repo, "rev-parse", "HEAD")
         tree = _git(repo, "rev-parse", "HEAD^{tree}")
         if _git(repo, "status", "--porcelain", "--untracked-files=no"):
             problems.append("tracked worktree/index is dirty")
     except (ValueError, OSError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         return {"ready": False, "problems": [f"unverifiable inputs: {error}"]}
+
+    try:
+        evidence = _json(evidence_path)
+    except (ValueError, OSError, json.JSONDecodeError) as error:
+        evidence = {}
+        problems.append(f"retirement evidence unavailable: {error}")
 
     if migration.get("schema") != "codex.hia.migration.v1":
         problems.append("migration schema is not recognized")
@@ -110,9 +144,7 @@ def check(repo: Path, migration_path: Path, evidence_path: Path) -> dict:
     if not isinstance(approved_paths, list) or not approved_paths:
         problems.append("retirement.approved_paths is empty")
     else:
-        if any(not isinstance(v, str) or not v or v.startswith("/")
-               or any(part in (".", "..", ".git") for part in PurePosixPath(v).parts)
-               for v in approved_paths):
+        if any(not _safe_retirement_path(v) for v in approved_paths):
             problems.append("retirement.approved_paths contains an unsafe path")
         if len(set(v for v in approved_paths if isinstance(v, str))) != len(approved_paths):
             problems.append("retirement.approved_paths contains duplicates")
@@ -124,7 +156,11 @@ def check(repo: Path, migration_path: Path, evidence_path: Path) -> dict:
     baseline = migration.get("baseline")
     manifests = migration.get("rust_components")
     expected_count = baseline.get("codex_rs_cargo_manifest_count") if isinstance(baseline, dict) else None
-    if not isinstance(manifests, list) or not isinstance(expected_count, int) or expected_count < 1:
+    if not isinstance(baseline, dict) or baseline.get("inventory_sha256") != EXPECTED_BASELINE_INVENTORY_SHA256:
+        problems.append("original baseline inventory digest changed")
+    if expected_count != EXPECTED_MANIFEST_COUNT:
+        problems.append("original baseline Cargo manifest count changed")
+    if not isinstance(manifests, list) or type(expected_count) is not int or expected_count < 1:
         problems.append("Rust inventory is missing or malformed")
     else:
         paths = [v.get("manifest") for v in manifests if isinstance(v, dict)]
@@ -144,8 +180,9 @@ def check(repo: Path, migration_path: Path, evidence_path: Path) -> dict:
     else:
         ids = [v.get("id") for v in modules if isinstance(v, dict)]
         if (len(ids) != len(modules) or any(not isinstance(v, str) for v in ids)
-                or len(ids) != len(set(v for v in ids if isinstance(v, str)))):
-            problems.append("candidate_modules contains invalid or duplicate identities")
+                or len(ids) != len(set(v for v in ids if isinstance(v, str)))
+                or not EXPECTED_MODULE_IDS.issubset(set(v for v in ids if isinstance(v, str)))):
+            problems.append("candidate_modules contains missing, invalid, or duplicate identities")
         for v in modules:
             if not isinstance(v, dict):
                 continue
@@ -165,6 +202,8 @@ def check(repo: Path, migration_path: Path, evidence_path: Path) -> dict:
         problems.append("required Linux/macOS/Windows architecture matrix is incomplete")
     requirements = retirement.get("requirements") if isinstance(retirement, dict) else None
     attestations = evidence.get("requirements")
+    if requirements != list(REQUIRED_RETIREMENT_REQUIREMENTS):
+        problems.append("canonical retirement requirements were changed or weakened")
     if not isinstance(requirements, list) or len(requirements) != 6 or not isinstance(attestations, list) or len(attestations) != 6:
         problems.append("six source-bound retirement requirement attestations are required")
     else:
@@ -203,7 +242,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=Path("."))
     parser.add_argument("--migration", type=Path, default=Path("hia/migration.json"))
-    parser.add_argument("--evidence", type=Path, required=True,
+    parser.add_argument("--evidence", type=Path, default=Path("hia/retirement-evidence.json"),
                         help="exact source-bound release evidence; absence fails closed")
     args = parser.parse_args()
     repo = args.repo.resolve()
