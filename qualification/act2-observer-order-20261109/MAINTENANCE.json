@@ -1,0 +1,27 @@
+{
+  "tested_source_sha": "111d5773145dbe4add99a28b2d1111916a3dbd3b",
+  "tested_tree_sha": "cd6ea40d7bad36bc1149cdca4137e85f9798f5fc",
+  "maintained_source_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+  "maintained_tree_sha": "b9879a77f0b7a7d8f766aaf2308b719e6bcaa29e",
+  "maintained_parent_sha": "111d5773145dbe4add99a28b2d1111916a3dbd3b",
+  "official_formatter_patch": {
+    "path": "evidence/official-format.patch",
+    "bytes": 795,
+    "sha256": "1580b37b40bd9a42bacc74a459f26411eca7f6e48685ab0fc11e6a8072ce2881",
+    "independent_formatter_and_native_final_patch_identical": true
+  },
+  "postimage": {
+    "path": "codex-rs/hepta-agentd/src/notes_document_observer.rs",
+    "bytes": 3252,
+    "sha256": "56bfa07834f10f4be1ce4dd132fef9852fe1318bfac33b49efc9e17c48b453e6",
+    "git_blob_sha": "af5e5213a54f5e14803dca46f9d6a35e4ecb7960"
+  },
+  "scoped_fix_modified_source": false,
+  "official_formatter_modified_source": true,
+  "behavior_tests_after_maintenance_in_original_run": false,
+  "successor_native_result": "PASSED_FRESH_EXACT_SOURCE_RUN_42769615520",
+  "mapping_scope": "Exact official formatter postimage only. Original test counts belong to tested_source_sha.",
+  "published_maintenance_postimage_independently_read_back_equal": true,
+  "published_maintenance_commit_changes_only_official_patch": true,
+  "successor_native_evidence": "maintained-run/RESULT.json"
+}

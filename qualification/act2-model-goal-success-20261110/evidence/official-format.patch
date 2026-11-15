@@ -1,0 +1,16 @@
+diff --git a/codex-rs/hepta-agentd/src/notes_action_observer_tests.rs b/codex-rs/hepta-agentd/src/notes_action_observer_tests.rs
+index 033a8739..0cac78f0 100644
+--- a/codex-rs/hepta-agentd/src/notes_action_observer_tests.rs
++++ b/codex-rs/hepta-agentd/src/notes_action_observer_tests.rs
+@@ -150,7 +150,10 @@ fn notes_act2_tool_success_keeps_read_and_original_navigation_semantics() {
+         crate::notes_thread_tool::READ_TOOL,
+         &read
+     ));
+-    assert!(!original_notes_tool_succeeded("unregistered_tool", &succeeded));
++    assert!(!original_notes_tool_succeeded(
++        "unregistered_tool",
++        &succeeded
++    ));
+ }
+ 
+ #[test]

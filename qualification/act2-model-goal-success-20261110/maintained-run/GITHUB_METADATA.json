@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "workflow": ".github/workflows/hepta-act2-observer.yml",
+  "run_id": 42771121382,
+  "run_attempt": 1,
+  "head_branch": "fix/act2-model-goal-success-20261110",
+  "head_sha": "631e99f78898543e8dc1e8671632baf73945940e",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-11-10T06:49:44Z",
+  "updated_at": "2026-11-10T07:37:30Z",
+  "jobs": [
+    {"id": 129684885374, "name": "format", "status": "completed", "conclusion": "success"},
+    {"id": 129684885621, "name": "native-and-real-notes", "status": "completed", "conclusion": "success"}
+  ],
+  "artifacts": [
+    {"id": 13743459047, "name": "act2-native-631e99f78898543e8dc1e8671632baf73945940e-1", "bytes": 72887, "sha256": "799795be18a34ea0866ad69f128e903e9fac158744a3ec4448eb9cdfc660f679"},
+    {"id": 13742643595, "name": "act2-format-631e99f78898543e8dc1e8671632baf73945940e-1", "bytes": 57850, "sha256": "9c13f8e4829de00c3ccd4308daa9f830d64b92a315c52c7895270119cce9fef1"}
+  ]
+}
