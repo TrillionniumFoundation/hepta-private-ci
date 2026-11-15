@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn-n256-sparse-dynamic-source-freeze-v2",
+  "identity": "hcsn-n256-sparse-dynamic-source-v2-20261115-c06d-001",
+  "base_commit": "c749869a68a5f5d26600fdfb49ffd0352d214b39",
+  "parent_draft": 6366,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-sparse-dynamic-v2-intent.yml": "8ba1ee1f193b446e46967f67ec6c70c798054947be41a566570bd74c701cef07",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/__init__.py": "1844e1c5cca8b7ed9a3f332d0488cede4ec29fc7284e1a3e6aff65536afd5abe",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/admission.py": "37cb6b1cae1e05f07e12a91cba4d2643263e6aae97ef3f1c564b7f438f4f6514",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py": "7ce716d2cbc00740d646b13498cbf6f935ba388e3bb43363a5bc4e79cd7312bf",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/static_inspector.py": "95d06d48748f66813dee927c88b52172b28d8e127e7dc073f6a173aec7336929",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/test_static.py": "9ca61eb6dd984cd330508587ea3bd5dd82ff0481b836726f85d35be8d38fd790",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/verify_source.py": "1a0a0e20dc138c983e5271625b196890b7f87c02d4323c84e79242f77a9d6c66",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/REQUEST.json": "1da196b5ddd6ec2b1013cd194fe7da7df3ac895d9285c4b05c529c0041d2f8e1",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/README.md": "9414ac1dc0c4d3ff77d96d9991fd20d5245366a3f2a97693bfff0f78a8d843be"
+  },
+  "bindings": {
+    "historical_v1_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "authentic_phase_sha256": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "t0_builder_sha256": "e96f8165cffc3e9f616f07bf42e18a0960a6213582f1e525f93ac5a8623f0b6c",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2"
+  },
+  "authentic_schema_checks": {
+    "phase_packets": 8,
+    "channels_per_packet": 5,
+    "required_field": "signed_content",
+    "rejected_legacy_alias": "content"
+  },
+  "execution_counts": {
+    "authentic_phase_packets_parsed_per_test_mode": 8,
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "unresolved": [
+    "runtime profile",
+    "current host and ancestor-cgroup snapshots",
+    "allocation, concurrency, and calendar",
+    "independent numerical oracle source",
+    "canonical serializer and cold loader source",
+    "N256 numerical execution and full-state comparison"
+  ],
+  "status": "PASS_SOURCE_ONLY_SIGNED_CONTENT_HOLD_NUMERICAL",
+  "largegrid_qualification": false,
+  "all_closed": false
+}
