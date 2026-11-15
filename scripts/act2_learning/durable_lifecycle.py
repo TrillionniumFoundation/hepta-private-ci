@@ -50,14 +50,16 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def binding(task, contract, model_path):
+def binding(task, contract, model_path, *, model_digest=None):
     boot = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
     if len(boot) != 36:
         raise ValueError("unsupported boot identity")
     return {
         "task": sha(canonical(task)),
         "contract": sha(canonical(asdict(contract))),
-        "model": sha(Path(model_path).read_bytes()),
+        "model": sha(Path(model_path).read_bytes())
+        if model_digest is None
+        else model_digest,
         "boot": boot,
         "source": {
             p.name: sha(p.read_bytes())
@@ -110,13 +112,19 @@ class DurableLifecycle(LifecycleDestination):
     inference. A restarted driver must restore its model state separately.
     """
 
+    state_fields = FIELDS
+
+    def _binding(self, task, contract, model_path):
+        return binding(task, contract, model_path)
+
     @classmethod
     def start(cls, task, contract, model_path, directory):
+        task = json.loads(canonical(task))
         directory = Path(directory)
-        expected = binding(task, contract, model_path)
-        directory.mkdir(parents=True, exist_ok=False)
         self = cls.__new__(cls)
-        self.directory, self.expected = directory, expected
+        self.directory = directory
+        self.expected = self._binding(task, contract, model_path)
+        directory.mkdir(parents=True, exist_ok=False)
         self._open(create=True)
         try:
             LifecycleDestination.__init__(
@@ -137,21 +145,29 @@ class DurableLifecycle(LifecycleDestination):
 
     @classmethod
     def restore(cls, task, contract, model_path, directory):
+        task = json.loads(canonical(task))
         self = cls.__new__(cls)
         self.directory = Path(directory)
-        self.expected = binding(task, contract, model_path)
+        self.expected = self._binding(task, contract, model_path)
         self._open(create=False)
         try:
             revision, digest, raw = self.db.execute(
                 "SELECT revision,digest,body FROM state WHERE id=1"
             ).fetchone()
-            if len(raw) > 2_000_000 or sha(raw) != digest:
+            if (
+                type(revision) is not int
+                or revision < 1
+                or len(raw) > 2_000_000
+                or sha(raw) != digest
+            ):
                 raise ValueError("invalid durable state bytes")
             saved = json.loads(raw)
+            if canonical(saved) != raw:
+                raise ValueError("noncanonical durable state bytes")
             if set(saved) != {"binding", "fields"} or saved["binding"] != self.expected:
                 raise ValueError("durable contract, model, source or boot drift")
             fields = saved["fields"]
-            if set(fields) != set(FIELDS):
+            if set(fields) != set(self.state_fields):
                 raise ValueError("durable state field drift")
             if (
                 type(fields["calls"]) is not int
@@ -202,7 +218,7 @@ class DurableLifecycle(LifecycleDestination):
             raise
 
     def _save(self):
-        values = {name: getattr(self, name) for name in FIELDS}
+        values = {name: getattr(self, name) for name in self.state_fields}
         values["unresolved"] = sorted(self.unresolved)
         raw = canonical({"binding": self.expected, "fields": values})
         if len(raw) > 2_000_000:

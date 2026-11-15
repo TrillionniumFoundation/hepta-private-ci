@@ -1,0 +1,5263 @@
+{
+  "actual_recomputed_metrics_by_seed": {
+    "4101": {
+      "laplace_exact_feature_table": {
+        "accuracy": 0.4,
+        "brier": 0.3335976331360947,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 24,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 32
+        },
+        "log_loss": 0.9005540881342267,
+        "observed": 80,
+        "total": 96
+      },
+      "neural_advisory": {
+        "accuracy": 0.4,
+        "brier": 0.37523660467884645,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 24,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 32
+        },
+        "log_loss": 1.4658711333998349,
+        "observed": 80,
+        "total": 96
+      },
+      "smoothed_constant": {
+        "accuracy": 0.7,
+        "brier": 0.23091546985895878,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 0,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 56
+        },
+        "log_loss": 0.6611806706032197,
+        "observed": 80,
+        "total": 96
+      }
+    },
+    "4102": {
+      "laplace_exact_feature_table": {
+        "accuracy": 0.4,
+        "brier": 0.3335976331360947,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 24,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 32
+        },
+        "log_loss": 0.9005540881342267,
+        "observed": 80,
+        "total": 96
+      },
+      "neural_advisory": {
+        "accuracy": 0.4,
+        "brier": 0.37508480209160433,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 24,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 32
+        },
+        "log_loss": 1.4566647337334644,
+        "observed": 80,
+        "total": 96
+      },
+      "smoothed_constant": {
+        "accuracy": 0.7,
+        "brier": 0.23091546985895878,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 0,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 56
+        },
+        "log_loss": 0.6611806706032197,
+        "observed": 80,
+        "total": 96
+      }
+    }
+  },
+  "audit_script_sha256": "9b4c638796f85194cbc1d1fee1b208596c34832c33faa83294d8e5903efa7a4e",
+  "checks": [
+    {
+      "check": "retained file roster exact and no symlinks",
+      "passed": true
+    },
+    {
+      "check": "retained digest MANIFEST.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest TEST_PLAN.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/DATASET.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/FROZEN_PLAN.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/PREDICTIONS.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/RESULT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-00-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-01-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-02-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-03-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-04-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-05-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-06-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-07-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/fold-08-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4101/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4101/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4101/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4101/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4102/FIT.json",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4102/initial.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4102/optimizer.jsonl",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe/full-train-seed-4102/weights.npz",
+      "passed": true
+    },
+    {
+      "check": "retained digest probe.log",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/async_owner_wait.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/async_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/audit_families.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/browser_family.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/composite_family.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/continuation.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/diagnose.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/durable_async_owner.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/durable_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/ensure_transition_loader.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/file_family.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/models.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/operational_metrics.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/procedural_replay.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/qualify_continuation.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/qualify_families.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/qualify_operational.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/qualify_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/qualify_skill_completion.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/reproduce.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/run.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/skill_completion_advisory.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/skill_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/sqlite_destination.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_async_owner_wait.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_async_recurrent_adversarial.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_async_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_browser_family.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_composite_family.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_continuation.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_diagnose.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_durable_async_owner.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_durable_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_ensure_transition_loader.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_family_qualification.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_file_family.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_operational_metrics.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_procedural_replay.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_qualify_operational.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_recurrent_lifecycle_adversarial.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_skill_completion_advisory.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest source/test_skill_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "retained digest tests.log",
+      "passed": true
+    },
+    {
+      "check": "exact common source commit and tree",
+      "passed": true
+    },
+    {
+      "check": "source before after and manifest match",
+      "passed": true
+    },
+    {
+      "check": "retained source roster exact",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob async_owner_wait.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob async_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob audit_families.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob browser_family.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob composite_family.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob continuation.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob diagnose.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob durable_async_owner.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob durable_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob ensure_transition_loader.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob file_family.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob models.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob operational_metrics.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob procedural_replay.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob qualify_continuation.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob qualify_families.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob qualify_operational.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob qualify_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob qualify_skill_completion.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob reproduce.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob run.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob skill_completion_advisory.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob skill_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob sqlite_destination.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_async_owner_wait.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_async_recurrent_adversarial.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_async_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_browser_family.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_composite_family.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_continuation.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_diagnose.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_durable_async_owner.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_durable_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_ensure_transition_loader.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_family_qualification.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_file_family.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_operational_metrics.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_procedural_replay.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_qualify_operational.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_recurrent_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_recurrent_lifecycle_adversarial.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_skill_completion_advisory.py",
+      "passed": true
+    },
+    {
+      "check": "source bytes and exact Git blob test_skill_lifecycle.py",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-700.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-701.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-702.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-703.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-704.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-705.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-706.npz",
+      "passed": true
+    },
+    {
+      "check": "historical model exact Git blob B4_gru-seed-707.npz",
+      "passed": true
+    },
+    {
+      "check": "all14 actually started passed and log corroborated",
+      "passed": true
+    },
+    {
+      "check": "nested and standalone probe result match",
+      "passed": true
+    },
+    {
+      "check": "baseline expectations were unchanged",
+      "passed": true
+    },
+    {
+      "check": "independent original custody audit unchanged",
+      "passed": true
+    },
+    {
+      "check": "baseline math input commitment",
+      "passed": true
+    },
+    {
+      "check": "dataset commitment",
+      "passed": true
+    },
+    {
+      "check": "plan binds exact loader and consumer source",
+      "passed": true
+    },
+    {
+      "check": "fixed plan hyperparameters",
+      "passed": true
+    },
+    {
+      "check": "original input pin FROZEN_MANIFEST.json",
+      "passed": true
+    },
+    {
+      "check": "original input pin SHA256SUMS.json",
+      "passed": true
+    },
+    {
+      "check": "original input pin source-postimages.zip",
+      "passed": true
+    },
+    {
+      "check": "original input pin training-trajectories.jsonl.gz",
+      "passed": true
+    },
+    {
+      "check": "exact original transition roster",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "exact original boundary and label train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "original line task event record commitments train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "dataset no oracle or confirmation use flags preserved",
+      "passed": true
+    },
+    {
+      "check": "original episode denominator retained",
+      "passed": true
+    },
+    {
+      "check": "original masking and feature denominator",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-1/lost_reply",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-1/normal",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-1/opaque_after_apply",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-1/prestaged",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-2/already_partial",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-2/lost_reply",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-2/normal",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-2/opaque_after_apply",
+      "passed": true
+    },
+    {
+      "check": "fold isolation and coverage keys-2/prestaged",
+      "passed": true
+    },
+    {
+      "check": "no independent feature holdout claim",
+      "passed": true
+    },
+    {
+      "check": "exact20 fit directory roster",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-00-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-00-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-00-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-00-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-00-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-00-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-00-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-00-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-00-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-00-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-01-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-01-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-01-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-01-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-01-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-01-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-01-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-01-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-01-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-01-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-02-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-02-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-02-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-02-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-02-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-02-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-02-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-02-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-02-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-02-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-03-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-03-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-03-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-03-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-03-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-03-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-03-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-03-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-03-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-03-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-04-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-04-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-04-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-04-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-04-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-04-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-04-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-04-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-04-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-04-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-05-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-05-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-05-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-05-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-05-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-05-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-05-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-05-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-05-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-05-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-06-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-06-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-06-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-06-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-06-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-06-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-06-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-06-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-06-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-06-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-07-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-07-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-07-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-07-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-07-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-07-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-07-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-07-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-07-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-07-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-08-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-08-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-08-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-08-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-08-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original fold-08-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights fold-08-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data fold-08-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links fold-08-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective fold-08-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "fit report original full-train-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights full-train-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data full-train-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links full-train-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective full-train-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "fit report original full-train-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact seeded initialization and weights full-train-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "exact masked fold training data full-train-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "200 contiguous changed parameter links full-train-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "independent initial final loss and objective full-train-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "actual fit update diversity denominators",
+      "passed": true
+    },
+    {
+      "check": "exact192 one-per-seed transition predictions",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-00-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4101/train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4101/train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4101/train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-00-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-a/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-a/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-b/schema-0/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-b/schema-0/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-a/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-a/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-b/schema-1/keys-1/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-00-seed-4102/train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-00-seed-4102/train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-00-seed-4102/train/train-b/schema-1/keys-1/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-01-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4101/train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4101/train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4101/train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-01-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-a/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-a/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-b/schema-0/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-b/schema-0/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-a/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-a/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-b/schema-1/keys-1/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-01-seed-4102/train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-01-seed-4102/train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-01-seed-4102/train/train-b/schema-1/keys-1/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-02-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4101/train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4101/train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4101/train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-02-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-a/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-a/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-b/schema-0/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-b/schema-0/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-a/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-a/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-b/schema-1/keys-1/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-02-seed-4102/train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-02-seed-4102/train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-02-seed-4102/train/train-b/schema-1/keys-1/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-03-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4101/train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4101/train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4101/train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-03-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-a/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-a/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-b/schema-0/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-b/schema-0/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-a/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-a/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-b/schema-1/keys-1/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-03-seed-4102/train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-03-seed-4102/train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-03-seed-4102/train/train-b/schema-1/keys-1/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-04-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4101/train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4101/train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4101/train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-04-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-a/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-a/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-b/schema-0/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-b/schema-0/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-a/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-a/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-b/schema-1/keys-2/already_partial/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-04-seed-4102/train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-04-seed-4102/train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-04-seed-4102/train/train-b/schema-1/keys-2/already_partial/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-05-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4101/train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-05-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-0/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-a/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-05-seed-4102/train/train-b/schema-1/keys-2/lost_reply/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-06-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4101/train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-06-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-0/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-a/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-06-seed-4102/train/train-b/schema-1/keys-2/normal/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-07-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4101/train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4101/train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4101/train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-07-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-a/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-a/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-b/schema-0/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-b/schema-0/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-a/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-a/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-b/schema-1/keys-2/opaque_after_apply/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-07-seed-4102/train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-07-seed-4102/train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-07-seed-4102/train/train-b/schema-1/keys-2/opaque_after_apply/1:0",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-08-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4101/train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "OOF saved weight prediction roster fold-08-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-0/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-a/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/0:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/0:1",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/1:0",
+      "passed": true
+    },
+    {
+      "check": "saved neural tensor and target fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction laplace_exact_feature_table/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "frozen independent baseline prediction smoothed_constant/fold-08-seed-4102/train/train-b/schema-1/keys-2/prestaged/1:1",
+      "passed": true
+    },
+    {
+      "check": "independent aggregate proper scores 4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent aggregate proper scores 4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "frozen aggregate baseline 4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent aggregate proper scores 4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "frozen aggregate baseline 4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent aggregate proper scores 4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent aggregate proper scores 4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "frozen aggregate baseline 4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent aggregate proper scores 4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "frozen aggregate baseline 4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-00-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-00-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-00-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-00-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-00-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-00-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-01-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-01-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-01-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-01-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-01-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-01-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-02-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-02-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-02-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-02-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-02-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-02-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-03-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-03-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-03-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-03-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-03-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-03-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-04-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-04-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-04-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-04-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-04-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-04-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-05-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-05-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-05-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-05-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-05-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-05-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-06-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-06-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-06-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-06-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-06-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-06-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-07-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-07-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-07-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-07-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-07-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-07-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-08-seed-4101/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-08-seed-4101/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-08-seed-4101/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-08-seed-4102/laplace_exact_feature_table",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-08-seed-4102/neural_advisory",
+      "passed": true
+    },
+    {
+      "check": "independent fold scores fold-08-seed-4102/smoothed_constant",
+      "passed": true
+    },
+    {
+      "check": "fully censored folds report null rather than zero error",
+      "passed": true
+    },
+    {
+      "check": "full-fit empirical information bounds full-train-seed-4101",
+      "passed": true
+    },
+    {
+      "check": "full-fit empirical information bounds full-train-seed-4102",
+      "passed": true
+    },
+    {
+      "check": "negative comparative proper scores preserved",
+      "passed": true
+    },
+    {
+      "check": "scope and negative adoption preserved",
+      "passed": true
+    },
+    {
+      "check": "retained originals unchanged after audit",
+      "passed": true
+    }
+  ],
+  "checks_failed": 0,
+  "checks_passed": 1174,
+  "corpus_campaign_wall_ns": 2860548181,
+  "counts": {
+    "OOF_baseline_predictions_compared_to_prior_independent_expected_values": 384,
+    "OOF_neural_predictions_recomputed_directly_from_saved_tensors": 192,
+    "censored_labels": 16,
+    "corpus_fit_directories": 20,
+    "corpus_optimizer_records_and_links_verified": 4000,
+    "distinct_final_parameter_snapshots": 16,
+    "distinct_initial_parameter_snapshots": 2,
+    "distinct_ordered_supervised_arrays": 8,
+    "distinct_supervised_multisets": 6,
+    "families": 9,
+    "fully_censored_families": 2,
+    "historical_gru_model_git_blob_hashes_verified_but_not_fitted": 8,
+    "integrity_math_tests_actually_passed": 14,
+    "observed_labels": 80,
+    "original_ensure_transitions": 96,
+    "original_train_episodes": 80,
+    "parameters_per_model": 97,
+    "retained_file_digests_verified": 133,
+    "saved_model_files_verified": 40,
+    "separate_synthetic_unit_optimizer_updates_not_corpus_fits": 30,
+    "source_postimages_matched_exact_git_blobs": 44,
+    "unique_initiation_feature_vectors": 3
+  },
+  "created_at_utc": "2026-11-12T07:19:31.766071+00:00",
+  "finding": "Both neural seeds match table40% forecast accuracy but have worse Brier/log-loss than both baselines. Fits and model changes are real retained work; this corpus shows no advisory predictive advantage and no operational gain.",
+  "fit_audits": [
+    {
+      "final_bce_recomputed": 0.36877774312630357,
+      "final_objective_recomputed": 0.381466836660513,
+      "final_parameter_sha256": "ef36aca3cc405a12cfde799e40460f6063c42568526306fd626067e94559ade7",
+      "fit": "fold-00-seed-4101",
+      "held_group": "keys-1/lost_reply",
+      "initial_bce_recomputed": 0.6890169834686779,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "ae23df302d735f20aa88fee765229b6006fc8fc28a94e5223f410f58d4045e2f",
+      "training_ordered_array_sha256": "4444ef97e28d8afdd4960c8de49b031543ffe65c44859e8f8e6cb62507d67e2f",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.36881201554993026,
+      "final_objective_recomputed": 0.381553475128211,
+      "final_parameter_sha256": "914fc80d5b4fd77eaf562e18eef11c7d74382a12e3abd3063809c15e6d54ba68",
+      "fit": "fold-00-seed-4102",
+      "held_group": "keys-1/lost_reply",
+      "initial_bce_recomputed": 0.7008740452344008,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "ae23df302d735f20aa88fee765229b6006fc8fc28a94e5223f410f58d4045e2f",
+      "training_ordered_array_sha256": "4444ef97e28d8afdd4960c8de49b031543ffe65c44859e8f8e6cb62507d67e2f",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.3687777431263036,
+      "final_objective_recomputed": 0.38146683666051306,
+      "final_parameter_sha256": "bf99c2c607a5e2d54ab184aeeda8cca7e633dcec1a6fd334423a9b42b7d91f02",
+      "fit": "fold-01-seed-4101",
+      "held_group": "keys-1/normal",
+      "initial_bce_recomputed": 0.6890169834686779,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "ae23df302d735f20aa88fee765229b6006fc8fc28a94e5223f410f58d4045e2f",
+      "training_ordered_array_sha256": "c84222bb4d82ce7410a79aef683a200085333df003413570ae53e8e496ed2895",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.36881201554993037,
+      "final_objective_recomputed": 0.3815534751282111,
+      "final_parameter_sha256": "c6ef972ce93e2dedec8aedf32f018a4ca9fbd36a3010ba77756f000369e4f0d5",
+      "fit": "fold-01-seed-4102",
+      "held_group": "keys-1/normal",
+      "initial_bce_recomputed": 0.7008740452344008,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "ae23df302d735f20aa88fee765229b6006fc8fc28a94e5223f410f58d4045e2f",
+      "training_ordered_array_sha256": "c84222bb4d82ce7410a79aef683a200085333df003413570ae53e8e496ed2895",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.4185975091876939,
+      "final_objective_recomputed": 0.4296181790381465,
+      "final_parameter_sha256": "8aab4fdd24a024762ee38745b14694020f3d6d1b47225a47ac30f45f5524956c",
+      "fit": "fold-02-seed-4101",
+      "held_group": "keys-1/opaque_after_apply",
+      "initial_bce_recomputed": 0.6883177162822273,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "0da1ebae3dd188effba789b2fcf39f9f02ea9b6b0a4f8ffbb3c8a69d9df08058",
+      "training_ordered_array_sha256": "5b87aedc3d3dd8e40cbb1c2b9d9cf7ff2413394b01f0a53630bd7ba6297e0e11",
+      "training_rows": 80
+    },
+    {
+      "final_bce_recomputed": 0.41863989717820776,
+      "final_objective_recomputed": 0.4296418206572763,
+      "final_parameter_sha256": "39251cfe0466bfab148ec77b5024a87d06aa11b3176068217ce4b1fc9ee4051e",
+      "fit": "fold-02-seed-4102",
+      "held_group": "keys-1/opaque_after_apply",
+      "initial_bce_recomputed": 0.7020179948951112,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "0da1ebae3dd188effba789b2fcf39f9f02ea9b6b0a4f8ffbb3c8a69d9df08058",
+      "training_ordered_array_sha256": "5b87aedc3d3dd8e40cbb1c2b9d9cf7ff2413394b01f0a53630bd7ba6297e0e11",
+      "training_rows": 80
+    },
+    {
+      "final_bce_recomputed": 0.31109117345172205,
+      "final_objective_recomputed": 0.3241182238618535,
+      "final_parameter_sha256": "30669ef4a507f918087cdfe2fa88aa9cccd05ef8bd7e64c6a27e1b7ea8dce498",
+      "fit": "fold-03-seed-4101",
+      "held_group": "keys-1/prestaged",
+      "initial_bce_recomputed": 0.6889887517379815,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "e854389970eabcacc06b988d7306a23b3f6a870796f5e4b85cdde7ef7773de9f",
+      "training_ordered_array_sha256": "afbcdca2bb4479d1e24622e40ba27d6eb7613a0497ab5ad11cee50ac8b20f99d",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.31119348045440937,
+      "final_objective_recomputed": 0.3241975131533412,
+      "final_parameter_sha256": "1a2aefc681fe154585e9133f85c1f5e906799805ed20bea53de630d11918336a",
+      "fit": "fold-03-seed-4102",
+      "held_group": "keys-1/prestaged",
+      "initial_bce_recomputed": 0.700908780998148,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "e854389970eabcacc06b988d7306a23b3f6a870796f5e4b85cdde7ef7773de9f",
+      "training_ordered_array_sha256": "afbcdca2bb4479d1e24622e40ba27d6eb7613a0497ab5ad11cee50ac8b20f99d",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.46506930166183164,
+      "final_objective_recomputed": 0.4756650083874445,
+      "final_parameter_sha256": "7b8ac095e1b38b704ebdfcecf8a5b87304f8040e073e3009cdd6ce6d2b0a6828",
+      "fit": "fold-04-seed-4101",
+      "held_group": "keys-2/already_partial",
+      "initial_bce_recomputed": 0.6891328951041148,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "37036810267560126630803568ccf27bdeb5c4453db78d5b87afa57ecec57c2b",
+      "training_ordered_array_sha256": "17a8827882dddff3409b9153dfb6593215ce81838d8d8abe7336a16665fd5a47",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.46503581772223807,
+      "final_objective_recomputed": 0.47557789859590804,
+      "final_parameter_sha256": "ccdec812398302406a18c468d92702aa1f7d04cc76069b9174304c6c02351458",
+      "fit": "fold-04-seed-4102",
+      "held_group": "keys-2/already_partial",
+      "initial_bce_recomputed": 0.7005692424785267,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "37036810267560126630803568ccf27bdeb5c4453db78d5b87afa57ecec57c2b",
+      "training_ordered_array_sha256": "17a8827882dddff3409b9153dfb6593215ce81838d8d8abe7336a16665fd5a47",
+      "training_rows": 72
+    },
+    {
+      "final_bce_recomputed": 0.4148925901413226,
+      "final_objective_recomputed": 0.4243744176258052,
+      "final_parameter_sha256": "4c3843c29368763b713787b3c1d6d035ba18f82c9e4f3b42d1fb4e5d2edc7556",
+      "fit": "fold-05-seed-4101",
+      "held_group": "keys-2/lost_reply",
+      "initial_bce_recomputed": 0.687225111913577,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "cc7791a64452481a19b11bfccf977fcdd7268a2f5cdf258224851dbf52a7810a",
+      "training_ordered_array_sha256": "644d1eb07e0a47b42b040a0bfc6dd6ea5e1db59a5243d93202bb19d1d8929070",
+      "training_rows": 64
+    },
+    {
+      "final_bce_recomputed": 0.41498143688354194,
+      "final_objective_recomputed": 0.42439849873522284,
+      "final_parameter_sha256": "0d1e3bcb652ffd99ffd3ce249f4902544f1f9b05ca1c340ee3482d824954cf76",
+      "fit": "fold-05-seed-4102",
+      "held_group": "keys-2/lost_reply",
+      "initial_bce_recomputed": 0.7038477389180232,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "cc7791a64452481a19b11bfccf977fcdd7268a2f5cdf258224851dbf52a7810a",
+      "training_ordered_array_sha256": "644d1eb07e0a47b42b040a0bfc6dd6ea5e1db59a5243d93202bb19d1d8929070",
+      "training_rows": 64
+    },
+    {
+      "final_bce_recomputed": 0.4148925901413227,
+      "final_objective_recomputed": 0.42437441762580524,
+      "final_parameter_sha256": "22e8c44c3aacde79224491a5e580f73da1e10ae242229b7280b063f4cfe67225",
+      "fit": "fold-06-seed-4101",
+      "held_group": "keys-2/normal",
+      "initial_bce_recomputed": 0.6872251119135772,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "cc7791a64452481a19b11bfccf977fcdd7268a2f5cdf258224851dbf52a7810a",
+      "training_ordered_array_sha256": "274fc31303f4164dcbca8421c34be5436028100130e1c8eb93cb895fc11a33e7",
+      "training_rows": 64
+    },
+    {
+      "final_bce_recomputed": 0.41498143688354194,
+      "final_objective_recomputed": 0.42439849873522284,
+      "final_parameter_sha256": "deca5a12180fcf30b63280e5906ed3bc924793f69e2cdd3888a22219453080ac",
+      "fit": "fold-06-seed-4102",
+      "held_group": "keys-2/normal",
+      "initial_bce_recomputed": 0.7038477389180232,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "cc7791a64452481a19b11bfccf977fcdd7268a2f5cdf258224851dbf52a7810a",
+      "training_ordered_array_sha256": "274fc31303f4164dcbca8421c34be5436028100130e1c8eb93cb895fc11a33e7",
+      "training_rows": 64
+    },
+    {
+      "final_bce_recomputed": 0.4185975091876939,
+      "final_objective_recomputed": 0.4296181790381465,
+      "final_parameter_sha256": "8aab4fdd24a024762ee38745b14694020f3d6d1b47225a47ac30f45f5524956c",
+      "fit": "fold-07-seed-4101",
+      "held_group": "keys-2/opaque_after_apply",
+      "initial_bce_recomputed": 0.6883177162822273,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "0da1ebae3dd188effba789b2fcf39f9f02ea9b6b0a4f8ffbb3c8a69d9df08058",
+      "training_ordered_array_sha256": "5b87aedc3d3dd8e40cbb1c2b9d9cf7ff2413394b01f0a53630bd7ba6297e0e11",
+      "training_rows": 80
+    },
+    {
+      "final_bce_recomputed": 0.41863989717820776,
+      "final_objective_recomputed": 0.4296418206572763,
+      "final_parameter_sha256": "39251cfe0466bfab148ec77b5024a87d06aa11b3176068217ce4b1fc9ee4051e",
+      "fit": "fold-07-seed-4102",
+      "held_group": "keys-2/opaque_after_apply",
+      "initial_bce_recomputed": 0.7020179948951112,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "0da1ebae3dd188effba789b2fcf39f9f02ea9b6b0a4f8ffbb3c8a69d9df08058",
+      "training_ordered_array_sha256": "5b87aedc3d3dd8e40cbb1c2b9d9cf7ff2413394b01f0a53630bd7ba6297e0e11",
+      "training_rows": 80
+    },
+    {
+      "final_bce_recomputed": 0.3499736060296637,
+      "final_objective_recomputed": 0.3624519425203666,
+      "final_parameter_sha256": "1f029a4f65945767bf667b0b9d489a9b5ae9386fdd83db057780f9efb53f51b0",
+      "fit": "fold-08-seed-4101",
+      "held_group": "keys-2/prestaged",
+      "initial_bce_recomputed": 0.6872575827876665,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "11d2dcbd2163bc891ced844349f1f45adecab0461d13567480ca17b73dbb29e2",
+      "training_ordered_array_sha256": "3c82421fec873d0e02409156e662cd3ec216110ca7ca93005b3804f52ff9dc82",
+      "training_rows": 64
+    },
+    {
+      "final_bce_recomputed": 0.3500130297014183,
+      "final_objective_recomputed": 0.36249715615209654,
+      "final_parameter_sha256": "2805956f46db211b228d4234b2026b4eea1eb03da514fe214b60a11643ee3330",
+      "fit": "fold-08-seed-4102",
+      "held_group": "keys-2/prestaged",
+      "initial_bce_recomputed": 0.7038101056886266,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "11d2dcbd2163bc891ced844349f1f45adecab0461d13567480ca17b73dbb29e2",
+      "training_ordered_array_sha256": "3c82421fec873d0e02409156e662cd3ec216110ca7ca93005b3804f52ff9dc82",
+      "training_rows": 64
+    },
+    {
+      "final_bce_recomputed": 0.4185975091876939,
+      "final_objective_recomputed": 0.4296181790381465,
+      "final_parameter_sha256": "8aab4fdd24a024762ee38745b14694020f3d6d1b47225a47ac30f45f5524956c",
+      "fit": "full-train-seed-4101",
+      "held_group": null,
+      "initial_bce_recomputed": 0.6883177162822273,
+      "initial_parameter_sha256": "fa813a6c80686c1884e3879375211624f0800fc17578017d10622cab75151906",
+      "optimizer_links_verified": 200,
+      "seed": 4101,
+      "training_multiset_sha256": "0da1ebae3dd188effba789b2fcf39f9f02ea9b6b0a4f8ffbb3c8a69d9df08058",
+      "training_ordered_array_sha256": "5b87aedc3d3dd8e40cbb1c2b9d9cf7ff2413394b01f0a53630bd7ba6297e0e11",
+      "training_rows": 80
+    },
+    {
+      "final_bce_recomputed": 0.41863989717820776,
+      "final_objective_recomputed": 0.4296418206572763,
+      "final_parameter_sha256": "39251cfe0466bfab148ec77b5024a87d06aa11b3176068217ce4b1fc9ee4051e",
+      "fit": "full-train-seed-4102",
+      "held_group": null,
+      "initial_bce_recomputed": 0.7020179948951112,
+      "initial_parameter_sha256": "0eaa97e85bfc583011bda703054626ce4ca533face41d4f93cadd625eec40e19",
+      "optimizer_links_verified": 200,
+      "seed": 4102,
+      "training_multiset_sha256": "0da1ebae3dd188effba789b2fcf39f9f02ea9b6b0a4f8ffbb3c8a69d9df08058",
+      "training_ordered_array_sha256": "5b87aedc3d3dd8e40cbb1c2b9d9cf7ff2413394b01f0a53630bd7ba6297e0e11",
+      "training_rows": 80
+    }
+  ],
+  "full_fit_observed_train_only_metrics": [
+    {
+      "fit": "full-train-seed-4101",
+      "observed_train_scores_only": {
+        "accuracy": 0.7,
+        "brier": 0.15002773906139183,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 0,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 56
+        },
+        "log_loss": 0.418597509187694,
+        "observed": 80,
+        "total": 96
+      },
+      "unique_entry_probabilities": [
+        {
+          "entry_features": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "probability": 0.5049433189202468
+        },
+        {
+          "entry_features": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            1.0
+          ],
+          "probability": 0.9932984298341201
+        },
+        {
+          "entry_features": [
+            1.0,
+            0.0,
+            1.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "probability": 0.5000204374199899
+        }
+      ]
+    },
+    {
+      "fit": "full-train-seed-4102",
+      "observed_train_scores_only": {
+        "accuracy": 0.7,
+        "brier": 0.1500289372505745,
+        "censored": 16,
+        "confusion": {
+          "false_negative": 0,
+          "false_positive": 24,
+          "true_negative": 0,
+          "true_positive": 56
+        },
+        "log_loss": 0.41863989717820765,
+        "observed": 80,
+        "total": 96
+      },
+      "unique_entry_probabilities": [
+        {
+          "entry_features": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "probability": 0.5051043111183184
+        },
+        {
+          "entry_features": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            1.0
+          ],
+          "probability": 0.9931963886887354
+        },
+        {
+          "entry_features": [
+            1.0,
+            0.0,
+            1.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "probability": 0.500003890745408
+        }
+      ]
+    }
+  ],
+  "independent_baseline_sha256": "f61215725ec325af70245b33dca266959bf7a7af46194cc4382029bc64b3051d",
+  "independent_custody_sha256": "666b03a5932370ea9701d51f2e574108b325e365395dd3f3df688a9a90b47ff1",
+  "max_absolute_baseline_probability_difference": 0.0,
+  "max_absolute_neural_probability_difference": 0.0,
+  "qualification_directory": "/workspace/scratch/5fe4a47a9363/skill-completion-source-2c77000-run1",
+  "qualification_wall_ns": 4026531267,
+  "result": "PASS_SCOPED_RETAINED_ORIGINAL_AUDIT_WITH_NEGATIVE_ADVISORY_RESULT",
+  "retained_sha256sums_sha256": "4a83a81bead230553812a0ecc47237bcc019b991f29f5fd749377c5236d30acf",
+  "reviewer": "/root/act_ci_audit",
+  "schema": "hepta.independent-skill-completion-retained-audit.v1",
+  "scope": {
+    "denominator_warning": "Neural/table32/80forecast accuracy and constant56/80forecast accuracy refer to observed old-TRAIN labels; historical512/640 fixed-workflow completion is a different operational metric.",
+    "fits_rerun_by_auditor": 0,
+    "fixed_skill_library_retained": true,
+    "independent_feature_holdout": false,
+    "inference_method": "Independent NumPy tanh/logistic formula from retained model tensors only.",
+    "labels": "Only original subsequent actor readback; 16 UNKNOWN remain masked despite separate privileged custody knowledge.",
+    "loader_or_consumer_imported_by_auditor": false,
+    "new_application_version_fault_evidence": false,
+    "new_independent_tasks": 0,
+    "new_tool_host_or_production_authority": false,
+    "not_a_tamper_proof_execution_attestation": true,
+    "operational_net_utility_evaluation": false,
+    "optimizer_verification": "4000 retained changed-parameter records, exact initial/final tensors, consecutive digest links and loss recomputation; no optimizer replay.",
+    "promotion": false,
+    "seeds_are_not_new_tasks": true,
+    "source_or_repository_modified": false,
+    "test_suites_rerun_by_auditor": 0
+  },
+  "source_commit": "2c77000a6092f20eb28f7b65eef1940a33ac9b8b",
+  "source_tree": "2838a39764f31d191d91233acc2fcab6be47ab82"
+}

@@ -1,0 +1,555 @@
+{
+  "schema": "combined-independent-retained-audits-v1",
+  "source_commit": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+  "source_tree": "205a4d1958f2d57d4dbb9a1368846e53022e79b2",
+  "status": "PASS_SCOPED_RETAINED_ORIGINAL_AUDIT",
+  "independent_joint_audit": {
+    "additional_fixture_cuts_without_individual_retention": [
+      {
+        "asserted_returncode": 17,
+        "mode": "before_apply",
+        "retained_individual_exit_record": false,
+        "test_id": "test_durable_lifecycle.DurableLifecycleTests.test_process_death_before_apply_remains_unknown_without_replay",
+        "test_passed": true
+      },
+      {
+        "asserted_returncode": 17,
+        "mode": "after_apply",
+        "retained_individual_exit_record": false,
+        "test_id": "test_durable_lifecycle.DurableLifecycleTests.test_process_death_after_real_publication_reconciles_original_once",
+        "test_passed": true
+      },
+      {
+        "asserted_returncode": 17,
+        "mode": "after_apply",
+        "retained_individual_exit_record": false,
+        "test_id": "test_durable_lifecycle.DurableLifecycleTests.test_foreign_but_self_consistent_invocation_is_never_original_receipt",
+        "test_passed": true
+      },
+      {
+        "asserted_returncode": 17,
+        "mode": "after_apply",
+        "retained_individual_exit_record": false,
+        "test_id": "test_durable_lifecycle.DurableLifecycleTests.test_foreign_receipt_after_restore_clears_old_success_and_is_rejected",
+        "test_passed": true
+      },
+      {
+        "asserted_returncode": 17,
+        "mode": "paused",
+        "retained_individual_exit_record": false,
+        "test_id": "test_durable_lifecycle.DurableLifecycleTests.test_paused_state_and_original_deadline_survive_two_processes",
+        "test_passed": true
+      },
+      {
+        "asserted_returncode": 17,
+        "mode": "paused",
+        "retained_individual_exit_record": false,
+        "test_id": "test_durable_lifecycle.DurableLifecycleTests.test_deadline_expiry_after_restart_cannot_extend_original_budget",
+        "test_passed": true
+      }
+    ],
+    "audit_kind": "Independent read-only inspection of retained source, exact Git blobs, original SQLite rows, actual payloads and process chronology; no repeated test suite or model inference.",
+    "audit_unix_ns": 1794466719333971635,
+    "checks": {
+      "58_unique_methods_started_and_passed_exact_plan": true,
+      "all_retained_file_hashes_and_roster_match": true,
+      "all_retained_source_postimages_match_manifest": true,
+      "all_source_postimages_match_exact_git_commit": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:admission_identity_consistent": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:checkpoint_hash_and_canonical_bytes": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:original_model_hash_matches_seed700": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:single_retained_control_database": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:source_bindings_match_final_source": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:task_contract_and_budget_consistent": true,
+      "async:test_controller_sigkill_before_release_never_recreates_original_io:unique_original_effect_keys": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:admission_identity_consistent": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:checkpoint_hash_and_canonical_bytes": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:effect_0_original_bytes": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:original_model_hash_matches_seed700": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:single_retained_control_database": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:source_bindings_match_final_source": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:task_contract_and_budget_consistent": true,
+      "async:test_live_pipe_and_pre_release_pause_preserve_original_effect_owner:unique_original_effect_keys": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:admission_identity_consistent": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:checkpoint_hash_and_canonical_bytes": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:original_model_hash_matches_seed700": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:single_retained_control_database": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:source_bindings_match_final_source": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:task_contract_and_budget_consistent": true,
+      "async:test_original_worker_checks_expired_deadline_after_actual_release:unique_original_effect_keys": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:admission_identity_consistent": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:checkpoint_hash_and_canonical_bytes": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:effect_0_original_bytes": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:original_model_hash_matches_seed700": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:single_retained_control_database": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:source_bindings_match_final_source": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:task_contract_and_budget_consistent": true,
+      "async:test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery:unique_original_effect_keys": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:admission_identity_consistent": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:checkpoint_hash_and_canonical_bytes": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:original_model_hash_matches_seed700": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:single_retained_control_database": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:source_bindings_match_final_source": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:task_contract_and_budget_consistent": true,
+      "async:test_wait_budget_survives_controller_reopen_without_inference:unique_original_effect_keys": true,
+      "audit_reads_did_not_change_retained_inputs": true,
+      "before_release_sigkill_preserves_unknown_original_without_effect": true,
+      "eight_retained_model_hashes_match_exact_git_commit": true,
+      "exact_source_commit_and_tree": true,
+      "exhausted_wait_budget_retained": true,
+      "joint_controller_actual_sigkill_minus9": true,
+      "joint_does_not_claim_neural_stop_success": true,
+      "joint_exact_original_effect_once": true,
+      "joint_exact_timeline_order": true,
+      "joint_hidden_sequence_and_owner_unchanged": true,
+      "joint_no_production_or_learning_claim": true,
+      "joint_one_apply_reservation_no_refund": true,
+      "joint_original_invocation_preserved": true,
+      "joint_original_spec_and_pending_match_saved_checkpoint": true,
+      "joint_release_before_original_deadline": true,
+      "joint_release_was_recorded_after_worker_stopped_before_controller_death": true,
+      "joint_restored_unknown_then_original_complete_without_pipe": true,
+      "joint_same_original_worker_stop_and_resume_identity": true,
+      "joint_source_uses_retained_pidfd_and_blocks_restore_spawn_and_inference": true,
+      "live_original_pipe_has_observed_wait_and_current_effect": true,
+      "nine_individually_retained_controller_deaths_seven_sigkill": true,
+      "no_failures_errors_or_skips": true,
+      "raw_log_digest_matches_result": true,
+      "released_worker_past_deadline_stays_unknown_without_effect": true,
+      "retained_tree_contains_no_symlinks": true,
+      "six_additional_fixture_cuts_are_only_asserted_by_passing_cases": true,
+      "unchanged_clean_before_after_source": true
+    },
+    "failed_checks": [],
+    "input_checksum_catalog_sha256": "d111a971a2b1bd0831cf0784a76801c8bb6d1e7070d96b07fd9b084c386fde23",
+    "input_directory": "/workspace/scratch/5fe4a47a9363/async-recurrent-source-c66ebe4-run1",
+    "input_manifest_sha256": "f5154df338a729ccf2b0af8abc744d60b2918d5379f8f59dde62fc2dfe385986",
+    "input_result_sha256": "22c923252fc9833f9200d165aab3d2082b8e096f17b92d54c98ac073ff0723dc",
+    "joint_recovery": {
+      "actual_effect_count": 1,
+      "actual_value_sha256": "a9c2c7d4645febd173d526837fa1d805699feebdc4142bcea3c058c30455e5a9",
+      "apply_reservation": 4,
+      "claimed_success": false,
+      "controller_pid": 66,
+      "duplicate_effects": 0,
+      "final_policy_phase": "ready",
+      "hidden_bytes": 96,
+      "hidden_sha256": "359b9385af3afe4527568fc9985b2678b1e886f1b2cd6abbfd36d36daffb90f8",
+      "knowledge_after": "CONFIRMED_COMPLETE",
+      "knowledge_before": "UNKNOWN",
+      "original_invocation": "original:0",
+      "original_worker_pid": 68,
+      "owner_identity": {
+        "": [
+          39,
+          414338,
+          1000
+        ],
+        "admission.json": [
+          39,
+          414339,
+          1000
+        ],
+        "control.db": [
+          39,
+          414341,
+          1000
+        ],
+        "destination": [
+          39,
+          414342,
+          1000
+        ],
+        "destination/contract.json": [
+          39,
+          414346,
+          1000
+        ],
+        "destination/effects": [
+          39,
+          414343,
+          1000
+        ],
+        "destination/owner.json": [
+          39,
+          414345,
+          1000
+        ],
+        "destination/staged": [
+          39,
+          414344,
+          1000
+        ],
+        "writer.lock": [
+          39,
+          414340,
+          1000
+        ]
+      },
+      "primitive_calls": {
+        "after_fresh_report": 9,
+        "after_original_worker_exit": 8,
+        "original_ready": 6,
+        "recovered_before_worker_continue": 7
+      },
+      "release_returned": {
+        "release_attempted": true,
+        "time_ns": 6792728897178
+      },
+      "restored_pipe_available": false,
+      "sequence_before_and_after": 2,
+      "timeline": [
+        {
+          "controller_pid": 66,
+          "event": "original_worker_ready",
+          "time_ns": 6792728133136,
+          "worker_pid": 68
+        },
+        {
+          "event": "original_worker_stopped",
+          "time_ns": 6792728397333,
+          "worker_pid": 68
+        },
+        {
+          "controller_pid": 66,
+          "event": "controller_sigkill_observed",
+          "time_ns": 6792732366637
+        },
+        {
+          "event": "original_worker_continued",
+          "time_ns": 6792738640839,
+          "worker_pid": 68
+        },
+        {
+          "event": "original_worker_exit_observed",
+          "time_ns": 6792858193085
+        },
+        {
+          "event": "restored_original_readback",
+          "time_ns": 6792866127417
+        }
+      ]
+    },
+    "learning_gain_claimed": false,
+    "limitations": [
+      "The 58 count denotes unique engineering test methods, not independent real tasks, model fits, seeds executed or successful application episodes.",
+      "All eight historical GRU files are hash verified; the five joint async cases actually use seed700. Presence of eight files is not eight-seed joint qualification.",
+      "The decisive joint case ends after restored effect readback: actual complete=true, policy phase=ready, decisions=[inspect,ensure], claimed_success=false. No post-recovery neural STOP success is certified by this case.",
+      "Nine deliberate controller-death cases have individual retained exit evidence: five recurrent SIGKILL, two joint async SIGKILL, and legacy abrupt exits17/18. Six further durable-lifecycle cuts are asserted by passing tests but lack individually retained per-child originals.",
+      "Independent observer checks retained code, test execution identities and chronology; OS signal assertions and pidfd ownership come from this same-UID test harness, not an independent trusted hardware witness.",
+      "Copied retained directories intentionally have new filesystem inodes. Original inode/UID identity consistency is checked across original spec, admission, checkpoint and events, not against archival-copy inodes.",
+      "Same boot, same UID, cooperative original FileOwner, process death only. No production FinalUse/Root/AuthBus, cross-boot continuation, power-loss/common rollback qualification, independent application benefit, training gain or complete lifetime cost.",
+      "Async retry remains unqualified; missing or precommit-returned original effects remain UNKNOWN and cannot authorize redispatch.",
+      "Retained original fixture archives exist for the5 async-recurrent,8 recurrent and5 legacy-durable-async methods; remaining methods have exact test-log identities and source, without per-case original directory retention."
+    ],
+    "observed_result": {
+      "errors": 0,
+      "executed": 58,
+      "failures": 0,
+      "passed_unique_methods": 58,
+      "planned": 58,
+      "skips": 0,
+      "wall_ns": 14842045041
+    },
+    "production_authority": false,
+    "promotion": false,
+    "retained_controller_deaths": [
+      {
+        "case": "test_after_publish_real_sigkill_reconciles_only_original_key",
+        "controller_pid": 50,
+        "exit_record": "originals/test_recurrent_lifecycle/test_after_publish_real_sigkill_reconciles_only_original_key/child-0-after_publish.json",
+        "family": "recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_entered_real_sigkill_before_apply_remains_unknown_without_resend",
+        "controller_pid": 52,
+        "exit_record": "originals/test_recurrent_lifecycle/test_entered_real_sigkill_before_apply_remains_unknown_without_resend/child-0-before_apply.json",
+        "family": "recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_opaque_published_effect_preserves_unknown_and_hidden",
+        "controller_pid": 55,
+        "exit_record": "originals/test_recurrent_lifecycle/test_opaque_published_effect_preserves_unknown_and_hidden/child-0-after_publish.json",
+        "family": "recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_prepared_real_sigkill_consumes_original_decision_without_inference",
+        "controller_pid": 57,
+        "exit_record": "originals/test_recurrent_lifecycle/test_prepared_real_sigkill_consumes_original_decision_without_inference/child-0-prepared.json",
+        "family": "recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_prepared_resume_matches_uninterrupted_learned_policy_and_goal",
+        "controller_pid": 59,
+        "exit_record": "originals/test_recurrent_lifecycle/test_prepared_resume_matches_uninterrupted_learned_policy_and_goal/child-0-prepared.json",
+        "family": "recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_controller_sigkill_before_release_never_recreates_original_io",
+        "controller_pid": 61,
+        "exit_record": "originals/test_async_recurrent_lifecycle/test_controller_sigkill_before_release_never_recreates_original_io/controller-exit.json",
+        "family": "joint_async_recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery",
+        "controller_pid": 66,
+        "exit_record": "originals/test_async_recurrent_lifecycle/test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery/controller-exit.json",
+        "family": "joint_async_recurrent",
+        "kind": "SIGKILL",
+        "returncode": -9
+      },
+      {
+        "case": "test_controller_death_before_release_never_replays",
+        "controller_pid": 40,
+        "exit_record": "originals/test_durable_async_owner/test_controller_death_before_release_never_replays/events.jsonl",
+        "family": "legacy_durable_async",
+        "kind": "os._exit",
+        "returncode": 17
+      },
+      {
+        "case": "test_released_original_completes_only_after_controller_death",
+        "controller_pid": 46,
+        "exit_record": "originals/test_durable_async_owner/test_released_original_completes_only_after_controller_death/events.jsonl",
+        "family": "legacy_durable_async",
+        "kind": "os._exit",
+        "returncode": 18
+      }
+    ],
+    "schema_version": 1,
+    "source_commit": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+    "source_tree": "205a4d1958f2d57d4dbb9a1368846e53022e79b2",
+    "status": "PASS_SCOPED_RETAINED_ORIGINAL_AUDIT",
+    "suite_method_counts": {
+      "test_async_recurrent_adversarial": 7,
+      "test_async_recurrent_lifecycle": 5,
+      "test_durable_async_owner": 5,
+      "test_durable_lifecycle": 9,
+      "test_file_family": 3,
+      "test_recurrent_lifecycle": 8,
+      "test_recurrent_lifecycle_adversarial": 12,
+      "test_skill_lifecycle": 9
+    },
+    "verified_counts": {
+      "checks": 68,
+      "individually_retained_controller_death_cases": 9,
+      "joint_async_case_databases": 5,
+      "joint_async_physical_effects": 2,
+      "retained_file_digests": 244,
+      "retained_legacy_abrupt_exit_cases": 2,
+      "retained_model_git_blobs": 8,
+      "retained_sigkill_cases": 7,
+      "source_postimages_and_git_blobs": 39
+    }
+  },
+  "all_control_databases": {
+    "schema": "all-retained-control-db-readback-v1",
+    "source_commit": "c66ebe41e03b2951e88f4c8c1e6d15be8e7fa165",
+    "source_tree": "205a4d1958f2d57d4dbb9a1368846e53022e79b2",
+    "method": "read-only SQLite open, canonical raw checkpoint digest and all bound source/model hashes; no lifecycle restore. Model absent by design in five legacy async-owner records.",
+    "databases": [
+      {
+        "path": "originals/test_async_recurrent_lifecycle/test_controller_sigkill_before_release_never_recreates_original_io/session/control.db",
+        "revision": 27,
+        "raw_state_sha256": "222adf5098f5038218e162e41728352c26204b08336245590be0879e4ed953b2",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 8,
+        "recurrent": true,
+        "file_sha256": "2f7706ecc00bf15691fd36327fa2a0b6e71a179d7ad44246986abb526089419b"
+      },
+      {
+        "path": "originals/test_async_recurrent_lifecycle/test_live_pipe_and_pre_release_pause_preserve_original_effect_owner/session/control.db",
+        "revision": 34,
+        "raw_state_sha256": "5a881c4395afc6056b38652b6c950e4d2a1bbc3a3f72258311674411adbc46ef",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 8,
+        "recurrent": true,
+        "file_sha256": "df40cb54347f29fb100ca4c29cdf2a0459d96270c08af9227a6dd254006960bb"
+      },
+      {
+        "path": "originals/test_async_recurrent_lifecycle/test_original_worker_checks_expired_deadline_after_actual_release/session/control.db",
+        "revision": 29,
+        "raw_state_sha256": "3d8a97d9de5bef9f711e24977b995bf4a64a30bfad85e7c1ed6c45f77889ae90",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 8,
+        "recurrent": true,
+        "file_sha256": "96fc6ba57afef111eaf46f46e0aebde9ab8d679f994e5f9f51621356154e92b5"
+      },
+      {
+        "path": "originals/test_async_recurrent_lifecycle/test_original_worker_publishes_after_controller_sigkill_with_hidden_recovery/session/control.db",
+        "revision": 35,
+        "raw_state_sha256": "6c94c71ae941a5ce76ad7d120c35e948bea050ca817702f4722b487b0b1843bc",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 8,
+        "recurrent": true,
+        "file_sha256": "420a994f973228438f88c03438db149b719b357501fe8b755b08e23261c32524"
+      },
+      {
+        "path": "originals/test_async_recurrent_lifecycle/test_wait_budget_survives_controller_reopen_without_inference/session/control.db",
+        "revision": 36,
+        "raw_state_sha256": "f8a97ed26e22b3dca5dee2687d29b6f6d6739767e854be55962ab0cfb83a5430",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 8,
+        "recurrent": true,
+        "file_sha256": "9f2d2ed683035637b4269771732fcc4d1230c3a017296a33149ace205c418977"
+      },
+      {
+        "path": "originals/test_durable_async_owner/test_controller_death_before_release_never_replays/session/control.db",
+        "revision": 5,
+        "raw_state_sha256": "98f2ecbe825f76c63485a3376fdd9d2149e3398e1bfc03db165f734cabfced76",
+        "source_binding_verified": true,
+        "model_digest_verified": null,
+        "source_count": 3,
+        "recurrent": false,
+        "file_sha256": "b6ce4f1e928696efc1481d5dbb148e63c30cbab25166c50c3046fed5434f5e61"
+      },
+      {
+        "path": "originals/test_durable_async_owner/test_original_caller_mutation_cannot_change_frozen_worker_goal/session/control.db",
+        "revision": 4,
+        "raw_state_sha256": "f38b65d1dff6bbbad34f1d9f06526cb8ab6ae5b49568f0016608b4b2b3bfba22",
+        "source_binding_verified": true,
+        "model_digest_verified": null,
+        "source_count": 3,
+        "recurrent": false,
+        "file_sha256": "16a3edc78654a7a7e55f3dc48475643e89b3a46f73ff9d79f87059313e2f6045"
+      },
+      {
+        "path": "originals/test_durable_async_owner/test_pause_and_expiry_never_release_original/session/control.db",
+        "revision": 9,
+        "raw_state_sha256": "c3ab6898674681cf89e29335978b395c1fb5127929ada7d348df4b37319ae7f4",
+        "source_binding_verified": true,
+        "model_digest_verified": null,
+        "source_count": 3,
+        "recurrent": false,
+        "file_sha256": "50bf0b1c178b7f1b065b016247e1faa53e5abff95d049a6f6d3432d6ed8608b6"
+      },
+      {
+        "path": "originals/test_durable_async_owner/test_released_original_completes_only_after_controller_death/session/control.db",
+        "revision": 9,
+        "raw_state_sha256": "a31c0f01e1119e807887fcdd25e9b41b1ac9baf6aa4a0e1fecb5a98709b433cd",
+        "source_binding_verified": true,
+        "model_digest_verified": null,
+        "source_count": 3,
+        "recurrent": false,
+        "file_sha256": "a70f243e1d4bcf18b4146ce49f1b6bca1c73c7cf7bdc0c2aede6ab33325144a5"
+      },
+      {
+        "path": "originals/test_durable_async_owner/test_writer_binding_and_observation_budget_survive_reopen/session/control.db",
+        "revision": 6,
+        "raw_state_sha256": "d6f27b79493b8eaebbbb365e05db13a5c92cffd5f936886668bb92df7b018bf9",
+        "source_binding_verified": true,
+        "model_digest_verified": null,
+        "source_count": 3,
+        "recurrent": false,
+        "file_sha256": "7bc282abe24702fff5b4f7c906de38e46b25f69637f656c5a4d79db822f68485"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_after_publish_real_sigkill_reconciles_only_original_key/session/control.db",
+        "revision": 23,
+        "raw_state_sha256": "e9611b6b732d144a0b7b24284871b19fcea8a35c57bd167c6a43f898f89c7687",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "3c3c3b7867201ddf8fbcf4e01c6a1a1fc0b02e3d5661a0ac2646460d1b6b23ab"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_different_real_model_is_rejected_without_checkpoint_write/session/control.db",
+        "revision": 7,
+        "raw_state_sha256": "4fdd53c50d49094a4cc6ce52588322fb7394fa34b7caf139604e6fd2dada6479",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "8294633a959146f435167c0713b5d7ee4b6e9602cb4c3a113b92a701849e5a29"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_entered_real_sigkill_before_apply_remains_unknown_without_resend/session/control.db",
+        "revision": 29,
+        "raw_state_sha256": "5d4930d00138f72163f82f5b515a1e987dd68843c5a7f182ba0eb8e9c63e6aff",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "78563844705e5a0e3a05b18c94cb06cfe7005953b90e1a348abfc2371ee2b599"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_exhausted_budget_is_not_refunded_and_cannot_advance_hidden/session/control.db",
+        "revision": 33,
+        "raw_state_sha256": "8b92f28c6ea9a17c86dad535123987be6e492d6448868500455a7dba914de990",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "806a3e3342b126369e28618e5884ced19aba1cb7f4dfbc880180dbf3d4cbf833"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_opaque_published_effect_preserves_unknown_and_hidden/session/control.db",
+        "revision": 22,
+        "raw_state_sha256": "64508635dfb0436ae352bb79bce3af560cc5aa5d787e29693a9a0253c90b365f",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "de41d713b6ee3e9d8b3a82ab93dc55c5eee7daa0f64a97ccda06199bd7b0919c"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_pause_and_elapsed_original_deadline_preserve_hidden_without_inference/session/control.db",
+        "revision": 12,
+        "raw_state_sha256": "75f5ec2e5b7e297f1c8b2fe66d388e0bc5b3c43677af1082428c95ccf1a0852d",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "82bd6586c2961e12ec308d0eb8cdf06d7c5247b90aafa708a73badbb46309207"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_prepared_real_sigkill_consumes_original_decision_without_inference/session/control.db",
+        "revision": 22,
+        "raw_state_sha256": "061d39bc054b22251ee6219a875290de88d38fdb94cc0b169530c077f7ba202e",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "97f84b877f2fb81f59220bd046f757c43960422608c0078a6e3b900a870de9c5"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_prepared_resume_matches_uninterrupted_learned_policy_and_goal/reference/control.db",
+        "revision": 32,
+        "raw_state_sha256": "31c0bebb10ffc19ed1a5c9525d64aa112b2e0579f74437dd80f6546cf7360823",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "78ffebe404d2300bf3f4f8e81ec27c4bc2085afcc19061cfe419d301dd075658"
+      },
+      {
+        "path": "originals/test_recurrent_lifecycle/test_prepared_resume_matches_uninterrupted_learned_policy_and_goal/session/control.db",
+        "revision": 34,
+        "raw_state_sha256": "c2a19e32591c77d7964587e263435f8223b10aa3f7ee7e53eef12ed84220422a",
+        "source_binding_verified": true,
+        "model_digest_verified": true,
+        "source_count": 7,
+        "recurrent": true,
+        "file_sha256": "b7b4d6a8912e7e46cecbafee69675d0aae1c00c66a6ef9671136cfb6d7741da0"
+      }
+    ],
+    "verified_count": 19
+  }
+}
