@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-n256-execution-receipt-publisher-source-freeze-v1",
+  "identity": "hcsn-n256-execution-receipt-publisher-source-20261115-c06d-001",
+  "base_commit": "ca307ce5f1e1856b8da5a36e301a1dbc30b24666",
+  "base_tree": "f142d47193469018befee9ef09818c87125e716d",
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-execution-receipt-publisher-intent.yml": "d03d7356520b011b877d3a025a515f8610cd75189d36f1e762e65d6ad1d10972",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/README.md": "95a78e3e76bfb993a5ead62ee8bb32f91580ce8fa0c8fdd7b026da3d6f9108ca",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/DEVELOPMENT_RESULTS.md": "7668a6a77f6461afd1e41a93461797f7b183d5d6b955e18666144c805ffeacc4",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/REQUEST.json": "c1f05542d19e83ec8561d303fa825c02e6c71c665e20fd547bd8bdfc945dec42",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/__init__.py": "144a11b7b16146671c54b3562fca31e360e3b1f2e1dcf89309490f06487dc05b",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/publisher.py": "237f34ca7bc8e82d8c5b44e37ae294bf9c9d7ca19bf7f9d0f0275de4a880ef85",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/static_inspector.py": "64558b034adaced64fa68e1b80638724488374511d2905d764d649b8d4726994",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/test_publisher.py": "5fcf29d2a47aa9bdf89aaa6cd6e02906b25bd63b7761b340efcf1b72fede5b8f",
+    "qualification/hcsn_currentstate_n256_execution_receipt_publisher_intent/verify_source.py": "f2623a8cab9e8dd8b271727821c21f30878ad81334a4acd8c71d5651abd4f125"
+  },
+  "inherited_blocking_ci": {
+    "source_run_id": 43721551127,
+    "evidence_run_id": 43721791160,
+    "per_run_jobs": 30,
+    "per_run_success": 9,
+    "per_run_failure": 16,
+    "per_run_cancelled": 2,
+    "per_run_skipped": 3,
+    "preserved_as_success": false
+  },
+  "required_external_originals_present": 0,
+  "required_process_facts_present": 0,
+  "authentic_execution_receipts_published": 0,
+  "dynamic_runs": 0,
+  "matrix_exponential_actions": 0,
+  "provider_calls": 0,
+  "oracle_calls": 0,
+  "serializer_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "c2_full_replay_completed": "0/6",
+  "hpca_status": "NO_UPDATE_EXTERNAL_CUSTODY_AND_SAME_BUDGET_BENEFIT_OPEN",
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false,
+  "status": "PASS_SOURCE_ONLY_HOLD_EXTERNAL_ORIGINALS"
+}
