@@ -2,7 +2,7 @@ name: Hepta foundation owner validation
 
 on:
   push:
-    branches: ["codex/hia-foundation-contract-*"]
+    branches: ["codex/hia-foundation-contract-*", "codex/hia-patch-output-agentd-bridge-*"]
   workflow_call:
   workflow_dispatch:
 
