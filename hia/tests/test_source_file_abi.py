@@ -63,7 +63,8 @@ def verify(library_dir):
     function = library.codex_hia_source_file
     function.restype = ctypes.c_uint64
     function.argtypes = [ctypes.c_void_p, ctypes.c_uint64] * 3
-    counts = {"native_calls": 0, "error_no_write_cases": 0, "query_calls": 0, "emit_calls": 0}
+    counts = {"native_calls": 0, "error_no_write_cases": 0, "query_calls": 0, "emit_calls": 0,
+              "strict_trusted_plan_comparisons": 0}
     count_lock = Lock()
 
     def invoke(source, frame, expected_status=0, expected=None, output_size=40):
@@ -105,11 +106,16 @@ def verify(library_dir):
         assert operation in (0, 2, 4, 6)
         rows = tuple(rows)
         expected = ((40 + 32 * len(rows), len(rows), logical, total, preferred), rows)
-        invoke(source, frame, expected=expected)
-        invoke(source, changed_word(frame, 0, operation + 1), expected=expected, output_size=expected[0][0])
-        if expanded:
-            invoke(source, frame, expected=expected, output_size=expected[0][0] + 19)
-            invoke(source, changed_word(frame, 0, operation + 1), expected=expected, output_size=expected[0][0] + 19)
+        for profile in (0, 8):
+            query = changed_word(frame, 0, operation + profile)
+            emit = changed_word(frame, 0, operation + profile + 1)
+            invoke(source, query, expected=expected)
+            invoke(source, emit, expected=expected, output_size=expected[0][0])
+            if expanded:
+                invoke(source, query, expected=expected, output_size=expected[0][0] + 19)
+                invoke(source, emit, expected=expected, output_size=expected[0][0] + 19)
+        with count_lock:
+            counts["strict_trusted_plan_comparisons"] += 1
 
     parse_cases = [
         (b"", (), 1), (b"x", ((3, 0, 1, 0),), 1),
@@ -178,8 +184,8 @@ def verify(library_dir):
     source, frame = state_request(2, ("aé\r\n汉😀z".encode(),), overlapping)
     pair(source, frame, ((3, 1, 2, 1), (3, 1, 11, 3), (3, 13, 0, 1)), 3, 16, 1)
 
-    for operation in range(8):
-        if operation < 2:
+    for operation in range(16):
+        if (operation & 7) < 2:
             source, frame = b"a\nb", parse_request(operation, b"a\nb")
         else:
             source, frame = state_request(operation, (b"a",), ((3, 0, 1, 0),))
@@ -195,19 +201,19 @@ def verify(library_dir):
         for index, huge in [(1, U64_MAX), (1, U64_MAX // 8 + 1), (2, U64_MAX // 32 + 1),
                             (3, U64_MAX // 24 + 1), (4, U64_MAX // 8 + 1)]:
             invoke(source, changed_word(frame, index, huge), INVALID)
-    for operation in (8, 9, 255, 1 << 32, (1 << 32) + 7, 1 << 63, U64_MAX):
+    for operation in (16, 17, 255, 1 << 32, (1 << 32) + 7, 1 << 63, U64_MAX):
         invoke(b"a", parse_request(operation, b"a"), INVALID)
     for index, value in [(5, 1), (5, U64_MAX), (6, 0), (6, 4), (8, 0), (9, 1), (10, 2), (11, 0), (11, U64_MAX)]:
-        for operation in (0, 1):
+        for operation in (0, 1, 8, 9):
             invoke(b"a", changed_word(parse_request(operation, b"a"), index, value), INVALID)
-    for operation in (0, 1):
+    for operation in (0, 1, 8, 9):
         for lengths in [(1, 2, 1), (1, 2, 1, 1, 0)]:
             invoke(b"a", request(operation, lengths, preferred=0, parse_id=3), INVALID)
         for field in ("lines", "replacements", "inserted"):
             values = {"lines": ((3, 0, 1, 0),), "replacements": ((0, 0, 0),), "inserted": (3,)}
             invoke(b"a", request(operation, (1, 2, 1, 1), preferred=0, parse_id=3, **{field: values[field]}), INVALID)
 
-    for operation in range(2, 8):
+    for operation in (*range(2, 8), *range(10, 16)):
         source, frame = state_request(operation, ("é😀汉".encode(),), ((3, 0, 9, 0),))
         for index, value in [(5, 0), (5, 4), (5, U64_MAX), (5, (1 << 32) + 1), (6, 3),
                              (8, 0), (9, 1), (10, 2), (11, U64_MAX), (11, (1 << 32) + 9)]:
@@ -232,12 +238,12 @@ def verify(library_dir):
                     invoke(bad_source, bad_frame, INVALID)
         # The whole source is UTF-8, but the declared pool boundary bisects é.
         invoke(b"\n\r\n\r\xc3\xa9", request(operation, (1, 2, 1, 1, 1)), INVALID)
-    for operation in (4, 5, 6, 7):
+    for operation in (4, 5, 6, 7, 12, 13, 14, 15):
         source, frame = state_request(operation, (b"a",), replacements=((0, 0, 0),))
         invoke(source, frame, INVALID)
         source, frame = state_request(operation, (b"a",), inserted=(3,))
         invoke(source, frame, INVALID)
-    for operation in (2, 3):
+    for operation in (2, 3, 10, 11):
         for replacements, inserted in [
             (((2, 0, 0), (1, 0, 0)), ()), (((0, 2, 0), (1, 0, 0)), ()),
             (((U64_MAX, 1, 0),), ()), (((1, U64_MAX, 0),), ()),
@@ -265,17 +271,19 @@ def verify(library_dir):
                 invoke(source, frame, INVALID_UTF8)
     # Minimum sizes precede malformed metadata, which precedes UTF-8 and
     # final emit capacity. In particular no partially computed plan may leak.
-    invoke(b"\xff", changed_word(parse_request(1, b"\xff"), 0, 8), SHORT, output_size=39)
+    invoke(b"\xff", changed_word(parse_request(1, b"\xff"), 0, 16), SHORT, output_size=39)
     invoke(b"\xff", parse_request(1, b"\xff")[:63], SHORT)
-    invoke(b"\xff", changed_word(parse_request(1, b"\xff"), 0, 8), INVALID)
+    invoke(b"\xff", changed_word(parse_request(1, b"\xff"), 0, 16), INVALID)
     invoke(b"a\n\xff", parse_request(1, b"a\n\xff"), INVALID_UTF8)
     emit_fixtures = [(b"a\nb", parse_request(1, b"a\nb"), 104)]
     for operation in (3, 5, 7):
         source, frame = state_request(operation, (b"a",), ((3, 0, 1, 2),))
         emit_fixtures.append((source, frame, 104 if operation == 7 else 72))
     for source, frame, needed in emit_fixtures:
-        for size in range(40, needed):
-            invoke(source, frame, SHORT, output_size=size)
+        operation = struct.unpack_from("<Q", frame)[0]
+        for profile in (0, 8):
+            for size in range(40, needed):
+                invoke(source, changed_word(frame, 0, operation + profile), SHORT, output_size=size)
 
     # Both backing bytes and emitted row tables cross the old 1 MiB boundary.
     large_source = "é汉😀a".encode() * 220_000
@@ -307,7 +315,7 @@ def verify(library_dir):
         "source_sha256": component["source_sha256"], "compiler_sha256": build["compiler_sha256"],
         "build_report_sha256": digest(build_path), "test_source_sha256": digest(Path(__file__)),
         "request_header_bytes": 64, "result_header_bytes": 40, "result_record_bytes": 32,
-        "contract": "explicit complete query/emit plans; strict canonical UTF-8 and pool/subspan boundaries; live disjoint unaligned buffers; exact workspace extent",
+        "contract": "explicit complete query/emit plans; strict canonical UTF-8 profile and trusted valid-string profile; both retain complete frame/range/pool/subspan checks; live disjoint unaligned buffers; exact workspace extent",
         "error_contract": "every returned error leaves source, request, output and all canaries byte-identical",
         "oracle_scope": "explicit ABI fixtures only; complete original-Rust semantic comparison is test_native_source_file_caller.py",
     }
@@ -318,7 +326,7 @@ def main():
     parser.add_argument("--library-dir", required=True, type=Path)
     parser.add_argument("--report", required=True, type=Path)
     args = parser.parse_args()
-    report = {"schema": "codex.hia.source-file-abi.v1", "passed": False}
+    report = {"schema": "codex.hia.source-file-abi.v2", "passed": False}
     try:
         report.update(verify(args.library_dir.resolve(strict=True)))
     except (AssertionError, OSError, KeyError, ValueError) as error:

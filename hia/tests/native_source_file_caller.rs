@@ -105,6 +105,37 @@ fn newline_and_multi_apply_semantics_match_the_complete_original() {
 }
 
 #[test]
+fn dense_lines_and_insertions_preserve_capacity_boundary_semantics() {
+    for length in [0, 1, 31, 32, 63, 64, 127, 128, 255, 256, 257, 511, 512, 513] {
+        let unicode = format!("{}{}", "é".repeat(length / 2), "x".repeat(length % 2));
+        for contents in ["x".repeat(length), "\n".repeat(length), unicode] {
+            compare_every_prefix(
+                &contents,
+                &[vec![], vec![(0, 0, vec!["one\r\nrow".into()])]],
+            );
+        }
+    }
+    for line_count in [0, 1, 127, 128, 255, 256, 257, 511] {
+        let contents = "row\r\n".repeat(line_count);
+        for inserted_count in [0, 1, 2, 255, 256, 257] {
+            let inserted = (0..inserted_count)
+                .map(|index| format!("{index}\nembedded\rtext"))
+                .collect();
+            compare_every_prefix(
+                &contents,
+                &[
+                    vec![(line_count / 2, 0, inserted)],
+                    vec![],
+                    vec![(0, usize::MAX, vec![])],
+                    vec![(usize::MAX, 0, vec!["restored".into()])],
+                ],
+            );
+        }
+    }
+    report();
+}
+
+#[test]
 fn every_short_line_break_arrangement_and_edit_window_matches() {
     let alphabet = ['a', '\r', '\n', '\0', 'é', '😀'];
     for length in 0..=5 {
