@@ -440,6 +440,24 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
         serde_json::json!({"state":"terminal","outcome":"succeeded"})
     );
     assert_eq!(result["action_observation"]["historical_effect"], "applied");
+    // Exercise the Desktop response predicate with the original owner's real
+    // retained receipt and this same actual recovery-channel observation. This
+    // does not replace full Core callback/authorization qualification.
+    let mut desktop = serde_json::json!({
+        "source_domain":"original_protected_sender_reference",
+        "provenance":{"tool":crate::notes_thread_tool::REPLACE_TOOL},
+        "operation_id":result["operation_id"],"state":result["state"],
+        "receipt_utf8":result["receipt_utf8"],"original_target":result["original_target"],
+        "current_state_readback_available":true,"current_state":result["current_document"]
+    });
+    for tool in [
+        crate::notes_thread_tool::REPLACE_TOOL,
+        crate::notes_thread_tool::STATUS_TOOL,
+    ] {
+        assert!(crate::desktop_thread_tool::runtime::response_succeeded(
+            tool, &desktop
+        ));
+    }
     assert_eq!(
         peer.join().expect("application model thread")?,
         vec![
@@ -449,6 +467,16 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
     );
     let unavailable = observer.observe_document().ok();
     assert!(unavailable.is_none());
+    desktop["current_state_readback_available"] = serde_json::json!(false);
+    desktop["current_state"] = serde_json::Value::Null;
+    for tool in [
+        crate::notes_thread_tool::REPLACE_TOOL,
+        crate::notes_thread_tool::STATUS_TOOL,
+    ] {
+        assert!(!crate::desktop_thread_tool::runtime::response_succeeded(
+            tool, &desktop
+        ));
+    }
     let lost = crate::notes_action_observer::original_notes_status(
         &original,
         terminal.as_deref(),
