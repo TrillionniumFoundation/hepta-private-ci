@@ -1,0 +1,317 @@
+{
+  "schema": "codex.hia.patch-application-buffer-contract.v1",
+  "status": "normative candidate; behavior qualification is recorded separately",
+  "revision": 1,
+  "module": "patch_application",
+  "symbol": "codex_hia_patch_application",
+  "target": "x86_64-unknown-linux-gnu",
+  "foreign_abi": "(const u8 *source, u64 source_len, u8 *output, u64 output_capacity, u8 *workspace, u64 workspace_len) -> u64; f0 returns u32 zero-extended",
+  "source_identity": {
+    "baseline_head": "0339bd5f863ba2459084115906a875b10595a704",
+    "baseline_tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+    "baseline_complete_lib_sha256": "483b1d60104e34359490a343ee37960e0f73221dc6ceeb78ac76ce49051001a7",
+    "baseline_complete_lib_bytes": 48879,
+    "upstream_complete_original_lib_sha256": "7daa1b1f7df70220bcc2bd45e5e169246261c689b388fbb030c6b60b9d5db07a",
+    "upstream_complete_original_lib_git_blob": "1450223f39c2ce2e3ec6709df58a612d681e4b0d"
+  },
+  "layout": {
+    "endianness": "little",
+    "word_bytes": 8,
+    "source_exact_bytes": 64,
+    "output_min_bytes": 64,
+    "workspace_exact_bytes": 0,
+    "request_words": [
+      "revision=1",
+      "entry",
+      "phase",
+      "event",
+      "reserved=0",
+      "reserved=0",
+      "reserved=0",
+      "reserved=0"
+    ],
+    "response_words": [
+      "revision=1",
+      "entry echo",
+      "next_phase",
+      "action",
+      "previous_phase echo",
+      "event echo",
+      "reserved=0",
+      "reserved=0"
+    ]
+  },
+  "entries": {
+    "0": "PATCH_TEXT",
+    "1": "DIRECT_HUNKS"
+  },
+  "phases": {
+    "0": "INITIAL",
+    "1": "AFTER_PARSE",
+    "2": "AFTER_INVALID_PATCH_WRITE",
+    "3": "AFTER_INVALID_HUNK_WRITE",
+    "4": "AFTER_EFFECTS",
+    "5": "AFTER_SUMMARY",
+    "6": "AFTER_EFFECTS_ERROR_WRITE",
+    "7": "AFTER_EFFECTS_ERROR_CLASSIFY",
+    "8": "TERMINAL"
+  },
+  "events": {
+    "0": "START",
+    "1": "PARSE_OK",
+    "2": "PARSE_INVALID_PATCH",
+    "3": "PARSE_INVALID_HUNK",
+    "4": "WRITE_OK",
+    "5": "WRITE_ERROR",
+    "6": "EFFECTS_OK",
+    "7": "EFFECTS_ERROR",
+    "8": "EFFECTS_ERROR_IS_IO",
+    "9": "EFFECTS_ERROR_IS_OTHER"
+  },
+  "actions": {
+    "1": "PARSE",
+    "2": "APPLY_EFFECTS",
+    "3": "WRITE_INVALID_PATCH",
+    "4": "WRITE_INVALID_HUNK",
+    "5": "PRINT_SUMMARY",
+    "6": "WRITE_EFFECTS_ERROR",
+    "7": "CLASSIFY_EFFECTS_ERROR",
+    "8": "RETURN_SUCCESS",
+    "9": "RETURN_PARSE_FAILURE",
+    "10": "RETURN_WRITER_FAILURE_EMPTY_DELTA",
+    "11": "RETURN_WRITER_FAILURE_COMMITTED_DELTA",
+    "12": "RETURN_EFFECTS_IO_FAILURE",
+    "13": "RETURN_EFFECTS_OTHER_FAILURE"
+  },
+  "transitions": [
+    {
+      "entry": 0,
+      "phase": 0,
+      "event": 0,
+      "next_phase": 1,
+      "action": 1
+    },
+    {
+      "entry": 1,
+      "phase": 0,
+      "event": 0,
+      "next_phase": 4,
+      "action": 2
+    },
+    {
+      "entry": 0,
+      "phase": 1,
+      "event": 1,
+      "next_phase": 4,
+      "action": 2
+    },
+    {
+      "entry": 0,
+      "phase": 1,
+      "event": 2,
+      "next_phase": 2,
+      "action": 3
+    },
+    {
+      "entry": 0,
+      "phase": 1,
+      "event": 3,
+      "next_phase": 3,
+      "action": 4
+    },
+    {
+      "entry": 0,
+      "phase": 2,
+      "event": 4,
+      "next_phase": 8,
+      "action": 9
+    },
+    {
+      "entry": 0,
+      "phase": 2,
+      "event": 5,
+      "next_phase": 8,
+      "action": 10
+    },
+    {
+      "entry": 0,
+      "phase": 3,
+      "event": 4,
+      "next_phase": 8,
+      "action": 9
+    },
+    {
+      "entry": 0,
+      "phase": 3,
+      "event": 5,
+      "next_phase": 8,
+      "action": 10
+    },
+    {
+      "entry": 0,
+      "phase": 4,
+      "event": 6,
+      "next_phase": 5,
+      "action": 5
+    },
+    {
+      "entry": 0,
+      "phase": 4,
+      "event": 7,
+      "next_phase": 6,
+      "action": 6
+    },
+    {
+      "entry": 0,
+      "phase": 5,
+      "event": 4,
+      "next_phase": 8,
+      "action": 8
+    },
+    {
+      "entry": 0,
+      "phase": 5,
+      "event": 5,
+      "next_phase": 8,
+      "action": 11
+    },
+    {
+      "entry": 0,
+      "phase": 6,
+      "event": 4,
+      "next_phase": 7,
+      "action": 7
+    },
+    {
+      "entry": 0,
+      "phase": 6,
+      "event": 5,
+      "next_phase": 8,
+      "action": 11
+    },
+    {
+      "entry": 0,
+      "phase": 7,
+      "event": 8,
+      "next_phase": 8,
+      "action": 12
+    },
+    {
+      "entry": 0,
+      "phase": 7,
+      "event": 9,
+      "next_phase": 8,
+      "action": 13
+    },
+    {
+      "entry": 1,
+      "phase": 4,
+      "event": 6,
+      "next_phase": 5,
+      "action": 5
+    },
+    {
+      "entry": 1,
+      "phase": 4,
+      "event": 7,
+      "next_phase": 6,
+      "action": 6
+    },
+    {
+      "entry": 1,
+      "phase": 5,
+      "event": 4,
+      "next_phase": 8,
+      "action": 8
+    },
+    {
+      "entry": 1,
+      "phase": 5,
+      "event": 5,
+      "next_phase": 8,
+      "action": 11
+    },
+    {
+      "entry": 1,
+      "phase": 6,
+      "event": 4,
+      "next_phase": 7,
+      "action": 7
+    },
+    {
+      "entry": 1,
+      "phase": 6,
+      "event": 5,
+      "next_phase": 8,
+      "action": 11
+    },
+    {
+      "entry": 1,
+      "phase": 7,
+      "event": 8,
+      "next_phase": 8,
+      "action": 12
+    },
+    {
+      "entry": 1,
+      "phase": 7,
+      "event": 9,
+      "next_phase": 8,
+      "action": 13
+    }
+  ],
+  "transport": {
+    "OK": 0,
+    "SHORT": 4294967294,
+    "INVALID": 4294967295,
+    "precedence": [
+      "If source_len<64 or output_capacity<64 return SHORT before reading any source bytes.",
+      "Otherwise reject source_len!=64 or workspace_len!=0 as INVALID.",
+      "Reject revision!=1, nonzero reserved words, entry outside0..1, phase outside0..8, event outside0..9 as INVALID.",
+      "Reject every entry/phase/event triple absent from the exact transition table as INVALID.",
+      "After all validation, write exactly output[0:64] and return OK."
+    ],
+    "no_write_on_nonzero": "No output or workspace byte changes; source is always unchanged. Output tail beyond64 is unchanged on success.",
+    "semantic_errors": "Parse, effects and writer errors are facts carried by callbacks; every listed transition returns C status0 including failure terminals. No ABI error stands in for semantic rollback.",
+    "pointer_preconditions": "Caller supplies live memory for each nonempty advertised range; source/output are disjoint. Workspace length is zero and pointer may be null. Native retains no pointer.",
+    "stateless_scope": "Each call is a pure transition. Replaying an identical valid request is deterministic and allowed; no process-global history or anti-replay claim. The Rust adapter exclusively owns its continuation and executes each requested action once. A terminal phase has no valid event."
+  },
+  "semantic_boundary": {
+    "native_owns": [
+      "parser/effects/summary sequencing decisions",
+      "diagnostic selection",
+      "writer error precedence over parse/effects error",
+      "empty versus committed delta terminal selection",
+      "classification-to-terminal effects error selection"
+    ],
+    "rust_owns": [
+      "original typed values and error object ownership",
+      "fact-only Result/ParseError/downcast callback encoding",
+      "execution of the existing parser and native effects/summary components",
+      "identical original writeln! expressions and async effects await",
+      "validation and materialization of the native-selected terminal Rust value"
+    ],
+    "original_writer_calls": [
+      "writeln!(stderr, \"Invalid patch: {message}\")",
+      "writeln!(stderr, \"Invalid patch hunk on line {line_number}: {message}\")",
+      "print_summary(&affected_paths, stdout)",
+      "writeln!(stderr, \"{msg}\")"
+    ],
+    "error_rules": [
+      "Parse diagnostic failure returns the writer io::Error and empty exact delta. Successful diagnostic returns the original ParseError and empty exact delta.",
+      "Successful effects call summary. Summary failure returns its writer io::Error and a clone of the committed delta, with no stderr diagnostic.",
+      "Effects failure computes its to_string() once and writes stderr before downcasting. A failed diagnostic returns the writer io::Error and a clone of committed delta.",
+      "After successful effects diagnostic, From<&io::Error> reconstructs kind+to_string with context I/O error; non-io keeps context=msg and source=io::Error::other(original anyhow error).",
+      "On success or preserved effects failure the committed delta is moved exactly as before. No operation is replayed or rolled back."
+    ],
+    "async": "The existing effects future is awaited exactly once in its original order. Native calls are synchronous; no new yield/cancellation point is introduced. Cancellation while the host future is pending does not issue a resume or replay.",
+    "public_signatures": "Unchanged. apply_patch/apply_hunks default wrappers remain source-identical and route through the native with-options functions under hia-native. Default options are NormalizeToLf and follow_symlinks=true; no implicit environment read.",
+    "source_routing": "Only a new cfg module and imports plus three exact cfg guards; whole lib.rs can be inverted byte-for-byte to the clean baseline and then by the existing inverse to the complete original."
+  },
+  "qualification": {
+    "whole_codex_rewritten": false,
+    "production_dispatch_migrated": false,
+    "legacy_retirement": false,
+    "global_default_changed": false
+  }
+}
