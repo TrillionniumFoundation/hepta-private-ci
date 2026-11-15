@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="3" failures="2" errors="0" uuid="63d27162-f9ee-4de6-a91d-4ad0dd187c40" timestamp="2026-11-12T08:48:02.156-05:00" time="120.067">
+    <testsuite name="codex-hepta-agentd" tests="3" disabled="0" errors="0" failures="2">
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel" classname="codex-hepta-agentd" timestamp="2026-11-12T08:48:02.177-05:00" time="60.008">
+            <failure type="test timeout"/>
+            <system-out>
+running 1 test
+</system-out>
+            <system-err>HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongPage) elapsed_ms=0
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongPage) elapsed_ms=8538
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongPage) elapsed_ms=8553
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongPage) elapsed_ms=9376
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongPage) elapsed_ms=9376
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongPage) elapsed_ms=9377
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongPage) elapsed_ms=9378
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongCompletion) elapsed_ms=9378
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongCompletion) elapsed_ms=18030
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongCompletion) elapsed_ms=18039
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongCompletion) elapsed_ms=18914
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongCompletion) elapsed_ms=18914
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongCompletion) elapsed_ms=18914
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongCompletion) elapsed_ms=18916
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongOffset) elapsed_ms=18916
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongOffset) elapsed_ms=27746
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongOffset) elapsed_ms=27763
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongOffset) elapsed_ms=28610
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongOffset) elapsed_ms=28610
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongOffset) elapsed_ms=28610
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongOffset) elapsed_ms=28613
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongTotal) elapsed_ms=28613
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(WrongTotal) elapsed_ms=37482
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(WrongTotal) elapsed_ms=37498
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(WrongTotal) elapsed_ms=38378
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(WrongTotal) elapsed_ms=38378
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(WrongTotal) elapsed_ms=38378
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(WrongTotal) elapsed_ms=38380
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(CorruptHeads) elapsed_ms=38380
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(CorruptHeads) elapsed_ms=47232
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(CorruptHeads) elapsed_ms=47243
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(CorruptHeads) elapsed_ms=48233
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(CorruptHeads) elapsed_ms=48233
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(CorruptHeads) elapsed_ms=48234
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(CorruptHeads) elapsed_ms=48236
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(CloseAfterFirst) elapsed_ms=48236
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-ready fault=Some(CloseAfterFirst) elapsed_ms=56534
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-start fault=Some(CloseAfterFirst) elapsed_ms=56549
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-readback-finished fault=Some(CloseAfterFirst) elapsed_ms=57370
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-join-start fault=Some(CloseAfterFirst) elapsed_ms=57370
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-peer-joined fault=Some(CloseAfterFirst) elapsed_ms=57370
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-closed fault=Some(CloseAfterFirst) elapsed_ms=57372
+HEPTA_CANDIDATE_MATERIAL_PHASE phase=fault-fixture-start fault=Some(WrongFinishDigest) elapsed_ms=57372
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic" classname="codex-hepta-agentd" timestamp="2026-11-12T08:49:02.188-05:00" time="0.019">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic" classname="codex-hepta-agentd" timestamp="2026-11-12T08:49:02.207-05:00" time="60.014">
+            <failure type="test timeout"/>
+            <system-out>
+running 1 test
+</system-out>
+            <system-err>LEARN_FDE_C_TIMING command_readback_elapsed_us=1214532 result=Ok(())
+LEARN_FDE_C_TIMING evidence_readback_elapsed_us=502701 result=Err(OwnerUnavailable(&quot;original learning evidence owner&quot;))
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>
