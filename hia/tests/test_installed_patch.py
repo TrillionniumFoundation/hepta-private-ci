@@ -26,7 +26,12 @@ import time
 
 
 NATIVE_SYMBOL = "codex_hia_seek_sequence"
-NATIVE_SYMBOLS = (NATIVE_SYMBOL, "codex_hia_source_file", "codex_hia_file_update")
+NATIVE_SYMBOLS = (
+    NATIVE_SYMBOL,
+    "codex_hia_source_file",
+    "codex_hia_file_update",
+    "codex_hia_parser",
+)
 INPUT_SIZE = 2 * 1024 * 1024
 PATCH = (
     "*** Begin Patch\n"
@@ -240,6 +245,95 @@ def run_source_file_case(
     print(f"PASS mixed endings and unterminated tail: {dispatch}, original Rust parity")
 
 
+def run_parser_cases(
+    binary: Path, reference: Path, work: Path, environment: dict, report: dict,
+    *, dispatch: str = "stdin",
+) -> None:
+    """Check complete grammar and parse-error atomicity in the installed product."""
+    initial = {"old.txt": b"first\r\ncontext\r\nold\r\nlast\r\n", "delete.txt": b"remove me\n"}
+    rich_patch = (
+        "\u2003<<'EOF'\r\n*** Begin Patch \t\r\n"
+        "*** Add File: 新文件.txt \t\r\n+alpha\r\n+βeta\r\n"
+        "*** Update File: old.txt\r\n*** Move to: renamed.txt\r\n"
+        "@@ context\r\n-old\r\n+new\r\n last\r\n*** End of File\r\n"
+        "*** Delete File: delete.txt\r\n*** End Patch \t\r\nEOF\u3000"
+    )
+    repeated_context = (
+        "*** Begin Patch\n*** Add File: created.txt\n+must not persist\n"
+        "*** Update File: old.txt\n@@\n@@ again\n*** End Patch"
+    )
+    duplicate_environment = (
+        "*** Begin Patch\n*** Environment ID: first\n*** Environment ID: second\n"
+        "*** Delete File: old.txt\n*** End Patch"
+    )
+    fixtures = (
+        (
+            "heredoc_unicode_paths_move_context_eof", rich_patch, 0,
+            "Success. Updated the following files:\nA 新文件.txt\nM renamed.txt\nD delete.txt\n".encode(),
+            b"", {"新文件.txt": "alpha\nβeta\n".encode(), "renamed.txt": b"first\r\ncontext\r\nnew\r\nlast\r\n"},
+        ),
+        (
+            "syntax_error_does_not_apply_accepted_prefix", repeated_context, 1, b"",
+            b"Invalid patch hunk on line 6: Unexpected line found in update hunk: '@@ again'. "
+            b"Every line should start with ' ' (context line), '+' (added line), or '-' (removed line)\n",
+            initial,
+        ),
+        (
+            "duplicate_environment_error", duplicate_environment, 1, b"",
+            b"Invalid patch: apply_patch environment_id cannot be specified more than once\n", initial,
+        ),
+    )
+    work.mkdir()
+    child_environment = environment.copy()
+    child_environment["CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS"] = "1"
+    for name, patch, exit_code, stdout, stderr, expected_files in fixtures:
+        if dispatch == "stdin":
+            arguments, patch_input = [], patch.encode()
+        elif dispatch == "codex_arg1":
+            arguments, patch_input = ["--codex-run-as-apply-patch", patch], None
+        else:
+            raise RuntimeError(f"unknown patch invocation: {dispatch}")
+        case = {
+            "name": name, "dispatch": dispatch, "passed": False,
+            "patch_sha256": hashlib.sha256(patch.encode()).hexdigest(),
+            "expected_exit_code": exit_code,
+        }
+        report["cases"].append(case)
+        observations = []
+        for variant, executable in (("native", binary), ("original_rust", reference)):
+            directory = work / f"{name}-{variant}"
+            directory.mkdir()
+            for filename, contents in initial.items():
+                (directory / filename).write_bytes(contents)
+            started = time.monotonic()
+            result = subprocess.run(
+                [str(executable), *arguments], input=patch_input, capture_output=True,
+                cwd=directory, env=child_environment, timeout=60,
+            )
+            entries = list(directory.iterdir())
+            if any(not entry.is_file() for entry in entries):
+                raise RuntimeError(f"installed parser case created an unexpected directory: {name}")
+            actual_files = {entry.name: entry.read_bytes() for entry in entries}
+            observations.append((result.returncode, result.stdout, result.stderr, actual_files))
+            case[variant] = {
+                "returncode": result.returncode,
+                "elapsed_seconds": round(time.monotonic() - started, 6),
+                "stdout": result.stdout.decode(errors="replace"),
+                "stderr": result.stderr.decode(errors="replace"),
+                "files_sha256": {
+                    filename: hashlib.sha256(contents).hexdigest()
+                    for filename, contents in sorted(actual_files.items())
+                },
+                "exact_contents_match": actual_files == expected_files,
+            }
+        contract = (exit_code, stdout, stderr, expected_files)
+        if observations != [contract, contract]:
+            raise RuntimeError(f"installed parser differs from original Rust or the exact contract: {name}")
+        case["original_rust_parity"] = True
+        case["passed"] = True
+        print(f"PASS installed parser {name}: {dispatch}, exact original Rust parity")
+
+
 def verify(args: argparse.Namespace, report: dict) -> None:
     binary = args.binary.resolve(strict=True)
     if not binary.is_file() or not os.access(binary, os.X_OK):
@@ -271,6 +365,7 @@ def verify(args: argparse.Namespace, report: dict) -> None:
         run_case(installed, reference, work_dir / "legacy-lf", False, environment, report)
         run_case(installed, reference, work_dir / "preserve-crlf", True, environment, report)
         run_source_file_case(installed, reference, work_dir / "mixed-endings", environment, report)
+        run_parser_cases(installed, reference, work_dir / "parser", environment, report)
     report["passed"] = True
 
 

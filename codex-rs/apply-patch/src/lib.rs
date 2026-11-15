@@ -4,6 +4,10 @@ mod hia_native;
 #[cfg(feature = "hia-native")]
 mod hia_native_file_update;
 #[cfg(feature = "hia-native")]
+mod hia_native_parser;
+#[cfg(feature = "hia-native")]
+mod hia_native_streaming_parser;
+#[cfg(feature = "hia-native")]
 mod hia_native_text_file;
 mod invocation;
 mod parser;

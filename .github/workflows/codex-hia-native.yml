@@ -237,6 +237,45 @@ jobs:
             --report "$RUNNER_TEMP/hia-source-file-receipt.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-source-file-receipt.log"
 
+      - name: Compare native batch and streaming parsers with the complete original Rust owner
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_parser_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-parser-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-parser-caller.log"
+
+      - name: Verify actual parser host dependencies and reject incomplete receipts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_parser_host_receipt.py \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-parser-host-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-parser-host-receipt.log"
+
+      - name: Verify parser framing and committed-error-state contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_parser_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-parser-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-parser-abi.log"
+
+      - name: Verify parser archive and source admission
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module parser \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-parser-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-parser-receipt.log"
+
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -475,6 +514,8 @@ jobs:
           name: codex-hia-native-results
           retention-days: 14
           if-no-files-found: warn
+          # The pinned original snapshot includes a tracked .gitattributes fixture.
+          include-hidden-files: true
           path: |
             ${{ runner.temp }}/hia-native/build.json
             ${{ runner.temp }}/hia-toolchain.log
@@ -485,6 +526,14 @@ jobs:
             ${{ runner.temp }}/hia-source-file-abi.log
             ${{ runner.temp }}/hia-source-file-receipt.json
             ${{ runner.temp }}/hia-source-file-receipt.log
+            ${{ runner.temp }}/hia-parser-caller.json
+            ${{ runner.temp }}/hia-parser-caller.log
+            ${{ runner.temp }}/hia-parser-host-receipt.json
+            ${{ runner.temp }}/hia-parser-host-receipt.log
+            ${{ runner.temp }}/hia-parser-abi.json
+            ${{ runner.temp }}/hia-parser-abi.log
+            ${{ runner.temp }}/hia-parser-receipt.json
+            ${{ runner.temp }}/hia-parser-receipt.log
             ${{ runner.temp }}/hia-string-caller.json
             ${{ runner.temp }}/hia-string-caller.log
             ${{ runner.temp }}/hia-metric-caller.json

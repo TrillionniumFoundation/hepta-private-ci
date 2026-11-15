@@ -1,5 +1,5 @@
 {
-  "schema": "codex.hia.source-file-abi.v1",
+  "schema": "codex.hia.source-file-abi.v2",
   "native_symbol": "codex_hia_source_file",
   "entry": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32; standard six-u64 borrowed-buffer native ABI",
   "encoding": "All fields little-endian u64; unaligned buffers supported; caller provides live disjoint buffers and immutable source/workspace for the call. No references are retained.",
@@ -11,7 +11,15 @@
     "4": "line_texts query",
     "5": "line_texts emit",
     "6": "into_contents query",
-    "7": "into_contents emit"
+    "7": "into_contents emit",
+    "8": "parse query (trusted UTF8)",
+    "9": "parse emit (trusted UTF8)",
+    "10": "apply query (trusted UTF8)",
+    "11": "apply emit (trusted UTF8)",
+    "12": "line_texts query (trusted UTF8)",
+    "13": "line_texts emit (trusted UTF8)",
+    "14": "into_contents query (trusted UTF8)",
+    "15": "into_contents emit (trusted UTF8)"
   },
   "workspace_header_bytes": 64,
   "workspace_header": [
@@ -66,7 +74,7 @@
     "2": "CRLF",
     "3": "CR"
   },
-  "parse_request": "pool_count=4; parse_text_id=3; line_count=replacement_count=inserted_count=preferred_ending=reserved_zero=0; pool_lengths=[1,2,1,source.len]. source is the original contents only, with strict canonical UTF8 validation. First existing CRLF/CR/LF selects preferred ending; absence defaults to LF. No terminal empty sentinel logical line.",
+  "parse_request": "pool_count=4; parse_text_id=3; line_count=replacement_count=inserted_count=preferred_ending=reserved_zero=0; pool_lengths=[1,2,1,source.len]. source is the original contents only, with complete canonical UTF8 validation in operations 0/1 and a valid-UTF8 caller precondition in operations 8/9. First existing CRLF/CR/LF selects preferred ending; absence defaults to LF. No terminal empty sentinel logical line.",
   "nonparse_request": "pool_count>=4; parse_text_id=reserved_zero=0; preferred_ending in1..3. source is the direct concatenation of all declared pool strings in ID order; checked sum(pool_lengths)==source.len. Pool IDs0/1/2 are fixed LF/CRLF/CR, lengths[1,2,1], and source begins with bytes 0a0d0a0d. Every pool and subspan must end on UTF8 boundaries. line_texts/contents require replacement_count=inserted_count=0.",
   "old_lines": "text_id>=3 and <pool_count; start<=pool_length and len<=pool_length-start; ending0..3. Both start and end must be UTF8 boundaries within the declared pool. Overlapping spans are allowed. Metadata modes never split a span at internal CR/LF.",
   "replacements": "apply only; new_line_count values sum exactly to inserted_count. start>=previous(start+old_length), and start+old_length<=u64::MAX. Each inserted ID is>=3 and <pool_count and denotes that entire pool string as one logical line, even with internal CR/LF.",
@@ -89,20 +97,26 @@
   "parse_apply_result": "One row per resulting logical line; fourth word ending0..3 (apply nonzero); logical_line_count=record_count. total_text_bytes includes all preserved/filled endings and equals future into_contents byte length.",
   "line_texts_result": "One row per logical line, fourth word0; logical_line_count=record_count; total_text_bytes is text lengths only.",
   "contents_result": "Text row for every logical line, including empty spans, followed by ending literal row when ending!=0. Literal id=ending-1,start0,len=declared literal length,fourth word0. Text rows also have fourth word0. logical_line_count is state line count, record_count counts copy fragments, total_text_bytes includes endings.",
-  "query_emit": "Even operations write only the complete40B header. Odd operations write identical header and records. Before writing either kind all frame/UTF8/span/replacement checks and output counts/byte totals/size overflow checks must pass. Emit then checks full output capacity. Bytes beyond query40 or full emitted plan are preserved.",
+  "query_emit": "Even operations write only the complete40B header. Odd operations write identical header and records. Before writing either kind all frame/profile-applicable UTF8/span/replacement checks and output counts/byte totals/size overflow checks must pass. Emit then checks full output capacity. Bytes beyond query40 or full emitted plan are preserved.",
   "statuses": {
     "0": "success",
     "4294967294": "SHORT: output<40 or workspace<64, or otherwise-valid emit lacks full required output capacity",
     "4294967295": "INVALID: operation/frame/metadata/ordering/span boundary/arithmetic overflow",
-    "4294967293": "UTF8: malformed canonical UTF8 source in any mode"
+    "4294967293": "UTF8: malformed canonical UTF8 source in strict operations 0..7"
   },
   "precedence": [
     "Minimum output40/workspace64 (SHORT).",
     "Header, exact frame size, table values, span range, replacement order/sums and source/pool extent checks (INVALID).",
-    "Complete source UTF8 validation (UTF8), then pool/span UTF8 boundary checks (INVALID), then output row/byte totals and plan-size overflow checks (INVALID).",
+    "Strict profile: complete source UTF8 validation (UTF8). Both profiles: pool/span UTF8 boundary checks (INVALID), then output row/byte totals and plan-size overflow checks (INVALID).",
     "Emit-only full output capacity check (SHORT).",
     "Publish complete header/plan."
   ],
   "atomicity": "Every returned error preserves every source/workspace/output byte. Successful calls never write source or workspace. No pointer provenance/admission is claimed beyond live/disjoint caller preconditions.",
-  "rust_storage": "One owned contiguous text backing plus native-selected logical line spans and preferred code. Parse copies original bytes once; line_texts/contents borrow current backing. Apply encodes new pool text only as needed, then copies HIA-selected spans into compact current backing and releases old backing/frame. No line splitting, style choice, replacement selection, render/reparse, or Rust algorithm fallback."
+  "rust_storage": "One owned contiguous text backing plus native-selected logical line spans and preferred code. Parse copies original bytes once; line_texts/contents borrow current backing. Apply encodes new pool text only as needed, then copies HIA-selected spans into compact current backing and releases old backing/frame. No line splitting, style choice, replacement selection, render/reparse, or Rust algorithm fallback.",
+  "profiles": {
+    "strict": "Operations 0..7 preserve complete canonical UTF8 validation before span validation and output admission.",
+    "trusted_utf8": "Operations 8..15 require the caller to supply a complete valid UTF8 source. They skip only the whole-source UTF8 scan. All frame, table, literal, range, pool/subspan boundary, replacement, overflow and output-capacity checks remain identical. Invalid UTF8 violates this profile precondition and has no defined validation status.",
+    "production_precondition": "Every source in the safe Rust adapter is a borrowed &str or concatenated String/Cow<str>; only the private typed Operation enum selects the trusted profile.",
+    "base_operation": "operation & 7; bit 0 selects query/emit; all operation values above 15 are INVALID."
+  }
 }

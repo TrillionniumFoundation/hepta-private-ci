@@ -1,23 +1,79 @@
+// BEGIN HIA_NATIVE legacy_path_storage
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_path_storage
 use std::path::PathBuf;
 
+// BEGIN HIA_NATIVE legacy_add_file_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_add_file_import
 use crate::parser::ADD_FILE_MARKER;
+// BEGIN HIA_NATIVE legacy_begin_patch_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_begin_patch_import
 use crate::parser::BEGIN_PATCH_MARKER;
+// BEGIN HIA_NATIVE legacy_change_context_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_change_context_import
 use crate::parser::CHANGE_CONTEXT_MARKER;
+// BEGIN HIA_NATIVE legacy_delete_file_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_delete_file_import
 use crate::parser::DELETE_FILE_MARKER;
+// BEGIN HIA_NATIVE legacy_empty_change_context_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_empty_change_context_import
 use crate::parser::EMPTY_CHANGE_CONTEXT_MARKER;
+// BEGIN HIA_NATIVE legacy_end_patch_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_end_patch_import
 use crate::parser::END_PATCH_MARKER;
+// BEGIN HIA_NATIVE legacy_eof_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_eof_import
 use crate::parser::EOF_MARKER;
+// BEGIN HIA_NATIVE legacy_hunk_import
+#[cfg(any(not(feature = "hia-native"), test))]
+// END HIA_NATIVE legacy_hunk_import
 use crate::parser::Hunk;
+// BEGIN HIA_NATIVE legacy_move_to_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_move_to_import
 use crate::parser::MOVE_TO_MARKER;
+// BEGIN HIA_NATIVE legacy_parseerror_import
+#[cfg(any(not(feature = "hia-native"), test))]
+// END HIA_NATIVE legacy_parseerror_import
 use crate::parser::ParseError;
+// BEGIN HIA_NATIVE legacy_update_file_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_update_file_import
 use crate::parser::UPDATE_FILE_MARKER;
+// BEGIN HIA_NATIVE legacy_updatefilechunk_import
+#[cfg(any(not(feature = "hia-native"), test))]
+// END HIA_NATIVE legacy_updatefilechunk_import
 use crate::parser::UpdateFileChunk;
 
+// BEGIN HIA_NATIVE legacy_hunk_variants
+#[cfg(any(not(feature = "hia-native"), test))]
+// END HIA_NATIVE legacy_hunk_variants
 use Hunk::*;
+// BEGIN HIA_NATIVE legacy_error_variants
+#[cfg(any(not(feature = "hia-native"), test))]
+// END HIA_NATIVE legacy_error_variants
 use ParseError::*;
 
+// BEGIN HIA_NATIVE native_stream_owner
+#[cfg(feature = "hia-native")]
+pub use crate::hia_native_streaming_parser::StreamingPatchParser;
+
+// END HIA_NATIVE native_stream_owner
+// BEGIN HIA_NATIVE legacy_environment_marker
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_environment_marker
 const ENVIRONMENT_ID_MARKER: &str = "*** Environment ID:";
 
+// BEGIN HIA_NATIVE legacy_stream_owner
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_stream_owner
 #[derive(Debug, Default, Clone)]
 pub struct StreamingPatchParser {
     line_buffer: String,
@@ -25,6 +81,9 @@ pub struct StreamingPatchParser {
     line_number: usize,
 }
 
+// BEGIN HIA_NATIVE legacy_stream_state
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_stream_state
 #[derive(Debug, Default, Clone)]
 struct StreamingParserState {
     mode: StreamingParserMode,
@@ -32,6 +91,9 @@ struct StreamingParserState {
     environment_id: Option<String>,
 }
 
+// BEGIN HIA_NATIVE legacy_stream_mode
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_stream_mode
 #[derive(Debug, Default, Clone, Copy)]
 enum StreamingParserMode {
     #[default]
@@ -45,6 +107,9 @@ enum StreamingParserMode {
     EndedPatch,
 }
 
+// BEGIN HIA_NATIVE legacy_stream_impl
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_stream_impl
 impl StreamingPatchParser {
     pub fn environment_id(&self) -> Option<&str> {
         self.state.environment_id.as_deref()
