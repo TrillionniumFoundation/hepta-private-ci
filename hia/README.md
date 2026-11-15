@@ -10,10 +10,12 @@ The opt-in `hia-native` Cargo feature connects the earlier eight components to
 existing production paths on Linux x86-64 GNU: patch matching, four string
 operations, and template parsing, rendering and ordered indexing. The prefix
 matcher and its scalar admission helper reach production callers through
-`codex-execpolicy/hia-native`. The current compiler's complete execpolicy
+`codex-execpolicy/hia-native`. The stack-frame adapter's complete execpolicy
 crate and installed standalone caller are qualified locally; its full Codex
-CLI, Core and workspace gates remain pending. Published V2 native CI passed
-with the earlier compiler and is recorded separately below. Rust retains
+CLI and Core need future V4 CI, and the workspace gate remains pending. The
+published V3 adapter passed its own native CI, including the installed full
+CLI and filtered Core gates; that source-specific evidence is recorded below.
+Published V2 evidence retains its earlier compiler scope. Rust retains
 allocation, owned strings and AST storage, generic iterator effects, public
 formatting, and checked transport across the native interfaces. Static archives are
 verified at build time and incorporated into the caller binary.
@@ -68,8 +70,11 @@ The prefix feature propagates from `codex-cli/hia-native` to
 `codex-execpolicy/hia-native`. `PrefixRule::matches` and the existing `Policy`
 callers reach the selected native matcher, including the standalone
 `codex-execpolicy check` command. The Rust adapter calls the HIA scalar admission
-entry before frame sizing, copying or allocation, then frames admitted objects
-and clones the selected command prefix after a match. HIA owns count
+entry before frame sizing, copying or allocation. The checked complete-frame
+capacity selects a 512-byte stack buffer when it fits and the existing reserved
+Vec otherwise. Both stores use one generic encoder and the same full-frame HIA
+call. A small same-first/later-token mismatch needs no frame allocation; a
+successful match still clones the selected command prefix into owned strings. HIA owns count
 admission, token and alternative comparisons, and the match decision. Existing decision precedence,
 rule order, justifications, resolved-program metadata, parser behavior and
 unmatched-command heuristics remain with their original owners. A native
@@ -372,9 +377,84 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Prefix matcher: current local qualification
+### Prefix matcher: current stack-frame qualification
 
-The current twelve-module B1/B2/B3 build passed with Hepta
+The adapter increment starts from published V3 revision
+`98429434a266d2165e9d3b4d6f1894bd77916917` and changes three transport/test
+files. The twelve HIA programs, compiler/build sources, raw ABI and native
+archives are unchanged and were reused without a new HIA build.
+
+After HIA count admission, the adapter computes the exact complete-frame size.
+Frames of at most 512 bytes use a stack buffer; larger frames retain the
+reserved Vec and append path, without another full-frame copy or zero fill.
+One generic `Write` encoder emits the original packet into either store and
+passes only the encoded extent to the same raw HIA matcher. HIA still owns
+traversal, byte comparison and the decision. There is no first-token probe or
+cache. Public `first` and `rest` mutations remain visible on every call.
+
+For the normal Policy path after first-token lookup, a small later-token
+mismatch now has no frame allocation. Successful results retain their owned
+`Vec<String>` allocations. These measured local gates are distinct:
+
+| Gate | Observed result and execution scope |
+| ---- | ----------------------------------- |
+| Original Rust public matcher | 49,938 comparisons across seven tests actually ran in the minimal stack fixture; integration bound all nine source files byte-for-byte and did not rerun this gate. |
+| Public allocation regression | 20 fixture cases, nine zero-allocation calls; positive probes observed alloc and realloc. Integration bound the same nine files without rerunning this gate. All five earlier count-rejection cases remain zero-allocation. |
+| Stack/heap threshold | Complete frames of 511/512/513 bytes observed 0/0/1 allocations. Mutating the same rest back across the threshold observed 0 then 1. Successful 512/514-byte frames observed 3/4 allocations including required owned results. |
+| Current complete execpolicy crate | 34 native-feature and 34 default-feature tests actually ran and passed; zero skips. |
+| Current builds and installed standalone | Both binaries built; 30 cases and 60 relocated production processes passed exact output/exit/expected-JSON checks. |
+| Current owner checks | Eleven actual steps including both all-target Clippy modes with `-D warnings`, scoped `just fix`, `just fmt` and diff checks. Fix/fmt preserved every frozen source byte. |
+| Reused V3 HIA artifacts | The earlier 5,937 raw-prefix calls, 158,100 scalar calls, 119 artifact checks and 64 receipt checks remain bound to identical artifacts. They were not executed again for this adapter increment. |
+
+Exact source/binary identities, original report paths and hashes are recorded in
+[`stack_frame_qualification`](verification.json#stack_frame_qualification).
+The V3 adapter's own allocation/standalone/performance records remain below
+and in the recorded `current_qualification` block. This increment has no full
+Codex CLI/Core/workspace qualification; it requires future V4 CI. A V3 CI
+result belongs to its V3 source and cannot qualify this stack adapter.
+Performance, default release, complete ownership and retirement remain false.
+
+#### Stack-frame performance remains open
+
+The first complete stack public differential recorded all seven original
+performance rows. Values are total nanoseconds for the stated call count:
+
+| Scenario | Iterations | Stack HIA total (ns) | Original Rust total (ns) |
+| -------- | ---------- | -------------------- | ------------------------ |
+| short_match | 10,000 | 3,272,203 | 251,334 |
+| first_mismatch | 10,000 | 2,437,382 | 60,039 |
+| many_alternatives | 1,000 | 2,887,142 | 92,568 |
+| large_match | 3 | 3,509,897 | 179,506 |
+| large_pattern_empty_command | 3 | 80 | 70 |
+| large_pattern_short_command | 3 | 60 | 30 |
+| first_mismatch_large_alternatives | 3 | 95,588 | 80 |
+
+One additional bounded same-machine diagnostic ran V3 and then stack using
+the same Rust toolchain, V3 archives and unchanged performance harness:
+
+| Scenario | Iterations | V3 HIA (ns) | V3 Rust (ns) | Stack HIA (ns) | Stack Rust (ns) |
+| -------- | ---------- | ----------- | ------------ | -------------- | --------------- |
+| short_match | 10,000 | 3,446,504 | 244,913 | 2,747,453 | 243,973 |
+| first_mismatch | 10,000 | 2,015,984 | 61,138 | 1,826,669 | 58,369 |
+| many_alternatives | 1,000 | 2,792,662 | 104,487 | 2,793,513 | 121,886 |
+| large_match | 3 | 3,601,200 | 164,105 | 3,436,795 | 180,325 |
+| large_pattern_empty_command | 3 | 140 | 70 | 130 | 70 |
+| large_pattern_short_command | 3 | 60 | 40 | 60 | 40 |
+| first_mismatch_large_alternatives | 3 | 87,807 | 70 | 93,497 | 80 |
+
+Both observations retain the large-alternative first-mismatch cost. The
+ordered pair is a diagnostic, not a statistical performance qualification or
+a replacement for the full differential. No timing threshold is marked
+passed. Raw logs and both complete stack observations remain external.
+
+### Recorded V3 compiler and adapter qualification
+
+The following local adapter results are recorded at published revision
+`98429434a266d2165e9d3b4d6f1894bd77916917`. Its HIA artifact evidence still
+corresponds to the identical reused artifacts; its caller/allocation results
+belong to the V3 adapter, not to the current stack-frame adapter.
+
+The V3 twelve-module B1/B2/B3 build passed with Hepta
 `0de5657a80f96b138525ac7ee9ce11712a83a10d`. All three compiler generations
 have SHA-256
 `76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273`;
@@ -395,8 +475,8 @@ Executed Linux x86-64 GNU results with Rust 1.96.1 are:
 | Existing component regression gates | All 15 non-Cargo component scripts passed; current ASCII JSON and UUID public differentials also passed with 27,075 and 26,808 comparisons. |
 | Owner checks and formatting | Native/default execpolicy Clippy with `-D warnings`, `just fix`, `just fmt` and diff checks passed. |
 
-These results qualify the current local components and standalone caller.
-They do not execute the complete new-compiler full Codex CLI, Core suite or
+These recorded results qualify the V3 local components and standalone caller.
+That local run did not execute the complete V3 full Codex CLI, Core suite or
 workspace. The allocation runner counts calling-thread Rust allocator effects;
 it has no independent subprocess timeout, and artifact provenance is bound
 by the preceding receipt and scalar-admission gates. The original failed
@@ -404,13 +484,48 @@ owner preflight, where `just` was missing before Cargo execution, and the
 allocation report before the review fix are preserved outside the source
 tree. Successful reruns are recorded with their own source and report hashes.
 
-New-compiler full CLI/Core/workspace, required platforms, performance,
-default-release and complete owner gates remain open. Historical ten-module
-workspace and published V2 CI results below cannot substitute for them.
+At that V3 local checkpoint, full CLI/Core/workspace, required platforms,
+performance, default-release and complete owner gates remained open. Historical
+ten-module workspace and published V2 CI results below could not substitute
+for those source-specific gates. The current stack pending gates are stated above.
 Active Rust implementations remain necessary until their replacements meet
 the retirement requirements.
 
-#### Current prefix performance remains open
+#### Published V3 native CI
+
+At exact V3 head `98429434a266d2165e9d3b4d6f1894bd77916917`, push
+[43675407031](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43675407031)
+and PR
+[43675410486](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43675410486)
+both passed all 41 steps. The PR checkout
+`f9d89a9575d1b2f9b171c24b994043183b49b83c` has the same Git tree. Actual
+checkout identities, report bindings, both ZIP digests and all 132 extracted
+report/log files were verified.
+
+Each run passed scalar 158,100 calls, 119 artifact checks, 64 receipt checks,
+49,938 original-public comparisons, 5,937 raw-prefix calls and 11 allocation
+cases with five zero-allocation calls. Each installed standalone run passed
+30 cases / 60 processes; each full installed Codex run passed 34 cases and
+two startup cases with all 10 required symbols and no HIA shared dependency.
+Native/default owner suites passed 198/185 tests with no skips. CLI/arg0/TUI
+passed 4,474 tests with six reported skips. Core passed 11 selected exec-policy
+tests, with 3,870 excluded by the explicit filter; this was not the full Core
+suite.
+
+The two CI runs agree on all 12 module identities and reported executable
+hashes. Local and CI source/Core/object/text/archive hashes agree, but their
+linked shared-library hashes differ and remain recorded separately. The ZIPs
+contain reports and logs, not compiled binaries. Architecture passed within
+its source and same-tree-reuse scopes; the V8 canary ran metadata only, with
+build jobs skipped. Broader CI still has actual platform/linking/test failures.
+All seven prefix timing rows were slower than Rust in both native CI runs.
+
+Exact identities and limits are in
+[`published_v3_ci_history`](verification.json#published_v3_ci_history). These
+results belong to the V3 adapter and do not qualify the current stack-frame
+adapter, complete Core/workspace, all platforms, performance or retirement.
+
+#### Recorded V3 prefix performance remains open
 
 Native word operations reduce the matcher overhead, and HIA scalar admission
 removes full-pattern allocation and copying for empty or too-short commands.
@@ -575,7 +690,7 @@ pinned Git tree is the complete source-path inventory.
 | Threads and turns           | `core`, `core-api`, `protocol`, `thread-store`                                         | Turn state, ordered events, incremental context and concurrent ownership.                                                                                                                                                                                                 |
 | History and recovery        | `state`, `history`, `message-history`, `rollout`, `thread-store`                       | Existing session/database formats, atomic persistence, resume and crash recovery.                                                                                                                                                                                         |
 | Tools, processes and files  | `tools`, `exec`, `exec-server`, `shell-command`, `file-system`, code-mode crates       | Tool execution, PTY/pipes, process groups, cancellation and owned file effects.                                                                                                                                                                                           |
-| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap`               | Prefix matching and scalar count admission have opt-in HIA owners with current local standalone qualification; new-compiler full CLI/Core/workspace, complete policy/default/platform integration and isolation remain.                                                                                                   |
+| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap`               | Prefix matching and scalar count admission have opt-in HIA owners; the stack adapter has local standalone qualification, while its V4 full CLI/Core/workspace, complete policy/default/platform integration and isolation remain.                                                                                                   |
 | MCP                         | `codex-mcp`, `rmcp-client`, `mcp-server`                                               | Initialization, catalogs, calls, notifications, cancellation and transports.                                                                                                                                                                                              |
 | App Server v2               | `app-server`, protocol/transport/client/daemon crates                                  | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations.                                                                                                                                                                                         |
 | CLI and TUI                 | `cli`, `tui`, `arg0`, terminal utilities                                               | Flags, exit status, terminal event/rendering paths and existing snapshots.                                                                                                                                                                                                |

@@ -87,7 +87,7 @@
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Twelve modules rebuilt through B3: eleven borrowed-buffer entries and one scalar count-admission entry. Current raw ABI, original Rust public differentials, complete execpolicy crate, strict native/default Clippy, relocated standalone CLI and allocation regressions passed. New-compiler full CLI/Core/workspace, performance, complete owners, default releases and required platforms remain pending. Published eleven-module V2 CI is retained only as historical evidence.",
+    "qualification_scope": "Twelve HIA modules were built through B3 with eleven borrowed-buffer entries and one scalar entry. Published V3 native CI passed its recorded full CLI and filtered Core gates. The current stack adapter has its own local execpolicy and standalone qualification; its V4 full CLI/Core CI remains pending. Whole workspace, performance, complete owners, default release and required platforms remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -943,7 +943,7 @@
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "PrefixPattern::matches_prefix",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_linux_component_and_installed_standalone_passed_new_compiler_full_codex_pending",
+      "qualification_status": "current_linux_stack_adapter_and_standalone_passed_v4_full_codex_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -960,7 +960,8 @@
         "source_schema": "hepta.hia.program.v9",
         "word_operations": "Native buffer.load.u64.le and buffer.store.u64.le after explicit complete-frame/capacity validation; byte-exact 0..7 tail.",
         "preflight_module": "prefix_admission",
-        "preflight_scope": "The public Rust adapter passes counts to HIA before frame sizing/allocation. HIA 0 is NoMatch, 1 requires complete framing, and every other result is an error. The raw prefix_match frame contract remains unchanged and still validates its entire supplied frame before any match result."
+        "preflight_scope": "The public Rust adapter passes counts to HIA before frame sizing/allocation. HIA 0 is NoMatch, 1 requires complete framing, and every other result is an error. The raw prefix_match frame contract remains unchanged and still validates its entire supplied frame before any match result.",
+        "frame_storage": "Checked complete-frame capacity <=512 uses stack storage; larger frames retain reserved Vec append. Both use the same encoder and one existing full-frame HIA call."
       },
       "tests": [
         "hia/tests/test_prefix_match_abi.py",
@@ -981,7 +982,7 @@
           "native_abi_calls": 5937,
           "original_rust_comparisons": 49938,
           "skipped": 0,
-          "report": "hia/verification.json#current_qualification",
+          "report": "hia/verification.json#stack_frame_qualification.artifact_continuity",
           "core_sha256": "6dc3ca023de5c906ae6fc097d0d546c122dda8db0391786b2237b72265c68e37",
           "library_sha256": "75d907e72500f1dcb5e32a0e60068096d402eb6f115f5ce77845fbd8a1fc685b",
           "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
@@ -992,30 +993,33 @@
               "file": "prefix-abi-v3.json",
               "sha256": "7cd573dad1a512d3325a4908269aabbdaa75f5a0aa29695df9483437ad81c6df",
               "bytes": 1338,
-              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
             },
             {
               "file": "prefix-caller-v3.json",
               "sha256": "19633fab28ff30530626d757a66105ee0ffc554be4b38f20b41f46fe7fdd425a",
               "bytes": 59290,
-              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
             },
             {
               "file": "prefix-allocations-v3.json",
               "sha256": "5f7a4aa7131b75ed6595d2a66b64292d1732377781a34ae8b19c56077eb3eddc",
               "bytes": 36424,
-              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
             },
             {
               "file": "installed-execpolicy-v3.json",
               "sha256": "2b41e1ae96dacd8cf117472141c685d91d9eff900efee58137fd73305c58d9a9",
               "bytes": 119058,
-              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
             }
-          ]
+          ],
+          "recorded_at_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+          "reexecuted_for_stack_adapter": false,
+          "scope": "Recorded V3 artifact observations; source/archive identities are unchanged and reused. V3 caller/allocation reports retain only their original adapter scope; current stack evidence is linked from stack_frame_qualification."
         },
         "production_dispatch": {
-          "status": "opt_in_linux_execpolicy_and_standalone_cli_passed",
+          "status": "opt_in_linux_stack_adapter_execpolicy_and_standalone_passed",
           "feature": "codex-execpolicy/hia-native",
           "link": [
             "static=codex_hia_prefix_match",
@@ -1030,36 +1034,38 @@
           "strict_native_clippy_passed": true,
           "strict_default_clippy_passed": true,
           "owner_report": {
-            "file": "owner-qualification-v3.json",
-            "sha256": "54bd7577fa88d08a56fa4d32b4860b9085626b1bfacb9b5e8957d1baa8ed113e",
-            "bytes": 6487,
-            "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/owner-qualification-stack.json",
+            "sha256": "00f17197295c0422519517c34d30e24c82246f9949e69ebe12308999c08f4354",
+            "bytes": 20543,
+            "scope": "Current stack adapter: 11 actual steps, complete native/default execpolicy and relocated standalone only."
           },
-          "scope": "Complete execpolicy crate and relocated standalone caller only; complete policy/Core/platform ownership and full Codex remain pending."
+          "scope": "Current stack adapter: complete execpolicy crate and relocated standalone only; full Codex/Core requires V4 CI and workspace/platform/default/complete-owner gates remain open.",
+          "report": "hia/verification.json#stack_frame_qualification.current_owner_gates"
         },
         "performance": {
           "qualified": false,
-          "report": "hia/verification.json#current_qualification.performance"
+          "report": "hia/verification.json#stack_frame_qualification.performance"
         },
         "full_codex_and_core": {
-          "status": "pending_new_compiler_published_ci",
+          "status": "pending_v4_stack_adapter_ci",
           "historical_v2": "Both V2 native CI runs passed with the f33 compiler and eleven modules; those are not current compiler evidence.",
-          "report": "hia/verification.json#published_v2_ci_history"
+          "report": "hia/verification.json#stack_frame_qualification.pending",
+          "recorded_v3_scope": "V3 source/adapter at 98429434 has separate qualification; its pending or eventual CI result cannot qualify the current stack adapter."
         },
         "allocation_regression": {
           "passed": true,
-          "cases": 11,
+          "cases": 20,
           "skipped": 0,
-          "zero_allocation_cases": 5,
+          "zero_allocation_cases": 9,
           "positive_probe_alloc": 1,
           "positive_probe_realloc": 1,
           "report": {
-            "file": "prefix-allocations-v3.json",
-            "sha256": "5f7a4aa7131b75ed6595d2a66b64292d1732377781a34ae8b19c56077eb3eddc",
-            "bytes": 36424,
-            "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/candidate-allocations.json",
+            "sha256": "1c46a5734b5b20c3794a7aba9aed98a0bc16d985840a3d3df2d079f4240a808a",
+            "bytes": 37696,
+            "scope": "Earlier executed stack fixture run, bound to the identical nine integration-source files; not rerun during owner integration."
           },
-          "scope": "Calling-thread Rust GlobalAlloc observations. The runner has no independent subprocess timeout; artifact provenance is bound by preceding receipt and scalar-admission gates."
+          "scope": "Calling-thread Rust GlobalAlloc during real public owner calls. Nine zero-allocation cases include all five original count rejects and the small-frame threshold cases; positive controls observed both operations. The original performance harness remains uninstrumented."
         }
       }
     },
@@ -1070,7 +1076,7 @@
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "PrefixPattern::matches_prefix count admission",
       "implementation_status": "native_scalar_helper_with_opt_in_production_caller",
-      "qualification_status": "current_linux_scalar_abi_artifact_and_public_caller_passed_full_codex_pending",
+      "qualification_status": "current_linux_stack_adapter_and_standalone_passed_v4_full_codex_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1120,33 +1126,38 @@
               "file": "prefix-admission-abi-v3.json",
               "sha256": "640cc7b6cfbd9e4408934e94bf0771488ad340f394f5f9cd656683b183d5abff",
               "bytes": 1779,
-              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
             },
             {
               "file": "prefix-scalar-admission-v3.json",
               "sha256": "a0a5e59dc1324f9944b4376be3055c74d929c49d34b39a43edd7db48219764fe",
               "bytes": 5227,
-              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
             }
           ],
-          "report": "hia/verification.json#current_qualification"
+          "report": "hia/verification.json#stack_frame_qualification.artifact_continuity",
+          "recorded_at_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+          "reexecuted_for_stack_adapter": false,
+          "scope": "Recorded V3 artifact observations; source/archive identities are unchanged and reused. V3 caller/allocation reports retain only their original adapter scope; current stack evidence is linked from stack_frame_qualification."
         },
         "production_dispatch": {
-          "status": "opt_in_linux_execpolicy_and_standalone_cli_passed",
+          "status": "opt_in_linux_stack_adapter_execpolicy_and_standalone_passed",
           "feature": "codex-execpolicy/hia-native",
           "link": "static=codex_hia_prefix_admission",
           "default_release_migrated": false,
           "original_rust_comparisons": 49938,
-          "allocation_regression_cases": 11,
+          "allocation_regression_cases": 20,
           "native_tests": 34,
           "default_tests": 34,
           "installed_standalone_symbols": 2,
-          "full_codex_and_core": "pending_new_compiler_published_ci"
+          "full_codex_and_core": "pending_v4_stack_adapter_ci",
+          "report": "hia/verification.json#stack_frame_qualification.current_owner_gates",
+          "public_evidence_scope": "Earlier executed stack 49,938-comparison and 20-allocation fixture evidence is bound by nine identical files; native/default crate and standalone gates were actually executed for integration."
         },
         "performance": {
           "qualified": false,
-          "report": "hia/verification.json#current_qualification.performance",
-          "scope": "The seven current bounded measurements all remain slower than Rust; removal of empty/short-command copying is not performance closure."
+          "report": "hia/verification.json#stack_frame_qualification.performance",
+          "scope": "Both complete seven-row stack observations and the once-paired V3 baseline are retained; allocation removal does not establish performance qualification."
         }
       }
     }
@@ -1276,7 +1287,7 @@
         "filesystem and network isolation",
         "platform sandbox setup and denial behavior"
       ],
-      "next_implementation": "Execute the new compiler's full Codex/Core/workspace and required platform gates, close prefix performance, then migrate remaining policy evaluation and platform integration with the existing denial tests.",
+      "next_implementation": "Execute the stack adapter's V4 full Codex/Core CI, workspace and required platform gates, close prefix performance, then migrate remaining policy evaluation and platform integration with the existing denial tests.",
       "candidate_modules": [
         "prefix_match",
         "prefix_admission"
@@ -2932,8 +2943,8 @@
     "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The eleven existing borrowed-buffer modules retain their profile."
   },
   "current_qualification": {
-    "report": "hia/verification.json#current_qualification",
-    "base_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+    "report": "hia/verification.json#stack_frame_qualification",
+    "base_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "module_count": 12,
     "borrowed_module_count": 11,
@@ -2944,60 +2955,52 @@
     ],
     "current_installed_standalone_symbols": 2,
     "expected_full_codex_symbols": 10,
-    "installed_full_codex_cli": "pending_new_compiler_published_ci",
-    "core_exec_policy": "pending_new_compiler_published_ci",
-    "whole_workspace_requalification": "pending_new_compiler_source",
-    "native_prefix_raw_calls": 5937,
-    "native_scalar_raw_calls": 158100,
-    "scalar_artifact_checks": 119,
+    "artifact_continuity": "hia/verification.json#stack_frame_qualification.artifact_continuity",
+    "artifact_scope": "Byte-identical V3 HIA programs, archives and build sources reused; not rebuilt. Original raw/scalar/artifact/receipt counts remain earlier actual observations, not new executions.",
+    "recorded_v3_adapter_qualification": "hia/verification.json#current_qualification",
+    "earlier_stack_public_allocation_binding": "hia/verification.json#stack_frame_qualification.earlier_executed_fixture_binding",
     "prefix_original_rust_comparisons": 49938,
-    "receipt_checks": 64,
-    "other_component_steps": 15,
-    "additional_public_differentials": [
-      "ascii_json_fragment",
-      "uuid_matches"
-    ],
+    "public_comparisons_reexecuted_during_integration": false,
+    "allocation_cases": 20,
+    "allocation_zero_allocation_cases": 9,
+    "allocation_reexecuted_during_integration": false,
+    "current_owner_steps": 11,
     "native_execpolicy_tests": 34,
     "default_execpolicy_tests": 34,
     "installed_standalone_cases": 30,
     "installed_standalone_processes": 60,
-    "allocation_cases": 11,
-    "allocation_zero_allocation_cases": 5,
-    "strict_native_clippy": "passed_execpolicy_only",
-    "strict_default_clippy": "passed_execpolicy_only",
+    "strict_native_clippy": "passed_execpolicy_all_targets_only",
+    "strict_default_clippy": "passed_execpolicy_all_targets_only",
+    "fix_fmt_frozen_source_unchanged": true,
+    "installed_full_codex_cli": "pending_v4_stack_adapter_ci",
+    "core_exec_policy": "pending_v4_stack_adapter_ci",
+    "whole_workspace_requalification": "pending_stack_adapter_source",
+    "performance_report": "hia/verification.json#stack_frame_qualification.performance",
     "prefix_performance_closed": false,
     "template_performance_closed": false,
     "other_platforms": "pending",
     "whole_workspace_qualified": false,
     "default_release_migrated": false,
     "retirement_ready": false,
-    "post_test_deltas": "The reviewed allocation harness was rerun against its final source hashes. Root reviewed the three canonical documentation files after the code freeze; they are the only post-test source changes. No full CLI/Core/workspace evidence is inferred from V2 CI.",
-    "reports": [
-      {
-        "file": "component-qualification-v3.json",
-        "sha256": "8be3b18e84407ee29060de9fa3ce386d834d9a8445571b88b1c5a6b98473e0cc",
-        "bytes": 3674,
-        "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+    "post_test_deltas": "The nine fixture files match earlier executed stack public/allocation reports and remained byte-identical through the actual owner/fix/fmt gates. These three canonical documents are subsequent drafts; full CLI/Core/workspace passes are not inferred.",
+    "reports": {
+      "owner-qualification-stack.json": {
+        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/owner-qualification-stack.json",
+        "sha256": "00f17197295c0422519517c34d30e24c82246f9949e69ebe12308999c08f4354",
+        "bytes": 20543
       },
-      {
-        "file": "owner-qualification-v3.json",
-        "sha256": "54bd7577fa88d08a56fa4d32b4860b9085626b1bfacb9b5e8957d1baa8ed113e",
-        "bytes": 6487,
-        "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+      "candidate-run.json": {
+        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/candidate-run.json",
+        "sha256": "3e003d611abdf3321030fe4b254b3fea17acb4610cc6873e4d9e99802174a5fc",
+        "bytes": 5339
       },
-      {
-        "file": "other-components-v3.json",
-        "sha256": "d692ffbac10ccdcef1e1653c3573cd11ed3184759536c7a42c2374ab06a45c02",
-        "bytes": 51581,
-        "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
-      },
-      {
-        "file": "prefix-allocations-v3.json",
-        "sha256": "5f7a4aa7131b75ed6595d2a66b64292d1732377781a34ae8b19c56077eb3eddc",
-        "bytes": 36424,
-        "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+      "diagnostic-pair.json": {
+        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/diagnostic-pair.json",
+        "sha256": "54ce32168bc8506bd697085e1dd7fd32a06340907f0d3a8c25c9da59eff8362d",
+        "bytes": 114382
       }
-    ]
+    },
+    "recorded_v3_native_ci": "hia/verification.json#published_v3_ci_history"
   },
   "historical_qualification": {
     "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
@@ -3052,5 +3055,16 @@
   "default_release_migrated": false,
   "workspace_qualified": false,
   "performance_qualified": false,
-  "legacy_source_retired": false
+  "legacy_source_retired": false,
+  "published_v3_qualification": {
+    "source_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+    "report": "hia/verification.json#published_v3_ci_history",
+    "native_runs": [
+      43675407031,
+      43675410486
+    ],
+    "per_run_steps_passed": 41,
+    "applies_to_current_stack_adapter": false,
+    "scope": "Exact V3 source: full installed CLI 34+2 with 10 symbols, CLI/arg0/TUI 4474 passed with six reported skips, and Core exec-policy 11 passed with 3870 filtered out. Not current stack CI, complete Core/workspace or retirement evidence."
+  }
 }
