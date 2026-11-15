@@ -8633,6 +8633,750 @@
       },
       "final_source_is_same_as_executed": true,
       "post_final_maintenance_product_execution": false
+    },
+    "build_and_artifacts": {
+      "mode": "native-selfhost",
+      "full17_rebuilt": true,
+      "build_report_sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343",
+      "native_inventory": {
+        "files": 228,
+        "bytes": 27902926,
+        "inventory_sha256": "9c4940c3aadf42a2b906c7e403ddc6df6e84c046dc772f73e02ac62b3990adf8",
+        "scope": "complete regular/symlink bytes and Git modes"
+      },
+      "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "compiler_generations": [
+        "B1",
+        "B2",
+        "B3"
+      ],
+      "receipt_checks": 74,
+      "receipt_cases": [
+        "sha256-0",
+        "sha256-1",
+        "sha256-3",
+        "sha256-55",
+        "sha256-56",
+        "sha256-63",
+        "sha256-64",
+        "sha256-65",
+        "sha256-1000",
+        "sha256-1000000",
+        "feature-disabled-needs-no-files-or-target",
+        "accepted-seek_sequence",
+        "accepted-utf8_boundaries",
+        "accepted-utf8_prefix",
+        "accepted-metric_tag",
+        "accepted-markdown_location",
+        "accepted-ascii_json_fragment",
+        "accepted-uuid_matches",
+        "accepted-template_parser",
+        "accepted-template_render",
+        "accepted-template_index",
+        "accepted-prefix_match",
+        "accepted-prefix_admission",
+        "accepted-policy_summary",
+        "accepted-network_domains",
+        "accepted-allowed_prefixes",
+        "accepted-command_dispatch",
+        "accepted-network_host",
+        "changed-bytes-build.py",
+        "changed-bytes-cargo_build.rs",
+        "changed-bytes-toolchain.json",
+        "changed-bytes-seek_sequence.hepta",
+        "changed-bytes-utf8_boundaries.hepta",
+        "changed-bytes-utf8_prefix.hepta",
+        "changed-bytes-metric_tag.hepta",
+        "changed-bytes-markdown_location.hepta",
+        "changed-bytes-ascii_json_fragment.hepta",
+        "changed-bytes-uuid_matches.hepta",
+        "changed-bytes-template_parser.hepta",
+        "changed-bytes-template_render.hepta",
+        "changed-bytes-template_index.hepta",
+        "changed-bytes-prefix_match.hepta",
+        "changed-bytes-prefix_admission.hepta",
+        "changed-bytes-policy_summary.hepta",
+        "changed-bytes-network_domains.hepta",
+        "changed-bytes-allowed_prefixes.hepta",
+        "changed-bytes-command_dispatch.hepta",
+        "changed-bytes-network_host.hepta",
+        "changed-bytes-build.json",
+        "changed-bytes-seek_sequence.namespaced.o",
+        "changed-bytes-libcodex_hia_seek_sequence.a",
+        "changed-bytes-B1.image.bin",
+        "changed-bytes-B2.image.bin",
+        "changed-bytes-B3.image.bin",
+        "wrong-receipt-mode",
+        "wrong-receipt-symbol",
+        "wrong-receipt-object",
+        "wrong-receipt-archive",
+        "wrong-receipt-revision",
+        "invalid-build-state-status",
+        "invalid-build-state-build_mode",
+        "invalid-build-state-compiler_fixed_point",
+        "noncanonical-receipt-62",
+        "noncanonical-receipt-63",
+        "noncanonical-receipt-64",
+        "missing-libdir",
+        "unsupported-CARGO_CFG_TARGET_OS",
+        "unsupported-CARGO_CFG_TARGET_ARCH",
+        "unsupported-CARGO_CFG_TARGET_ENV",
+        "unsupported-CARGO_CFG_TARGET_POINTER_WIDTH",
+        "reject-rehashed-weak-symbol",
+        "reject-rehashed-undefined-symbol",
+        "duplicate-rehashed-archive-member",
+        "python-duplicate-archive-rejected"
+      ],
+      "receipt_report_sha256": "ff3ae3660d305cbc3dfd39a37ebb9d2a5f1a990c70c20d5f37834ecd2bf4d28c",
+      "previous_scalar_artifact_counts_not_transferred": true,
+      "current_scalar_artifact_gate": "pending_current_seventeen_module_ci",
+      "native_build_report": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "native-root-v1/build.json",
+        "bytes": 197185,
+        "sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343"
+      },
+      "new_module": {
+        "source_sha256": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+        "core_sha256": "5041dff01436a53d3ac0f592ee488ac0e6b82af8dfdf1e6b6a928d2e82e7d68a",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "library_sha256": "3f278af62de3adaf8910ad448a1ae0b7616f66579563bf682308d8bce40e6b2f",
+        "library_bytes": 33576,
+        "static_link": {
+          "symbol": "codex_hia_network_host",
+          "library": "libcodex_hia_network_host.so",
+          "object": "network_host.namespaced.o",
+          "archive": "libcodex_hia_network_host.a",
+          "archive_member": "hia.o",
+          "archive_bytes": 22416,
+          "archive_sha256": "d03ed9eb11191e5ae4cd18e3cf4c95a7672b1c21f0f55b3551b6cef9417bd677",
+          "text_sha256": "04b4c29ba86c35f384aa94879407cf7a37402f4ebde510c957700266d32cb388",
+          "defined_symbols": [
+            "codex_hia_network_host"
+          ],
+          "undefined_symbols": [],
+          "object_sha256": "a04753a6a760d4a377ad5364abc0d5966e96602af73a3fd9b9820ad94e596a34",
+          "library_sha256": "bad214129de736912e494feddc89cff343b9b7198b6fe9f0ad62d650ccdc61f3",
+          "objcopy_command": [
+            "objcopy",
+            "--redefine-sym=f0=codex_hia_network_host",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.o",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o"
+          ],
+          "link_command": [
+            "ld",
+            "-m",
+            "elf_x86_64",
+            "-shared",
+            "-z",
+            "defs",
+            "-z",
+            "noexecstack",
+            "-z",
+            "relro",
+            "-z",
+            "now",
+            "--build-id=none",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o",
+            "-o",
+            "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/libcodex_hia_network_host.so"
+          ],
+          "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+        }
+      },
+      "object_inventory": {
+        "format": "ELF64-ET_REL",
+        "machine": "EM_X86_64",
+        "exports": [
+          "f0"
+        ],
+        "undefined_symbols": [],
+        "external_relocations": [],
+        "nonexecuting_stack_note": true,
+        "text_offset": 64,
+        "text_bytes": 21652,
+        "text_sha256": "04b4c29ba86c35f384aa94879407cf7a37402f4ebde510c957700266d32cb388",
+        "entry_wrapper_bytes": 78,
+        "object_sha256": "8664e8c421ce2bd583caa448bafc185fae38004192d4641de6155f039f626912"
+      },
+      "previous16_source_core_object_text_archive_and_library_identities_equal": true,
+      "previous16_embedded_build_command_scope": "Earlier artifact records are retained unchanged, including their historical command paths. Their artifact identities were independently compared with this full17 build.",
+      "current_raw_artifact_checks": {
+        "schema": "codex.hia.native-build.v1",
+        "profile": "full-native17",
+        "module_count": 17,
+        "compiler_generations_verified": [
+          "B1",
+          "B2",
+          "B3"
+        ],
+        "full17_manifest_verified": true,
+        "scope": "Existing native-selfhost report, all seventeen module artifacts and three fixed-point image identities; no compilation performed by this raw gate."
+      }
+    },
+    "raw_abi": {
+      "schema": "codex.hia.network-host.raw-abi.v1",
+      "passed": true,
+      "requested_build_profile": "full-native17",
+      "semantic_reference": "Literal fixtures and independent Python contract/wire model",
+      "original_rust_oracle_executed": false,
+      "public_owner_qualified": false,
+      "performance_qualified": false,
+      "skipped": 0,
+      "compiler_bootstrap_executed_by_raw_gate": false,
+      "literal_fixtures": 31,
+      "enumerated_hosts": 7381,
+      "concurrent_hosts_included": 256,
+      "counts": {
+        "calls": 13501,
+        "returned_success": 11167,
+        "literal": 48,
+        "unicode": 278,
+        "enumerated": 9310,
+        "random": 1049,
+        "returned_error": 2334,
+        "malformed-control": 1080,
+        "malformed-utf8": 1136,
+        "output-boundary": 140,
+        "revalidated-run": 5,
+        "large": 7,
+        "concurrent": 448
+      },
+      "maximum_source_bytes": 2097160,
+      "inputs_unchanged": true
+    },
+    "public_owner": {
+      "complete_owner_comparisons": 9519,
+      "concurrent_comparisons_included": 256,
+      "enumerated_hosts": 7381,
+      "passed": true,
+      "performance_qualified": false,
+      "public_entry_observations": 1281,
+      "skipped": 0,
+      "unicode_hosts": 828,
+      "whole_policy_migrated": false,
+      "binary_sha256": "d2e454bc0a2eacbd1a4aeeea14822b4568fa11f8db239137313cb2bb9d641072",
+      "harness_sha256": "18d516021603da3a77857f587f822adb37f60106e99f68d8ef303b715ce161e9"
+    },
+    "original_oracle": {
+      "revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "owners": {
+        "policy": {
+          "token_count": 2372,
+          "token_sha256": "080a1946165e5555b5789e5705fdae77f117f4c0300f6159e682f1678ff79254"
+        },
+        "decision": {
+          "token_count": 134,
+          "token_sha256": "62c968bd0e18a20e2c4e4e814f115f7be66f5ddb69455679b28155be2a4dc9d2"
+        },
+        "execpolicycheck": {
+          "token_count": 491,
+          "token_sha256": "579b4542a2a063435c8f5ea7f9bea744f5140feb5aaaa294128cae948ec466e3"
+        },
+        "rule": {
+          "token_count": 208,
+          "token_sha256": "229f094dded61b39578ae0cdd453e12e14bb0720a3147082075d2c9997812e7f"
+        },
+        "dispatcher": {
+          "token_count": 459,
+          "token_sha256": "10c23ef41a88326d5ea451cf5a81a3f695063d64fedbb32879bfe2a282edd2e9",
+          "overlap": "subregion of the complete 2372-token Policy pin; not additive"
+        },
+        "original_path_services": {
+          "codex-rs/execpolicy/src/executable_name.rs": "85414e488db0dba6a0b077cc038cc8f7ad0aa5695f927fc1fb05886f4d8adf7b",
+          "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+          "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7"
+        },
+        "network_host": {
+          "token_count": 393,
+          "token_sha256": "a2bb25bf0604d951d60f92fef5c827467dc233ad4440de3571e6f9a8eb1ae5a5",
+          "overlap": "subregion of the 583-token network types/normalization pin; not additive"
+        },
+        "network_types_and_normalization": {
+          "token_count": 583,
+          "token_sha256": "775fddae2313f22890a6d395c67d98b96e273be7b514724ae4fcb0fadde07d70"
+        },
+        "unchanged_callers_and_errors": {
+          "parser.rs": "58b89a789c394cffa2412189b5acadf2110ab23229c91db5878b72d5aeb9fee8",
+          "amend.rs": "e0869236f00e7e96e13c8546c17120b8e7e4438c6e6d676831446707eda2d1eb",
+          "error.rs": "7c952283b5c2a75d3a34669427dab79ef0a6ff26d401b8731bba9751822d81dc"
+        }
+      }
+    },
+    "public_wrapper": {
+      "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/public_owner.rs",
+      "sha256": "18d516021603da3a77857f587f822adb37f60106e99f68d8ef303b715ce161e9",
+      "oracle_function_sha256": "80c521fe50c556517e33e3d53983fcf58c3de7876ce52d30d0da4100035b4550"
+    },
+    "public_execution": {
+      "actual_commands": 26,
+      "all_return_codes_zero": true,
+      "all_process_timeouts_false": true,
+      "standalone_edition": "2024",
+      "profile": "real dev crate owners; opt-level=3 external harnesses; one diagnostic timing observation per case",
+      "source_input_count": 58,
+      "actual_current_owner_builds": {
+        "reference": {
+          "rlib": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/libreference_execpolicy.rlib",
+          "rlib_sha256": "12f364e6d7616b80da019f2236fac216b0cb91bb35d2e8a07fb85bf82926239d",
+          "binary": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/reference-codex-execpolicy",
+          "binary_sha256": "b9ca2efea35c8ed9edf4db84ed701871d578e8b6402d02bfbfcfa5c6368e41ce"
+        },
+        "native": {
+          "rlib": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/libnative_execpolicy.rlib",
+          "rlib_sha256": "8a66797b69d228a91123d6b4eca1256393cb5b71a5964b22450b7a14f323463e",
+          "binary": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/network-host-public-v1-artifacts/native-codex-execpolicy",
+          "binary_sha256": "359cdf872abfb19dbf36f99b83d98640e850c19f0cf628aaf1035ea7f71e782f"
+        }
+      },
+      "raw_stream_count": 52,
+      "raw_stream_scope": "26 actual commands, each retaining stdout and stderr; full streams remain in the immutable exported observations.",
+      "native17_admission": {
+        "schema": "codex.hia.native-build.v1",
+        "profile": "full-native17",
+        "module_count": 17,
+        "compiler_generations_verified": [
+          "B1",
+          "B2",
+          "B3"
+        ],
+        "full17_manifest_verified": true,
+        "scope": "Existing native-selfhost report, all seventeen module artifacts and three fixed-point image identities; no compilation performed by this raw gate."
+      },
+      "all52_raw_stream_bytes_verified": true,
+      "all_eight_behavioral_stdout_completions_equal_reports": true,
+      "current_compiler_capture_files_verified": 4
+    },
+    "public_effect_scope": {
+      "entry_observations": 1281,
+      "direct_add_observations": 40,
+      "parser_observations": 1120,
+      "append_file_observations": 120,
+      "large_ignored_host_observations": 1,
+      "observations_compare": "Complete results, rule order/protocol/decision/justification metadata, error strings, files and directory existence.",
+      "earlier_parser_precedence_preserved": true,
+      "not_counted_as_additional_complete_owner_comparisons": true
+    },
+    "substituted_callee": {
+      "checked_entrypoints_per_corruption": 3,
+      "corruptions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "ignored_native_entry_probes": 3,
+      "native_hia_executed": false,
+      "passed": true,
+      "scope": "actual production transport and public callers with deliberately substituted callee; raw input pointer identity, no push/file creation after corruption, and original earlier parser validation retained",
+      "semantic_error_probes": 6,
+      "valid_positive_probes": 1,
+      "binary_sha256": "6ca60e5fd593aeab543e46871c3463480e5e82bce42ecd7611c83fd9a5ab7d5e",
+      "harness_sha256": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50"
+    },
+    "independent_baselines": {
+      "labels": [
+        "original",
+        "native16",
+        "native17"
+      ],
+      "three_required": true,
+      "three_executed": true,
+      "predecessor": {
+        "status": "validated_frozen_owner16_bundle",
+        "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\n",
+        "published_revision": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "published_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+        "manifest_path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/manifest.json",
+        "bundle_root": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3",
+        "manifest_sha256": "62d7c78ddd44d8dbe3f0b79c37e338ffc4d964b60aa7074bd3b51cfa24252a5b",
+        "public_report_sha256": "eef2ce2356eeeee04d6d1fe59aeb62b83ec6890c7e7dce51f15df1d28ea49192",
+        "original_manifest_pending_final_field": true,
+        "promotion_descriptor_sha256": "0480b6f9f6840d228df3af588abb02f87e819157001aa95d15f070d095526210",
+        "compiled_source_files_bound_to_published_tree": 54,
+        "independent_files_verified": 1306,
+        "native_module_count": 16,
+        "copy_mode_contract": "original freeze operation normalized executable files to 0755 and other files to 0644",
+        "owner_rlib": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/files/command-dispatch-public-v3-artifacts/libnative_execpolicy.rlib",
+        "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+        "owner_rebuilt_now": false,
+        "compiled_now": true,
+        "executed_now": true,
+        "compiled_now_scope": "new owner17 allocation and performance consumer harnesses; not a Cargo owner rebuild",
+        "compiler_identity_scope": "exact captured executable path and complete verbose version; historical executable bytes were not pinned",
+        "external_platform_dynamic_names": [
+          "ld-linux-x86-64.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ],
+        "external_platform_scope": "fixed rustc/sysroot/CRT/system dynamic libraries remain platform inputs; not supplied by native archives",
+        "existing_performance_binary_reused": false,
+        "inputs_unchanged_after_consumers": true,
+        "direct_dependency_units": [
+          "serde",
+          "serde_json",
+          "anyhow",
+          "multimap",
+          "codex_utils_absolute_path"
+        ],
+        "compiler_capture_sha256": {
+          "lib": "364c7f4483590eedb47acf05b6092cebc79363892e0e730ac268d3ee195052e1",
+          "bin": "8ed5dd07176e064808cdbf99d396fdcf9563b3363d3f7a03d8b74a2d371b2ac4"
+        },
+        "full_input_closure_count": 1311
+      },
+      "actual_consumer_identities": {
+        "original": {
+          "allocations": {
+            "label": "original",
+            "passed": true,
+            "performance_qualification": false,
+            "positive_probe": {
+              "allocations": 1,
+              "peak_requested_live_bytes": 24,
+              "reallocations": 1
+            },
+            "scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+            "skipped": 0,
+            "binary_sha256": "c5e9c5d6e14b3b1fb486b9662de912d4912308fbf35fb629d943e1610f66fc48",
+            "owner_rlib_sha256": "12f364e6d7616b80da019f2236fac216b0cb91bb35d2e8a07fb85bf82926239d",
+            "harness_sha256": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          },
+          "performance": {
+            "label": "original",
+            "passed": true,
+            "performance_qualification": false,
+            "scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+            "skipped": 0,
+            "binary_sha256": "1168e2b04a837e2964373d7e8ca061525755226407a67b814417039d90839735",
+            "owner_rlib_sha256": "12f364e6d7616b80da019f2236fac216b0cb91bb35d2e8a07fb85bf82926239d",
+            "harness_sha256": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          }
+        },
+        "native16": {
+          "allocations": {
+            "label": "native16",
+            "passed": true,
+            "performance_qualification": false,
+            "positive_probe": {
+              "allocations": 1,
+              "peak_requested_live_bytes": 24,
+              "reallocations": 1
+            },
+            "scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+            "skipped": 0,
+            "binary_sha256": "9aea04b1059795f2d2eb784c521114db1b7d0366189f580151f9b16ff208029a",
+            "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+            "harness_sha256": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          },
+          "performance": {
+            "label": "native16",
+            "passed": true,
+            "performance_qualification": false,
+            "scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+            "skipped": 0,
+            "binary_sha256": "751433e922258ee326b4d7e52dc1b932f282d1f347c27efa7dcaeee4bec82705",
+            "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+            "harness_sha256": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          }
+        },
+        "native17": {
+          "allocations": {
+            "label": "native17",
+            "passed": true,
+            "performance_qualification": false,
+            "positive_probe": {
+              "allocations": 1,
+              "peak_requested_live_bytes": 24,
+              "reallocations": 1
+            },
+            "scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+            "skipped": 0,
+            "binary_sha256": "a9885617d64db24a0a111a5e500561349db24e78b496432ca09ea0d501aff53a",
+            "owner_rlib_sha256": "8a66797b69d228a91123d6b4eca1256393cb5b71a5964b22450b7a14f323463e",
+            "harness_sha256": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          },
+          "performance": {
+            "label": "native17",
+            "passed": true,
+            "performance_qualification": false,
+            "scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+            "skipped": 0,
+            "binary_sha256": "6be7c2d718703e9989e97be7077bd5f437eba4f7158a1b910754c165785fb3a5",
+            "owner_rlib_sha256": "8a66797b69d228a91123d6b4eca1256393cb5b71a5964b22450b7a14f323463e",
+            "harness_sha256": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+            "compiled_now": true,
+            "executed_now": true,
+            "prior_binary_reused": false
+          }
+        }
+      },
+      "separate_processes": true,
+      "native16_cargo_owner_rebuilt": false,
+      "native16_new_harnesses_compiled_and_executed": true,
+      "old_workload_binary_reused": false,
+      "ci_scope": "Checked-in CI has two current-source baselines original/native17; it does not receive the private owner16 bundle. Its result is pending.",
+      "admission": {
+        "passed": true,
+        "completed_cases": 18,
+        "rejected_cases": 17,
+        "positive_cases": 1,
+        "cases": [
+          {
+            "case": "positive_after_publication",
+            "passed": true,
+            "scope": "actual immutable16 bundle and formal publication; admission only"
+          },
+          {
+            "case": "missing_required_descriptor",
+            "passed": true,
+            "observation": "frozen owner16: required published owner16 descriptor is missing",
+            "expected_substring": "required published owner16 descriptor is missing",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "descriptor_hash",
+            "passed": true,
+            "observation": "frozen owner16: promotion descriptor bytes differ",
+            "expected_substring": "promotion descriptor bytes differ",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "unpublished_owner",
+            "passed": true,
+            "observation": "frozen owner16: owner16 has not been published",
+            "expected_substring": "owner16 has not been published",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "raw_commit_identity",
+            "passed": true,
+            "observation": "frozen owner16: commit/tree mismatch",
+            "expected_substring": "commit/tree mismatch",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "partial_tree",
+            "passed": true,
+            "observation": "frozen owner16: complete published tree does not match inventory",
+            "expected_substring": "complete published tree does not match inventory",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "compiled_source_binding",
+            "passed": true,
+            "observation": "frozen owner16: compiled source is not in final published owner16 tree: codex-rs/execpolicy/src/policy.rs",
+            "expected_substring": "compiled source is not in final published owner16 tree",
+            "scope": "synthetic internally consistent Git descriptor; no real publication or Git mutation"
+          },
+          {
+            "case": "output_overlap",
+            "passed": true,
+            "observation": "frozen owner16: output overlaps frozen owner: /home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/DO-NOT-CREATE-network-host-target",
+            "expected_substring": "output overlaps frozen owner",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "compiler_identity",
+            "passed": true,
+            "observation": "frozen owner16: compiler identity differs",
+            "expected_substring": "compiler identity differs",
+            "scope": "independent descriptor or small file fixture"
+          },
+          {
+            "case": "frozen_file_hash",
+            "passed": true,
+            "observation": "frozen owner16: frozen file changed: /home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/files/command-dispatch-public-v3.json",
+            "expected_substring": "frozen file changed",
+            "scope": "read-only injected hash observation; frozen bytes never changed"
+          },
+          {
+            "case": "frozen_file_hardlink",
+            "passed": true,
+            "observation": "frozen owner16: not a regular independent frozen copy",
+            "expected_substring": "not a regular independent frozen copy",
+            "scope": "read-only injected stat observation"
+          },
+          {
+            "case": "cargo_unit",
+            "passed": true,
+            "observation": "frozen owner16: Cargo closure differs",
+            "expected_substring": "Cargo closure differs",
+            "scope": "read-only decoder fault on already hashed manifest; not a tampered-file claim"
+          },
+          {
+            "case": "link_closure",
+            "passed": true,
+            "observation": "frozen owner16: transitive search closure differs",
+            "expected_substring": "transitive search closure differs",
+            "scope": "read-only decoder fault on already hashed manifest; not a tampered-file claim"
+          },
+          {
+            "case": "thin_archive",
+            "passed": true,
+            "observation": "frozen owner16: thin archive requires an explicitly materialized closure",
+            "expected_substring": "thin archive",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "linker_script",
+            "passed": true,
+            "observation": "frozen owner16: archive is an unsupported linker script/input",
+            "expected_substring": "unsupported linker script/input",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "needed_path",
+            "passed": true,
+            "observation": "frozen owner16: path-qualified ELF dependency escapes the link plan",
+            "expected_substring": "path-qualified ELF dependency",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "external_rpath",
+            "passed": true,
+            "observation": "frozen owner16: ELF loader path leaves bundle and fixed compiler toolchain",
+            "expected_substring": "ELF loader path leaves",
+            "scope": "tiny archive/ELF data fixture; never compiled, linked, loaded or executed"
+          },
+          {
+            "case": "post_execution_inventory",
+            "passed": true,
+            "observation": "frozen owner16: frozen inventory changed",
+            "expected_substring": "frozen inventory changed",
+            "scope": "read-only injected final inventory observation"
+          }
+        ],
+        "consumer_compilation_or_execution": false,
+        "actual_frozen_input_mutation": false,
+        "old_target_used": false,
+        "loader_sha256": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428"
+      }
+    },
+    "measurements": {
+      "performance_qualified": false,
+      "baseline_order": [
+        "original",
+        "native16",
+        "native17"
+      ],
+      "allocation_metric_order": [
+        "allocations",
+        "reallocations",
+        "deallocations",
+        "requested_bytes",
+        "peak_requested_live_bytes",
+        "requested_live_at_return_bytes",
+        "untracked_releases"
+      ],
+      "row_count_per_baseline_per_metric": 19,
+      "all_timing_values": 57,
+      "all_allocation_vectors": 57,
+      "all_allocation_numeric_values": 399,
+      "native17_slower_than_original_rows": 19,
+      "native17_slower_than_native16_rows": 17,
+      "native17_faster_than_native16_rows": 2,
+      "rows": [
+        {
+          "case": "lowercase",
+          "raw_bytes": 11,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "7b2fd96f356b16f42febe2e0e142922774546d12fe790eedf0600c903b7c25fd",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1033576,
+            1088514,
+            3141828
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "eb5c5506c90e0a55451aa2bed80dc200d95fe62439b1326d4a8301405196a540",
+            "67ad4544e6f9f942e775112df42281bb0ca7a07711c2adaee1dde3dc4b0ba69e",
+            "0b12b17005c9bf78c75e98076b9885e2ce3372bf2726389e141c2b889c02a2cc"
+          ],
+          "complete_allocation_row_sha256": [
+            "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a",
+            "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a",
+            "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a"
+          ]
+        }
+      ],
+      "canonical_row_digest_encoding": "UTF-8 JSON with sorted keys, ensure_ascii=false and separators comma/colon, no trailing newline.",
+      "raw_rows_preserved": {
+        "report": {
+          "path": "network-host-root-review/observations-v1/network-host-public-v1.json",
+          "bytes": 13052765,
+          "sha256": "f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c"
+        },
+        "timing": "performance.<baseline>.rows",
+        "allocation": "allocations.<baseline>.rows",
+        "scope": "Every complete raw row remains in this retained report. Large repeated rules strings are represented here by exact canonical bytes/SHA; no timing or allocation numeric field is omitted."
+      },
+      "allocation_scope": "System allocator requested layouts during one actual public add_network_rule call; raw String and empty Policy with one reserved rule slot constructed outside measurement; returned allocations retained until after measurement. Realloc subtracts old before adding new, so this is neither RSS nor transient simultaneous allocator storage.",
+      "timing_scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
+      "allocation_observation": "Four error cases avoid one temporary allocation; the other 15 measured allocation vectors equal both baselines. No zero-allocation row is claimed. This does not qualify performance.",
+      "timing_observation": "The early-scheme three-call row is 3,051,661 ns native17 versus 1,870 ns original and 1,710 ns native16; complete UTF-8 input validation remains in the raw contract.",
+      "inlined_measurement_rows": 1
     }
   }
 }
