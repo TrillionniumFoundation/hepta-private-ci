@@ -422,6 +422,21 @@ jobs:
             --report "$RUNNER_TEMP/hia-installed-patch.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-installed-patch.log"
 
+      # Core integration tests discover these executable fixtures using
+      # cargo_bin(), not the nextest-built test binaries under debug/deps.
+      # Keep the fixture binaries on the original test path; never skip tests.
+      - name: Build required Core MCP and Code Mode test binaries
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-rmcp-client --bin test_stdio_server \
+            2>&1 | tee "$RUNNER_TEMP/hia-test-stdio-server-build.log"
+          cargo build --locked -p codex-code-mode-host --bin codex-code-mode-host \
+            2>&1 | tee "$RUNNER_TEMP/hia-code-mode-host-build.log"
+          test -x "$CARGO_TARGET_DIR/debug/test_stdio_server"
+          test -x "$CARGO_TARGET_DIR/debug/codex-code-mode-host"
+
       - name: Test full Codex owners with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -539,6 +554,8 @@ jobs:
             ${{ runner.temp }}/hia-installed-patch.json
             ${{ runner.temp }}/hia-installed-patch.log
             ${{ runner.temp }}/hia-default-crates.log
+            ${{ runner.temp }}/hia-test-stdio-server-build.log
+            ${{ runner.temp }}/hia-code-mode-host-build.log
             ${{ runner.temp }}/hia-codex-owners.log
             ${{ runner.temp }}/hia-installed-codex-build.log
             ${{ runner.temp }}/hia-original-codex-build.log
