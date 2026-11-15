@@ -103,6 +103,17 @@ jobs:
             --output "$RUNNER_TEMP/windows-owner-crypto-observations.json" \
             | tee "$RUNNER_TEMP/windows-owner-crypto-observations.log"
 
+      - name: Observe real broker file operations without CLR
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/windows-owner-crypto-probe.json"
+          python -B ../.github/diagnostics/run_windows_crypto_diagnostic.py \
+            --probe "$RUNNER_TEMP/native-crypto-probe.exe" \
+            --file-boundary \
+            --output "$RUNNER_TEMP/windows-owner-file-observations.json" \
+            | tee "$RUNNER_TEMP/windows-owner-file-observations.log"
+
       - name: Check source remains clean
         if: always()
         uses: ./.github/actions/check-clean-worktree

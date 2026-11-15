@@ -31,6 +31,9 @@ use windows_sys::Win32::Security::TokenMandatoryPolicy;
 use windows_sys::Win32::System::Threading::GetExitCodeProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
+#[path = "file_boundary.rs"]
+mod file_boundary;
+
 const OUTPUT_LIMIT: u64 = 16 * 1024;
 const DIAGNOSTIC_WAIT_MS: u32 = 5_000;
 const WAIT_TIMEOUT: u32 = 258;
@@ -46,6 +49,9 @@ pub(super) fn run() -> Result<()> {
     anyhow::ensure!(args.next().is_none(), "unexpected diagnostic argument");
     let probe = std::fs::canonicalize(probe)?;
     let mode = mode.to_str().context("diagnostic mode must be UTF-8")?;
+    if mode == "files" {
+        return file_boundary::run(&probe);
+    }
     anyhow::ensure!(
         matches!(mode, "base" | "full" | "capability" | "broker"),
         "unknown diagnostic mode"

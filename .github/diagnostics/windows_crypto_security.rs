@@ -3,8 +3,11 @@
 use core::ffi::c_void;
 
 use super::number;
+use super::windows_probe_memory::BoundedMemory;
 use super::write;
 use super::GetProcAddress;
+
+const DESCRIPTOR_BYTES: usize = 4096;
 
 #[derive(Clone, Copy)]
 pub(super) enum SelfHandleKind {
@@ -34,25 +37,28 @@ pub(super) fn observe(ntdll: isize, handle: isize) {
     let valid = unsafe { core::mem::transmute::<*mut c_void, ValidRelative>(valid) };
     let get_dacl = unsafe { core::mem::transmute::<*mut c_void, GetDacl>(get_dacl) };
     let get_ace = unsafe { core::mem::transmute::<*mut c_void, GetAce>(get_ace) };
-    let mut data = [0_u32; 1024];
+    let Some(data) = BoundedMemory::new(DESCRIPTOR_BYTES) else {
+        number(b"handle_delta_dacl_complete", /*value*/ 0);
+        return;
+    };
     let mut returned = 0;
     let status = unsafe {
         query(
             handle,
             /*security_information: DACL_SECURITY_INFORMATION*/ 4,
-            data.as_mut_ptr().cast(),
-            core::mem::size_of_val(&data) as u32,
+            data.as_ptr(),
+            DESCRIPTOR_BYTES as u32,
             &mut returned,
         )
     };
     number(b"handle_delta_dacl_query_ntstatus", status as u32);
     number(b"handle_delta_dacl_query_required_bytes", returned);
-    if status < 0 || !(20..=core::mem::size_of_val(&data)).contains(&(returned as usize)) {
+    if status < 0 || !(20..=DESCRIPTOR_BYTES).contains(&(returned as usize)) {
         number(b"handle_delta_dacl_complete", /*value*/ 0);
         return;
     }
     // Validation consumes only the initialized returned range, not guessed offsets.
-    let descriptor = data.as_mut_ptr().cast();
+    let descriptor = data.as_ptr();
     if unsafe {
         valid(descriptor, returned, /*required_information*/ 4)
     } == 0

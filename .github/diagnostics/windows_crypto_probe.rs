@@ -7,6 +7,8 @@ use core::ffi::c_void;
 
 mod windows_crypto_observe;
 mod windows_crypto_security;
+mod windows_file_probe;
+mod windows_probe_memory;
 
 #[link(name = "kernel32")]
 unsafe extern "system" {
@@ -118,6 +120,9 @@ fn module_path(label: &[u8], module: isize) {
 
 #[unsafe(no_mangle)]
 pub extern "system" fn mainCRTStartup() -> ! {
+    if windows_file_probe::requested() {
+        windows_file_probe::run();
+    }
     write(b"probe_entry=1\n");
     module_path(b"probe_path", /*module*/ 0);
     let ntdll = unsafe { GetModuleHandleW(NTDLL.as_ptr()) };
@@ -189,7 +194,7 @@ pub extern "system" fn mainCRTStartup() -> ! {
         }
     }
     write(b"self_handles_phase=after_bcrypt_load_and_rng\n");
-    windows_crypto_observe::Handles::capture(Some(&before), ntdll);
+    windows_crypto_observe::Handles::capture(before.as_ref(), ntdll);
     if bcrypt != 0 {
         unsafe { FreeLibrary(bcrypt) };
     }
@@ -211,6 +216,7 @@ pub extern "system" fn mainCRTStartup() -> ! {
         module_path(b"primitives_path", primitives);
         unsafe { FreeLibrary(primitives) };
     }
+    drop(before);
     write(b"probe_complete=1\n");
     // Completion means observations were emitted, not that CNG authorization passed.
     unsafe {

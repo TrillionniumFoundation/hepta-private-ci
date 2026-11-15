@@ -131,6 +131,12 @@ def main():
                 "security_observer_sha256": hashlib.sha256(
                     args.source.with_name("windows_crypto_security.rs").read_bytes()
                 ).hexdigest(),
+                "bounded_memory_sha256": hashlib.sha256(
+                    args.source.with_name("windows_probe_memory.rs").read_bytes()
+                ).hexdigest(),
+                "file_probe_sha256": hashlib.sha256(
+                    args.source.with_name("windows_file_probe.rs").read_bytes()
+                ).hexdigest(),
                 "executable_sha256": hashlib.sha256(data).hexdigest(),
                 "bytes": len(data),
                 "imports": libraries,

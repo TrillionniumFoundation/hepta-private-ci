@@ -4,6 +4,7 @@ use core::ffi::c_void;
 use super::number;
 use super::windows_crypto_security;
 use super::windows_crypto_security::SelfHandleKind;
+use super::windows_probe_memory::BoundedMemory;
 use super::write;
 use super::GetProcAddress;
 
@@ -157,28 +158,33 @@ struct HandleKey {
     basic_available: bool,
 }
 
-const EMPTY: HandleKey = HandleKey {
-    handle: 0,
-    object_type: 0,
-    access: 0,
-    attributes: 0,
-    basic_available: false,
-};
 const HANDLE_LIMIT: usize = 128;
 const REPORT_LIMIT: usize = 24;
 const QUERY_REPORT_LIMIT: usize = 8;
 
 pub(super) struct Handles {
-    entries: [HandleKey; HANDLE_LIMIT],
+    entries: BoundedMemory,
     len: usize,
     complete: bool,
     missing_basic: usize,
 }
 
 impl Handles {
-    pub(super) fn capture(before: Option<&Self>, ntdll: isize) -> Self {
+    fn entries(&self) -> &[HandleKey] {
+        // The allocation is zeroed, which is valid for every HandleKey field.
+        // Only initialized keys below len are exposed, and len never exceeds
+        // HANDLE_LIMIT. The owning allocation outlives this borrowed slice.
+        unsafe { core::slice::from_raw_parts(self.entries.as_ptr().cast(), self.len) }
+    }
+
+    pub(super) fn capture(before: Option<&Self>, ntdll: isize) -> Option<Self> {
+        let Some(entries) = BoundedMemory::new(core::mem::size_of::<HandleKey>() * HANDLE_LIMIT)
+        else {
+            number(b"self_handles_complete", /*value*/ 0);
+            return None;
+        };
         let mut result = Self {
-            entries: [EMPTY; HANDLE_LIMIT],
+            entries,
             len: 0,
             complete: false,
             missing_basic: 0,
@@ -189,7 +195,7 @@ impl Handles {
         let status = unsafe { PssCaptureSnapshot(GetCurrentProcess(), 0x14, 0, &mut snapshot) };
         number(b"self_handles_capture_error", status);
         if status != 0 {
-            return result;
+            return Some(result);
         }
         let mut marker = 0;
         let status = unsafe { PssWalkMarkerCreate(core::ptr::null(), &mut marker) };
@@ -274,11 +280,19 @@ impl Handles {
                     attributes: if basic_available { entry.attributes } else { 0 },
                     basic_available,
                 };
-                result.entries[result.len] = key;
+                // Capacity was checked immediately above. This is an aligned slot
+                // in the retained zeroed allocation; no stack array is materialized.
+                unsafe {
+                    result
+                        .entries
+                        .as_ptr()
+                        .cast::<HandleKey>()
+                        .add(result.len)
+                        .write(key)
+                };
                 result.len += 1;
-                if before.is_some_and(|before| {
-                    before.complete && !before.entries[..before.len].contains(&key)
-                }) {
+                if before.is_some_and(|before| before.complete && !before.entries().contains(&key))
+                {
                     differences += 1;
                     if differences <= REPORT_LIMIT {
                         number(b"handle_delta_index", differences as u32);
@@ -299,7 +313,8 @@ impl Handles {
                                 // identity across a close/reopen between snapshot and query.
                                 let new_handle_value = before.is_some_and(|before| {
                                     before.complete
-                                        && !before.entries[..before.len]
+                                        && !before
+                                            .entries()
                                             .iter()
                                             .any(|previous| previous.handle == entry.handle)
                                 });
@@ -364,7 +379,7 @@ impl Handles {
         );
         // This compares handle metadata, not kernel object identity. Reused handle
         // values with the same metadata and transient objects may be unobserved.
-        result
+        Some(result)
     }
 }
 

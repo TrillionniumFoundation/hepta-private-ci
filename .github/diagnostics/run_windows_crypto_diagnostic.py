@@ -13,6 +13,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--file-boundary", action="store_true")
     args = parser.parse_args()
     metadata = json.loads(
         subprocess.check_output(
@@ -42,7 +43,12 @@ def main():
                 raise ValueError(f"diagnostic bundle changed {name}")
             hashes[name] = digest
         records = []
-        for mode in ["base", "full", "capability", "broker"]:
+        modes = (
+            ["files"]
+            if args.file_boundary
+            else ["base", "full", "capability", "broker"]
+        )
+        for mode in modes:
             command = [
                 str(bundle / "windows_crypto_diagnostic.exe"),
                 mode,
@@ -62,7 +68,9 @@ def main():
             record["output_truncated"] = len(stdout) > 65536 or len(stderr) > 65536
             record["stdout"] = stdout[:65536].decode("utf-8", errors="replace")
             record["stderr"] = stderr[:65536].decode("utf-8", errors="replace")
-            if record["driver_exit"] == 0 and not record["output_truncated"]:
+            if not record["output_truncated"] and (
+                record["driver_exit"] == 0 or args.file_boundary
+            ):
                 try:
                     record["observation"] = json.loads(record["stdout"])
                 except json.JSONDecodeError as error:
@@ -84,6 +92,17 @@ def main():
                 + "\n"
             )
             print(json.dumps(record), flush=True)
+        if args.file_boundary:
+            observation = records[0].get("observation", {})
+            if (
+                records[0]["driver_exit"] != 0
+                or not observation.get("complete")
+                or not observation.get("policy_passed")
+            ):
+                raise ValueError(
+                    "actual CRT-free file operations did not satisfy the original owner boundary"
+                )
+            return
         baseline = records[0].get("observation", {}).get("result", {})
         required = [
             "probe_entry=1",
