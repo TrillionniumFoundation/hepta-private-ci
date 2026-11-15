@@ -857,6 +857,11 @@ pub use notes_recovery_selection::AgentdNotesPreviousRecoveryRequest;
 pub use notes_recovery_selection::AgentdNotesRecoverySelector;
 mod runtime_tasks;
 mod shared_terminal_cell;
+mod native_shadow_execution;
+pub use native_shadow_execution::ShadowExecutionCandidateV1;
+pub use native_shadow_execution::propose_native_shadow_execution_v1;
+mod shadow_execution;
+pub use shadow_execution::propose_shadow_execution_v1;
 mod state;
 pub mod text_session;
 #[cfg(target_os = "linux")]
