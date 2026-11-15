@@ -10120,6 +10120,307 @@
             "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3",
             "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3"
           ]
+        },
+        {
+          "case": "large-early-scheme",
+          "raw_bytes": 2097160,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a hostname or IP literal (without scheme or path)",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            1870,
+            1710,
+            3051661
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              75,
+              75,
+              75,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              75,
+              75,
+              75,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              75,
+              75,
+              75,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "cadfc75e80c3f655839015bb5edd13865fca08306c4d53cc1855e64a1f0b29be",
+            "a5ec940023eb389318732e031f65bef00bdda003afec4be10b8ae611572f4276",
+            "761b5fd79143e8af43b4e4303aa3f399a7702e455da2ade986d8797e7fd35e49"
+          ],
+          "complete_allocation_row_sha256": [
+            "bca949a7e9204d3b96e6d31c8478fc2f039f108e5439f22c13758a9a06c5fa48",
+            "bca949a7e9204d3b96e6d31c8478fc2f039f108e5439f22c13758a9a06c5fa48",
+            "bca949a7e9204d3b96e6d31c8478fc2f039f108e5439f22c13758a9a06c5fa48"
+          ]
+        },
+        {
+          "case": "large-missing-bracket",
+          "raw_bytes": 2097154,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host has an invalid bracketed IPv6 literal",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            12599780,
+            12619339,
+            52932948
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              55,
+              55,
+              55,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              55,
+              55,
+              55,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              55,
+              55,
+              55,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "63d1590da82e39d741f50e31e3ca98a42462c3870e7b6f11981a7ea02f562155",
+            "7fde49c1a68d347b82b5060812f333abfc9fbfd59d07f33a82bd357a8184c235",
+            "da9417ba56077c1a1c884853b122591993e5513a41bb37b9a21f1c2b2ebff35d"
+          ],
+          "complete_allocation_row_sha256": [
+            "29029f32f86736b7af47c9d7b9a5d3a43d95f805cae83087852e4b631b354b37",
+            "29029f32f86736b7af47c9d7b9a5d3a43d95f805cae83087852e4b631b354b37",
+            "29029f32f86736b7af47c9d7b9a5d3a43d95f805cae83087852e4b631b354b37"
+          ]
+        },
+        {
+          "case": "large-early-wildcard",
+          "raw_bytes": 2097154,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a specific host; wildcards are not allowed",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            20127285,
+            19916112,
+            52969237
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              68,
+              68,
+              68,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "03edce38cdc47b784d4dd9bbb480bc91ad545785772bf536a3155da959e42452",
+            "1e961b85023c4472327907524149eeda78fa680f0ae1df3828ced372f0d4ee4b",
+            "2e3e487ed2a825e1c3c26ca75e30076068e434bb2b49df8e54555e01c3993297"
+          ],
+          "complete_allocation_row_sha256": [
+            "d026280f1b90ed08093766b168db68b41d06fdf58e18e139648b36886823b2b0",
+            "d026280f1b90ed08093766b168db68b41d06fdf58e18e139648b36886823b2b0",
+            "e14814fd5de4adb58501439c2c649f5ae9be4568a29346580abdeda6e8260a5e"
+          ]
+        },
+        {
+          "case": "large-late-wildcard",
+          "raw_bytes": 2097154,
+          "iterations": 3,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a specific host; wildcards are not allowed",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            20326059,
+            20207633,
+            164523767
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              2097222,
+              2097222,
+              68,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              68,
+              68,
+              68,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "12ab851a998102be03750250b3925a5d77330c8eef0ce200ac5536c0459b3ea1",
+            "0f1c123f0c77682bb9da5d348e6ba7feea3db6b78dccca2b692ecf669975684a",
+            "9d056d114fa7de38d258a02baa552c382d52fcc74081590c6f27315577af8c34"
+          ],
+          "complete_allocation_row_sha256": [
+            "6a24dd09c7810d420f2167db91ab3e5760560526672b560ffbb8bee78e816d06",
+            "6a24dd09c7810d420f2167db91ab3e5760560526672b560ffbb8bee78e816d06",
+            "e1bd7bd0c2d7247b3274770931236e939dc10a2933db8b22567af3a7391aa400"
+          ]
+        },
+        {
+          "case": "large-trimmed",
+          "raw_bytes": 393226,
+          "iterations": 3,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "3cb390f27f1fcabdcef1b8dbc7f7359380ca065d1ab045a79b3412e2c1254067",
+            "canonical_json_bytes": 34
+          },
+          "nanoseconds": [
+            6770350,
+            6644044,
+            60310538
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "642471baf9e531d1450140cbc21071ed1825729b5b5b51e000113766a1ad60f1",
+            "e891e609c1ce86e7dc65996b65ad59062dde6ff60035456e595609e2eb93d30f",
+            "674e0125e82582478016b5eca5afee631e738233698c03019b4c61c9b7064671"
+          ],
+          "complete_allocation_row_sha256": [
+            "d204ca982833ffed567618dce247ffde842241aab8028f67851a482e548cdcb6",
+            "d204ca982833ffed567618dce247ffde842241aab8028f67851a482e548cdcb6",
+            "d204ca982833ffed567618dce247ffde842241aab8028f67851a482e548cdcb6"
+          ]
         }
       ],
       "canonical_row_digest_encoding": "UTF-8 JSON with sorted keys, ensure_ascii=false and separators comma/colon, no trailing newline.",
@@ -10137,7 +10438,440 @@
       "timing_scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
       "allocation_observation": "Four error cases avoid one temporary allocation; the other 15 measured allocation vectors equal both baselines. No zero-allocation row is claimed. This does not qualify performance.",
       "timing_observation": "The early-scheme three-call row is 3,051,661 ns native17 versus 1,870 ns original and 1,710 ns native16; complete UTF-8 input validation remains in the raw contract.",
-      "inlined_measurement_rows": 14
+      "inlined_measurement_rows": 19
+    },
+    "owner_and_installed": {
+      "owner_stage": {
+        "path": "network-host-root-review/execution-v1/owner-v1.json",
+        "bytes": 33552,
+        "sha256": "8d1fc2404305443f237fc43025fc7e5653b0b0678042a8bef16deeb8b7d35f3a"
+      },
+      "default_tests": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/owner-v1-default.junit.xml",
+        "bytes": 5927,
+        "sha256": "19ec7ab02101367ddb4e4e2c22b940de4e5c2f7356d6ba01d32ffbeb7f1eea1b",
+        "original_generated_path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/codex/codex-rs/target/nextest/local/junit.xml",
+        "testcases": 34,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0,
+        "flaky_failures": 0
+      },
+      "native_tests": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/owner-v1-native.junit.xml",
+        "bytes": 5927,
+        "sha256": "fb27ce7879a20e320e4147613568b914fed48c52ef5ba4f2625f56cc5b30188e",
+        "original_generated_path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/codex/codex-rs/target/nextest/local/junit.xml",
+        "testcases": 34,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0,
+        "flaky_failures": 0
+      },
+      "strict_default_and_native_passed": true,
+      "installed_report": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/installed-execpolicy-v1.json",
+        "bytes": 195461,
+        "sha256": "a7739a9faac74937bb18773920dbd1907753a8ae3b7c7de9144b0450468aa938"
+      },
+      "full_cli_or_core_retested_locally": false,
+      "standalone": {
+        "passed": true,
+        "cases": 39,
+        "processes": 78,
+        "skipped": 0,
+        "symbols": [
+          "codex_hia_prefix_match",
+          "codex_hia_prefix_admission",
+          "codex_hia_policy_summary",
+          "codex_hia_command_dispatch",
+          "codex_hia_network_host"
+        ],
+        "native_binary_sha256": "359cdf872abfb19dbf36f99b83d98640e850c19f0cf628aaf1035ea7f71e782f",
+        "reference_binary_sha256": "b9ca2efea35c8ed9edf4db84ed701871d578e8b6402d02bfbfcfa5c6368e41ce",
+        "relocated_copies_match": true,
+        "native_symbol_table_sha256": "0b1e0ce8038ea006bbebce2d08b1ebecad082f8c1d59b25012ea5a1548387d26",
+        "reference_native_definitions": 0,
+        "hia_dynamic_dependencies": []
+      }
+    },
+    "formatter_and_final_maintenance": {
+      "formatter_tests_passed": 34,
+      "formatter_scope": "Python formatter component, including real rustfmt and Cargo metadata/locate-project on temporary fixtures; no product compilation",
+      "initial_format_before_behavioral_gates": true,
+      "final_commands": [
+        {
+          "label": "just-fix-default",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "fix",
+            "-p",
+            "codex-execpolicy",
+            "--locked",
+            "--allow-no-vcs"
+          ],
+          "returncode": 0,
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-default.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-default.stderr",
+            "bytes": 1729,
+            "sha256": "3bf15f224bbb26d1b1d8e90f4409d4417277eab4ec1440a85cebe85d53b18709"
+          }
+        },
+        {
+          "label": "just-fix-native",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "fix",
+            "-p",
+            "codex-execpolicy",
+            "--locked",
+            "--allow-no-vcs",
+            "--features",
+            "hia-native"
+          ],
+          "returncode": 0,
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-native.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-just-fix-native.stderr",
+            "bytes": 1574,
+            "sha256": "8532d92fb48b84c52de6b2414625d0fb3ae60d68e4749ea2014f96b919f8746e"
+          }
+        },
+        {
+          "label": "final-just-fmt",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "fmt"
+          ],
+          "returncode": 0,
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-final-just-fmt.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1-final-just-fmt.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "final_source_unchanged": true,
+      "source_inventory": {
+        "files": 9893,
+        "bytes": 109917681,
+        "inventory_sha256": "12909d9288ad1185f7dc8d6c907719f212cc7a3bc975614803fe0309b0327598",
+        "scope": "complete regular/symlink bytes and Git modes"
+      },
+      "no_post_final_maintenance_product_execution": true,
+      "additional_sixteen_module_maintenance_still_unknown": true,
+      "additional_sixteen_module_maintenance_scope": "The older job 1a1df15c4ef-392-264f remains UNKNOWN in command_dispatch_qualification; the current final-maintenance success does not rewrite it.",
+      "source_scope": "Seven protected Git roots, two source-only owners, the frozen predecessor bundle and recorded older-target metadata were guarded by the actual stage reports.",
+      "sdk_patch_whitespace_exception": {
+        "path": "patches/rama-dns_hermetic_toolchain.patch",
+        "sha256": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+        "strict_whitespace_passed": false,
+        "literal_context_whitespace_verified": true
+      }
+    },
+    "sdk_resolver_patch": {
+      "path": "patches/rama-dns_hermetic_toolchain.patch",
+      "sha256": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+      "delta_added": 90,
+      "delta_removed": 9,
+      "separate_followup_pr": 6374,
+      "new_source_contains_patch": true,
+      "separate_sdk_ci_transferred_to_current_source": false,
+      "current_sdk_and_broader_ci": "pending_new_published_source"
+    },
+    "pending": {
+      "new_source_github_native_ci": true,
+      "new_source_broader_ci": true,
+      "full_cli_expected_native_symbols": 15,
+      "full_cli_qualified": false,
+      "core_execpolicy_and_network_consumers_qualified": false,
+      "protocol_allowed_prefix_consumer_qualified": false,
+      "prior_component_and_scalar_gates_qualified": false,
+      "whole_policy_migrated": false,
+      "whole_core_suite_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "legacy_source_retired": false,
+      "successor_consumer_bundle_qualified": false
+    },
+    "report_path_scope": {
+      "local": "Paths are relative to the root-owned review workspace, outside the repository.",
+      "remote": "Original report paths name the exact source qualification workspace; no generated products are committed.",
+      "immutable_older_history": "Existing command_dispatch_qualification and all earlier objects remain unchanged; published16 follow-up is separate."
+    },
+    "reports": {
+      "actual_public": {
+        "path": "network-host-root-review/observations-v1/network-host-public-v1.json",
+        "bytes": 13052765,
+        "sha256": "f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c"
+      },
+      "raw_abi": {
+        "path": "network-host-root-review/execution-v1/network-host-raw-v1.json",
+        "bytes": 21733,
+        "sha256": "0a87781751d3c6e2b73c479f715a87f3c82a9a4eea610c6363d5844d1400a664"
+      },
+      "build_receipt": {
+        "path": "network-host-root-review/execution-v1/build-receipt-v1.json",
+        "bytes": 2828,
+        "sha256": "ff3ae3660d305cbc3dfd39a37ebb9d2a5f1a990c70c20d5f37834ecd2bf4d28c"
+      },
+      "initial_source_manifest": {
+        "path": "network-host-root-review/execution-v1/initial-formatted-source-manifest.json",
+        "bytes": 18982,
+        "sha256": "413ef6fe5d1c2ace8cdee53cffa6ab95757b503ec0709798d60026d5561bdc7e"
+      },
+      "initial_format_stage": {
+        "path": "network-host-root-review/execution-v1/initial_format-v1.json",
+        "bytes": 32989,
+        "sha256": "a76605d70c85696bce261084974df1c9d1ead469f4ae206b56b07eb0f0444e43"
+      },
+      "initial_format_terminal": {
+        "path": "network-host-root-review/execution-v1/initial_format-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "8d06e36945f746b70abc472f1dd79af91e35c0d2ed7f92c8d947931cad9655e7"
+      },
+      "root_initial_format": {
+        "path": "network-host-root-review/execution-v1/root-initial_format-verification.json",
+        "bytes": 999,
+        "sha256": "c5642b2f0bc4270d8771f46cd01eeaeb35e96d767e403faf4843cb7d15d8ef39"
+      },
+      "formatter_stage": {
+        "path": "network-host-root-review/execution-v1/formatter-v1.json",
+        "bytes": 26628,
+        "sha256": "3bc4090a76bb4dc2218f0b2d6893fa27ec1025388393cd858582237117c531d4"
+      },
+      "formatter_terminal": {
+        "path": "network-host-root-review/execution-v1/formatter-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "dc3671266f8812d48e409a6390e2325615411b9db5499c54474b831fa69f8c2f"
+      },
+      "root_formatter": {
+        "path": "network-host-root-review/execution-v1/root-formatter-verification.json",
+        "bytes": 989,
+        "sha256": "4ada31f406d795066a7ce2e99883ae23f0161cb3590148e2a0579f0f15c03502"
+      },
+      "native_stage": {
+        "path": "network-host-root-review/execution-v1/native-v1.json",
+        "bytes": 29377,
+        "sha256": "652b0b2ec6c2213ac50e659ed1c81fa501920f97901442ae35dc2ea245902c0d"
+      },
+      "native_terminal": {
+        "path": "network-host-root-review/execution-v1/native-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "7cbb3cf74bdfad3bb3c378d29688dbb73268d30a9db6d2a371644660c71350a3"
+      },
+      "root_native": {
+        "path": "network-host-root-review/execution-v1/root-native-verification.json",
+        "bytes": 983,
+        "sha256": "301247545242d3091d11fb459140ca8af085a457f59835d1fa9ad8af4db4efd3"
+      },
+      "raw_stage": {
+        "path": "network-host-root-review/execution-v1/raw-v1.json",
+        "bytes": 27484,
+        "sha256": "6ae77a41afbc0aa4502c3ad6f6f6eb41d9a9122e5cd5a70a3188d28cda1fbf0b"
+      },
+      "raw_terminal": {
+        "path": "network-host-root-review/execution-v1/raw-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "ca9f97244cdc0182db99462d63b4394fef38c047b1c9551b9ff695979e02f354"
+      },
+      "root_raw": {
+        "path": "network-host-root-review/execution-v1/root-raw-verification.json",
+        "bytes": 977,
+        "sha256": "b8f16fb67a478fbabbe91f83146c1dfe3c9a276a95efadbf890e73af5a72ac92"
+      },
+      "admission_stage": {
+        "path": "network-host-root-review/execution-v1/admission-v1.json",
+        "bytes": 27175,
+        "sha256": "fb48103c5b9c74551e41c06cad686feec9e4ade1f89657392deefa4744d84ae1"
+      },
+      "admission_terminal": {
+        "path": "network-host-root-review/execution-v1/admission-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "effe7778f71385b7b23bdbe90ed911f5b6fd8bfa956e7a52e46017fcb71b3fe8"
+      },
+      "root_admission": {
+        "path": "network-host-root-review/execution-v1/root-admission-verification.json",
+        "bytes": 989,
+        "sha256": "bd77d7cc1b8f1d27678e5df37f5a20b6d125070266270f554cc80cabf378e5ea"
+      },
+      "public_stage": {
+        "path": "network-host-root-review/execution-v1/public-v1.json",
+        "bytes": 28885,
+        "sha256": "f6a9c0f30edc1c8ef6f63f3ff6971cedf31a4d54f9f4ed302c8c8fb01c88a95a"
+      },
+      "public_terminal": {
+        "path": "network-host-root-review/execution-v1/public-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "29aafcd2af994a1f7e6c245f7a199bf1baece20c6a15ca3cc7018b47b62c4113"
+      },
+      "root_public": {
+        "path": "network-host-root-review/execution-v1/root-public-verification.json",
+        "bytes": 983,
+        "sha256": "6846e72e810a6c01216ae07b635b2111f2192648a153ae3ad1857ca55bada0ee"
+      },
+      "owner_stage": {
+        "path": "network-host-root-review/execution-v1/owner-v1.json",
+        "bytes": 33552,
+        "sha256": "8d1fc2404305443f237fc43025fc7e5653b0b0678042a8bef16deeb8b7d35f3a"
+      },
+      "owner_terminal": {
+        "path": "network-host-root-review/execution-v1/owner-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "45c76e18b3e1c1d133e00289e21f005acfb3e3880d2f5e5df2e498fb263862f6"
+      },
+      "root_owner": {
+        "path": "network-host-root-review/execution-v1/root-owner-verification.json",
+        "bytes": 981,
+        "sha256": "d7cb4050c0e736ce98ba963a94fa596feec30695be292b9e894f5991dd9eb240"
+      },
+      "final_maintenance_stage": {
+        "path": "network-host-root-review/execution-v1/final_maintenance-v1.json",
+        "bytes": 31801,
+        "sha256": "8843805d908be346c618b3ab18d699319f9034033a125b42c4a89df2d822b013"
+      },
+      "final_maintenance_terminal": {
+        "path": "network-host-root-review/execution-v1/final_maintenance-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "8fea29418beb5532cab099f929b8a66b0d6351f2d1345bd84220f4abddf419c1"
+      },
+      "root_final_maintenance": {
+        "path": "network-host-root-review/execution-v1/root-final_maintenance-verification.json",
+        "bytes": 1005,
+        "sha256": "525af162994f02a4138eb9215c96c0ab0c4059d7a444bee4fb80b66f1a97d44e"
+      },
+      "export_stage": {
+        "path": "network-host-root-review/execution-v1/export-v1.json",
+        "bytes": 26988,
+        "sha256": "55047f808d7f6fc7e9390baedad624f06a4db90efc13796aa612bcadb2f5f658"
+      },
+      "export_terminal": {
+        "path": "network-host-root-review/execution-v1/export-v1-terminal.json",
+        "bytes": 729,
+        "sha256": "7f4132a639855f4a3a69adb9fdfc9b604bf487a5c2456ae92d0def2af7128c66"
+      },
+      "root_export": {
+        "path": "network-host-root-review/execution-v1/root-export-verification.json",
+        "bytes": 983,
+        "sha256": "e31e855f956db3ca13c5e2519294aed5c25848ca69e764a178d24bef5f0f325c"
+      },
+      "observation_archive": {
+        "path": "network-host-root-review/observations-v1/observations.tar.xz",
+        "bytes": 8725728,
+        "sha256": "26971981c45becb796b1dd8aade8af1e1853a27074df84ed0131b15ccc85e615"
+      },
+      "final_source_manifest": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/final-source/source-manifest.json",
+        "bytes": 18932,
+        "sha256": "5bfda2cd5ab431a4418430d3db8dc791a2e99e91ce449a06f153f8a55850a8cc"
+      },
+      "native_build": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "native-root-v1/build.json",
+        "bytes": 197185,
+        "sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343"
+      },
+      "installed_execpolicy": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/installed-execpolicy-v1.json",
+        "bytes": 195461,
+        "sha256": "a7739a9faac74937bb18773920dbd1907753a8ae3b7c7de9144b0450468aa938"
+      },
+      "strict16_admission": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/strict16-admission-v1.json",
+        "bytes": 329457,
+        "sha256": "5286a804098b47bf436368fa0881b69e566d206ea31935b6b569dcfe8ad1e1d5"
+      },
+      "formatter_in_progress_observation": {
+        "path": "network-host-root-review/execution-v1/formatter-progress-reconciliation.json",
+        "bytes": 14340,
+        "sha256": "fbbaa0135a998bcbf07fd8def35f73f93777935fd6fe823e25e06fa2c55cb584"
+      },
+      "formatter_start_timeout_observation": {
+        "path": "network-host-root-review/execution-v1/formatter-start-timeout-observation.json",
+        "bytes": 4844,
+        "sha256": "39d892aa8fe20a46c59d4f4ec739aa93454022d7992468fbcd05e40b4db35b80"
+      },
+      "consumer_bundle_stage": {
+        "path": "network-host-root-review/execution-v1/consumer_bundle-v1.json",
+        "bytes": 33317,
+        "sha256": "a452d42fda6b8b67cad42352a919dee275aa4a48a7f7ce7e978bf1184952f188"
+      },
+      "root_observation_archive": {
+        "path": "network-host-root-review/observations-v1/root-archive-verification.json",
+        "bytes": 42578,
+        "sha256": "ba12b7bd21c79f7b507b32e5c863215a0e3dacb50477ea78572fc63ea54c1d1d"
+      }
+    },
+    "observations_archive": {
+      "path": "network-host-root-review/observations-v1/observations.tar.xz",
+      "bytes": 8725728,
+      "sha256": "26971981c45becb796b1dd8aade8af1e1853a27074df84ed0131b15ccc85e615",
+      "members": 191,
+      "original_files": 190,
+      "logical_bytes": 108627849,
+      "all_member_bytes_sizes_and_modes_verified": true,
+      "compiled_binaries_included": false,
+      "all_original_reports_and_attempts_retained": true,
+      "source_export_only_no_rerun_or_relink": true
+    },
+    "preserved_nonterminal_observation": {
+      "formatter_progress_passed": false,
+      "formatter_test_process_returncode": 0,
+      "later_authoritative_formatter_state": "succeeded",
+      "later_authoritative_formatter_exit_code": 0,
+      "original_progress_report_retained": true,
+      "start_response_timeout_not_a_product_failure": true,
+      "sixteen_module_unknown_job_unchanged": true
+    },
+    "successor_consumer_bundle": {
+      "data_frozen": true,
+      "source_tree": "9c984a9f9be8dca17240233ae62973193d4beb03",
+      "independent_copied_files": 1353,
+      "copied_bytes": 1269156126,
+      "complete_package_files": 1356,
+      "complete_package_directories": 64,
+      "manifest": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/manifest.json",
+        "bytes": 1849757,
+        "sha256": "217f0496e83d8c4179aee7814d4b80a3c0f45a966eb34710c3733e1b97f9416d"
+      },
+      "link_proof": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/link-proof.json",
+        "bytes": 2113995,
+        "sha256": "1d439072d3deb8aac212ee16eb2fabf06eda8530feb6f261b95018cdbf456880"
+      },
+      "copy_plan": {
+        "path": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/copy-plan.json",
+        "bytes": 1404771,
+        "sha256": "7e1ce7f5028246fd8e297ab25b61b9b80686ab06257ccbd6a4accb3c2f3c1dc5"
+      },
+      "original_source_and_target_inputs_unchanged": true,
+      "existing_qualified_performance_binary_copied": true,
+      "new_bundle_only_consumer_relink_performed": false,
+      "new_bundle_only_consumer_relink_qualified": false,
+      "runtime_execution_during_freeze": false,
+      "publication_revision": null,
+      "publication_promotion_pending": true,
+      "scope": "Retained actual pre-maintenance compile/nm/run evidence and independently copied existing bytes. No fresh consumer was linked from copied paths; a separately authorized successor must qualify that operation."
     }
   }
 }
