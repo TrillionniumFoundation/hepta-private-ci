@@ -8,6 +8,12 @@ from file_update_oracle import cargo, identity
 
 MODULES = ("seek_sequence", "source_file", "file_update", "parser", "patch_effects",
            "patch_summary", "patch_application")
+BOUND_MODULES = (*MODULES, "patch_standalone")
+STANDALONE_ROUTING_BLOCKS = {
+    "native-module-path": "// BEGIN HIA PATCH STANDALONE ROUTING v1: native-module-path\n#[cfg_attr(feature = \"hia-native\", path = \"hia_native_patch_standalone.rs\")]\n// END HIA PATCH STANDALONE ROUTING v1: native-module-path\n",
+    "native-environment-export": "// BEGIN HIA PATCH STANDALONE ROUTING v1: native-environment-export\n#[cfg(feature = \"hia-native\")]\n#[doc(hidden)]\npub use standalone_executable::apply_patch_file_update_mode_from_env;\n// END HIA PATCH STANDALONE ROUTING v1: native-environment-export\n",
+    "legacy-environment-function": "// BEGIN HIA PATCH STANDALONE ROUTING v1: legacy-environment-function\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA PATCH STANDALONE ROUTING v1: legacy-environment-function\n"
+}
 APPLICATION_ROUTING_BLOCKS = {
     "native-module": "// BEGIN HIA PATCH APPLICATION ROUTING v1: native-module\n#[cfg(feature = \"hia-native\")]\nmod hia_native_patch_application;\n#[cfg(feature = \"hia-native\")]\nuse hia_native_patch_application::apply_hunks_with_options;\n#[cfg(feature = \"hia-native\")]\npub use hia_native_patch_application::apply_patch_with_options;\n// END HIA PATCH APPLICATION ROUTING v1: native-module\n",
     "legacy-parse-error-import": "// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-parse-error-import\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA PATCH APPLICATION ROUTING v1: legacy-parse-error-import\n",
@@ -60,6 +66,13 @@ def recover_lib(producer):
     source = producer / identity.CRATE / "src/lib.rs"
     data = source.read_bytes()
     restored = data
+    for name, block in STANDALONE_ROUTING_BLOCKS.items():
+        encoded = block.encode()
+        require(restored.count(encoded) == 1,
+                "standalone routing is absent or duplicated: " + name)
+        restored = restored.replace(encoded, b"", 1)
+    require(b"HIA PATCH STANDALONE ROUTING" not in restored,
+            "unreviewed standalone routing remains")
     for name, block in APPLICATION_ROUTING_BLOCKS.items():
         encoded = block.encode()
         require(restored.count(encoded) == 1,
@@ -119,7 +132,7 @@ def recover_lib(producer):
             (47657, ORIGINAL_LIB_SHA256, ORIGINAL_LIB_BLOB),
             "inverse routing must recover the entire unchanged original lib.rs")
     return {"current_lib_sha256": hashlib.sha256(data).hexdigest(),
-            "exact_routing_rewrites": 30, "restored_bytes": len(restored),
+            "exact_routing_rewrites": 33, "restored_bytes": len(restored),
             "restored_sha256": digest, "restored_git_blob": blob}
 
 
@@ -129,7 +142,7 @@ def native_inputs(producer, library):
     require(build.get("status") == "built" and build.get("compiler_fixed_point") is True,
             "a real native compiler fixed point and successful build are required")
     modules = {}
-    for name in MODULES:
+    for name in BOUND_MODULES:
         record = build["modules"][name]
         source = producer / "hia" / (name + ".hepta")
         archive = library / ("libcodex_hia_" + name + ".a")
@@ -150,6 +163,10 @@ def native_inputs(producer, library):
         "hia/patch_summary_buffer_contract.json",
         "codex-rs/apply-patch/src/hia_native_patch_application.rs",
         "hia/patch_application_buffer_contract.json",
+        "codex-rs/apply-patch/src/hia_native_patch_standalone.rs",
+        "codex-rs/apply-patch/src/standalone_executable.rs",
+        "codex-rs/apply-patch/src/main.rs",
+        "hia/patch_standalone_buffer_contract.json",
     ):
         sources[relative] = identity.sha(producer / relative)
     return {"build_report_sha256": identity.sha(report_path),
