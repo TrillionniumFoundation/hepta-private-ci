@@ -12,6 +12,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_training_capture_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -104,7 +106,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         start = source.index(function)
         end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -113,7 +115,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             target.write_text(source)
             self.require_actual_source_capture_errors(path, source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            changed = source[:offset] + source[offset + len(marker):]
+            changed = source[:offset] + source[limit:]
             target.write_text(changed)
             with self.assertRaises(PROOF.VerificationFailure):
                 self.require_actual_source_capture_errors(path, changed)
@@ -164,7 +166,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         for function, marker in (
             ("fn create_from_original_source(", "source.native_inputs()?"),
             ("fn recover_from_original_source(", "source.native_inputs()?"),
-            ("fn captured_job_key(", "let original = job_key(plan, batch, rule)?"),
+            ("fn captured_job_key(", "let original = construction::job_key(plan, batch, rule, &OriginalQ24OwnerReadV1)?"),
             ("fn captured_job_key(", "source.source_capture_binding().as_array()"),
             ("fn require_original_source_capture(", "ordinary Training requires original source capture"),
             ("fn require_original_source_capture(", "self.fenced = true"),
@@ -174,19 +176,27 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             with self.subTest(function=function, marker=marker):
                 self.rejects(OWNER, function, marker)
         self.rejects(BOUND, "fn from_original_stage(", "SourceLaneProof::require_original(source, &mut owners.training)?")
-        self.rejects(NATIVE, "fn fit_or_readback(", "Ok(state) => return self.decode_state(state)")
-        self.rejects(NATIVE, "fn fit_or_readback(", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)")
+        self.rejects(NATIVE, "fn fit_or_readback_with_source(", "Ok(state) => return self.decode_state(state)")
+        self.rejects(NATIVE, "fn fit_or_readback_with_source(", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)")
 
     def test_existing_native_and_model_lanes_keep_live_checks_before_return(self):
-        self.rejects(NATIVE, "fn fit_or_readback(", "self.require_live_source_if_captured()?")
+        self.rejects(NATIVE, "fn fit_or_readback_with_source(", "self.require_live_source_if_captured()?")
+        self.rejects(NATIVE, "fn fit_or_readback(",
+                     "self.fit_or_readback_with_source(cancellation, &OriginalQ24OwnerReadV1)")
         self.rejects(STAGE, "fn require_captured_tail_current(", "self.read_original_completion()?")
         self.rejects(STAGE, "fn require_captured_tail_current(", "self.require_retained_attestation_current(&completed)?")
         self.rejects(STAGE, "fn require_retained_attestation_current(", "super::now()")
-        self.rejects(STAGE, "fn execute_training(", "training.require_live_source_if_captured()?")
+        self.rejects(STAGE, "fn execute_original_training_with_source_at(",
+                     "training.require_live_source_if_captured()?")
+        self.rejects(STAGE, "fn execute_training(",
+                     "owners.execute_original_training_with_source_at("
+                     "&cancellation, &OriginalQ24OwnerReadV1, operation_started_at,)")
         self.rejects(STAGE, "fn execute_training(", "fresh_now >= dataset.request.envelope.expiry_unix_seconds")
         for path, function in ((STAGE, "fn in_lane<"), (MODEL, "fn in_model_lane<")):
             for marker in (
-                "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+                (".map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)"
+                 if path == MODEL else
+                 "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)"),
                 "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
                 "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
             ):

@@ -71,7 +71,7 @@ class OriginalQualificationOwnerSourceClosureTests(unittest.TestCase):
     def rejects_change(self, path, change):
         source = (ROOT / path).read_text()
         rows = self.rows(path)
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(rows), 2 if path in (OWNER, READBACK) else 1)
         changed = change(source)
         self.assertNotEqual(source, changed)
         with tempfile.TemporaryDirectory() as directory:
@@ -86,21 +86,25 @@ class OriginalQualificationOwnerSourceClosureTests(unittest.TestCase):
 
     def test_each_original_custody_effect_and_fresh_clock_guard_is_effective(self):
         for path, expected in FUNCTIONS.items():
-            rules = self.rows(path)[0]["required_function_order"]
-            self.assertEqual({row["function"] for row in rules}, expected)
-            for rule in rules:
-                for index, marker in enumerate(rule["sequence"]):
-                    with self.subTest(path=path, function=rule["function"], marker=marker, index=index):
-                        def remove(source, rule=rule, index=index):
-                            start = source.index(rule["function"])
-                            end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
-                            self.assertIsNotNone(end)
-                            cursor = start
-                            for token in rule["sequence"][:index + 1]:
-                                at = source.index(token, cursor, end + 1)
-                                cursor = at + len(token)
-                            return source[:at] + source[cursor:]
-                        self.rejects_change(path, remove)
+            records = self.rows(path)
+            self.assertEqual(len(records), 2 if path in (OWNER, READBACK) else 1)
+            for record in records:
+                rules = record["required_function_order"]
+                self.assertEqual({row["function"] for row in rules}, expected)
+                for rule in rules:
+                    for index, marker in enumerate(rule["sequence"]):
+                        with self.subTest(path=path, function=rule["function"], marker=marker, index=index):
+                            def remove(source, rule=rule, index=index):
+                                code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+                                start = code.index(rule["function"])
+                                end = PROOF._rust_item_end(code, start)
+                                self.assertIsNotNone(end)
+                                cursor = start
+                                for token in rule["sequence"][:index + 1]:
+                                    at = code.index(token, cursor, end + 1)
+                                    cursor = at + len(token)
+                                return source[:at] + source[cursor:]
+                            self.rejects_change(path, remove)
 
     def test_public_owner_routes_are_closed_and_actual_original_edges_are_exact(self):
         expected = {
@@ -108,7 +112,9 @@ class OriginalQualificationOwnerSourceClosureTests(unittest.TestCase):
             "learning_original_qualification_owner_recover": (),
             "learning_original_qualification_owner_publish": (),
             "learning_original_qualification_owner_readback": (),
-            "cell_original_qualification_publication": (OWNER, READBACK),
+            "cell_original_qualification_publication": (
+                AGENT + "authority_host_q24_evaluation_execute.rs", OWNER, READBACK,
+            ),
             "learning_original_execution_store_create": (OWNER,),
             "learning_original_execution_store_recover": (OWNER,),
             "learning_original_execution_store_readback_only": (
@@ -125,6 +131,7 @@ class OriginalQualificationOwnerSourceClosureTests(unittest.TestCase):
             self.boundaries[identifier].definition_path,
             *self.boundaries[identifier].product_callers,
         )}
+        paths.add(AGENT + "authority_host_q24_evaluation_execution.rs")
         sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
             (ROOT / path).read_text())) for path in paths}
         for identifier, callers in expected.items():

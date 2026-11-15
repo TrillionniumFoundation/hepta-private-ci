@@ -12,6 +12,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_no_update_stage_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -32,7 +34,7 @@ READINESS = AGENT + "circuit_learning_completion_readiness.rs"
 READINESS_OWNER = AGENT + "circuit_learning_completion_readiness_service.rs"
 EXPECTED = {
     "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/artifact_original_head_client.rs", "codex-rs/hepta-agentd/src/artifact_original_head_service.rs", "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",),
-    "circuit_feature_original_selection_observation": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",),
+    "circuit_feature_original_selection_observation": ('codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_candidate_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_model_version_task.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs', 'codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs'),
     "learning_original_material_command_client_from_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
     "learning_original_material_command_client_from_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
     "learning_original_material_command_client_recover_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
@@ -76,7 +78,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
 
     def verifies(self, path, source):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(rows), 2 if path == READINESS_OWNER else 1)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -90,9 +92,9 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[limit:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -157,7 +159,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             "before_dispatch?",
             "let after_dispatch =",
             "if after_dispatch.is_err()",
-            "self.await_completed_c(snapshot, &mut state).await?",
+            "self.await_completed_c(snapshot, state).await?",
             "RootResidentLearningEffectGateV3::training_cancellation(gate)",
             "OriginalCellQ24TrainingCommandClientV1::execute_training(trainer, dispatch)",
             "ready.as_ref() != Some(&value.receipt().observation)",

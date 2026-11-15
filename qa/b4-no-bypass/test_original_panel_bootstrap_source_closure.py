@@ -11,6 +11,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_panel_bootstrap_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -282,10 +284,10 @@ class OriginalPanelBootstrapClosureTests(unittest.TestCase):
             )
             source = (ROOT / path).read_text()
             _, start, end = self.function(source, function)
-            offset = source.index(marker, start, end + 1)
+            offset, limit = source_marker_span(source, marker, start, end + 1)
             self.verifies(path, source)
             for replacement in ("", "/* " + marker + " */"):
-                changed = source[:offset] + replacement + source[offset + len(marker):]
+                changed = source[:offset] + replacement + source[limit:]
                 with self.subTest(group=group, function=function, marker=marker,
                                   replacement=replacement):
                     with self.assertRaises(PROOF.VerificationFailure):
@@ -358,7 +360,7 @@ class OriginalPanelBootstrapClosureTests(unittest.TestCase):
             ("fn build_original_owner(", "OriginalCircuitOnPolicyPanelPolicyV2::require_original_panel_training("),
         ):
             _, start, end = self.function(source, function)
-            offset = source.index(marker, start, end + 1)
+            offset, limit = source_marker_span(source, marker, start, end + 1)
             stop = source.index("?;", offset, end + 1) + 2
             call = source[offset:stop]
             changed = source[:offset] + "if unrelated_condition() { " + call + " }" + source[stop:]

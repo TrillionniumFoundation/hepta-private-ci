@@ -12,6 +12,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "resident_root_caller_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -117,6 +119,57 @@ ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
 ]
 
+# Reviewed additional original native parents; this does not execute them here.
+OTHER_PARENT_CASES = (
+    'authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history',
+    'authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint',
+    'authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client',
+    'authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen',
+    'root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin',
+    'authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history',
+    'authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files',
+    'authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness',
+    'root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec',
+    'root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights',
+    'authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody',
+    'learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd',
+    'root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights',
+    'final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming',
+    'final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files',
+    'neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current',
+    'neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery',
+    'neuron_generation_current::initial_root_tests::root_initial_peer_ready_registers_fixed_inputs_without_trigger_file',
+    'authority_host_service::generation_initial::historical_source_pin::cell::files::tests::original_initial_cell_custody_waits_for_the_actual_witness_owner',
+    'authority_host_service::generation_initial::historical_source_pin::tests::root_source_pin_preserves_exact_registration_and_never_initializes_recovery',
+    'authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_capability_rejects_replaced_lifetime_and_late_ack',
+    'authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_ack_is_data_and_keeps_the_one_shot_consumed',
+    'authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced',
+    'authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes',
+    'authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization',
+    'authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_sequences_block_stale_cross_handle_completion',
+    'authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_does_not_retrofit_old_primary_or_split_one_scope',
+    'authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_crash_during_failed_primary_read_remains_armed_after_restore',
+    'authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_physical_corruption_then_restore_stays_refused_across_processes',
+    'authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_unfinished_capture_cannot_initialize_after_restart',
+    'authority_host_service::generation_initial::historical_source_handoff::tests::cold::root_source_handoff_physical_corruption_then_restore_stays_refused_across_processes',
+    'authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recoverable',
+    'authority_host_service::generation_initial::run_start_retention::tests::root_run_start_data_never_promotes_pending_or_missing_refusal',
+    'authority_host_service::generation_initial::run_start_retention::tests::root_run_start_finalized_primary_before_failed_postcheck_cannot_recover',
+    'authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes',
+    'authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read',
+    'authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer',
+    'authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_missing_witness_never_reinitializes',
+    'authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption',
+    'authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed',
+    'authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce',
+    'authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues',
+    'authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile',
+    'root_production_handoff::independent_b_source::fresh_rights_tests::original_b_source_fresh_handoff_requires_six_exact_original_rights',
+    'root_independent_b_notice::terminal_tests::original_b_source_terminal_notice_allows_exit_after_real_frame_postcheck',
+    'root_independent_b_notice::terminal_tests::original_b_source_terminal_missing_notice_never_completes',
+)
+
+
 class ResidentRootSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -131,7 +184,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
         self.assertTrue(rows)
         with tempfile.TemporaryDirectory() as directory:
@@ -140,7 +193,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             target.parent.mkdir(parents=True)
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + replacement + source[offset + len(marker):])
+            target.write_text(source[:offset] + replacement + source[limit:])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
@@ -307,7 +360,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn prepare_enrollment(", "AgentdRootResidentLearningClientV3::readback(&root).await?"),
             ("fn prepare_enrollment(", "root.require_fresh_admission_channel()?"),
             ("fn prepare_enrollment(", "state\n            .require_resident_learning_source_candidate(request)\n            .await"),
-            ("fn prepare_enrollment(", "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await"),
+            ("fn prepare_enrollment(", "host.reconcile_learning_outbox(store, Some(&request.source_run_id), state)\n            .await"),
             ("fn deliver(", "self.admission = DeliveryAdmissionV3::Readback"),
             ("fn deliver(", "store\n                .claim_circuit_learning(&row.intent, &digest)\n                .await"),
             ("fn deliver(", "coordinator.next_stage().is_some()"),
@@ -323,8 +376,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             AGENT + "learning_iteration_delivery_runtime.rs",
             AGENT + "resident_learning_delivery.rs",
         ))
-        self.assertEqual(boundary.caller_markers,
-                         (".require_circuit_learning_source(request)",))
+        self.assertEqual(boundary.caller_markers, ())
         paths = (boundary.definition_path, *boundary.product_callers)
         sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
             (ROOT / path).read_text())) for path in paths}
@@ -335,8 +387,8 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
             PROOF._verify_boundary(ROOT, boundary, extra, ())
-        # The shared caller marker is only the method. These per-file guards
-        # retain the complete actual receiver-call span despite rustfmt layout.
+        # The typed boundary retains the original receiver and method. These
+        # per-file guards retain every complete actual receiver-call span.
         for source_file, function, original_call in (
             ("learning_iteration_delivery_runtime.rs", "fn run(",
              "state.require_circuit_learning_source(request)"),
@@ -389,7 +441,12 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         self.assertEqual(len(parents), len(set(parents)))
         self.assertTrue(set(ROOT_CASES).issubset(parents))
         self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))
-        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES))
+        self.assertEqual(
+            set(parents), set(ROOT_CASES) | set(ROOT_ISSUER_CASES) | set(OTHER_PARENT_CASES),
+        )
+        self.assertEqual(
+            len(parents), len(OTHER_PARENT_CASES) + len(ROOT_CASES) + len(ROOT_ISSUER_CASES),
+        )
         roots = (ROOT / (AGENT + "authority_host_learning_resident_root_tests.rs")).read_text()
         evaluation = (ROOT / (AGENT + "authority_host_learning_resident_evaluation_tests.rs")).read_text()
         self.assertIn(

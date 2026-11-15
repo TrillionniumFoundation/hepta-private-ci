@@ -13,6 +13,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_readonly_ready_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -36,7 +38,7 @@ EXPECTED = {
     'learning_original_material_dataset_context_check': ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs", "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",),
     'learning_original_next_use_command_owner_factory': ('codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs'),
     'learning_original_training_readonly_initial': (),
-    'learning_original_training_readonly_bind': ('codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs'),
+    'learning_original_training_readonly_bind': ('codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs', 'codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs'),
     'learning_original_training_readonly_first_ready': (),
     'learning_original_training_readonly_backend': ('codex-rs/hepta-agentd/src/learning_iteration_command_evidence.rs',),
     'learning_original_selection_readonly_initial': (),
@@ -121,11 +123,16 @@ class OriginalReadonlyReadySourceClosureTests(unittest.TestCase):
         start = code.index("fn " + function + "(")
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1) if at is None else at
-        self.assertEqual(source[offset:offset + len(marker)], marker)
+        if at is None:
+            offset, limit = source_marker_span(source, marker, start, end + 1)
+        else:
+            offset, limit = at, at + len(marker)
+            self.assertGreaterEqual(offset, start)
+            self.assertLessEqual(limit, end + 1)
+            self.assertEqual(code[offset:limit], marker)
         self.verifies(path, source)
         with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
-            self.verifies(path, source[:offset] + replacement + source[offset + len(marker):])
+            self.verifies(path, source[:offset] + replacement + source[limit:])
 
     def test_only_actual_readonly_backends_and_consuming_hosts_are_registered(self):
         paths = set(FUNCTIONS)
@@ -158,9 +165,11 @@ class OriginalReadonlyReadySourceClosureTests(unittest.TestCase):
             self.assertEqual({row["function"][3:-1] for row in rows}, expected)
             code = self.code((ROOT / path).read_text())
             for row in rows:
-                cursor = code.index(row["function"]) + len(row["function"])
+                cursor = code.index(row["function"])
+                end = PROOF._rust_item_end(code, cursor)
+                self.assertIsNotNone(end)
                 for marker in row["sequence"]:
-                    offset = code.index(marker, cursor)
+                    offset = code.index(marker, cursor, end + 1)
                     cursor = offset + len(marker)
                     with self.subTest(path=path, function=row["function"], marker=marker):
                         self.rejects(path, row["function"][3:-1], marker, at=offset)

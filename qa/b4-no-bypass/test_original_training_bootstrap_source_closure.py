@@ -13,6 +13,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_training_bootstrap_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -29,7 +31,7 @@ BUILD = AGENT + "cell_q24_training_bootstrap_build.rs"
 SERVICE = AGENT + "cell_q24_training_bootstrap_service.rs"
 EXPECTED = {
     "learning_original_dataset_readback_attenuation": (),
-    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_dataset_readback_current": ('codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
     "learning_original_dataset_readback_context": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_host.rs'),
     "learning_original_dataset_readback_cut": ('codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
     "learning_original_material_connection_create": (),
@@ -39,8 +41,8 @@ EXPECTED = {
     "learning_original_training_bootstrap_recover": (),
     "learning_original_training_bootstrap_serve": (),
     "learning_original_training_bootstrap_evidence": (),
-    "learning_original_training_receipt_create": (BUILD,),
-    "learning_original_training_receipt_recover": (BUILD,),
+    "learning_original_training_receipt_create": ('codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs'),
+    "learning_original_training_receipt_recover": ('codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs'),
     "learning_source_bound_training_owner_create": (BUILD,),
     "learning_source_bound_training_owner_recover": (BUILD,),
     "learning_original_training_stage_constructor": (BUILD,),
@@ -81,7 +83,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
 
     def verifies(self, path, source):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(rows), 2 if path == BUILD else 1)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -95,9 +97,9 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[limit:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 

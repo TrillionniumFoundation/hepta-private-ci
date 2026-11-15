@@ -4,7 +4,6 @@ Source proof only. Synthetic mechanisms, statistical reachability and actual
 ordinary B/retention/selection authority are separate evidence domains.
 """
 import importlib.util
-import json
 from pathlib import Path
 import re
 import sys
@@ -12,6 +11,7 @@ import tempfile
 import tomllib
 import unittest
 
+from original_current_source_contract_support import load_current_contract, project_case
 from rust_source_marker_support import _tokens, source_marker_span
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -30,8 +30,10 @@ SPEC.loader.exec_module(PROOF)
 class OriginalPairedProductSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.contract = json.loads((ROOT / CONTRACT).read_text())
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.contract, cls.current, cls.rows = load_current_contract(
+            ROOT, cls.manifest, "0", CONTRACT
+        )
 
     def function(self, source, marker):
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
@@ -53,8 +55,8 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
         return start, end, body
 
     def verifies(self, path, source):
-        rows = [row for row in self.contract["rows"] if row["path"] == path]
-        self.assertEqual(len(rows), 1, path)
+        rows = [row for row in self.rows if row["path"] == path]
+        self.assertEqual(len(rows), self.current["record_counts"][path], path)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -62,6 +64,7 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
         for literal in self.contract["literal_markers"]:
+            literal = project_case(self.current, literal)
             if literal["path"] != path:
                 continue
             start, end, body = self.function(source, literal["function"])
@@ -75,6 +78,7 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
         return rows
 
     def rejects(self, case):
+        case = project_case(self.current, case)
         source = (ROOT / case["path"]).read_text()
         start, end, _ = self.function(source, case["function"])
         first, after = source_marker_span(source, case["marker"], start, end + 1)
@@ -83,12 +87,12 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
             self.verifies(case["path"], source[:first] + source[after:])
 
     def test_complete_records_and_actual_composed_callers_are_installed(self):
-        for row in self.contract["rows"]:
+        for row in self.rows:
             with self.subTest(path=row["path"]):
                 self.assertEqual(self.manifest["protected_file"].count(row), 1)
                 for sequence in [
-                    *row["required_order"],
-                    *[item["sequence"] for item in row["required_function_order"]],
+                    *row.get("required_order", []),
+                    *[item["sequence"] for item in row.get("required_function_order", [])],
                 ]:
                     self.assertIsInstance(sequence, list)
                     self.assertGreaterEqual(len(sequence), 2)
@@ -101,6 +105,8 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
                 for path in change["new_actual_callers"]:
                     self.assertTrue((ROOT / path).is_file())
                 expected[change["after"]["id"]] = change["after"]
+        self.assertEqual(set(expected), {row["id"] for row in self.current["boundaries"]})
+        expected = {row["id"]: row for row in self.current["boundaries"]}
         inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
         for identifier, row in expected.items():
             with self.subTest(boundary=identifier):
@@ -144,6 +150,7 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
 
     def test_domains_are_actual_literals_in_the_original_functions(self):
         for literal in self.contract["literal_markers"]:
+            literal = project_case(self.current, literal)
             source = (ROOT / literal["path"]).read_text()
             start, end, _ = self.function(source, literal["function"])
             first, after = source_marker_span(source, literal["marker"], start, end + 1)

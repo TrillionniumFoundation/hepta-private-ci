@@ -4,7 +4,6 @@ These source mutations preserve the original statistical and owner domains.
 They do not prove a real preregistration, fit, B task, adoption or restart.
 """
 import importlib.util
-import json
 from pathlib import Path
 import re
 import sys
@@ -12,6 +11,7 @@ import tempfile
 import tomllib
 import unittest
 
+from original_current_source_contract_support import load_current_contract
 from rust_source_marker_support import source_marker_span
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,9 +28,10 @@ SPEC.loader.exec_module(PROOF)
 class OriginalProductPolicyV2SourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.contract = json.loads((ROOT / CONTRACT).read_text())
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
-        cls.rows = cls.contract["rows"]
+        cls.contract, cls.current, cls.rows = load_current_contract(
+            ROOT, cls.manifest, "1", CONTRACT
+        )
 
     def source_scope(self, source, marker):
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
@@ -78,8 +79,8 @@ class OriginalProductPolicyV2SourceClosureTests(unittest.TestCase):
             with self.subTest(path=row["path"]):
                 self.assertEqual(self.manifest["protected_file"].count(row), 1)
                 for sequence in [
-                    *row["required_order"],
-                    *[item["sequence"] for item in row["required_function_order"]],
+                    *row.get("required_order", []),
+                    *[item["sequence"] for item in row.get("required_function_order", [])],
                 ]:
                     self.assertIsInstance(sequence, list)
                     self.assertGreaterEqual(len(sequence), 2)
@@ -91,6 +92,8 @@ class OriginalProductPolicyV2SourceClosureTests(unittest.TestCase):
             item["after"]["id"]: item["after"]
             for item in self.contract["boundary"]["replacements"]
         })
+        self.assertEqual(set(expected), {row["id"] for row in self.current["boundaries"]})
+        expected = {row["id"]: row for row in self.current["boundaries"]}
         actual = {row["id"]: row for row in self.manifest["boundary"]}
         inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
         loaded = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
@@ -187,7 +190,7 @@ class OriginalProductPolicyV2SourceClosureTests(unittest.TestCase):
             )
 
     def test_policy_metadata_cannot_mint_keys_or_runtime_authority(self):
-        for row in self.rows:
+        for row in self.contract["rows"]:
             source = (ROOT / row["path"]).read_text()
             for injection in (
                 "\nfn bypass() { SigningKey::generate(); }\n",

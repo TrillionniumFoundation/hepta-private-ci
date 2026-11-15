@@ -479,7 +479,7 @@ class OriginalOnPolicyEvaluationClosureTests(unittest.TestCase):
             ("circuit_on_policy_evaluation.rs", "fn release_after_consumption(",
              "Err(ProductProviderErrorV1::Rejected)"),
             ("circuit_evaluation_cohort_custody.rs", "fn require_original_member(",
-             "_ => return Err(Error::Binding("),
+             "_ => { return Err(Error::Binding("),
             ("circuit_evaluation_cohort_custody.rs", "fn authenticate_current(",
              "_ => Err(Error::Binding("),
             ("circuit_evaluation_cohort_custody.rs", "fn original_model_commitment(",

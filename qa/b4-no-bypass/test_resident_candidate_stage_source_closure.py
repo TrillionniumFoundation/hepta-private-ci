@@ -10,6 +10,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "resident_candidate_stage_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -50,8 +52,11 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
 
     def verifies(self, path, source):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), 1)
-        self.assertTrue(rows[0]["required"])
+        self.assertEqual(len(rows), 2 if path in (
+            AGENT + "authority_host_learning_resident_auth.rs",
+            AGENT + "cell_q24_candidate_stage_adoption.rs",
+        ) else 1)
+        self.assertTrue(all(row["required"] for row in rows))
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -65,9 +70,9 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[limit:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 

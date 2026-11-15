@@ -319,14 +319,20 @@ class PositiveModelVersionSourceClosureTests(unittest.TestCase):
                 rows = [row for row in rows if {
                     "fn require_original_context(", "fn original_predecessors_for_publication("
                 } == {item["function"] for item in row.get("required_function_order", [])}]
-            if len(rows) != 1:
-                raise AssertionError(("one complete owned contract record", path))
-            row = rows[0]
-            if set(expected) != {
-                item["function"] for item in row.get("required_function_order", [])
-            }:
+            inventories = [set(expected)]
+            if path.endswith("/circuit_model_version_task.rs"):
+                inventories.append(set(expected))
+            elif path.endswith("/circuit_candidate_learning_read_service.rs"):
+                inventories.append(set(expected) | {"fn serve_channel("})
+            if len(rows) != len(inventories):
+                raise AssertionError(("complete owned contract records", path))
+            actual = [
+                {item["function"] for item in row.get("required_function_order", [])}
+                for row in rows
+            ]
+            if sorted(map(sorted, actual)) != sorted(map(sorted, inventories)):
                 raise AssertionError(("complete exact owned function inventory", path))
-            cls.rows.append(row)
+            cls.rows.extend(rows)
 
     def test_complete_positive_owner_records_validate(self):
         PROOF._verify_protected_files(ROOT, {"protected_file": self.rows})
@@ -469,7 +475,7 @@ class PositiveModelVersionSourceClosureTests(unittest.TestCase):
                 root = Path(directory)
                 target = root / row["path"]
                 target.parent.mkdir(parents=True)
-                for marker in row["forbidden"]:
+                for marker in row.get("forbidden", []):
                     with self.subTest(path=row["path"], forbidden=marker):
                         target.write_text(source + "\n" + marker + "\n")
                         with self.assertRaises(PROOF.VerificationFailure):

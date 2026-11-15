@@ -4,13 +4,13 @@ The fixed Model proof contains five receipts and four original role signatures.
 Selection and NextUse extend that proof through distinct original owners.
 """
 import importlib.util
-import json
 from pathlib import Path
 import sys
 import tempfile
 import tomllib
 import unittest
 
+from original_current_source_contract_support import load_current_contract, project_case
 from rust_source_marker_support import source_marker_span
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -30,12 +30,14 @@ SPEC.loader.exec_module(PROOF)
 class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.contract = json.loads((ROOT / CONTRACT_PATH).read_text())
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.contract, cls.current, cls.rows = load_current_contract(
+            ROOT, cls.manifest, "3", CONTRACT_PATH
+        )
 
     def verifies(self, path, source):
-        rows = [row for row in self.contract["rows"] if row["path"] == path]
-        self.assertEqual(len(rows), 1, path)
+        rows = [row for row in self.rows if row["path"] == path]
+        self.assertEqual(len(rows), self.current["record_counts"][path], path)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -44,6 +46,7 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
             PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def rejects(self, case):
+        case = project_case(self.current, case)
         path, function = case["path"], case["function"]
         source = (ROOT / path).read_text()
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
@@ -57,7 +60,7 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
             self.verifies(path, source[:first] + source[after:])
 
     def test_complete_guard_records_and_exact_caller_delta_are_installed(self):
-        for row in self.contract["rows"]:
+        for row in self.rows:
             with self.subTest(path=row["path"]):
                 self.assertEqual(self.manifest["protected_file"].count(row), 1)
                 self.verifies(row["path"], (ROOT / row["path"]).read_text())
@@ -66,6 +69,11 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
             *[change["after"] for change in self.contract["boundary"]["changes"]],
             *self.contract["boundary"]["additions"],
         ]
+        self.assertEqual(
+            [row["id"] for row in expected],
+            [row["id"] for row in self.current["boundaries"]],
+        )
+        expected = self.current["boundaries"]
         inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
         for row in expected:
             with self.subTest(boundary=row["id"]):
