@@ -88,6 +88,8 @@ def main():
         required = [
             "probe_entry=1",
             "bcrypt_preloaded=0x00000000",
+            "bcrypt_preloaded_after_observation=0x00000000",
+            "primitives_preloaded_after_observation=0x00000000",
             "system_rng_ntstatus=0x00000000",
             "probe_complete=1",
         ]

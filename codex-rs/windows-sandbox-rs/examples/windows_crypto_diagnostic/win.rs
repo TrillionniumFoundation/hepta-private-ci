@@ -14,6 +14,8 @@ use serde_json::json;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
+use std::mem::size_of;
+use std::mem::size_of_val;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
@@ -21,8 +23,11 @@ use std::path::Path;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::Cryptography::BCRYPT_USE_SYSTEM_PREFERRED_RNG;
 use windows_sys::Win32::Security::Cryptography::BCryptGenRandom;
+use windows_sys::Win32::Security::GetTokenInformation;
 use windows_sys::Win32::Security::ImpersonateLoggedOnUser;
 use windows_sys::Win32::Security::RevertToSelf;
+use windows_sys::Win32::Security::TokenIntegrityLevel;
+use windows_sys::Win32::Security::TokenMandatoryPolicy;
 use windows_sys::Win32::System::Threading::GetExitCodeProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
@@ -45,6 +50,14 @@ pub(super) fn run() -> Result<()> {
         matches!(mode, "base" | "full" | "capability" | "broker"),
         "unknown diagnostic mode"
     );
+    // Only this diagnostic's own launcher token is queried, without mutation.
+    let launcher =
+        unsafe { OwnedHandle::from_raw_handle(get_current_token_for_restriction()? as _) };
+    eprintln!(
+        "CRYPTO_TOKEN mode={mode} role=launcher {}",
+        token_metadata(launcher.as_raw_handle() as HANDLE)
+    );
+    drop(launcher);
     let fixture = tempfile::tempdir()?;
     let workspace = fixture.path().join("workspace");
     std::fs::create_dir(&workspace)?;
@@ -142,6 +155,10 @@ fn restricted(
             scope,
         )? as _)
     };
+    eprintln!(
+        "CRYPTO_TOKEN mode={mode} role=restricted_child {}",
+        token_metadata(token.as_raw_handle() as HANDLE)
+    );
     // Compare an already initialized provider with the fresh kernel32-only
     // child. This is only an observation, never a child launch workaround.
     anyhow::ensure!(
@@ -228,4 +245,59 @@ fn restricted(
         json!({"exit_code": code, "wait_status": wait, "timed_out": wait == WAIT_TIMEOUT,
         "stdout": String::from_utf8_lossy(&output)}),
     )
+}
+
+fn token_metadata(token: HANDLE) -> serde_json::Value {
+    let mut label = [0_usize; 32];
+    let mut returned = 0;
+    let label_ok = unsafe {
+        GetTokenInformation(
+            token,
+            TokenIntegrityLevel,
+            label.as_mut_ptr().cast(),
+            size_of_val(&label) as u32,
+            &mut returned,
+        )
+    } != 0;
+    let label_error = (!label_ok).then(std::io::Error::last_os_error);
+    let rid = if label_ok && returned as usize <= size_of_val(&label) {
+        let offset = label[0].checked_sub(label.as_ptr() as usize);
+        offset
+            .filter(|offset| *offset >= 2 * size_of::<usize>())
+            .filter(|offset| {
+                offset
+                    .checked_add(12)
+                    .is_some_and(|end| end <= returned as usize)
+            })
+            .and_then(|offset| {
+                // The returned SID_AND_ATTRIBUTES must point into this buffer
+                // and encode S-1-16 with one integrity RID, not an account SID.
+                let bytes = unsafe {
+                    std::slice::from_raw_parts(label.as_ptr().cast::<u8>().add(offset), 12)
+                };
+                (bytes[..8] == [1, 1, 0, 0, 0, 0, 0, 16])
+                    .then(|| u32::from_le_bytes([bytes[8], bytes[9], bytes[10], bytes[11]]))
+            })
+    } else {
+        None
+    };
+    let mut policy = 0_u32;
+    let policy_ok = unsafe {
+        GetTokenInformation(
+            token,
+            TokenMandatoryPolicy,
+            (&mut policy as *mut u32).cast(),
+            size_of_val(&policy) as u32,
+            &mut returned,
+        )
+    } != 0;
+    let policy_error = (!policy_ok).then(std::io::Error::last_os_error);
+    json!({
+        "integrity_query_ok": label_ok,
+        "integrity_win32_error": label_error.and_then(|error| error.raw_os_error()),
+        "integrity_rid": rid,
+        "mandatory_query_ok": policy_ok,
+        "mandatory_win32_error": policy_error.and_then(|error| error.raw_os_error()),
+        "mandatory_policy": (policy_ok && returned == size_of_val(&policy) as u32).then_some(policy),
+    })
 }

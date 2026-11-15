@@ -123,6 +123,9 @@ def main():
             {
                 "target": args.target,
                 "source_sha256": hashlib.sha256(args.source.read_bytes()).hexdigest(),
+                "observer_sha256": hashlib.sha256(
+                    args.source.with_name("windows_crypto_observe.rs").read_bytes()
+                ).hexdigest(),
                 "executable_sha256": hashlib.sha256(data).hexdigest(),
                 "bytes": len(data),
                 "imports": libraries,

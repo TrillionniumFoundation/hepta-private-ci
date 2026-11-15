@@ -5,6 +5,8 @@
 
 use core::ffi::c_void;
 
+mod windows_crypto_observe;
+
 #[link(name = "kernel32")]
 unsafe extern "system" {
     fn GetStdHandle(kind: u32) -> isize;
@@ -133,6 +135,18 @@ pub extern "system" fn mainCRTStartup() -> ! {
         b"primitives_preloaded",
         (unsafe { GetModuleHandleW(PRIMITIVES.as_ptr()) } != 0) as u32,
     );
+    windows_crypto_observe::token_metadata(ntdll);
+    write(b"self_handles_phase=before_bcrypt\n");
+    let before = windows_crypto_observe::Handles::capture(/*before*/ None, ntdll);
+    number(
+        b"bcrypt_preloaded_after_observation",
+        (unsafe { GetModuleHandleW(BCRYPT.as_ptr()) } != 0) as u32,
+    );
+    number(
+        b"primitives_preloaded_after_observation",
+        (unsafe { GetModuleHandleW(PRIMITIVES.as_ptr()) } != 0) as u32,
+    );
+    write(b"crypto_phase=load_bcrypt\n");
     unsafe {
         SetLastError(/*error*/ 0)
     };
@@ -155,6 +169,7 @@ pub extern "system" fn mainCRTStartup() -> ! {
             // SAFETY: resolved the named system32 bcrypt export with its exact ABI.
             let random = unsafe { core::mem::transmute::<*mut c_void, GenRandom>(random) };
             let mut bytes = [0_u8; 16];
+            write(b"crypto_phase=system_rng\n");
             let result = unsafe {
                 random(
                     core::ptr::null_mut(),
@@ -171,8 +186,13 @@ pub extern "system" fn mainCRTStartup() -> ! {
             }
             number(b"system_rng_ntstatus", result as u32);
         }
+    }
+    write(b"self_handles_phase=after_bcrypt_load_and_rng\n");
+    windows_crypto_observe::Handles::capture(Some(&before), ntdll);
+    if bcrypt != 0 {
         unsafe { FreeLibrary(bcrypt) };
     }
+    write(b"crypto_phase=load_primitives\n");
     unsafe {
         SetLastError(/*error*/ 0)
     };
