@@ -19,6 +19,61 @@ from c2_durable import publish_once, publish_checkpoint, append_receipt, read_re
 from c2_boundary import require, validate_boundary, terminal_guard
 
 
+def strict_object_json(path, *, max_bytes=1 << 25):
+    """Read only a bounded, unambiguous finite JSON object from a real file.
+
+    No parser default may silently select one of duplicate keys or accept NaN,
+    Infinity or a float exponent which overflows to a nonfinite value.
+    """
+    import math
+    import stat
+    path = Path(path)
+    if type(max_bytes) is not int or max_bytes <= 0:
+        raise ValueError("invalid JSON byte limit")
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    with os.fdopen(fd, "rb") as source:
+        metadata = os.fstat(source.fileno())
+        if not stat.S_ISREG(metadata.st_mode) or not 0 < metadata.st_size <= max_bytes:
+            raise ValueError("nonregular, empty or oversized JSON evidence")
+        data = source.read(max_bytes + 1)
+    if not 0 < len(data) <= max_bytes:
+        raise ValueError("empty or oversized JSON evidence")
+
+    def pairs_no_duplicates(pairs):
+        fields = {}
+        for key, value in pairs:
+            if key in fields:
+                raise ValueError("duplicate JSON evidence key: " + key)
+            fields[key] = value
+        return fields
+
+    def no_constants(value):
+        raise ValueError("nonfinite JSON constant: " + value)
+
+    candidate = json.loads(data.decode("utf-8"),
+                           object_pairs_hook=pairs_no_duplicates,
+                           parse_constant=no_constants)
+    if type(candidate) is not dict:
+        raise ValueError("JSON evidence root must be an object")
+
+    def assert_finite(value, depth=0):
+        if depth > 96:
+            raise ValueError("excessive JSON nesting")
+        if type(value) is dict:
+            for child in value.values():
+                assert_finite(child, depth + 1)
+        elif type(value) is list:
+            for child in value:
+                assert_finite(child, depth + 1)
+        elif type(value) is float and not math.isfinite(value):
+            raise ValueError("nonfinite JSON number")
+        elif type(value) not in (type(None), str, bool, int, float):
+            raise ValueError("unsupported JSON evidence value")
+
+    assert_finite(candidate)
+    return candidate
+
+
 def sha(path):
     value = hashlib.sha256()
     with Path(path).open('rb') as stream:
