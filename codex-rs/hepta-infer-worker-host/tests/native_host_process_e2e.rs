@@ -7,7 +7,7 @@ fn native_worker_help_executes_the_real_binary_without_state() {
         .output()
         .expect("execute native worker help");
     assert!(output.status.success(), "{output:?}");
-    let stdout = String::from_utf8(output.stdout).expect("UTF-8 help output");
+    let stdout = std::str::from_utf8(&output.stdout).expect("UTF-8 help output");
     assert!(stdout.contains("--profile native-app-server"));
     assert!(stdout.contains("--resume"));
     assert!(output.stderr.is_empty(), "{output:?}");
