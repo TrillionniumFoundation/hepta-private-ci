@@ -19,6 +19,7 @@ pub enum PatternToken {
 }
 
 impl PatternToken {
+    #[cfg(not(feature = "hia-native"))]
     fn matches(&self, token: &str) -> bool {
         match self {
             Self::Single(expected) => expected == token,
@@ -43,6 +44,12 @@ pub struct PrefixPattern {
 }
 
 impl PrefixPattern {
+    #[cfg(feature = "hia-native")]
+    pub fn matches_prefix(&self, cmd: &[String]) -> Option<Vec<String>> {
+        crate::hia_native_prefix::matches_prefix(self, cmd)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn matches_prefix(&self, cmd: &[String]) -> Option<Vec<String>> {
         let pattern_length = self.rest.len() + 1;
         if cmd.len() < pattern_length || cmd[0] != self.first.as_ref() {

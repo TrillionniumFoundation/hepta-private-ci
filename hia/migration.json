@@ -75,23 +75,32 @@
   "toolchain": {
     "lock": "hia/toolchain.json",
     "repository": "https://github.com/TrillionniumFoundation/Hepta",
-    "revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "implemented_target": "x86_64-unknown-linux-gnu",
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_10_modules_and_8_opt_in_production_path_algorithms_passed",
+    "qualification_status": "three_generation_fixed_point_12_modules_with_scoped_linux_component_qualification",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 byte equality; ten native modules; eight production-path algorithms plus a public UUID API with no repository production caller; original-Rust/ABI comparisons; three owner crates and listed Linux GNU consumers; relocated full CLI with eight symbols. Template performance, complete owners, default releases and other platforms remain pending.",
-    "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+    "qualification_scope": "Twelve HIA modules were built through B3 with eleven borrowed-buffer entries and one scalar entry. Published V3 native CI passed its recorded full CLI and filtered Core gates. The current stack adapter has its own local execpolicy and standalone qualification; its V4 full CLI/Core CI remains pending. Whole workspace, performance, complete owners, default release and required platforms remain open.",
+    "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
-    "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
+    "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
+    "module_count": 12,
+    "entry_profiles": {
+      "borrowed-buffers-u32-v1": 11,
+      "u64-pair-to-u64-v1": 1
+    },
+    "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+    "build_driver_source_revision": "7fe65ae990187e6ff1130c791f902728b4e50197",
+    "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The eleven existing borrowed-buffer modules retain their profile."
   },
   "candidate_modules": [
     {
@@ -101,7 +110,7 @@
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_selfhost_component_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -134,16 +143,42 @@
           "buffer_boundary_calls": 135,
           "original_rust_comparison": true,
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
           "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-          "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1"
+          "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1",
+          "core_sha256": "b7503d955cefee04d2cecff7c6679c8e485c9e95c13cd36384180f12faa998a1",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-seek-sequence-v3.json",
+              "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
+              "bytes": 675,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-apply-patch/hia-native",
           "link": "static=codex_hia_seek_sequence",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_crate_tests_passed",
+            "feature": "codex-apply-patch/hia-native",
+            "link": "static=codex_hia_seek_sequence",
+            "default_release_migrated": false
+          }
         }
       }
     },
@@ -154,7 +189,7 @@
       "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_candidate",
-      "qualification_status": "native_selfhost_component_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -171,7 +206,9 @@
         "original Rust behavior for every valid string input",
         "full UTF-8 validation before output publication"
       ],
-      "tests": ["hia/tests/test_utf8_boundaries.py"],
+      "tests": [
+        "hia/tests/test_utf8_boundaries.py"
+      ],
       "validation": {
         "native_selfhost": {
           "status": "passed",
@@ -183,13 +220,36 @@
           "rust_oracle_calls": 2093,
           "core_vm_calls": 56,
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
           "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
-          "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17"
+          "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17",
+          "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-utf8-boundaries-v3.json",
+              "sha256": "8a85ee7b65f843d92dfa9be48e1431a711e6773ec06d30113ec8e8a084bb497e",
+              "bytes": 452,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "pending"
+          "status": "pending",
+          "current_scope": "Diagnostic validator only; no production caller.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "pending"
+          }
         }
       }
     },
@@ -199,7 +259,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_public_differential_passed_complete_owner_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -221,19 +281,45 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
           "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
           "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
           "tests": 5,
           "skipped": 0,
-          "original_rust_comparisons": 18559
+          "original_rust_comparisons": 18559,
+          "core_sha256": "1fb0f643c5a5e4d84a741644b249ff5ee79934a5c1cb703628e21cc21a4eeb0b",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-native-string-v3.json",
+              "sha256": "0ef3606fcc8a3ea40b2b14dcccf2ce8e988dd88f7b6499457c21446e903fac63",
+              "bytes": 4074,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-string/hia-native",
           "link": "static=codex_hia_utf8_prefix",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_crate_tests_passed",
+            "feature": "codex-utils-string/hia-native",
+            "link": "static=codex_hia_utf8_prefix",
+            "default_release_migrated": false
+          }
         }
       }
     },
@@ -243,7 +329,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "sanitize_metric_tag_value",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_public_differential_passed_complete_owner_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -281,16 +367,48 @@
           "skipped": 0,
           "original_rust_comparisons": 40992,
           "abi_native_calls": 10535,
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
           "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
-          "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae"
+          "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae",
+          "core_sha256": "9651924c897e3f4bdc276d698da9ff606a8f334c022b4cff42f4a206198c41d9",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-metric-caller-v3.json",
+              "sha256": "de9af7dd3741315c411cb62e8123ca58b418d1375ddc62d1fc8aa9825e203461",
+              "bytes": 4158,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-metric-abi-v3.json",
+              "sha256": "1e9a32fd65e79b12a2e245edd8d7e01a7d06a661c5196b013f63de13cc0ced16",
+              "bytes": 323,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-string/hia-native",
           "link": "static=codex_hia_metric_tag",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_crate_tests_passed",
+            "feature": "codex-utils-string/hia-native",
+            "link": "static=codex_hia_metric_tag",
+            "default_release_migrated": false
+          }
         }
       }
     },
@@ -325,7 +443,7 @@
         "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_public_differential_passed_complete_owner_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
@@ -334,20 +452,52 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
           "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
           "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
           "tests": 7,
           "skipped": 0,
           "original_rust_comparisons": 164791,
-          "abi_native_calls": 1289
+          "abi_native_calls": 1289,
+          "core_sha256": "09f1ca5eb6f6f48a2fd9afdb90a330023d5506d1fd453a77af4ebcceb44ffc4f",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-markdown-caller-v3.json",
+              "sha256": "6d8adb3e5ec5910d6dbf8a87ed3664d32072ae5462c122eaa27fc8ef9cb8f015",
+              "bytes": 4346,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-markdown-abi-v3.json",
+              "sha256": "10504d035fa2997d01853303a4ca73e44b6fd00cb8b5e13ef0f3fc66221f83cd",
+              "bytes": 415,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-string/hia-native",
           "link": "static=codex_hia_markdown_location",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_crate_tests_passed",
+            "feature": "codex-utils-string/hia-native",
+            "link": "static=codex_hia_markdown_location",
+            "default_release_migrated": false
+          }
         }
       }
     },
@@ -382,7 +532,7 @@
         "codex-rs/utils/string/src/ascii_json_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_public_differential_passed_complete_owner_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
@@ -391,20 +541,52 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
           "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
           "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
           "tests": 7,
           "skipped": 0,
           "original_rust_comparisons": 27075,
-          "abi_native_calls": 957
+          "abi_native_calls": 957,
+          "core_sha256": "75109c1a75aac0f1a2d4294d0ef1fc94598f68a8cb3c1f0272428562548775af",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "ascii-json-caller-v3.json",
+              "sha256": "8f746e5289fdaa01cb530cb9fb4e3b5aa14d04da6a785bd29b137a946932d034",
+              "bytes": 124522,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-ascii-json-abi-v3.json",
+              "sha256": "21d83d08bc2a9efebb252b3b241fde29c9962f7ea97f711dee8b604bc14865e7",
+              "bytes": 409,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-string/hia-native",
           "link": "static=codex_hia_ascii_json_fragment",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_crate_tests_passed",
+            "feature": "codex-utils-string/hia-native",
+            "link": "static=codex_hia_ascii_json_fragment",
+            "default_release_migrated": false
+          }
         }
       }
     },
@@ -414,7 +596,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "find_uuids",
       "implementation_status": "native_with_opt_in_public_api_no_repository_production_caller",
-      "qualification_status": "native_linux_public_api_and_crate_tests_passed",
+      "qualification_status": "current_native_public_api_differential_passed_no_production_caller",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -445,20 +627,52 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
           "library_sha256": "5972557274b1ef6ce2a0e76712781534f179d18eae96caf842c7a61225bd0d02",
           "archive_sha256": "a62ca9814c7422b12cee721ce1c67db524870740e14933fad48bfe8d630e1d1f",
           "tests": 6,
           "skipped": 0,
           "original_rust_comparisons": 26808,
-          "abi_native_calls": 34861
+          "abi_native_calls": 34861,
+          "core_sha256": "3983bd885b537398188d1f8f16dae0f4eb2b24dd51db51d83f6aecd1864805f9",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "uuid-caller-v3.json",
+              "sha256": "7d9c0b67b9ebed2928432c24d6e389a7fb23cf996d5e83fcac57eab590d449d8",
+              "bytes": 88848,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-uuid-abi-v3.json",
+              "sha256": "e76cf0c6f8209cb3f2c5256ed2092c3b0d92e261ccbcdb1cecf7329737ad5610",
+              "bytes": 413,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
           "status": "public_api_only_no_repository_production_caller",
           "feature": "codex-utils-string/hia-native",
           "link": "static=codex_hia_uuid_matches",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Public API differential only; no repository production caller.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "public_api_only_no_repository_production_caller",
+            "feature": "codex-utils-string/hia-native",
+            "link": "static=codex_hia_uuid_matches",
+            "default_release_migrated": false
+          }
         }
       }
     },
@@ -492,7 +706,7 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
           "library_sha256": "bc3b613d335b7bab98f281412024fcb2b19e55380124314e998248c3fe592a60",
           "archive_sha256": "1c57968b2caedc582323ca89900bd90204cf497e96a4f471b88d9f624e70bb1d",
@@ -500,13 +714,45 @@
           "skipped": 0,
           "original_rust_parse_comparisons": 2334492,
           "original_rust_render_comparisons": 78,
-          "abi_native_calls": 962
+          "abi_native_calls": 962,
+          "core_sha256": "b45a07ea84f18de9908b8e70dd701f432198c721099f068407302a94e7ef2c8f",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-template-parser-caller-v3.json",
+              "sha256": "9e1ab725834fef6fa6dab771459a8c998c13613bfdb9f188ff89aa3e41da3e9b",
+              "bytes": 5222,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-template-parser-abi-v3.json",
+              "sha256": "d93301fcfa09d94f07c8b29e2987dd3ff94bbc63b62d9423edfc5047ddc39403",
+              "bytes": 294,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_opt_in_caller_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-template/hia-native",
           "link": "static=codex_hia_template_parser",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_opt_in_caller_tests_passed",
+            "feature": "codex-utils-template/hia-native",
+            "link": "static=codex_hia_template_parser",
+            "default_release_migrated": false
+          }
         }
       },
       "performance_equivalence": false,
@@ -547,7 +793,7 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
           "library_sha256": "86752db526f3be8d544bb60547255b05772534e2b86312edb72f02b360f5fb91",
           "archive_sha256": "bd87e7e068658c55387c5a3cb8a8975551c2d6766c18303a54d51dd9c83c43be",
@@ -555,13 +801,45 @@
           "skipped": 0,
           "original_rust_comparisons": 1161985,
           "iterator_effect_cases": 120,
-          "abi_native_calls": 457
+          "abi_native_calls": 457,
+          "core_sha256": "b746d6496ffe9c58894672e57dc39d6732b1f175fb0686bf108ef5b18da1298c",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-template-render-caller-v3.json",
+              "sha256": "619b35cbc368deea4a49cf23b7cfb6fdb42330e4fe367d284a66b3c958d30337",
+              "bytes": 22086,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-template-render-abi-v3.json",
+              "sha256": "a5da19327d3740e593a72c17e33760558fd4274b3bdcbc3168e456526ee4070e",
+              "bytes": 257,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_opt_in_caller_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-template/hia-native",
           "link": "static=codex_hia_template_render",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_opt_in_caller_tests_passed",
+            "feature": "codex-utils-template/hia-native",
+            "link": "static=codex_hia_template_render",
+            "default_release_migrated": false
+          }
         }
       },
       "performance_equivalence": false,
@@ -602,20 +880,52 @@
           "rust_version": "1.96.1",
           "host": "ai395",
           "artifact_generation": "B3",
-          "report": "hia/verification.json",
+          "report": "hia/verification.json#current_qualification",
           "source_sha256": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
           "library_sha256": "065be7a88cfc09241bcaaf79355fcb537b77475c189ebae57ff7c082108305ad",
           "archive_sha256": "d199980913d36eaf31c634c936571fae03be2d34cb765d917058306695afb5a6",
           "tests": 6,
           "skipped": 0,
           "original_rust_public_api_comparisons": 2029,
-          "abi_native_calls": 609200
+          "abi_native_calls": 609200,
+          "core_sha256": "f64300cf094772353b5391dc6b70d33ea41a7755fa5b3f76c65f96880458c0e1",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "other-template-index-caller-v3.json",
+              "sha256": "49ac1c54ed437ecf1edd755e5dfc85d93c35206d24e13d9748bf420e3723dd47",
+              "bytes": 5201,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            },
+            {
+              "file": "other-template-index-abi-v3.json",
+              "sha256": "a7cc246428b129eb458bf94303bae1f007e4d7489cb0898ff6ef4320d088179c",
+              "bytes": 3858,
+              "scope": "Current twelve-module local qualification on Hepta 0de5657a80f96b138525ac7ee9ce11712a83a10d"
+            }
+          ]
         },
         "production_dispatch": {
-          "status": "native_linux_opt_in_caller_tests_passed",
+          "status": "current_linux_public_differential_passed_complete_owner_pending",
           "feature": "codex-utils-template/hia-native",
           "link": "static=codex_hia_template_index",
-          "default_release_migrated": false
+          "default_release_migrated": false,
+          "current_scope": "Current public/component differential passed; complete crate, full CLI/Core and workspace qualification are separate gates.",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "complete_crate_requalified_for_current_compiler": false
+        },
+        "historical_production_dispatch": {
+          "recorded_in_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+          "scope": "Prior recorded caller/crate evidence; complete owning crates were not rerun for the current compiler, except execpolicy.",
+          "applies_to_current_compiler": false,
+          "record": {
+            "status": "native_linux_opt_in_caller_tests_passed",
+            "feature": "codex-utils-template/hia-native",
+            "link": "static=codex_hia_template_index",
+            "default_release_migrated": false
+          }
         }
       },
       "performance_equivalence": false,
@@ -625,6 +935,231 @@
         "generic iterator/AsRef/Drop effects",
         "public formatting and checked native result conversion"
       ]
+    },
+    {
+      "id": "prefix_match",
+      "hia_source": "hia/prefix_match.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_linux_stack_adapter_and_standalone_passed_v4_full_codex_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_match",
+        "source_wire": "u64 command_count, pattern_count; pattern_count groups of u64 alternative_count then u64 byte_length and bytes per alternative; min(command_count, pattern_count) length-prefixed command strings. All integers little-endian.",
+        "source_contract": "At least one pattern group; exactly one first-group alternative; later groups may have zero alternatives. Entire frame must be structurally valid and have no trailing bytes before matching.",
+        "output_wire": "u64 pattern_count for a match or zero for no match, little-endian",
+        "success_return": 8,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_precedence": "Short output before source validation.",
+        "workspace": "Unused; never read or written; null with zero length accepted.",
+        "error_effect": "Output unchanged; source/workspace never modified. Success writes only output bytes 0..8.",
+        "source_schema": "hepta.hia.program.v9",
+        "word_operations": "Native buffer.load.u64.le and buffer.store.u64.le after explicit complete-frame/capacity validation; byte-exact 0..7 tail.",
+        "preflight_module": "prefix_admission",
+        "preflight_scope": "The public Rust adapter passes counts to HIA before frame sizing/allocation. HIA 0 is NoMatch, 1 requires complete framing, and every other result is an error. The raw prefix_match frame contract remains unchanged and still validates its entire supplied frame before any match result.",
+        "frame_storage": "Checked complete-frame capacity <=512 uses stack storage; larger frames retain reserved Vec append. Both use the same encoder and one existing full-frame HIA call."
+      },
+      "tests": [
+        "hia/tests/test_prefix_match_abi.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/native_execpolicy_caller.rs",
+        "hia/tests/test_installed_execpolicy.py",
+        "hia/tests/test_prefix_admission_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_execpolicy_allocations.py",
+        "hia/tests/native_execpolicy_allocations.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "artifact_generation": "B3",
+          "source_sha256": "5502f02c6b7e18cb88ca48323d3cebcd9bf95e43f8557556f52bfb39fad215ee",
+          "archive_sha256": "daf903cabb617627341e1e17f72c243a362f5eb698a7e6c886d99d811fa1ad2f",
+          "native_abi_calls": 5937,
+          "original_rust_comparisons": 49938,
+          "skipped": 0,
+          "report": "hia/verification.json#stack_frame_qualification.artifact_continuity",
+          "core_sha256": "6dc3ca023de5c906ae6fc097d0d546c122dda8db0391786b2237b72265c68e37",
+          "library_sha256": "75d907e72500f1dcb5e32a0e60068096d402eb6f115f5ce77845fbd8a1fc685b",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "borrowed-buffers-u32-v1",
+          "current_reports": [
+            {
+              "file": "prefix-abi-v3.json",
+              "sha256": "7cd573dad1a512d3325a4908269aabbdaa75f5a0aa29695df9483437ad81c6df",
+              "bytes": 1338,
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
+            },
+            {
+              "file": "prefix-caller-v3.json",
+              "sha256": "19633fab28ff30530626d757a66105ee0ffc554be4b38f20b41f46fe7fdd425a",
+              "bytes": 59290,
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
+            },
+            {
+              "file": "prefix-allocations-v3.json",
+              "sha256": "5f7a4aa7131b75ed6595d2a66b64292d1732377781a34ae8b19c56077eb3eddc",
+              "bytes": 36424,
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
+            },
+            {
+              "file": "installed-execpolicy-v3.json",
+              "sha256": "2b41e1ae96dacd8cf117472141c685d91d9eff900efee58137fd73305c58d9a9",
+              "bytes": 119058,
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
+            }
+          ],
+          "recorded_at_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+          "reexecuted_for_stack_adapter": false,
+          "scope": "Recorded V3 artifact observations; source/archive identities are unchanged and reused. V3 caller/allocation reports retain only their original adapter scope; current stack evidence is linked from stack_frame_qualification."
+        },
+        "production_dispatch": {
+          "status": "opt_in_linux_stack_adapter_execpolicy_and_standalone_passed",
+          "feature": "codex-execpolicy/hia-native",
+          "link": [
+            "static=codex_hia_prefix_match",
+            "static=codex_hia_prefix_admission"
+          ],
+          "default_release_migrated": false,
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "native_tests": 34,
+          "default_tests": 34,
+          "standalone_cases": 30,
+          "standalone_processes": 60,
+          "strict_native_clippy_passed": true,
+          "strict_default_clippy_passed": true,
+          "owner_report": {
+            "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/owner-qualification-stack.json",
+            "sha256": "00f17197295c0422519517c34d30e24c82246f9949e69ebe12308999c08f4354",
+            "bytes": 20543,
+            "scope": "Current stack adapter: 11 actual steps, complete native/default execpolicy and relocated standalone only."
+          },
+          "scope": "Current stack adapter: complete execpolicy crate and relocated standalone only; full Codex/Core requires V4 CI and workspace/platform/default/complete-owner gates remain open.",
+          "report": "hia/verification.json#stack_frame_qualification.current_owner_gates"
+        },
+        "performance": {
+          "qualified": false,
+          "report": "hia/verification.json#stack_frame_qualification.performance"
+        },
+        "full_codex_and_core": {
+          "status": "pending_v4_stack_adapter_ci",
+          "historical_v2": "Both V2 native CI runs passed with the f33 compiler and eleven modules; those are not current compiler evidence.",
+          "report": "hia/verification.json#stack_frame_qualification.pending",
+          "recorded_v3_scope": "V3 source/adapter at 98429434 has separate qualification; its pending or eventual CI result cannot qualify the current stack adapter."
+        },
+        "allocation_regression": {
+          "passed": true,
+          "cases": 20,
+          "skipped": 0,
+          "zero_allocation_cases": 9,
+          "positive_probe_alloc": 1,
+          "positive_probe_realloc": 1,
+          "report": {
+            "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/candidate-allocations.json",
+            "sha256": "1c46a5734b5b20c3794a7aba9aed98a0bc16d985840a3d3df2d079f4240a808a",
+            "bytes": 37696,
+            "scope": "Earlier executed stack fixture run, bound to the identical nine integration-source files; not rerun during owner integration."
+          },
+          "scope": "Calling-thread Rust GlobalAlloc during real public owner calls. Nine zero-allocation cases include all five original count rejects and the small-frame threshold cases; positive controls observed both operations. The original performance harness remains uninstrumented."
+        }
+      }
+    },
+    {
+      "id": "prefix_admission",
+      "hia_source": "hia/prefix_admission.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix count admission",
+      "implementation_status": "native_scalar_helper_with_opt_in_production_caller",
+      "qualification_status": "current_linux_stack_adapter_and_standalone_passed_v4_full_codex_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_admission",
+        "source_schema": "hepta.hia.program.v8",
+        "exports": [
+          "f0"
+        ],
+        "entry_profile": "u64-pair-to-u64-v1",
+        "arguments": [
+          "command_count:u64",
+          "pattern_count:u64"
+        ],
+        "return_type": "u64",
+        "invalid_pattern_count": 4294967295,
+        "insufficient_command_count": 0,
+        "need_complete_frame": 1,
+        "precedence": "pattern_count == 0 is invalid before the command-count comparison.",
+        "side_effects": "No buffers, string reads, allocations or pointer inputs.",
+        "rust_dispatch": "0 returns None, 1 continues to checked framing, every other status panics; Rust does not compare either count for matching or any string."
+      },
+      "behavior": "HIA owns the count decision before the adapter sizes or copies a pattern. Empty and short commands avoid the full-frame copy; admitted commands retain the complete validated prefix_match frame and byte comparisons. This helper belongs to the existing prefix algorithm and is not another complete owner migration.",
+      "tests": [
+        "hia/tests/test_prefix_admission_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/test_native_execpolicy_allocations.py",
+        "hia/tests/native_execpolicy_allocations.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "artifact_generation": "B3",
+          "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "source_sha256": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb",
+          "core_sha256": "2212996be8d222724bc4d908fe20845be4c9aaf23e625ec883180a6c091391aa",
+          "library_sha256": "742e910b500da8e11fd4139987d283258a5b0c750eaae8f49710eafeefa97e56",
+          "archive_sha256": "50686d71c36113ac0498e5f3e2e4d8ca7203e11ab9d5ee1b1bda37f999bafe7b",
+          "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+          "entry_profile": "u64-pair-to-u64-v1",
+          "native_abi_calls": 158100,
+          "scalar_artifact_checks": 119,
+          "skipped": 0,
+          "current_reports": [
+            {
+              "file": "prefix-admission-abi-v3.json",
+              "sha256": "640cc7b6cfbd9e4408934e94bf0771488ad340f394f5f9cd656683b183d5abff",
+              "bytes": 1779,
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
+            },
+            {
+              "file": "prefix-scalar-admission-v3.json",
+              "sha256": "a0a5e59dc1324f9944b4376be3055c74d929c49d34b39a43edd7db48219764fe",
+              "bytes": 5227,
+              "scope": "Recorded V3 evidence at 98429434. Artifact checks remain bound to identical reused artifacts; adapter/caller checks apply only to the recorded V3 adapter."
+            }
+          ],
+          "report": "hia/verification.json#stack_frame_qualification.artifact_continuity",
+          "recorded_at_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+          "reexecuted_for_stack_adapter": false,
+          "scope": "Recorded V3 artifact observations; source/archive identities are unchanged and reused. V3 caller/allocation reports retain only their original adapter scope; current stack evidence is linked from stack_frame_qualification."
+        },
+        "production_dispatch": {
+          "status": "opt_in_linux_stack_adapter_execpolicy_and_standalone_passed",
+          "feature": "codex-execpolicy/hia-native",
+          "link": "static=codex_hia_prefix_admission",
+          "default_release_migrated": false,
+          "original_rust_comparisons": 49938,
+          "allocation_regression_cases": 20,
+          "native_tests": 34,
+          "default_tests": 34,
+          "installed_standalone_symbols": 2,
+          "full_codex_and_core": "pending_v4_stack_adapter_ci",
+          "report": "hia/verification.json#stack_frame_qualification.current_owner_gates",
+          "public_evidence_scope": "Earlier executed stack 49,938-comparison and 20-allocation fixture evidence is bound by nine identical files; native/default crate and standalone gates were actually executed for integration."
+        },
+        "performance": {
+          "qualified": false,
+          "report": "hia/verification.json#stack_frame_qualification.performance",
+          "scope": "Both complete seven-row stack observations and the once-paired V3 baseline are retained; allocation removal does not establish performance qualification."
+        }
+      }
     }
   ],
   "capabilities": [
@@ -745,14 +1280,19 @@
         "codex-rs/bwrap",
         "codex-rs/shell-escalation"
       ],
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
         "existing approval and execution policies",
         "filesystem and network isolation",
         "platform sandbox setup and denial behavior"
       ],
-      "next_implementation": "Port policy evaluation and platform integration while preserving the existing sandbox environment contracts and denial tests."
+      "next_implementation": "Execute the stack adapter's V4 full Codex/Core CI, workspace and required platform gates, close prefix performance, then migrate remaining policy evaluation and platform integration with the existing denial tests.",
+      "candidate_modules": [
+        "prefix_match",
+        "prefix_admission"
+      ],
+      "partial_scope": "Only PrefixPattern::matches_prefix uses HIA through codex-execpolicy/hia-native, including scalar count admission before allocation and the full-frame matcher. Decision aggregation, rule metadata, resolved-program policy, Core ownership and platform sandbox ownership are not migrated."
     },
     {
       "id": "mcp",
@@ -809,7 +1349,11 @@
     },
     {
       "id": "sdk_frontends",
-      "source_roots": ["sdk", "codex-cli", "apps"],
+      "source_roots": [
+        "sdk",
+        "codex-cli",
+        "apps"
+      ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -821,7 +1365,10 @@
     },
     {
       "id": "patch_application",
-      "source_roots": ["codex-rs/apply-patch", "codex-rs/file-search"],
+      "source_roots": [
+        "codex-rs/apply-patch",
+        "codex-rs/file-search"
+      ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -830,11 +1377,15 @@
         "Unicode context matching and search ordering"
       ],
       "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
-      "candidate_modules": ["seek_sequence"]
+      "candidate_modules": [
+        "seek_sequence"
+      ]
     },
     {
       "id": "string_utilities",
-      "source_roots": ["codex-rs/utils/string"],
+      "source_roots": [
+        "codex-rs/utils/string"
+      ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -942,7 +1493,10 @@
           "revision": "f33d8da316de8fdf27b504371f1a5310997ff548"
         }
       ],
-      "source_paths": ["hia/build.py", "hia/toolchain.json"],
+      "source_paths": [
+        "hia/build.py",
+        "hia/toolchain.json"
+      ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -1301,8 +1855,9 @@
       "manifest": "codex-rs/execpolicy/Cargo.toml",
       "manifest_blob": "42040222336513132da0b6a274bcd3fc80589f99",
       "rust_file_count": 13,
-      "migration_status": "pending",
-      "production_dispatch_migrated": false
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false,
+      "partial_scope": "Prefix matching and its scalar count-admission helper have an opt-in native caller; parser, decisions, metadata, default release and complete owner retirement remain Rust-owned or unqualified."
     },
     {
       "manifest": "codex-rs/ext/agent/Cargo.toml",
@@ -2372,11 +2927,84 @@
       "uuid_matches",
       "template_parser",
       "template_render",
-      "template_index"
+      "template_index",
+      "prefix_match",
+      "prefix_admission"
     ],
-    "checks_passed": 60
+    "checks_passed": 64,
+    "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "entry_profiles": {
+      "borrowed-buffers-u32-v1": 11,
+      "u64-pair-to-u64-v1": 1
+    },
+    "scalar_admission_tests": "hia/tests/test_scalar_build_admission.py",
+    "scalar_admission_checks_passed": 119,
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The eleven existing borrowed-buffer modules retain their profile."
   },
   "current_qualification": {
+    "report": "hia/verification.json#stack_frame_qualification",
+    "base_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "module_count": 12,
+    "borrowed_module_count": 11,
+    "scalar_module_count": 1,
+    "configured_production_path_algorithms": 9,
+    "scalar_helpers": [
+      "prefix_admission"
+    ],
+    "current_installed_standalone_symbols": 2,
+    "expected_full_codex_symbols": 10,
+    "artifact_continuity": "hia/verification.json#stack_frame_qualification.artifact_continuity",
+    "artifact_scope": "Byte-identical V3 HIA programs, archives and build sources reused; not rebuilt. Original raw/scalar/artifact/receipt counts remain earlier actual observations, not new executions.",
+    "recorded_v3_adapter_qualification": "hia/verification.json#current_qualification",
+    "earlier_stack_public_allocation_binding": "hia/verification.json#stack_frame_qualification.earlier_executed_fixture_binding",
+    "prefix_original_rust_comparisons": 49938,
+    "public_comparisons_reexecuted_during_integration": false,
+    "allocation_cases": 20,
+    "allocation_zero_allocation_cases": 9,
+    "allocation_reexecuted_during_integration": false,
+    "current_owner_steps": 11,
+    "native_execpolicy_tests": 34,
+    "default_execpolicy_tests": 34,
+    "installed_standalone_cases": 30,
+    "installed_standalone_processes": 60,
+    "strict_native_clippy": "passed_execpolicy_all_targets_only",
+    "strict_default_clippy": "passed_execpolicy_all_targets_only",
+    "fix_fmt_frozen_source_unchanged": true,
+    "installed_full_codex_cli": "pending_v4_stack_adapter_ci",
+    "core_exec_policy": "pending_v4_stack_adapter_ci",
+    "whole_workspace_requalification": "pending_stack_adapter_source",
+    "performance_report": "hia/verification.json#stack_frame_qualification.performance",
+    "prefix_performance_closed": false,
+    "template_performance_closed": false,
+    "other_platforms": "pending",
+    "whole_workspace_qualified": false,
+    "default_release_migrated": false,
+    "retirement_ready": false,
+    "post_test_deltas": "The nine fixture files match earlier executed stack public/allocation reports and remained byte-identical through the actual owner/fix/fmt gates. These three canonical documents are subsequent drafts; full CLI/Core/workspace passes are not inferred.",
+    "reports": {
+      "owner-qualification-stack.json": {
+        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/owner-qualification-stack.json",
+        "sha256": "00f17197295c0422519517c34d30e24c82246f9949e69ebe12308999c08f4354",
+        "bytes": 20543
+      },
+      "candidate-run.json": {
+        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/candidate-run.json",
+        "sha256": "3e003d611abdf3321030fe4b254b3fea17acb4610cc6873e4d9e99802174a5fc",
+        "bytes": 5339
+      },
+      "diagnostic-pair.json": {
+        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/diagnostic-pair.json",
+        "sha256": "54ce32168bc8506bd697085e1dd7fd32a06340907f0d3a8c25c9da59eff8362d",
+        "bytes": 114382
+      }
+    },
+    "recorded_v3_native_ci": "hia/verification.json#published_v3_ci_history"
+  },
+  "historical_qualification": {
+    "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+    "scope": "Prior ten-module record only; it does not qualify either the V2 prefix increment or the current compiler increment.",
     "report": "hia/verification.json",
     "component_tested_git_tree": "54905a2186d56f7ee5dc37e812b14bb181340fd9",
     "source_snapshot_sha256": "575813eb6545264769276bd69b8e7ac957ae6d1be0c9b86adebf4b744c0d1dd5",
@@ -2391,6 +3019,52 @@
     },
     "native_windows_runtime": "pending_for_main_source",
     "post_test_deltas": "See verification.json source_reconciliation for documentation and CI changes.",
-    "separate_windows_diagnostic": "Open: separate branch b10e6d45 has 180/189 sandbox tests passing with nine failures; it is not main-source qualification."
+    "separate_windows_diagnostic": "Open: separate branch b10e6d45 has 180/189 sandbox tests passing with nine failures; it is not main-source qualification.",
+    "applies_to_current_compiler": false
+  },
+  "published_v2_qualification": {
+    "source_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
+    "hepta_revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "module_count": 11,
+    "native_ci_status": "both_completed_success",
+    "native_runs": [
+      43669031066,
+      43669081862
+    ],
+    "native_ci_steps_per_run": 39,
+    "architecture_run": 43669081861,
+    "architecture_status": "success",
+    "installed_full_cli_cases": 34,
+    "installed_startup_cases": 2,
+    "required_full_cli_symbols": 9,
+    "filtered_core_tests": 11,
+    "core_tests_excluded_by_filter": 3870,
+    "scope": "Historical published V2 source and compiler only; not current compiler full CLI/Core/workspace evidence.",
+    "blocking_ci_run": 43669081867,
+    "blocking_ci_conclusion": "failure",
+    "jobs": {
+      "total": 37,
+      "success": 17,
+      "failure": 16,
+      "skipped": 4
+    },
+    "failure_attribution": "Fourteen substantive job failures plus Windows and required-CI aggregate failures. No independent base comparison; not classified wholesale as pre-existing or prefix-caused.",
+    "report": "hia/verification.json#published_v2_ci_history",
+    "evidence_sha256": "186615d216b53ddf3c0d6872e8be04288334d5f03c1523bfc74a8f8cd9eab099"
+  },
+  "default_release_migrated": false,
+  "workspace_qualified": false,
+  "performance_qualified": false,
+  "legacy_source_retired": false,
+  "published_v3_qualification": {
+    "source_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+    "report": "hia/verification.json#published_v3_ci_history",
+    "native_runs": [
+      43675407031,
+      43675410486
+    ],
+    "per_run_steps_passed": 41,
+    "applies_to_current_stack_adapter": false,
+    "scope": "Exact V3 source: full installed CLI 34+2 with 10 symbols, CLI/arg0/TUI 4474 passed with six reported skips, and Core exec-policy 11 passed with 3870 filtered out. Not current stack CI, complete Core/workspace or retirement evidence."
   }
 }

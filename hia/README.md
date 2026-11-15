@@ -1,28 +1,38 @@
 # Codex in HIA
 
-This directory contains ten native HIA components compiled with
+This directory contains twelve native HIA modules compiled with
 [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
-at `f33d8da316de8fdf27b504371f1a5310997ff548`. Their algorithms execute as
+at `0de5657a80f96b138525ac7ee9ce11712a83a10d`: eleven borrowed-buffer
+entries and one scalar count-admission entry. Their algorithms execute as
 machine code compiled from the checked-in `.hepta` sources.
 
-The opt-in `hia-native` Cargo feature connects eight components to existing
-production paths on Linux x86-64 GNU: patch matching, four string operations,
-and template parsing, rendering and ordered indexing. Rust retains allocation,
-owned strings and AST storage, generic iterator effects, public formatting,
-and checked transport across borrowed-buffer interfaces. Static archives are
+The opt-in `hia-native` Cargo feature connects the earlier eight components to
+existing production paths on Linux x86-64 GNU: patch matching, four string
+operations, and template parsing, rendering and ordered indexing. The prefix
+matcher and its scalar admission helper reach production callers through
+`codex-execpolicy/hia-native`. The stack-frame adapter's complete execpolicy
+crate and installed standalone caller are qualified locally; its full Codex
+CLI and Core need future V4 CI, and the workspace gate remains pending. The
+published V3 adapter passed its own native CI, including the installed full
+CLI and filtered Core gates; that source-specific evidence is recorded below.
+Published V2 evidence retains its earlier compiler scope. Rust retains
+allocation, owned strings and AST storage, generic iterator effects, public
+formatting, and checked transport across the native interfaces. Static archives are
 verified at build time and incorporated into the caller binary.
 
 Two other components have narrower scopes. `utf8_boundaries` is a diagnostic
 full-input UTF-8 validator; production prefix selection uses `utf8_prefix`.
 `uuid_matches` implements the public `find_uuids` API behind the feature and
 passes its original-source comparisons, but has no current repository
-production caller. Neither is counted among the eight symbols required in the
-installed full CLI.
+production caller. Neither was counted among the eight symbols retained by
+the historical ten-module installed-full-CLI gate. That gate predates the
+prefix matcher. The later published V2 full-CLI gate retained nine symbols;
+neither historical gate qualifies the current compiler and scalar helper.
 
 [`verification.json`](verification.json) records exact source, artifact and
 report identities. [`migration.json`](migration.json) tracks the remaining
-owners. Template performance equivalence, complete owner migration, default
-native releases and other platforms remain open:
+owners. Template and prefix-matcher performance equivalence, complete owner
+migration, default native releases and other platforms remain open:
 
 ```json
 {
@@ -46,6 +56,8 @@ native releases and other platforms remain open:
 | [`template_parser.hepta`](template_parser.hepta)         | [`Template::parse`](../codex-rs/utils/template/src/lib.rs)                          | Four-brace escapes, delimiter/error precedence, UTF-8 byte offsets and Unicode trimming.                                         |
 | [`template_render.hepta`](template_render.hepta)         | `Template::render`                                                                  | Duplicate/missing/extra validation precedence and literal/value segment decisions.                                               |
 | [`template_index.hepta`](template_index.hepta)           | Template placeholder collection and render variable index                           | AVL byte ordering, duplicate detection, sorted iteration, lookup, usage marks and smallest-unused selection.                     |
+| [`prefix_match.hepta`](prefix_match.hepta)               | [`PrefixPattern::matches_prefix`](../codex-rs/execpolicy/src/rule.rs)                  | Exact command-token prefix and alternative matching, complete frame validation and no-match distinction from native errors.     |
+| [`prefix_admission.hepta`](prefix_admission.hepta)       | Count admission for the same prefix matcher                                          | HIA decides invalid, too-short or full-frame-required from two `u64` counts before Rust sizes or copies the pattern.               |
 
 The template feature propagates through
 `codex-cli/hia-native` → `codex-login/hia-native` →
@@ -53,6 +65,20 @@ The template feature propagates through
 Rust ordered set, comparison or map lookup for the HIA index. The public
 `Clone`, `Debug`, equality and ordered iterator behavior remains compatible.
 These are component algorithm migrations, not complete Rust-owner retirement.
+
+The prefix feature propagates from `codex-cli/hia-native` to
+`codex-execpolicy/hia-native`. `PrefixRule::matches` and the existing `Policy`
+callers reach the selected native matcher, including the standalone
+`codex-execpolicy check` command. The Rust adapter calls the HIA scalar admission
+entry before frame sizing, copying or allocation. The checked complete-frame
+capacity selects a 512-byte stack buffer when it fits and the existing reserved
+Vec otherwise. Both stores use one generic encoder and the same full-frame HIA
+call. A small same-first/later-token mismatch needs no frame allocation; a
+successful match still clones the selected command prefix into owned strings. HIA owns count
+admission, token and alternative comparisons, and the match decision. Existing decision precedence,
+rule order, justifications, resolved-program metadata, parser behavior and
+unmatched-command heuristics remain with their original owners. A native
+error fails the call; it must not become `None` and activate those heuristics.
 
 The full-input UTF-8 validator rejects overlong encodings, surrogates, values
 above U+10FFFF, lone continuations and truncation, including invalid bytes
@@ -62,7 +88,7 @@ own incremental validation within their documented framing contracts.
 
 ### Native buffer interface
 
-Each shared object exposes the same HIA signature:
+The eleven borrowed-buffer modules expose this HIA signature:
 
 ```text
 f0(source:readbuf, output:mutbuf, workspace:mutbuf) -> u32
@@ -94,6 +120,7 @@ these low-bit results:
 | `24` for `template_parser`                            | One committed event and its source span.                                              |
 | `32` for `template_render` and scalar index results   | One typed policy/index result.                                                        |
 | `32 + 8 * n` for an index ordered page                | Up to 1,024 native-selected IDs.                                                      |
+| `8` for `prefix_match`                               | One little-endian `u64`: matching pattern-token count, or zero for no match.           |
 | `0xffffffff`                                          | Invalid frame/state; also invalid UTF-8 for the original matching/validation entries. |
 | `0xfffffffe`                                          | Insufficient output or workspace capacity.                                            |
 | `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in the JSON fragment encoder.               |
@@ -103,8 +130,8 @@ disjoint. The direct seed wrapper and bootstrap compiler profile have a
 1,048,576-byte capacity. The production B3 ELF entry receives the actual live
 buffer extent; that compiler capacity is not a maximum file size. The patch
 adapter checks all length arithmetic and uses fallible allocation. All modules
-leave the source unchanged. The patch and UTF-8 modules leave workspace
-unchanged, reserve it for future use and accept length zero. Their successful
+leave the source unchanged. The patch, UTF-8 and prefix-matching modules leave
+workspace unchanged, reserve it for future use and accept length zero. Their successful
 calls preserve output bytes beyond the result length. The metric module uses
 its workspace and output buffer as streaming state, as described below.
 Returned errors leave the current call's output and workspace unchanged.
@@ -199,6 +226,55 @@ large-buffer borrowing and public-effect preservation are specified in
 [`template_buffer_contract.md`](template_buffer_contract.md). Template-specific
 syntax and semantic error codes are distinct from malformed-buffer errors.
 
+`prefix_match` accepts little-endian `u64 command_count` and
+`u64 pattern_count`, followed by `pattern_count` groups. Each group contains a
+`u64 alternative_count` and that many strings, each encoded as `u64 byte_length`
+followed by raw bytes. `pattern_count` must be at least one; the first group
+must contain exactly one alternative. Later groups may have no alternatives,
+which produces a non-match. After all groups, the frame contains exactly
+`min(command_count, pattern_count)` length-prefixed command tokens. Extra
+command tokens are irrelevant to prefix selection and are not copied.
+
+The entire frame, including all counts, lengths and its exact end, is validated
+before matching. An early mismatch or insufficient command count cannot hide
+a malformed tail. Comparison is byte-exact, with no normalization or case
+folding; public Rust strings are already valid UTF-8, and the raw ABI also
+accepts arbitrary byte values. Output capacity is checked first. A successful
+call returns `8` and writes only the first eight output bytes: the pattern
+count for a match, or zero for a non-match. A malformed frame returns
+`0xffffffff`; output capacity below eight returns `0xfffffffe`. All errors
+leave output and workspace unchanged, and workspace is never read or written.
+The current v9 implementation uses native little-endian word loads and stores
+only after explicit bounds checks. Its eight-byte comparisons retain a
+byte-exact tail; they do not change this packet ABI or error precedence.
+
+### Scalar prefix admission
+
+`prefix_admission` uses the separate `u64-pair-to-u64-v1` entry profile,
+with a v8 `exports(f0)` source:
+
+```text
+f0(command_count:u64, pattern_count:u64) -> u64
+```
+
+| Condition, in priority order | Return | Public adapter action |
+| --------------------------- | ------ | --------------------- |
+| `pattern_count == 0` | `0xffffffff` | Fail the call. |
+| `command_count < pattern_count` | `0` | Return no match before frame allocation or copying. |
+| Otherwise | `1` | Construct and validate the complete matcher frame. |
+
+The helper receives counts only; it cannot inspect strings or memory buffers.
+Rust performs checked transport conversions and handles the returned status.
+Every status other than zero or one is an error, so an invalid native result
+cannot become a no-match or activate unmatched-command heuristics. No Rust or
+C matcher substitutes for either HIA decision.
+
+This precheck is an additional public-call stage, not a relaxation of the
+raw `prefix_match` ABI. Every supplied raw matcher packet still receives
+complete validation, even when its command count is insufficient. Admitted
+public calls still copy the complete pattern, including alternatives after
+a possible first-token mismatch.
+
 ## Build
 
 Use Linux x86-64, Python, GNU `ld`, `objcopy`, `ar`, and a clean checkout of the Hepta revision
@@ -233,6 +309,15 @@ The default build executes this sequence:
 The Python driver orchestrates this build and creates the initial B0 seed.
 B1–B3 and the final component compilation execute native HIA compiler images.
 The linker links the emitted object; it does not generate C or Rust source.
+
+The build driver is the exact version from Codex revision
+`7fe65ae990187e6ff1130c791f902728b4e50197`. Borrowed buffers remain the
+default closed profile; only `prefix_admission` selects the scalar profile.
+Scalar admission verifies the exact exported signature and 59-byte entry
+wrapper, rejects imports or unexpected relocations, and normalizes the
+compiler's empty relocation section without changing emitted `.text`.
+The existing Cargo receipt helper is unchanged. The scalar artifact gate is
+separate from raw scalar ABI and public-owner behavior tests.
 
 `build.json` records the compiler generation identities, source/Core hashes,
 object inventory, static archives and shared-library hashes. Each module also
@@ -292,9 +377,228 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Observed validation
+### Prefix matcher: current stack-frame qualification
 
-The ten-module B3 build and the listed integration gates passed on Linux
+The adapter increment starts from published V3 revision
+`98429434a266d2165e9d3b4d6f1894bd77916917` and changes three transport/test
+files. The twelve HIA programs, compiler/build sources, raw ABI and native
+archives are unchanged and were reused without a new HIA build.
+
+After HIA count admission, the adapter computes the exact complete-frame size.
+Frames of at most 512 bytes use a stack buffer; larger frames retain the
+reserved Vec and append path, without another full-frame copy or zero fill.
+One generic `Write` encoder emits the original packet into either store and
+passes only the encoded extent to the same raw HIA matcher. HIA still owns
+traversal, byte comparison and the decision. There is no first-token probe or
+cache. Public `first` and `rest` mutations remain visible on every call.
+
+For the normal Policy path after first-token lookup, a small later-token
+mismatch now has no frame allocation. Successful results retain their owned
+`Vec<String>` allocations. These measured local gates are distinct:
+
+| Gate | Observed result and execution scope |
+| ---- | ----------------------------------- |
+| Original Rust public matcher | 49,938 comparisons across seven tests actually ran in the minimal stack fixture; integration bound all nine source files byte-for-byte and did not rerun this gate. |
+| Public allocation regression | 20 fixture cases, nine zero-allocation calls; positive probes observed alloc and realloc. Integration bound the same nine files without rerunning this gate. All five earlier count-rejection cases remain zero-allocation. |
+| Stack/heap threshold | Complete frames of 511/512/513 bytes observed 0/0/1 allocations. Mutating the same rest back across the threshold observed 0 then 1. Successful 512/514-byte frames observed 3/4 allocations including required owned results. |
+| Current complete execpolicy crate | 34 native-feature and 34 default-feature tests actually ran and passed; zero skips. |
+| Current builds and installed standalone | Both binaries built; 30 cases and 60 relocated production processes passed exact output/exit/expected-JSON checks. |
+| Current owner checks | Eleven actual steps including both all-target Clippy modes with `-D warnings`, scoped `just fix`, `just fmt` and diff checks. Fix/fmt preserved every frozen source byte. |
+| Reused V3 HIA artifacts | The earlier 5,937 raw-prefix calls, 158,100 scalar calls, 119 artifact checks and 64 receipt checks remain bound to identical artifacts. They were not executed again for this adapter increment. |
+
+Exact source/binary identities, original report paths and hashes are recorded in
+[`stack_frame_qualification`](verification.json#stack_frame_qualification).
+The V3 adapter's own allocation/standalone/performance records remain below
+and in the recorded `current_qualification` block. This increment has no full
+Codex CLI/Core/workspace qualification; it requires future V4 CI. A V3 CI
+result belongs to its V3 source and cannot qualify this stack adapter.
+Performance, default release, complete ownership and retirement remain false.
+
+#### Stack-frame performance remains open
+
+The first complete stack public differential recorded all seven original
+performance rows. Values are total nanoseconds for the stated call count:
+
+| Scenario | Iterations | Stack HIA total (ns) | Original Rust total (ns) |
+| -------- | ---------- | -------------------- | ------------------------ |
+| short_match | 10,000 | 3,272,203 | 251,334 |
+| first_mismatch | 10,000 | 2,437,382 | 60,039 |
+| many_alternatives | 1,000 | 2,887,142 | 92,568 |
+| large_match | 3 | 3,509,897 | 179,506 |
+| large_pattern_empty_command | 3 | 80 | 70 |
+| large_pattern_short_command | 3 | 60 | 30 |
+| first_mismatch_large_alternatives | 3 | 95,588 | 80 |
+
+One additional bounded same-machine diagnostic ran V3 and then stack using
+the same Rust toolchain, V3 archives and unchanged performance harness:
+
+| Scenario | Iterations | V3 HIA (ns) | V3 Rust (ns) | Stack HIA (ns) | Stack Rust (ns) |
+| -------- | ---------- | ----------- | ------------ | -------------- | --------------- |
+| short_match | 10,000 | 3,446,504 | 244,913 | 2,747,453 | 243,973 |
+| first_mismatch | 10,000 | 2,015,984 | 61,138 | 1,826,669 | 58,369 |
+| many_alternatives | 1,000 | 2,792,662 | 104,487 | 2,793,513 | 121,886 |
+| large_match | 3 | 3,601,200 | 164,105 | 3,436,795 | 180,325 |
+| large_pattern_empty_command | 3 | 140 | 70 | 130 | 70 |
+| large_pattern_short_command | 3 | 60 | 40 | 60 | 40 |
+| first_mismatch_large_alternatives | 3 | 87,807 | 70 | 93,497 | 80 |
+
+Both observations retain the large-alternative first-mismatch cost. The
+ordered pair is a diagnostic, not a statistical performance qualification or
+a replacement for the full differential. No timing threshold is marked
+passed. Raw logs and both complete stack observations remain external.
+
+### Recorded V3 compiler and adapter qualification
+
+The following local adapter results are recorded at published revision
+`98429434a266d2165e9d3b4d6f1894bd77916917`. Its HIA artifact evidence still
+corresponds to the identical reused artifacts; its caller/allocation results
+belong to the V3 adapter, not to the current stack-frame adapter.
+
+The V3 twelve-module B1/B2/B3 build passed with Hepta
+`0de5657a80f96b138525ac7ee9ce11712a83a10d`. All three compiler generations
+have SHA-256
+`76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273`;
+the build report has SHA-256
+`1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b`.
+Executed Linux x86-64 GNU results with Rust 1.96.1 are:
+
+| Gate | Observed result |
+| ---- | --------------- |
+| Raw prefix ABI | 5,937 calls, including 2,310 error/no-write cases and 512 concurrent calls; zero skips. |
+| Raw scalar admission ABI | 158,100 returned and verified calls, including full-width count boundaries, 8,192 concurrent calls, and all three outcomes; zero skips. |
+| Scalar artifact admission | 119 checks of profile, source, exact wrapper, object, archive, symbol and negative mutations; zero skips. |
+| Original Rust public matcher | 49,938 comparisons across seven tests; zero skips. The complete original prefix types and methods remain token-pinned and compiled independently. |
+| Complete original execpolicy crate | 34/34 native-feature tests and 34/34 default-feature tests passed. |
+| Relocated standalone execpolicy | 30 cases, 60 actual native/reference processes; raw output, errors and exit status agree. Both prefix symbols are retained and no HIA shared dependency is required. |
+| Public allocation regressions | 11 cases, five allocation-free early no-match calls, plus positive alloc/realloc counter probes; zero skips. |
+| Build receipts | 64 checks, retaining all eleven existing borrowed modules and admitting the scalar module. |
+| Existing component regression gates | All 15 non-Cargo component scripts passed; current ASCII JSON and UUID public differentials also passed with 27,075 and 26,808 comparisons. |
+| Owner checks and formatting | Native/default execpolicy Clippy with `-D warnings`, `just fix`, `just fmt` and diff checks passed. |
+
+These recorded results qualify the V3 local components and standalone caller.
+That local run did not execute the complete V3 full Codex CLI, Core suite or
+workspace. The allocation runner counts calling-thread Rust allocator effects;
+it has no independent subprocess timeout, and artifact provenance is bound
+by the preceding receipt and scalar-admission gates. The original failed
+owner preflight, where `just` was missing before Cargo execution, and the
+allocation report before the review fix are preserved outside the source
+tree. Successful reruns are recorded with their own source and report hashes.
+
+At that V3 local checkpoint, full CLI/Core/workspace, required platforms,
+performance, default-release and complete owner gates remained open. Historical
+ten-module workspace and published V2 CI results below could not substitute
+for those source-specific gates. The current stack pending gates are stated above.
+Active Rust implementations remain necessary until their replacements meet
+the retirement requirements.
+
+#### Published V3 native CI
+
+At exact V3 head `98429434a266d2165e9d3b4d6f1894bd77916917`, push
+[43675407031](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43675407031)
+and PR
+[43675410486](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43675410486)
+both passed all 41 steps. The PR checkout
+`f9d89a9575d1b2f9b171c24b994043183b49b83c` has the same Git tree. Actual
+checkout identities, report bindings, both ZIP digests and all 132 extracted
+report/log files were verified.
+
+Each run passed scalar 158,100 calls, 119 artifact checks, 64 receipt checks,
+49,938 original-public comparisons, 5,937 raw-prefix calls and 11 allocation
+cases with five zero-allocation calls. Each installed standalone run passed
+30 cases / 60 processes; each full installed Codex run passed 34 cases and
+two startup cases with all 10 required symbols and no HIA shared dependency.
+Native/default owner suites passed 198/185 tests with no skips. CLI/arg0/TUI
+passed 4,474 tests with six reported skips. Core passed 11 selected exec-policy
+tests, with 3,870 excluded by the explicit filter; this was not the full Core
+suite.
+
+The two CI runs agree on all 12 module identities and reported executable
+hashes. Local and CI source/Core/object/text/archive hashes agree, but their
+linked shared-library hashes differ and remain recorded separately. The ZIPs
+contain reports and logs, not compiled binaries. Architecture passed within
+its source and same-tree-reuse scopes; the V8 canary ran metadata only, with
+build jobs skipped. Broader CI still has actual platform/linking/test failures.
+All seven prefix timing rows were slower than Rust in both native CI runs.
+
+Exact identities and limits are in
+[`published_v3_ci_history`](verification.json#published_v3_ci_history). These
+results belong to the V3 adapter and do not qualify the current stack-frame
+adapter, complete Core/workspace, all platforms, performance or retirement.
+
+#### Recorded V3 prefix performance remains open
+
+Native word operations reduce the matcher overhead, and HIA scalar admission
+removes full-pattern allocation and copying for empty or too-short commands.
+The measured region still includes the real production adapter and result
+construction. The following values are total nanoseconds for the stated
+iteration count, compared in one process against the original Rust matcher:
+
+| Scenario | Iterations | HIA native total (ns) | Original Rust total (ns) |
+| -------- | ---------- | --------------------- | ------------------------ |
+| Short match | 10,000 | 3,136,578 | 254,901 |
+| First-token mismatch | 10,000 | 2,102,015 | 59,697 |
+| Many alternatives | 1,000 | 3,233,395 | 85,417 |
+| Large matching token | 3 | 4,152,731 | 174,804 |
+| Large pattern, empty command | 3 | 300 | 90 |
+| Large pattern, short command | 3 | 60 | 40 |
+| First-token mismatch with large alternatives | 3 | 89,837 | 80 |
+
+All seven native measurements remain slower than Rust. Three-call timings
+are bounded observations, not a performance-equivalence result. Count-admitted
+first-token mismatches still copy and validate the full pattern. Performance
+qualification remains false.
+
+#### Preserved V1 and V2 negative performance evidence
+
+V2 used HIA-only eight-byte loop unrolling with the fixed `f33d8da`
+compiler's byte-load instructions. Its recorded measurements remain:
+
+| Scenario | Timing basis | HIA native | Original Rust |
+| -------- | ------------ | ---------- | ------------- |
+| Short match | Per-call average | 469 ns | 24 ns |
+| First-token mismatch | Per-call average | 291 ns | 5.86 ns |
+| Many alternatives | Per-call average | 5,623 ns | 78.7 ns |
+| Large matching token | Three-call total | 11.46 ms | 0.204 ms |
+| Large pattern, empty command | Three-call total | 82.4 us | 70 ns |
+| Large pattern, short command | Three-call total | 85.0 us | 40 ns |
+| First-token mismatch with large alternatives | Three-call total | 85.0 us | 100 ns |
+
+The earlier V1 measurements, approximately 37–155 times the Rust cost, are
+also retained in `verification.json`. V2 improved its four original scenarios
+by approximately 2.1–2.4 times but still copied the complete pattern before
+HIA could reject an empty or short command. Neither those improvements nor
+the current measurements close performance, default dispatch or retirement.
+
+### Historical published V2 CI
+
+At published source `be38c8b47a4955f7c7e453a570a688b07b1ad540`, both
+[native push CI](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43669031066)
+and [native PR CI](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43669081862)
+completed successfully, with 39 successful steps each. The PR checkout was
+the same-tree prospective merge. The
+[architecture run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43669081861)
+also passed. These runs used the `f33d8da` compiler and eleven modules.
+
+Each native run recorded 34 installed full-CLI cases plus two startup cases
+with nine required HIA symbols, 198 native and 185 default component tests,
+4,474 CLI/arg0/TUI tests with six skips, and 11 Core exec-policy tests with
+3,870 tests excluded by the explicit filter. The filtered Core result is not
+the complete Core suite. Artifact ZIP and manifest digests and scope details are retained in
+`verification.json`; its referenced evidence report records the 60 report/log
+file hashes per run.
+
+The separate [required CI run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43669081867)
+finished with 37 jobs: 17 successful, 16 failed and four skipped. Fourteen
+substantive failures covered SDK/release linking, remote test execution,
+macOS execution paths and actual tests, and Windows tests/analysis; the
+remaining two failures were required aggregates. No independent base
+comparison established that all these failures were pre-existing or caused
+by the prefix changes. The published V2 record does not qualify the current
+compiler, scalar helper, whole workspace or required platforms.
+
+### Historical ten-module validation
+
+The earlier ten-module B3 build and the listed integration gates passed on Linux
 x86-64 GNU with Rust 1.96.1. Exact inputs, commands, artifact identities and
 raw-report hashes are recorded in [`verification.json`](verification.json).
 
@@ -348,7 +652,7 @@ qualification of this main source or of native HIA dispatch on Windows.
 
 ### Template performance remains open
 
-The exact current template sources were compared in one process, timing only
+The recorded ten-module template sources were compared in one process, timing only
 `Template::render` after both templates had been parsed. Result equality passed
 for every measurement. At 50,000 keys the native path remains substantially
 slower:
@@ -386,7 +690,7 @@ pinned Git tree is the complete source-path inventory.
 | Threads and turns           | `core`, `core-api`, `protocol`, `thread-store`                                         | Turn state, ordered events, incremental context and concurrent ownership.                                                                                                                                                                                                 |
 | History and recovery        | `state`, `history`, `message-history`, `rollout`, `thread-store`                       | Existing session/database formats, atomic persistence, resume and crash recovery.                                                                                                                                                                                         |
 | Tools, processes and files  | `tools`, `exec`, `exec-server`, `shell-command`, `file-system`, code-mode crates       | Tool execution, PTY/pipes, process groups, cancellation and owned file effects.                                                                                                                                                                                           |
-| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap`               | Existing authorization decisions, isolation and denial behavior on each platform.                                                                                                                                                                                         |
+| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap`               | Prefix matching and scalar count admission have opt-in HIA owners; the stack adapter has local standalone qualification, while its V4 full CLI/Core/workspace, complete policy/default/platform integration and isolation remain.                                                                                                   |
 | MCP                         | `codex-mcp`, `rmcp-client`, `mcp-server`                                               | Initialization, catalogs, calls, notifications, cancellation and transports.                                                                                                                                                                                              |
 | App Server v2               | `app-server`, protocol/transport/client/daemon crates                                  | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations.                                                                                                                                                                                         |
 | CLI and TUI                 | `cli`, `tui`, `arg0`, terminal utilities                                               | Flags, exit status, terminal event/rendering paths and existing snapshots.                                                                                                                                                                                                |
@@ -397,10 +701,12 @@ pinned Git tree is the complete source-path inventory.
 | Platforms and release       | Linux/macOS/Windows integrations, build and release paths                              | Supported architectures, packages, clean installation and end-to-end platform tests.                                                                                                                                                                                      |
 | HIA toolchain               | The pinned Hepta compiler and runtime                                                  | Required host interfaces, broader platform support and complete compiler/runtime ownership.                                                                                                                                                                               |
 
-All 15 complete capability migrations remain pending. The eight connected
-components advance individual algorithms; their complete Rust owners and
-default release dispatch have not been migrated. Login template algorithms
-are connected, while login and credential ownership remain separate work.
+All 15 complete capability migrations remain pending. The earlier eight
+connected components, the prefix matcher and its scalar helper advance
+individual algorithms; the helper does not add another complete owner.
+Their complete Rust owners and default release dispatch have not been migrated.
+Login template algorithms are connected, while login and credential ownership
+remain separate work.
 
 The search implementation preserves the original four-pass search complexity.
 Long repeated context can require quadratic work. Large-input compatibility
@@ -441,15 +747,28 @@ python3 -B hia/tests/test_uuid_abi.py --library-dir "$native_output" --report "$
 python3 -B hia/tests/test_native_template_parser.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/template-parser-tests.json"
 python3 -B hia/tests/test_native_template_parser.py --library-dir "$native_output" --rustc "$rustc_binary" --harness hia/tests/native_template_render.rs --report "$build_parent/template-render-tests.json"
 python3 -B hia/tests/test_native_template_parser.py --library-dir "$native_output" --rustc "$rustc_binary" --harness hia/tests/native_template_placeholders.rs --report "$build_parent/template-placeholder-tests.json"
-python3 -B hia/tests/test_template_parser_abi.py --library-dir "$native_output" --report "$build_parent/template-parser-abi.json"
-python3 -B hia/tests/test_template_render_abi.py --library-dir "$native_output" --report "$build_parent/template-render-abi.json"
-python3 -B hia/tests/test_template_index_abi.py --library-dir "$native_output" --report "$build_parent/template-index-abi.json"
+python3 -B hia/tests/test_template_parser_abi.py --library "$native_output/libcodex_hia_template_parser.so" --report "$build_parent/template-parser-abi.json"
+python3 -B hia/tests/test_template_render_abi.py --library "$native_output/libcodex_hia_template_render.so" --report "$build_parent/template-render-abi.json"
+python3 -B hia/tests/test_template_index_abi.py --library "$native_output/libcodex_hia_template_index.so" --report "$build_parent/template-index-abi.json"
+python3 -B hia/tests/test_prefix_match_abi.py --library "$native_output/prefix_match.so" --report "$build_parent/prefix-match-abi.json"
+python3 -B hia/tests/test_prefix_admission_abi.py --library "$native_output/prefix_admission.so" --report "$build_parent/prefix-admission-abi.json"
+python3 -B hia/tests/test_scalar_build_admission.py --artifacts "$native_output" --module prefix_admission --report "$build_parent/prefix-scalar-admission.json"
+python3 -B hia/tests/test_native_execpolicy_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/prefix-caller-tests.json"
+python3 -B hia/tests/test_native_execpolicy_allocations.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/prefix-allocations.json"
 
 "$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
 "$build_parent/patch-caller-tests"
 
 cd codex-rs
-just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --features hia-native --locked
+just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy --features hia-native --locked
+
+cargo build --locked -p codex-execpolicy --features hia-native --bin codex-execpolicy
+cp "${CARGO_TARGET_DIR:-target}/debug/codex-execpolicy" "$build_parent/hia-execpolicy"
+cargo build --locked -p codex-execpolicy --bin codex-execpolicy
+python3 -B ../hia/tests/test_installed_execpolicy.py \
+  --binary "$build_parent/hia-execpolicy" \
+  --reference-binary "${CARGO_TARGET_DIR:-target}/debug/codex-execpolicy" \
+  --report "$build_parent/installed-execpolicy.json"
 
 cargo build --locked -p codex-apply-patch --features hia-native --bin apply_patch
 cp "${CARGO_TARGET_DIR:-target}/debug/apply_patch" "$build_parent/hia-apply_patch"

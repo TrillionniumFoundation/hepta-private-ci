@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 
+from test_installed_execpolicy import run_cases as run_execpolicy_cases
 from test_installed_patch import inspect_binary
 from test_installed_patch import run_case
 from test_installed_patch import sha256
@@ -29,6 +30,8 @@ NATIVE_SYMBOLS = (
     "codex_hia_template_parser",
     "codex_hia_template_render",
     "codex_hia_template_index",
+    "codex_hia_prefix_match",
+    "codex_hia_prefix_admission",
 )
 
 
@@ -85,6 +88,11 @@ def verify(args: argparse.Namespace, report: dict) -> None:
                 raise RuntimeError(f"relocated Codex startup differs from the original: {option}")
             print(f"PASS full Codex {option}: original Rust parity")
 
+        run_execpolicy_cases(
+            paths["native", "codex"], paths["reference", "codex"],
+            root / "execpolicy", environment, report, dispatch="codex",
+        )
+
         for dispatch, name in (("stdin", "apply_patch"), ("codex_arg1", "codex")):
             for preserve in (False, True):
                 work = root / f"{dispatch}-{'crlf' if preserve else 'lf'}"
@@ -108,7 +116,7 @@ def main() -> int:
     }
     try:
         verify(args, report)
-    except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+    except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as error:
         report["error"] = str(error)
         print(str(error), file=sys.stderr)
     report["cases_passed"] = sum(case["passed"] for case in report["cases"])

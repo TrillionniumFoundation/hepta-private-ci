@@ -5,6 +5,7 @@ on:
     paths:
       - hia/**
       - codex-rs/apply-patch/**
+      - codex-rs/execpolicy/**
       - codex-rs/arg0/**
       - codex-rs/cli/**
       - codex-rs/tui/**
@@ -22,6 +23,7 @@ on:
     paths:
       - hia/**
       - codex-rs/apply-patch/**
+      - codex-rs/execpolicy/**
       - codex-rs/arg0/**
       - codex-rs/cli/**
       - codex-rs/tui/**
@@ -66,7 +68,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: TrillionniumFoundation/Hepta
-          ref: f33d8da316de8fdf27b504371f1a5310997ff548
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
           path: Hepta
           persist-credentials: false
 
@@ -238,7 +240,7 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --features hia-native --locked \
+          just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy --features hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-native-crates.log"
 
       - name: Compare actual native and original ASCII JSON callers
@@ -259,6 +261,64 @@ jobs:
             --library-dir "$RUNNER_TEMP/hia-native" \
             --report "$RUNNER_TEMP/hia-ascii-json-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-abi.log"
+
+      - name: Compare native execution policy matching with original Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_execpolicy_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-execpolicy-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-caller.log"
+
+      - name: Verify scalar count admission and closed object profile
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_prefix_admission_abi.py \
+            --library "$RUNNER_TEMP/hia-native/prefix_admission.so" \
+            --report "$RUNNER_TEMP/hia-prefix-admission-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-prefix-admission-abi.log"
+          python3 -B codex/hia/tests/test_scalar_build_admission.py \
+            --artifacts "$RUNNER_TEMP/hia-native" --module prefix_admission \
+            --report "$RUNNER_TEMP/hia-prefix-scalar-admission.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-prefix-scalar-admission.log"
+
+      - name: Verify short-command matching requires no frame allocation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_execpolicy_allocations.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-execpolicy-allocations.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-allocations.log"
+
+      - name: Verify prefix matching buffer admission and atomic errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_prefix_match_abi.py \
+            --library "$RUNNER_TEMP/hia-native/prefix_match.so" \
+            --report "$RUNNER_TEMP/hia-execpolicy-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-abi.log"
+
+      - name: Verify installed execution policy command
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-execpolicy --features hia-native --bin codex-execpolicy \
+            2>&1 | tee "$RUNNER_TEMP/hia-installed-execpolicy-build.log"
+          cp "$CARGO_TARGET_DIR/debug/codex-execpolicy" "$RUNNER_TEMP/hia-execpolicy"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo build --locked -p codex-execpolicy --bin codex-execpolicy \
+            2>&1 | tee "$RUNNER_TEMP/hia-original-execpolicy-build.log"
+          python3 -B ../hia/tests/test_installed_execpolicy.py \
+            --binary "$RUNNER_TEMP/hia-execpolicy" \
+            --reference-binary "$CARGO_TARGET_DIR/debug/codex-execpolicy" \
+            --dispatch standalone \
+            --report "$RUNNER_TEMP/hia-installed-execpolicy.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-installed-execpolicy.log"
 
       - name: Compare actual native and original UUID callers
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -362,6 +422,15 @@ jobs:
           just test -p codex-cli -p codex-arg0 -p codex-tui --features hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
 
+      - name: Test actual agent execution policy integration with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-core --features codex-execpolicy/hia-native --locked \
+            -E 'test(suite::exec_policy::)' \
+            2>&1 | tee "$RUNNER_TEMP/hia-core-execpolicy.log"
+
       - name: Verify installed full Codex executable
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -383,7 +452,7 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --locked \
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
 
       - name: Upload original build and test results
@@ -445,3 +514,18 @@ jobs:
             ${{ runner.temp }}/hia-seek-sequence.log
             ${{ runner.temp }}/hia-utf8-boundaries.json
             ${{ runner.temp }}/hia-utf8-boundaries.log
+            ${{ runner.temp }}/hia-execpolicy-caller.json
+            ${{ runner.temp }}/hia-execpolicy-caller.log
+            ${{ runner.temp }}/hia-execpolicy-abi.json
+            ${{ runner.temp }}/hia-execpolicy-abi.log
+            ${{ runner.temp }}/hia-prefix-admission-abi.json
+            ${{ runner.temp }}/hia-prefix-admission-abi.log
+            ${{ runner.temp }}/hia-prefix-scalar-admission.json
+            ${{ runner.temp }}/hia-prefix-scalar-admission.log
+            ${{ runner.temp }}/hia-execpolicy-allocations.json
+            ${{ runner.temp }}/hia-execpolicy-allocations.log
+            ${{ runner.temp }}/hia-installed-execpolicy-build.log
+            ${{ runner.temp }}/hia-original-execpolicy-build.log
+            ${{ runner.temp }}/hia-installed-execpolicy.json
+            ${{ runner.temp }}/hia-installed-execpolicy.log
+            ${{ runner.temp }}/hia-core-execpolicy.log
