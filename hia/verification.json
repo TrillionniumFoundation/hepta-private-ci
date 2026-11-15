@@ -6,23 +6,7 @@
   "build_mode": "native-selfhost",
   "build_status": "built",
   "compiler_fixed_point": true,
-  "compiler_generations": [
-    {
-      "generation": "B1",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "forbidden_compiler_modules_loaded": []
-    },
-    {
-      "generation": "B2",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "forbidden_compiler_modules_loaded": []
-    },
-    {
-      "generation": "B3",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "forbidden_compiler_modules_loaded": []
-    }
-  ],
+  "compiler_generations": 3,
   "sources": {
     "seek_sequence": {
       "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
@@ -45,30 +29,6 @@
         "undefined_symbols": [],
         "object_sha256": "8be4b6180caf305f3f608545266ebb59ff334848158367b531500b9f0d8797f6",
         "library_sha256": "f28e5222725077e92fbb07ef35da711f6c29e36217a79d2ac7fe8cfa76ca9498",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_seek_sequence",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/seek_sequence.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/seek_sequence.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/seek_sequence.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_seek_sequence.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -93,30 +53,6 @@
         "undefined_symbols": [],
         "object_sha256": "8bf83079c457edf7af1bcad77f0863bca3e26029a5863186fd8e0e088b878f79",
         "library_sha256": "c13a6b566910eaba52b0d7bfba1f2c562e6c8b6e543435c7e6487f37d3bd84e8",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_utf8_boundaries",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/utf8_boundaries.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/utf8_boundaries.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/utf8_boundaries.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_utf8_boundaries.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -141,30 +77,6 @@
         "undefined_symbols": [],
         "object_sha256": "d3bd3368110567e86ee960df7ae070e16f51089c5d5ccdc5ed07a1c81400a0f1",
         "library_sha256": "1eb95d9b14f6b640ea8d825d4b41d966bcd7d3465568ac36057b900b7f2653c8",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_utf8_prefix",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/utf8_prefix.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/utf8_prefix.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/utf8_prefix.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_utf8_prefix.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -189,30 +101,6 @@
         "undefined_symbols": [],
         "object_sha256": "d9677eb3edb8b33580276d191663f7b8796c378948a01360c2ed2fd64ad44b2d",
         "library_sha256": "aca8249178a5aa60182120ba9b668aa4ba7ec994e0694d4f098718a671347f61",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_metric_tag",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/metric_tag.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/metric_tag.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/metric_tag.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_metric_tag.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -237,30 +125,6 @@
         "undefined_symbols": [],
         "object_sha256": "669a7edf77c4b867a78ca81f31dc1b35cf97ccd16d07d4307e75e2d7abf5e401",
         "library_sha256": "e9407071eb36013c150ce005d83fec0e57fa36ab7daa3dccb06034c732d011b7",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_markdown_location",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/markdown_location.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/markdown_location.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/markdown_location.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_markdown_location.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -285,30 +149,6 @@
         "undefined_symbols": [],
         "object_sha256": "6f26f5ae6c0426b20125f267f8ebf70440ea69672f72a08a9eab0781145cdcdb",
         "library_sha256": "cbd9f78f814faf93704450fa9940ca83d660abeadbf4f516f25ec97c4b697fee",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_ascii_json_fragment",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/ascii_json_fragment.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/ascii_json_fragment.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/ascii_json_fragment.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_ascii_json_fragment.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -333,30 +173,6 @@
         "undefined_symbols": [],
         "object_sha256": "4c029de0fef846892e4c1f7b36083387499ff781c6bf793eea1d2601b69c69d8",
         "library_sha256": "a5b5bfa2bc52aef5c9b289377d5de44455d5df5b09cb1eeaf2c7a7931376ac3d",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_truncate",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/truncate.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/truncate.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/truncate.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_truncate.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -381,38 +197,13 @@
         "undefined_symbols": [],
         "object_sha256": "35c8c5d16c6b6961f3accf97fda1d801036440760f97fec0f6f898e556976d0d",
         "library_sha256": "a2dcde98c7faa6af9aff1c198d7a260bb7bfbcf0291e03157f377bc146f4dcbf",
-        "objcopy_command": [
-          "objcopy",
-          "--remove-section=.rela.text",
-          "--redefine-sym=f0=codex_hia_token_budget",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/token_budget.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/token_budget.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/token_budget.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_token_budget.so"
-        ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "source_file": {
-      "source_sha256": "318444262135fbb1ca506ecce7dcc28fac4fc92d776d2d8d9f7c94a5a121b710",
-      "core_sha256": "77ff2e1fda6271b4b5135b4fcdefd901af124ad3f270cadf30edab0819c68e2d",
-      "library_sha256": "50ff01a8b50b8b8caaeb74e33c6129f1d6d5cd39f45012ec471e8fbffd37da17",
+      "source_sha256": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
+      "core_sha256": "dc30f3db6195d48e89b05a05fb04b38030d6cb312256354e91211d1afa74940e",
+      "library_sha256": "65c78be5c7296a6ea669d8cffe3b041d1bea1cddf81d938d4f1b377e7ac62aa4",
       "library_bytes": 62248,
       "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
@@ -421,39 +212,15 @@
         "object": "source_file.namespaced.o",
         "archive": "libcodex_hia_source_file.a",
         "archive_member": "hia.o",
-        "archive_bytes": 51046,
-        "archive_sha256": "83c7c330e21631e2ef746ef4126a77272222779aecbf9a42134812586de4a367",
-        "text_sha256": "4c5dcc208f2a967f8b93df546f395aa06b19788313bb0db644429fb7b4672ee1",
+        "archive_bytes": 51686,
+        "archive_sha256": "643fc9276b14845e5c2c1c052b3dc45ca1a80f3eac78ad5f5557ac12e3db4fa4",
+        "text_sha256": "ca16fd5c5797269eccaa3e2817954f74f9165be3bca5d684d09574465d821f80",
         "defined_symbols": [
           "codex_hia_source_file"
         ],
         "undefined_symbols": [],
-        "object_sha256": "84ea4244cf9fa6effe8e0fd51dd6d4e7a90c0b0e576d9e498e8aafb96a756320",
-        "library_sha256": "aa92b9aa3fe9810ef31637c9ebab31c81609b1c1123e87734afc3e27d2102d51",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_source_file",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/source_file.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/source_file.namespaced.o"
-        ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/source_file.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_source_file.so"
-        ],
+        "object_sha256": "ddf33d067ffb2678ce5cc8910c355907e05a03f965242da30ad11b591adb282c",
+        "library_sha256": "b2ee911aaa2721d99a80d769db4edc5621198377f395039743f8d9364abe1eca",
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
@@ -478,41 +245,41 @@
         "undefined_symbols": [],
         "object_sha256": "33e07add5d7a2257091f6693c165cbc15e1ed433ee75a7aa82909720de903b1c",
         "library_sha256": "026229de63517c172605e34d5cd64bf7caf87b612e2e3e3c2c2aeb52a9f9d0ac",
-        "objcopy_command": [
-          "objcopy",
-          "--redefine-sym=f0=codex_hia_file_update",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/file_update.o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/file_update.namespaced.o"
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
+    },
+    "parser": {
+      "source_sha256": "4bc5c33576b56b27214d21dae686a7242f81ea01ac81516bd0be6583424b827f",
+      "core_sha256": "4358ef497c64577e2f045cd43563fc6e08c7f714bb320b3337e81abc6b255aa6",
+      "library_sha256": "8462e7030fc26cfd85e2c0c440912979c6bbeda5629777712451b44490a80227",
+      "library_bytes": 119592,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "static_link": {
+        "symbol": "codex_hia_parser",
+        "library": "libcodex_hia_parser.so",
+        "object": "parser.namespaced.o",
+        "archive": "libcodex_hia_parser.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 107794,
+        "archive_sha256": "927ded4f9e3bee6d7ef7cadd97e0817199a36375337dc3d8fbe13a0c8e0e7eda",
+        "text_sha256": "3039735b36c24374b3e53b486aba57fef8bc0ecfb203c88c01444542ec805426",
+        "defined_symbols": [
+          "codex_hia_parser"
         ],
-        "link_command": [
-          "ld",
-          "-m",
-          "elf_x86_64",
-          "-shared",
-          "-z",
-          "defs",
-          "-z",
-          "noexecstack",
-          "-z",
-          "relro",
-          "-z",
-          "now",
-          "--build-id=none",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/file_update.namespaced.o",
-          "-o",
-          "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/libcodex_hia_file_update.so"
-        ],
+        "undefined_symbols": [],
+        "object_sha256": "d3346887c160847322e6335205c94a67a4f76cda65f74b9a8925624c92dcccaa",
+        "library_sha256": "138998eca92fa839acaef410b3c33161dc3d98533c2e0b1e25de7e47dcce8364",
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "21dda7f77d48505111a01142a41cd7796d7f8da38459bc0bc884ca4ab1ddff00",
+    "toolchain_lock_sha256": "979ff92b47a73edf13a815f34d9d9042cb61f12193455bb8fc792a1815536856",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6",
+  "build_report_sha256": "47313f73a5fef297e17d68a92e37e92e2f0e3db8a0f605c4a967b34af3ff9312",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
@@ -525,9 +292,10 @@
     "ascii_json_fragment": "ASCII JSON string-fragment encoding",
     "truncate": "middle truncation and approximate token budgets (five public APIs)",
     "source_file": "Complete SourceFile owner: parse, line_texts, apply_replacements and into_contents",
-    "file_update": "Candidate complete update computation owner: LF line parsing, chunk/resume planning, stable ordering and reverse NormalizeToLf edits/rendering, composed with existing HIA search and SourceFile."
+    "file_update": "Candidate complete update computation owner: LF line parsing, chunk/resume planning, stable ordering and reverse NormalizeToLf edits/rendering, composed with existing HIA search and SourceFile.",
+    "parser": "Complete batch and streaming patch grammar, normalization, errors/events and path selection; PathUri joins remain host operations."
   },
-  "scope": "Linux x86-64 GNU; ten B3 modules cover eight algorithm groups including file_update. Published head 5ce8 passed the complete-original public owner, native/default consumer tests and installed executables, but failed native strict lint and post-fix clean-source checks. The current minimal adapter repair has only formatting, exact-source and arithmetic/dispatch review evidence; new-head runtime and lint/fix qualification are pending. HIA raw ABI/build receipts remain separate recorded component checkpoints. All 15 complete capabilities, default dispatch, global migration and retirement remain open.",
+  "scope": "Linux x86-64 GNU, opt-in hia-native. Eleven B3 modules cover nine algorithm groups. The current native build and eleven component gates passed. The post-gate adapter lint repair and hidden-fixture upload change are separately bound; all native source/artifact files and prior component gate inputs remain unchanged. The complete combined file-update public owner, Cargo consumers, installed executables, strict lint and fix/clean-diff require fresh CI. Earlier published CI results qualify only their recorded source trees. All 15 complete capabilities, whole-Codex/default migration, required platforms, retirement and whole-product performance remain open.",
   "current_source_inputs": {
     ".github/workflows/codex-hia-native.yml": "0d406d84e1d0d82bc99fb000127f9410ad5546ca4a20cbae1d656610bdf39081",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
@@ -714,404 +482,8 @@
     "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
     "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
   },
-  "native_optimization": {
-    "base_commit": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
-    "target": "x86_64-unknown-linux-gnu",
-    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
-    "rust_version": "1.96.1",
-    "status": "historical_eight_module_component_owner_and_published_ci_passed_performance_open",
-    "source_snapshot": {
-      "files": 9822,
-      "sha256": "3df8ad067237b0a3e6f0ec2ab6905b355b14550b31e34ccfe323bbab31a8b424"
-    },
-    "source_inputs_at_differential": {
-      "public_source_sha256": "cfeba2400aa9e7439ece0c23d6a4291d4c106777f3159f2e5f8fd89e7ec24551",
-      "extracted_source_sha256": "2484fd678a35ac3ecf6c2f86490f32fbed3f68862b0336cd56e0a1a17df696f9",
-      "adapter_sha256": "4b7beaa71d688157b018dc2ca282ced7707470c9cc027c3d51fe87e40908cf63",
-      "hia_source_sha256": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
-      "test_source_sha256": "de88b426d2330a5013fc3a2fb0fab300a51382ef45bd0f735257284138c7c451",
-      "archive_sha256": "3dd358a5be6db2db8860e4e6e8a7d58d30ce104256d272b5304c1db8d0d865ff",
-      "token_budget_source_sha256": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-      "token_budget_archive_sha256": "791efb6220129bdeb722e27b9457e718f51219a162e6c45619462f84601c6eec",
-      "build_report_sha256": "d4b610babb20b4d297da41f19cf533a67fb215c1e231bf0be685db3dfe881dbe",
-      "original_revision": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
-      "original_blob": "fa5b871774c242fb1380b927dd34fd7f73d3680b",
-      "original_production_tokens_sha256": "4e7972a26775f1ac20903b977becb011a5283bb56bfbf9311ca483593a21b485"
-    },
-    "build_report_sha256": "d4b610babb20b4d297da41f19cf533a67fb215c1e231bf0be685db3dfe881dbe",
-    "original_rust": {
-      "tests_passed": 7,
-      "skipped": 0,
-      "comparisons": 229173
-    },
-    "typed_abi": {
-      "abi": "SysV AMD64 (value:u64, operation:u64) -> u64",
-      "operations": {
-        "0": "min(value * 4, u64::MAX)",
-        "1": "min(value + 3, u64::MAX) / 4",
-        "other": "SIGILL"
-      },
-      "explicit_calls": 14,
-      "boundary_values": 9069,
-      "boundary_calls": 18138,
-      "random_values": 20000,
-      "random_calls": 40000,
-      "concurrent_calls": 16384,
-      "concurrent_workers": 8,
-      "successful_native_calls": 74536,
-      "unknown_operation_trap_calls": 16,
-      "native_calls": 74552,
-      "skipped": 0
-    },
-    "truncate_abi": {
-      "schema": "codex.hia.truncate-abi.v2",
-      "passed": true,
-      "native_calls": 2888,
-      "error_no_write_cases": 757,
-      "valid_plans": 22,
-      "trusted_plan_comparisons": 288,
-      "concurrent_calls": 512,
-      "skipped": 0,
-      "trusted_concurrent_calls": 512,
-      "raw_and_scalar_error_no_write_cases": 645,
-      "trusted_capacity_error_no_write_cases": 112,
-      "library_sha256": "a5b5bfa2bc52aef5c9b289377d5de44455d5df5b09cb1eeaf2c7a7931376ac3d",
-      "request_size": 16,
-      "output_size": 40,
-      "input_contract": "operations 0/1 validate arbitrary bytes; operations 4/5 require valid UTF-8 borrowed from Rust &str; all requests are unaligned and read-only",
-      "error_contract": "all returned errors preserve source, request and complete output buffers"
-    },
-    "build_admission_checks": 114,
-    "cargo_receipt_checks": {
-      "seek_sequence": 56,
-      "token_budget": 56,
-      "shared_cargo_helper_changed": false
-    },
-    "owner_tests": {
-      "native_passed": 38,
-      "default_without_hia_artifacts_passed": 26,
-      "skipped": 0
-    },
-    "unchanged_artifacts": {
-      "count": 35,
-      "scope": "All five compiled artifacts for the six unchanged buffer modules and scalar module are identical between the f33 scalar build and historical eight-module v9 build. The word-load truncation component changed as intended.",
-      "report_sha256": "4214ef1ce467fb9bb8326671efb1255b63e78b2dc262ff896fac1417c3e4a5cf"
-    },
-    "gates": {
-      "native-build": {
-        "command": "python3 -B hia/build.py --hepta-root /workspace/scratch/9f380f39cb05/v9-truncate-experiment/Hepta --output /workspace/scratch/9f380f39cb05/combined-native-build-v1",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "f2055870de0735602a5eb6f38b2a76f150edd15374e6ef50dcb3f0c1c7b4df1f"
-      },
-      "seed-build": {
-        "command": "python3 -B hia/build.py --hepta-root /workspace/scratch/9f380f39cb05/v9-truncate-experiment/Hepta --output /workspace/scratch/9f380f39cb05/combined-seed-build-v1 --seed-only",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "a82df498ac31f64ffe8c2619d9858f26d3e18d7cb6e0ecfbeb74c2c4eae5437c"
-      },
-      "original-rust": {
-        "command": "python3 -B hia/tests/test_native_truncate_caller.py --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1 --rustc /workspace/scratch/9f380f39cb05/tools/rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc --report /workspace/scratch/9f380f39cb05/qualification/combined/original-rust-report-v1.json",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "0b460530f9a264a052b20af0edbcd18effa7afabdafa58fb87fcb65a58999cd4"
-      },
-      "typed-abi": {
-        "command": "python3 -B hia/tests/test_token_budget_abi.py --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1 --report /workspace/scratch/9f380f39cb05/qualification/combined/typed-abi-report-v1.json",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "abb8b130a7df97d39d625654175f756b77c9f879da0dce4b871be0fca9b2305b"
-      },
-      "truncate-abi": {
-        "command": "python3 -B hia/tests/test_truncate_abi.py --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1 --report /workspace/scratch/9f380f39cb05/qualification/combined/truncate-abi-report-v1.json",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "99c9099781c981f3ce498690510933d60677a27205e4aa8d40ffd30b95ffe560"
-      },
-      "build-admission": {
-        "command": "python3 -B hia/tests/test_scalar_build_admission.py --artifacts /workspace/scratch/9f380f39cb05/combined-native-build-v1 --report /workspace/scratch/9f380f39cb05/qualification/combined/build-admission-report-v1.json",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "b7861480b94e40c92600fdb0ae25f61dcaeeccd573ff7202736df205bccce4a5"
-      },
-      "receipt-default": {
-        "command": "python3 -B hia/tests/test_build_receipt.py --artifacts /workspace/scratch/9f380f39cb05/combined-native-build-v1 --rustc /workspace/scratch/9f380f39cb05/tools/rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc --report /workspace/scratch/9f380f39cb05/qualification/combined/receipt-default-report-v1.json",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "2e949b302f3fc370a17da819f5c4f5ec49a6d1a87f5674a4595369e5783f21e4"
-      },
-      "receipt-typed": {
-        "command": "python3 -B hia/tests/test_build_receipt.py --artifacts /workspace/scratch/9f380f39cb05/combined-native-build-v1 --mutation-module token_budget --rustc /workspace/scratch/9f380f39cb05/tools/rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc --report /workspace/scratch/9f380f39cb05/qualification/combined/receipt-typed-report-v1.json",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "f83c72df9dc08846a44aee80a29e28381e8aabc82f08cd7681cf81ce4157f5ea"
-      },
-      "native-string-tests": {
-        "command": "just test -p codex-utils-string --features hia-native --locked",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "11219d338b41ef3f66a1c134ae9f477a146ad4d8d5682719c863b493c16ae22a"
-      },
-      "default-string-tests": {
-        "command": "env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-string --locked",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "b084c7bc461624662f8e3635b1924e0d64653300332e10758aa41af0ba9b8d2f"
-      },
-      "native-strict-clippy": {
-        "command": "cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-utils-string --all-targets --locked --features hia-native -- -D warnings",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "edfc03762d310c0807ba24df8e76f068b5b5671385411bb8047c83be69e394c3"
-      },
-      "default-strict-clippy": {
-        "command": "env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-utils-string --all-targets --locked -- -D warnings",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "c66316b7c15c8631f41f9ca6abf9d90d18976925828a956d0724025179ae86b6"
-      },
-      "format": {
-        "command": "just fmt",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      "clippy-fix": {
-        "command": "just fix -p codex-utils-string --features hia-native",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "bdee4aa5454e0734956e0c837c1706c95825b6686f83d3102b1ff86c47dcfce0"
-      },
-      "performance-prepare": {
-        "command": "python3 -B /workspace/scratch/9f380f39cb05/performance/combined-v1/run_benchmark.py prepare --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "96bb4ebc946980956c459ec44127338f6cccd91121256b8fd88447e737129926"
-      },
-      "performance-measure": {
-        "command": "python3 -B /workspace/scratch/9f380f39cb05/performance/combined-v1/run_benchmark.py measure",
-        "exit": 0,
-        "source_unchanged": true,
-        "log_sha256": "7192824939883d83ce76af959e9d2be134dc200d13151a7b8d346e7e7f29e89e"
-      }
-    },
-    "reports": {
-      "receipt-default-report-v1.json": "972b688f4fc3db3bce85833f46a5ea33be694e720355d4beb0928b258d7b184c",
-      "truncate-abi-report-v1.json": "38f64ff4d50b644efdca6a2b2a6d11a449b36d881c020fe07605f9dbb237742b",
-      "original-rust-report-v1.json": "31258b1d7e41889861e07f4397885e613f6d0babe5669b0c68a788489fdf5c0c",
-      "typed-abi-report-v1.json": "63081afef2516559ad79dbce81b8d2345ab3c5d7be2c484535db4e835c42a1f7",
-      "unchanged-artifacts-report-v1.json": "4214ef1ce467fb9bb8326671efb1255b63e78b2dc262ff896fac1417c3e4a5cf",
-      "receipt-typed-report-v1.json": "ff7b6496a0a0e27a739d8ba93abaf77ecaf459654ac6800739717a61fa3e6903",
-      "build-admission-report-v1.json": "b2ad93d0c46d98dc05a6fde90122bbdf81ca8271839ae92ad3db1ece42c0c6d4"
-    },
-    "performance": {
-      "qualified": false,
-      "method": "same optimized Rust public APIs; original source token-bound; actual B3 native HIA static archive; black_box inputs and results; 3 alternating-order samples per case; equal iterations per pair",
-      "report_sha256": "b83538199ad0906598935fc5386b9891e57a27a95443a40c5822840ac18f2aee",
-      "raw_sha256": "cee2e5391ab7e52d4184d6c091b3551800aabace89de36b7157d710bffad704c",
-      "binary_sha256": "cf2ba2d8ea1237f804d2ef97640979a9b7cdeae9d2decf21c04f78624e047c2f",
-      "cases": {
-        "bytes_for_17_tokens": {
-          "input_bytes": 0,
-          "budget": 17,
-          "native_ns": 7.3042275,
-          "original_rust_ns": 0.601329,
-          "native_to_original_ratio": 12.146807321782251
-        },
-        "tokens_for_65_bytes": {
-          "input_bytes": 0,
-          "budget": 65,
-          "native_ns": 9.2802005,
-          "original_rust_ns": 0.5578885,
-          "native_to_original_ratio": 16.634507612184155
-        },
-        "saturated_bytes_for_tokens": {
-          "input_bytes": 0,
-          "budget": 4611686018427387904,
-          "native_ns": 6.235631,
-          "original_rust_ns": 0.880882,
-          "native_to_original_ratio": 7.078849380507264
-        },
-        "token_count_small_unicode": {
-          "input_bytes": 132,
-          "budget": 0,
-          "native_ns": 8.959920335972118,
-          "original_rust_ns": 0.8576460501761176,
-          "native_to_original_ratio": 10.447107328404531
-        },
-        "chars_small_ascii": {
-          "input_bytes": 116,
-          "budget": 48,
-          "native_ns": 449.8202676864245,
-          "original_rust_ns": 209.94773741236457,
-          "native_to_original_ratio": 2.1425344861084126
-        },
-        "chars_small_unicode": {
-          "input_bytes": 132,
-          "budget": 48,
-          "native_ns": 578.551,
-          "original_rust_ns": 169.2921,
-          "native_to_original_ratio": 3.4174719316494984
-        },
-        "tokens_small_unicode": {
-          "input_bytes": 132,
-          "budget": 8,
-          "native_ns": 270.19880994049703,
-          "original_rust_ns": 181.3559677983899,
-          "native_to_original_ratio": 1.4898809960357746
-        },
-        "tokens_under_budget_small_unicode": {
-          "input_bytes": 132,
-          "budget": 34,
-          "native_ns": 204.5163,
-          "original_rust_ns": 15.3502,
-          "native_to_original_ratio": 13.323363864965929
-        },
-        "chars_zero_budget_large_ascii": {
-          "input_bytes": 1048581,
-          "budget": 0,
-          "native_ns": 1873297.7272727273,
-          "original_rust_ns": 46066.0,
-          "native_to_original_ratio": 40.66551745913966
-        },
-        "chars_zero_budget_large_unicode": {
-          "input_bytes": 1048586,
-          "budget": 0,
-          "native_ns": 3004638.153846154,
-          "original_rust_ns": 59646.38461538462,
-          "native_to_original_ratio": 50.37418735805768
-        },
-        "chars_large_ascii": {
-          "input_bytes": 1048581,
-          "budget": 512,
-          "native_ns": 1606037.3333333333,
-          "original_rust_ns": 1270297.8333333333,
-          "native_to_original_ratio": 1.2642998288983935
-        },
-        "chars_large_unicode": {
-          "input_bytes": 1048586,
-          "budget": 512,
-          "native_ns": 2067840.4615384615,
-          "original_rust_ns": 865391.9230769231,
-          "native_to_original_ratio": 2.3894843554654424
-        },
-        "tokens_large_ascii": {
-          "input_bytes": 1048581,
-          "budget": 128,
-          "native_ns": 641.625,
-          "original_rust_ns": 2177892.6875,
-          "native_to_original_ratio": 0.0002946081795869017
-        },
-        "tokens_large_unicode": {
-          "input_bytes": 1048586,
-          "budget": 128,
-          "native_ns": 664.8461538461538,
-          "original_rust_ns": 1441712.0,
-          "native_to_original_ratio": 0.00046115046128918525
-        },
-        "tokens_under_budget_large_ascii": {
-          "input_bytes": 1048581,
-          "budget": 262146,
-          "native_ns": 26030.533333333333,
-          "original_rust_ns": 25204.95,
-          "native_to_original_ratio": 1.0327548094058243
-        },
-        "tokens_under_budget_large_unicode": {
-          "input_bytes": 1048586,
-          "budget": 262147,
-          "native_ns": 25796.828125,
-          "original_rust_ns": 25702.0,
-          "native_to_original_ratio": 1.003689523188857
-        },
-        "tokens_zero_budget_large_unicode": {
-          "input_bytes": 1048586,
-          "budget": 0,
-          "native_ns": 391.6875,
-          "original_rust_ns": 64959.5,
-          "native_to_original_ratio": 0.006029718516922082
-        }
-      },
-      "all_cases_within_3_seconds": true,
-      "remaining": "Scalar calls still exceed inline Rust costs. Character paths, especially zero budgets, and small unchanged token inputs retain regressions. These bounded local observations are not a whole-product performance qualification."
-    },
-    "current_consumer_and_installed_ci": {
-      "status": "passed_for_historical_eight_module_head",
-      "source_commit": "7fe65ae990187e6ff1130c791f902728b4e50197",
-      "source_tree": "37bc6e88c2e85127eb6dacf8a5c7738cf232e786",
-      "pull_request": 6344,
-      "native_modules": 8,
-      "production_algorithm_groups": 6,
-      "required_symbol": "codex_hia_token_budget",
-      "report_sha256": "c63c339f5f9423d917903485149eb874cf81ae02e28cb55b3f3650e4a577c056",
-      "scope": "Exact published eight-module 7fe65ae checkpoint only; Linux x86-64 GNU opt-in CI. Does not qualify the nine-module SourceFile increment, full workspace, performance, other platforms or default dispatch.",
-      "workflows": [
-        {
-          "event": "push",
-          "run_id": 43653376966,
-          "job_id": 132626515676,
-          "conclusion": "success",
-          "updated_at": "2026-11-14T23:55:42Z",
-          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43653376966",
-          "decoded_log_sha256": "61dc8b4752ad29e9d3ce74905f9d9feab9506e249e788e183dc223ab5869cab9",
-          "artifact_id": 14138115640,
-          "artifact_digest": "sha256:007b8c1ac7d260a7c2bf61d159f53b259ba7c39d33de09ef48297ec588e9e941"
-        },
-        {
-          "event": "pull_request",
-          "run_id": 43653380224,
-          "job_id": 132626526073,
-          "conclusion": "success",
-          "updated_at": "2026-11-14T23:52:45Z",
-          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43653380224",
-          "decoded_log_sha256": "ea160c89d61f8e31bb2b79280a4a9d9f2bc0e389d1874ace05368f70340c45d6",
-          "artifact_id": 14136889487,
-          "artifact_digest": "sha256:3eb828aaff965746f13d6fafe5f3d5924ae44c72bfae32098b0ef088cc0d3d6f"
-        }
-      ],
-      "actual_cargo_summaries": {
-        "native_apply_patch_and_string": {
-          "passed": 139,
-          "failed": 0,
-          "skipped": 0
-        },
-        "native_truncation_consumers": {
-          "passed": 319,
-          "failed": 0,
-          "skipped": 0
-        },
-        "native_cli_arg0_tui": {
-          "passed": 4473,
-          "failed": 0,
-          "skipped": 6,
-          "push_flaky": 0,
-          "pr_flaky": 1
-        },
-        "default_owners_and_consumers_without_hia": {
-          "passed": 444,
-          "failed": 0,
-          "skipped": 0
-        }
-      },
-      "installed_patch_and_codex_steps": "passed",
-      "installed_scope": "Relocated startup, native symbols and large patch parity; not every linked algorithm.",
-      "whole_workspace_qualified": false,
-      "default_dispatch_migrated": false,
-      "retirement_ready": false
-    },
-    "publication_changes_after_tests": [
-      "hia/README.md",
-      "hia/migration.json",
-      "hia/verification.json"
-    ],
-    "whole_codex_rewritten": false,
-    "production_dispatch_migrated": false,
-    "legacy_retirement_ready": false,
-    "published_commit": "7fe65ae990187e6ff1130c791f902728b4e50197",
-    "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197 checkpoint, six production algorithm groups. Original local source/artifact identities and exact-head CI are retained; this does not qualify the current nine-module SourceFile increment. Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
-  },
-  "opt_in_production_callers_verification_scope": "The complete-original file_update owner, current consumers and installed executables actually passed at published 5ce8, as scoped in file_update_increment.historical_ci_checkpoint_5ce8. The current adapter differs by a native-dispatch/strict-lint repair and awaits a new complete CI; historical results do not qualify these changed adapter bytes.",
   "whole_product_performance_qualified": false,
-  "current_evidence_record": "file_update_increment",
+  "current_evidence_record": "patch_integration",
   "source_file_increment": {
     "base_commit": "7fe65ae990187e6ff1130c791f902728b4e50197",
     "target": "x86_64-unknown-linux-gnu",
@@ -1519,89 +891,8 @@
     "checkpoint_scope": "Historical nine-module SourceFile record. All source identities, observed outcomes and pending states below describe that recorded stage; none is substituted for the ten-module file_update owner.",
     "qualifies_current_file_update_owner": false
   },
-  "historical_nine_module_checkpoint": {
-    "build_report_sha256": "500d2cce100ca1871e47ecc3ec10da6fb3b1fc8c26f7341dea4a891fbd0cabd3",
-    "build_inputs": {
-      "toolchain_lock_sha256": "5006164b7d3703f55cf9eacd6b0327c8d8a8b5386922f93f4da6bccb47816479",
-      "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-      "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
-    },
-    "current_source_inputs": {
-      ".github/workflows/codex-hia-native.yml": "0408de8f492fb49510093859df35f4f9d8fead1e9900657d7c3acb36314babf0",
-      "codex-rs/apply-patch/BUILD.bazel": "b46d28a69e2080c76b980da7d4256c2495154f39baf24602a6434a7de1bea719",
-      "codex-rs/apply-patch/Cargo.toml": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
-      "codex-rs/apply-patch/build.rs": "1d6b6b25c900f3787050eed7babcaedc8b6059a5732f7e45e8c2c73e305eeb7f",
-      "codex-rs/apply-patch/src/file_update.rs": "6f45aabc6d1bb103875df8c8529558a49587db103b1a26aa633b8ea7ada570f2",
-      "codex-rs/apply-patch/src/hia_native_text_file.rs": "6c4af87c8981be96a636d311fc6adb384289f67d6f06433d75ef8e206d1e4f7f",
-      "codex-rs/apply-patch/src/lib.rs": "cfe2e97bbed395c2016cf74e3a927c51d5a062457e248b38f43afeb1c5b39556",
-      "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
-      "codex-rs/apply-patch/src/text_file.rs": "f8552845979411008c856f77b378d16e39966fa877a53a1ebd29f5e4cc74f2e2",
-      "codex-rs/apply-patch/tests/suite/hia_native.rs": "d6f822a1e42645beabc801c8b122184d29d0e0c6289a4e8f721075ba54459572",
-      "codex-rs/arg0/Cargo.toml": "d5d7c6d652ef06c623de0dafe121b3b4f41bb0f98ed8e8d946d9e6c68880a152",
-      "codex-rs/cli/Cargo.toml": "1ab01dc7d288e62af6c9e2eefcd2d88a29a384d067842f4258971e7f81085b77",
-      "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70",
-      "codex-rs/tui/Cargo.toml": "a9949f5c09dcbf05c4c1feeab89d26cf1ca52c0cd0d364d51c732711085e24a5",
-      "codex-rs/utils/string/BUILD.bazel": "c10a3ee27f80de0062b4f6c5b3d32516bccf348d008d940dd00b984ac53a44dc",
-      "codex-rs/utils/string/Cargo.toml": "b6b11402e1448cb2fbafbb944be985fa71c9a476a703ae3a9a47bf38e3ee0a93",
-      "codex-rs/utils/string/build.rs": "315b128aaef52ef17bcd0168e4dab0c7989b23b6f295791c9d9026d7e8f83a48",
-      "codex-rs/utils/string/src/ascii_json_tests.rs": "7e52a8777264b1b13528bf9b81ab5998674239f30425592e97349633c5cc9d05",
-      "codex-rs/utils/string/src/hia_native.rs": "c09416c899e8554aa8e8903fb952b21e1751cdf1b06b25186079dcf333f8d489",
-      "codex-rs/utils/string/src/hia_native_ascii_json.rs": "9a5b3fb5fd581012de872c3835f10d69a2be9b28fb594ee64f653bfd97cdcc39",
-      "codex-rs/utils/string/src/hia_native_markdown.rs": "f893ae0c4ee9677a7556be5ca27c058584bd7e6d05530ec9ecd82b64bd66e7e1",
-      "codex-rs/utils/string/src/hia_native_metric.rs": "c74c9d5ffabaeefd125e240977dca2b02c2da0c2d9e658315faac0bb2036cd73",
-      "codex-rs/utils/string/src/hia_native_truncate.rs": "4b7beaa71d688157b018dc2ca282ced7707470c9cc027c3d51fe87e40908cf63",
-      "codex-rs/utils/string/src/json.rs": "799b4f220ede9ba62ebb9fe90f66397dbdf35271a1ae289c5e78607260f24a0b",
-      "codex-rs/utils/string/src/lib.rs": "2c68d499ce4f3778490364ab0326cdc0c2a78603c4d27ee60c1a7c7826abe17c",
-      "codex-rs/utils/string/src/truncate.rs": "cfeba2400aa9e7439ece0c23d6a4291d4c106777f3159f2e5f8fd89e7ec24551",
-      "codex-rs/utils/string/src/truncate_native_tests.rs": "b6113c90f484104f909c3636fc08c29da7249007c693c88d0871034441f7fdbc",
-      "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
-      "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-      "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-      "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
-      "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
-      "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-      "hia/source_file.hepta": "318444262135fbb1ca506ecce7dcc28fac4fc92d776d2d8d9f7c94a5a121b710",
-      "hia/source_file_buffer_contract.json": "0da7ff9106fc1c153a879214075bf0be99ccd5ec6847c6613c27e1f621208b5f",
-      "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
-      "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
-      "hia/tests/native_metric_caller.rs": "3ddb875dbca6480d340f04e2df777e4b380294366107d05d238b3be3c9b60c64",
-      "hia/tests/native_patch_caller.rs": "5e3e0527cd69997170db7402e43b0bb84be4c9f8964f6d74417dbb1470083ac2",
-      "hia/tests/native_source_file_caller.rs": "48b2e9127131b502a73f5c98c1fa53667af776a64eef174b3c688f485c4270fd",
-      "hia/tests/native_string_caller.rs": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
-      "hia/tests/native_truncate_caller.rs": "de88b426d2330a5013fc3a2fb0fab300a51382ef45bd0f735257284138c7c451",
-      "hia/tests/seek_sequence_oracle.rs": "a858319766e0e5a9c5ca9069f894c987895f3a7f28da6f61db547f24983554e0",
-      "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
-      "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
-      "hia/tests/test_installed_codex.py": "b0219a44509ff019d4ff8474c0f5ba4832d0d6949fed4ab288534709080cd5ca",
-      "hia/tests/test_installed_patch.py": "72490c91a7971bcbf12a22258740bec43f6c2b9619ad0f812b458a9152703aa8",
-      "hia/tests/test_markdown_location_abi.py": "bac67c99f75d4899571db903acd570a548ed62a7b3b2943f850c9d46ef06ca1d",
-      "hia/tests/test_metric_tag_abi.py": "6d10774c87586c9ab428809acf9fa2007b2658cf074909d09b44b7851e3239be",
-      "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
-      "hia/tests/test_native_markdown_caller.py": "92fb33c542e50e55d81b20abce470c4bec54359b3a2a79b488d55e4f45220157",
-      "hia/tests/test_native_metric_caller.py": "31f1965f7620e392e123dfa5c908454dad3f2e179976b2132d30705345ef8adc",
-      "hia/tests/test_native_source_file_caller.py": "a7f00401280170a4b49adf7c5b73ff09526bd48e119190c6cebaca209690733e",
-      "hia/tests/test_native_string_caller.py": "4dbe9843e6f04e3fabc40783bbf0402aa64e6b5da84f6202795905f273066636",
-      "hia/tests/test_native_truncate_caller.py": "48c85d7a30d0b261b8831eb46c83c16514eda1f2826c0c184384962aeaf0f9b6",
-      "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
-      "hia/tests/test_seek_sequence.py": "674df1a3014c764fc425e4ebcb8f19a3fa3ab6462e173eb2e71eaddacbc730bc",
-      "hia/tests/test_source_file_abi.py": "7826a9812dfbf06e72a1d17f3bbbc725194cca183d7d156d2a073fd29de751be",
-      "hia/tests/test_token_budget_abi.py": "af2b3e5cd8b12577175c07797917f28db6713ecc683bf081d2dcf7403359a4ba",
-      "hia/tests/test_truncate_abi.py": "c9d7a2ade87809136d92e731681fba498a2cf3ad06942dc9364f3868bbd3049a",
-      "hia/tests/test_utf8_boundaries.py": "5d670e37ac739b42f0d54479d40a429e01ac20da8b3a959fca1f798f24e17fd1",
-      "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-      "hia/toolchain.json": "5006164b7d3703f55cf9eacd6b0327c8d8a8b5386922f93f4da6bccb47816479",
-      "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
-      "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
-      "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9"
-    },
-    "metadata_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
-    "verification_json_sha256": "83be9b7076ff98c183d302ce76def0fddbd820c91e56d42f34cedd0976e2c3eb",
-    "scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
-  },
-  "native_module_count": 10,
-  "production_algorithm_group_count": 8,
-  "evidence_reports_scope": "Existing top-level evidence_reports remain historical component checkpoints. file_update_increment.reports retains the original ten-module component evidence; historical_ci_checkpoint_5ce8 records actual published-head CI, and current_lint_repair binds the changed adapter without claiming new execution.",
+  "native_module_count": 11,
+  "production_algorithm_group_count": 9,
   "current_source_inputs_scope": "Previous canonical inputs, all tracked/untracked nonignored HIA source/contracts/tests, complete apply-patch and utils/string crates, existing edited paths, workspace Cargo inputs and repository test runners; excludes exactly the three metadata files. These hashes bind source bytes; they do not assert that pending execution gates ran.",
   "file_update_increment": {
     "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
@@ -2414,5 +1705,13 @@
       "whole_product_performance_qualified": false
     }
   },
-  "metadata_publication_incomplete": true
+  "metadata_publication_incomplete": true,
+  "legacy_retirement_ready": false,
+  "composition_sources": {
+    "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+    "parser": "168080b72c4be242d14eadd47168f2a9326590f2",
+    "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
+    "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
+    "scope": "Single-parent integration of these three sibling candidates; no unrelated main integration tree or target directory is reused."
+  }
 }
