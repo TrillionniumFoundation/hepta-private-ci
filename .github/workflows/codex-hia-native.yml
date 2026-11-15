@@ -9,6 +9,13 @@ on:
       - codex-rs/cli/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
+      - codex-rs/utils/template/**
+      - codex-rs/login/**
+      - codex-rs/models-manager/**
+      - codex-rs/prompts/**
+      - codex-rs/memories/write/**
+      - codex-rs/ext/goal/**
+      - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
@@ -27,6 +34,13 @@ on:
       - codex-rs/cli/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
+      - codex-rs/utils/template/**
+      - codex-rs/login/**
+      - codex-rs/models-manager/**
+      - codex-rs/prompts/**
+      - codex-rs/memories/write/**
+      - codex-rs/ext/goal/**
+      - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
@@ -138,6 +152,29 @@ jobs:
             --rustc "$RUSTC" \
             --report "$RUNNER_TEMP/unified-component-receipts.json" \
             2>&1 | tee "$RUNNER_TEMP/unified-component-receipts.log"
+
+      - name: Verify template parsing and atomic no-write contracts
+        id: template_parse_abi
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_template_parse_abi.py \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-template-parse-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-parse-abi.log"
+
+      - name: Verify template parser source and archive receipts
+        id: template_parse_receipt
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module template_parse \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-template-parse-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-parse-receipt.log"
 
       - name: Verify UUID byte matching and atomic no-write contracts
         id: uuid_abi
@@ -598,6 +635,29 @@ jobs:
           just test -p codex-cli -p codex-arg0 -p codex-tui --features hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
 
+      - name: Test native template owner and all direct consumers
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          template_owner_features=codex-utils-template/hia-native,codex-login/hia-native,codex-models-manager/hia-native
+          template_owner_features+=,codex-prompts/hia-native,codex-memories-write/hia-native
+          template_owner_features+=,codex-goal-extension/hia-native,codex-memories-extension/hia-native
+          just test --locked -p codex-utils-template -p codex-login -p codex-models-manager \
+            -p codex-prompts -p codex-memories-write -p codex-goal-extension -p codex-memories-extension \
+            --features "$template_owner_features" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-consumers-native.log"
+
+      - name: Test default template owner and all direct consumers
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test --locked \
+            -p codex-utils-template -p codex-login -p codex-models-manager \
+            -p codex-prompts -p codex-memories-write -p codex-goal-extension -p codex-memories-extension \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-consumers-default.log"
+
       - name: Verify installed full Codex executable
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -644,6 +704,20 @@ jobs:
             --work-dir "$RUNNER_TEMP/hia-uuid-caller" \
             --report "$RUNNER_TEMP/hia-uuid-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-uuid-caller.log"
+
+      - name: Compare complete original and actual Cargo native template owners
+        id: template_parse_caller
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_template_parse_caller.py \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --original-repo "$GITHUB_WORKSPACE/codex-file-update-original" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --work-dir "$RUNNER_TEMP/hia-template-caller" \
+            --report "$RUNNER_TEMP/hia-template-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-caller.log"
 
       - name: Compare complete original and native file-update owners
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
@@ -752,8 +826,8 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string \
-            --features codex-apply-patch/hia-native,codex-utils-string/hia-native \
+          cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string -p codex-utils-template \
+            --features codex-apply-patch/hia-native,codex-utils-string/hia-native,codex-utils-template/hia-native \
             --message-format=json-render-diagnostics -- -D warnings \
             > "$RUNNER_TEMP/unified-owner-clippy.jsonl" 2> "$RUNNER_TEMP/unified-owner-clippy.stderr"
           cat "$RUNNER_TEMP/unified-owner-clippy.stderr" | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
@@ -761,7 +835,7 @@ jobs:
             > "$RUNNER_TEMP/unified-owner-clippy-admission.json"
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-owner-clippy-admission.json"
           env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
-            -p codex-apply-patch -p codex-utils-string -- -D warnings \
+            -p codex-apply-patch -p codex-utils-string -p codex-utils-template -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-default-owner-clippy.log"
 
       - name: Run scoped native owner fixes without source drift
@@ -789,6 +863,36 @@ jobs:
           python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-after-fix.jsonl" \
             > "$RUNNER_TEMP/unified-after-fix-admission.json"
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-after-fix-admission.json"
+
+      - name: Fix native string and template owners with actual compiler evidence
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          export GIT_OPTIONAL_LOCKS=0
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py snapshot \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --report "$RUNNER_TEMP/hia-string-template-source-before.json"
+          cargo metadata --locked --no-deps --format-version 1 \
+            > "$RUNNER_TEMP/hia-string-template-metadata.json" 2> "$RUNNER_TEMP/hia-string-template-metadata.stderr"
+          CODEX_HIA_POLICY_FIX_REQUIRE_NATIVE=0 \
+          CODEX_HIA_POLICY_FIX_REPORT="$RUNNER_TEMP/hia-string-template-fix.json" \
+            just fix --locked --all-targets -p codex-utils-string -p codex-utils-template \
+              --features codex-utils-string/hia-native,codex-utils-template/hia-native \
+            2>&1 | tee "$RUNNER_TEMP/hia-string-template-fix.log"
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py verify \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --before "$RUNNER_TEMP/hia-string-template-source-before.json" \
+            --fix-report "$RUNNER_TEMP/hia-string-template-fix.json" \
+            --metadata "$RUNNER_TEMP/hia-string-template-metadata.json" \
+            --report "$RUNNER_TEMP/hia-string-template-fix-validation.json"
+          just fmt 2>&1 | tee "$RUNNER_TEMP/hia-string-template-format.log"
+          python3 -B ../hia/tests/verify_scoped_owner_fix.py unchanged \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --before "$RUNNER_TEMP/hia-string-template-source-before.json" \
+            --report "$RUNNER_TEMP/hia-string-template-source-after.json"
+          git diff --exit-code
+          git diff --cached --exit-code
 
       - name: Upload original build and test results
         if: ${{ always() }}
@@ -833,6 +937,14 @@ jobs:
             ${{ runner.temp }}/unified-*.jsonl
             ${{ runner.temp }}/unified-*.log
             ${{ runner.temp }}/unified-*.stderr
+            ${{ runner.temp }}/hia-template-parse-abi.json
+            ${{ runner.temp }}/hia-template-parse-abi.log
+            ${{ runner.temp }}/hia-template-parse-abi-files/
+            ${{ runner.temp }}/hia-template-parse-receipt.json
+            ${{ runner.temp }}/hia-template-parse-receipt.log
+            ${{ runner.temp }}/hia-template-caller.json
+            ${{ runner.temp }}/hia-template-caller.log
+            ${{ runner.temp }}/hia-template-caller/
             ${{ runner.temp }}/hia-uuid-abi.json
             ${{ runner.temp }}/hia-uuid-abi.log
             ${{ runner.temp }}/hia-uuid-abi-files/
@@ -946,6 +1058,17 @@ jobs:
             ${{ runner.temp }}/hia-native-owner-clippy.log
             ${{ runner.temp }}/hia-default-owner-clippy.log
             ${{ runner.temp }}/hia-native-owner-fix.log
+            ${{ runner.temp }}/hia-template-consumers-native.log
+            ${{ runner.temp }}/hia-template-consumers-default.log
+            ${{ runner.temp }}/hia-string-template-source-before.json
+            ${{ runner.temp }}/hia-string-template-source-after.json
+            ${{ runner.temp }}/hia-string-template-metadata.json
+            ${{ runner.temp }}/hia-string-template-metadata.stderr
+            ${{ runner.temp }}/hia-string-template-fix.json
+            ${{ runner.temp }}/hia-string-template-fix/
+            ${{ runner.temp }}/hia-string-template-fix.log
+            ${{ runner.temp }}/hia-string-template-fix-validation.json
+            ${{ runner.temp }}/hia-string-template-format.log
             ${{ runner.temp }}/hia-codex-owners.log
             ${{ runner.temp }}/hia-installed-codex-build.log
             ${{ runner.temp }}/hia-original-codex-build.log

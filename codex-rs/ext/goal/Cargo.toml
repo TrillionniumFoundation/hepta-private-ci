@@ -10,6 +10,9 @@ path = "src/lib.rs"
 test = false
 doctest = false
 
+[features]
+hia-native = ["codex-utils-template/hia-native"]
+
 [lints]
 workspace = true
 

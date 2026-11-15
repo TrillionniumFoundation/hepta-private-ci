@@ -1,0 +1,105 @@
+{
+  "schema": "codex.hia.template-parse-buffer-contract.v1",
+  "revision": 1,
+  "module": "template_parse",
+  "symbol": "codex_hia_template_parse",
+  "entry_profile": "borrowed-buffers-u32-v1",
+  "platform": "Linux x86-64; little-endian u64 words and 64-bit borrowed-buffer lengths",
+  "scope": "Complete Template::parse, parse_placeholder and push_literal computation. Rendering, allocation and Rust object materialization remain host responsibilities.",
+  "original": {
+    "commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+    "crate": "codex-rs/utils/template",
+    "crate_tree": "239023ac5b71e7cd40b23bff31cbf3e36c59a8c5",
+    "library_blob": "62d2314ffb30959cc7dab3c9fd6924e189e53ca8",
+    "library_sha256": "f930640a38e4ed882274397f6f2ac2105c3aac7891269b7b1edf39393b5d80cf",
+    "complete_crate_files": 4,
+    "original_tests": 14
+  },
+  "calling_convention": {
+    "arguments": ["source_ptr", "source_len", "output_ptr", "output_capacity", "workspace_ptr", "workspace_len"],
+    "return": "Zero-extended u32 transport status in the native ABI return register",
+    "caller_obligations": "All indicated buffers are live, correctly sized and mutually non-overlapping during the synchronous call. No pointers are retained.",
+    "source": "Arbitrary bytes, validated completely as UTF-8 before parsing. No trusted-UTF8 profile or source-size cap.",
+    "workspace": "Exactly 32 readable bytes; always unchanged.",
+    "output": "Writable capacity of at least 64 bytes; query/emit write only the reported prefix. The unused output suffix is unchanged."
+  },
+  "request_words": [
+    {"offset": 0, "name": "version", "value": 1},
+    {"offset": 8, "name": "operation", "values": {"query": 0, "emit": 1}},
+    {"offset": 16, "name": "reserved_0", "value": 0},
+    {"offset": 24, "name": "reserved_1", "value": 0}
+  ],
+  "header_bytes": 64,
+  "header_words": [
+    {"offset": 0, "name": "version", "value": 1},
+    {"offset": 8, "name": "operation", "meaning": "Echo the admitted request operation."},
+    {"offset": 16, "name": "source_len", "meaning": "Original source byte length."},
+    {"offset": 24, "name": "record_count", "meaning": "Number of 24-byte instructions, including append instructions; not the final segment count."},
+    {"offset": 32, "name": "required", "meaning": "Checked 64 + 24 * record_count; semantic errors always require 64."},
+    {"offset": 40, "name": "written", "meaning": "64 for query or semantic error; required for successful emit."},
+    {"offset": 48, "name": "semantic_error", "meaning": "Zero for a valid template, otherwise one of the four original parse errors."},
+    {"offset": 56, "name": "error_start", "meaning": "Original UTF-8 byte offset; zero when semantic_error is zero."}
+  ],
+  "record_bytes": 24,
+  "records_offset": 64,
+  "record_words": [
+    {"offset": 0, "name": "kind", "meaning": "1=new literal, 2=append literal, 3=placeholder"},
+    {"offset": 8, "name": "start", "meaning": "Inclusive source byte index."},
+    {"offset": 16, "name": "end", "meaning": "Exclusive source byte index."}
+  ],
+  "record_invariants": [
+    "All ranges are nonempty, within source_len, on UTF-8 boundaries and ordered without overlap.",
+    "Kind 1 creates Literal(source[start..end]); there is no immediately preceding Literal segment.",
+    "Kind 2 appends source[start..end] to the immediately preceding Literal segment; that segment must exist.",
+    "Kind 3 creates a new Placeholder from the native-selected trimmed range. Repeated names retain separate ordered Placeholder segments.",
+    "Escaped four-brace delimiters reference their first two source bytes and skip the other two. Gaps between ranges are valid.",
+    "The host inserts placeholder strings into the existing BTreeSet to preserve unique sorted names, and constructs the original Vec<Segment> without reparsing.",
+    "Empty source produces zero records. Empty literal fragments are omitted; adjacent literal fragments are joined by append instructions."
+  ],
+  "operations": {
+    "query": "Validate frame and entire UTF-8 source; compute the complete plan or semantic error without emitting records; write only the 64-byte header.",
+    "emit": "Validate frame, entire UTF-8 source, complete semantic result and required output capacity before any write. Emit records only for a valid template, then publish the header.",
+    "agreement": "For the same source, query and emit agree on source_len, record_count, required, semantic_error and error_start. Only operation and written differ."
+  },
+  "semantic_errors": {
+    "1": "EmptyPlaceholder: the interior of the first closing pair becomes empty after Rust-compatible Unicode whitespace trim; start is the outer opening pair.",
+    "2": "NestedPlaceholder: an inner opening pair is encountered before closing; start is the outer opening pair.",
+    "3": "UnmatchedClosingDelimiter: a top-level closing pair is not consumed as a four-brace literal escape; start is that pair.",
+    "4": "UnterminatedPlaceholder: an opened placeholder reaches the end without closing or an earlier nested opening; start is the outer opening pair.",
+    "transport_status": 0,
+    "record_count": 0,
+    "required": 64,
+    "written": 64,
+    "partial_prefix": "No partial plan or partial Template is returned, including when an error follows valid literal/placeholder prefixes."
+  },
+  "syntax": {
+    "outer_priority": ["four opening braces -> literal opening pair", "four closing braces -> literal closing pair", "opening pair -> placeholder", "closing pair -> unmatched error", "ordinary source bytes"],
+    "inner_priority": ["opening pair -> nested error", "closing pair -> trim and close", "ordinary source bytes", "end -> unterminated error"],
+    "inner_escape": "Four-brace literal escaping applies only outside placeholders.",
+    "names": "Trim only leading/trailing Unicode White_Space; keep internal whitespace, single braces, Unicode and NUL. No identifier alphabet, case folding or normalization.",
+    "trim_codepoints": ["U+0009..U+000D", "U+0020", "U+0085", "U+00A0", "U+1680", "U+2000..U+200A", "U+2028", "U+2029", "U+202F", "U+205F", "U+3000"],
+    "error_priority": "Preserve the first error reached by the original left-to-right parser; inner error positions refer to the outer opener."
+  },
+  "transport_statuses": {
+    "0": "Valid native request completed; inspect semantic_error for the Rust parse result.",
+    "4294967294": "SHORT: output capacity below 64, workspace length below 32, or successful emit capacity below required.",
+    "4294967295": "INVALID: workspace longer than 32, wrong version/op/reserved word, invalid UTF-8, or unrepresentable checked output size.",
+    "precedence": "Minimum output/workspace capacity checks occur first; exact frame validation precedes full UTF-8 validation; semantic planning precedes final emit capacity validation.",
+    "no_write": "Every nonzero transport return leaves source, workspace and the entire output byte-for-byte unchanged. Semantic errors are successful transport and write their header.",
+    "source_and_workspace": "Never modified for any request."
+  },
+  "host_adapter": {
+    "responsibilities": "Allocate query/emit buffers, check complete header and checked sizes, require query/emit agreement, validate returned range framing and UTF-8 boundaries, map the four native error codes, and materialize original Rust strings/segments/set.",
+    "forbidden_fallback": "No Rust delimiter parser, trim implementation or semantic fallback is selected when HIA fails.",
+    "native_failure": "Internal ABI/transport rejection is distinct from the four original semantic parse errors.",
+    "retained_boundary": "Original error Display/Debug/Error implementations, public data traits, render algorithm and all 14 original tests remain unchanged."
+  },
+  "qualification_scope": {
+    "whole_template_crate_native": false,
+    "render_migrated": false,
+    "runtime_or_public_equivalence_established_by_this_contract": false,
+    "whole_product_qualified": false,
+    "default_switch_qualified": false,
+    "legacy_retirement_qualified": false
+  }
+}
