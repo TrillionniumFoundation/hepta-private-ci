@@ -118,6 +118,12 @@ jobs:
         if: always()
         uses: ./.github/actions/check-clean-worktree
 
+      - name: Probe native filesystem policy support
+        if: always()
+        run: |
+          python -B ../.github/diagnostics/probe_windows_security_environment.py \
+            --output "$RUNNER_TEMP/windows-owner-security-environment.json"
+
       - name: Collect native evidence in one directory
         if: always()
         shell: pwsh
