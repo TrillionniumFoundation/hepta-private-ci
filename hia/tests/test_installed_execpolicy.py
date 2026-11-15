@@ -24,7 +24,7 @@ from test_installed_patch import inspect_binary, sha256
 
 
 ROOT = Path(__file__).resolve().parents[2]
-NATIVE_SYMBOLS = ("codex_hia_prefix_match", "codex_hia_prefix_admission", "codex_hia_policy_summary")
+NATIVE_SYMBOLS = ("codex_hia_prefix_match", "codex_hia_prefix_admission", "codex_hia_policy_summary", "codex_hia_command_dispatch")
 
 
 def rule(prefix, decision, *, resolved=None, justification=None):
