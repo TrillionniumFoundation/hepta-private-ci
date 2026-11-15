@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-11-15T15:45:52.977015+00:00",
+  "base": "89ed8393d951043031baf69361eb1585f1f4bd07",
+  "incoming": "d1a4caa4cbc50f5a7e2fd3d6063bf296f4b3c75d",
+  "preview_tree": "427dd2ef85eaab5ce7315655fb4f484e5d50eae4",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete subprocess boundary and tests reviewed. Original worker reuse, charged startup/failure cleanup, bounded progress count, timeout kill/restart and unreaped-worker refusal retained. No active callers existed in current qa/scripts/qualification Python sources.",
+  "reproducer": {
+    "deadline_s": 0.05,
+    "observed_wall_s": 0.6034975659995325,
+    "receipt_status": "timeout",
+    "reason": "late_worker_reply",
+    "scope": "trusted local pickleable handler result with slow parent deserialization"
+  },
+  "correction": "Custom pickleable results could execute slow reconstruction in the parent after poll succeeded. IPC now permits only bounded builtin literal data and uses callback-free same-interpreter marshal framing; 1 MiB wire, 4096 values, depth32, finite floats and 256-bit ints. Custom objects/oversize/cyclic data are rejected. Bounded transport and cleanup are charged; OS scheduling and arbitrary grandchildren are not claimed as supervised. Null payload is now literal data, not an undocumented shutdown sentinel.",
+  "compatibility": "Factory remains pickleable/importable under spawn. Payload/progress/results no longer accept arbitrary custom objects; callers must export bounded builtin data. This is a future utility with no production caller in the checked tree.",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/ndu-grounded-generation",
+    "-p",
+    "test_hard_deadline.py",
+    "-v"
+  ],
+  "test_exit": 0,
+  "reported_tests": 12,
+  "tests_skipped": 0,
+  "source_sha256": {
+    "qa/ndu-grounded-generation/hard_deadline.py": "425cceef3d35abf2abb77143a1b1a4a7a1eda2876b79b3af0c4b0b41ecc4d1a5",
+    "qa/ndu-grounded-generation/test_hard_deadline.py": "e310275b39aff0a83ec7ffa2f7c1f3a6d7ba6ba1735e3cb1fc3a2a63e381058d"
+  },
+  "qualification": false
+}

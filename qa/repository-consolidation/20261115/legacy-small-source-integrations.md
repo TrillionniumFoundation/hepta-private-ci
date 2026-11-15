@@ -56,3 +56,27 @@ The complete focused reader suite passes 13 tests, including recursive shape
 substitutions and later-episode real fixture pixel scoring. No real actor campaign
 or production adoption occurred. Details and the actual combined-source test log
 are retained under `legacy-small/retention-reader-shapes`.
+
+## Bounded NDU worker deadline boundary
+
+Incoming `d1a4caa4cbc50f5a7e2fd3d6063bf296f4b3c75d` adds a future warm-worker
+supervisor and model-free tests. Review found no current production Python caller
+in `qa`, `scripts` or `qualification`. Its original pickle transport could run
+result reconstruction in the parent: a permitted result with a 600 ms restoration
+caused a 50 ms deadline to return only after 603 ms. The result was correctly
+marked timeout, but the waiting-time claim was not supported.
+
+The merge retains worker reuse, measured startup, failure accounting, timeout
+termination/replacement and unreaped-worker refusal. IPC now accepts bounded
+builtin data (including bytes/tuples/null), with no reconstruction callbacks:
+1 MiB wire, 4096 values, depth 32, finite floats and integers up to 256 bits.
+The same-interpreter marshal framing is internal IPC, not an artifact format.
+Custom objects require callers to export bounded data explicitly; the factory
+remains importable/pickleable for spawn. Transfer, validation and cleanup are
+charged, while OS scheduling latency and grandchildren remain outside the claim.
+
+All 12 focused tests pass. New regressions cover the slow custom result, exact
+builtin/null round trips, oversized progress/results and invalid payload bounds,
+including cycles. No model work or external campaign was run. The preserved
+reproducer, compatibility note, exact source hashes and test log are under
+`legacy-small/hard-deadline`.
