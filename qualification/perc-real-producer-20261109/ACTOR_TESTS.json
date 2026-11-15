@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/workspace/scratch/45b9487ed5d1/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_perc1_document_actor.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "wall_ns": 16320915547,
+  "scope": "real TRAIN-document integration after collector module extraction; no held-out labels or efficacy evaluation",
+  "tested_sha256s": {
+    "scripts/perc1/document_actor.py": "f14c2e6179e0abcd620d42a05b7bbcfc4f360a5348a1a791a74202dc4959b55b",
+    "scripts/perc1/document_collector.py": "06dab811f6ec2b50d6bbcd5298bcc297cc83928cbc7bea9e87145a4a90cee3c9",
+    "scripts/test_perc1_document_actor.py": "96505b57ecc26ccb8bcc9dd7c207884ac0fd8723c0dea68b4a562ae7f6ccb55b"
+  },
+  "unchanged_during_execution": true,
+  "format_output": "3 files reformatted\n",
+  "format_ast_unchanged": true,
+  "formatted_sha256s": {
+    "scripts/perc1/document_actor.py": "8cff584e4ab7b7b8bbe4bd187a3040ad234b7d1623df240d9c4b7772b0a7c157",
+    "scripts/perc1/document_collector.py": "6f55acbf7aec5d34d0322c792daa74262e853d4c7f692dc611bbe83d6be79631",
+    "scripts/test_perc1_document_actor.py": "187c7f46438ff210a6ef830bbd8074a5e58318258c404dc97146c369f15a7d5c"
+  },
+  "formatted_lines": {
+    "scripts/perc1/document_actor.py": 300,
+    "scripts/perc1/document_collector.py": 409,
+    "scripts/test_perc1_document_actor.py": 301
+  }
+}

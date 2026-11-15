@@ -155,3 +155,72 @@ three unchanged historical hosted logs (546 reported lines); those bytes match
 their historical inventory and were retained. No whitespace-check exclusion or
 global size limit was changed. The scoped and full outcomes are distinguished
 in `legacy/pred-static-checks.json`.
+
+## PERC real-producer and native-control ancestry
+
+Incoming tip: `9197fc1ec55d1ff25efa0ac87ad21659e5d55d7f`
+(`research/perc-native-control-c47d3953-20261110`), merged normally after the
+PRED checkpoint. The actual delta adds 90 paths, including 18 Python production
+modules and 11 test modules. It changes no Rust source or workflow behavior.
+All 90 new paths retain their exact incoming bytes, as recorded in
+`legacy/perc-source-integrity.json`.
+
+### Conflict resolution and preserved evidence
+
+The sole conflict is an explanatory comment in `.gitattributes` above the
+existing canonical Perception fixture rule. The resolution retains the incoming
+explanation and every existing attribute. It also adds exact `-text` rules for
+the three already-verified PRED historical logs, protecting their original
+line endings on other platforms. This does not exclude whitespace checks. The
+Perception fixture's complete SHA-256 and native payload SHA-256 both match the
+retained EOL proof; this is a byte check, not a new Windows/native execution.
+
+Historical public evidence summaries and their HOLD/failure records are retained
+unchanged. Private image/receipt/model archives named by those summaries are not
+present in this delta, so their historical execution results were not reverified.
+Archived HeptaRuntime continuation/publication request JSON remains evidence;
+none of those commands was launched, reconciled or published during this review.
+
+### Source review
+
+All 18 new production modules were read, covering raster export, local frozen
+producer, train-only projection, acquisition ridge/MLP heads, document data and
+OCR collection, actor prefixes, public controls, diagnostic evaluation, native
+readback, recomputation, repeated development training, source-reuse rejection
+and process metering. The producer requires a local SHA-pinned weight file,
+loads it with `weights_only=True`, and constructs torchvision with no pretrained
+weight download. It bounds image/region/native-wire sizes and retains original
+RGB crop evidence. OCR and native probes use argument lists and timeouts.
+
+Acquisition heads remain advisory/HOLD. They separate TRAIN/DEV from confirmation,
+retain controlled prefix/evidence identities and leave production source/budget
+ownership unimplemented. The actor uses bounded read quotes and preserves an
+overrun failure instead of labeling an over-budget trace valid. Diagnostic
+reports keep the unchanged complete PERC prerequisite gate; no scientific or
+production acceptance was promoted. DEV repeats are labeled as calibration with
+shared sources, and local time/byte proxies are not described as provider bills.
+
+Native probe generation points to the actual production Rust Perception and
+Hepta type sources and checks their before/after hashes. Its wrappers prove
+observation decoding/binding only and deny Cell admission/execution attestation.
+The process meter owns its launched process group, preserves timeout/failure
+receipts and does not claim completeness for detached descendants. No network
+acquisition, remote publication, daemon restart or automatic training job is
+introduced by the merge. No PERC production logic required a merge correction.
+
+### Verification
+
+`legacy/perc-python-tests.json` and its log record an exit-zero run of the full
+`test_perc1*.py` discovery: **90 reported tests, 84 passed and six explicit
+skips**, with source hashes unchanged. Five skipped producer tests require an
+explicit official MobileNet checkpoint; the executed document test additionally
+requires its explicit dataset/runtime. All 29 incoming Python files parse.
+These source/fixture and owned-child-process checks did not run a historical
+campaign, acquire a model or execute a native Rust probe. Native checks and the
+six dependency/data-bound tests remain pending on an appropriately provisioned
+host; historical PASS fields do not fill that gap.
+
+The complete staged PERC delta passes the unchanged 512,000-byte blob policy
+and full `git diff --check`; the tree checked and raw outputs are recorded in
+`legacy/perc-static-checks.json`. This is scoped to this third merge, so it does
+not relabel the three preserved PRED raw-log whitespace findings.
