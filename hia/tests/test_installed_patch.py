@@ -26,7 +26,7 @@ import time
 
 
 NATIVE_SYMBOL = "codex_hia_seek_sequence"
-NATIVE_SYMBOLS = (NATIVE_SYMBOL, "codex_hia_source_file")
+NATIVE_SYMBOLS = (NATIVE_SYMBOL, "codex_hia_source_file", "codex_hia_file_update")
 INPUT_SIZE = 2 * 1024 * 1024
 PATCH = (
     "*** Begin Patch\n"
