@@ -1,0 +1,42 @@
+name: HPCA recorded chat evidence admission
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hpca-chat-evidence-admission.yml'
+      - 'qualification/hpca-neuroscience-20261110/chat_evidence_audit.py'
+      - 'qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py'
+      - 'qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/**'
+  push:
+    branches:
+      - research/hpca-chat-evidence-admission-20261112
+
+permissions:
+  contents: read
+
+jobs:
+  recorded-byte-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact proposed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: qualification/hpca-neuroscience-20261110
+      - name: Test rejection with assertions enabled and disabled
+        run: |
+          python3 -m unittest discover -s qualification/hpca-neuroscience-20261110 -p test_chat_evidence_audit.py -v
+          python3 -O -m unittest discover -s qualification/hpca-neuroscience-20261110 -p test_chat_evidence_audit.py -v
+      - name: Recount retained original bytes without model execution
+        run: |
+          python3 qualification/hpca-neuroscience-20261110/chat_evidence_audit.py \
+            --evidence-dir qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/execution \
+            --source-dir qualification/hpca-neuroscience-20261110
+      - name: Verify source is unchanged
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code

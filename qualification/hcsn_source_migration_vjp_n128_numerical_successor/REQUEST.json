@@ -1,0 +1,130 @@
+{
+  "schema": "hcsn-original-visit897-source-migration-vjp-n128-numerical-successor-v1",
+  "identity": "hcsn-original-visit897-source-migration-vjp-n128-numerical-successor-20261112-c06d",
+  "unique_execution_key": "hcsn-original-visit897-source-migration-vjp-n128-numerical-successor-20261112-c06d-001",
+  "parent_pr": 6265,
+  "parent_head": "859d0f75119b792c035af54c9872b5fb7636eca6",
+  "parent_static_clear": {
+    "run_id": 43269501620,
+    "job_id": 131361931939,
+    "artifact_id": 13967801304,
+    "artifact_sha256": "dce818e9bdf8eff3db295d47ded5e297a46e5a529c2fbb77aa31f9df8da6b322",
+    "status": "CLEAR_SOURCE_TREE_STATIC_ONLY",
+    "checks_passed": 34,
+    "checks_failed": 0
+  },
+  "scope": {
+    "intervals": 128,
+    "source_laws": 1,
+    "source_visit": 897,
+    "source_arm": "c0_b1",
+    "source_update": 24,
+    "source_position": 1,
+    "query_time": 0.02,
+    "delay": 0.2,
+    "first_cycle_only": true,
+    "fixed_physics_geometry_support": true
+  },
+  "maximum_calls": {
+    "candidate_forwards": 42,
+    "continuous_adjoint_calls": 2,
+    "backward_attempts": 2,
+    "optimizer_updates": 0
+  },
+  "directions": [
+    "normalized-logit-0",
+    "normalized-logit-1",
+    "normalized-logit-2",
+    "normalized-logit-3",
+    "raw-signed-content-0",
+    "raw-signed-content-1",
+    "raw-mixed-0",
+    "raw-mixed-1",
+    "raw-homogeneous-probability",
+    "raw-homogeneous-content"
+  ],
+  "fd_scales": [
+    0.0002,
+    0.0001
+  ],
+  "directional_gate": {
+    "absolute_floor": 2e-8,
+    "relative_multiplier": 0.001,
+    "relative_reporting_floor": 1e-10,
+    "average_or_cancellation_allowed": false
+  },
+  "transpose_gate": {
+    "coordinates": 125,
+    "absolute_tolerance": 5e-13,
+    "independent_fraction_recompute": true
+  },
+  "resource_caps": {
+    "address_space_bytes": 3221225472,
+    "cpu_seconds": 900,
+    "wall_seconds": 1000,
+    "minimum_host_mem_available_bytes": 4294967296,
+    "threads": 1,
+    "reverse_accepted_steps": 4096,
+    "reverse_rhs_calls": 100000,
+    "sparse_jacobian_nonzeros": 50000,
+    "retained_adjoint_scalars": 16000000
+  },
+  "negative_guards": [
+    "wrong visit",
+    "wrong arm",
+    "selected-law byte mismatch",
+    "migration-source byte mismatch",
+    "uniform node substitution",
+    "N512 node substitution",
+    "mutable lift cache",
+    "nonzero lower atom",
+    "trainable delay request",
+    "trainable support request",
+    "trainable physics request",
+    "raw path silent normalization"
+  ],
+  "runtime": {
+    "python": "3.12",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch_cpu": "2.8.0"
+  },
+  "historical_red_retained": [
+    {
+      "kind": "desktop_format_exit2",
+      "job_id": "1a1d086d1a2-2564-1b95",
+      "status": "RED_STOP_NO_READMISSION"
+    },
+    {
+      "kind": "hosted_missing_migration_source",
+      "run_id": 43263814418,
+      "job_id": 131341874598,
+      "status": "RED_SOURCE_BIND_MISSING_FILE"
+    },
+    {
+      "kind": "hosted_missing_pinned_just",
+      "run_id": 43266437592,
+      "job_id": 131351145063,
+      "status": "RED_EXIT127"
+    },
+    {
+      "kind": "hosted_branch_binding_reviewer_failure",
+      "run_id": 43267676383,
+      "job_id": 131355528404,
+      "artifact_id": 13967056947,
+      "artifact_sha256": "c405a80bb6c67d9ed46f18796f45dea28154496784de004d7d464bcbf0cb0e49",
+      "status": "RED_STATIC_REVIEW"
+    }
+  ],
+  "execution_policy": {
+    "event": "single branch-creation push",
+    "github_run_attempt": 1,
+    "retry_same_key": false,
+    "tuning_after_failure": false,
+    "stop_on_any_red_or_unknown": true,
+    "preserve_raw_originals": true
+  },
+  "numerical_execution_authorized": true,
+  "global_status": "HOLD",
+  "all_closed": false
+}

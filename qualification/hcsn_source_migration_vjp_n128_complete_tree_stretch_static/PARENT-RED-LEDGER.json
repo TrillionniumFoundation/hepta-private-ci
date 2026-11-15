@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-visit897-n128-complete-tree-stretch-parent-ledger-v1",
+  "parent_pr": 6271,
+  "parent_head": "ffcad5a6aa9bea30a66b7f217af93e7e850cd0b5",
+  "records": [
+    {"kind": "desktop_format_exit2", "job_id": "1a1d086d1a2-2564-1b95", "status": "RED_STOP_NO_READMISSION"},
+    {"kind": "hosted_missing_migration_source", "run_id": 43263814418, "job_id": 131341874598, "status": "RED_SOURCE_BIND_MISSING_FILE"},
+    {"kind": "hosted_missing_pinned_just", "run_id": 43266437592, "job_id": 131351145063, "status": "RED_EXIT127"},
+    {"kind": "hosted_branch_binding_reviewer_failure", "run_id": 43267676383, "job_id": 131355528404, "status": "RED_STATIC_REVIEW"},
+    {"kind": "hosted_exact_migration_byte_gate_failure", "run_id": 43272612558, "job_id": 131372742074, "status": "UNKNOWN_TERMINAL_NO_RESULT_NO_READMISSION"},
+    {"kind": "hosted_reviewer_schema_preimport_failure", "run_id": 43275048169, "job_id": 131381121252, "status": "RED_PREIMPORT_REVIEWER_SCHEMA_NO_ARTIFACT_NO_READMISSION"},
+    {"kind": "hosted_ast_set_count_preimport_failure", "run_id": 43277019131, "job_id": 131388014924, "status": "RED_PREIMPORT_AST_SET_COUNT_NO_ARTIFACT_NO_READMISSION"},
+    {"kind": "hosted_inventory_manifest_preimport_failure", "run_id": 43283690593, "job_id": 131411347208, "status": "RED_PREIMPORT_SOURCE_SHA256_MISSING_NO_ARTIFACT_NO_READMISSION"},
+    {
+      "kind": "hosted_grading_attribute_failure_after_migration_setup",
+      "run_id": 43285117987,
+      "job_id": 131416350055,
+      "artifact_id": 13973049539,
+      "artifact_sha256": "389b82348b8a91c67f4e8523d1251fbe7efe9e3b4407eaf44469bb23bce25c84",
+      "status": "UNKNOWN_TERMINAL_NO_RESULT_NO_READMISSION",
+      "recorded_candidate_forwards": 0,
+      "recorded_adjoints": 0,
+      "recorded_optimizer_updates": 0,
+      "source_migration_setup_executed": true
+    },
+    {
+      "kind": "stretch_field_static_repair_clear",
+      "run_id": 43293507645,
+      "job_id": 131445592013,
+      "artifact_id": 13977608127,
+      "artifact_sha256": "98c904fc4a86c28c2a2f5c73d9c04139cdf143a755c90c60df48ea11e129c618",
+      "status": "CLEAR_STRETCH_FIELD_STATIC_ONLY",
+      "checks_passed": 29,
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "backward_attempts": 0,
+      "optimizer_updates": 0,
+      "numerical_execution_authorized": false
+    },
+    {
+      "kind": "inherited_old_complete_tree_hash_rejection",
+      "run_id": 43293552915,
+      "job_id": 131445749358,
+      "status": "RED_OLD_SOURCE_SHA256_BINDING",
+      "failed_step": "Bind complete frozen source tree",
+      "artifact_published": false,
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "backward_attempts": 0,
+      "optimizer_updates": 0,
+      "numerical_execution_authorized": false
+    }
+  ],
+  "parent_static_key_burned": true,
+  "parent_static_key_reused": false,
+  "successor_inherits_numerical_qualification": false,
+  "historical_failures_unchanged": true,
+  "historical_unknowns_unchanged": true
+}
