@@ -1,0 +1,173 @@
+{
+  "artifact_hash_scope": "all sibling files except MANIFEST.json; manifest self-hash is intentionally absent",
+  "artifact_readback": {
+    "atomic_multifile_snapshot": false,
+    "benchmark_restarted_for_readback": false,
+    "cold_reader_exit_codes": [
+      0,
+      0
+    ],
+    "complete_event_links_result_hash": true,
+    "harness_before_compile": "launcher SHA-256 check passed",
+    "implementation_before_launch": "independent byte count and SHA-256 confirmed",
+    "main_process_exit_code": null,
+    "output_files": 6,
+    "output_readback": "complete per-file size and SHA-256 verification",
+    "readback_truncated": false,
+    "shell_prompt_after_complete_observed": true,
+    "source_and_harness_after_checks": "unchanged hashes"
+  },
+  "base": {
+    "branch": "codex/mem7-read-freshness-20261110-ed353817",
+    "commit": "4c3b1fb6d40de7c85aedd1964357e138fc7aa9d8",
+    "pull_request": 5814,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "tree": "494fe36854e8d26cd9ae0b510e429fe931cef63d"
+  },
+  "decision": {
+    "adoption": "NoUpdate",
+    "complete_effect_owner_recovery": false,
+    "max_32_dependency_dense_graph_measured": false,
+    "memory_benefit_evaluated": false,
+    "new_independent_real_tasks": 0,
+    "qualification": "HOLD",
+    "required_repo_ci_evaluated": false
+  },
+  "excluded_from_publication": [
+    "private host paths",
+    "transport operation identifiers",
+    "unrelated dispatch records"
+  ],
+  "failed_observations": [
+    {
+      "failure": "SSH connection closed",
+      "resolution": "later launcher checked complete harness hash before compile; no extra benchmark run",
+      "stage": "independent harness file-info before launch"
+    },
+    {
+      "failure": "MCP -32603 request timed out",
+      "resolution": "later read-only terminal observation showed complete event and shell prompt",
+      "stage": "PTY output read during result recovery"
+    },
+    {
+      "failure": "MCP -32603 request timed out",
+      "resolution": "later complete read-only output-file readback with verified size and SHA-256",
+      "stage": "result file-info during recovery"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 3118,
+      "git_blob": "1d5195979ac37cd9d7407662c709d6e6e88dfdc0",
+      "path": "EVENTS.jsonl",
+      "role": "immutable observed artifact",
+      "sha256": "26e6fd2fab54d5d112836b96eea776cd87149a6d803b02afa05ffe1e030a6c07"
+    },
+    {
+      "bytes": 7428,
+      "git_blob": "2fdec20c747c783a8f030d2fb1a53a1a8cc817d9",
+      "path": "README.md",
+      "role": "editorial explanation",
+      "sha256": "36c6ac1f0a185641e29ce05b210a6758e4c9846eec895b7057a346ce54a09705"
+    },
+    {
+      "bytes": 7869,
+      "git_blob": "c02d9934d4e7930c25fa5620983e7fcad16f17c1",
+      "path": "RESULT.json",
+      "role": "immutable observed artifact",
+      "sha256": "512aa664b77047377da0a65057b0b8e1c5f2f0f4b84f2846339245a751ad22d6"
+    },
+    {
+      "bytes": 9895,
+      "git_blob": "16f63561be5799fd40b867546faf521f90343821",
+      "path": "mem7_capacity_probe.py",
+      "role": "immutable observed artifact",
+      "sha256": "867d8be685c3996ed99d17f9a2ff019801d1ffe79763e4a627bd62f91be75b92"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "revoke-cold.stderr",
+      "role": "immutable observed artifact",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 979,
+      "git_blob": "17662270a7c0c0df12663649cd095f13da12d194",
+      "path": "revoke-cold.stdout",
+      "role": "immutable observed artifact",
+      "sha256": "a09056e37b64f1726ae51350ea9844ad63a50ce4b28e1311436ac6cd88c881e3"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "update-cold.stderr",
+      "role": "immutable observed artifact",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 978,
+      "git_blob": "435b6fa256de24a9bdaa2473f3661d3689b1d7a6",
+      "path": "update-cold.stdout",
+      "role": "immutable observed artifact",
+      "sha256": "1dfd94f8d930832e90a209ca5bcffe48acd91ebe46c79daffcb7f42436938281"
+    }
+  ],
+  "implementation": {
+    "bytes": 21522,
+    "git_blob": "0294daca0a0dee3221be4dc94d563b6816156da1",
+    "path": "scripts/ndu_real_runtime/episodic_memory.py",
+    "sha256": "1afcc4a3b3f2b5dbbb0150a97d7513daad4e7226982576f600ae639bef787440"
+  },
+  "measurement_clarification": {
+    "child_cpu": "all reaped child processes including the cold readers and any platform helper",
+    "child_peak_rss": "Linux maximum child peak, not the sum of concurrent child memory",
+    "energy_joules": null,
+    "full_physical_cost_observed": false,
+    "mutation_deltas_include_cold_readers": false,
+    "raw_result_unchanged": true,
+    "rss_unit": "KiB",
+    "self_and_child_peaks_may_be_added_as_system_peak": false,
+    "self_cpu_and_rss": "OS cumulative observations including process startup and imports",
+    "startup_import_exclusion_applies_to": "wall timer only",
+    "transport_cost": null
+  },
+  "observed_date_utc": "2026-11-11",
+  "protocol": {
+    "data": "synthetic fixture",
+    "declared_edges": 4095,
+    "max_serialized_bytes": 16777216,
+    "namespace_count": 1,
+    "population_writer": "EpisodicStore.put public API, sequential",
+    "records": 4096,
+    "shape": "one root; reverse-key-ordered one-dependency chain",
+    "source_group_count": 1,
+    "wall_budget_seconds": 1200.0
+  },
+  "retained_but_not_included": [
+    "original SQLite stores",
+    "exported snapshot"
+  ],
+  "schema": "hepta.mem7.capacity-evidence-manifest.v1",
+  "synthetic_dataset": {
+    "authority_identifiers": "random on store creation; exact replay byte equality is not expected",
+    "generator_artifact": "mem7_capacity_probe.py",
+    "generator_sha256": "867d8be685c3996ed99d17f9a2ff019801d1ffe79763e4a627bd62f91be75b92",
+    "observed_record_inventory_sha256": "a7fa40de0257b861bb5fcd0c2d942f76981ef06335c3204f24a64d4ff508617a",
+    "provenance_source_sha_field": "synthetic placeholder of 64 lowercase a characters, not an authenticated real source",
+    "snapshot_bytes": 2004986,
+    "snapshot_sha256": "0fdff3a721d7f5e56cfba6c80c2eadbc425371207cfc84d69c36b76a5d1e107f"
+  },
+  "units": {
+    "cold_reader_processes": 2,
+    "dependency_edges": 4095,
+    "independent_owner_trust_domains_established": 0,
+    "intermediate_population_events_are_independent_runs": false,
+    "mutation_arms": 2,
+    "native_capacity_runs": 1,
+    "new_real_confirmation_tasks": 0,
+    "public_put_calls": 4096,
+    "synthetic_namespace_count": 1,
+    "synthetic_source_groups": 1
+  }
+}

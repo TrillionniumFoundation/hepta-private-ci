@@ -112,3 +112,19 @@ gate. The incoming HPCA parser records trained-model identities without proving
 common weights across arms/families; that limit is explicit in its README.
 The stage OIDs and exact path/byte mapping are recorded in
 `legacy-small/factorial-hpca-coexistence.json`.
+
+## Historical MEM7 capacity probe
+
+Incoming `d7a037620e78b8ec323bba904e6abbb752a9102f` retains a single historical
+4096-record synthetic probe and its exact source. The full harness and its
+measurement limits were reviewed: local SHA-pinned source, fresh output root,
+SQLite copies under that root and two isolated cold readers. Its cooperative
+population wall check is explicitly not a whole-process hard deadline. No
+network, model, service or deployment action is introduced.
+
+All eight manifest entries match byte count, SHA-256 and Git blob ID; the sibling
+inventory is complete, and the final event/result and cold-reader output pins
+match. All nine incoming files retain exact bytes. The Python harness parses.
+The historical 176-second capacity study was not rerun, so no new capacity
+sample, Rust product qualification or real-task benefit is claimed. The original
+HOLD/NoUpdate, missing main exit code and physical-cost limits remain intact.
