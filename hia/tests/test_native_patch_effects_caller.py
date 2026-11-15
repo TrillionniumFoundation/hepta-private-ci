@@ -101,12 +101,17 @@ def verify(args, report):
     report["cargo_metadata_inputs"] = metadata
     write_json(work / "metadata-source-inputs.json", metadata)
     graphs = {}
+    graph_manifests = {}
     for side, enabled in (("default", False), ("native", True)):
         captured = cargo.capture(real_cargo, producer, env, enabled, commands)
         graph = cargo.admit(captured, packages, owner, dependencies, target,
                             work / (side + "-deps"), native=enabled)
         graphs[side] = graph
-        write_json(work / (side + "-dependency-manifest.json"), graph)
+        graph_path = work / (side + "-dependency-manifest.json")
+        write_json(graph_path, graph)
+        graph_manifests[side] = {"path": str(graph_path), "bytes": graph_path.stat().st_size,
+                                 "sha256": identity.sha(graph_path)}
+    report["actual_cargo_graph_manifests"] = graph_manifests
     report["actual_cargo_builds"] = {
         side: {"successful_build_finished": graph["actual_cargo_build_succeeded"],
                "artifact_jsonl_sha256": graph["artifact_jsonl_sha256"],
@@ -151,6 +156,11 @@ def verify(args, report):
     for side, graph in graphs.items():
         cargo.verify_graph(graph)
         admission.verify_fingerprints(serde[side])
+        manifest_record = graph_manifests[side]
+        manifest_path = Path(manifest_record["path"])
+        require(identity.sha(manifest_path) == manifest_record["sha256"] and
+                manifest_path.stat().st_size == manifest_record["bytes"],
+                "an admitted actual Cargo graph manifest changed")
     identity.verify_sources(snapshot, original_manifest)
     final_producer = identity.producer_inputs(producer, snapshot, original_manifest)
     final_producer["complete_lib_inverse"] = admission.recover_lib(producer)
