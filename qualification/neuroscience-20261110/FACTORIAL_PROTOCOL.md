@@ -2,7 +2,7 @@
 
 This independent research-only protocol **does not run a model or external task**. It adds a machine-checkable *input contract* for the next real experiment, separate from the routed/shuffled/scalar/no-eligibility mechanisms in `study.py` and the HPCA microbenchmark in #5739. Fixtures in `test_factorial.py` are synthetic and **not experimental results**.
 
-`python3 -m unittest -v test_factorial.py` runs ten contract tests. A prospective evaluator can provide `FactorialRow` JSONL (`python3 factorial.py --trials frozen.jsonl`); no dataset, human labels, GPU, or owner attestation is bundled. The output is always `HOLD_NO_GO` / `DENY_ALL`.
+`python3 -m unittest -v test_factorial.py` runs the input-contract test suite. A prospective evaluator can provide `FactorialRow` JSONL (`python3 factorial.py --trials frozen.jsonl`); no dataset, human labels, GPU, or owner attestation is bundled. The output is always `HOLD_NO_GO` / `DENY_ALL`.
 
 ## Fixed identities and contrasts
 

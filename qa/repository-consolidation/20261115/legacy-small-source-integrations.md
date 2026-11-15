@@ -92,3 +92,23 @@ null. Sign flips use training-seed clusters rather than repeated task counts,
 and four-contrast Holm correction remains exploratory. HOLD_NO_GO/DENY_ALL is
 unconditional. All incoming bytes are retained. The focused suite passes 17
 synthetic contract tests; these do not run a model or an owner.
+
+## Six-family HPCA factorial coexistence
+
+Incoming `c940b15f5359eccda233ff70d78a89db4ae5321c` has independent add/add
+conflicts in `factorial.py` and `test_factorial.py`: its manifest API and schema
+differ from the just-integrated dataclass preflight. Both complete implementations
+and tests were reviewed. The resolution keeps family/cohort `factorial.py` and
+its tests byte-for-byte, and retains the HPCA implementation byte-for-byte as
+`hpca_factorial.py`. `test_hpca_factorial.py` changes only its import; AST comparison
+confirms every original assertion and fixture is preserved. README entry points
+now distinguish the two schemas and their different identity requirements.
+
+The two suites execute together: 32 synthetic contract tests pass, without skips.
+Four primary contrasts, missing-retention behavior, all resource/roster checks
+and unconditional HOLD_NO_GO/DENY_ALL outputs are preserved in their respective
+modules. Neither parser is substituted for the other or promoted to an owner
+gate. The incoming HPCA parser records trained-model identities without proving
+common weights across arms/families; that limit is explicit in its README.
+The stage OIDs and exact path/byte mapping are recorded in
+`legacy-small/factorial-hpca-coexistence.json`.
