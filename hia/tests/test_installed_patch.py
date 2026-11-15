@@ -26,6 +26,7 @@ import time
 
 
 NATIVE_SYMBOL = "codex_hia_seek_sequence"
+NATIVE_SYMBOLS = (NATIVE_SYMBOL, "codex_hia_source_file")
 INPUT_SIZE = 2 * 1024 * 1024
 PATCH = (
     "*** Begin Patch\n"
@@ -44,7 +45,7 @@ def sha256(path: Path) -> str:
 
 def inspect_binary(
     binary: Path, report: dict, native: bool = True,
-    required_symbols: tuple[str, ...] = (NATIVE_SYMBOL,),
+    required_symbols: tuple[str, ...] = NATIVE_SYMBOLS,
 ) -> None:
     nm = shutil.which("nm")
     readelf = shutil.which("readelf")
@@ -188,6 +189,57 @@ def run_case(
     print(f"PASS {case['name']}: {len(original)} input bytes, later ASCII match, original Rust parity")
 
 
+def run_source_file_case(
+    binary: Path, reference: Path, work: Path, environment: dict, report: dict,
+    *, dispatch: str = "stdin",
+) -> None:
+    """Exercise mixed endings and a missing final ending through the installed owner."""
+    original = b"alpha\rbeta\r\ngamma\ndelta"
+    expected = b"alpha\rbeta one\rbeta two\rgamma\ndelta\r"
+    patch = "*** Begin Patch\n*** Update File: mixed.txt\n@@\n-beta\n+beta one\n+beta two\n*** End Patch\n"
+    if dispatch == "stdin":
+        arguments, patch_input = [], patch.encode()
+    elif dispatch == "codex_arg1":
+        arguments, patch_input = ["--codex-run-as-apply-patch", patch], None
+    else:
+        raise RuntimeError(f"unknown patch invocation: {dispatch}")
+    child_environment = environment.copy()
+    child_environment["CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS"] = "1"
+    case = {
+        "name": "preserve_mixed_endings_and_unterminated_tail", "dispatch": dispatch,
+        "preserve_line_endings": "1", "input_bytes": len(original),
+        "input_sha256": hashlib.sha256(original).hexdigest(),
+        "expected_sha256": hashlib.sha256(expected).hexdigest(), "passed": False,
+    }
+    report["cases"].append(case)
+    observations = []
+    for variant, executable in (("native", binary), ("original_rust", reference)):
+        directory = work if variant == "native" else work.with_name(work.name + "-reference")
+        directory.mkdir()
+        target = directory / "mixed.txt"
+        target.write_bytes(original)
+        started = time.monotonic()
+        result = subprocess.run(
+            [str(executable), *arguments], input=patch_input, capture_output=True,
+            cwd=directory, env=child_environment, timeout=60,
+        )
+        actual = target.read_bytes()
+        observations.append((result.returncode, result.stdout, result.stderr, actual))
+        case[variant] = {
+            "returncode": result.returncode, "elapsed_seconds": round(time.monotonic() - started, 6),
+            "stdout": result.stdout.decode(errors="replace"),
+            "stderr": result.stderr.decode(errors="replace"),
+            "output_bytes": len(actual), "output_sha256": hashlib.sha256(actual).hexdigest(),
+            "exact_contents_match": actual == expected,
+        }
+    contract = (0, b"Success. Updated the following files:\nM mixed.txt\n", b"", expected)
+    if observations != [contract, contract]:
+        raise RuntimeError("installed SourceFile behavior differs from original Rust or mixed-ending contract")
+    case["original_rust_parity"] = True
+    case["passed"] = True
+    print(f"PASS mixed endings and unterminated tail: {dispatch}, original Rust parity")
+
+
 def verify(args: argparse.Namespace, report: dict) -> None:
     binary = args.binary.resolve(strict=True)
     if not binary.is_file() or not os.access(binary, os.X_OK):
@@ -218,6 +270,7 @@ def verify(args: argparse.Namespace, report: dict) -> None:
             raise RuntimeError("the copied executable differs from the inspected binary")
         run_case(installed, reference, work_dir / "legacy-lf", False, environment, report)
         run_case(installed, reference, work_dir / "preserve-crlf", True, environment, report)
+        run_source_file_case(installed, reference, work_dir / "mixed-endings", environment, report)
     report["passed"] = True
 
 
