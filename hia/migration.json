@@ -80,17 +80,17 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "twelve_module_fixed_point_effect_component_and_actual_cargo_owner_gates_passed_production_ci_pending",
+    "qualification_status": "fourteen_module_build_and_initial_admission_passed_combined_product_ci_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Twelve B3 modules cover ten algorithm groups. The current fixed-point build, patch-effects raw ABI, 64 receipt checks and 118 scalar admission checks passed. Actual native/default Cargo owner builds, 101/99 just tests, strict all-target Clippy and scoped just fix passed with unchanged source. Complete immutable-original/prototype public observations passed 360 pairs with real filesystem callbacks; the complete-crate prototype also passed 13 unchanged root tests and strict workspace lint. Production-artifact public comparisons, installed callers, consumers and full CI qualify separately. The eleven existing sources/static archives match the qualified 2ff44 parent. All 15 complete capabilities, default dispatch, required platforms, retirement and whole-product performance remain open.",
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Fourteen B3 modules cover twelve algorithm groups. The current fixed-point build, summary raw ABI (1328 calls), complete-original unified component ABI (522858 native calls, zero skips), two initial 68-check receipt gates and 120 scalar admission checks passed. All twelve inherited sources/static archives match the fully audited aeb88 effect parent. Frozen summary and unified prototypes separately passed their complete-original public comparisons; the unified prototype also passed actual checked/wrapping Cargo, cached-policy and strict owner-lint gates. These do not qualify the final combination's Cargo, public owners, installed executables, consumers or CI. All 15 complete capabilities, default dispatch, required platforms, release/LTO, retirement and whole-product performance remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json#patch_effects_increment",
+    "report": "hia/verification.json#patch_output_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
   },
   "candidate_modules": [
@@ -101,7 +101,7 @@
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -125,8 +125,9 @@
         "codex-rs/apply-patch/tests/suite/hia_native.rs"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -136,7 +137,7 @@
       "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_candidate",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -157,8 +158,9 @@
         "hia/tests/test_utf8_boundaries.py"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -167,7 +169,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -184,8 +186,9 @@
         "codex-rs/utils/string/src/hia_native_tests.rs"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -194,7 +197,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "sanitize_metric_tag_value",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -223,8 +226,9 @@
         "codex-rs/utils/string/src/hia_native_metric_tests.rs"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -258,12 +262,13 @@
         "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -297,12 +302,13 @@
         "codex-rs/utils/string/src/ascii_json_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -315,7 +321,7 @@
         "truncate_middle_with_token_budget"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -352,8 +358,9 @@
         "codex-rs/utils/string/src/truncate_native_tests.rs"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -367,7 +374,7 @@
       ],
       "production_algorithm_group": "truncate",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -388,8 +395,9 @@
         "hia/tests/test_build_receipt.py"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_integration",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -406,7 +414,7 @@
       ],
       "production_algorithm_group": "source_file",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_complete_original_owner_and_raw_abi_passed_combined_product_ci_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -464,8 +472,9 @@
         "hia/tests/test_installed_codex.py"
       ],
       "validation": {
-        "current": "hia/verification.json#source_file_increment",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       },
       "materialization": {
         "owner": "Rust computes storage bounds only; HIA chooses every logical row and span.",
@@ -489,7 +498,7 @@
       ],
       "production_algorithm_group": "file_update",
       "implementation_status": "native_opt_in_complete_computation_owner_candidate",
-      "qualification_status": "current_raw_abi_and_receipts_passed_repaired_combined_public_adapter_ci_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "performance_qualified": false,
@@ -515,7 +524,7 @@
         "HIA controls Preserve context splitting, first-out-of-range break behavior and reached invalid-order preconditions.",
         "HIA orders replacement events stably and performs overlapping NormalizeToLf edits in reverse using bounded ID scratch.",
         "Rust transports native search requests to the existing HIA seek_sequence; Preserve rendering composes the existing HIA SourceFile.",
-        "Original filesystem, PathUri, sandbox/symlink policy, public error strings and TextDiff remain host boundaries."
+        "Original filesystem, PathUri, sandbox/symlink policy, public error strings remain host boundaries; unified formatting is a separate native owner."
       ],
       "tests": [
         "hia/tests/test_file_update_abi.py",
@@ -530,8 +539,9 @@
         "hia/tests/test_installed_codex.py"
       ],
       "validation": {
-        "current": "hia/verification.json#file_update_increment",
-        "published_history": "hia/verification.json#historical_published_ci"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -551,7 +561,7 @@
       ],
       "production_algorithm_group": "parser",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_complete_original_transcripts_raw_abi_and_fresh_host_admission_passed_combined_product_ci_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -599,8 +609,9 @@
         "hia/tests/test_parser_host_receipt.py"
       ],
       "validation": {
-        "current": "hia/verification.json#parser_increment",
-        "published_history": "hia/verification.json#historical_published_ci/parser"
+        "current": "hia/verification.json#patch_output_increment",
+        "published_history": "hia/verification.json#historical_published_ci/parser",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
       }
     },
     {
@@ -622,7 +633,7 @@
       ],
       "production_algorithm_group": "patch_effects",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_native_build_actual_cargo_owner_gates_passed_production_ci_pending",
+      "qualification_status": "audited_aeb88_parent_passed_current_fourteen_module_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -649,8 +660,77 @@
         "hia/tests/test_build_receipt.py"
       ],
       "validation": {
-        "current": "hia/verification.json#patch_effects_increment",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_integration"
+        "current": "hia/verification.json#patch_output_increment",
+        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
+      }
+    },
+    {
+      "id": "unified_diff",
+      "hia_source": "hia/unified_diff.hepta",
+      "source_path": "codex-rs/apply-patch/src/file_update.rs",
+      "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "source_function": "unified_diff_from_chunks_with_context_and_mode",
+      "production_algorithm_group": "unified_diff",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_native_build_and_admission_passed_frozen_prototype_qualified_combined_product_ci_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_unified_diff",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/unified_diff_buffer_contract.json",
+        "contract_sha256": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e"
+      },
+      "behavior": [
+        "HIA owns complete Similar line splitting, edit/compact/replace decisions, grouping, context arithmetic and unified output bytes.",
+        "Preserve checked/wrapping semantic panics, CR/LF/CRLF, absent final newlines and original nonmonotonic coordinates.",
+        "Admit production modes only from real compiler/codegen and Similar artifact receipts; mixed policies and LTO remain rejected."
+      ],
+      "tests": [
+        "hia/tests/test_unified_diff_abi.py",
+        "hia/tests/test_native_unified_diff_caller.py",
+        "hia/tests/test_unified_diff_policy.py",
+        "hia/tests/test_build_receipt.py",
+        "hia/tests/test_installed_patch.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "current": "hia/verification.json#patch_output_increment",
+        "component": "hia/verification.json#unified_diff_increment"
+      }
+    },
+    {
+      "id": "patch_summary",
+      "hia_source": "hia/patch_summary.hepta",
+      "source_path": "codex-rs/apply-patch/src/lib.rs",
+      "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "source_function": "print_summary",
+      "production_algorithm_group": "patch_summary",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_native_build_and_admission_passed_frozen_prototype_qualified_combined_product_ci_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_patch_summary",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/patch_summary_buffer_contract.json",
+        "contract_sha256": "c2d4b73c77ae3af0a07c1d3c6930aab34d59f36625b4dd98272d6fe18a5360f5"
+      },
+      "behavior": [
+        "HIA selects the unconditional success header and exact added/modified/deleted path order.",
+        "Rust executes each original writeln! with actual Path::display and Write/write_fmt; partial/error prefixes remain observable.",
+        "Fixed-size continuation bounds accept independent full-u64 group counts without summing them; structural state does not authenticate prior calls."
+      ],
+      "tests": [
+        "hia/tests/test_patch_summary_abi.py",
+        "hia/tests/test_native_patch_summary_caller.py",
+        "hia/tests/test_build_receipt.py",
+        "hia/tests/test_installed_patch.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "current": "hia/verification.json#patch_output_increment",
+        "component": "hia/verification.json#patch_summary_increment"
       }
     }
   ],
@@ -856,13 +936,15 @@
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Qualify this current effect/parser/matcher/SourceFile/file-update combination through actual native/default Cargo artifacts, complete original public behavior, installed executables and strict lint/fix. Then migrate unified-diff formatting, filesystem/search backends and remaining platform/default release paths.",
+      "next_implementation": "Qualify this complete fourteen-module composition through actual native/default Cargo, exact public effect/summary/unified observations, compiler-policy negatives, installed executables and strict lint/fix. Then migrate filesystem/search and writer host boundaries, release/LTO, default dispatch and required platforms.",
       "candidate_modules": [
         "seek_sequence",
         "source_file",
         "file_update",
         "parser",
-        "patch_effects"
+        "patch_effects",
+        "unified_diff",
+        "patch_summary"
       ]
     },
     {
@@ -2400,7 +2482,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_twelve_module_admission_and_effect_receipt_passed",
+    "status": "current_fourteen_module_admission_summary_and_unified_receipts_passed",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2413,15 +2495,18 @@
       "source_file",
       "file_update",
       "parser",
-      "patch_effects"
+      "patch_effects",
+      "unified_diff",
+      "patch_summary"
     ],
-    "checks_passed": 64,
-    "scalar_build_admission_checks_passed": 118,
+    "checks_passed": 68,
+    "scalar_build_admission_checks_passed": 120,
     "shared_cargo_helper_changed": false,
-    "report": "hia/verification.json#patch_effects_increment",
-    "checks_passed_scope": "64 current checks for patch_effects, including accepted receipts and source binding for all twelve locked modules. Prior module-specific mutation evidence remains scoped to its original source tree.",
+    "report": "hia/verification.json#patch_output_increment",
+    "checks_passed_scope": "68 current checks each for patch_summary and unified_diff; each accepts all fourteen locked modules. Inherited mutation evidence remains scoped to its original source tree.",
     "mutation_modules": [
-      "patch_effects"
+      "patch_summary",
+      "unified_diff"
     ]
   }
 }

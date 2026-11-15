@@ -129,7 +129,11 @@ ROUTING_BLOCKS = {
     "file_update_legacy_contents": "    // BEGIN HIA_NATIVE file_update_legacy_contents\n    #[cfg(not(feature = \"hia-native\"))]\n    // END HIA_NATIVE file_update_legacy_contents\n",
     "file_update_native_contents": "    // BEGIN HIA_NATIVE file_update_native_contents\n    #[cfg(feature = \"hia-native\")]\n    let new_contents = crate::hia_native_file_update::new_contents(\n        &original_contents,\n        &path_text,\n        chunks,\n        update_file_mode,\n    )?;\n    // END HIA_NATIVE file_update_native_contents\n",
     "file_update_legacy_plan": "// BEGIN HIA_NATIVE file_update_legacy_plan\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA_NATIVE file_update_legacy_plan\n",
-    "file_update_legacy_apply": "// BEGIN HIA_NATIVE file_update_legacy_apply\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA_NATIVE file_update_legacy_apply\n"
+    "file_update_legacy_apply": "// BEGIN HIA_NATIVE file_update_legacy_apply\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA_NATIVE file_update_legacy_apply\n",
+    "unified_diff_import": "// BEGIN HIA_NATIVE unified_diff_import\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA_NATIVE unified_diff_import\n",
+    "unified_diff_text": "    // BEGIN HIA_NATIVE unified_diff_text\n    #[cfg(not(feature = \"hia-native\"))]\n    // END HIA_NATIVE unified_diff_text\n",
+    "unified_diff_render": "    // BEGIN HIA_NATIVE unified_diff_render\n    #[cfg(not(feature = \"hia-native\"))]\n    // END HIA_NATIVE unified_diff_render\n",
+    "unified_diff_native": "    // BEGIN HIA_NATIVE unified_diff_native\n    #[cfg(feature = \"hia-native\")]\n    let unified_diff = crate::hia_native_unified_diff::unified_diff(\n        &original_contents,\n        &new_contents,\n        context,\n        crate::hia_native_unified_diff_policy::ARITHMETIC_POLICY,\n    );\n    // END HIA_NATIVE unified_diff_native\n"
 }
 
 

@@ -7,23 +7,24 @@
   "build_status": "built",
   "compiler_fixed_point": true,
   "compiler_generations": 3,
-  "native_module_count": 12,
-  "production_algorithm_group_count": 10,
+  "native_module_count": 14,
+  "production_algorithm_group_count": 12,
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "whole_product_performance_qualified": false,
   "opt_in_production_callers_verified": false,
-  "scope": "Linux x86-64 GNU, opt-in hia-native. Twelve B3 modules cover ten algorithm groups. The current fixed-point build, patch-effects raw ABI, 64 receipt checks and 118 scalar admission checks passed. Actual native/default Cargo owner builds, 101/99 just tests, strict all-target Clippy and scoped just fix passed with unchanged source. Complete immutable-original/prototype public observations passed 360 pairs with real filesystem callbacks; the complete-crate prototype also passed 13 unchanged root tests and strict workspace lint. Production-artifact public comparisons, installed callers, consumers and full CI qualify separately. The eleven existing sources/static archives match the qualified 2ff44 parent. All 15 complete capabilities, default dispatch, required platforms, retirement and whole-product performance remain open.",
-  "current_evidence_record": "patch_effects_increment",
+  "scope": "Linux x86-64 GNU, opt-in hia-native. Fourteen B3 modules cover twelve algorithm groups. The current fixed-point build, summary raw ABI (1328 calls), complete-original unified component ABI (522858 native calls, zero skips), two initial 68-check receipt gates and 120 scalar admission checks passed. All twelve inherited sources/static archives match the fully audited aeb88 effect parent. Frozen summary and unified prototypes separately passed their complete-original public comparisons; the unified prototype also passed actual checked/wrapping Cargo, cached-policy and strict owner-lint gates. These do not qualify the final combination's Cargo, public owners, installed executables, consumers or CI. All 15 complete capabilities, default dispatch, required platforms, release/LTO, retirement and whole-product performance remain open. The first published 0339 combination subsequently executed both native CI attempts, each with 56 successful steps, one cached-artifact admission failure and two skipped steps. Those exact results are historical; the current two-file repair passed bounded actual compiler-control regressions and awaits complete-source CI.",
+  "current_evidence_record": "patch_output_increment",
   "composition_sources": {
     "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
     "parser": "168080b72c4be242d14eadd47168f2a9326590f2",
     "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
     "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
-    "scope": "Independent candidate based on the qualified single-parent patch integration. The new effect owner uses the unchanged integrated parser, matcher, SourceFile and file-update owners.",
-    "patch_integration_parent": "2ff44b608a202c25e7551edca67a7a5362f34d36"
+    "scope": "The audited effect parent plus native unified formatting and exact public-summary effect selection; no default or platform promotion.",
+    "patch_integration_parent": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+    "patch_effects_parent": "aeb88f596b83186456caac577080bcb2f253ad32"
   },
   "production_algorithms": {
     "seek_sequence": "patch context matching",
@@ -35,7 +36,9 @@
     "source_file": "Complete SourceFile owner: parse, line_texts, apply_replacements and into_contents",
     "file_update": "Candidate complete update computation owner: LF line parsing, chunk/resume planning, stable ordering and reverse NormalizeToLf edits/rendering, composed with existing HIA search and SourceFile.",
     "parser": "Complete batch and streaming patch grammar, normalization, errors/events and path selection; PathUri joins remain host operations.",
-    "patch_effects": "Patch filesystem operation order, missing-parent retry, delta exactness and committed-prefix transitions, and failed-removal byte comparison. Real OS operations and path/sandbox enforcement remain host callbacks."
+    "patch_effects": "Patch filesystem operation order, missing-parent retry, delta exactness and committed-prefix transitions, and failed-removal byte comparison. Real OS operations and path/sandbox enforcement remain host callbacks.",
+    "unified_diff": "Complete Similar 2.7.0 unified line diff decisions and bytes, including supported checked/wrapping arithmetic and semantic panics; compiler receipt admission and host allocation remain required.",
+    "patch_summary": "Public summary header and A/M/D path selection; the exact individual original writeln!/Path::display/Write effects remain the host bridge."
   },
   "sources": {
     "seek_sequence": {
@@ -325,15 +328,63 @@
         "library_sha256": "49fd89fffc4855781197afd9574778ba7ba4d6e7ea8c2651672c5b9faeb32443",
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
+    },
+    "unified_diff": {
+      "source_sha256": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
+      "core_sha256": "912d3957448ecf690b2ac4201eacd3c45bbb1ba2efaccc23356981dfb44c082f",
+      "library_sha256": "44eead22c3d36144fd979a4cfaf430a1e17e8b3fcd1b45fb1e15d2bb563b252f",
+      "library_bytes": 197416,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "static_link": {
+        "symbol": "codex_hia_unified_diff",
+        "library": "libcodex_hia_unified_diff.so",
+        "object": "unified_diff.namespaced.o",
+        "archive": "libcodex_hia_unified_diff.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 188384,
+        "archive_sha256": "51c2d3a03df65e9a537193ccc89ea647c8961780b132866b0cebc9e54344b434",
+        "text_sha256": "1e8372b7ed50c5bdc49421fd3b86e672b0e64f9e80f55fd7ab6cf6d6d310df1b",
+        "defined_symbols": [
+          "codex_hia_unified_diff"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "f0e851f0b7fcaead0d249183e204fd1ade33e033ef14f56d701ecc7c20ab495e",
+        "library_sha256": "a4247f58b9aa593dc517f2f271ef536520102d62a92f08e157849352cfac664e",
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
+    },
+    "patch_summary": {
+      "source_sha256": "50dd79660f44dd6ed5bcaf835364478875528a2050fdaad2199077b74529b84e",
+      "core_sha256": "b69f0b4b6a26811433d62a7f48c8754708e68d8f11112a8791d5e87bf4b850f3",
+      "library_sha256": "57b93f1207bf4dec36e43f3856cb8e64415b9dfbb3e4836f1c66f96eddd81250",
+      "library_bytes": 17192,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "static_link": {
+        "symbol": "codex_hia_patch_summary",
+        "library": "libcodex_hia_patch_summary.so",
+        "object": "patch_summary.namespaced.o",
+        "archive": "libcodex_hia_patch_summary.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 7104,
+        "archive_sha256": "fc4b276eb9c95486a7772cf42cd56593d0266eacfa44ae10dc4c2cdc17b39265",
+        "text_sha256": "04a1a7eade51510c6c1de9cde5ed58c24dacb897d6fa6b0fee33211def30ba17",
+        "defined_symbols": [
+          "codex_hia_patch_summary"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "6651b6a70a282eec250b18d571658eb86cdd95257cf8532a23dedf4cb349355c",
+        "library_sha256": "4a25aac683ca7843599d2679d3c278a54e4efd89a6b94e96306304bd84a80089",
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "ce601319488bbe847438fcc449bbe72758c6ee7ed6e7c511b0e936437d9cea1b",
+    "toolchain_lock_sha256": "b72f7e1561288832a085bf69763f55b7778171bb10a11d7536a69eb808bc6647",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "18dd8b87d927d6e45b47e548cc31354ae45e37ec2d547b1336fe1dfdbf548ed5",
+  "build_report_sha256": "a5a038a937d641093e5dc6702d7bb008bb82a8cdf8caced676f8ca0ca5bc7149",
   "compiler_generation_evidence": [
     {
       "case": "B1",
@@ -358,24 +409,28 @@
     }
   ],
   "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
-  "current_source_inputs_scope": "Named inherited producing inputs plus every current HIA program, contract, test, build and new effect dispatch input. Excludes exactly README.md, migration.json and verification.json to avoid metadata self-hashing. These byte identities do not claim execution of pending gates.",
+  "current_source_inputs_scope": "Named inherited producing inputs plus every current HIA program, contract, test, policy helper and native dispatch input. Excludes exactly hia/README.md, hia/migration.json and hia/verification.json to avoid metadata self-hashing. These byte identities do not claim execution of pending gates.",
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "9b76b464f5bb71733a42deb2854b1069cd2f277bf117189f8d290200c1ed4359",
+    ".github/workflows/codex-hia-native.yml": "b10d40d92f14782d655242cf66fd7d38c20816637833e94ad278f27548851c1b",
+    "NOTICE": "b47d6a3bd64f5bbf9b3f9a14ea672dedbb1c483f1a3bf48c011d0782603c0854",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
     "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
     "codex-rs/apply-patch/BUILD.bazel": "b46d28a69e2080c76b980da7d4256c2495154f39baf24602a6434a7de1bea719",
     "codex-rs/apply-patch/Cargo.toml": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
-    "codex-rs/apply-patch/build.rs": "5f4d66e23bb8fee9c41c3849ed65f8c8286d58517538f920bf4569d23997c335",
-    "codex-rs/apply-patch/src/file_update.rs": "035c8933e3c1282c04cce7a5419e4f7d1909b823efd2cb8d0c19229bde7faf5d",
+    "codex-rs/apply-patch/build.rs": "f87936fa03922e76ca452c03048d24e911c43246f7e1d05d9728872e25989b52",
+    "codex-rs/apply-patch/src/file_update.rs": "290a7c76c9b988a7878be4dee73d61a25a3f638856e76b543547ca17f85ca29a",
     "codex-rs/apply-patch/src/file_update_tests.rs": "59fc1e6db897fd61be7ee865a741dc7fdb709501426c4f9603ef8a532fe08282",
     "codex-rs/apply-patch/src/hia_native.rs": "80981c210f252b24915c077cbd8b3b84356c7a0b4c3c4906d375cb9f42727749",
     "codex-rs/apply-patch/src/hia_native_file_update.rs": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
     "codex-rs/apply-patch/src/hia_native_parser.rs": "77826bfa61b2d38f37eda19edf0de12c2794b2680236e6b3338baec78b8b56e8",
     "codex-rs/apply-patch/src/hia_native_patch_effects.rs": "cd6b48313d94fa732909c000da31fe86aacb478baddc8b6d7dfdd91b1bb4bda7",
+    "codex-rs/apply-patch/src/hia_native_patch_summary.rs": "1d3bb2032a50348d0f66d0f45bd2358ddd3a9fbae53e1a63557a9d5db8409f25",
     "codex-rs/apply-patch/src/hia_native_streaming_parser.rs": "ab294ac591cecd8a31dc15d4d73c6c22ee26b612eeffcfbf059736670be2710a",
     "codex-rs/apply-patch/src/hia_native_text_file.rs": "c5cb63a376005418dc10d83dae8beda8d97a2db0e63e8033470d72e69b3aa76d",
+    "codex-rs/apply-patch/src/hia_native_unified_diff.rs": "cddc068db30a8dc14766c8eea1a7a951010872e0a9970875ea9a9e012a84c144",
+    "codex-rs/apply-patch/src/hia_native_unified_diff_policy.rs": "90bdecd1249fbcb4a70f051b910c79befde27aa2d04a5ee5354843eafba12bea",
     "codex-rs/apply-patch/src/invocation.rs": "ab6ce54396919236a2b68a5dc33f670663c67c12fa8def3b80588933d297047a",
-    "codex-rs/apply-patch/src/lib.rs": "6c8a6e2f42a89a96db730c3860baf51d32dbaa11d5028730df6887a2b43aa725",
+    "codex-rs/apply-patch/src/lib.rs": "483b1d60104e34359490a343ee37960e0f73221dc6ceeb78ac76ce49051001a7",
     "codex-rs/apply-patch/src/main.rs": "31de3e573a13c50c81af81d262a11fdb758540408cbab3fafb5e638c66a50117",
     "codex-rs/apply-patch/src/parser.rs": "c5dd2d20dada169f7b4d9910b4b126707bb4cd040c38f1c2039c5c6f1c2e5a38",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
@@ -505,7 +560,9 @@
     "codex-rs/utils/string/src/truncate.rs": "cfeba2400aa9e7439ece0c23d6a4291d4c106777f3159f2e5f8fd89e7ec24551",
     "codex-rs/utils/string/src/truncate/tests.rs": "c2b000b02eaa736362eb01f7dac0e981db4c8d081ed15710bda33bf3b437e1e0",
     "codex-rs/utils/string/src/truncate_native_tests.rs": "b6113c90f484104f909c3636fc08c29da7249007c693c88d0871034441f7fdbc",
+    "hia/ATTRIBUTION.unified_diff.md": "c6eccdebb9e1be3363d5328d90daa6c37056ed4b53f3e4b8d0ee1796b0c2fad6",
     "hia/BUILD.bazel": "b6250dc1eeac16684a35acc122775c51a3bb2e9c12968d41dd52be91f2b9e542",
+    "hia/LICENSE.similar-2.7.0": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
     "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
     "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
@@ -517,14 +574,19 @@
     "hia/parser_buffer_contract.json": "f5c56e0e49455faa925b60306b1de72b7575391ce154c26b914250a4b0b47706",
     "hia/patch_effects.hepta": "3fa4152c1737970f67d4ab24594870c38f3f03a774ffa151a256da6cf3c026b8",
     "hia/patch_effects_buffer_contract.json": "fb02bb3a5812edc2ad9201820e920dba5f9d8319c59581cfd8a66f5f0283c855",
+    "hia/patch_summary.hepta": "50dd79660f44dd6ed5bcaf835364478875528a2050fdaad2199077b74529b84e",
+    "hia/patch_summary_buffer_contract.json": "c2d4b73c77ae3af0a07c1d3c6930aab34d59f36625b4dd98272d6fe18a5360f5",
+    "hia/prepare_unified_diff_policy.py": "be01132ce336e9178e08afd359d212981bd3d321d849357bce500768665edf71",
     "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+    "hia/similar-source.json": "7fceb120e1cefbf4de7677fbc15dfe65ce845c23fb23b64eb73fede8afb8999f",
+    "hia/similar_policy.py": "ecf924330252841411abde51b138cbfc28b281d72d73337378a3ae4c5501a84c",
     "hia/source_file.hepta": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
     "hia/source_file_buffer_contract.json": "47d50172b6abd2a9449c8eb2e312c7a1588404e25e4480216b0d3241d5f54105",
     "hia/tests/file_update_oracle/__init__.py": "1a2b6ac67893128518bd6254f31f4d71c9b76f9bf56a5fb0f423e07c4945729b",
-    "hia/tests/file_update_oracle/cargo.py": "25cb55322926d9b807d162407fc49f3cbd3f9eb87edc8525f101ebb00541f89c",
+    "hia/tests/file_update_oracle/cargo.py": "d3a32a64ac878859ef237d656a571ea4c96b1086298ee237f9719443e2f20bce",
     "hia/tests/file_update_oracle/corpus.py": "ee95bce3930ad2409d61b9056c576c81ee18f2cb058a8eddc689d7d1036d4221",
     "hia/tests/file_update_oracle/driver.rs": "a37d04bbefed18e36106a89d97685b09f271a752fd5f40db0fe3cd6164d100a2",
-    "hia/tests/file_update_oracle/identity.py": "9306ddb5ad703d343bf8d896a3faaed05d1f0bca940f226fddbd05f6d8754a80",
+    "hia/tests/file_update_oracle/identity.py": "d2eb30e15c5d4e827f17bc79ddaf681c2292b634b16db5013479a4763bf97823",
     "hia/tests/file_update_oracle/wire.py": "17fde4ef735978232b1a7fa4b977b0c8072687552324cc7a73216dd6dba3a9c6",
     "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
     "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
@@ -537,18 +599,21 @@
     "hia/tests/parser_cases.py": "fd506798eb666edbcc880f414f980b352226452bf71a1ac12f07f293c7ddfacd",
     "hia/tests/parser_oracle_Cargo.lock": "0617730b9259af552e2028a3716fb8a1a53f9e757c164b3015cccc5ab7ea142a",
     "hia/tests/patch_effects_oracle/__init__.py": "4675671d37c98f45a557c3e0869ffc87a9f0c7c3fe0c408cb546a1dee58c97ec",
-    "hia/tests/patch_effects_oracle/admission.py": "e003fe19b02d29759a8c0b5592414d83e01da521999e9b19fc409a04b59c0088",
+    "hia/tests/patch_effects_oracle/admission.py": "f0cb43fa3b2da27a57145291cde90e1a1a5e284e29de136b435410db3ca0956c",
     "hia/tests/patch_effects_oracle/driver.rs": "248138e83e798b14f5e8d48bf28da7042e2486ab00d19c339b7f091fb941c680",
     "hia/tests/patch_effects_oracle/observations.py": "4d2ca57efddd58acaa8e4fdcb1b5533352f84dfac707bea3c7ba91aab9732af4",
     "hia/tests/patch_effects_oracle/observed_fs.rs": "bec939e2e1804f1c0cfc2b7ff222c167c9c55c824a732d20840afddfae040d8b",
     "hia/tests/patch_effects_oracle/transport.py": "43c08726aeefd073d39ac2fb44dbe304db04ed635208465447101c8beca1e3bb",
     "hia/tests/patch_effects_oracle/transport_error_driver.rs": "936e8ad7deb8af215a7f8076799075a13dc8cd899654749aaa6832123a073aba",
+    "hia/tests/patch_summary_oracle/__init__.py": "f6c60ff60f1cefef6ad83ce00b0ee92ed5e06d27d4d9d83b3223e815b285b80f",
+    "hia/tests/patch_summary_oracle/driver.rs": "5a8e83b127ba52aa381188b8325f0e32ddab9776e27b422561343b62c90073b2",
+    "hia/tests/patch_summary_oracle/observations.py": "597cbb9e7632570c6197e11f3598fb1602050684562b7b2fb1a902608589d187",
     "hia/tests/seek_sequence_oracle.rs": "a858319766e0e5a9c5ca9069f894c987895f3a7f28da6f61db547f24983554e0",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
     "hia/tests/test_file_update_abi.py": "d591e493a70ffc43923d9cd84341c72238aa6072d1c3403ca7bc1aade02930f5",
-    "hia/tests/test_installed_codex.py": "45d67ca0b475c92405fe8b8c7a20e5793d58b39e0aaedac042b07052fb11e689",
-    "hia/tests/test_installed_patch.py": "4d49e8bdbcee03c349a4bd37fb41ba2592de6e0d9510ca0032eeabe391743810",
+    "hia/tests/test_installed_codex.py": "aeda4e6db874b769e57002a86e905e7001a851ade5ceeb31243c2178f68903b0",
+    "hia/tests/test_installed_patch.py": "9032eba104fadd48ee92088b1401780962e18c65962d9a4a39bc00f4031e1284",
     "hia/tests/test_markdown_location_abi.py": "bac67c99f75d4899571db903acd570a548ed62a7b3b2943f850c9d46ef06ca1d",
     "hia/tests/test_metric_tag_abi.py": "6d10774c87586c9ab428809acf9fa2007b2658cf074909d09b44b7851e3239be",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
@@ -556,25 +621,59 @@
     "hia/tests/test_native_markdown_caller.py": "92fb33c542e50e55d81b20abce470c4bec54359b3a2a79b488d55e4f45220157",
     "hia/tests/test_native_metric_caller.py": "31f1965f7620e392e123dfa5c908454dad3f2e179976b2132d30705345ef8adc",
     "hia/tests/test_native_parser_caller.py": "f4ff47173bd8954634039b4f5efda70f842bb4d44656026c58d5968685b850a4",
-    "hia/tests/test_native_patch_effects_caller.py": "65dcdebbefb20879faf6dd485c84bfa2f41669cc9a86209a84fb746dd8364de8",
+    "hia/tests/test_native_patch_effects_caller.py": "3cdd64f7bd36c31ad383792deb98c0c4fbcc669aa0b3eb3aff536bb2e84386f5",
+    "hia/tests/test_native_patch_summary_caller.py": "73409f498ee5cfdb6f069ccc21a5883d752e813d7d77700f935a0594bf6dd66d",
     "hia/tests/test_native_source_file_caller.py": "a7f00401280170a4b49adf7c5b73ff09526bd48e119190c6cebaca209690733e",
     "hia/tests/test_native_string_caller.py": "4dbe9843e6f04e3fabc40783bbf0402aa64e6b5da84f6202795905f273066636",
     "hia/tests/test_native_truncate_caller.py": "48c85d7a30d0b261b8831eb46c83c16514eda1f2826c0c184384962aeaf0f9b6",
+    "hia/tests/test_native_unified_diff_caller.py": "272a9984c3f2f028bcd83c2d9e6c088e0267fbeb5e41314b5a1480de2162ef6b",
     "hia/tests/test_parser_abi.py": "72530c2b2c4f554028c4786cefc625b15ccfab5face9c477dfad71e995a758ba",
     "hia/tests/test_parser_host_receipt.py": "84829f52edd05a7ff18998dfef83a7254c9b19673100c1be808910591207cdd7",
     "hia/tests/test_patch_effects_abi.py": "4cdbeabf2fed08f3b62d301186ed04b716d695da5dec80e3e4f200e538471c37",
+    "hia/tests/test_patch_summary_abi.py": "e4442d6230eaefa2ed2def0460fbeeed7005dc01cdcf1290d5896bfb13a15c08",
     "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
     "hia/tests/test_seek_sequence.py": "674df1a3014c764fc425e4ebcb8f19a3fa3ab6462e173eb2e71eaddacbc730bc",
     "hia/tests/test_source_file_abi.py": "6d0cd17d55a0c349c550bd88743f288cc12eb419b14c1dda069d86d8e58fb8ca",
     "hia/tests/test_token_budget_abi.py": "af2b3e5cd8b12577175c07797917f28db6713ecc683bf081d2dcf7403359a4ba",
     "hia/tests/test_truncate_abi.py": "c9d7a2ade87809136d92e731681fba498a2cf3ad06942dc9364f3868bbd3049a",
+    "hia/tests/test_unified_diff_abi.py": "d4f088ac7090d59c63b65c81299df6c228a6cfcc6c513d3551972f1ee7c54542",
+    "hia/tests/test_unified_diff_policy.py": "d1b3b1aa6ae9ad0e57c12b478be4b9f63bcf7eee0053d9293c4accf2a44bd73e",
     "hia/tests/test_utf8_boundaries.py": "5d670e37ac739b42f0d54479d40a429e01ac20da8b3a959fca1f798f24e17fd1",
+    "hia/tests/unified_diff_abi/__init__.py": "54f59f1c5e638ea8a3a633c3f8a2b58db57e0cae7498c4980cc62d90e416fc1c",
+    "hia/tests/unified_diff_abi/admission.py": "44aca9d8b41b0f7c622a59e2c32946945f0dabfdc2e6a3efaf47655331a52df9",
+    "hia/tests/unified_diff_abi/adversarial.json.gz": "bde43b6b7fffb88e8e7173fa3df2ae9d4a8ffd6fd5a0b446a231306b0b25af1c",
+    "hia/tests/unified_diff_abi/baseline.json.gz": "15817d2d828e73ca4cc9051e1c575c4ed0ebbd046301531ce81f18cec17287a2",
+    "hia/tests/unified_diff_abi/corpus_cases.py": "4316f4f4c76863afa8542d51abef063aa5333a79a51801a2b70ac216f5d565f4",
+    "hia/tests/unified_diff_abi/frontend_cases.py": "f262fc00ea834154610c3dd0884e7982e82eccde3f054e12c72bdce9167a07f3",
+    "hia/tests/unified_diff_abi/original.py": "d21a33fa0832a2c3b842b415358cbcbacc0819b338417f3d66f3d5dc507596e5",
+    "hia/tests/unified_diff_abi/original_observer.rs": "84c198694f35f3103ad24d7bcf9b437abda5a7b6bb55bd7ab3dd7d600fd65e5e",
+    "hia/tests/unified_diff_abi/raw_cases.py": "3d27f59359644be1195221fa368c674fe532466cb455d3d8a407ea2f83b6a0be",
+    "hia/tests/unified_diff_abi/runner.py": "7ff6cc633df5ea733f59d6b0cdfbbd50db7af032b4e62f934417cb60869ce500",
+    "hia/tests/unified_diff_abi/selector_cases.py": "596e3dda2277c261be160ce165f6e4ed2e2ccbe36eda8cca94375c88566d8246",
+    "hia/tests/unified_diff_abi/similar-2.7.0.crate": "bbbb5d9659141646ae647b42fe094daf6c6192d1620870b449d9557f748b2daa",
+    "hia/tests/unified_diff_abi/similar_source.json": "7a5374e51a5ee6f58b78041b810d12eded7ef0354c388bc751b10c3d883e4e4f",
+    "hia/tests/unified_diff_abi/transport.py": "ec238a50e37daa5e680cc3f7aec782629f765ca8a6ee128442e40cf32e86ab4b",
+    "hia/tests/unified_diff_abi/word_cases.py": "1e51c96aa207cdc180cec2a0b56af24b9dedc46da4f0ecbe5acc6aaa0a8c8e42",
+    "hia/tests/unified_diff_oracle/__init__.py": "fc35b623e706ef6114e4d4c3daa90366b1e02e967323f101362c5a4a69bb1bc1",
+    "hia/tests/unified_diff_oracle/adversarial.json.gz": "bde43b6b7fffb88e8e7173fa3df2ae9d4a8ffd6fd5a0b446a231306b0b25af1c",
+    "hia/tests/unified_diff_oracle/common.py": "a6493fb2d1268711b7b7f4a91272dfc4fff3d66819830ffa3afcfe56d960e6f4",
+    "hia/tests/unified_diff_oracle/corpus.py": "aa7cbfd4ae808e72c8aca3c43503bec86c3b42626d662d330609afe864a2706e",
+    "hia/tests/unified_diff_oracle/driver.rs": "8488fc2c358d14e0f1a5a51f1d91fe1f0b86a0c23d2ff84a8298720bffb05f6b",
+    "hia/tests/unified_diff_oracle/original.py": "e361165581bd6f328a506b822b2b3700bc0edab4eec3db3da1647d6a594f74da",
+    "hia/tests/unified_diff_oracle/policies.py": "c7fffeb197db86aa53c3596569ef5a1ff50f8d086cc2f1d07a03b761e22bcc0b",
+    "hia/tests/unified_diff_oracle/public.py": "b603892a2965765b557f23300d7bc4854aed828919455fff141d1708d3677f8a",
     "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-    "hia/toolchain.json": "ce601319488bbe847438fcc449bbe72758c6ee7ed6e7c511b0e936437d9cea1b",
+    "hia/toolchain.json": "b72f7e1561288832a085bf69763f55b7778171bb10a11d7536a69eb808bc6647",
     "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
+    "hia/unified_diff.hepta": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
+    "hia/unified_diff_buffer_contract.json": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e",
+    "hia/unified_policy_ci.py": "a6847dc71d0b98bb37a89d9fad2b0c1fe864d31ca4b353603610c0981106cb5c",
+    "hia/unified_policy_fix.py": "430de4f64db34d45af073fcc335deeae8f18d5a0169f0a57184306ecf915e26c",
+    "hia/unified_policy_fix_outer.py": "0c49c7ac11f17b5d91b75ec9539ccc64e6a45e3fd71a7a3f58c650af8eb2347b",
+    "hia/unified_policy_fix_workspace.py": "9a8564f68be52f42810b94b4b843714b2b631c119304b4b179d0eccb7e4c657a",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "justfile": "190b791359ca4522a995ed8adab82ef1b3432c391b560f38a56ad5ebc7649f80",
     "scripts/format.py": "44ccd393a2fc2516fba691cad743bd07d0149c6a3e16e18d13965428fcbaddd6",
     "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
     "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
@@ -1000,12 +1099,15 @@
     "performance_qualified": false
   },
   "current_product_ci": {
-    "status": "not_yet_published",
+    "status": "cached_alias_repair_prepared_full_ci_pending",
     "qualified": false,
+    "candidate_parent": "0339bd5f863ba2459084115906a875b10595a704",
+    "prior_attempts": "historical_published_ci.patch_output_before_cached_alias_repair",
     "pending_gates": [
-      "Complete original public effect differential on the actual native/default production-owner Cargo artifacts.",
-      "Full CI rerun of current native/default owner and consumer suites, CLI/arg0/TUI suites, installed apply_patch/full Codex with five/eleven native symbols, strict Clippy and scoped fix.",
-      "Required platforms, default releases and whole-product performance."
+      "Complete original public effect, summary and unified comparisons on the final native/default production artifacts.",
+      "Actual current checked/wrapping policy, cached compiler receipt, source-negative, just test, strict all-target Clippy and scoped just fix gates.",
+      "Full owner/consumer CI and installed apply_patch/full Codex with six/thirteen required native symbols.",
+      "Required platforms, default releases/LTO and whole-product performance."
     ]
   },
   "historical_published_ci": {
@@ -1174,6 +1276,133 @@
       ],
       "artifact_scope": "Both complete job logs and uploaded artifact sets audited, including all 121 immutable original source files and tracked hidden fixture. Uploaded results do not constitute local rerunning or rehashing of unuploaded executables/rlibs.",
       "qualifies_new_effect_owner": false
+    },
+    "patch_effects": {
+      "commit": "aeb88f596b83186456caac577080bcb2f253ad32",
+      "tree": "29386bcac408706d83ee0aa2a51107bb115a1295",
+      "pull_request": 6364,
+      "status": "both_exact_head_native_attempts_qualified",
+      "audit": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-effects-ci/terminal-audit.json",
+        "bytes": 59414,
+        "sha256": "785e7266e64ec16a7a8b823aa47bf50c2879a5f37932ba7f4f5c2466f70f2b7a"
+      },
+      "provenance": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-effects-ci/audit-provenance.json",
+        "bytes": 3972,
+        "sha256": "4ab0ef437135e614fd4069e1ce660e66e74756c1e05ebc26f0a65287525b77c3"
+      },
+      "runs": [
+        {
+          "event": "push",
+          "run_id": 43690482951,
+          "job_id": 132739887835,
+          "attempt": 1,
+          "conclusion": "success",
+          "tested_commit": "aeb88f596b83186456caac577080bcb2f253ad32",
+          "tested_tree": "29386bcac408706d83ee0aa2a51107bb115a1295",
+          "completed_at": "2026-11-15T08:12:56Z",
+          "step_counts": {
+            "success": 50
+          },
+          "four_group_tests_passed": 5375,
+          "six_existing_skips": 6
+        },
+        {
+          "event": "pull_request",
+          "run_id": 43690486395,
+          "job_id": 132739897997,
+          "attempt": 1,
+          "conclusion": "success",
+          "tested_commit": "dae7be767b77eda229e9d0b3c7af11a54e77682e",
+          "tested_tree": "29386bcac408706d83ee0aa2a51107bb115a1295",
+          "completed_at": "2026-11-15T08:08:03Z",
+          "step_counts": {
+            "success": 50
+          },
+          "four_group_tests_passed": 5375,
+          "six_existing_skips": 6
+        }
+      ],
+      "public_effect_pairs_per_run": 360,
+      "original_root_tests_per_run": 13,
+      "library_units_per_actual_graph": 666,
+      "artifact_files_per_actual_graph": 1284,
+      "strict_native_default_and_fix_clean_diff": true,
+      "artifact_scope": "Both uploaded archives/logs, complete original snapshots and PR merge identity audited. No rerun or rehash of unuploaded executables/rlibs is claimed.",
+      "qualifies_new_summary_unified_combination": false
+    },
+    "patch_output_before_cached_alias_repair": {
+      "head": "0339bd5f863ba2459084115906a875b10595a704",
+      "tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+      "qualified": false,
+      "audit": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-ci/terminal-audit.json",
+        "bytes": 114231,
+        "sha256": "ab55d4a296d1f4944cb045feabdf6a53389ee9065d5b5bf07bc3aed14351f9c0"
+      },
+      "merge_identity": {
+        "commit": "14ae5767e440c950fe567cf22f14058c80b309f3",
+        "tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+        "parents": [
+          "aeb88f596b83186456caac577080bcb2f253ad32",
+          "0339bd5f863ba2459084115906a875b10595a704"
+        ],
+        "same_tree_as_candidate": true
+      },
+      "runs": [
+        {
+          "event": "push",
+          "run_id": 43701251060,
+          "job_id": 132772661636,
+          "attempt": 1,
+          "conclusion": "failure",
+          "tested_commit": "0339bd5f863ba2459084115906a875b10595a704",
+          "tested_tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+          "step_counts": {
+            "success": 56,
+            "failure": 1,
+            "skipped": 2
+          },
+          "artifact": {
+            "id": 14157700665,
+            "path": "push-43701251060/artifact.zip",
+            "bytes": 38068683,
+            "sha256": "602a3e0a416ae9046c52102d1f72875e4b7c5d1ffa6ac88c6b987f0569e23d4e",
+            "members": 11618,
+            "github_size_digest_checked": true
+          }
+        },
+        {
+          "event": "pull_request",
+          "run_id": 43701273070,
+          "job_id": 132772729344,
+          "attempt": 1,
+          "conclusion": "failure",
+          "tested_commit": "14ae5767e440c950fe567cf22f14058c80b309f3",
+          "tested_tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+          "step_counts": {
+            "success": 56,
+            "failure": 1,
+            "skipped": 2
+          },
+          "artifact": {
+            "id": 14158400629,
+            "path": "pr-43701273070/artifact.zip",
+            "bytes": 38069651,
+            "sha256": "4c9049cde6918d266ad2defe2ca72e4106f4461c7e3203551b9dd04ef85d9ec1",
+            "members": 11618,
+            "github_size_digest_checked": true
+          }
+        }
+      ],
+      "failure": "Cached checked Cargo build succeeded; actual artifact admission returned 74 because its publication-alias index selected a different real compiler unit.",
+      "not_executed": [
+        "wrapping policy",
+        "eight policy rejection commands",
+        "complete unified public comparison"
+      ],
+      "executed_scope": "All other executed steps succeeded: fourteen native modules, component gates, summary public 1002 pairs, inherited 5375 Rust passes/6 existing skips, original effects/file-update, installed executables and strict/fix. These do not close the failed policy or skipped unified public gates."
     }
   },
   "historical_performance": {
@@ -1550,7 +1779,7 @@
   },
   "history_policy": "Earlier full qualification records remain in their immutable published commits and external reports. Canonical metadata contains one current composition and explicitly scoped historical CI/performance evidence; it does not duplicate every process attempt.",
   "patch_effects_increment": {
-    "status": "current_native_build_actual_cargo_owner_gates_passed_production_ci_pending",
+    "status": "historical_local_record_followed_by_audited_aeb88_parent_ci",
     "contract": "hia/patch_effects_buffer_contract.json",
     "contract_sha256": "fb02bb3a5812edc2ad9201820e920dba5f9d8319c59581cfd8a66f5f0283c855",
     "source_sha256": "3fa4152c1737970f67d4ab24594870c38f3f03a774ffa151a256da6cf3c026b8",
@@ -1743,6 +1972,357 @@
       "The first production report aggregator expected passed=true from a status=passed receipt schema. Native build, ABI and receipt commands had returned zero; only the outstanding scalar gate ran in the corrected aggregation."
     ],
     "production_cargo_qualified": true,
+    "installed_full_codex_qualified": false,
+    "whole_product_qualified": false,
+    "published_ci": "#historical_published_ci/patch_effects"
+  },
+  "patch_output_increment": {
+    "status": "current_fourteen_module_build_and_component_admission_passed_combined_product_ci_pending",
+    "native_build": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-output/native-build-v1/build.json",
+      "bytes": 178565,
+      "sha256": "a5a038a937d641093e5dc6702d7bb008bb82a8cdf8caced676f8ca0ca5bc7149"
+    },
+    "build_reconciliation": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-output/native-build-reconciliation-v2/report.json",
+      "bytes": 4376,
+      "sha256": "a8c01ab1ae70ca909ed38101c9418ab1573fa05548cfeba300d2cbb8b8c255a5"
+    },
+    "independent_build_review": {
+      "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-review/build-admission-review-v1.json",
+      "bytes": 20903,
+      "sha256": "d7bfb22dd27c29d977b6f7b0ccedea357b19d06c48ba86b1185cb7986ff41dcc"
+    },
+    "actual_native_build_exit_code": 0,
+    "native_modules": 14,
+    "prior_twelve_sources_and_archives_unchanged": true,
+    "summary_archive_matches_exercised_prototype": true,
+    "unified_archive_packaging": {
+      "canonical_archive_sha256": "51c2d3a03df65e9a537193ccc89ea647c8961780b132866b0cebc9e54344b434",
+      "prototype_archive_sha256": "bbafa9aad627bb052611d299fb2bb1a0fa0e1defdf3559997be64b206e7f637f",
+      "raw_and_namespaced_objects_match_exercised_prototype": true,
+      "complete_byte_comparison": "All differences fall within the 16-byte ar member-name field at offset 100: unified_diff.o/ becomes hia.o/. All remaining archive bytes match.",
+      "proof": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/source-transfer-v1/unified-archive-packaging-delta.json",
+        "bytes": 509,
+        "sha256": "53dc2d72ea70a255a9a9dd0503d4d092e2194bd1a34a8cc2205ea3d62eba1031"
+      }
+    },
+    "admission": {
+      "controller": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/admission-v1/report.json",
+        "bytes": 7127,
+        "sha256": "5944cfb05f3778098f3a044d27b224936b4a7fb63694d72097e07edf20f62f04"
+      },
+      "summary_raw": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/admission-v1/patch-summary-abi.json",
+        "bytes": 477562,
+        "sha256": "dc77ea39c78bdceae32a649df5e42816bd933636e869c35e215f521c4b05a13c"
+      },
+      "summary_receipts": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/admission-v1/patch-summary-receipt.json",
+        "bytes": 2589,
+        "sha256": "a449714d1bc43cbc1bce1a728b6ba7a1fbcdd237c6334d7e3d5e998304370af6"
+      },
+      "unified_receipts": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/admission-v1/unified-diff-receipt.json",
+        "bytes": 2586,
+        "sha256": "d9c469e1c8a7775964181a1d211d02516e833d3f628fa557ce1485d766ff5b06"
+      },
+      "receipt_checks_each": 68,
+      "scalar": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/admission-v1/scalar-build-admission.json",
+        "bytes": 5094,
+        "sha256": "8bb56509b15320f3760820893067581900a2214236b0dbc1b9e87d461b029dfc"
+      },
+      "scalar_checks": 120,
+      "actual_commands": 4,
+      "all_exit_codes": 0
+    },
+    "production_cargo_qualified": false,
+    "installed_full_codex_qualified": false,
+    "whole_product_qualified": false,
+    "source_integration": {
+      "portable_public_owner_delivery": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/oracle-integration-v1/copy-report.json",
+        "bytes": 10598,
+        "sha256": "be22e7d4d79b9a28239b139c527306d52cb9db8a5d94768b134c1268260bfb28"
+      },
+      "strict_native_admission_and_notice_overlay": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/oracle-integration-v1/overlay-v2-report.json",
+        "bytes": 2850,
+        "sha256": "36888b95ecd1d8d62caabc2087970ff6b47e13d25dabc8cfbafab79b8cbfbb89"
+      },
+      "whole_original_source_inverses": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/oracle-integration-v1/whole-source-inverses.json",
+        "bytes": 779,
+        "sha256": "4428856dccf26e549eeb3b175dcb1ca0a4bbd5504afd90e6f370a30233b8f471"
+      },
+      "canonical_component_delivery": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/oracle-integration-v1/raw-delivery-v2-copy.json",
+        "bytes": 5528,
+        "sha256": "58cab90fcc550e5f687aeef751091fd1c2bff8652b6b54c5299fae7dae17060c"
+      },
+      "required_native_policy_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-review/policy-required-source-review-v1.json",
+        "bytes": 3396,
+        "sha256": "4d267a369c9b4eb9632c2e123893669d6f23b999ca3ed2d6a89acb90e322f8f3"
+      },
+      "final_whitespace_and_strict_digest_cleanup": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/publication-v1/whitespace-cleanup-v1.json",
+        "bytes": 6551,
+        "sha256": "01dc33216240c3ed02bb754ddcfc25cc517327aaf0bf806bf7383c7158e8a59a"
+      },
+      "scope": "Exact source identities and original whole-file inverses; these checks do not qualify actual Cargo or installed behavior of the final composition."
+    },
+    "compiler_fix_controls": {
+      "manifest": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-oracle/canonical-v4/revision3-fix-chain/freeze-manifest.json",
+        "bytes": 8877,
+        "sha256": "2598d005534203d2f07db68e24f927ea4f7b092b4558de2fd98b5a8d50f38791"
+      },
+      "root_copy": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/oracle-integration-v1/fix-bridge-v3-copy.json",
+        "bytes": 4269,
+        "sha256": "49f4183ed871834b92e402c1499960b1701ad96bb2a3892df0d14c85cd54b8a4"
+      },
+      "checked": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-oracle/canonical-v4/revision3-fix-chain/evidence/checked-v3/report.json",
+        "bytes": 29837,
+        "sha256": "387150145645001be08d33458bcd8b5424d7325a229a329505d9f663a763cfe2"
+      },
+      "wrapping": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-oracle/canonical-v4/revision3-fix-chain/evidence/wrapping-v3/report.json",
+        "bytes": 30106,
+        "sha256": "13dba7cee0adc8cbf1ba8e679570b8837268840b96c615f7c8e48345506286e7"
+      },
+      "extended": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-oracle/canonical-v4/revision3-fix-chain/evidence/extended-v1/report.json",
+        "bytes": 30604,
+        "sha256": "ad6a865a3718e7873b410eaba8df7bd7fde063254171aab537670778eb53826b"
+      },
+      "helper_ast_delta": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-oracle/canonical-v4/revision3-fix-chain/evidence/helper-ast-delta.json",
+        "bytes": 1082,
+        "sha256": "e2398f795768f39e324acaf5dca5880631245055c43f49908106a970d306cc17"
+      },
+      "independent_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-review/fix-chain-review-v2.json",
+        "bytes": 7474,
+        "sha256": "59717544114b2565d5ff2d1577fda13fca7f6f15fa28701f4081826e23a0455e"
+      },
+      "scope": "Actual fixed-toolchain compiler/receipt/just-fix controls with the complete unchanged 73-file Similar crate and a small control owner, including a nonprimary workspace dependency. No complete Codex owner or HIA algorithm is executed by these controls.",
+      "actual_small_controls": {
+        "checked_fix": 0,
+        "wrapping_fix": 0,
+        "fix_source_change_each": [
+          409,
+          401
+        ],
+        "begin_completion_pairs_each": 17,
+        "native_helper_calls_each": 2,
+        "extended_positive_controls": 9,
+        "extended_rejections": 8
+      },
+      "extended_refusal_scope": "Four entry preconditions, three actual helper refusals (manual policy cfg and both mixed arrangements), and one earlier rustc embed-bitcode/LTO incompatibility. The last does not establish execution of the new helper's LTO admission branch.",
+      "helper_change": "The earlier compiler-log and strict fix bridge changes are retained. The current helper additionally selects cached Cargo publication aliases through their actual hashed output/peer receipt; every pre-existing helper function except the single verify_cargo_log call is AST-identical to 0339. See cached_cargo_alias_repair for actual regression evidence and pending full-owner scope.",
+      "exercised_helper_sha256": "815fb0823e8822697cac5d1d455f0881e4e54cad394392dee3f18d8659ac6dc0",
+      "current_helper_sha256": "ecf924330252841411abde51b138cbfc28b281d72d73337378a3ae4c5501a84c",
+      "post_control_source_delta": "Eight catalog/test files lose only eleven trailing LF bytes in total, with identical JSON/Python AST. Helper and CI digest constants retain strict byte admission for those final bytes. Original control reports keep their exact earlier identities; final complete-owner CI remains pending.",
+      "actual_fix_admission": "Real pinned Cargo fix invokes pinned Clippy through admitted workspace/outer bridges. Every call has paired start/completion records and successful status; actual fix artifacts receive independent policy receipt admission.",
+      "full_owner_original_eight_negatives_with_new_helper_passed": false,
+      "combined_cargo_qualified": false,
+      "whole_product_qualified": false,
+      "pre_alias_repair_helper_sha256": "8d97a44b12a7626ed567789ddede9a17f50ac63fe0b0d99c359a60ff38ab1d96",
+      "historical_helper_change": "Compiler-log identity includes the complete source inventory, actual Clippy arguments and actual stdout/stderr hashes. Final catalog EOF cleanup changes only the strict CATALOG_SHA constant and the matching CI pins; every function AST is unchanged from the exercised 815fb helper."
+    },
+    "failed_attempts_preserved_externally": [
+      "The actual fourteen-module build returned zero; the first controller then failed its overly strict prototype archive byte-equality aggregation. A complete byte comparison established the member-name-only difference without rerunning or rewriting that failed record.",
+      "Both 0339 native CI attempts failed at checked cached-artifact admission; their full logs, immutable ZIPs and source-specific audit remain retained. The wrapping/eight-negative/unified public steps did not execute."
+    ],
+    "cached_cargo_alias_repair": {
+      "manifest": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/freeze-manifest-v1.json",
+        "bytes": 3320,
+        "sha256": "fd1ad0e9662474790ee1735bc3e29dd7e9297d2cb2647fd8aa148833d0cd0ea1"
+      },
+      "independent_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-review/cached-alias-repair-review-v1.json",
+        "bytes": 14810,
+        "sha256": "1d5d82c9f1f71f210f5fe5f7b3fabf03d8d88a3ab6f0de0043dd028dd56a8e4e"
+      },
+      "baseline_regression": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/evidence/baseline-v1/report.json",
+        "bytes": 54963,
+        "sha256": "24c40458c4486a0f138814b7563f0e8c4cf5eabd9004d4e6308e0f32c93ca8d9"
+      },
+      "repaired_regression": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/evidence/repaired-v1/report.json",
+        "bytes": 176497,
+        "sha256": "4d962e1dc5ceed0d7b7e9739f0c962c0ba90594e823e2aa100cef54a5ce4da18"
+      },
+      "final_validation": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/evidence/final-validation-v1.json",
+        "bytes": 14455,
+        "sha256": "6447108d1be89697fbb9159b408b5eacb6f44f0dfbbb56f7c69d87d3c35ef31d"
+      },
+      "actual_baseline_commands": 7,
+      "actual_repaired_commands": 31,
+      "successful_admissions": 9,
+      "executed_policy_drivers": 4,
+      "actual_rejections": 5,
+      "admission": "An explicit Cargo publication alias requires the unique hashed peer in the same actual Cargo row, matching actual crate/features/out-dir/extra-filename/emit event, one immutable compiler receipt and exact alias/canonical bytes. Only then is its alias index refreshed with Cargo-log provenance.",
+      "scope": "Real pinned Rust/Cargo with all 73 original Similar files and a small control owner. Complete Codex owner, eight original policy negatives and unified public qualification remain pending on the repaired source.",
+      "hia_algorithms_or_artifacts_changed": false,
+      "whole_product_qualified": false
+    }
+  },
+  "patch_summary_increment": {
+    "source_sha256": "50dd79660f44dd6ed5bcaf835364478875528a2050fdaad2199077b74529b84e",
+    "adapter_sha256": "1d3bb2032a50348d0f66d0f45bd2358ddd3a9fbae53e1a63557a9d5db8409f25",
+    "contract_sha256": "c2d4b73c77ae3af0a07c1d3c6930aab34d59f36625b4dd98272d6fe18a5360f5",
+    "current_raw_abi": {
+      "native_calls": 1328,
+      "error_no_write_cases": 157,
+      "concurrent_calls": 128,
+      "complete_small_count_traces": 125,
+      "skipped": 0
+    },
+    "prototype_complete_crate": {
+      "path": "/workspace/scratch/9f380f39cb05/qualification/patch-summary/complete-crate-v1.json",
+      "bytes": 119187,
+      "sha256": "405455d22d159e7aad686c72b0a6359d5d8b1ec1569a8de02e83c92d2243146a"
+    },
+    "prototype_public_writer": {
+      "path": "/workspace/scratch/9f380f39cb05/qualification/patch-summary/public-writer-v1.json",
+      "bytes": 201282,
+      "sha256": "bff0a6d91a3bb481926bd8f6efdb22a78ead5794bf9515d160a08e2730dd1638"
+    },
+    "prototype_public_counts": {
+      "compared_pairs": 1002,
+      "actual_processes": 2004,
+      "native_forwarded_calls": 4022,
+      "skipped": 0,
+      "mismatches": 0,
+      "outcomes": {
+        "BrokenPipe": 184,
+        "Interrupted": 75,
+        "Other": 77,
+        "WriteZero": 230,
+        "ok": 436
+      }
+    },
+    "prototype_scope": "Complete immutable-original and complete native libraries compiled by direct rustc against real Cargo dependencies; 13 unchanged root tests and strict workspace lint. The 1002-pair writer matrix does not claim actual Cargo compilation or installed qualification of the final combined source tree.",
+    "portable_driver_format": {
+      "proof": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output/format-v1/summary-driver-format-delta.json",
+        "bytes": 458,
+        "sha256": "7d434dc88ad2e6b2ec4b73ddee6075a59b2bc3bb088f995ddda3e11be1b90b1a"
+      },
+      "current_sha256": "5a8e83b127ba52aa381188b8325f0e32ddab9776e27b422561343b62c90073b2",
+      "scope": "Actual repository just fmt changed import order and granularity only; the body from the native-call counter onward is unchanged. Final portable-driver Cargo/runtime qualification remains pending."
+    },
+    "writer_contract": "Exact individual writeln! invocations, Path::display and custom Write/write_fmt observations; no preformatting or write coalescing. Errors preserve accepted output prefixes.",
+    "production_cargo_qualified": false,
+    "whole_product_qualified": false
+  },
+  "unified_diff_increment": {
+    "source_sha256": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
+    "adapter_sha256": "cddc068db30a8dc14766c8eea1a7a951010872e0a9970875ea9a9e012a84c144",
+    "contract_sha256": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e",
+    "current_component_abi": {
+      "report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-native-canonical/canonical-v2.json",
+        "bytes": 51309,
+        "sha256": "f18395ad51c8f5e990f8dacf42f2e5afab8fe7c3e1dac8d3f2206c52c09fd632"
+      },
+      "native_calls": 522858,
+      "tests_skipped": 0,
+      "actual_worker_exit_code": 0,
+      "component_counts": {
+        "original": {
+          "native_calls": 109152,
+          "inspect_calls": 54576,
+          "plan_calls": 46638,
+          "rendered_bytes_observed": 3130942,
+          "semantic_panics": 7938
+        },
+        "raw-abi": {
+          "native_calls": 2490,
+          "error_no_write_cases": 1082,
+          "status_4294967294": 424,
+          "status_4294967295": 76,
+          "status_4294967293": 582,
+          "inspect_calls": 704,
+          "plan_calls": 545,
+          "rendered_bytes_observed": 16831146,
+          "semantic_panics": 159
+        },
+        "frontend": {
+          "native_calls": 3136,
+          "inspect_calls": 1568,
+          "plan_calls": 1174,
+          "rendered_bytes_observed": 1775970,
+          "semantic_panics": 394
+        },
+        "word-boundary": {
+          "native_calls": 408080,
+          "inspect_calls": 204040,
+          "plan_calls": 152966,
+          "rendered_bytes_observed": 3690604,
+          "semantic_panics": 51074
+        }
+      },
+      "complete_original_files": 73,
+      "original_reference_build": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-native-canonical/actual-v2/reference/original-build.json",
+        "bytes": 21349,
+        "sha256": "1146af2b31967220a978cdb2b3d3df050f332c5ccd807220c0dcf74c5465b46b"
+      },
+      "observer_format_preservation": {
+        "path": "/workspace/scratch/9f380f39cb05/next-unified-diff-native-canonical/observer-format-preservation-v2.json",
+        "bytes": 13666,
+        "sha256": "70a9651ed113033ed2fc41829bd139ee91d332e4a33fcd652f85515ffd927be2"
+      },
+      "source_and_artifact_unchanged": true,
+      "scope": "Actual canonical HIA component versus fresh complete Similar 2.7.0 references; raw memory boundaries, both original corpora, frontend collisions and the complete word matrix.",
+      "cargo_executed": false,
+      "production_compile_profile_binding_qualified": false,
+      "public_fs_chunk_adapter_qualified": false,
+      "mixed_codex_production_configuration_qualified": false,
+      "whole_product_qualified": false
+    },
+    "prototype_actual_owner": {
+      "path": "/workspace/scratch/9f380f39cb05/qualification/unified-diff-v4/qualification-v4.json",
+      "bytes": 22201,
+      "sha256": "ac12c6dbb8cbf0f9509168f2bce1ad4e81f2a3d0614e88f17946a776ce1fa4ff"
+    },
+    "prototype_integration_delta": {
+      "path": "/workspace/scratch/9f380f39cb05/qualification/unified-diff-v4/integration-delta-v4.json",
+      "bytes": 7952,
+      "sha256": "c74e18e113a9ca7a73663e6a9ceeed90da49ef5b08708017e0382d3216fa2663"
+    },
+    "prototype_counts": {
+      "public_case_count_per_policy": 3974,
+      "paired_public_results": 7948,
+      "actual_forwarded_hia_calls": 15864,
+      "public_cross_policy_differences": 1417,
+      "negative_admission_cases": 8
+    },
+    "prototype_actual_checked_and_wrapping_cargo": true,
+    "prototype_actual_cached_policy_and_strict_owner_clippy": true,
+    "production_policy_modes": [
+      0,
+      1
+    ],
+    "mixed_policy_qualified": false,
+    "lto_qualified": false,
+    "arithmetic_contract": "Select from real pinned rustc/codegen and Similar artifact receipts; retain semantic arithmetic panics and original nonmonotonic coordinates. No debug_assertions/profile-name inference or manual policy cfg.",
+    "license": "hia/LICENSE.similar-2.7.0",
+    "attribution": "hia/ATTRIBUTION.unified_diff.md",
+    "source_catalog": "hia/similar-source.json",
+    "performance_qualified": false,
+    "production_cargo_qualified_on_final_combination": false,
     "installed_full_codex_qualified": false,
     "whole_product_qualified": false
   }

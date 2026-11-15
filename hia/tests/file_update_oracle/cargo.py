@@ -5,6 +5,8 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
+import types
 
 from .identity import CRATE, REQUIRED, RUSTC_COMMIT, RUSTC_SHA256, sha
 
@@ -37,13 +39,22 @@ class Commands:
         return stdout
 
 
+def policy_environment(producer, rustc, env):
+    if not env.get("RUSTC_WRAPPER") and not env.get("RUSTC_WORKSPACE_WRAPPER"):
+        return None
+    path = producer / "hia/unified_policy_ci.py"
+    module = types.ModuleType("unified_policy_ci_admission")
+    module.__file__ = str(path)
+    exec(compile(path.read_bytes(), str(path), "exec"), module.__dict__)
+    return module.admit_environment(producer, rustc, env)
+
+
 def compiler(rustc, commands, producer):
     rustc = rustc.resolve(strict=True)
     if sha(rustc) != RUSTC_SHA256:
         raise RuntimeError("the fixed Linux Rust 1.96.1 compiler SHA differs")
     env = os.environ.copy()
-    if env.get("RUSTC_WRAPPER") or env.get("RUSTC_WORKSPACE_WRAPPER"):
-        raise RuntimeError("an unverified rustc wrapper cannot qualify this oracle")
+    wrapper = policy_environment(producer, rustc, env)
     env.update(RUSTC=str(rustc), RUSTUP_TOOLCHAIN="1.96.1",
                CARGO_INCREMENTAL="0", CARGO_PROFILE_DEV_DEBUG="0", CARGO_PROFILE_TEST_DEBUG="0")
     env.setdefault("CARGO_BUILD_JOBS", "1")
@@ -55,7 +66,8 @@ def compiler(rustc, commands, producer):
     if not cargo_version.startswith("cargo 1.96.1 "):
         raise RuntimeError("Cargo is not from the fixed toolchain")
     return rustc, cargo, env, {"rustc_sha256": sha(rustc), "rustc_version": version,
-                              "cargo_sha256": sha(cargo), "cargo_version": cargo_version}
+                              "cargo_sha256": sha(cargo), "cargo_version": cargo_version,
+                              "policy_wrapper": wrapper}
 
 
 def metadata(cargo, producer, env, commands):
@@ -90,14 +102,31 @@ def metadata(cargo, producer, env, commands):
 
 def capture(cargo, producer, env, native, commands):
     child = env.copy()
+    if native:
+        admitted_policy = policy_environment(producer, Path(child["RUSTC"]), child)
+        if admitted_policy is None:
+            raise RuntimeError("native owner qualification requires an admitted policy wrapper and configuration")
     if not native:
         child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)
     args = [cargo, "build", "--locked", "--no-default-features", "-p", "codex-apply-patch",
             "--tests", "--message-format=json-render-diagnostics"]
     if native:
         args += ["--features", "hia-native"]
-    return commands.run("cargo-native" if native else "cargo-default", args,
-                        cwd=producer / "codex-rs", env=child, jsonl=True)
+    result = commands.run("cargo-native" if native else "cargo-default", args,
+                          cwd=producer / "codex-rs", env=child, jsonl=True)
+    if native:
+        if policy_environment(producer, Path(child["RUSTC"]), child) != admitted_policy:
+            raise RuntimeError("policy environment changed during actual Cargo compilation")
+        verified = commands.run("cargo-native-policy-admission", [sys.executable,
+            producer / "hia/similar_policy.py", "--verify-cargo-log", result],
+            cwd=producer / "codex-rs", env=child)
+        record = json.loads(verified.read_text())
+        binding = {"path": str(result.resolve()), "bytes": result.stat().st_size, "sha256": sha(result)}
+        if (record.get("passed") is not True or record.get("cargo_log") != binding
+                or not record.get("consumer_artifacts")
+                or any(item["policy_mode"] != 0 for item in record["consumer_artifacts"])):
+            raise RuntimeError("actual Cargo native artifacts lack policy receipt admission")
+    return result
 
 
 def admit(path, packages, owner, dependencies, target_dir, stage, *, native):

@@ -1,0 +1,220 @@
+{
+  "schema": "codex.hia.unified-diff-buffer.v2",
+  "status": {
+    "c_status": {
+      "0": "accepted operation; inspect/normal plan/semantic panic distinguished in output header",
+      "4294967293": "strict input is not valid UTF-8 at one of the two string boundaries",
+      "4294967294": "short required header or insufficient preflight output/workspace capacity",
+      "4294967295": "invalid operation/policy/reserved field/frame extent or unrepresentable native sizing"
+    },
+    "semantic_codes": {
+      "0": "success",
+      "1": "original context*2 checked overflow; operands=context,2; panic payload: attempt to multiply with overflow",
+      "2": "original u32 distinct-ID increment checked overflow; operands=4294967295,1; panic payload: attempt to add with overflow; source-derived and not exercised at this impractical input scale",
+      "3": "original formatter indexed beyond a line array; operands=line_count,index; preserve first failing traversal position and bounds panic payload",
+      "4": "original checked coordinate addition overflow; exact source category is selected per defining non-generic versus monomorphized arithmetic; only full-source reachable branches belong to the owner contract",
+      "5": "original checked coordinate subtraction overflow; same category provenance requirements as semantic code 4",
+      "6": "rendered String capacity overflow; allocation failure/OOM is not promised to be bit-identical"
+    },
+    "transport_precedence": [
+      "workspace<64 or output<128 -> SHORT",
+      "operation/policy/reserved validation and exact source/descriptor framing -> INVALID",
+      "strict validation of complete UTF-8 source and old/new split boundary -> INVALID_UTF8",
+      "native line count and all sizing arithmetic checks -> INVALID",
+      "plan output and workspace upper-bound capacity checks -> SHORT",
+      "only now may scratch stores begin and algorithmic/semantic outcomes be computed"
+    ],
+    "write_contract": {
+      "nonzero_c": "Every byte of output and workspace remains unchanged; source is always unchanged",
+      "inspect_c_zero": "Only output[0:128] changes; source, workspace, and output tail remain unchanged",
+      "plan_c_zero_normal": "Descriptor workspace[0:64] unchanged; scratch[64:required_workspace_capacity] may change; output[0:plan_bytes] contains the result, output tail and scratch tail after advertised capacity unchanged",
+      "plan_c_zero_semantic": "Only output[0:128] is published, no partial String result; scratch within advertised capacity may change; header reports the original semantic failure"
+    }
+  },
+  "reference": {
+    "crate": "similar",
+    "version": "2.7.0",
+    "features": [
+      "default",
+      "text"
+    ],
+    "archive_sha256": "bbbb5d9659141646ae647b42fe094daf6c6192d1620870b449d9557f748b2daa",
+    "upstream_commit": "28c146b628119065e9a4dae569eaa570a4632c17",
+    "source_manifest": "source-identity-v1.json",
+    "call": "TextDiff::from_lines(old, new).unified_diff().context_radius(context).to_string()",
+    "codex_default_context": 1,
+    "algorithm": "Myers -> Compact -> Replace -> group_diff_ops -> UnifiedDiff formatter",
+    "file_name_headers": false,
+    "deadline": null,
+    "scope": "Two exported unified_diff_from_chunks APIs plus internal with_mode consumer; FS reads/PathUri/chunk computation remain existing boundaries"
+  },
+  "proposed_module": "hia/unified_diff.hepta",
+  "proposed_symbol": "codex_hia_unified_diff",
+  "target": {
+    "architecture": "x86_64",
+    "endianness": "little",
+    "usize_bits": 64,
+    "hepta_pin": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "entry": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32"
+  },
+  "memory_preconditions": [
+    "All declared byte ranges are live and readable/writable according to their role for the duration of the call",
+    "source, output and workspace do not overlap",
+    "unaligned byte pointers are supported by buffer primitives",
+    "source is old_bytes immediately followed by new_bytes; the adapter performs only this transport copy"
+  ],
+  "input": {
+    "descriptor_bytes": 64,
+    "word_type": "u64 little-endian",
+    "workspace_words": [
+      "operation",
+      "old_bytes",
+      "new_bytes",
+      "context_radius",
+      "arithmetic_policy",
+      "reserved_zero",
+      "reserved_zero",
+      "reserved_zero"
+    ],
+    "operation": {
+      "0": "inspect_strict",
+      "1": "plan_strict",
+      "2": "inspect_trusted",
+      "3": "plan_trusted"
+    },
+    "arithmetic_policy": {
+      "0": "non-generic defining arithmetic checked; monomorphized-owner arithmetic checked",
+      "1": "non-generic defining arithmetic wrapping; monomorphized-owner arithmetic wrapping",
+      "2": "non-generic defining arithmetic checked; monomorphized-owner arithmetic wrapping",
+      "3": "non-generic defining arithmetic wrapping; monomorphized-owner arithmetic checked"
+    },
+    "context_range": "0..18446744073709551615, with no clamp or blanket rejection",
+    "source_extent": "old_bytes <= source.len and new_bytes == source.len-old_bytes; subtraction validation avoids header addition overflow",
+    "inspect_workspace": "exactly 64 bytes",
+    "plan_workspace": "at least required_workspace_capacity bytes; the first 64 descriptor bytes remain unchanged",
+    "strict_utf8": "both old and new are valid UTF-8 separately; whole source validation plus old_bytes scalar boundary is equivalent",
+    "trusted_precondition": "both halves come from valid Rust &str; trusted operations skip only UTF-8 admission, not tokenization, arithmetic policy, or native computation",
+    "strict_trusted_equivalence": "For all valid UTF-8 input halves, identical headers, plans, bytes and semantic panic classification under the same arithmetic policy",
+    "unknown_policy": "Every value >=4 is INVALID before UTF-8 admission or writes.",
+    "arithmetic_category_map": {
+      "source_domains": "The two enum bits denote defining similar compilation and actual monomorphizing apply-patch owner compilation; neither is inferred from outer executable flags.",
+      "context_radius_times_two": "Observed original group context multiplication checks under defining bit: policies 0/2.",
+      "IdentifyDistinct_u32_primitive_Add": "Actual u32 Add IR follows owner bit: policies 0/3; billion-line boundary is source/IR-derived, not executed.",
+      "generic_concrete_usize_arithmetic": "Observed conquer/find_middle_snake, Compact and Replace concrete add/sub checks use conjunction: policy 0 only. Valid-source bounds make most internal values independent of arithmetic mode.",
+      "nongeneric_copies": "Source syntax does not determine all compiled call sites. Actual owner IR contains internal max_d/as_tag_tuple copies with different overflow lowering. Admitted S bounds must prove relevant operations cannot overflow.",
+      "abs": "find_middle_snake core isize::abs may retain owner-controlled neg overflow in policy 3; native coordinate proof must show its operand cannot reach isize::MIN.",
+      "public_wrapping_groups": "A wrapping context can create an invalid source span; preserve semantic bounds failure order, not source-range validation rejection.",
+      "debug_assertions": "Separate codegen dimension. Actual Replace active-coordinate invariant is proven for full Myers/Compact event streams; no debug flag inferred from overflow.",
+      "independent_method_map": {
+        "path": "../next-unified-diff-oracle/arithmetic-method-map-v1.json",
+        "sha256": "17a1558cab7386ce003460b0ac0d6b0ba85ed407fe1025fad7e54774e2d39fdc"
+      },
+      "production_policy_admission": "Raw operations accept explicit policies 0..3. Production must supply a policy admitted against its actual compiler and artifact provenance. A deployment may support a narrower evidence-bound set; unsupported build configurations must fail admission rather than choose a guessed policy."
+    }
+  },
+  "output": {
+    "header_bytes": 128,
+    "header_words": [
+      "abi_revision=2",
+      "required_output_capacity",
+      "required_workspace_capacity",
+      "plan_bytes",
+      "rendered_bytes",
+      "fragment_count",
+      "fragment_table_offset",
+      "literal_pool_offset",
+      "literal_pool_bytes",
+      "old_line_count",
+      "new_line_count",
+      "semantic_code",
+      "semantic_operand_a",
+      "semantic_operand_b",
+      "arithmetic_policy",
+      "reserved_zero"
+    ],
+    "query_header": "All actual-plan/result fields are zero; line counts and both required capacities are native-computed; semantic_code is 0 because query does not run the diff algorithm",
+    "successful_plan": "fragment_table_offset=128; literal_pool_offset=128+32*fragment_count; plan_bytes=literal_pool_offset+literal_pool_bytes; rendered_bytes equals the checked sum of emitted fragment lengths",
+    "fragment_stride": 32,
+    "fragment_words": [
+      "kind",
+      "offset",
+      "bytes",
+      "reserved_zero"
+    ],
+    "fragment_kinds": {
+      "0": "source slice relative to source[0]",
+      "1": "literal slice relative to literal_pool_offset"
+    },
+    "native_formatting": "HIA constructs every header digit, prefix, separator and missing-newline marker; Rust only validates the plan and copies the named byte ranges",
+    "semantic_plan": "C status 0, plan_bytes=128, rendered_bytes=fragment_count=fragment_table_offset=literal_pool_offset=literal_pool_bytes=0; semantic_code/operands populated; only output[0:128] written; scratch within advertised capacity may have changed"
+  },
+  "sizing": {
+    "status": "Normative revision-2 capacities: inspect reports the stated conservative bounds and plan requires both bounds before any scratch store. This specifies ABI obligations rather than qualification results.",
+    "S": "old_line_count + new_line_count, checked in HIA",
+    "required_output_capacity": "512 + 352*S",
+    "required_workspace_capacity": "1024 + 256*S",
+    "group_bound": "at most S+1 groups and 2*S+2 grouped operation rows",
+    "emitted_line_bound": "at most 2*S for successful rendering: compaction preserves the original line stream; each Equal run is kept at most twice by grouping; an out-of-range wrapped group becomes a semantic bounds panic before expansion",
+    "fragment_bound": "8*S+8, covering at most 3 fragments per emitted line plus one per group",
+    "literal_bound": "96*S+128, covering at most 92 bytes per u64 hunk header plus the 3 prefix bytes and one shared 29-byte missing-newline literal",
+    "output_bound_derivation": "128 + 32*(8*S+8) + (96*S+128) = 512+352*S",
+    "workspace_bound_derivation": "64 descriptor + 256 bookkeeping + 16*S line spans + 8*S IDs + max(8*T,16*(S+3)+48*(2*S+4)+56*(2*S+4),40*(S+2)+48*(2*S+4)), where hash capacity T<=4*S+2; this is <=1024+256*S",
+    "arenas": {
+      "line_spans": "16*S bytes, old then new; terminators included",
+      "ids": "8*S bytes carrying actual u32 IDs when interning is selected",
+      "hash": "8*T bytes, T the first power of two >= max(2,2*S); exact byte collision resolution; may reuse subsequent algorithm arena",
+      "frontiers": "Two arrays of 2*D i64 slots, D=(S+1)/2+1; exact total32*D bytes. This is at most16*(S+3), and signed k coordinates are within admitted S.",
+      "tasks": "2*S+4 entries of 48 bytes for explicit left-before-right conquest/suffix continuations",
+      "compact_nodes": "2*S+4 nodes of 56 bytes; preserve original pointer traversal, coordinate updates and deletion quirks; recycle removed nodes",
+      "replace_rows": "S+2 entries of 40 bytes, reuse expired frontier/task memory",
+      "group_rows": "2*S+4 entries of 48 bytes, reuse compact node memory after replacement"
+    },
+    "proofs_required": [
+      "Every checked add/multiply used in sizing is guarded before stores",
+      "Myers raw nonempty event weight is <=S",
+      "Compact transfers equal-run lengths and preserves positive event weight; at most one transient extra node, with removed nodes recycled",
+      "Explicit task stack bound covers suffix continuations as well as left/right ranges",
+      "Retained grouped rows and successful emitted line/fragment counts satisfy the above bounds, including wrapping context branches",
+      "All arena intervals and live-range reuse are independently reviewed and tested"
+    ],
+    "capacity_policy": "plan requires the full advertised upper bounds even when a smaller buffer could contain this particular result; accepting smaller capacities is explicitly outside revision 2",
+    "resource_note": "No fixed 1 MiB input cap. Conservative O(S) native arenas and host transport copies may exceed original allocation costs. Allocation failure and OOM are not promised to be identical."
+  },
+  "semantics": {
+    "tokenize": "LF, CR, CRLF delimit; retain exact terminator; no extra token after a final terminator; CRLF does not cross the old/new source boundary; NEL/LS/PS/NUL are ordinary content",
+    "intern": "Only when either side exceeds 100 tokens. Assign u32 identities in old-first then new-first-seen order. Exact byte equality resolves every internal hash collision and preserves original wrapped identity behavior. The hash function and bucket placement are private implementation choices; they do not change identity assignment or output semantics.",
+    "myers": "Same prefix/suffix trimming, descending k order, tie choice, odd/even overlap return coordinates, left-before-right recursion and final suffix order as pinned upstream; no alternative shortest edit script",
+    "compact": "Delete pass then insert pass, shift up then down, exactly matching original swaps/merges and range-mutator definitions; do not substitute a corrected or standard cleanup algorithm",
+    "coordinates": "No cross-op monotonicity invariant and no reconstruction of coordinates from rendered line counts; actual Compact can leave stale indices affecting header text",
+    "grouping": "First/last Equal trimming occurs before loop; context*2 is evaluated only for each Equal including a zero-length one; wrapping uses u64 modulo and can produce oversized Equal spans",
+    "formatting": "Header start from first op, end from last op, saturating range lengths; default context 1 in Codex; no filename headers; Replace emits all deletes then all inserts; exact CR/CRLF bytes and missing-newline markers The actual iterator must yield a valid first change before its group header is formatted; a group with no yielded changes emits no header. Range start+1 is evaluated even for zero-length headers before subtracting one, preserving branch order.",
+    "equality_fast_path": "Forbidden unless implemented wholly in HIA and proven to preserve interning, Equal grouping and arithmetic failures; old==new is not sufficient to return an empty string"
+  },
+  "host_adapter": {
+    "permitted": [
+      "Encode lengths, context and admitted build-time arithmetic policy",
+      "Allocate native-requested frame/work/output buffers",
+      "Call strict/trusted HIA query then HIA plan",
+      "Validate C status, header, row bounds, reserved words, UTF-8 slices and aggregate output byte count",
+      "Allocate one String and copy native-selected source/literal fragments in native order",
+      "Raise the equivalent Rust panic for a native semantic panic record; panic=abort/unwind follows the host build"
+    ],
+    "prohibited": [
+      "Rust line splitting, line identity assignment, LCS/Myers, compaction, grouping, header arithmetic/formatting or hidden fallback",
+      "Passing reference-generated DiffOps into the production native interface",
+      "Using source equality to skip HIA",
+      "Clamping context or replacing overflow behavior with a blanket INVALID",
+      "Calling the old similar implementation from the native production branch"
+    ]
+  },
+  "revision": 2,
+  "provenance": {
+    "license": "Apache-2.0",
+    "upstream": "https://github.com/mitsuhiko/similar",
+    "commit": "28c146b628119065e9a4dae569eaa570a4632c17",
+    "license_path": "LICENSE.similar-2.7.0",
+    "license_sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "attribution": "ATTRIBUTION.unified_diff.md",
+    "preserve": "Source attribution and complete upstream license must accompany a production adaptation; the HIA grammar has no comment form, so use a sidecar attribution file."
+  }
+}

@@ -2,7 +2,11 @@ mod file_update;
 #[cfg(feature = "hia-native")]
 mod hia_native_patch_effects;
 #[cfg(feature = "hia-native")]
+mod hia_native_patch_summary;
+#[cfg(feature = "hia-native")]
 use hia_native_patch_effects::apply_hunks_to_files;
+#[cfg(feature = "hia-native")]
+pub use hia_native_patch_summary::print_summary;
 #[cfg(feature = "hia-native")]
 mod hia_native;
 #[cfg(feature = "hia-native")]
@@ -13,6 +17,10 @@ mod hia_native_parser;
 mod hia_native_streaming_parser;
 #[cfg(feature = "hia-native")]
 mod hia_native_text_file;
+#[cfg(feature = "hia-native")]
+mod hia_native_unified_diff;
+#[cfg(feature = "hia-native")]
+mod hia_native_unified_diff_policy;
 mod invocation;
 mod parser;
 mod seek_sequence;
@@ -888,6 +896,7 @@ async fn write_file_with_missing_parent_retry(
 
 /// Print the summary of changes in git-style format.
 /// Write a summary of changes to the given writer.
+#[cfg(not(feature = "hia-native"))]
 pub fn print_summary(
     affected: &AffectedPaths,
     out: &mut impl std::io::Write,
