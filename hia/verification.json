@@ -2650,9 +2650,7 @@
     "current_qualification_source": "parser_increment.recovered_local_gates"
   },
   "parser_increment": {
-    "status": "publication_metadata_record_incomplete",
-    "publication_staging_only": true,
-    "qualification_claim_complete": false,
+    "status": "recovered_parser_original_public_abi_and_fresh_admission_passed_current_ci_and_performance_open",
     "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
     "frozen_code_tree": "c0653c55959e973a20d74b4ee1565f2ff6a92e47",
     "initial_restored_code_tree": "c00aa49ffe849138894de1205890fbc55a54f115",
@@ -3171,6 +3169,410 @@
       "entry_profile": "u64-pair-to-u64-v1",
       "test_sha256": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
       "build_report_sha256": "6e4b962066e2e0b85fbcb944fec935e03188da5b4514028d459f8565be18b9a5"
-    }
+    },
+    "fresh_host_dependencies": {
+      "public_caller": {
+        "package_count": 71,
+        "artifact_count": 130,
+        "receipt_sha256": "8b243ef39f5f7df5e35e030ee18415f5e721f7765c9714fdac64e0077e6346aa",
+        "fresh_target_directory": false,
+        "reused_verified_build": true,
+        "origin": "The current public differential reuses the same actual fresh 71-package persistent dependency build used by the repair preflight."
+      },
+      "initial_public_caller": {
+        "package_count": 71,
+        "artifact_count": 130,
+        "receipt_sha256": "4b1c4cbbb4ad97cc849dada9d568238b025d4bbe66162f58bfec3cebfc4baae0",
+        "fresh_target_directory": true,
+        "reused_verified_build": false
+      },
+      "persistent_repair_host_receipt": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/adapter-repair-v2/host-build/host-dependencies/host-dependencies-receipt.json",
+        "sha256": "8b243ef39f5f7df5e35e030ee18415f5e721f7765c9714fdac64e0077e6346aa",
+        "bytes": 42289
+      },
+      "host_receipt_gate": {
+        "host_build_mode": "actual_fresh_locked_Cargo",
+        "artifacts_checked": 130,
+        "rejection_count": 11
+      },
+      "retention_scope": "The two initial fresh-build runners cleaned their ordinary temporary dependencies; their original reports retain verified hashes and outcomes. The later repair uses one new persistent real locked dependency build, admitted by the unchanged receipt verifier for both lint and the complete public gate; its artifacts/provenance remain present and were revalidated here. Complete current corpus/transcripts are retained as lossless gzip with original sizes/SHA256.",
+      "public_host_sources": {
+        "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
+        "codex-rs/utils/absolute-path/Cargo.toml": "ad98dc1a75333700db00f6bde0685ce7a3e0f5558b0520e7a09e9bbcc6576736",
+        "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7",
+        "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+        "codex-rs/utils/path-uri/Cargo.toml": "d45031c71d6dbcf8c7770ce1feebabbc2f3224841c5eb770d9e2dc70d19d9d20",
+        "codex-rs/utils/path-uri/src/absolute_path_normalization.rs": "e050e7bee691b2696ef8ebbdcfa5805f695b94a903b1a9b584f8724f37dd7ea3",
+        "codex-rs/utils/path-uri/src/api_path_string.rs": "6bb02a76fcd6d2fff8471e9f32b5322e0573ec3e9abe041109461a1cd6b63049",
+        "codex-rs/utils/path-uri/src/api_path_string_tests.rs": "6c1edafb7636d484cf79bf4329266747d14393e3d23d8a20a60a4a0941b9ce2c",
+        "codex-rs/utils/path-uri/src/lib.rs": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc",
+        "codex-rs/utils/path-uri/src/native_path_bytes.rs": "6295f7e680d774d38cd6d6c5ad9245e58b8e0321d6f5a248260b14cc941411d1",
+        "codex-rs/utils/path-uri/src/tests.rs": "caa94d4ea84a8d54a972a2c7bfd5db5e6abf6f89a8df95a013c1f8008c3af0a1"
+      },
+      "host_receipt_positive_checks": 3,
+      "host_receipt_tests_skipped": 0,
+      "host_receipt_sources_checked": 11,
+      "host_receipt_direct_rlibs_checked": [
+        "codex_utils_absolute_path",
+        "codex_utils_path_uri",
+        "pretty_assertions",
+        "serde_json",
+        "tempfile",
+        "thiserror"
+      ],
+      "host_receipt_report": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-host-receipt-report-v1.json",
+        "sha256": "02e13165f7166c7f6dad39dd2d54af87cff959922cc9205b7015d6cf0f02f124"
+      },
+      "admission_scope": "The real manifest/lock/resolved graph/complete Cargo artifact report and build evidence bind source/artifact inventories plus direct features/profile/package identities. The initial public and host-receipt gates each built fresh single-job debug=0 dependencies. The repaired public gate reuses the separately fresh persistent host closure also used for its lint preflight. No Cloud dependency receipt is used."
+    },
+    "recovered_local_gates": {
+      "build": {
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-build-v1.json",
+          "sha256": "5e6b78c3e428b8cadd63e8880ef562fd1925eb73ea34e95e4237384bbe4c788c"
+        },
+        "log_sha256": "546457309f9268fbffec94130408b5cf8db5fe3ba6cc3cc06b4314e903ef88e7",
+        "source_manifest_sha256": "3d60222b67ba2075c44724e35c222e07d9f30cf14f070d6520f8fafa0f70d0e3",
+        "command_exit": 0,
+        "source_unchanged": true,
+        "source_snapshot": {
+          "files": 9838,
+          "sha256": "50261bc3dedfcca74f0f1848ba6bfd08fab4ac4bae4b0b717157df007342e3ee"
+        },
+        "scope": "Initial restored 18-file source before the separately recorded two-adapter panic-spelling repair."
+      },
+      "original": {
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-original-v1.json",
+          "sha256": "d3c65990bee412b46e8714e55edd5c7eb7d8bbb226784b8885caf10e65ddba56"
+        },
+        "log_sha256": "c75d026445ce1ba401adb1c282f82b9ec58eace81b505154959d9d32100c90ec",
+        "source_manifest_sha256": "3d60222b67ba2075c44724e35c222e07d9f30cf14f070d6520f8fafa0f70d0e3",
+        "command_exit": 0,
+        "source_unchanged": true,
+        "source_snapshot": {
+          "files": 9838,
+          "sha256": "50261bc3dedfcca74f0f1848ba6bfd08fab4ac4bae4b0b717157df007342e3ee"
+        },
+        "scope": "Initial restored 18-file source before the separately recorded two-adapter panic-spelling repair."
+      },
+      "abi": {
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-abi-v1.json",
+          "sha256": "2b39e55e07f3257bb845ab59294eb387b5466a5838b6c82d56e27f31b7e1d4f7"
+        },
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source_manifest_sha256": "3d60222b67ba2075c44724e35c222e07d9f30cf14f070d6520f8fafa0f70d0e3",
+        "command_exit": 0,
+        "source_unchanged": true,
+        "source_snapshot": {
+          "files": 9838,
+          "sha256": "50261bc3dedfcca74f0f1848ba6bfd08fab4ac4bae4b0b717157df007342e3ee"
+        },
+        "scope": "Initial restored 18-file source before the separately recorded two-adapter panic-spelling repair."
+      },
+      "receipts": {
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-receipts-v1.json",
+          "sha256": "0ebdf757ce26cb26e06b3171a496e23ed0cd30822846ecc34ac92e30c0ab0717"
+        },
+        "log_sha256": "7e6bcbe1b19e04f2ea4ac39003bb9ecffd7b410a8c8692e075be36a8b328f8ce",
+        "source_manifest_sha256": "3d60222b67ba2075c44724e35c222e07d9f30cf14f070d6520f8fafa0f70d0e3",
+        "command_exit": 0,
+        "source_unchanged": true,
+        "source_snapshot": {
+          "files": 9838,
+          "sha256": "50261bc3dedfcca74f0f1848ba6bfd08fab4ac4bae4b0b717157df007342e3ee"
+        },
+        "scope": "Initial restored 18-file source before the separately recorded two-adapter panic-spelling repair."
+      },
+      "admission": {
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-admission-v1.json",
+          "sha256": "ad8c10f9e605176fdba6470f0680be6d9b3abef0dd58b2636f4aa22ad8241cc3"
+        },
+        "log_sha256": "dcb6105f0ffe58f2770dc3e8998cd76371b64167d706b1c8e182e7eb9e28bced",
+        "source_manifest_sha256": "3d60222b67ba2075c44724e35c222e07d9f30cf14f070d6520f8fafa0f70d0e3",
+        "command_exit": 0,
+        "source_unchanged": true,
+        "source_snapshot": {
+          "files": 9838,
+          "sha256": "50261bc3dedfcca74f0f1848ba6bfd08fab4ac4bae4b0b717157df007342e3ee"
+        },
+        "scope": "Initial restored 18-file source before the separately recorded two-adapter panic-spelling repair."
+      },
+      "host-receipt": {
+        "report": {
+          "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-host-receipt-v1.json",
+          "sha256": "6402c5d4dfd7b522b3511ba5539d93f1be48e72267d1590c59c1e26652d64f6e"
+        },
+        "log_sha256": "45c1f01e76cb8dcd88a4f957f31743bf884e627ccc7d525de7a725852585c3f1",
+        "source_manifest_sha256": "3d60222b67ba2075c44724e35c222e07d9f30cf14f070d6520f8fafa0f70d0e3",
+        "command_exit": 0,
+        "source_unchanged": true,
+        "source_snapshot": {
+          "files": 9838,
+          "sha256": "50261bc3dedfcca74f0f1848ba6bfd08fab4ac4bae4b0b717157df007342e3ee"
+        },
+        "scope": "Initial restored 18-file source before the separately recorded two-adapter panic-spelling repair."
+      }
+    },
+    "result_reports": {
+      "original": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/adapter-repair-v2/original-report.json",
+        "sha256": "1c82d1632821982f719e0a52431e2b864453ddcedbb3c6664280bfae0b0955ed"
+      },
+      "abi": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-abi-report-v1.json",
+        "sha256": "edd9bd954fecf780e03352ca3337805cff0f57f930ff2ae3f570aecd62be9bec"
+      },
+      "receipts": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-receipts-report-v1.json",
+        "sha256": "d1911464b8cc0b18011176611594b5b8207080fb7bc514c8d7d79c18023bb627"
+      },
+      "admission": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-admission-report-v1.json",
+        "sha256": "a7a7891c0d9fae530c51299f24d41e3d7c8cdecb81102be447e327b86b8e3796"
+      },
+      "host-receipt": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-host-receipt-report-v1.json",
+        "sha256": "02e13165f7166c7f6dad39dd2d54af87cff959922cc9205b7015d6cf0f02f124"
+      },
+      "original_before_adapter_repair": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/final-original-report-v1.json",
+        "sha256": "833c987ac82cc23d701a7c612d811a2e453134af6940fa77f7951e05363e47df"
+      }
+    },
+    "h_process_receipts": {
+      "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/h-process-receipts.json",
+      "sha256": "f43a2d241ec7e212e48db96eb053d2cadd20752d6b729d918d3dcc1cdfb7874e"
+    },
+    "resource_request": {
+      "nice": 10,
+      "cpu_quota_percent": 200,
+      "memory_max_bytes": 2147483648
+    },
+    "current_artifact_binding": {
+      "proof": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/metadata-binding-proof.json",
+        "sha256": "935b42875bad3539a96ea54663628ffb3e1d7a6570af925b1da85a405d791ded"
+      },
+      "physical_current_artifacts_checked": 50,
+      "current_named_source_inputs": 92,
+      "old_cloud_artifacts_rehashed": false
+    },
+    "prior_cloud_observations": {
+      "note": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/parser-recovered-v1/prior-cloud-observations.json",
+        "sha256": "78741fe9c4fa930bd0424f7b1907c2020a64e1a6a5859283736a201634720f61"
+      },
+      "raw_files_available": false,
+      "v2": {
+        "scope": "Five original local gates before strengthened host receipt admission.",
+        "gates_previously_observed_passed": 5,
+        "snapshot": {
+          "files": 9837,
+          "sha256": "66af81bb5024ee494c238e0b51ba498bc911d3bdcdf6f780d23f9434577f0100"
+        }
+      },
+      "v3": {
+        "public_gate_passed": false,
+        "original_and_native_inline_tests_each": 17,
+        "native_transcript_returncode_recorded": false,
+        "native_stderr_bytes": 0,
+        "gate_sha256": "bbe0aa8c1a7f8529362f506e668ef42a1cc87bfc154244c846f8baf42851fc2f",
+        "report_sha256": "76393d16c90a9216170a47941efa415641e96a51498f36945ae6064110b409b1",
+        "fresh_host_receipt": {
+          "previously_observed_passed": true,
+          "artifacts": 130,
+          "rejections": 11,
+          "report_sha256": "46c09f38297e6d046d1618187655fef11f956bca41ab0e81932ff73a1cbec82c"
+        }
+      },
+      "single_diagnostic": {
+        "executions": 1,
+        "reference_returncode": -9,
+        "reference_signal": "SIGKILL",
+        "native_transcript_started": false,
+        "complete_output_records": 3834,
+        "partial_case": "003834:all-unicode-scalar-payload",
+        "signal_cause_known": false,
+        "oom_confirmed": false,
+        "conclusion_sha256": "3640d59c7e467caee21d51946a92a8fd47dbe3cc79160bace786155bbaf12f0e"
+      },
+      "v4": {
+        "scope": "Six Cloud local gates previously passed; these records are not substituted for the recovered host gates.",
+        "previously_observed_passed": true,
+        "snapshot": {
+          "files": 9838,
+          "sha256": "59b066baeff626e2c99b661e7738f4b5b9eddce94d5d243db95d744bc0eef7a2"
+        },
+        "build_report_sha256": "13bfb15467217e8040d49f07ecfe134fb66be4001a0f49c0fef797579e479672",
+        "public_comparisons": 3836,
+        "inline_tests_each": 17,
+        "actual_hia_calls": 104989,
+        "abi_calls": 11715,
+        "receipt_checks": 60,
+        "scalar_admission_checks": 116,
+        "reused_host_artifacts": 132,
+        "host_rejections": 11,
+        "named_input_hashes_previously_checked": 90,
+        "inherited_artifacts_previously_compared": 45,
+        "measured_parser_artifacts_previously_compared": 5,
+        "binding_proof_sha256": "91977fcdf3317e6fdab284a1e633af0066fbdc532391a3317114694862261664"
+      },
+      "current_pass_substituted_from_history": false
+    },
+    "performance": {
+      "status": "Historical bounded measurements previously observed; raw reports and timing binaries are unavailable on the recovered host.",
+      "measured_on_recovered_host": false,
+      "artifact_equality_rechecked_after_recovery": false,
+      "qualified": false,
+      "whole_product_performance_qualified": false,
+      "method_previously_observed": "Complete fixture parity before timing; three alternating samples, matched iterations, black-boxed inputs/results, one CPU and less than three seconds per case. Both owners/drivers used opt-level 3, one codegen unit, debug assertions and checked overflow.",
+      "host_dependency_caveat": "The shared actual PathUri dependency used opt-level 0. Path resolution ratios do not qualify a fully optimized host or whole-product performance.",
+      "case_columns": [
+        "case",
+        "input_bytes_or_null",
+        "original_ns_per_call_median",
+        "native_ns_per_call_median",
+        "native_over_original_observed_rounded"
+      ],
+      "cases": [
+        [
+          "batch_empty_patch",
+          29,
+          221.4125,
+          4943.561,
+          22.3274
+        ],
+        [
+          "batch_typical_update",
+          106,
+          1503.264,
+          22364.58,
+          14.8773
+        ],
+        [
+          "batch_heredoc_unicode",
+          189,
+          1915.012,
+          29137.429,
+          15.2153
+        ],
+        [
+          "batch_ascii_2mib",
+          2097199,
+          4232111,
+          15426875,
+          3.6452
+        ],
+        [
+          "batch_unicode_2mib",
+          2097199,
+          2995301,
+          16840322,
+          5.62225
+        ],
+        [
+          "batch_32768_lines",
+          196653,
+          1659240,
+          79783149,
+          48.08415
+        ],
+        [
+          "stream_scalar_4096",
+          4143,
+          170703,
+          1737834,
+          10.18045
+        ],
+        [
+          "stream_scalar_16384",
+          16431,
+          679388,
+          7038466,
+          10.36001
+        ],
+        [
+          "stream_scalar_65536",
+          65583,
+          2749399,
+          28170100,
+          10.24591
+        ],
+        [
+          "stream_unicode_chunks",
+          12333,
+          58734,
+          2209272,
+          37.61487
+        ],
+        [
+          "stream_error_recovery",
+          124,
+          867.381,
+          11091.24,
+          12.78704
+        ],
+        [
+          "path_rename_borrow",
+          null,
+          1.89627,
+          155.992608,
+          82.26285
+        ],
+        [
+          "resolve_rename_source",
+          null,
+          3477.599708,
+          3683.562158,
+          1.059225
+        ]
+      ],
+      "observed_hashes": {
+        "performance/parser-v1/binding.json": "f37afc8f22ea4b23882e826b85e952f5ccee8bd2032bcad23821048472929eb2",
+        "performance/parser-v1/report.raw.json": "3cbe038b45e6d523440fde8eb0dc87f32418d7c115eee5fb62a7e0b871cb6390",
+        "performance/parser-v1/benchmark-binary": "092ad8589d2216a1d884bff4d3e3003517d09074c655c378bba7ed2c624b8e3e",
+        "performance/parser-path-v1/binding.json": "162db71607abd74a47ebaa2a974d782d1956116d2e23764fe176384a3dcd5a41",
+        "performance/parser-path-v1/report.raw.json": "e5387356d35365622ba951f0ab5c4ba17ca86740bbdbfd6a3a202205c2bbc66a",
+        "performance/parser-path-v1/benchmark-binary": "151f26c8b54bacb51a2f84c2dc379f8de592960b1553c2ea996983c836c3b991"
+      }
+    },
+    "current_cargo_and_installed_ci": {
+      "status": "pending_current_published_parser_head",
+      "required_symbol": "codex_hia_parser",
+      "required_checks": [
+        "native/default Cargo owner suites",
+        "consumer and CLI/arg0/TUI suites",
+        "relocated apply_patch and both installed full-Codex dispatches",
+        "Cargo strict Clippy with actual workspace lint levels",
+        "scoped just fix and source-clean check",
+        "fresh locked host dependency admission in CI"
+      ],
+      "historical_nine_owner_ci_is_not_substituted": true,
+      "standalone_with_workspace_levels_passed": true,
+      "standalone_workspace_levels_are_not_complete_cargo_clippy": true
+    },
+    "large_change_review_exception": {
+      "source": "hia/parser.hepta",
+      "lines": 2480,
+      "scope": "Parent-directed exception for the complete single B3 parser compile unit.",
+      "reason": "The shared eight-word grammar, query/emit admission and event plan belong to one complete native owner. Private functions split responsibilities within that compile unit; this exception does not waive review, original/ABI checks or published workspace Cargo lint/fix gates."
+    },
+    "publication_changes_after_tests": [
+      "hia/README.md",
+      "hia/migration.json",
+      "hia/verification.json"
+    ],
+    "publication_scope": "The earlier six gates retain their original restored-source scope. Two adapters then changed and passed the full public differential plus a real workspace-level standalone lint preflight. Only the three metadata documents change after those final repair gates; all 18 current code/test files and all named inputs remain frozen.",
+    "current_source_inputs_scope": "Hashes are recomputed on ai395 and matched to the final post-repair original/lint tested snapshot; the initial six gates retain their distinct earlier snapshot. Metadata files are excluded to avoid a self-hash cycle.",
+    "whole_codex_rewritten": false,
+    "production_dispatch_migrated": false,
+    "legacy_retirement_ready": false,
+    "whole_product_performance_qualified": false
   }
 }
