@@ -1,0 +1,502 @@
+{
+  "schema": "hepta.mem.native-followup.hosted-ci-observation.v1",
+  "observed_at_utc": "2026-11-11 13:34:13 UTC",
+  "owner_source_pr": 5972,
+  "owner_source_commit": "2e0f6ff4525a02143f700dee70309ef9b6169398",
+  "owner_source_tree": "3e87a1e1e6d17191f9342e276d70cc0187dfb6b7",
+  "observed_merge_commit": "ddc505e2e9025e4994aa73d30a507de1c632a63e",
+  "target_pr": 5935,
+  "target_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "runs": [
+    {
+      "id": 43024095016,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_number": 599,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095016/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095016/logs",
+      "workflow_id": 391152960
+    },
+    {
+      "id": 43024095046,
+      "name": "Windows original CI regressions (declared scope only)",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_number": 158,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095046/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095046/logs",
+      "workflow_id": 396970845
+    },
+    {
+      "id": 43024095051,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 713,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095051/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095051/logs",
+      "workflow_id": 385583766
+    },
+    {
+      "id": 43024095323,
+      "name": "blocking-ci",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_number": 35240,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095323/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095323/logs",
+      "workflow_id": 336746106
+    },
+    {
+      "id": 43024095069,
+      "name": "Hepta MEM candidate and replay controls",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 52,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095069/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095069/logs",
+      "workflow_id": 412048854
+    },
+    {
+      "id": 43024095044,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 35059,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095044/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024095044/logs",
+      "workflow_id": 336746138
+    },
+    {
+      "id": 43024094981,
+      "name": "Hepta architecture convergence",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 22054,
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024094981/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43024094981/logs",
+      "workflow_id": 344551465
+    }
+  ],
+  "named_mem_workflow_jobs": [
+    {
+      "id": 130534279159,
+      "name": "Frozen candidate and coverage contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 43024095069,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Check out the exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Retain source and install real CPU actor dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Check real actor and independent candidate evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Check identical-support selectors and bound action receipts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Check replay matching and incomplete-run accounting",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check full-trajectory replay matching and failure accounting",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Check prospective selector plans, failures and independent scoring",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Check frozen cohort and failed-attempt accounting",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Check composition paths and partial native failure costs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Check fixed-public retention attribution and fresh-session memory",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Retain final source state",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Retain test and dependency evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27
+        },
+        {
+          "name": "Post Check out the exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29
+        }
+      ]
+    },
+    {
+      "id": 130534279471,
+      "name": "Staged native episodic owner contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 43024095069,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Bind exact comparison and staged source presence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run ./.github/actions/setup-ci",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Retain native tool versions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Format exact PR changes and reject any source rewrite",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Install existing native build prerequisites",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Resolve repository-verified V8 inputs for the control stage",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Test staged memory owner contracts on unchanged source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Build and bind the exact Codex executable for real App Server drain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Test staged Agentd control contracts on unchanged source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Test the qualification feature preserves explicit memory isolation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Test protocol package after the control stage is present",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Run scoped fixes after tests and reject any source rewrite",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Retain final source, full rewrite patch and changed files",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Retain native logs and exact-source evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 37
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 38
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 39
+        }
+      ]
+    },
+    {
+      "id": 130534279579,
+      "name": "Source-memory receipts and post-update revocation",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 43024095069,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Check out the exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Bind source-head identity before integrity tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Check standard-library integrity and fresh readers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Record the isolated revocation campaign",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Bind source-head identity after integrity tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Retain integrity evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Check out the exact source commit",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    }
+  ],
+  "scope": "Owner named MEM workflow succeeded. Broader blocking CI has observed failures, other owner and delivery runs may remain in progress. No whole HOSTED-CI closure or native-count inflation. Workflow list is the API first page; failures and source attribution are preserved separately.",
+  "previous_observation_at_utc": "2026-11-11T13:22:00Z",
+  "owner_blocking_observed_failures": [
+    {
+      "job_id": 130534279170,
+      "classification": "Fence readiness before checkout; blob checks skipped"
+    },
+    {
+      "job_id": 130534450487,
+      "classification": "Hard-link diagnostic assertion; earlier attempt failures separately retained"
+    },
+    {
+      "job_id": 130534450558,
+      "classification": "Two ordinary-host delete controls followed by three poisoned-lock failures"
+    }
+  ],
+  "failure_evidence": "owner-ci-failures.tar.xz",
+  "failure_report": "ci-owner/CI_FAILURES_OWNER.md",
+  "windows_tested_merge": "ddc505e2e9025e4994aa73d30a507de1c632a63e",
+  "windows_tested_tree": "2e3cb076a7e6b5bc83c9ffde2c28c7052b00715b",
+  "delivery": {
+    "pr": 5977,
+    "source_head": "b03214c5c2e2bf4499c211227e43cc22f8663d95",
+    "source_tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+    "observed_merge": "5266438337b94540551995a2e72b803c9626af56",
+    "runs": [
+      {
+        "id": 43029137659,
+        "name": "Hepta Windows private-state native (security qualification only)",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 716,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137659/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137659/logs",
+        "workflow_id": 385583766
+      },
+      {
+        "id": 43029137502,
+        "name": "Production HOS2 owner proposal",
+        "status": "completed",
+        "conclusion": "skipped",
+        "run_number": 602,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137502/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137502/logs",
+        "workflow_id": 391152960
+      },
+      {
+        "id": 43029137495,
+        "name": "Hepta MEM candidate and replay controls",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 53,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137495/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137495/logs",
+        "workflow_id": 412048854
+      },
+      {
+        "id": 43029137571,
+        "name": "Hepta architecture convergence",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 22062,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137571/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137571/logs",
+        "workflow_id": 344551465
+      },
+      {
+        "id": 43029137684,
+        "name": "v8-canary",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 35067,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137684/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137684/logs",
+        "workflow_id": 336746138
+      },
+      {
+        "id": 43029137909,
+        "name": "blocking-ci",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 35248,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137909/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43029137909/logs",
+        "workflow_id": 336746106
+      }
+    ]
+  }
+}

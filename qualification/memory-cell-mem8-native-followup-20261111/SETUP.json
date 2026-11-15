@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.mem.native-isolated-checkout.v1",
+  "scope": "Only this task's checkout attempts and successful exact-SHA materialization; zero tests in setup.",
+  "base_commit": "189711e3563ea13a5328d52e99a286f082045b98",
+  "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "ai395_first_clone": {
+    "job_id": "1a1ca7d9d86-2564-63e",
+    "taskroot": "/home/qq/mem-native-5af6-20261111",
+    "test_executions": 0,
+    "files": [
+      {
+        "eof": true,
+        "path": "/home/qq/mem-native-5af6-20261111/prep/checkout.stderr",
+        "sha256": "da0acd5496421d1b6ddba1ffc9a964e382175261ae36cc38c605a30c3668f265",
+        "size": 70,
+        "text": "fatal: unable to read tree (189711e3563ea13a5328d52e99a286f082045b98)\n",
+        "version": "66306:55081352:70:1794398595109975120:1794398595109975120"
+      },
+      {
+        "eof": true,
+        "path": "/home/qq/mem-native-5af6-20261111/prep/clone.stderr",
+        "sha256": "bc51f8ef8b771f80f871eb9dd6d18657b26bbfda7222912206403beb2a3b3e00",
+        "size": 59,
+        "text": "Cloning into '/home/qq/mem-native-5af6-20261111/source'...\n",
+        "version": "66306:55081338:59:1794398595108733157:1794398595108733157"
+      }
+    ],
+    "process_observation": {
+      "audit_recorded": true,
+      "job_id": "1a1ca7d9d86-2564-63e",
+      "stderr": {
+        "eof": true,
+        "next_offset": 413,
+        "offset": 0,
+        "size": 413,
+        "text": "Traceback (most recent call last):\n  File \"<string>\", line 14, in <module>\n    run(\"checkout\",[\"/usr/bin/git\",\"-C\",str(src),\"checkout\",\"--detach\",want],180)\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 7, in run\n    if r.returncode:raise RuntimeError(name+\"_FAILED\")\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: checkout_FAILED\n"
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 212,
+        "offset": 0,
+        "size": 212,
+        "text": "{\"phase\": \"donor_head\", \"returncode\": 0}\n{\"phase\": \"donor_status_before\", \"returncode\": 0}\n{\"phase\": \"target_object\", \"returncode\": 0}\n{\"phase\": \"clone\", \"returncode\": 0}\n{\"phase\": \"checkout\", \"returncode\": 128}\n"
+      }
+    }
+  },
+  "desktop_first_clone": {
+    "job_id": "1a1ca7f4c7a-2564-64f",
+    "taskroot": "/home/qian-qi/mem-native-5af6-20261111",
+    "test_executions": 0,
+    "files": [
+      {
+        "eof": true,
+        "path": "/home/qian-qi/mem-native-5af6-20261111/prep/checkout.stderr",
+        "sha256": "e40e37f538a1a2ba7ea0627766ccb10550dca46b747054ec82838524ab5b25f3",
+        "size": 72,
+        "text": "fatal: 引用不是一个树：189711e3563ea13a5328d52e99a286f082045b98\n",
+        "version": "2050:51969207:72:1794398709482946638:1794398709482946638"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/mem-native-5af6-20261111/prep/clone.stderr",
+        "sha256": "cb8454d3901b4cd6c98824a0ef1cf01f21b740daf0a3c46d05893ddd3fafe348",
+        "size": 64,
+        "text": "正克隆到 '/home/qian-qi/mem-native-5af6-20261111/source'...\n",
+        "version": "2050:51969205:64:1794398709479371531:1794398709479371531"
+      }
+    ],
+    "process_observation": {
+      "audit_recorded": true,
+      "job_id": "1a1ca7f4c7a-2564-64f",
+      "stderr": {
+        "eof": true,
+        "next_offset": 139,
+        "offset": 0,
+        "size": 139,
+        "text": "Traceback (most recent call last):\n  File \"<string>\", line 15, in <module>\n  File \"<string>\", line 7, in run\nRuntimeError: checkout_FAILED\n"
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 267,
+        "offset": 0,
+        "size": 267,
+        "text": "{\"phase\": \"donor_head\", \"returncode\": 0}\n{\"phase\": \"donor_status_before\", \"returncode\": 0}\n{\"phase\": \"target_object\", \"returncode\": 0}\n{\"phase\": \"target_tree_materialized\", \"returncode\": 0}\n{\"phase\": \"clone\", \"returncode\": 0}\n{\"phase\": \"checkout\", \"returncode\": 128}\n"
+      }
+    }
+  },
+  "desktop_materialization": {
+    "job_id": "1a1ca81bb49-2564-669",
+    "proof": {
+      "eof": true,
+      "path": "/home/qian-qi/mem-native-5af6-20261111/prep/SOURCE_PROOF.json",
+      "sha256": "e4fe981c73dabe7281165c4c6fb592ea2d472fd40d257e93a1f18c795208574b",
+      "size": 6222,
+      "text": "{\n  \"source\": \"/home/qian-qi/mem-native-5af6-20261111/source\",\n  \"head\": \"189711e3563ea13a5328d52e99a286f082045b98\",\n  \"tree\": \"e253b99e0a5c3b3a680569da0d224fabff0781ba\",\n  \"clean\": true,\n  \"donor\": \"/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/source\",\n  \"donor_status_unchanged\": true,\n  \"independent_git_objects\": true,\n  \"free_bytes\": 128515858432,\n  \"tool_paths\": {\n    \"just\": [\n      \"/home/qian-qi/.cargo/bin/just\"\n    ],\n    \"cargo\": [\n      \"/home/qian-qi/.cargo/bin/cargo\",\n      \"/usr/bin/cargo\"\n    ],\n    \"rustc\": [\n      \"/home/qian-qi/.cargo/bin/rustc\",\n      \"/usr/bin/rustc\"\n    ],\n    \"rustfmt\": [\n      \"/home/qian-qi/.cargo/bin/rustfmt\",\n      \"/usr/bin/rustfmt\"\n    ],\n    \"cargo-nextest\": [\n      \"/home/qian-qi/.cargo/bin/cargo-nextest\"\n    ],\n    \"uv\": [],\n    \"clang\": [\n      \"/usr/bin/clang\"\n    ]\n  },\n  \"native_roots\": [\n    {\n      \"path\": \"/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/repo-contents-cache\",\n      \"children\": [\n        \"2fa1bce5bdd276259f8cca8e056c6725b907e1095f00dffc74fea94d42d3ce52\",\n        \"d586fca81a53e97e95222ca94fb1b6b5657180dee681e0f49a1362a2d8b0fcd4\",\n        \"5ac1f4150d73eff290ac0dbf38980ab87446d6770ab0a7181b436c91b7cd380a\",\n        \"0658a9397b0f072fd4a903d246c5e9dbf1f8d39835e1e5d3d1dcfd558102fa4c\",\n        \"22533a578877a61f604005c914bf415d58f8b38920ca556d8469653ef6cba891\",\n        \"feadd40feb7f182b371a88f7332c1910c03f98b1228483a89363aefcc1cd751c\",\n        \"d4b2b6de94386c436102c5c4d52532a8f7ff8b9e1e9e45f14f8f58af3793a0cb\",\n        \"d65db4f2b6b2bf83921309f46ce221e6b4d94718aa728f5309ccada3be1ca0a0\",\n        \"_trash\",\n        \"fe2079e4fdd14114286e9693852e6d72f277594e1c6e482542c185e03ff8cd17\",\n        \"c95247aa7fae48361a7920271c0fcc201a24d93bdc3c05b6fabf7d30e2961c6a\",\n        \"70a37bdcdd0527b55c9a7927cc3545dde4fed5f024af64a43c94a879f3ab56b2\",\n        \"8cfe80eb54d5ce649d093fe99337c92576869d7e96effd239f3208d41c4830b3\",\n        \"83255725696987f34bf7e7b21f8a7229b8c820870b4ede5eff4d5f096f26b1b4\",\n        \"83f96d6db50954c37518390584485df05e7f9215fede394f63fd9518dac6c617\",\n        \"85c1196ec521c19781182fd241006fcdb86e494ae2895c32a47b503a4c307c90\",\n        \"455ee4f7f24ee04020ed81ee239561e0ff5229d51657e7eff632923a4e169f70\",\n        \"fa9f201c46fcc2cff6707739c9a96cb23b50459048ec8c31765517ac838847b1\",\n        \"b9e6a5392bd659fb1c2d0d1a740f88ec20045d2267c4982b9b474ed67bc4c3b2\",\n        \"47144b07cb5447cd30e637d145f0a8e9a05057421b73ae77c728c1fbc1edb870\",\n        \"1a4bf77ce6187df45d5ea8fe0c66a5ecf7ee75d817d6e2e729e596b3fff937af\",\n        \"gc_lock\",\n        \"142cc4c38c90483c4b0a1e4c80e87939b8ae3595e3d90d40ba96ee05e43579f6\",\n        \"98a4f283928298fb06cb532cd1ea21e001b46112e8307bf4633054ad4a3c2c23\",\n        \"bed17c67cf1e6906d140cb3e471d1d8ce21a6b512541b0e852689fc5dc757380\"\n      ]\n    },\n    {\n      \"path\": \"/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/repository-cache\",\n      \"children\": [\n        \"content_addressable\"\n      ]\n    },\n    {\n      \"path\": \"/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/output-base\",\n      \"children\": [\n        \"README\",\n        \"external\",\n        \"java.log\",\n        \"bazel-remote-logs\",\n        \"javalog.properties\",\n        \"execroot\",\n        \"DO_NOT_BUILD_HERE\",\n        \"modextwd\",\n        \"lock\",\n        \"install\",\n        \"java.log.qian-qi.qian-qi.log.java.20261111-045549.4046735\",\n        \"MODULE.bazel.lock\"\n      ]\n    },\n    {\n      \"path\": \"/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/records\",\n      \"children\": [\n        \"INPUT.json\",\n        \"stage-candidate.json\",\n        \"CACHE_ISOLATION.json\",\n        \"source-promisor.stderr\",\n        \"candidate-commit.stdout\",\n        \"LOCK_BUDGET.json\",\n        \"origin.json\",\n        \"RESULT.json\",\n        \"candidate-commit-identity.json\",\n        \"origin.stdout\",\n        \"fetch-base.json\",\n        \"fetch-base.stderr\",\n        \"lock-generate.json.45b850f753fe4fc2acd7fef7ab986706.log\",\n        \"lock-generate.json\",\n        \"bazel-version.stdout\",\n        \"lock-generate.wrapper.stderr\",\n        \"origin.stderr\",\n        \"source-partial-filter.stdout\",\n        \"checkout-base.json\",\n        \"clone.json\",\n        \"bazel-version.stderr\",\n        \"source-promisor.json\",\n        \"lock-generate.MODULE.bazel.lock.post\",\n        \"just-version.stdout\",\n        \"BASE_CHECKOUT_IDENTITY.json\"\n      ]\n    },\n    {\n      \"path\": \"/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/bin\",\n      \"children\": [\n        \"bazel\"\n      ]\n    },\n    {\n      \"path\": \"/home/qian-qi/mem8-f1fd-full-rmcp-consumers-ed353817-v1/records\",\n      \"children\": [\n        \"INPUT.json\",\n        \"RESULT.json\",\n        \"scoped-rmcp-fix.json.b633af9047a84f49930a74d665f577c9.log\",\n        \"full-rmcp-268.wrapper.stderr.log\",\n        \"same-source-codex-cli-build.wrapper.stdout.log\",\n        \"CLI_AFTER_TESTS.json\",\n        \"scoped-rmcp-fix.wrapper.stderr.log\",\n        \"same-source-codex-cli-build.audit.json\",\n        \"scoped-rmcp-fix.audit.json\",\n        \"same-source-codex-cli-build.wrapper.stderr.log\",\n        \"same-source-codex-cli-build.json.46d8df3f79d64fd6a81488f8b9f844fa.log\",\n        \"full-rmcp-268.json.258dccb802c34ff5a2f0500c989f7b30.log\",\n        \"full-rmcp-268.json\",\n        \"scoped-rmcp-fix.wrapper.stdout.log\",\n        \"full-rmcp-268.wrapper.stdout.log\",\n        \"scoped-rmcp-fix.json\",\n        \"full-rmcp-268.junit.xml\",\n        \"same-source-codex-cli-build.json\",\n        \"CLI_BEFORE_TESTS.json\",\n        \"full-rmcp-268.audit.json\"\n      ]\n    }\n  ],\n  \"driver_files\": [\n    \"/home/qian-qi/mem8-f1fd-full-rmcp-consumers-ed353817-v1/driver.py\"\n  ],\n  \"toolchains\": [\n    \"/home/qian-qi/.rustup/toolchains/stable-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.99.0-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu\",\n    \"/home/qian-qi/.rustup/toolchains/1.95-x86_64-unknown-linux-gnu\"\n  ]\n}\n",
+      "version": "2050:51969224:6222:1794398871349984168:1794398871349984168"
+    },
+    "outcome": "Exact-SHA fetch from the original local donor completed before clean detached checkout. Donor worktree state unchanged; private independent Git objects."
+  },
+  "frontend_read_timeout": {
+    "tool": "h.process_read",
+    "job_id": "1a1ca81bb49-2564-669",
+    "text": "tool call error: tool call failed for `codex_apps/h.process_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+    "replay": false
+  },
+  "successful_async_read_operation": "fc2d9d7c2d35810c0e69ac0cba88c2e09905aa63c34da0836375d28be8d65614",
+  "scientific_adoption": "HOLD"
+}

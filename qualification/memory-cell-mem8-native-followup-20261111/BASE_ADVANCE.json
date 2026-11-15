@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.mem.native-followup.base-advance.v1",
+  "observed_at_utc": "2026-11-11 12:55:10 UTC",
+  "frozen_test_base": "189711e3563ea13a5328d52e99a286f082045b98",
+  "current_target": {
+    "pr": 5935,
+    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591"
+  },
+  "ancestry": [
+    {
+      "sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "parents": [
+        "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2"
+      ]
+    },
+    {
+      "sha": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+      "parents": [
+        "6ce78781977d1ca77d004845b933ec9a99f54a83"
+      ]
+    },
+    {
+      "sha": "6ce78781977d1ca77d004845b933ec9a99f54a83",
+      "tree": "c156a37173be3d2d72cd8c8bcd19e22f4d6bed51",
+      "parents": [
+        "189711e3563ea13a5328d52e99a286f082045b98"
+      ]
+    }
+  ],
+  "affected_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "at_frozen_base": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+      "at_current_target": "595a9aec06808963b580b83f7cb856221d2a7bd5",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "at_frozen_base": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+      "at_current_target": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "at_frozen_base": "b34481b81ec0fc7284aa37540b7c638d809aa950",
+      "at_current_target": "b34481b81ec0fc7284aa37540b7c638d809aa950",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "at_frozen_base": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+      "at_current_target": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_read.rs",
+      "at_frozen_base": null,
+      "at_current_target": null,
+      "existing_bytes_unchanged": null,
+      "new_path_absence_confirmed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_native_head_tests.rs",
+      "at_frozen_base": null,
+      "at_current_target": null,
+      "existing_bytes_unchanged": null,
+      "new_path_absence_confirmed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "at_frozen_base": "1a2f49b93b9c562b9817874652184f06297615a7",
+      "at_current_target": "1a2f49b93b9c562b9817874652184f06297615a7",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "at_frozen_base": "f0236c414a88cd9cfbe2966627c10410f54b85d9",
+      "at_current_target": "f0236c414a88cd9cfbe2966627c10410f54b85d9",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "at_frozen_base": "d378670412d30caf71feac26064c5cd476f6f1ca",
+      "at_current_target": "d378670412d30caf71feac26064c5cd476f6f1ca",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/test_support.rs",
+      "at_frozen_base": "99d6ce85cf015235d0e194c812e384511af5d9d7",
+      "at_current_target": "99d6ce85cf015235d0e194c812e384511af5d9d7",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "at_frozen_base": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e",
+      "at_current_target": "c3ef8bf87075cf072660074fe8e91aedb75d5f5e",
+      "existing_bytes_unchanged": true,
+      "new_path_absence_confirmed": null
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_context.rs",
+      "at_frozen_base": null,
+      "at_current_target": null,
+      "existing_bytes_unchanged": null,
+      "new_path_absence_confirmed": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_context_tests.rs",
+      "at_frozen_base": null,
+      "at_current_target": null,
+      "existing_bytes_unchanged": null,
+      "new_path_absence_confirmed": true
+    }
+  ],
+  "publication": {
+    "pr": 5972,
+    "head": "2e0f6ff4525a02143f700dee70309ef9b6169398",
+    "tree": "3e87a1e1e6d17191f9342e276d70cc0187dfb6b7",
+    "changed_files": 7,
+    "mergeable": true,
+    "observed_merge_commit": "ddc505e2e9025e4994aa73d30a507de1c632a63e"
+  },
+  "scope": "All nine affected existing files retain identical Git blobs; the four new files are absent at the current target. The current target descends from the frozen test base. Native component results remain bound to their original commit/tree; no result is transferred to the newer complete composition.",
+  "native_result_on_current_target": null
+}
