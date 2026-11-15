@@ -61,6 +61,11 @@ pub(crate) struct AgentdState {
     pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
 }
 
+pub(crate) enum CognitiveStoreRequirement {
+    OptionalReadOnly,
+    RequiredForWrites,
+}
+
 struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
@@ -364,8 +369,10 @@ impl AgentdState {
     #[cfg(feature = "qualification-cognitive-write")]
     pub(crate) fn qualification_turn_authority(&self) -> Result<u64, AgentdError> {
         self.refresh_generation()?;
+        let cognitive_store_available = self.cognitive.lock().map_err(poisoned_state)?.is_some();
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if runtime.lifecycle != AgentLifecycle::Running
+        if !cognitive_store_available
+            || runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
             || !runtime.critical_stores_ready
             || !runtime.revocation_ready
@@ -385,8 +392,17 @@ impl AgentdState {
     /// default Agentd composition has zero production effect authority, so a
     /// current zero-authority revocation baseline is sufficient here; any
     /// effect-authorized composition must replace it before opening admission.
-    pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
-        let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+    /// Cognitive storage is optional only for the explicit read-only profile;
+    /// its absence never creates a writer authority or advertises write tools.
+    pub(crate) fn mark_runtime_prerequisites_ready(
+        &self,
+        cognitive_requirement: CognitiveStoreRequirement,
+    ) -> Result<(), AgentdError> {
+        let cognitive_store_available = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+        let critical_stores_ready = match cognitive_requirement {
+            CognitiveStoreRequirement::OptionalReadOnly => true,
+            CognitiveStoreRequirement::RequiredForWrites => cognitive_store_available,
+        };
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.critical_stores_ready = critical_stores_ready;
         runtime.revocation_ready = true;

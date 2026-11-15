@@ -71,7 +71,8 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
-    let temp = tempfile::tempdir()?;
+    // The real Agentd endpoints must fit Darwin's 103-byte Unix socket bound.
+    let temp = tempfile::Builder::new().prefix("has-").tempdir_in("/tmp")?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
     let registry = FleetRegistry::initialize(fleet_root.clone())?;
@@ -85,7 +86,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let sources = root.join("release-sources");
     std::fs::create_dir(&sources)?;
-    let agentd = PathBuf::from(env!("CARGO_BIN_EXE_codex-hepta-agentd"));
+    let agentd = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
     let source_v1 = agentd_wrapper(&sources, "agentd-v1", &agentd)?;
     let source_v2 = agentd_wrapper(&sources, "agentd-v2", &agentd)?;
     let release_v1 = ReleaseId::parse("agentd-v1")?;

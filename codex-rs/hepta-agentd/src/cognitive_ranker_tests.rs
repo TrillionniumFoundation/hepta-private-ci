@@ -420,7 +420,10 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     use codex_hepta_paths::HeptaFleetRoot;
     use tokio_util::sync::CancellationToken;
 
-    let directory = tempfile::tempdir().unwrap();
+    let directory = tempfile::Builder::new()
+        .prefix("har-")
+        .tempdir_in("/tmp")
+        .unwrap();
     let root = directory.path().canonicalize().unwrap();
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap();
@@ -505,7 +508,11 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     let socket = identity.control_socket.clone();
     let state = Arc::new(crate::AgentdState::new(identity, registry, 16).unwrap());
     state.attach_cognitive_store(Arc::clone(&store)).unwrap();
-    state.mark_runtime_prerequisites_ready().unwrap();
+    state
+        .mark_runtime_prerequisites_ready(
+            crate::state::CognitiveStoreRequirement::RequiredForWrites,
+        )
+        .unwrap();
     assert!(state.cognitive_ranker.set(attached_ranker).is_ok());
     // Running is lifecycle generation 2, while this body's identity is still 1.
     lifecycle
