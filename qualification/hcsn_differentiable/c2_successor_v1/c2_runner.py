@@ -114,7 +114,7 @@ def bind_program(manifest_path):
             and value['execution_authorized'] is False,
             'C2 source freeze may not silently authorize scientific execution')
     required = {'c2_runner.py', 'c2_io.py', 'c2_recording.py', 'c2_boundary.py',
-                'c2_controller.py', 'POSTERIOR-POLICY.json',
+                'c2_controller.py', 'c2_stopping.py', 'POSTERIOR-POLICY.json',
                 'OPTIMIZATION-POSTERIOR-POLICY-v2.json', 'CONTRACT.json'}
     expected = value['files']
     require(type(expected) is dict and set(expected) == required,

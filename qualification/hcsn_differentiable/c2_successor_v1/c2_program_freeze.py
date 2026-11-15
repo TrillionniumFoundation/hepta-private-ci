@@ -20,7 +20,7 @@ from c2_durable import EvidenceError, identity as durable_identity, publish_once
 
 REQUIRED_FILES = (
     'c2_runner.py', 'c2_io.py', 'c2_recording.py',
-    'c2_boundary.py', 'c2_controller.py', 'POSTERIOR-POLICY.json',
+    'c2_boundary.py', 'c2_controller.py', 'c2_stopping.py', 'POSTERIOR-POLICY.json',
     'OPTIMIZATION-POSTERIOR-POLICY-v2.json', 'CONTRACT.json',
 )
 DURABLE_DEPENDENCY = 'recovery_v1/c2_durable.py'

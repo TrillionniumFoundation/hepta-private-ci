@@ -30,7 +30,8 @@ def strict_object_json(path, *, max_bytes=1 << 25):
     path = Path(path)
     if type(max_bytes) is not int or max_bytes <= 0:
         raise ValueError("invalid JSON byte limit")
-    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+                 | getattr(os, "O_NONBLOCK", 0))
     with os.fdopen(fd, "rb") as source:
         metadata = os.fstat(source.fileno())
         if not stat.S_ISREG(metadata.st_mode) or not 0 < metadata.st_size <= max_bytes:

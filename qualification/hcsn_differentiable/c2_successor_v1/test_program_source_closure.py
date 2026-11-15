@@ -16,7 +16,7 @@ from c2_io import identity
 
 REQUIRED = (
     'c2_runner.py', 'c2_io.py', 'c2_recording.py', 'c2_boundary.py',
-    'c2_controller.py', 'POSTERIOR-POLICY.json',
+    'c2_controller.py', 'c2_stopping.py', 'POSTERIOR-POLICY.json',
     'OPTIMIZATION-POSTERIOR-POLICY-v2.json', 'CONTRACT.json'
 )
 

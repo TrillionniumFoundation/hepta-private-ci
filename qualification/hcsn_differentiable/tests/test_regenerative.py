@@ -150,5 +150,59 @@ class RegenerativeTests(unittest.TestCase):
             refractory_value(0.2, parameters(), refractory=0.1)
 
 
+
+class FirstHitRegimeTests(unittest.TestCase):
+    """Independent undiscounted controls for the signed drift regimes."""
+
+    def test_three_drift_regimes_and_long_run_rate(self):
+        from qualification.hcsn_differentiable.regenerative import first_hit_regime
+        x, delay = 0.3, 0.1
+        negative = first_hit_regime(x, parameters(mu=-0.2), refractory=delay)
+        self.assertEqual(negative.drift_regime, "negative")
+        self.assertEqual(negative.eventual_hit_probability, 1.0)
+        self.assertAlmostEqual(negative.mean_first_hit_time, 1.5)
+        self.assertAlmostEqual(
+            negative.long_run_event_rate,
+            1.0 / (delay + math.log(1.5) / 0.2),
+            delta=1e-14,
+        )
+        zero = first_hit_regime(x, parameters(mu=0.0), refractory=delay)
+        self.assertEqual(zero.drift_regime, "zero")
+        self.assertEqual(zero.eventual_hit_probability, 1.0)
+        self.assertTrue(math.isinf(zero.mean_first_hit_time))
+        self.assertEqual(zero.long_run_event_rate, 0.0)
+        positive = first_hit_regime(x, parameters(mu=0.2), refractory=delay)
+        self.assertEqual(positive.drift_regime, "positive")
+        self.assertAlmostEqual(
+            positive.eventual_hit_probability,
+            math.exp(-2 * 0.2 * x / 0.4 ** 2),
+            delta=1e-15,
+        )
+        self.assertTrue(math.isinf(positive.mean_first_hit_time))
+        self.assertEqual(positive.long_run_event_rate, 0.0)
+        self.assertLess(float(first_hit_laplace(x, parameters(mu=0.2))), positive.eventual_hit_probability)
+
+    def test_log_rare_hit_survives_probability_underflow(self):
+        from qualification.hcsn_differentiable.regenerative import first_hit_regime
+        reported = first_hit_regime(8.0, parameters(mu=2.0, sigma=0.05), refractory=0.1)
+        self.assertEqual(reported.eventual_hit_probability, 0.0)
+        self.assertAlmostEqual(reported.log_eventual_hit_probability, -12800.0, places=5)
+        self.assertTrue(math.isfinite(reported.log_eventual_hit_probability))
+        self.assertGreater(reported.reset_eventual_hit_probability, 0.0)
+
+    def test_boundary_immediate_hit_and_invalid_inputs(self):
+        from qualification.hcsn_differentiable.regenerative import first_hit_regime
+        now = first_hit_regime(0.0, parameters(mu=0.2), refractory=0.1)
+        self.assertEqual(now.eventual_hit_probability, 1.0)
+        self.assertEqual(now.mean_first_hit_time, 0.0)
+        with self.assertRaises(ValueError):
+            first_hit_regime(-0.1, parameters(), refractory=0.1)
+        with self.assertRaises(ValueError):
+            first_hit_regime(torch.tensor([0.1, 0.2], dtype=torch.float64),
+                             parameters(), refractory=0.1)
+        with self.assertRaises(ValueError):
+            first_hit_regime(0.2, parameters(), refractory=-0.1)
+
+
 if __name__ == "__main__":
     unittest.main()
