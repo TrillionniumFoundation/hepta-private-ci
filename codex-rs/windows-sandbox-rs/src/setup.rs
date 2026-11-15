@@ -348,6 +348,12 @@ fn run_setup_refresh_inner(
     let (read_roots, write_roots) = build_payload_roots(&request, &overrides);
     let deny_read_paths = build_payload_deny_read_paths(overrides.deny_read_paths);
     let deny_write_paths = build_payload_deny_write_paths(&request, overrides.deny_write_paths);
+    let _deny_admission = crate::setup_deny_write::apply_as_caller(
+        request.codex_home,
+        request.command_cwd,
+        &write_roots,
+        &deny_write_paths,
+    )?;
     let offline_proxy_settings =
         offline_proxy_settings_for_request(&request, offline_proxy_settings_override);
     let payload = ElevationPayload {
@@ -1124,6 +1130,12 @@ fn run_elevated_setup_inner(
     let (read_roots, write_roots) = build_payload_roots(&request, &overrides);
     let deny_read_paths = build_payload_deny_read_paths(overrides.deny_read_paths);
     let deny_write_paths = build_payload_deny_write_paths(&request, overrides.deny_write_paths);
+    let _deny_admission = crate::setup_deny_write::apply_as_caller(
+        request.codex_home,
+        request.command_cwd,
+        &write_roots,
+        &deny_write_paths,
+    )?;
     let offline_proxy_settings =
         offline_proxy_settings_for_request(&request, offline_proxy_settings_override);
     let payload = ElevationPayload {

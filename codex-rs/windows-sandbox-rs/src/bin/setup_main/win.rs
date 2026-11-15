@@ -33,7 +33,7 @@ use codex_windows_sandbox::string_from_sid_bytes;
 use codex_windows_sandbox::sync_persistent_deny_read_acls;
 use codex_windows_sandbox::to_wide;
 use codex_windows_sandbox::workspace_write_cap_sid_for_root;
-use codex_windows_sandbox::workspace_write_root_overlaps_path;
+use codex_windows_sandbox::workspace_write_cap_sids_for_path;
 use codex_windows_sandbox::write_setup_error_report;
 use serde::Deserialize;
 use serde::Serialize;
@@ -128,42 +128,6 @@ fn log_line(log: &mut dyn Write, msg: &str) -> Result<()> {
         ))
     })?;
     Ok(())
-}
-
-fn workspace_write_cap_sids_for_path(
-    codex_home: &Path,
-    command_cwd: &Path,
-    write_roots: &[PathBuf],
-    path: &Path,
-) -> Result<Vec<String>> {
-    let mut sid_strs = Vec::new();
-    for root in write_roots {
-        if workspace_write_root_overlaps_path(root, path) {
-            sid_strs.push(workspace_write_cap_sid_for_root(
-                codex_home,
-                command_cwd,
-                root,
-            )?);
-        }
-    }
-    if sid_strs.is_empty() {
-        if write_roots.is_empty() {
-            sid_strs.push(workspace_write_cap_sid_for_root(
-                codex_home,
-                command_cwd,
-                command_cwd,
-            )?);
-        } else {
-            for root in write_roots {
-                sid_strs.push(workspace_write_cap_sid_for_root(
-                    codex_home,
-                    command_cwd,
-                    root,
-                )?);
-            }
-        }
-    }
-    Ok(sid_strs)
 }
 
 struct ReadAclSubjects<'a> {
@@ -966,15 +930,10 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
         // read-only-under-a-writable-root carveouts in the transformed sandbox policy, or from
         // legacy protected children such as `.git`, `.codex`, and `.agents`.
         //
-        // Deny ACEs attach to filesystem objects; if an explicit policy carveout does not exist
-        // during setup, the sandbox could otherwise create it later under a writable parent and
-        // bypass the carveout. Materialize missing carveouts as directories so the deny-write ACL
-        // is present before the command starts. Legacy protected children are filtered before
-        // payload creation, so this should not create sentinel directories in a workspace.
-        if !path.exists() {
-            std::fs::create_dir_all(path)
-                .with_context(|| format!("failed to create deny-write path {}", path.display()))?;
-        }
+        // The effective caller has already materialized and admitted every
+        // required carveout, retaining its pathname through this helper. Do not
+        // create it with the helper's stronger token. The handle-based ACL
+        // operation below atomically rejects any reparse in the current path.
 
         let deny_sid_strs = workspace_write_cap_sids_for_path(
             &payload.codex_home,

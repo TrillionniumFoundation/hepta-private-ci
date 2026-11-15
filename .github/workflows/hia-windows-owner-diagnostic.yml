@@ -68,7 +68,7 @@ jobs:
       - name: Capture read-only ACL diagnostics
         shell: pwsh
         run: |
-          $paths = @("$env:SystemRoot\System32", "$env:CARGO_TARGET_DIR\debug", "$env:GITHUB_WORKSPACE\codex-rs")
+          $paths = @("$env:SystemRoot\System32", "$env:CARGO_TARGET_DIR\debug", "$env:GITHUB_WORKSPACE\codex-rs", "$env:SystemRoot\System32\bcrypt.dll", "$env:SystemRoot\System32\bcryptprimitives.dll", "$env:SystemRoot\System32\mscoree.dll")
           foreach ($path in $paths) {
             $acl = Get-Acl -LiteralPath $path
             "$path`n$($acl.Sddl)" | Out-File -Append "$env:RUNNER_TEMP/windows-owner-acls.txt"
@@ -87,6 +87,21 @@ jobs:
           set -euo pipefail
           cargo clippy --locked -p codex-windows-sandbox --all-targets -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/windows-owner-clippy.log"
+
+      - name: Observe native crypto initialization without CLR
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python -B ../.github/diagnostics/build_windows_crypto_probe.py \
+            --source ../.github/diagnostics/windows_crypto_probe.rs \
+            --output "$RUNNER_TEMP/native-crypto-probe.exe" \
+            | tee "$RUNNER_TEMP/windows-owner-crypto-probe.json"
+          cargo build --locked -p codex-windows-sandbox --example windows_crypto_diagnostic \
+            2>&1 | tee "$RUNNER_TEMP/windows-owner-crypto-build.log"
+          python -B ../.github/diagnostics/run_windows_crypto_diagnostic.py \
+            --probe "$RUNNER_TEMP/native-crypto-probe.exe" \
+            --output "$RUNNER_TEMP/windows-owner-crypto-observations.json" \
+            | tee "$RUNNER_TEMP/windows-owner-crypto-observations.log"
 
       - name: Check source remains clean
         if: always()

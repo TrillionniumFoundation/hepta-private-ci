@@ -49,6 +49,8 @@ pub struct WindowsSandboxProvisioningSettings {
 #[cfg(target_os = "windows")]
 mod acl;
 #[cfg(target_os = "windows")]
+mod acl_target;
+#[cfg(target_os = "windows")]
 mod allow;
 #[cfg(target_os = "windows")]
 mod audit;
@@ -146,6 +148,9 @@ mod sandbox_utils;
 mod setup;
 
 #[cfg(target_os = "windows")]
+mod setup_deny_write;
+
+#[cfg(target_os = "windows")]
 mod setup_error;
 
 #[cfg(target_os = "windows")]
@@ -199,6 +204,8 @@ pub use cap::load_or_create_cap_sids;
 pub use cap::workspace_cap_sid_for_cwd;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_cap_sid_for_root;
+#[cfg(target_os = "windows")]
+pub use cap::workspace_write_cap_sids_for_path;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_root_contains_path;
 #[cfg(target_os = "windows")]

@@ -125,6 +125,43 @@ pub fn workspace_write_cap_sid_for_root(
     }
 }
 
+/// Returns the current write capabilities whose authority must be denied at a carveout.
+pub fn workspace_write_cap_sids_for_path(
+    codex_home: &Path,
+    command_cwd: &Path,
+    write_roots: &[PathBuf],
+    path: &Path,
+) -> Result<Vec<String>> {
+    let mut sid_strs = Vec::new();
+    for root in write_roots {
+        if workspace_write_root_overlaps_path(root, path) {
+            sid_strs.push(workspace_write_cap_sid_for_root(
+                codex_home,
+                command_cwd,
+                root,
+            )?);
+        }
+    }
+    if sid_strs.is_empty() {
+        if write_roots.is_empty() {
+            sid_strs.push(workspace_write_cap_sid_for_root(
+                codex_home,
+                command_cwd,
+                command_cwd,
+            )?);
+        } else {
+            for root in write_roots {
+                sid_strs.push(workspace_write_cap_sid_for_root(
+                    codex_home,
+                    command_cwd,
+                    root,
+                )?);
+            }
+        }
+    }
+    Ok(sid_strs)
+}
+
 pub fn workspace_write_root_contains_path(root: &Path, path: &Path) -> bool {
     canonicalize_path(path).starts_with(canonicalize_path(root))
 }

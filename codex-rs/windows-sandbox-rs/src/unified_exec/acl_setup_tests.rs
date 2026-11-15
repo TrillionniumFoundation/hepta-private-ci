@@ -355,7 +355,7 @@ impl AclSetupFailureFixture {
                 Some((
                     crate::SetupErrorCode::HelperUnknownError,
                     format!(
-                        "sandbox filesystem ACL setup failed:\ndeny ACE failed on {}: SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
+                        "sandbox filesystem ACL setup failed:\ndeny ACE failed on {}: ReOpenFile(WRITE_DAC) failed for {}: {ERROR_ACCESS_DENIED}",
                         self.protected_file.display(),
                         self.protected_file.display(),
                     ),
