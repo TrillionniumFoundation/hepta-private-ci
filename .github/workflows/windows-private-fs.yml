@@ -44,8 +44,6 @@ jobs:
       CARGO_TERM_COLOR: never
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_INCREMENTAL: "0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/windows-private-fs-target
-      EVIDENCE_DIR: ${{ runner.temp }}/windows-private-fs-evidence
     steps:
       - name: Preserve source line endings
         run: git config --global core.autocrlf false
@@ -62,6 +60,9 @@ jobs:
       - name: Bind native checkout and toolchain
         run: |
           $ErrorActionPreference = "Stop"
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "windows-private-fs-target"
+          $env:EVIDENCE_DIR = Join-Path $env:RUNNER_TEMP "windows-private-fs-evidence"
+          @("CARGO_TARGET_DIR=$env:CARGO_TARGET_DIR", "EVIDENCE_DIR=$env:EVIDENCE_DIR") | Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8
           New-Item -ItemType Directory -Force $env:EVIDENCE_DIR | Out-Null
           $head = git --no-replace-objects rev-parse HEAD
           if ($LASTEXITCODE -ne 0 -or $head -ne $env:SOURCE_SHA) { throw "source identity mismatch" }
