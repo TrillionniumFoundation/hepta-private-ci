@@ -541,619 +541,24 @@
   "production_algorithm_group_count": 9,
   "current_source_inputs_scope": "Union of named inputs from the three published candidates and every current HIA source/contract/test/build file. Excludes exactly the three canonical metadata files to avoid self-hashing. Source hashes bind bytes, not execution of pending gates.",
   "file_update_increment": {
-    "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
-    "implementation_commit": "0ada4c2d2b9ba4465b0ce05577bbf256b46e98c5",
-    "implementation_tree_before_ci_and_metadata": "a03ccf41a6ba180b0484bf8dea84317c19f6a6f3",
-    "target": "x86_64-unknown-linux-gnu",
-    "rust_version": "1.96.1",
-    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
-    "status": "minimal_native_dispatch_and_lint_repair_prepared_pending_new_ci",
-    "native_modules": 10,
-    "production_algorithm_groups": 8,
-    "new_algorithm_owner_candidate": "file_update",
-    "parser_hia_owner_included": false,
-    "source_snapshot": {
-      "scope": "Actual uncommitted working-tree bytes before this CI receipt addition and three metadata updates; the Git base alone is not a tested final head.",
-      "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
-      "head_tree": "81e2c89764d0956754adfc1508948b109ac0e39e",
-      "tracked_changes": 7,
-      "untracked_files": 11,
-      "snapshot_sha256": "3a887b433b217318c3b251d85a0474d6ca857271ba229e6af1be3c369c45318c",
-      "durable_job_id": "1a1dd41b1ca-392-1fda",
-      "exit_code": 0
-    },
-    "build_report_sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6",
-    "formal_build_directory": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1",
-    "compiler_fixed_point": true,
-    "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-    "native_build_job": {
-      "id": "1a1dd16b118-392-1f20",
-      "exit_code": 0
-    },
-    "owner": {
-      "source": "codex-rs/apply-patch/src/file_update.rs",
-      "adapter": "codex-rs/apply-patch/src/hia_native_file_update.rs",
-      "hia_source": "hia/file_update.hepta",
-      "source_functions": [
-        "derive_new_contents_from_chunks",
-        "compute_replacements",
-        "apply_replacements"
-      ],
-      "native_scope": {
-        "owner": "Native LF split, native chunk/resume state machine, native stable permutation, native reverse overlapping line edits and LF rendering.",
-        "search": "HIA emits each search request. Rust calls the existing real HIA seek_sequence on unchanged original lines and the native-selected context/pattern slice, then returns its Option index. No duplicated matcher, Rust matching fallback or cross-archive HIA call.",
-        "preserve": "Existing real HIA SourceFile parses/projects original logical lines and applies/renders the native-sorted replacement plan.",
-        "rust": "Allocation, metadata encoding, owned String/Vec storage, checked native indices/spans, synchronous callback transport and exact error formatting. Static enum dispatch selects native components. Original filesystem, PathUri, symlink/sandbox policy and similar TextDiff remain host boundaries.",
-        "continuation": "Explicit caller-owned continuation, not a cryptographic token. Native admission checks structural state and callback ranges. Production binds lengths and callback truth to actual Strings/native results; raw metadata alone cannot authenticate text equality.",
-        "evidence": "Whole public oracle parity does not imply observation of every original private search/replacement trace. Raw continuation tests are a separate contract gate."
-      },
-      "host_boundaries": [
-        "real ExecutorFileSystem and LOCAL_FS",
-        "PathUri and symlink/sandbox policy",
-        "public error formatting",
-        "similar TextDiff and public patch entry points"
-      ],
-      "whole_public_owner_qualified": false
-    },
-    "contract": {
-      "path": "hia/file_update_buffer_contract.json",
-      "sha256": "ba4ae185438fb19401fe92d0602c32c6f1d4e4891987937ad05cefb6f1f8be95",
-      "operations": 8,
-      "global_migration_complete": false,
-      "legacy_safe_to_delete": false
-    },
-    "source_inputs_at_abi": {
-      "hia/file_update.hepta": {
-        "sha256": "aaf5a14f8ba8627275b406c1f5ad26fffc6628048b68cdac7d732013491a2ddc",
-        "bytes": 119946,
-        "lines": 1953
-      },
-      "hia/file_update_buffer_contract.json": {
-        "sha256": "ba4ae185438fb19401fe92d0602c32c6f1d4e4891987937ad05cefb6f1f8be95",
-        "bytes": 11986,
-        "lines": 233
-      },
-      "codex-rs/apply-patch/src/hia_native_file_update.rs": {
-        "sha256": "5d4537451c3da845dfcaec48a02f00af07b48ff80f45c75fc63c24b9d9cbf671",
-        "bytes": 18397,
-        "lines": 493
-      },
-      "codex-rs/apply-patch/src/file_update.rs": {
-        "sha256": "035c8933e3c1282c04cce7a5419e4f7d1909b823efd2cb8d0c19229bde7faf5d",
-        "bytes": 13450,
-        "lines": 362
-      }
-    },
-    "exact_routing_inverse": {
-      "exact": true,
-      "block_count": 7,
-      "bytes": 12365,
-      "sha256": "6f45aabc6d1bb103875df8c8529558a49587db103b1a26aa633b8ea7ada570f2",
-      "git_blob": "b95270b799b31149bd19bf5825e4f68b1d97e954"
-    },
-    "raw_abi": {
-      "schema": "codex.hia.file-update-abi.v1",
-      "passed": true,
-      "native_calls": 2897,
-      "error_no_write_cases": 1381,
-      "query_calls": 756,
-      "emit_calls": 760,
-      "planner_pairs": 28,
-      "stable_sort_pairs": 200,
-      "reverse_render_pairs": 334,
-      "skipped": 0,
-      "concurrent_native_calls": 768,
-      "large_source_bytes": 2200000,
-      "large_line_plan_bytes": 1120032,
-      "library_sha256": "026229de63517c172605e34d5cd64bf7caf87b612e2e3e3c2c2aeb52a9f9d0ac",
-      "archive_sha256": "7552165d4918074e4008945b0bd9ff53078985b1002efd0b2bfd3e216955d840",
-      "source_sha256": "aaf5a14f8ba8627275b406c1f5ad26fffc6628048b68cdac7d732013491a2ddc",
-      "contract_sha256": "ba4ae185438fb19401fe92d0602c32c6f1d4e4891987937ad05cefb6f1f8be95",
-      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "build_report_sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6",
-      "test_source_sha256": "d591e493a70ffc43923d9cd84341c72238aa6072d1c3403ca7bc1aade02930f5",
-      "error_contract": "Every nonzero return preserves all buffers and canaries; query writes only its header; emit writes only within needed bytes.",
-      "callback_scope": "Explicit raw continuation answers only. Existing actual HIA seek and complete-original public behavior are qualified separately.",
-      "oracle_scope": "Independent raw ABI/sequence fixtures, not an extracted or substituted original Rust owner."
-    },
-    "raw_abi_job": {
-      "id": "1a1dd29002d-392-1f6e",
-      "exit_code": 0,
-      "result_sha256": "e773455a10cbd31eb5ab6d2775745dd386f7160ec704f1b2d9eb2e10ef3d5f5d"
-    },
-    "cargo_receipts": {
-      "schema": "codex.hia.build-receipt-test.v1",
-      "status": "passed",
-      "checks": 60,
-      "cases": [
-        "sha256-0",
-        "sha256-1",
-        "sha256-3",
-        "sha256-55",
-        "sha256-56",
-        "sha256-63",
-        "sha256-64",
-        "sha256-65",
-        "sha256-1000",
-        "sha256-1000000",
-        "feature-disabled-needs-no-files-or-target",
-        "accepted-seek_sequence",
-        "accepted-utf8_boundaries",
-        "accepted-utf8_prefix",
-        "accepted-metric_tag",
-        "accepted-markdown_location",
-        "accepted-ascii_json_fragment",
-        "accepted-truncate",
-        "accepted-token_budget",
-        "accepted-source_file",
-        "accepted-file_update",
-        "changed-bytes-build.py",
-        "changed-bytes-cargo_build.rs",
-        "changed-bytes-toolchain.json",
-        "changed-bytes-seek_sequence.hepta",
-        "changed-bytes-utf8_boundaries.hepta",
-        "changed-bytes-utf8_prefix.hepta",
-        "changed-bytes-metric_tag.hepta",
-        "changed-bytes-markdown_location.hepta",
-        "changed-bytes-ascii_json_fragment.hepta",
-        "changed-bytes-truncate.hepta",
-        "changed-bytes-token_budget.hepta",
-        "changed-bytes-source_file.hepta",
-        "changed-bytes-file_update.hepta",
-        "changed-bytes-build.json",
-        "changed-bytes-file_update.namespaced.o",
-        "changed-bytes-libcodex_hia_file_update.a",
-        "changed-bytes-B1.image.bin",
-        "changed-bytes-B2.image.bin",
-        "changed-bytes-B3.image.bin",
-        "wrong-receipt-mode",
-        "wrong-receipt-symbol",
-        "wrong-receipt-object",
-        "wrong-receipt-archive",
-        "wrong-receipt-revision",
-        "invalid-build-state-status",
-        "invalid-build-state-build_mode",
-        "invalid-build-state-compiler_fixed_point",
-        "noncanonical-receipt-48",
-        "noncanonical-receipt-49",
-        "noncanonical-receipt-50",
-        "missing-libdir",
-        "unsupported-CARGO_CFG_TARGET_OS",
-        "unsupported-CARGO_CFG_TARGET_ARCH",
-        "unsupported-CARGO_CFG_TARGET_ENV",
-        "unsupported-CARGO_CFG_TARGET_POINTER_WIDTH",
-        "reject-rehashed-weak-symbol",
-        "reject-rehashed-undefined-symbol",
-        "duplicate-rehashed-archive-member",
-        "python-duplicate-archive-rejected"
-      ],
-      "mutation_module": "file_update",
-      "helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-      "build_report_sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6",
-      "whole_codex_rewritten": false
-    },
-    "shared_scalar_build_admission": {
-      "schema": "codex.hia.scalar-build-admission.v1",
-      "status": "passed",
-      "checks": 116,
-      "cases": [
-        "native-build-schema",
-        "native-build-complete",
-        "native-build-mode",
-        "native-fixed-point",
-        "locked-toolchain",
-        "locked-toolchain-bytes",
-        "current-build-driver",
-        "current-cargo-helper",
-        "complete-module-inventory",
-        "current-source-seek_sequence",
-        "current-source-utf8_boundaries",
-        "current-source-utf8_prefix",
-        "current-source-metric_tag",
-        "current-source-markdown_location",
-        "current-source-ascii_json_fragment",
-        "current-source-truncate",
-        "current-source-token_budget",
-        "current-source-source_file",
-        "current-source-file_update",
-        "three-bootstrap-generations",
-        "B1-recorded-fixed-point",
-        "B1-actual-fixed-point",
-        "B2-recorded-fixed-point",
-        "B2-actual-fixed-point",
-        "B3-recorded-fixed-point",
-        "B3-actual-fixed-point",
-        "recorded-scalar-profile",
-        "compiled-source-assembly-version",
-        "scalar-native-compilation",
-        "compiled-source-input",
-        "compiled-source-observed",
-        "compiled-source-length",
-        "produced-raw-object",
-        "produced-raw-object-length",
-        "preserve-v8-object-source-schema-and-body",
-        "preserve-v9-object-source-schema-and-body",
-        "unknown-source-schema",
-        "source-schema-differs-from-core",
-        "source-module-differs-from-core",
-        "source-assembly-tag-differs",
-        "source-header-extra-token",
-        "accept-scalar-entry",
-        "accept-borrowed-entry",
-        "accept-scalar-entry-after-private-helper",
-        "unknown-profile",
-        "empty-profile",
-        "list-profile",
-        "integer-profile",
-        "profile-for-unlocked-module",
-        "profiles-not-an-object",
-        "scalar-without-locked-profile",
-        "missing-parameter",
-        "extra-parameter",
-        "resource-parameter",
-        "wrong-scalar-type",
-        "missing-return",
-        "wrong-return",
-        "extra-return",
-        "missing-export",
-        "wrong-export",
-        "extra-export",
-        "duplicate-export",
-        "no-explicit-scalar-exports",
-        "missing-f0",
-        "duplicate-f0",
-        "borrowed-explicit-resource-export",
-        "borrowed-entry-not-first",
-        "accept-real-b3-scalar-object",
-        "truncated-header",
-        "trailing-object-data",
-        "wrong-machine",
-        "wrong-object-kind",
-        "wrong-section-count",
-        "non-null-section-zero",
-        "rela-type",
-        "rela-flags",
-        "rela-address",
-        "rela-offset",
-        "rela-link",
-        "rela-info",
-        "rela-alignment",
-        "rela-entry-size",
-        "nonempty-relocation-section",
-        "writable-text",
-        "executable-stack-note",
-        "weak-export",
-        "undefined-export",
-        "non-function-export",
-        "nondefault-export-visibility",
-        "zero-size-export",
-        "export-outside-text",
-        "export-shifted-inside-text",
-        "export-truncated-inside-text",
-        "export-shifted-with-tail-preserved",
-        "wrapper-wrong-first-argument-register",
-        "wrapper-wrong-return-suffix",
-        "wrapper-call-enters-wrapper",
-        "wrapper-call-before-text",
-        "wrapper-call-past-text",
-        "wrong-export-name-offset",
-        "non-null-symbol-zero",
-        "wrong-export-name",
-        "extra-global-function-export",
-        "recorded-raw-object-inventory",
-        "normalized-section-count",
-        "normalized-machine-text",
-        "recorded-object-normalization",
-        "namespaced-archive-contract",
-        "namespaced-object-hash",
-        "namespaced-text-hash",
-        "archive-hash",
-        "archive-length",
-        "archive-machine-object",
-        "raw-library-hash",
-        "namespaced-library-hash",
-        "inputs-unchanged"
-      ],
-      "entry_profile": "u64-pair-to-u64-v1",
-      "test_sha256": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
-      "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-      "source_sha256": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-      "build_report_sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6",
-      "raw_object_sha256": "fbe7bf3d1709dc70c8c4f9e9eee80c213f8299be21ad6cee5f697ce130bf2315",
-      "normalized_object_sha256": "35c8c5d16c6b6961f3accf97fda1d801036440760f97fec0f6f898e556976d0d",
-      "archive_sha256": "791efb6220129bdeb722e27b9457e718f51219a162e6c45619462f84601c6eec",
-      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "object_inventory": {
-        "format": "ELF64-ET_REL",
-        "machine": "EM_X86_64",
-        "exports": [
-          "f0"
-        ],
-        "undefined_symbols": [],
-        "external_relocations": [],
-        "nonexecuting_stack_note": true,
-        "text_offset": 64,
-        "text_bytes": 746,
-        "text_sha256": "8024ce6daffa847925b915729d01da6b0f5928ab0e3c6de9a04087273b39212e",
-        "entry_wrapper_offset": 687,
-        "entry_wrapper_bytes": 59,
-        "object_sha256": "fbe7bf3d1709dc70c8c4f9e9eee80c213f8299be21ad6cee5f697ce130bf2315",
-        "empty_relocation_section": true
-      },
-      "whole_codex_rewritten": false,
-      "qualification_scope": "entry-profile and scalar ELF admission; behavioral gates separate"
-    },
-    "receipt_execution": {
-      "passed": true,
-      "source_unchanged": true,
-      "current_inputs": {
-        "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
-        "hia/file_update.hepta": "aaf5a14f8ba8627275b406c1f5ad26fffc6628048b68cdac7d732013491a2ddc",
-        "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
-        "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
-        "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-        "hia/source_file.hepta": "318444262135fbb1ca506ecce7dcc28fac4fc92d776d2d8d9f7c94a5a121b710",
-        "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-        "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
-        "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
-        "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-        "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-        "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-        "hia/toolchain.json": "21dda7f77d48505111a01142a41cd7796d7f8da38459bc0bc884ca4ab1ddff00",
-        "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
-        "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e"
-      },
-      "build_report_sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6",
-      "commands": [
-        {
-          "name": "receipts",
-          "argv": [
-            "/usr/bin/python3",
-            "-B",
-            "hia/tests/test_build_receipt.py",
-            "--artifacts",
-            "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1",
-            "--mutation-module",
-            "file_update",
-            "--rustc",
-            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
-            "--report",
-            "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-receipts-v1/receipts.json"
-          ],
-          "exit": 0,
-          "seconds": 0.7008999460376799,
-          "log_sha256": "749ccf8c59e7b4df57aee7c4cf788fe0ad688e5ed8d2a6572a6d58ecbd6669bf",
-          "report_sha256": "52956b100a26d442eef88d48bf68ac4ca8e78c55361f470db74ccb7ec5322f55"
-        },
-        {
-          "name": "admission",
-          "argv": [
-            "/usr/bin/python3",
-            "-B",
-            "hia/tests/test_scalar_build_admission.py",
-            "--artifacts",
-            "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1",
-            "--report",
-            "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-receipts-v1/admission.json"
-          ],
-          "exit": 0,
-          "seconds": 0.038041142048314214,
-          "log_sha256": "edcfe332fa3147252da4073ab35a4d9fa819c81ec3fb7d72ce7762efda5104e8",
-          "report_sha256": "113371ca60a4639792d8c3c60ede3d097f632a93ea01f8d6c970fd4758d9fcd8"
-        }
-      ],
-      "scope": "HIA module/build/receipt inputs only; complete original public Rust owner and current Cargo/installed gates remain separate."
-    },
-    "shared_admission_scope": "The 116-check gate validates the current ten-module build inventory and unchanged typed scalar entry/ELF admission. It is separate from file_update behavioral qualification.",
-    "current_artifact_binding": {
-      "passed": true,
-      "source_paths": 184,
-      "actual_source_and_artifact_files": 50,
-      "durable_job_id": "1a1dd4486ce-392-1fe7",
-      "exit_code": 0,
-      "report_sha256": "4550d38eef46d24f7866fc9b1bfe14a5415cc494f6ebfb9a6da88d9354e980d6",
-      "scope": "Actual bytes of ten HIA sources, raw libraries, namespaced libraries/objects and static archives match the build report.",
-      "checkpoint_scope": "This binding was executed before current_lint_repair. Its original source snapshot and HIA artifact bytes are retained; the changed Rust adapter has not been rebuilt or executed by this checkpoint."
-    },
-    "oracle": {
-      "entry": "hia/tests/test_native_file_update_caller.py",
-      "support": "hia/tests/file_update_oracle",
-      "pinned_original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
-      "pinned_original_crate_tree": "f3e0f3637151b2fe823d25e643cb69b21b6295b3",
-      "original_source_inputs": 121,
-      "original_source_bytes": 851098,
-      "case_definitions": 56,
-      "executions_per_binary": 159,
-      "semantic_comparisons_required": 157,
-      "separate_preconditions_required": 2,
-      "corpus_sha256": "9a27f794cde40d26458db10a7e8373a3cf8b0b64d938f74941a4d54141707d52",
-      "static_and_transport_passed": true,
-      "original_public_owner_executed": false,
-      "native_public_owner_executed": false,
-      "passed": false,
-      "full_original_library_and_real_dependencies_required": true,
-      "original_private_planner_transcripts_observed": false,
-      "normalization": "Only the exact supplied fixture root and actual Rust Debug spelling; raw streams, process status and independent post-exit file state retained.",
-      "static_scope": "159 typed wire roundtrips, 318 malformed transport rejections and 15 exact routing mutations; no Cargo or original/native public execution.",
-      "historical_static_workflow_sha256": "47b9c651f4198d6c2c85f1651e0af6e70d52c3ad0f9fcc90695952a523adecfc"
-    },
-    "pending_gates": {
-      "complete_original_library_compile": {
-        "status": "pending",
-        "passed": false
-      },
-      "five_unchanged_original_owner_tests": {
-        "status": "pending",
-        "passed": false,
-        "required_tests": 5,
-        "scope": "The five unchanged file_update tests within the complete original library test binary; not the whole crate suite."
-      },
-      "public_semantic_differential": {
-        "status": "pending",
-        "passed": false,
-        "required_paired_cases": 157
-      },
-      "separate_precondition_observations": {
-        "status": "pending",
-        "passed": false,
-        "required_observations": 2,
-        "post_panic_recovery_equivalence_required": false
-      },
-      "actual_cargo_dependency_graph_admission": {
-        "status": "pending",
-        "passed": false
-      },
-      "native_default_owner_and_consumer_tests": {
-        "status": "pending",
-        "passed": false
-      },
-      "installed_apply_patch_and_full_codex": {
-        "status": "pending",
-        "passed": false
-      },
-      "strict_native_default_all_target_clippy": {
-        "status": "pending",
-        "passed": false
-      },
-      "scoped_fix_and_clean_diff": {
-        "status": "pending",
-        "passed": false
-      },
-      "performance": {
-        "status": "not_measured_for_the_new_owner",
-        "qualified": false
-      }
-    },
-    "reports": {
-      "production_freeze": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-design/freeze-v2.json",
-        "bytes": 3457,
-        "sha256": "d9344810b00268251ef264fde7e98cee3bdfc7ef904f58116d10f682ca1fe456"
-      },
-      "raw_abi": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-abi-v1/report.json",
-        "bytes": 1404,
-        "sha256": "87f4d62675dd5d5946065d2f915f79d05a777fc2772e8b40b7b8554d9f13abc5"
-      },
-      "raw_abi_execution": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-abi-v1/result.json",
-        "bytes": 413,
-        "sha256": "e773455a10cbd31eb5ab6d2775745dd386f7160ec704f1b2d9eb2e10ef3d5f5d"
-      },
-      "cargo_receipts": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-receipts-v1/receipts.json",
-        "bytes": 2315,
-        "sha256": "52956b100a26d442eef88d48bf68ac4ca8e78c55361f470db74ccb7ec5322f55"
-      },
-      "shared_scalar_build_admission": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-receipts-v1/admission.json",
-        "bytes": 4958,
-        "sha256": "113371ca60a4639792d8c3c60ede3d097f632a93ea01f8d6c970fd4758d9fcd8"
-      },
-      "receipt_execution": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-receipts-v1/result.json",
-        "bytes": 3204,
-        "sha256": "4841949b620aa7cfcf0a3dfdf6c38064b34e23c712bb385a46c6c0d5ee3a6fd7"
-      },
-      "oracle_static": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-oracle-check-v2/report.json",
-        "bytes": 2756,
-        "sha256": "7a89fab8d7c852f28f7a6f8677cb1c35a93aad072895fcb10dd90d1a5b1d6484"
-      },
-      "oracle_static_freeze": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-oracle-check-v2/freeze.json",
-        "bytes": 4158,
-        "sha256": "6e29743ef3d2938b139b87e9d123f2f7121ec5e6bc470042233471f96eca561b"
-      },
-      "pre_metadata_source_freeze": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-metadata-v1/source-freeze-before.json",
-        "bytes": 4617,
-        "sha256": "3a887b433b217318c3b251d85a0474d6ca857271ba229e6af1be3c369c45318c"
-      },
-      "current_inputs_and_actual_artifacts": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-metadata-v1/current-inputs.json",
-        "bytes": 57862,
-        "sha256": "4550d38eef46d24f7866fc9b1bfe14a5415cc494f6ebfb9a6da88d9354e980d6"
-      },
-      "build": {
-        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/file-update-native-v1/build.json",
-        "bytes": 157944,
-        "sha256": "deae6aedf5ab171ded4e10de783bfe87cec373fbb78b7c0125e6068725d8d8a6"
-      }
-    },
-    "ci": {
-      "workflow": ".github/workflows/codex-hia-native.yml",
-      "workflow_sha256": "0d406d84e1d0d82bc99fb000127f9410ad5546ca4a20cbae1d656610bdf39081",
-      "execution_status": "5ce8_behavior_passed_native_strict_and_post_fix_clean_diff_failed_current_repair_pending_new_ci",
-      "complete_original_checkout": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
-      "new_gates": [
-        "raw file_update ABI",
-        "file_update receipt mutations using the actual archive and fixed rustc",
-        "complete-original public oracle after default owner tests and before strict lint"
-      ],
-      "existing_namespace_bwrap_clippy_fix_requirements_preserved": true,
-      "generated_outputs": "RUNNER_TEMP or explicit external directories; no generated original snapshots, request corpus, binaries or reports in the repository."
-    },
-    "publication_changes_after_local_component_checks": {
-      "allowed_paths": [
-        ".github/workflows/codex-hia-native.yml",
-        "hia/README.md",
-        "hia/migration.json",
-        "hia/verification.json"
-      ],
-      "scope": "Historical first-publication boundary: the original source freeze preceded only the recorded receipt CI addition and three metadata files. That proof remains unchanged; the subsequent current_lint_repair is a separate two-path change and is not covered by this historical unchanged-code assertion."
-    },
-    "cohesive_compilation_unit": {
-      "path": "hia/file_update.hepta",
-      "lines": 1953,
-      "exception": "The complete HIA planner/order/render owner is one cohesive compiler input and is published as one code unit."
-    },
-    "whole_codex_rewritten": false,
-    "production_dispatch_migrated": false,
-    "all_capabilities_migrated": false,
-    "default_native_dispatch_migrated": false,
-    "legacy_retirement_ready": false,
-    "whole_product_performance_qualified": false,
-    "source_inputs_at_abi_scope": "Immutable source bytes present during the original ABI/build checkpoint, including the old adapter SHA; not a receipt for the changed current_lint_repair adapter.",
-    "pending_gates_scope": "These gates apply to the current repaired adapter. The corresponding published 5ce8 executions are retained separately in historical_ci_checkpoint_5ce8; no pending value is silently promoted from the old head.",
-    "current_lint_repair": {
-      "status": "source_repaired_new_ci_pending",
-      "parent_commit": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
-      "parent_tree": "752e546a431b8bde7e42c05a8d4cb37870a1953c",
-      "paths": [
-        "codex-rs/apply-patch/src/hia_native_file_update.rs",
-        "hia/verification.json"
-      ],
-      "adapter_before_sha256": "5d4537451c3da845dfcaec48a02f00af07b48ff80f45c75fc63c24b9d9cbf671",
-      "adapter_sha256": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
-      "adapter_bytes": 18397,
-      "adapter_lines": 493,
-      "changes": [
-        "Route native-selected search requests through the existing seek_sequence_checked dispatcher. Its hia-native branch calls the same actual HIA function with the same arguments.",
-        "Use is_none_or with a strict greater-than bound at both checked-add rejection sites. Overflow remains rejected; successful bounds and error text are unchanged."
-      ],
-      "semantic_review": "For Option<usize>, not is_some_and(value <= bound) equals is_none_or(value > bound), including None. The dispatch change preserves the feature-selected native callee and all call parameters; no Rust matching fallback, allow attribute, threshold or CI weakening was added.",
-      "local_validation": {
-        "just_fmt_exit": 0,
-        "git_diff_check_exit": 0,
-        "durable_job_id": "1a1dd7cda03-392-20cf",
-        "format_result_sha256": "a92418885303fc56a4f8bdaf0e2d79cfca3978999345fa9215eb6fb397d62b8a",
-        "exact_original_owner_restored": true,
-        "blocks_removed": 7,
-        "original_bytes": 12365,
-        "original_sha256": "6f45aabc6d1bb103875df8c8529558a49587db103b1a26aa633b8ea7ada570f2",
-        "actual_index_unchanged": true
-      },
-      "new_adapter_cargo_tests_executed": false,
-      "new_adapter_public_owner_executed": false,
-      "new_adapter_clippy_executed": false,
-      "new_adapter_fix_gate_executed": false,
-      "runtime_qualified": false,
-      "current_source_inputs_scope": "Only the adapter hash changes in the existing 184-path source inventory. The three metadata files remain excluded from self-hashing; original ABI/source snapshot hashes are preserved as historical evidence.",
-      "global_migration_complete": false,
-      "legacy_retirement_ready": false,
-      "whole_product_performance_qualified": false
-    }
+    "status": "current_raw_abi_and_receipts_passed_repaired_combined_public_adapter_ci_pending",
+    "contract": "hia/file_update_buffer_contract.json",
+    "native_calls": 2897,
+    "error_no_write_cases": 1381,
+    "concurrent_native_calls": 768,
+    "receipt_checks": 62,
+    "gates": [
+      "file-update-abi",
+      "receipt-file_update"
+    ],
+    "adapter_sha256": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
+    "original_revision": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+    "complete_current_public_owner_verified": false,
+    "historical_original_public_gate": "#historical_published_ci/file_update_before_lint_repair",
+    "continuation_scope": "Caller-owned structural state is not authentication of text equality. The adapter binds actual HIA search results to the original strings.",
+    "private_planner_trace_observed": false,
+    "performance_measured": false,
+    "performance_qualified": false
   },
   "metadata_publication_incomplete": true,
   "legacy_retirement_ready": false,
@@ -1525,5 +930,174 @@
       "Current integrated performance and required-platform/release qualification."
     ],
     "whole_workspace_qualified": false
+  },
+  "parser_increment": {
+    "status": "current_complete_original_transcripts_raw_abi_and_fresh_host_admission_passed_combined_product_ci_pending",
+    "contract": "hia/parser_buffer_contract.json",
+    "original_comparisons": 3836,
+    "original_tests_per_side": 17,
+    "tests_skipped": 0,
+    "counted_hia_calls": 104989,
+    "native_abi_calls": 11715,
+    "transport_error_no_write_cases": 4029,
+    "concurrent_native_calls": 1024,
+    "receipt_checks": 62,
+    "fresh_actual_host_packages": 71,
+    "fresh_actual_host_artifacts": 130,
+    "host_admission_rejections": 11,
+    "original_report": {
+      "report": "parser-original.json",
+      "sha256": "3af4c09f45a64a0ea863575d9a78f2cf2f8747681b7e16bce41635b55d9e47ee",
+      "bytes": 62273
+    },
+    "gates": [
+      "parser-original",
+      "parser-abi",
+      "receipt-parser",
+      "fresh-host-build",
+      "parser-host-admission"
+    ],
+    "host_boundary": "Real PathUri dependencies are built fresh and reused only after their complete receipt and artifacts validate. No parser/path dependency stub is used.",
+    "published_ci": "#historical_published_ci/parser",
+    "performance_qualified": false
+  },
+  "current_product_ci": {
+    "status": "not_yet_published",
+    "qualified": false,
+    "pending_gates": [
+      "Complete original file-update public differential and five unchanged owner tests on this combined adapter/parser/SourceFile tree.",
+      "Current native and feature-off owner/consumer Cargo suites, CLI/arg0/TUI suites and installed apply_patch/full Codex.",
+      "Current native/default all-target strict Clippy and scoped just fix with a clean source diff.",
+      "Current integrated performance and required-platform/release qualification."
+    ]
+  },
+  "historical_published_ci": {
+    "scope": "Independent published candidate trees, not qualification of the current combined tree or a new adapter.",
+    "source_file": {
+      "commit": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "tree": "5f9fb6eadb7cde3244e49ba88d97fdf29177ce90",
+      "pull_request": 6350,
+      "status": "both_native_runs_succeeded",
+      "attempt": 1,
+      "runs": [
+        {
+          "event": "push",
+          "run": 43670046009,
+          "job": 132677864288,
+          "steps_passed": 38
+        },
+        {
+          "event": "pull_request",
+          "run": 43670051364,
+          "job": 132677881118,
+          "steps_passed": 38,
+          "tested_merge": "28c579bfed312a663a04ebac8a2350951ffe26b6"
+        }
+      ],
+      "cargo_passed_per_run": 5375,
+      "existing_cli_tui_skips_per_run": 6,
+      "installed_patch_fixtures_per_run": 3,
+      "installed_codex_dispatch_fixtures_per_run": 6,
+      "installed_startup_checks_per_run": 2,
+      "strict_native_default_and_fix_clean_diff": "passed",
+      "audit_sha256": "76120e067cfe8b6d05449b4c10dc54076be52ff73736d5039a6ca633ad3824e9"
+    },
+    "parser": {
+      "commit": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "tree": "bf1687508394cd8735f664e3a33912660aed072f",
+      "pull_request": 6353,
+      "status": "both_native_runs_succeeded",
+      "attempt": 1,
+      "runs": [
+        {
+          "event": "push",
+          "run": 43672807725,
+          "job": 132686366787,
+          "steps_passed": 42
+        },
+        {
+          "event": "pull_request",
+          "run": 43672866320,
+          "job": 132686546649,
+          "steps_passed": 42,
+          "tested_merge": "dd9aee848370c8febd0f47908174ff9a35dd9d02"
+        }
+      ],
+      "cargo_passed_per_run": 5375,
+      "existing_cli_tui_skips_per_run": 6,
+      "original_transcripts_per_run": 3836,
+      "original_tests_per_side_per_run": 17,
+      "counted_hia_calls_per_run": 104989,
+      "installed_patch_fixtures_per_run": 6,
+      "installed_codex_dispatch_fixtures_per_run": 12,
+      "installed_startup_checks_per_run": 2,
+      "strict_native_default_and_fix_clean_diff": "passed",
+      "audit_sha256": "d523fcd6a702baa527475bf1224650dbc7f145237c1cd205c7587ddd2bc4c095"
+    },
+    "file_update_before_lint_repair": {
+      "commit": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
+      "tree": "752e546a431b8bde7e42c05a8d4cb37870a1953c",
+      "pull_request": 6354,
+      "status": "both_native_runs_failed_strict_and_fix_clean_diff",
+      "attempt": 1,
+      "runs": [
+        {
+          "event": "push",
+          "run": 43674452219,
+          "job": 132691415254,
+          "steps_passed": 41,
+          "steps_failed": 2
+        },
+        {
+          "event": "pull_request",
+          "run": 43674490206,
+          "job": 132691525718,
+          "steps_passed": 41,
+          "steps_failed": 2,
+          "tested_merge": "d63773376df4809e029081c3c2f24fe394297e76"
+        }
+      ],
+      "complete_original_public_gate": "passed",
+      "semantic_pairs_per_run": 157,
+      "separate_panic_precondition_pairs_per_run": 2,
+      "actual_child_processes_per_run": 318,
+      "mismatches": 0,
+      "unchanged_original_owner_tests_per_run": 5,
+      "owner_tests_skipped": 0,
+      "other_original_tests_filtered_per_run": 64,
+      "real_dependency_graphs_per_run": 2,
+      "library_units_per_graph": 666,
+      "artifact_files_per_graph": 1284,
+      "prior_behavioral_cargo_and_installed_steps": "passed",
+      "native_strict_failures": [
+        "existing checked seek dispatcher function was unused (dead_code)",
+        "two nonminimal checked-add Boolean expressions"
+      ],
+      "default_strict_command": "not_run_after_native_failure",
+      "fix": "rewrote two expressions; subsequent clean-diff check failed",
+      "artifact_boundary": "The gate verified 121 original source files. The ZIP includes 120; the hidden .gitattributes fixture was omitted by upload-artifact. Its manifest identity matches the pinned Git blob. Executables and rlibs were not uploaded.",
+      "audit_sha256": "eb5f506fb16c3fa7bc07cc2eec767899ac2c49815b7c4ba9d76e3b8bf2c37687"
+    },
+    "file_update_lint_repair": {
+      "commit": "8b138f979a77baeb78b28b8273febcef960dcb88",
+      "tree": "c15eeffd532273ec83138934d4300722554929cc",
+      "pull_request": 6354,
+      "status": "published_fresh_ci_pending",
+      "adapter_sha256": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
+      "adapter_diff": {
+        "added": 5,
+        "deleted": 5
+      },
+      "actual_local_checks": [
+        "just fmt",
+        "diff check",
+        "seven-block original-source inverse",
+        "184 input hashes"
+      ],
+      "complete_public_runtime_cargo_installed_strict_fix_verified_for_this_adapter": false,
+      "publication_manifest_sha256": "1555920c13488379e48e0da6ec4be6eebd508d761e7a5361429e307be74071d5",
+      "final_proof_sha256": "b3cdd9a6eb647133ef944e46d22a5415e2ea5b360bb3895b2a6bc575617e0354"
+    },
+    "artifact_scope": "Run observations and uploaded regular-file hashes were audited. Uploaded reports do not substitute for unuploaded executable or rlib bytes, and no downloaded executable was rerun locally."
   }
 }
