@@ -65,18 +65,29 @@ fn put_word(buffer: &mut [u8], offset: usize, value: u64) {
 fn words<const N: usize>(buffer: &[u8]) -> [u64; N] {
     assert_eq!(buffer.len(), N * 8, "HIA parser word extent");
     std::array::from_fn(|index| {
-        u64::from_le_bytes(buffer[index * 8..index * 8 + 8].try_into().unwrap())
+        u64::from_le_bytes(
+            buffer[index * 8..index * 8 + 8]
+                .try_into()
+                .unwrap_or_else(|error| {
+                    panic!("called `Result::unwrap()` on an `Err` value: {error:?}")
+                }),
+        )
     })
 }
 
 pub(crate) fn index(value: u64) -> usize {
-    usize::try_from(value).expect("HIA parser integer fits the host")
+    usize::try_from(value)
+        .unwrap_or_else(|error| panic!("HIA parser integer fits the host: {error:?}"))
 }
 
 pub(crate) fn span(source: &str, start: u64, length: u64) -> &str {
     let begin = index(start);
-    let end = begin.checked_add(index(length)).expect("HIA parser span");
-    source.get(begin..end).expect("HIA parser UTF-8 span")
+    let end = begin
+        .checked_add(index(length))
+        .unwrap_or_else(|| panic!("HIA parser span"));
+    source
+        .get(begin..end)
+        .unwrap_or_else(|| panic!("HIA parser UTF-8 span"))
 }
 
 fn invoke(source: &str, output: &mut [u8], workspace: &mut [u8; 128]) {
@@ -120,7 +131,7 @@ impl Plan {
         let required = count
             .checked_mul(RECORD_BYTES)
             .and_then(|bytes| bytes.checked_add(HEADER_BYTES))
-            .expect("HIA parser result extent");
+            .unwrap_or_else(|| panic!("HIA parser result extent"));
         assert_eq!(index(header[0]), required, "HIA parser required size");
         let records = if count == 0 {
             Vec::new()
@@ -197,8 +208,9 @@ impl Plan {
             }
             6 => {
                 assert_eq!(h[4], 2, "HIA parser path error argument");
-                let Hunk::UpdateFile { path, .. } =
-                    hunks.get(index(h[5])).expect("HIA parser error hunk")
+                let Hunk::UpdateFile { path, .. } = hunks
+                    .get(index(h[5]))
+                    .unwrap_or_else(|| panic!("HIA parser error hunk"))
                 else {
                     panic!("HIA parser selected a non-update error hunk");
                 };
@@ -284,7 +296,7 @@ pub(crate) fn select_hunk_path(hunk: &Hunk, role: PathRole) -> &Path {
     match plan.header[18] {
         0 => source.as_path(),
         1 => moved
-            .expect("HIA parser selected an absent move path")
+            .unwrap_or_else(|| panic!("HIA parser selected an absent move path"))
             .as_path(),
         _ => panic!("HIA parser unknown path selection"),
     }

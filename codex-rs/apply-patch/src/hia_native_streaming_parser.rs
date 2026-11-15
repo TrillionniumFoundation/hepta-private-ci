@@ -114,7 +114,9 @@ impl StreamingPatchParser {
 }
 
 fn chunks_mut(hunks: &mut [Hunk], hunk_index: usize) -> &mut Vec<UpdateFileChunk> {
-    let Hunk::UpdateFile { chunks, .. } = hunks.get_mut(hunk_index).expect("HIA parser event hunk")
+    let Hunk::UpdateFile { chunks, .. } = hunks
+        .get_mut(hunk_index)
+        .unwrap_or_else(|| panic!("HIA parser event hunk"))
     else {
         panic!("HIA parser event selected a non-update hunk");
     };
@@ -155,8 +157,9 @@ fn apply_events(
                 hunks.push(hunk);
             }
             5 => {
-                let Hunk::AddFile { contents, .. } =
-                    hunks.get_mut(hunk_index).expect("HIA parser add target")
+                let Hunk::AddFile { contents, .. } = hunks
+                    .get_mut(hunk_index)
+                    .unwrap_or_else(|| panic!("HIA parser add target"))
                 else {
                     panic!("HIA parser append selected a non-add hunk");
                 };
@@ -164,8 +167,9 @@ fn apply_events(
                 contents.push('\n');
             }
             6 => {
-                let Hunk::UpdateFile { move_path, .. } =
-                    hunks.get_mut(hunk_index).expect("HIA parser move target")
+                let Hunk::UpdateFile { move_path, .. } = hunks
+                    .get_mut(hunk_index)
+                    .unwrap_or_else(|| panic!("HIA parser move target"))
                 else {
                     panic!("HIA parser move selected a non-update hunk");
                 };
@@ -188,7 +192,7 @@ fn apply_events(
             9..=11 => {
                 let chunk = chunks_mut(hunks, hunk_index)
                     .get_mut(chunk_index)
-                    .expect("HIA parser line target");
+                    .unwrap_or_else(|| panic!("HIA parser line target"));
                 match record[0] {
                     9 => {
                         assert_eq!(index(record[5]), chunk.old_lines.len());
@@ -211,7 +215,7 @@ fn apply_events(
             12 => {
                 chunks_mut(hunks, hunk_index)
                     .get_mut(chunk_index)
-                    .expect("HIA parser EOF target")
+                    .unwrap_or_else(|| panic!("HIA parser EOF target"))
                     .is_end_of_file = true;
             }
             _ => panic!("HIA parser returned a non-streaming event"),
