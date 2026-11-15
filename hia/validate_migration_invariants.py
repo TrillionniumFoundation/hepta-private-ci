@@ -17,6 +17,12 @@ CAPABILITIES = frozenset({
 COMPLETE = frozenset({"qualified", "complete", "fully_qualified"})
 
 
+def _lower_hex(value: object, length: int) -> bool:
+    """Check an identity's wire format, not the authenticity of its evidence."""
+    return (isinstance(value, str) and len(value) == length
+            and all(c in "0123456789abcdef" for c in value))
+
+
 def validate(migration: dict, verification: dict) -> list[str]:
     """Return every violated invariant; do not modify either input."""
     errors: list[str] = []
@@ -93,6 +99,10 @@ def validate(migration: dict, verification: dict) -> list[str]:
         errors.append("whole-product rewrite claimed before every capability owns production dispatch")
     if dispatch and incomplete:
         errors.append("default production dispatch claimed while capability groups remain incomplete")
+    if dispatch and any(isinstance(m, dict)
+                        and m.get("production_dispatch_migrated") is not True
+                        for m in modules):
+        errors.append("default production dispatch claimed while candidate modules remain unqualified")
     if whole and migration.get("toolchain", {}).get("complete_compiler_runtime_qualified") is not True:
         errors.append("whole-product rewrite claimed without complete HIA compiler/runtime qualification")
     if whole and migration.get("current_qualification", {}).get("template_performance_closed") is not True:
@@ -114,11 +124,18 @@ def validate(migration: dict, verification: dict) -> list[str]:
             errors.append("approved source paths require explicit per_path_qualification records")
         by_path = {r.get("path"): r for r in records if isinstance(r, dict)
                    and isinstance(r.get("path"), str)}
+        record_paths = [r["path"] for r in records if isinstance(r, dict)
+                        and isinstance(r.get("path"), str)]
+        if len(record_paths) != len(set(record_paths)):
+            errors.append("duplicate per_path_qualification records")
         for path in approved:
             record = by_path.get(path)
             if not record or not all(isinstance(record.get(k), str) and record[k]
                                      for k in ("source_tree", "qualification_sha256")):
                 errors.append(f"{path}: missing immutable source-tree and qualification identities")
+            elif not (_lower_hex(record.get("source_tree"), 40)
+                      and _lower_hex(record.get("qualification_sha256"), 64)):
+                errors.append(f"{path}: malformed immutable source-tree or qualification digest")
             if not record or not isinstance(record.get("verified_platforms"), list) or not record["verified_platforms"]:
                 errors.append(f"{path}: missing executed platform qualification")
             elif (not all(isinstance(p, str) and p.strip() == p and p

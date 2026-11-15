@@ -163,6 +163,49 @@ class RetirementGateTest(unittest.TestCase):
                 self.assertIn("unsafe approved source path",
                               "\\n".join(validate(migration, verification)))
 
+    def test_default_dispatch_requires_every_candidate_module(self):
+        migration, verification = incomplete()
+        for entry in migration["capabilities"]:
+            entry["migration_status"] = "fully_qualified"
+            entry["production_dispatch_migrated"] = True
+        migration["production_dispatch_migrated"] = True
+        verification["production_dispatch_migrated"] = True
+        self.assertIn("candidate modules remain unqualified",
+                      "\\n".join(validate(migration, verification)))
+        migration["candidate_modules"][0]["production_dispatch_migrated"] = True
+        self.assertEqual(validate(migration, verification), [])
+
+    def test_retirement_evidence_requires_real_digest_shapes(self):
+        migration, verification = incomplete()
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        record = {
+            "path": "codex-rs/sample.rs",
+            "source_tree": "not-a-git-tree",
+            "qualification_sha256": "not-a-sha256",
+            "verified_platforms": ["linux-x86_64-gnu"],
+        }
+        migration["retirement"]["per_path_qualification"] = [record]
+        self.assertIn("malformed immutable source-tree or qualification digest",
+                      "\\n".join(validate(migration, verification)))
+        record["source_tree"] = "a" * 40
+        record["qualification_sha256"] = "b" * 64
+        self.assertEqual(validate(migration, verification), [])
+
+    def test_duplicate_retirement_evidence_cannot_hide_conflicts(self):
+        migration, verification = incomplete()
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        record = {
+            "path": "codex-rs/sample.rs",
+            "source_tree": "a" * 40,
+            "qualification_sha256": "b" * 64,
+            "verified_platforms": ["linux-x86_64-gnu"],
+        }
+        migration["retirement"]["per_path_qualification"] = [
+            dict(record), dict(record, qualification_sha256="c" * 64),
+        ]
+        self.assertIn("duplicate per_path_qualification records",
+                      "\\n".join(validate(migration, verification)))
+
     def test_retired_flag_requires_readiness(self):
         migration, verification = incomplete()
         verification["legacy_source_retired"] = True
