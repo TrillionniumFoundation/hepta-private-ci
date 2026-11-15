@@ -1,0 +1,119 @@
+
+/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000005a0fe80 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E>:
+ 5a0fe80:	mov    %rsp,%r11
+ 5a0fe83:	sub    $0xae000,%r11
+ 5a0fe8a:	sub    $0x1000,%rsp
+ 5a0fe91:	movq   $0x0,(%rsp)
+ 5a0fe99:	cmp    %r11,%rsp
+ 5a0fe9c:	jne    5a0fe8a <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0xa>
+ 5a0fe9e:	sub    $0xe28,%rsp
+ 5a0fea5:	mov    %rsi,0x48(%rsp)
+ 5a0feaa:	mov    %rdi,0x50(%rsp)
+ 5a0feaf:	mov    %rdi,0x58(%rsp)
+ 5a0feb4:	mov    %rdx,0x68(%rsp)
+ 5a0feb9:	movzbl 0x36ec0(%rsi),%eax
+ 5a0fec0:	mov    %rax,0x60(%rsp)
+ 5a0fec5:	mov    0x60(%rsp),%rcx
+ 5a0feca:	lea    -0x3dfa629(%rip),%rax        # 1c158a8 <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0xa0168>
+ 5a0fed1:	movslq (%rax,%rcx,4),%rcx
+ 5a0fed5:	add    %rcx,%rax
+ 5a0fed8:	jmp    *%rax
+ 5a0feda:	ud2
+ 5a0fedc:	lea    -0x3de6c28(%rip),%rsi        # 1c292bb <anon.a599d5f780015c52ceadb2a64923b161.5.llvm.2410570604137225835+0xb3b7b>
+ 5a0fee3:	lea    0x6ddd0(%rsp),%rdi
+ 5a0feeb:	mov    $0x30,%edx
+ 5a0fef0:	call   5a11ac0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original1d17h5d92b159c7b69818E>
+ 5a0fef5:	jmp    5a0ff4b <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0xcb>
+ 5a0fef7:	xor    %eax,%eax
+ 5a0fef9:	test   $0x1,%al
+ 5a0fefb:	jne    5a0fef7 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x77>
+ 5a0fefd:	jmp    5a10047 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x1c7>
+ 5a0ff02:	xor    %eax,%eax
+ 5a0ff04:	test   $0x1,%al
+ 5a0ff06:	jne    5a0ff02 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x82>
+ 5a0ff08:	jmp    5a10054 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x1d4>
+ 5a0ff0d:	mov    0x68(%rsp),%rax
+ 5a0ff12:	mov    %rax,0x68(%rsp)
+ 5a0ff17:	jmp    5a10005 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x185>
+ 5a0ff1c:	mov    0x48(%rsp),%rax
+ 5a0ff21:	movb   $0x2,0x36ec0(%rax)
+ 5a0ff28:	mov    0xaee18(%rsp),%rdi
+ 5a0ff30:	call   b1aac70 <_Unwind_Resume@plt>
+ 5a0ff35:	mov    %rax,%rcx
+ 5a0ff38:	mov    %edx,%eax
+ 5a0ff3a:	mov    %rcx,0xaee18(%rsp)
+ 5a0ff42:	mov    %eax,0xaee20(%rsp)
+ 5a0ff49:	jmp    5a0ff1c <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x9c>
+ 5a0ff4b:	call   5a11b30 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original3now17h04efb3a89f8f6f32E>
+ 5a0ff50:	mov    %rdx,0x38(%rsp)
+ 5a0ff55:	mov    %rax,0x40(%rsp)
+ 5a0ff5a:	jmp    5a0ff5c <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0xdc>
+ 5a0ff5c:	mov    0x38(%rsp),%rsi
+ 5a0ff61:	mov    0x40(%rsp),%rdi
+ 5a0ff66:	mov    0x5b20b93(%rip),%rax        # b530b00 <_DYNAMIC+0x49d8>
+ 5a0ff6d:	call   *%rax
+ 5a0ff6f:	mov    %rdx,0x28(%rsp)
+ 5a0ff74:	mov    %rax,0x30(%rsp)
+ 5a0ff79:	jmp    5a0ff7b <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0xfb>
+ 5a0ff7b:	mov    0x48(%rsp),%rax
+ 5a0ff80:	mov    0x28(%rsp),%rcx
+ 5a0ff85:	mov    0x30(%rsp),%rdx
+ 5a0ff8a:	mov    %rdx,(%rax)
+ 5a0ff8d:	mov    %rcx,0x8(%rax)
+ 5a0ff91:	testq  $0x1,(%rax)
+ 5a0ff98:	je     5a0ffb9 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x139>
+ 5a0ff9a:	mov    0x48(%rsp),%rax
+ 5a0ff9f:	mov    0x8(%rax),%rsi
+ 5a0ffa3:	lea    0x589206e(%rip),%rdx        # b2a2018 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0xf4f50>
+ 5a0ffaa:	lea    0x99360(%rsp),%rdi
+ 5a0ffb2:	call   6216350 <_ZN153_$LT$core..result..Result$LT$T$C$F$GT$$u20$as$u20$core..ops..try_trait..FromResidual$LT$core..result..Result$LT$core..convert..Infallible$C$E$GT$$GT$$GT$13from_residual17h6964d4f731d0f035E>
+ 5a0ffb7:	jmp    5a10015 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x195>
+ 5a0ffb9:	mov    0x48(%rsp),%rax
+ 5a0ffbe:	mov    0x8(%rax),%rdx
+ 5a0ffc2:	lea    0x36f20(%rsp),%rdi
+ 5a0ffca:	lea    0x6ddd0(%rsp),%rsi
+ 5a0ffd2:	call   5a019d0 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture18ready_with_profile17h8debf99f2059b504E>
+ 5a0ffd7:	jmp    5a0ffd9 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x159>
+ 5a0ffd9:	lea    0x70(%rsp),%rdi
+ 5a0ffde:	lea    0x36f20(%rsp),%rsi
+ 5a0ffe6:	call   5ac74d0 <_ZN59_$LT$F$u20$as$u20$core..future..into_future..IntoFuture$GT$11into_future17h70b84593299b6333E>
+ 5a0ffeb:	jmp    5a0ffed <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x16d>
+ 5a0ffed:	mov    0x48(%rsp),%rdi
+ 5a0fff2:	add    $0x10,%rdi
+ 5a0fff6:	lea    0x70(%rsp),%rsi
+ 5a0fffb:	mov    $0x36eb0,%edx
+ 5a10000:	call   b1aac60 <memcpy@plt>
+ 5a10005:	mov    0x48(%rsp),%rax
+ 5a1000a:	add    $0x10,%rax
+ 5a1000e:	mov    %rax,0x20(%rsp)
+ 5a10013:	jmp    5a1008a <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x20a>
+ 5a10015:	jmp    5a10017 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x197>
+ 5a10017:	mov    0x50(%rsp),%rdi
+ 5a1001c:	lea    0x99360(%rsp),%rsi
+ 5a10024:	mov    $0x15ab8,%edx
+ 5a10029:	call   b1aac60 <memcpy@plt>
+ 5a1002e:	mov    0x48(%rsp),%rcx
+ 5a10033:	mov    0x58(%rsp),%rax
+ 5a10038:	movb   $0x1,0x36ec0(%rcx)
+ 5a1003f:	add    $0xaee28,%rsp
+ 5a10046:	ret
+ 5a10047:	lea    0x5891fe2(%rip),%rdi        # b2a2030 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0xf4f68>
+ 5a1004e:	call   *0x5b1e97c(%rip)        # b52e9d0 <_DYNAMIC+0x28a8>
+ 5a10054:	lea    0x5891fd5(%rip),%rdi        # b2a2030 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0xf4f68>
+ 5a1005b:	call   *0x5b1e977(%rip)        # b52e9d8 <_DYNAMIC+0x28b0>
+ 5a10061:	mov    0x48(%rsp),%rdi
+ 5a10066:	add    $0x10,%rdi
+ 5a1006a:	call   32977f0 <_ZN4core3ptr187drop_in_place$LT$codex_hepta_agentd..runtime..tests..circuit_task_ingress..q24_tests..model_selection_owner..original..PositiveFixture..ready_with_profile..$u7b$$u7b$closure$u7d$$u7d$$GT$17h28ba86e08d4af45eE>
+ 5a1006f:	jmp    5a0ff1c <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E+0x9c>
+ 5a10074:	mov    %rax,%rcx
+ 5a10077:	mov    %edx,%eax
+ 5a10079:	rex.W
+ 5a1007a:	.byte 0x89
+ 5a1007b:	mov    %fs,(%rax,%rbx,1)
+ 5a1007e:	out    %al,(%dx)
+ 5a1007f:	.byte 0xa
