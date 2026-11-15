@@ -3,12 +3,12 @@
 This directory contains HIA implementations of Codex's patch-line matching,
 UTF-8 prefix selection, metric-tag sanitizing, Markdown location suffix
 normalization, ASCII JSON string-fragment encoding, middle truncation and token
-arithmetic, and the complete SourceFile text-state owner. The compiler is
+arithmetic, the complete SourceFile text-state owner, and batch/streaming patch grammar. The compiler is
 pinned to [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
 at `0de5657a80f96b138525ac7ee9ce11712a83a10d`. These algorithms execute as
 native machine code compiled from `.hepta` source.
 
-The current build contains 9 HIA modules for 7 production algorithm groups.
+The current build contains 10 HIA modules for 8 production algorithm groups.
 Token arithmetic uses a separate typed scalar entry, and character counting
 uses checked unaligned 64-bit reads. These changes optimize the existing five
 truncation APIs. SourceFile adds the complete `parse`, `line_texts`,
@@ -46,6 +46,7 @@ dispatch still need migration. The whole-product state is therefore:
 | [`truncate.hepta`](truncate.hepta) | [`truncate.rs`](../codex-rs/utils/string/src/truncate.rs) | UTF-8 middle truncation, removed Unicode-scalar counts and token markers; strict byte and trusted string entries. |
 | [`token_budget.hepta`](token_budget.hepta) | The three public token/byte arithmetic helpers | Full-width saturating arithmetic through a typed `u64, u64 -> u64` native entry, without buffer framing. |
 | [`source_file.hepta`](source_file.hepta) | [`SourceFile`](../codex-rs/apply-patch/src/text_file.rs) | Parse, line-text projection, ordered replacements and final contents; mixed endings, persistent preferred style, repeated edits and logical inserted lines. |
+| [`parser.hepta`](parser.hepta) | [`parser.rs`](../codex-rs/apply-patch/src/parser.rs) and [`StreamingPatchParser`](../codex-rs/apply-patch/src/streaming_parser.rs) | Batch normalization, heredocs, incremental grammar, exact errors, committed-prefix state, context provenance and path selection. |
 
 The truncation APIs are `truncate_middle_chars`,
 `truncate_middle_with_token_budget`, `approx_token_count`,
@@ -62,7 +63,7 @@ are implemented in HIA; the surrounding Rust owners remain tracked separately.
 
 ### Native buffer interface
 
-The eight buffer components expose this HIA signature:
+The nine buffer components expose this HIA signature:
 
 ```text
 f0(source:readbuf, output:mutbuf, workspace:mutbuf) -> u32
@@ -92,6 +93,7 @@ these low-bit results:
 | `8..12296` for `ascii_json_fragment`                  | Eight-byte consumed-length header plus escaped fragment.                              |
 | `40` for `truncate`                                  | Five little-endian `u64` result fields.                                                |
 | `0` for `source_file` | A complete 40-byte query header or the complete emitted span plan; see its operation-specific contract below. |
+| `0` for `parser` | A complete 160-byte header and optional 64-byte events; grammar errors have a separate semantic status. |
 | `0xffffffff`                                          | Invalid frame/state; also invalid UTF-8 for the original matching/validation entries. |
 | `0xfffffffe`                                          | Insufficient output or workspace capacity.                                            |
 | `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in JSON fragments, strict truncation or SourceFile.      |
@@ -251,8 +253,51 @@ internal CR/LF remain one logical line across subsequent edits. Even an empty
 replacement list repairs absent endings on surviving lines. Legal
 `usize::MAX` skips/deletes consume only the finite remaining line table;
 nonmonotonic order and `start + old_length` overflow are separate invalid
-preconditions. The surrounding patch grammar, `compute_replacements`,
-normalizing update path and filesystem effects remain Rust owners.
+preconditions. The parser module owns the surrounding patch grammar. `compute_replacements`,
+the normalizing update path and filesystem effects remain Rust owners.
+
+### Batch and streaming patch parser
+
+`parser` exports `codex_hia_parser`. The normative interface is
+[`parser_buffer_contract.json`](parser_buffer_contract.json). HIA owns the
+complete grammar behind `parse_patch`, `StreamingPatchParser::push_delta`,
+`finish`, the selected environment value, `Hunk::path` and the source-path
+selection used by `Hunk::resolve_path`. Rust retains the public data types,
+owned strings/AST storage and the existing actual `PathUri` host operation.
+
+A request is exactly 128 bytes of unaligned little-endian words. The result
+has a 160-byte header and, for emit commands, 64-byte event records. Eight
+native words retain mode/flags, line number, pending extent, hunk count,
+update-header line and current chunk/old/new counts. No historical input
+arena or source pointer survives a call.
+
+| Operations | Native command |
+| --- | --- |
+| `0`/`1` and `4`/`5` | Streaming push query/emit with strict or trusted input. |
+| `2`/`3` and `6`/`7` | Streaming finish query/emit with strict or trusted input. |
+| `8`/`9` and `12`/`13` | Strict-boundary batch normalization, strict or trusted UTF-8. |
+| `10`/`11` and `14`/`15` | Lenient batch normalization with eligible heredocs, strict or trusted UTF-8. |
+| `16` and `17` | Select the affected path or original source path. |
+
+Trusted operations require valid Rust strings and an unchanged native-selected
+pending prefix. Strict source operations independently validate canonical UTF-8
+and the pending-prefix contract. Numeric frame/state/range checks apply to both.
+Query publishes the complete future header; a zero-event header is already a
+complete plan. Otherwise the caller obtains emit records before committing it.
+
+Transport success returns `0`, including all nine semantic-error families.
+A semantic error publishes the accepted-prefix events and post-error state;
+the Rust caller commits them before returning the exact public error and can
+continue accepting later calls. Transport failures return `0xfffffffe` for
+short capacity, `0xffffffff` for invalid frames/state/ranges/arithmetic or
+`0xfffffffd` for malformed strict UTF-8, with no writes. Successful calls
+preserve output beyond their full header/plan. The contract defines exact
+error precedence, all 14 event kinds and the raw/right/full-trim argument choice.
+
+HIA preserves finish without LF, the End Patch residual special case, separate
+batch/streaming CR removal, and context old/new indices. Actual PathUri joining
+and PathBuf byte/display behavior stay at the host boundary; no Rust grammar
+fallback is used by the HIA-selected adapters.
 
 ### Typed scalar interface
 
@@ -371,7 +416,111 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Current nine-module SourceFile increment
+### Current ten-module parser increment: recovered qualification
+
+The new `parser-native-recovered-v1` B1/B2/B3 build and six initial local gates
+qualified the restored source on ai395 with Rust 1.96.1. A later exact repair
+replaced eleven `expect` calls and one `unwrap` in the two Rust adapters with
+panic closures, retaining their failure conditions and messages. The complete
+public differential and standalone Clippy with every actual workspace lint
+level plus `-D warnings` then passed on this final 9,838-path snapshot:
+`1e2bec906e7c4ef5fcd9433eee320306d164a978953d5cbcbb5ad3d1e1859d52`.
+The initial six gates keep their distinct source snapshot and unchanged reports;
+HIA, ABI, receipt/helper and the other 16 restored files did not change.
+[`verification.json#parser_increment`](verification.json#parser_increment)
+binds the source inputs, gate reports, current compiled artifacts and processes.
+
+| Recovered check and source scope | Observed result |
+| --- | --- |
+| Complete original files | 17 original and 17 feature-selected native inline tests passed; zero skips. Complete original bytes, SHA256 and Git blobs remain independently bound. These are isolated original-file tests, not the entire Cargo crate suite. |
+| Public behavior | 3,836 complete AST/error/state/path transcripts matched; 104,989 actual HIA calls were counted. Both public processes returned zero with no termination signal and produced matching 115,157,092-byte transcripts. |
+| Raw parser ABI; unchanged HIA/contract/tests | 11,715 calls; 4,029 transport-error/no-write cases; 1,874 strict/trusted plan pairs; 1,024 concurrent calls; all 14 events and 9 semantic errors. |
+| Artifact admission; unchanged HIA/helper inputs | 60 Cargo receipt checks and 116 scalar/ELF admission checks against the new ten-module build. |
+| Actual host dependencies | The repaired public oracle and lint preflight share one new persistent, verified 71-package locked dependency closure. The two initial gates had independent fresh Cargo builds; the host receipt gate checked: 130 compiled artifacts, 11 sources/manifests, 6 direct rlibs, 3 positive checks and 11 rejected drift cases; zero skips. No Cloud receipt was reused. |
+| Workspace-level standalone lint | Both current adapters passed the real workspace levels, including `expect_used = deny` and `unwrap_used = deny`, followed by `-D warnings`. `just fmt` passed. Full owner Cargo lint and `just fix` remain separate. |
+| Current physical/input binding | All 50 component artifacts were rehashed against the new build, and 92 named current inputs were recomputed against the tested snapshot. This does not claim a new comparison with unavailable old Cloud artifact files. |
+| Current published Cargo and installed CI | Pending the parser head's owner/consumer/installed tests, actual workspace strict Clippy and scoped `just fix`. Historical nine-owner CI is not substituted. |
+
+The differential includes all public error messages and line numbers, ASTs,
+observable streaming states, partial input, error-then-continue histories,
+finish exceptions, Clone and owned results. It calls the actual PathUri and
+absolute-path implementations, including manually constructed non-UTF-8 paths.
+The raw ABI gate separately checks plans, canaries, admission precedence,
+query/emit equivalence and large inputs.
+
+All fresh host builds used one Cargo job and disabled dev debug information.
+The complete manifest, lock, resolved graph, Cargo artifact output and original
+build evidence are validated before direct dependencies are admitted. Feature,
+profile, package, source, transitive-artifact and provenance drift are rejected.
+The initial two runners cleaned their ordinary temporary builds; their reports
+retain the hashes and outcomes. The later repair's persistent dependency
+artifacts remain present, are fully revalidated, and serve both current checks.
+The complete current corpus and both transcripts were losslessly compressed;
+decompression reproduced each original byte count and SHA256 before raw files
+were removed.
+
+The two adapter repairs preserve all bounds, checked arithmetic and native
+transport checks and add no lint allowance. The other 16 restored code/test
+files remain unchanged. After the final repair gates, only this README and the
+two canonical JSON metadata files change.
+The whole-source publication proof and Git tree manifest are outside the repo.
+The 2480-line HIA parser is an explicit
+change-size exception for one complete B3 compile unit with private functions
+separating grammar, admission and event planning. It does not waive review or
+the remaining published Cargo/lint/fix gates.
+
+Earlier Cloud v2/v3/v4 results remain historical observations; their raw files
+are temporarily unavailable. The v3 public run failed without recording the
+native process return code. One unchanged-runner diagnostic observed reference
+Rust SIGKILL after 3,834 complete records, before native transcript execution.
+The cause is unknown and OOM was not confirmed. Those failures remain recorded;
+the recovered qualification comes from six new executions on ai395, followed
+by the two source-bound adapter-repair checks described above.
+
+#### Historical parser performance observations
+
+These 13 bounded cases were measured before recovery. They have **not** been
+remeasured on ai395; their old raw reports, binaries and artifact-equality proof
+were not re-read here. Previously observed values and original hash identifiers
+are retained in the JSON record, with their unavailable status explicit.
+The original method used parity checks, black-boxed inputs/results, matched
+iterations and three alternating samples on one CPU, each case below three
+seconds. Both owners/drivers used opt-level 3, one codegen unit and checked
+overflow/debug assertions.
+
+**The shared actual PathUri dependency used opt-level 0.** The path-resolution
+row describes that configuration and does not qualify fully optimized host or
+whole-product performance.
+
+| Previously measured API history | Input bytes | Original Rust | HIA | HIA / Rust |
+| --- | ---: | ---: | ---: | ---: |
+| `batch_empty_patch` | 29 | 221.412 ns | 4.944 us | 22.33x |
+| `batch_typical_update` | 106 | 1.503 us | 22.365 us | 14.88x |
+| `batch_heredoc_unicode` | 189 | 1.915 us | 29.137 us | 15.22x |
+| `batch_ascii_2mib` | 2,097,199 | 4.232 ms | 15.427 ms | 3.65x |
+| `batch_unicode_2mib` | 2,097,199 | 2.995 ms | 16.840 ms | 5.62x |
+| `batch_32768_lines` | 196,653 | 1.659 ms | 79.783 ms | 48.08x |
+| `stream_scalar_4096` | 4,143 | 170.703 us | 1.738 ms | 10.18x |
+| `stream_scalar_16384` | 16,431 | 679.388 us | 7.038 ms | 10.36x |
+| `stream_scalar_65536` | 65,583 | 2.749 ms | 28.170 ms | 10.25x |
+| `stream_unicode_chunks` | 12,333 | 58.734 us | 2.209 ms | 37.61x |
+| `stream_error_recovery` | 124 | 867.381 ns | 11.091 us | 12.79x |
+| `path_rename_borrow` | preconstructed | 1.896 ns | 155.993 ns | 82.26x |
+| `resolve_rename_source` | preconstructed | 3.478 us | 3.684 us | 1.06x |
+
+The recorded batch/stream ratios remain 3.65–48.08x; affected-path selection was
+82.26x and source-path resolution 1.06x in that historical configuration.
+All 15 complete capabilities, default production dispatch and legacy retirement
+remain open. `whole_product_performance_qualified` remains `false`.
+
+### Historical nine-module SourceFile checkpoint
+
+The following record predates the parser and retains its original scope.
+The later `2c02acd7` nine-module CI was previously observed passing both runs,
+with 38 successful steps and a verified 56-file report archive per run, including
+strict lint and scoped fix. Those old CI archives are unavailable on this
+recovered host and were not re-audited here; they do not qualify parser CI.
+
 
 The formal v9 B1/B2/B3 build and SourceFile qualification ran on Linux x86-64
 GNU with Rust 1.96.1. The 9,828-path source snapshot and exact compiled
@@ -380,14 +529,14 @@ source/Core/archive identities are recorded in
 identity report confirms all 40 compiled artifacts of the eight inherited
 modules are unchanged from the published `7fe65ae` checkpoint.
 
-| Current check | Observed result |
+| Historical check | Observed result |
 | --- | --- |
 | Complete original SourceFile | 8 tests; 224,253 original-Rust comparisons; zero skips. The independent rlib includes the complete original 3,851-byte file from `a3f319cf`, bound by SHA256 and Git blob. |
 | Separate invalid preconditions | Nonmonotonic ordering and index-addition overflow both fail; no post-panic state or release-overflow equivalence is claimed. |
 | Raw SourceFile ABI | 5,631 calls; 4,423 error/no-write cases, 604 query calls, 604 emit calls and 1,024 concurrent native calls. Includes 2.2 MB sources and a 1,120,040-byte plan. |
 | Cargo artifact admission | 58 checks with `source_file` as mutation target, including acceptance and source binding for all nine modules. |
 | Scalar build admission | 115 checks on this nine-module build; the separate typed scalar profile remains unchanged. |
-| Current Cargo / installed executables | Pending the published nine-module workflow; earlier local `rama-net` SIGKILL attempts do not establish a pass. |
+| Status at the original local checkpoint | Pending the published nine-module workflow; earlier local `rama-net` SIGKILL attempts do not establish a pass. |
 
 The full original-file oracle checks initial and repeated-edit states through
 all four actual feature-selected methods. Its coverage includes mixed endings,
@@ -396,12 +545,12 @@ total deletion and reinsertion, finite MAX requests, large line tables and
 concurrency. The raw ABI gate separately verifies exact frames, UTF-8 and span
 boundaries, queries, capacities, canaries and error atomicity.
 
-After those local gates, publication changes are limited to these three HIA
-metadata documents and the CI workflow. The workflow adds scoped
+After those local gates, publication changes were limited to these three HIA
+metadata documents and the CI workflow. The workflow added scoped
 `just fix --locked -p codex-apply-patch --features hia-native` and a clean-diff
 check after its test/lint steps. Implementation, tests and ABI-contract bytes
-remain unchanged. This is not a claim that the final published tree has
-already passed Cargo or installed-executable CI.
+remained unchanged. That local record preceded the separately observed
+published nine-module CI, and provides no current parser CI qualification.
 
 The bounded public-API benchmark used the genuine development full B3 build
 whose SourceFile source, Core and linked artifacts are identical to the
@@ -545,7 +694,7 @@ pinned Git tree is the complete source-path inventory.
 | App Server v2               | `app-server`, protocol/transport/client/daemon crates                                  | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations.                                                                                                                                |
 | CLI and TUI                 | `cli`, `tui`, `arg0`, terminal utilities                                               | Flags, exit status, terminal event/rendering paths and existing snapshots.                                                                                                                                       |
 | SDK and frontends           | `sdk/`, `codex-cli/`, `apps/`                                                          | Public client interfaces, frontend lifecycle and packaging.                                                                                                                                                      |
-| Patch application           | `apply-patch`, `file-search`                                                           | Matching and the complete SourceFile owner are connected behind `hia-native`; patch grammar, replacement planning, normalized updates and filesystem/search effects still need migration.                                                                                                                   |
+| Patch application           | `apply-patch`, `file-search`                                                           | Matching, the complete SourceFile owner and parser grammar are connected behind `hia-native`; replacement planning, normalized updates and filesystem/search effects still need migration.                                                                                                                   |
 | String utilities            | `utils/string`                                                                         | Prefix, metric, Markdown, JSON-fragment and truncation/token routines are connected behind `hia-native`; truncation performance, UUID helpers and complete owner/default/platform qualification remain open. |
 | Hepta cells and adapters    | `hepta-*` crates                                                                       | Existing cell, Agentd, Codex adapter, identity, recovery and learning/adoption boundaries.                                                                                                                       |
 | Platforms and release       | Linux/macOS/Windows integrations, build and release paths                              | Supported architectures, packages, clean installation and end-to-end platform tests.                                                                                                                             |
@@ -594,6 +743,10 @@ python3 -B hia/tests/test_truncate_abi.py --library-dir "$native_output" --repor
 python3 -B hia/tests/test_token_budget_abi.py --library-dir "$native_output" --report "$build_parent/token-budget-abi-tests.json"
 python3 -B hia/tests/test_native_source_file_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/source-file-caller-tests.json"
 python3 -B hia/tests/test_source_file_abi.py --library-dir "$native_output" --report "$build_parent/source-file-abi-tests.json"
+python3 -B hia/tests/test_native_parser_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/parser-caller-tests.json"
+python3 -B hia/tests/test_parser_abi.py --library-dir "$native_output" --report "$build_parent/parser-abi-tests.json"
+python3 -B hia/tests/test_parser_host_receipt.py --rustc "$rustc_binary" --report "$build_parent/parser-host-receipt-tests.json"
+python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --mutation-module parser --report "$build_parent/parser-receipt-tests.json"
 python3 -B hia/tests/test_scalar_build_admission.py --artifacts "$native_output" --report "$build_parent/scalar-admission-tests.json"
 python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --mutation-module token_budget --report "$build_parent/scalar-receipt-tests.json"
 python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --mutation-module source_file --report "$build_parent/source-file-receipt-tests.json"
