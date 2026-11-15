@@ -21,8 +21,12 @@ fn held_journal_bytes(control: &DurableInferenceControl) -> Vec<u8> {
 fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() {
     let path = path("checkpoint-v3");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    control.reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input()).unwrap();
-    let (_, token) = control.dispatch_native_with_pre_effect_abort("r1", dispatch()).unwrap();
+    control
+        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
     drop(token);
     let dispatching = control.native_record("r1").unwrap().clone();
     control.compact_journal().unwrap();
@@ -30,10 +34,18 @@ fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() 
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&dispatching));
     assert_eq!(dispatching.prepared_input_v2, Some(input()));
-    assert_eq!(control.dispatch_native("r1", dispatch()), Err(Error::InvalidTransition));
-    assert_eq!(control.stop_native_before_dispatch("r1", "not a recovered proof".into()), Err(Error::InvalidTransition));
+    assert_eq!(
+        control.dispatch_native("r1", dispatch()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        control.stop_native_before_dispatch("r1", "not a recovered proof".into()),
+        Err(Error::InvalidTransition)
+    );
     let mut observed = output(NativeRunStatus::Indeterminate, None);
-    observed.owner_authority = NativeOwnerAuthority::Lost { reason: "owner fenced".into() };
+    observed.owner_authority = NativeOwnerAuthority::Lost {
+        reason: "owner fenced".into(),
+    };
     control.settle_native("r1", observed.clone()).unwrap();
     observed.status = NativeRunStatus::Completed;
     observed.boundary_status = NativeBoundaryStatus::Quarantined;
@@ -55,7 +67,9 @@ fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() 
 fn checkpoint_v3_rejects_changed_snapshot_and_wrong_version_without_repair() {
     let path = path("checkpoint-v3-corruption");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    control.reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input()).unwrap();
+    control
+        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .unwrap();
     control.compact_journal().unwrap();
     drop(control);
     let original = std::fs::read_to_string(&path).unwrap();
@@ -71,14 +85,19 @@ fn checkpoint_v3_rejects_changed_snapshot_and_wrong_version_without_repair() {
     }
     std::fs::write(&path, &original).unwrap();
     let restored = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    assert_eq!(restored.native_record("r1").unwrap().prepared_input_v2, Some(input()));
+    assert_eq!(
+        restored.native_record("r1").unwrap().prepared_input_v2,
+        Some(input())
+    );
 }
 
 #[test]
 fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
     let path = path("checkpoint-v1-digest-only");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    let expected = control.reserve_native(prepared_request(), /*maximum_in_flight*/ 1).unwrap();
+    let expected = control
+        .reserve_native(prepared_request(), /*maximum_in_flight*/ 1)
+        .unwrap();
     control.compact_journal().unwrap();
     drop(control);
     let image = std::fs::read_to_string(&path).unwrap();
@@ -87,7 +106,18 @@ fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&expected));
     let bytes = held_journal_bytes(&control);
-    assert_eq!(control.reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input()).unwrap(), expected);
-    assert!(control.native_record("r1").unwrap().prepared_input_v2.is_none());
+    assert_eq!(
+        control
+            .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+            .unwrap(),
+        expected
+    );
+    assert!(
+        control
+            .native_record("r1")
+            .unwrap()
+            .prepared_input_v2
+            .is_none()
+    );
     assert_eq!(held_journal_bytes(&control), bytes);
 }

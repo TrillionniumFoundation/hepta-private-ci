@@ -419,10 +419,7 @@ fn real_file_capacity_preserves_cancel_dispatch_and_maximal_result_space() -> Re
     );
     // Retain the original full-frame capacity rejection. Monotonic usage alone
     // now has its separate successful small-delta regression in native tests.
-    assert_eq!(
-        control.append(&full_frame),
-        Err(Error::CapacityExceeded)
-    );
+    assert_eq!(control.append(&full_frame), Err(Error::CapacityExceeded));
     let mut extra = request.clone();
     extra.request_id = "overflow".into();
     assert!(matches!(

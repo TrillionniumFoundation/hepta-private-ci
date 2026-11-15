@@ -2,7 +2,10 @@
 use super::*;
 
 impl GenerationJournal {
-    pub(in crate::durable_control) fn append_checkpoint_lines(&self, image: &mut Vec<u8>) -> Result<(), Error> {
+    pub(in crate::durable_control) fn append_checkpoint_lines(
+        &self,
+        image: &mut Vec<u8>,
+    ) -> Result<(), Error> {
         for record in self.records.values() {
             validate_checkpoint(record)?;
             let json = serde_json::to_string(record)
@@ -12,7 +15,10 @@ impl GenerationJournal {
         Ok(())
     }
 
-    pub(in crate::durable_control) fn replay_checkpoint(&mut self, json: &str) -> Result<String, Error> {
+    pub(in crate::durable_control) fn replay_checkpoint(
+        &mut self,
+        json: &str,
+    ) -> Result<String, Error> {
         let record: GenerationRecordV1 = serde_json::from_str(json)
             .map_err(|_| Error::CorruptJournal("generation checkpoint decode"))?;
         validate_checkpoint(&record)?;
@@ -31,16 +37,27 @@ fn validate_checkpoint(record: &GenerationRecordV1) -> Result<(), Error> {
         observed_at_micros: record.admitted_at_micros,
     }];
     if let Some(observed_at_micros) = record.dispatched_at_micros {
-        events.push(Event::Dispatch { request_id: id.clone(), observed_at_micros });
+        events.push(Event::Dispatch {
+            request_id: id.clone(),
+            observed_at_micros,
+        });
     }
     if record.cancel_requested {
-        events.push(Event::Cancel { request_id: id.clone() });
+        events.push(Event::Cancel {
+            request_id: id.clone(),
+        });
     }
     if let Some(result) = &record.result {
         events.push(if record.aborted_before_dispatch {
-            Event::AbortBeforeDispatch { request_id: id.clone(), result: result.clone() }
+            Event::AbortBeforeDispatch {
+                request_id: id.clone(),
+                result: result.clone(),
+            }
         } else {
-            Event::Result { request_id: id.clone(), result: result.clone() }
+            Event::Result {
+                request_id: id.clone(),
+                result: result.clone(),
+            }
         });
     }
     let mut replay = GenerationJournal::default();

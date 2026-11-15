@@ -48,7 +48,11 @@ fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
         let bytes = std::fs::read(&path).unwrap();
         assert_eq!(
             control
-                .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+                .reserve_native_prepared_v2(
+                    prepared_request(),
+                    /*maximum_in_flight*/ 1,
+                    input()
+                )
                 .unwrap(),
             expected
         );
@@ -76,9 +80,22 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let bytes = std::fs::read(&path).unwrap();
     for field in [
-        "prompt", "query", "socket", "timeout", "run", "request", "objective",
-        "body", "artifacts", "epoch", "generation", "fence", "deadline",
-        "revision", "context", "envelope",
+        "prompt",
+        "query",
+        "socket",
+        "timeout",
+        "run",
+        "request",
+        "objective",
+        "body",
+        "artifacts",
+        "epoch",
+        "generation",
+        "fence",
+        "deadline",
+        "revision",
+        "context",
+        "envelope",
     ] {
         let mut changed = input();
         let binding = changed.intelligence.as_mut().unwrap();
@@ -102,7 +119,11 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
             _ => unreachable!(),
         }
         assert_eq!(
-            control.reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, changed),
+            control.reserve_native_prepared_v2(
+                prepared_request(),
+                /*maximum_in_flight*/ 1,
+                changed
+            ),
             Err(Error::Conflict),
             "{field}"
         );
@@ -125,8 +146,17 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
 #[test]
 fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
     for field in [
-        "schema", "empty", "size", "relative", "timeout", "query",
-        "revision", "epoch", "generation", "deadline", "digest",
+        "schema",
+        "empty",
+        "size",
+        "relative",
+        "timeout",
+        "query",
+        "revision",
+        "epoch",
+        "generation",
+        "deadline",
+        "digest",
     ] {
         let mut changed = input();
         match field {
@@ -137,18 +167,37 @@ fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
             "timeout" => changed.timeout_ms = 3_600_001,
             "query" => changed.context_query = Some(String::new()),
             "revision" => changed.intelligence.as_mut().unwrap().expected_revision = 0,
-            "epoch" => changed.intelligence.as_mut().unwrap().snapshot.authority_epoch = 0,
+            "epoch" => {
+                changed
+                    .intelligence
+                    .as_mut()
+                    .unwrap()
+                    .snapshot
+                    .authority_epoch = 0
+            }
             "generation" => changed.intelligence.as_mut().unwrap().snapshot.generation = 0,
             "deadline" => changed.intelligence.as_mut().unwrap().snapshot.deadline_ms = 0,
-            "digest" => changed.intelligence.as_mut().unwrap().snapshot.request_digest.clear(),
+            "digest" => changed
+                .intelligence
+                .as_mut()
+                .unwrap()
+                .snapshot
+                .request_digest
+                .clear(),
             _ => unreachable!(),
         }
         assert!(changed.payload_digest().is_err(), "{field}");
     }
     let value = serde_json::to_value(input()).unwrap();
     for field in [
-        "run_id", "request_digest", "objective_digest", "body_digest",
-        "artifact_set_digest", "authority_epoch", "generation", "fence_digest",
+        "run_id",
+        "request_digest",
+        "objective_digest",
+        "body_digest",
+        "artifact_set_digest",
+        "authority_epoch",
+        "generation",
+        "fence_digest",
         "deadline_ms",
     ] {
         let mut missing = value.clone();
@@ -156,7 +205,10 @@ fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
             .as_object_mut()
             .unwrap()
             .remove(field);
-        assert!(serde_json::from_value::<NativePreparedInputV2>(missing).is_err(), "{field}");
+        assert!(
+            serde_json::from_value::<NativePreparedInputV2>(missing).is_err(),
+            "{field}"
+        );
     }
     let mut unknown = value;
     unknown["intelligence"]["snapshot"]["current_snapshot_fallback"] = true.into();
@@ -184,7 +236,9 @@ fn v2_replay_rejects_replaced_input_without_repairing_bytes() {
 fn v2_never_upgrades_digest_only_history_from_ambient_input() {
     let path = path("prepared-v2-legacy");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    let legacy = control.reserve_native(prepared_request(), /*maximum_in_flight*/ 1).unwrap();
+    let legacy = control
+        .reserve_native(prepared_request(), /*maximum_in_flight*/ 1)
+        .unwrap();
     let bytes = std::fs::read(&path).unwrap();
     assert_eq!(
         control
@@ -192,11 +246,23 @@ fn v2_never_upgrades_digest_only_history_from_ambient_input() {
             .unwrap(),
         legacy
     );
-    assert!(control.native_record("r1").unwrap().prepared_input_v2.is_none());
+    assert!(
+        control
+            .native_record("r1")
+            .unwrap()
+            .prepared_input_v2
+            .is_none()
+    );
     assert_eq!(std::fs::read(&path).unwrap(), bytes);
     drop(control);
     let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    assert!(control.native_record("r1").unwrap().prepared_input_v2.is_none());
+    assert!(
+        control
+            .native_record("r1")
+            .unwrap()
+            .prepared_input_v2
+            .is_none()
+    );
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
@@ -205,7 +271,10 @@ fn v2_never_upgrades_digest_only_history_from_ambient_input() {
 fn v1_run_id_only_input_cannot_be_reinterpreted_as_v3() {
     let mut legacy = serde_json::to_value(input()).unwrap();
     legacy["schema_version"] = 1.into();
-    legacy["intelligence"].as_object_mut().unwrap().remove("snapshot");
+    legacy["intelligence"]
+        .as_object_mut()
+        .unwrap()
+        .remove("snapshot");
     legacy["intelligence"]["run_id"] = "original-intelligence-run".into();
     assert!(serde_json::from_value::<NativePreparedInputV2>(legacy).is_err());
 }

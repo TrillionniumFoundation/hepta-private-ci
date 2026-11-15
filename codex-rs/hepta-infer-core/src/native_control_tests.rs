@@ -419,7 +419,8 @@ fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
             serde_json::to_string(&Event::Observe {
                 request_id: "r1".to_string(),
                 output: observed.clone(),
-            }).unwrap()
+            })
+            .unwrap()
         );
         // Automatic checkpointing may reclaim this padding. Test rejection at
         // the actual nonmutating capacity preflight, not obsolete usage growth.

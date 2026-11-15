@@ -9,11 +9,16 @@ fn checkpoints_preserve_all_generation_shapes_and_never_reissue_tokens() -> Resu
     let mut saved_token = None;
     for shape in 0..6 {
         let request = binding(&format!("shape.{shape}"));
-        let (_, mut token) = control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
+        let (_, mut token) =
+            control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
         match shape {
             0 => saved_token = token,
-            1 => { control.cancel_generation(&request)?; }
-            2 => { control.dispatch_generation(/*now_micros*/ 11, &mut token)?; }
+            1 => {
+                control.cancel_generation(&request)?;
+            }
+            2 => {
+                control.dispatch_generation(/*now_micros*/ 11, &mut token)?;
+            }
             3 => {
                 control.dispatch_generation(/*now_micros*/ 11, &mut token)?;
                 control.cancel_generation(&request)?;
@@ -42,10 +47,20 @@ fn checkpoints_preserve_all_generation_shapes_and_never_reissue_tokens() -> Resu
     assert_eq!(reopened.generation.records, generation);
     assert_eq!(reopened.records, legacy);
     assert_eq!(reopened.native.records, native);
-    assert_eq!(reopened.journal_capacity_status().reserved_headroom_bytes, reserved);
-    assert_eq!(reopened.dispatch_generation(/*now_micros*/ 11, &mut saved_token), Err(Error::Conflict));
+    assert_eq!(
+        reopened.journal_capacity_status().reserved_headroom_bytes,
+        reserved
+    );
+    assert_eq!(
+        reopened.dispatch_generation(/*now_micros*/ 11, &mut saved_token),
+        Err(Error::Conflict)
+    );
     for expected in generation.values() {
-        let (actual, token) = reopened.admit_generation(/*now_micros*/ 200, expected.binding.clone(), PAYLOAD)?;
+        let (actual, token) = reopened.admit_generation(
+            /*now_micros*/ 200,
+            expected.binding.clone(),
+            PAYLOAD,
+        )?;
         assert_eq!(&actual, expected);
         assert!(token.is_none());
     }
@@ -53,11 +68,13 @@ fn checkpoints_preserve_all_generation_shapes_and_never_reissue_tokens() -> Resu
 }
 
 #[test]
-fn checkpoint_generation_corruption_and_whole_identity_truncation_are_rejected() -> Result<(), Error> {
+fn checkpoint_generation_corruption_and_whole_identity_truncation_are_rejected() -> Result<(), Error>
+{
     let fixture = Fixture::new()?;
     let mut control = DurableInferenceControl::open(fixture.path(), /*capacity*/ 8)?;
     let request = binding("generation");
-    let (_, mut token) = control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
+    let (_, mut token) =
+        control.admit_generation(/*now_micros*/ 10, request.clone(), PAYLOAD)?;
     control.dispatch_generation(/*now_micros*/ 11, &mut token)?;
     control.settle_generation(&request, b"actual result".to_vec())?;
     control.compact_journal()?;
@@ -65,8 +82,12 @@ fn checkpoint_generation_corruption_and_whole_identity_truncation_are_rejected()
     let original = fs::read_to_string(fixture.path())?;
     let lines: Vec<_> = original.lines().collect();
     assert_eq!(lines.len(), 3);
-    let value: serde_json::Value = serde_json::from_str(lines[1].strip_prefix(CHECKPOINT_PREFIX).expect("generation checkpoint"))
-        .map_err(|_| Error::CorruptJournal("test JSON"))?;
+    let value: serde_json::Value = serde_json::from_str(
+        lines[1]
+            .strip_prefix(CHECKPOINT_PREFIX)
+            .expect("generation checkpoint"),
+    )
+    .map_err(|_| Error::CorruptJournal("test JSON"))?;
     for field in ["dispatched_at_micros", "aborted_before_dispatch", "result"] {
         let mut changed = value.clone();
         match field {
@@ -75,12 +96,15 @@ fn checkpoint_generation_corruption_and_whole_identity_truncation_are_rejected()
             "result" => {
                 let first = changed[field]["digest"][0].as_u64().expect("digest byte");
                 changed[field]["digest"][0] = serde_json::json!(first ^ 1);
-            },
+            }
             _ => unreachable!(),
         }
         let damaged = format!("{}\n{CHECKPOINT_PREFIX}{changed}\n{}\n", lines[0], lines[2]);
         fs::write(fixture.path(), &damaged)?;
-        assert!(DurableInferenceControl::open(fixture.path(), /*capacity*/ 8).is_err(), "{field}");
+        assert!(
+            DurableInferenceControl::open(fixture.path(), /*capacity*/ 8).is_err(),
+            "{field}"
+        );
         assert_eq!(fs::read_to_string(fixture.path())?, damaged);
     }
     let truncated = format!("{}\n{}\n", lines[0], lines[2]);

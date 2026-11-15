@@ -195,24 +195,38 @@ fn path_constructor_still_requires_its_actual_parent_sync() -> TestResult {
     Ok(())
 }
 
-
 #[test]
 fn descriptor_only_compaction_cannot_use_a_replaced_diagnostic_path() -> TestResult {
     let directory = Directory::new()?;
     let path = directory.0.join("actual");
     let label = directory.0.join("unowned").join("diagnostic");
-    let file = OpenOptions::new().create_new(true).read(true).append(true).open(&path)?;
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .append(true)
+        .open(&path)?;
     let mut control = DurableInferenceControl::open_file(file, &label, /*capacity*/ 8)?;
     let expected = control.submit(/*now_ms*/ 10, request("retained"))?;
     let bytes = fs::read(&path)?;
-    assert_eq!(control.compact_journal(), Err(Error::InvalidIdentity("descriptor-only journal has no compaction path")));
+    assert_eq!(
+        control.compact_journal(),
+        Err(Error::InvalidIdentity(
+            "descriptor-only journal has no compaction path"
+        ))
+    );
     assert_eq!(fs::read(&path)?, bytes);
     assert!(!label.parent().expect("diagnostic parent").exists());
-    assert_eq!(control.get("retained").map(|record| record.revision), Some(expected.revision));
+    assert_eq!(
+        control.get("retained").map(|record| record.revision),
+        Some(expected.revision)
+    );
     control.cancel("retained", expected.revision)?;
     drop(control);
     let file = OpenOptions::new().read(true).append(true).open(&path)?;
     let control = DurableInferenceControl::open_file(file, &label, /*capacity*/ 8)?;
-    assert_eq!(control.get("retained").expect("record").state, RequestState::Cancelled);
+    assert_eq!(
+        control.get("retained").expect("record").state,
+        RequestState::Cancelled
+    );
     Ok(())
 }

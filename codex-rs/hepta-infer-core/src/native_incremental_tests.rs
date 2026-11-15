@@ -178,7 +178,12 @@ fn owner_drop_releases_locks_held_by_duplicate_descriptors() {
     // A forked child can briefly retain these open file descriptions until exec.
     // Duplicates must not keep a retired owner locked, nor unlock its successor.
     let data = owner.file.try_clone().unwrap();
-    let lock = owner._writer_lock.as_ref().expect("path-owned writer").try_clone().unwrap();
+    let lock = owner
+        ._writer_lock
+        .as_ref()
+        .expect("path-owned writer")
+        .try_clone()
+        .unwrap();
     assert_eq!(
         DurableInferenceControl::open(&path, 8).unwrap_err(),
         Error::WriterUnavailable

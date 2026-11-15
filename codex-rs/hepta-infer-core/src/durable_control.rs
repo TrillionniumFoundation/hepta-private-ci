@@ -274,7 +274,9 @@ impl DurableInferenceControl {
         let mut lock_path = path.as_os_str().to_os_string();
         lock_path.push(".writer.lock");
         let writer_lock = options.open(PathBuf::from(lock_path))?;
-        writer_lock.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        writer_lock
+            .try_lock()
+            .map_err(|_| Error::WriterUnavailable)?;
         // Open the data inode only after the stable ownership lock is held.
         let file = options.open(&path)?;
         let control = Self::replay_file(file, path, capacity, Some(writer_lock))?;
@@ -310,7 +312,12 @@ impl DurableInferenceControl {
         Self::replay_file(file, path, capacity, /*writer_lock*/ None)
     }
 
-    fn replay_file(mut file: File, path: impl AsRef<Path>, capacity: usize, writer_lock: Option<File>) -> Result<Self, Error> {
+    fn replay_file(
+        mut file: File,
+        path: impl AsRef<Path>,
+        capacity: usize,
+        writer_lock: Option<File>,
+    ) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);
         }
@@ -654,7 +661,8 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        let required = self.reserved_headroom_bytes
+        let required = self
+            .reserved_headroom_bytes
             .checked_add(generation_reserved)
             .ok_or(Error::ArithmeticOverflow)?;
         if encoded.len() > MAX_JOURNAL_LINE_BYTES
@@ -680,7 +688,11 @@ impl DurableInferenceControl {
         encoded: &str,
         required_headroom_after: u64,
     ) -> Result<(), Error> {
-        self.append_with_reserves(encoded, required_headroom_after, self.generation.reserved_bytes()?)
+        self.append_with_reserves(
+            encoded,
+            required_headroom_after,
+            self.generation.reserved_bytes()?,
+        )
     }
 
     fn append_with_reserves(
@@ -710,10 +722,13 @@ impl DurableInferenceControl {
             }
             self.replace_with_checkpoint_image(&image)?;
         }
-        let next_bytes = self.journal_bytes
+        let next_bytes = self
+            .journal_bytes
             .checked_add(encoded_bytes)
             .ok_or(Error::ArithmeticOverflow)?;
-        let persisted = self.file.write_all(encoded.as_bytes())
+        let persisted = self
+            .file
+            .write_all(encoded.as_bytes())
             .and_then(|()| self.file.flush())
             .and_then(|()| self.file.sync_all());
         if let Err(error) = persisted {

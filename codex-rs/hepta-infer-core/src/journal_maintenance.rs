@@ -7,7 +7,9 @@ impl DurableInferenceControl {
         JournalCapacityStatus {
             journal_bytes: self.journal_bytes,
             maximum_journal_bytes: MAX_JOURNAL_BYTES,
-            reserved_headroom_bytes: self.reserved_headroom_bytes.saturating_add(self.generation.reserved_bytes().unwrap_or(u64::MAX)),
+            reserved_headroom_bytes: self
+                .reserved_headroom_bytes
+                .saturating_add(self.generation.reserved_bytes().unwrap_or(u64::MAX)),
             admissible_bytes: MAX_JOURNAL_BYTES
                 .saturating_sub(self.journal_bytes)
                 .saturating_sub(self.reserved_headroom_bytes)
@@ -34,7 +36,8 @@ impl DurableInferenceControl {
             legacy_records: self.records.len(),
             native_records: self.native.records.len(),
             generation_records: self.generation.records.len(),
-            reserved_headroom_bytes: self.reserved_headroom_bytes
+            reserved_headroom_bytes: self
+                .reserved_headroom_bytes
                 .checked_add(self.generation.reserved_bytes()?)
                 .ok_or(Error::ArithmeticOverflow)?,
         })
@@ -47,13 +50,12 @@ impl DurableInferenceControl {
         // Older journals admitted without per-request liability. Recover their
         // responsibility instead of trapping them at open or first release.
         // Only liability-reducing transitions may use this migration exception.
-        let current_headroom = self.reserved_headroom_bytes
+        let current_headroom = self
+            .reserved_headroom_bytes
             .checked_add(self.generation.reserved_bytes()?)
             .ok_or(Error::ArithmeticOverflow)?;
         let overcommitted = !fits_with_headroom(bytes, 0, current_headroom)?;
-        Ok(overcommitted
-            && after < current_headroom
-            && fits_with_headroom(bytes, append, 0)?)
+        Ok(overcommitted && after < current_headroom && fits_with_headroom(bytes, append, 0)?)
     }
 
     pub(super) fn checkpoint_image(&self) -> Result<Vec<u8>, Error> {
@@ -73,9 +75,12 @@ impl DurableInferenceControl {
 
     pub(super) fn replace_with_checkpoint_image(&mut self, image: &[u8]) -> Result<(), Error> {
         if self._writer_lock.is_none() {
-            return Err(Error::InvalidIdentity("descriptor-only journal has no compaction path"));
+            return Err(Error::InvalidIdentity(
+                "descriptor-only journal has no compaction path",
+            ));
         }
-        let required = self.reserved_headroom_bytes
+        let required = self
+            .reserved_headroom_bytes
             .checked_add(self.generation.reserved_bytes()?)
             .ok_or(Error::ArithmeticOverflow)?;
         if image.len() as u64 > MAX_JOURNAL_BYTES

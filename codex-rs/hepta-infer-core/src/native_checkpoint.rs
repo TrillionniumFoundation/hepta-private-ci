@@ -49,13 +49,19 @@ impl NativeJournal {
         Ok(())
     }
 
-    pub(in crate::durable_control) fn replay_checkpoint(&mut self, json: &str) -> Result<String, Error> {
+    pub(in crate::durable_control) fn replay_checkpoint(
+        &mut self,
+        json: &str,
+    ) -> Result<String, Error> {
         let checkpoint: NativeCheckpoint = serde_json::from_str(json)
             .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
         self.install_checkpoint(checkpoint)
     }
 
-    pub(in crate::durable_control) fn replay_legacy_checkpoint(&mut self, json: &str) -> Result<String, Error> {
+    pub(in crate::durable_control) fn replay_legacy_checkpoint(
+        &mut self,
+        json: &str,
+    ) -> Result<String, Error> {
         let mut value: serde_json::Value = serde_json::from_str(json)
             .map_err(|_| Error::CorruptJournal("legacy native checkpoint decode"))?;
         let record = value
@@ -63,11 +69,15 @@ impl NativeJournal {
             .and_then(serde_json::Value::as_object_mut)
             .ok_or(Error::CorruptJournal("legacy native checkpoint record"))?;
         if record.contains_key("prepared_input_v2")
-            || record.get("prepared_input").is_some_and(|input| !input.is_null())
+            || record
+                .get("prepared_input")
+                .is_some_and(|input| !input.is_null())
         {
             // A run-id-only V1 input is not a complete V3 snapshot. Do not
             // invent fields or turn it into a resumable current input.
-            return Err(Error::CorruptJournal("legacy native checkpoint input version"));
+            return Err(Error::CorruptJournal(
+                "legacy native checkpoint input version",
+            ));
         }
         record.remove("prepared_input");
         let checkpoint = serde_json::from_value(value)
