@@ -1,0 +1,250 @@
+hia-asm.v1 hepta.hia.program.v9 codex_patch_application
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  v1:usize = const() {"value":64}
+  v2:usize = buffer.len(source)
+  v3:bool = compare.ge(v2,v1)
+  v4:usize = buffer.len(output)
+  v5:bool = compare.ge(v4,v1)
+  v6:bool = bool.and(v3,v5)
+  branch v6 sizes(source,output,workspace) short()
+block sizes(sizes_source:readbuf,sizes_output:mutbuf,sizes_workspace:mutbuf)
+  v7:usize = buffer.len(sizes_source)
+  v8:usize = const() {"value":64}
+  v9:bool = compare.eq(v7,v8)
+  v10:usize = buffer.len(sizes_workspace)
+  v11:usize = const() {"value":0}
+  v12:bool = compare.eq(v10,v11)
+  v13:bool = bool.and(v9,v12)
+  branch v13 frame(sizes_source,sizes_output) invalid()
+block frame(frame_source:readbuf,frame_output:mutbuf)
+  v14:usize = const() {"value":0}
+  v15:u64 = buffer.load.u64.le(frame_source,v14)
+  v16:usize = const() {"value":8}
+  v17:u64 = buffer.load.u64.le(frame_source,v16)
+  v18:usize = const() {"value":16}
+  v19:u64 = buffer.load.u64.le(frame_source,v18)
+  v20:usize = const() {"value":24}
+  v21:u64 = buffer.load.u64.le(frame_source,v20)
+  v22:usize = const() {"value":32}
+  v23:u64 = buffer.load.u64.le(frame_source,v22)
+  v24:usize = const() {"value":40}
+  v25:u64 = buffer.load.u64.le(frame_source,v24)
+  v26:usize = const() {"value":48}
+  v27:u64 = buffer.load.u64.le(frame_source,v26)
+  v28:usize = const() {"value":56}
+  v29:u64 = buffer.load.u64.le(frame_source,v28)
+  v30:u64 = const() {"value":0}
+  v31:u64 = const() {"value":1}
+  v32:bool = compare.eq(v15,v31)
+  v33:bool = compare.le(v17,v31)
+  v34:u64 = const() {"value":8}
+  v35:bool = compare.le(v19,v34)
+  v36:u64 = const() {"value":9}
+  v37:bool = compare.le(v21,v36)
+  v38:bool = compare.eq(v23,v30)
+  v39:bool = compare.eq(v25,v30)
+  v40:bool = compare.eq(v27,v30)
+  v41:bool = compare.eq(v29,v30)
+  v42:bool = compare.ge(v19,v31)
+  v43:u64 = const() {"value":3}
+  v44:bool = compare.le(v19,v43)
+  v45:bool = bool.and(v42,v44)
+  v46:bool = bool.not(v45)
+  v47:bool = compare.eq(v17,v30)
+  v48:bool = bool.or(v46,v47)
+  v49:bool = bool.and(v32,v33)
+  v50:bool = bool.and(v49,v35)
+  v51:bool = bool.and(v50,v37)
+  v52:bool = bool.and(v51,v38)
+  v53:bool = bool.and(v52,v39)
+  v54:bool = bool.and(v53,v40)
+  v55:bool = bool.and(v54,v41)
+  v56:bool = bool.and(v55,v48)
+  branch v56 decide(frame_source,frame_output,v17,v19,v21) invalid()
+block decide(decide_source:readbuf,decide_output:mutbuf,decide_kind:u64,decide_phase:u64,decide_event:u64)
+  v57:u64 = call(decide_kind,decide_phase,decide_event) {"function":"transition"}
+  v58:u64 = const() {"value":0}
+  v59:bool = compare.ne(v57,v58)
+  branch v59 publish(decide_source,decide_output,v57) invalid()
+block publish(publish_source:readbuf,publish_output:mutbuf,publish_choice:u64)
+  v60:u32 = call(publish_source,publish_output,publish_choice) {"function":"emit"}
+  ret(v60)
+block short()
+  v61:u32 = const() {"value":4294967294}
+  ret(v61)
+block invalid()
+  v62:u32 = const() {"value":4294967295}
+  ret(v62)
+end
+fn transition(kind:u64,phase:u64,event:u64) -> (u64) effects() entry(entry)
+block entry(kind:u64,phase:u64,event:u64)
+  jump phase0(kind,phase,event)
+block phase0(p0_kind:u64,p0_phase:u64,p0_event:u64)
+  v1:u64 = const() {"value":0}
+  v2:bool = compare.eq(p0_phase,v1)
+  branch v2 result0(p0_kind,p0_event) phase1(p0_kind,p0_phase,p0_event)
+block result0(r0_kind:u64,r0_event:u64)
+  v3:u64 = const() {"value":0}
+  v4:u64 = const() {"value":0}
+  v5:bool = compare.eq(r0_event,v4)
+  v6:u64 = const() {"value":0}
+  v7:bool = compare.eq(r0_kind,v6)
+  v8:bool = bool.and(v5,v7)
+  v9:u64 = const() {"value":17}
+  v10:u64 = select(v8,v9,v3)
+  v11:u64 = const() {"value":0}
+  v12:bool = compare.eq(r0_event,v11)
+  v13:u64 = const() {"value":1}
+  v14:bool = compare.eq(r0_kind,v13)
+  v15:bool = bool.and(v12,v14)
+  v16:u64 = const() {"value":66}
+  v17:u64 = select(v15,v16,v10)
+  ret(v17)
+block phase1(p1_kind:u64,p1_phase:u64,p1_event:u64)
+  v18:u64 = const() {"value":1}
+  v19:bool = compare.eq(p1_phase,v18)
+  branch v19 result1(p1_kind,p1_event) phase2(p1_kind,p1_phase,p1_event)
+block result1(r1_kind:u64,r1_event:u64)
+  v20:u64 = const() {"value":0}
+  v21:u64 = const() {"value":1}
+  v22:bool = compare.eq(r1_event,v21)
+  v23:u64 = const() {"value":66}
+  v24:u64 = select(v22,v23,v20)
+  v25:u64 = const() {"value":2}
+  v26:bool = compare.eq(r1_event,v25)
+  v27:u64 = const() {"value":35}
+  v28:u64 = select(v26,v27,v24)
+  v29:u64 = const() {"value":3}
+  v30:bool = compare.eq(r1_event,v29)
+  v31:u64 = const() {"value":52}
+  v32:u64 = select(v30,v31,v28)
+  ret(v32)
+block phase2(p2_kind:u64,p2_phase:u64,p2_event:u64)
+  v33:u64 = const() {"value":2}
+  v34:bool = compare.eq(p2_phase,v33)
+  branch v34 result2(p2_kind,p2_event) phase3(p2_kind,p2_phase,p2_event)
+block result2(r2_kind:u64,r2_event:u64)
+  v35:u64 = const() {"value":0}
+  v36:u64 = const() {"value":4}
+  v37:bool = compare.eq(r2_event,v36)
+  v38:u64 = const() {"value":137}
+  v39:u64 = select(v37,v38,v35)
+  v40:u64 = const() {"value":5}
+  v41:bool = compare.eq(r2_event,v40)
+  v42:u64 = const() {"value":138}
+  v43:u64 = select(v41,v42,v39)
+  ret(v43)
+block phase3(p3_kind:u64,p3_phase:u64,p3_event:u64)
+  v44:u64 = const() {"value":3}
+  v45:bool = compare.eq(p3_phase,v44)
+  branch v45 result3(p3_kind,p3_event) phase4(p3_kind,p3_phase,p3_event)
+block result3(r3_kind:u64,r3_event:u64)
+  v46:u64 = const() {"value":0}
+  v47:u64 = const() {"value":4}
+  v48:bool = compare.eq(r3_event,v47)
+  v49:u64 = const() {"value":137}
+  v50:u64 = select(v48,v49,v46)
+  v51:u64 = const() {"value":5}
+  v52:bool = compare.eq(r3_event,v51)
+  v53:u64 = const() {"value":138}
+  v54:u64 = select(v52,v53,v50)
+  ret(v54)
+block phase4(p4_kind:u64,p4_phase:u64,p4_event:u64)
+  v55:u64 = const() {"value":4}
+  v56:bool = compare.eq(p4_phase,v55)
+  branch v56 result4(p4_kind,p4_event) phase5(p4_kind,p4_phase,p4_event)
+block result4(r4_kind:u64,r4_event:u64)
+  v57:u64 = const() {"value":0}
+  v58:u64 = const() {"value":6}
+  v59:bool = compare.eq(r4_event,v58)
+  v60:u64 = const() {"value":85}
+  v61:u64 = select(v59,v60,v57)
+  v62:u64 = const() {"value":7}
+  v63:bool = compare.eq(r4_event,v62)
+  v64:u64 = const() {"value":102}
+  v65:u64 = select(v63,v64,v61)
+  ret(v65)
+block phase5(p5_kind:u64,p5_phase:u64,p5_event:u64)
+  v66:u64 = const() {"value":5}
+  v67:bool = compare.eq(p5_phase,v66)
+  branch v67 result5(p5_kind,p5_event) phase6(p5_kind,p5_phase,p5_event)
+block result5(r5_kind:u64,r5_event:u64)
+  v68:u64 = const() {"value":0}
+  v69:u64 = const() {"value":4}
+  v70:bool = compare.eq(r5_event,v69)
+  v71:u64 = const() {"value":136}
+  v72:u64 = select(v70,v71,v68)
+  v73:u64 = const() {"value":5}
+  v74:bool = compare.eq(r5_event,v73)
+  v75:u64 = const() {"value":139}
+  v76:u64 = select(v74,v75,v72)
+  ret(v76)
+block phase6(p6_kind:u64,p6_phase:u64,p6_event:u64)
+  v77:u64 = const() {"value":6}
+  v78:bool = compare.eq(p6_phase,v77)
+  branch v78 result6(p6_kind,p6_event) phase7(p6_kind,p6_phase,p6_event)
+block result6(r6_kind:u64,r6_event:u64)
+  v79:u64 = const() {"value":0}
+  v80:u64 = const() {"value":4}
+  v81:bool = compare.eq(r6_event,v80)
+  v82:u64 = const() {"value":119}
+  v83:u64 = select(v81,v82,v79)
+  v84:u64 = const() {"value":5}
+  v85:bool = compare.eq(r6_event,v84)
+  v86:u64 = const() {"value":139}
+  v87:u64 = select(v85,v86,v83)
+  ret(v87)
+block phase7(p7_kind:u64,p7_phase:u64,p7_event:u64)
+  v88:u64 = const() {"value":7}
+  v89:bool = compare.eq(p7_phase,v88)
+  branch v89 result7(p7_kind,p7_event) phase8(p7_kind,p7_phase,p7_event)
+block result7(r7_kind:u64,r7_event:u64)
+  v90:u64 = const() {"value":0}
+  v91:u64 = const() {"value":8}
+  v92:bool = compare.eq(r7_event,v91)
+  v93:u64 = const() {"value":140}
+  v94:u64 = select(v92,v93,v90)
+  v95:u64 = const() {"value":9}
+  v96:bool = compare.eq(r7_event,v95)
+  v97:u64 = const() {"value":141}
+  v98:u64 = select(v96,v97,v94)
+  ret(v98)
+block phase8(terminal_kind:u64,terminal_phase:u64,terminal_event:u64)
+  v99:u64 = const() {"value":0}
+  ret(v99)
+end
+fn emit(source:readbuf,output:mutbuf,choice:u64) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,choice:u64)
+  v1:u64 = const() {"value":16}
+  v2:u64 = int.div.checked(choice,v1)
+  v3:u64 = const() {"value":15}
+  v4:u64 = bit.and(choice,v3)
+  v5:u64 = const() {"value":1}
+  v6:usize = const() {"value":8}
+  v7:u64 = buffer.load.u64.le(source,v6)
+  v8:usize = const() {"value":16}
+  v9:u64 = buffer.load.u64.le(source,v8)
+  v10:usize = const() {"value":24}
+  v11:u64 = buffer.load.u64.le(source,v10)
+  v12:u64 = const() {"value":0}
+  v13:u64 = const() {"value":0}
+  v14:usize = const() {"value":0}
+  _ = buffer.store.u64.le(output,v14,v5)
+  v15:usize = const() {"value":8}
+  _ = buffer.store.u64.le(output,v15,v7)
+  v16:usize = const() {"value":16}
+  _ = buffer.store.u64.le(output,v16,v2)
+  v17:usize = const() {"value":24}
+  _ = buffer.store.u64.le(output,v17,v4)
+  v18:usize = const() {"value":32}
+  _ = buffer.store.u64.le(output,v18,v9)
+  v19:usize = const() {"value":40}
+  _ = buffer.store.u64.le(output,v19,v11)
+  v20:usize = const() {"value":48}
+  _ = buffer.store.u64.le(output,v20,v12)
+  v21:usize = const() {"value":56}
+  _ = buffer.store.u64.le(output,v21,v13)
+  v22:u32 = const() {"value":0}
+  ret(v22)
+end
