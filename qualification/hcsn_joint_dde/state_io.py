@@ -24,8 +24,10 @@ def _binding(model):
              "hcsn_boundary_audit/spatial_generator.py",
              "hcsn_boundary_audit/refractory_transport.py"]
     for cls in (type(model), type(model.spatial)):
-        source = Path(inspect.getfile(cls)).resolve().relative_to(root / "qualification")
-        paths.append(str(source))
+        for base in cls.__mro__:
+            if base is not object:
+                source = Path(inspect.getfile(base)).resolve().relative_to(root / "qualification")
+                paths.append(str(source))
     return {"physics": json.loads(_canonical(asdict(model))),
             "types": [cls.__module__ + "." + cls.__qualname__ for cls in (type(model), type(model.spatial))],
             "sources": {

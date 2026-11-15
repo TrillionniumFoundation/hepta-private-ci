@@ -1,0 +1,12 @@
+test_full_history_physical_partials_match_independent_forward (qualification.hcsn_reset_aligned.test_model.AlignedReset.test_full_history_physical_partials_match_independent_forward) ... ok
+test_generator_jacobian_crosses_old_reset_nodes (qualification.hcsn_reset_aligned.test_model.AlignedReset.test_generator_jacobian_crosses_old_reset_nodes) ... ok
+test_old_node_left_right_slopes_have_vanishing_gap (qualification.hcsn_reset_aligned.test_model.AlignedReset.test_old_node_left_right_slopes_have_vanishing_gap) ... ok
+test_original_uniform_reset_kink_is_retained (qualification.hcsn_reset_aligned.test_model.AlignedReset.test_original_uniform_reset_kink_is_retained) ... ok
+test_same_point_reset_continuation_refines_to_finite_continuum (qualification.hcsn_reset_aligned.test_model.AlignedReset.test_same_point_reset_continuation_refines_to_finite_continuum) ... ok
+test_joint_physical_initial_law_gradcheck_at_former_reset_knot (qualification.hcsn_reset_aligned.test_torch.NativeAlignedVjp.test_joint_physical_initial_law_gradcheck_at_former_reset_knot) ... ok
+test_learns_known_reset_and_signed_mark_with_adequacy_goal (qualification.hcsn_reset_aligned.test_torch.NativeAlignedVjp.test_learns_known_reset_and_signed_mark_with_adequacy_goal) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 95.071s
+
+OK

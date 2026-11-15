@@ -1,0 +1,24 @@
+{
+  "ast_unchanged": true,
+  "executed_probe_sha256": "d4624cb4bf151045fa0f993ea9e9d1844ae4bd225f85ed2b2bd8149bd7ffdde5",
+  "final_probe_sha256": "e48bfd7f3dea9d0b07ce4d9a565ef86df6614173b17cef6877145e3c8e51ecb9",
+  "formatter_sources": {
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/format.py": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+  },
+  "just_command": [
+    "just",
+    "fmt"
+  ],
+  "just_cwd": "codex-rs",
+  "just_exit_code": 0,
+  "ruff_command": [
+    "ruff",
+    "format",
+    "qualification/hcsn_reset_aligned/evidence/independent-review-20261112-4092/probe_shorttime_domain.py"
+  ],
+  "ruff_exit_code": 0,
+  "source_operator_changed": false,
+  "tests_rerun_after_format": false
+}
