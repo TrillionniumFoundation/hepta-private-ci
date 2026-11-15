@@ -42,7 +42,10 @@ def main():
         if imports & FORBIDDEN:
             raise ValueError("numeric/model dependency")
     workflow = (ROOT / ".github/workflows/hcsn-n256-authentic-t0-capsule.yml").read_text()
-    if workflow.count("builder.py") != 1 or workflow.count("cold_audit.py") != 1:
+    if (
+        workflow.count("hcsn_currentstate_n256_t0_capsule_v1.builder ") != 1
+        or workflow.count("hcsn_currentstate_n256_t0_capsule_v1.cold_audit ") != 1
+    ):
         raise ValueError("single execution budget")
     print(json.dumps({"status": "PASS_SOURCE_FREEZE", "files": len(observed), "old_sparse_gap_preserved": True, "model_calls": 0, "optimizer_calls": 0}, sort_keys=True))
 
