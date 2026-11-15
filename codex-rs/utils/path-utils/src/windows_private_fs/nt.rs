@@ -254,11 +254,6 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
         )
     };
     if status < 0 {
-        #[cfg(test)]
-        eprintln!(
-            "windows_private_fs diagnostic NtSetInformationFile rename ntstatus=0x{:08x}",
-            status as u32
-        );
         // SAFETY: converting a status value does not dereference any pointer.
         return Err(io::Error::from_raw_os_error(
             unsafe { RtlNtStatusToDosError(status) } as i32,
