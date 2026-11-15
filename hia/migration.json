@@ -80,27 +80,27 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_13_modules_with_scoped_local_execution_final_harness_ci_pending",
+    "qualification_status": "three_generation_fixed_point_14_modules_scoped_local_passed_current_ci_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Actual local thirteen-module build and executed scoped gates, followed by an exact source freeze. The formatted public harness has not executed. Published V4 is historical evidence only. No full CLI/Core/workspace/platform/performance/default-release/retirement closure is claimed.",
+    "qualification_scope": "Actual fresh fourteen-module B1/B2/B3 build and scoped network-domain raw ABI, complete original public owner, allocation, injected-callee, execpolicy owner and standalone gates. Final fix/fmt changed no source bytes. New fourteen-module full Codex CLI, Core network consumer, previous component reruns, workspace and required platforms remain pending; no performance, default-release or retirement closure is claimed.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "module_count": 13,
+    "module_count": 14,
     "entry_profiles": {
-      "borrowed-buffers-u32-v1": 12,
+      "borrowed-buffers-u32-v1": 13,
       "u64-pair-to-u64-v1": 1
     },
-    "build_report_sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
+    "build_report_sha256": "1778e399fb88386c104c21028980975a34464a119692c7058b32437cb44fcbc4",
     "build_driver_source_revision": "7fe65ae990187e6ff1130c791f902728b4e50197",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The twelve borrowed-buffer modules retain their profile."
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The thirteen borrowed-buffer modules retain their profile."
   },
   "candidate_modules": [
     {
@@ -1170,7 +1170,7 @@
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "Evaluation::from_matches / Evaluation::is_match / CLI result reduction",
       "implementation_status": "complete_pure_reduction_with_opt_in_production_callers",
-      "qualification_status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
+      "qualification_status": "published_thirteen_module_native_ci_recorded_current_fourteen_module_scope_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1215,7 +1215,60 @@
         "report": "hia/verification.json#policy_summary_qualification",
         "raw_abi_calls": 3955,
         "original_full_result_comparisons": 10356,
-        "public_harness_scope": "Executed 0d74f5... source; final formatted 323290... source pending CI.",
+        "public_harness_scope": "Published thirteen-module push/PR CI executed final formatted 323290... source; see published_policy_summary13_ci_history. This is not a fourteen-module rerun.",
+        "full_policy_migrated": false,
+        "performance_qualified": false
+      }
+    },
+    {
+      "id": "network_domains",
+      "hia_source": "hia/network_domains.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::compiled_network_domains / upsert_domain",
+      "implementation_status": "complete_pure_algorithm_with_opt_in_public_owner",
+      "qualification_status": "local_scoped_final_source_passed_current_full_cli_and_core_consumer_pending_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_network_domains",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "SELECT": "LE u64 mode=0,count<=64, followed by exactly count decision bytes (Allow=0,Prompt=1,Forbidden=2). Output requires 8+count and returns LE u64 selected_count plus increasing u8 batch positions; workspace unchanged.",
+        "REDUCE": "LE u64 mode=1,M original_count,N selected_count; exactly N records of LE u64 original_index, decision, host_length plus raw bytes. N<=M, increasing indices<M, decisions 0/2 and exact end required.",
+        "REDUCE_output": "Capacity>=16+8*N; LE u64 allowed_count,denied_count, then winning original indices, Allow followed by Forbidden, increasing within each group.",
+        "REDUCE_workspace": "Capacity>=N; writes exactly N flags (0 superseded,1 Allow,2 Forbidden). Success preserves unused output/workspace bytes.",
+        "success": 0,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "short_workspace": 4294967293,
+        "error_contract": "Minimum output eight first; SELECT exact header/capacity then all tags; REDUCE complete frame then both capacities. All failures write neither output nor workspace; source is always unchanged. Raw host bytes need not be UTF-8."
+      },
+      "behavior": {
+        "complete_algorithm": "Policy::compiled_network_domains: exact raw-host last non-Prompt winner and ordered Allow/Forbidden vectors.",
+        "hia_owns": "SELECT excludes Prompt; REDUCE compares host bytes, chooses last winners and emits original rule indices in per-decision order.",
+        "rust_retains": "Decision encoding, checked framing/capacity, structural output validation and owned final String clones. No Rust host equality, normalization, sorting or policy deduplication.",
+        "ignored_fields": "Prompt hosts and every justification/protocol stay outside transport; raw from_parts hosts remain byte-exact.",
+        "error_scope": "Malformed status/count/index/order/decision outputs panic with no Rust or empty-list fallback. Structurally valid but semantically wrong callee output is not proven correct by these guards; the real HIA/original-owner differential supplies semantic evidence.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_network_domains_abi.py",
+        "hia/tests/test_native_network_domains.py",
+        "hia/tests/native_network_domains.rs",
+        "hia/tests/native_network_domains_allocations.rs",
+        "hia/tests/native_network_domains_failures.rs"
+      ],
+      "validation": {
+        "report": "hia/verification.json#network_domains_qualification",
+        "raw_abi_calls": 8244,
+        "error_no_write_calls": 997,
+        "raw_concurrent_calls": 256,
+        "original_public_comparisons": 67976,
+        "concurrent_comparisons_included": 512,
+        "allocation_cases": 25,
+        "zero_allocation_cases": 10,
+        "injected_callee_failures": 23,
         "full_policy_migrated": false,
         "performance_qualified": false
       }
@@ -1346,13 +1399,14 @@
         "filesystem and network isolation",
         "platform sandbox setup and denial behavior"
       ],
-      "next_implementation": "Execute final thirteen-module CI with the formatted public harness, full Codex CLI/Core consumers, whole workspace and required platforms; close prefix and policy-summary performance/allocation gates; then migrate remaining Policy evaluation and platform integration while preserving the existing denial tests.",
+      "next_implementation": "Run the fourteen-module current-source CI, including the full CLI twelve-symbol gate, actual Core network consumer and all prior gates; close measured prefix/policy-summary/network-domain performance and memory regressions, then migrate remaining policy and platform effects while retaining denial behavior.",
       "candidate_modules": [
         "prefix_match",
         "prefix_admission",
-        "policy_summary"
+        "policy_summary",
+        "network_domains"
       ],
-      "partial_scope": "PrefixPattern::matches_prefix uses HIA through codex-execpolicy/hia-native, including scalar count admission and full-frame matching. policy_summary also owns the complete pure RuleMatch reduction (presence, strictest decision and explicit-match flag) for Evaluation::from_matches, Evaluation::is_match and the CLI format_matches_json path. Rust retains rule traversal, callbacks and iterator effects, metadata, resolved-program policy, serialization and checked transport. Whole Policy/Core ownership and platform sandbox integration are not migrated; final thirteen-module source CI remains pending."
+      "partial_scope": "Prefix matching/scalar admission and complete pure RuleMatch reduction retain their opt-in HIA owners. network_domains now owns the complete pure Policy::compiled_network_domains algorithm, including non-Prompt selection, exact raw-host last-winner decisions and per-decision order. Rust retains checked transport, owned Strings, rule traversal/callbacks, metadata and serialization. The fourteen-module full CLI/Core network consumer is pending current CI; whole Policy/Core and platform sandbox ownership remain unmigrated."
     },
     {
       "id": "mcp",
@@ -2990,58 +3044,58 @@
       "template_index",
       "prefix_match",
       "prefix_admission",
-      "policy_summary"
+      "policy_summary",
+      "network_domains"
     ],
-    "checks_passed": 66,
-    "build_report_sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
+    "checks_passed": 68,
+    "build_report_sha256": "1778e399fb88386c104c21028980975a34464a119692c7058b32437cb44fcbc4",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "entry_profiles": {
-      "borrowed-buffers-u32-v1": 12,
+      "borrowed-buffers-u32-v1": 13,
       "u64-pair-to-u64-v1": 1
     },
     "scalar_admission_tests": "hia/tests/test_scalar_build_admission.py",
     "scalar_admission_checks_passed": 119,
-    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The twelve borrowed-buffer modules retain their profile.",
-    "receipt_report_sha256": "fae718eb989afac91b39ae3518a49fd651709db90170841c11d074a008c7b4a3",
-    "scalar_admission_checks_scope": "119 checks are recorded V4 evidence; this increment executed the 66 receipt checks, not the scalar artifact suite again."
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The thirteen borrowed-buffer modules retain their profile.",
+    "receipt_report_sha256": "2f07c75ed32532d04a74171ad6ea4d46ff7a9fd80faee20c5581a26320ab67fd",
+    "scalar_admission_checks_scope": "119 is retained V4 local evidence; published thirteen-module CI executed 120 including source-policy_summary. This fourteen-module increment executed 68 receipt checks, not the scalar artifact suite again."
   },
   "current_qualification": {
-    "report": "hia/verification.json#policy_summary_qualification",
-    "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+    "report": "hia/verification.json#network_domains_qualification",
+    "base_revision": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
-    "module_count": 13,
-    "borrowed_module_count": 12,
+    "module_count": 14,
+    "borrowed_module_count": 13,
     "scalar_module_count": 1,
-    "configured_production_path_algorithms": 10,
+    "configured_production_path_algorithms": 11,
     "scalar_helpers": [
       "prefix_admission"
     ],
     "current_installed_standalone_symbols": 3,
-    "expected_full_codex_symbols": 11,
-    "build_receipt_checks": 66,
-    "policy_summary_raw_abi_calls": 3955,
-    "original_full_result_comparisons": 10356,
-    "mutable_states": 23,
-    "effect_trace_scenarios": 6,
-    "allocation_cases": 30,
-    "zero_allocation_cases": 20,
-    "failure_injection_cases": 18,
+    "expected_full_codex_symbols": 12,
+    "build_receipt_checks": 68,
+    "network_domain_raw_abi_calls": 8244,
+    "original_public_comparisons": 67976,
+    "concurrent_comparisons_included": 512,
+    "allocation_cases": 25,
+    "zero_allocation_cases": 10,
+    "failure_injection_cases": 23,
     "native_execpolicy_tests": 34,
     "default_execpolicy_tests": 34,
     "installed_standalone_cases": 30,
     "installed_standalone_processes": 60,
-    "public_report_binding": "Executed public harness 0d74f5...; final import-order-only formatted 323290... harness has not executed. Production, allocation and failure-harness bytes are unchanged.",
-    "owner_final_aggregate_passed": false,
+    "owner_final_aggregate_passed": true,
+    "final_source_bytes_match_execution": true,
     "final_source_ci_qualified": false,
-    "installed_full_codex_cli": "pending_current_thirteen_module_ci",
-    "core_exec_policy": "pending_current_thirteen_module_ci",
+    "installed_full_codex_cli": "pending_current_fourteen_module_ci",
+    "core_network_consumer": "pending_current_fourteen_module_ci",
     "whole_workspace_qualified": false,
     "required_platforms_qualified": false,
     "whole_policy_migrated": false,
     "performance_qualified": false,
     "default_release_migrated": false,
     "retirement_ready": false,
-    "performance_scope": "All five recorded timings are slower than Rust; 32/33-record frames add one observed allocation versus Rust zero. Earlier prefix/template negative evidence remains unchanged."
+    "performance_scope": "All eleven diagnostic rows are slower than Rust; repeated-large-host logical requested-live peak is approximately 5x Rust. All earlier negative evidence remains historical and unchanged."
   },
   "historical_qualification": {
     "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
@@ -3108,7 +3162,7 @@
     "applies_to_current_stack_adapter": false,
     "scope": "Exact V3 source: full installed CLI 34+2 with 10 symbols, CLI/arg0/TUI 4474 passed with six reported skips, and Core exec-policy 11 passed with 3870 filtered out. Not current stack CI, complete Core/workspace or retirement evidence."
   },
-  "candidate_module_evidence_scope": "The first twelve entries retain their recorded component/build evidence. Their source/Core/static identities match the new build; this does not transfer behavioral passes. Published V4 and active policy-summary evidence are separate records.",
+  "candidate_module_evidence_scope": "The first thirteen entries retain their source-specific evidence; published thirteen-module CI is immutable history. Source/Core/static identity continuity does not transfer behavioral passes to this fourteen-module candidate. Active local network-domain evidence and pending full CLI/Core consumer scope are separate.",
   "published_v4_qualification": {
     "source_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
     "source_tree": "08ca98a7ce509a29c59910c11e10d3a4cdbb1999",
@@ -3120,5 +3174,21 @@
     "per_run_steps_passed": 41,
     "applies_to_current_policy_summary_increment": false,
     "scope": "Exact twelve-module d7 sources only: full CLI 34+2 and 10 symbols; CLI/arg0/TUI 4474 passed and six skipped; filtered Core 11 passed with 3870 excluded. No current thirteen-module or complete workspace qualification."
+  },
+  "published_policy_summary13_qualification": {
+    "revision": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+    "tree": "97cc6a157085f01ece227bf8c2e6dc2b7a71934e",
+    "report": "hia/verification.json#published_policy_summary13_ci_history",
+    "native_runs": [
+      43686447298,
+      43686504680
+    ],
+    "each_run_steps_passed": 43,
+    "source_bindings_verified": 88,
+    "artifact_members_rehashed": 196,
+    "final_formatted_harness_executed": true,
+    "whole_workspace_qualified": false,
+    "performance_qualified": false,
+    "applies_to_current_fourteen_module_candidate": false
   }
 }
