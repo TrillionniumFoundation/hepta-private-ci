@@ -1,0 +1,65 @@
+name: Hepta Matrix macOS cipher qualification
+
+on:
+  push:
+    branches: [codex/hia-macos-matrix-cipher-20261115-a90d]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-cipher-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  matrix-cipher:
+    name: Original Matrix cipher fixtures on ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            target: aarch64-apple-darwin
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare the original repository Bazel toolchain and cache
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-test
+
+      - name: Run original fixtures and cipher cancellation regressions
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B .github/scripts/hepta_matrix_cipher_qualification.py \
+            --report-dir "$RUNNER_TEMP/matrix-cipher"
+
+      - name: Preserve original fixture results and compiler evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: matrix-cipher-${{ matrix.target }}-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/matrix-cipher/
+            ${{ runner.temp }}/bazel-execution-logs/
+
+      - name: Check the production source and original fixtures are unchanged
+        if: always()
+        uses: ./.github/actions/check-clean-worktree

@@ -2,6 +2,11 @@ exports_files([
     "clippy.toml",
 ])
 
+exports_files(
+    ["third_party/matrix-sdk-sqlite-0.19.1/src/cipher_task.rs"],
+    visibility = ["//codex-rs/hepta-matrix-sdk:__pkg__"],
+)
+
 filegroup(
     name = "workspace-files",
     srcs = glob(
