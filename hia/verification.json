@@ -15,7 +15,7 @@
   "legacy_retirement_ready": false,
   "whole_product_performance_qualified": false,
   "opt_in_production_callers_verified": false,
-  "scope": "Linux x86-64 GNU, opt-in hia-native. Fourteen B3 modules cover twelve algorithm groups. The current fixed-point build, summary raw ABI (1328 calls), complete-original unified component ABI (522858 native calls, zero skips), two initial 68-check receipt gates and 120 scalar admission checks passed. All twelve inherited sources/static archives match the fully audited aeb88 effect parent. Frozen summary and unified prototypes separately passed their complete-original public comparisons; the unified prototype also passed actual checked/wrapping Cargo, cached-policy and strict owner-lint gates. These do not qualify the final combination's Cargo, public owners, installed executables, consumers or CI. All 15 complete capabilities, default dispatch, required platforms, release/LTO, retirement and whole-product performance remain open.",
+  "scope": "Linux x86-64 GNU, opt-in hia-native. Fourteen B3 modules cover twelve algorithm groups. The current fixed-point build, summary raw ABI (1328 calls), complete-original unified component ABI (522858 native calls, zero skips), two initial 68-check receipt gates and 120 scalar admission checks passed. All twelve inherited sources/static archives match the fully audited aeb88 effect parent. Frozen summary and unified prototypes separately passed their complete-original public comparisons; the unified prototype also passed actual checked/wrapping Cargo, cached-policy and strict owner-lint gates. These do not qualify the final combination's Cargo, public owners, installed executables, consumers or CI. All 15 complete capabilities, default dispatch, required platforms, release/LTO, retirement and whole-product performance remain open. The first published 0339 combination subsequently executed both native CI attempts, each with 56 successful steps, one cached-artifact admission failure and two skipped steps. Those exact results are historical; the current two-file repair passed bounded actual compiler-control regressions and awaits complete-source CI.",
   "current_evidence_record": "patch_output_increment",
   "composition_sources": {
     "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
@@ -579,7 +579,7 @@
     "hia/prepare_unified_diff_policy.py": "be01132ce336e9178e08afd359d212981bd3d321d849357bce500768665edf71",
     "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
     "hia/similar-source.json": "7fceb120e1cefbf4de7677fbc15dfe65ce845c23fb23b64eb73fede8afb8999f",
-    "hia/similar_policy.py": "8d97a44b12a7626ed567789ddede9a17f50ac63fe0b0d99c359a60ff38ab1d96",
+    "hia/similar_policy.py": "ecf924330252841411abde51b138cbfc28b281d72d73337378a3ae4c5501a84c",
     "hia/source_file.hepta": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
     "hia/source_file_buffer_contract.json": "47d50172b6abd2a9449c8eb2e312c7a1588404e25e4480216b0d3241d5f54105",
     "hia/tests/file_update_oracle/__init__.py": "1a2b6ac67893128518bd6254f31f4d71c9b76f9bf56a5fb0f423e07c4945729b",
@@ -667,7 +667,7 @@
     "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
     "hia/unified_diff.hepta": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
     "hia/unified_diff_buffer_contract.json": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e",
-    "hia/unified_policy_ci.py": "d826fc17b3dfc5a774df2efbe27aea278f166c724e070284eb148d5e35cccc3c",
+    "hia/unified_policy_ci.py": "a6847dc71d0b98bb37a89d9fad2b0c1fe864d31ca4b353603610c0981106cb5c",
     "hia/unified_policy_fix.py": "430de4f64db34d45af073fcc335deeae8f18d5a0169f0a57184306ecf915e26c",
     "hia/unified_policy_fix_outer.py": "0c49c7ac11f17b5d91b75ec9539ccc64e6a45e3fd71a7a3f58c650af8eb2347b",
     "hia/unified_policy_fix_workspace.py": "9a8564f68be52f42810b94b4b843714b2b631c119304b4b179d0eccb7e4c657a",
@@ -1099,8 +1099,10 @@
     "performance_qualified": false
   },
   "current_product_ci": {
-    "status": "not_yet_published",
+    "status": "cached_alias_repair_prepared_full_ci_pending",
     "qualified": false,
+    "candidate_parent": "0339bd5f863ba2459084115906a875b10595a704",
+    "prior_attempts": "historical_published_ci.patch_output_before_cached_alias_repair",
     "pending_gates": [
       "Complete original public effect, summary and unified comparisons on the final native/default production artifacts.",
       "Actual current checked/wrapping policy, cached compiler receipt, source-negative, just test, strict all-target Clippy and scoped just fix gates.",
@@ -1329,6 +1331,78 @@
       "strict_native_default_and_fix_clean_diff": true,
       "artifact_scope": "Both uploaded archives/logs, complete original snapshots and PR merge identity audited. No rerun or rehash of unuploaded executables/rlibs is claimed.",
       "qualifies_new_summary_unified_combination": false
+    },
+    "patch_output_before_cached_alias_repair": {
+      "head": "0339bd5f863ba2459084115906a875b10595a704",
+      "tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+      "qualified": false,
+      "audit": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-ci/terminal-audit.json",
+        "bytes": 114231,
+        "sha256": "ab55d4a296d1f4944cb045feabdf6a53389ee9065d5b5bf07bc3aed14351f9c0"
+      },
+      "merge_identity": {
+        "commit": "14ae5767e440c950fe567cf22f14058c80b309f3",
+        "tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+        "parents": [
+          "aeb88f596b83186456caac577080bcb2f253ad32",
+          "0339bd5f863ba2459084115906a875b10595a704"
+        ],
+        "same_tree_as_candidate": true
+      },
+      "runs": [
+        {
+          "event": "push",
+          "run_id": 43701251060,
+          "job_id": 132772661636,
+          "attempt": 1,
+          "conclusion": "failure",
+          "tested_commit": "0339bd5f863ba2459084115906a875b10595a704",
+          "tested_tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+          "step_counts": {
+            "success": 56,
+            "failure": 1,
+            "skipped": 2
+          },
+          "artifact": {
+            "id": 14157700665,
+            "path": "push-43701251060/artifact.zip",
+            "bytes": 38068683,
+            "sha256": "602a3e0a416ae9046c52102d1f72875e4b7c5d1ffa6ac88c6b987f0569e23d4e",
+            "members": 11618,
+            "github_size_digest_checked": true
+          }
+        },
+        {
+          "event": "pull_request",
+          "run_id": 43701273070,
+          "job_id": 132772729344,
+          "attempt": 1,
+          "conclusion": "failure",
+          "tested_commit": "14ae5767e440c950fe567cf22f14058c80b309f3",
+          "tested_tree": "969cf1413eae03ae4290216db635ae99cbf71706",
+          "step_counts": {
+            "success": 56,
+            "failure": 1,
+            "skipped": 2
+          },
+          "artifact": {
+            "id": 14158400629,
+            "path": "pr-43701273070/artifact.zip",
+            "bytes": 38069651,
+            "sha256": "4c9049cde6918d266ad2defe2ca72e4106f4461c7e3203551b9dd04ef85d9ec1",
+            "members": 11618,
+            "github_size_digest_checked": true
+          }
+        }
+      ],
+      "failure": "Cached checked Cargo build succeeded; actual artifact admission returned 74 because its publication-alias index selected a different real compiler unit.",
+      "not_executed": [
+        "wrapping policy",
+        "eight policy rejection commands",
+        "complete unified public comparison"
+      ],
+      "executed_scope": "All other executed steps succeeded: fourteen native modules, component gates, summary public 1002 pairs, inherited 5375 Rust passes/6 existing skips, original effects/file-update, installed executables and strict/fix. These do not close the failed policy or skipped unified public gates."
     }
   },
   "historical_performance": {
@@ -2051,18 +2125,57 @@
         "extended_rejections": 8
       },
       "extended_refusal_scope": "Four entry preconditions, three actual helper refusals (manual policy cfg and both mixed arrangements), and one earlier rustc embed-bitcode/LTO incompatibility. The last does not establish execution of the new helper's LTO admission branch.",
-      "helper_change": "Compiler-log identity includes the complete source inventory, actual Clippy arguments and actual stdout/stderr hashes. Final catalog EOF cleanup changes only the strict CATALOG_SHA constant and the matching CI pins; every function AST is unchanged from the exercised 815fb helper.",
+      "helper_change": "The earlier compiler-log and strict fix bridge changes are retained. The current helper additionally selects cached Cargo publication aliases through their actual hashed output/peer receipt; every pre-existing helper function except the single verify_cargo_log call is AST-identical to 0339. See cached_cargo_alias_repair for actual regression evidence and pending full-owner scope.",
       "exercised_helper_sha256": "815fb0823e8822697cac5d1d455f0881e4e54cad394392dee3f18d8659ac6dc0",
-      "current_helper_sha256": "8d97a44b12a7626ed567789ddede9a17f50ac63fe0b0d99c359a60ff38ab1d96",
+      "current_helper_sha256": "ecf924330252841411abde51b138cbfc28b281d72d73337378a3ae4c5501a84c",
       "post_control_source_delta": "Eight catalog/test files lose only eleven trailing LF bytes in total, with identical JSON/Python AST. Helper and CI digest constants retain strict byte admission for those final bytes. Original control reports keep their exact earlier identities; final complete-owner CI remains pending.",
       "actual_fix_admission": "Real pinned Cargo fix invokes pinned Clippy through admitted workspace/outer bridges. Every call has paired start/completion records and successful status; actual fix artifacts receive independent policy receipt admission.",
       "full_owner_original_eight_negatives_with_new_helper_passed": false,
       "combined_cargo_qualified": false,
-      "whole_product_qualified": false
+      "whole_product_qualified": false,
+      "pre_alias_repair_helper_sha256": "8d97a44b12a7626ed567789ddede9a17f50ac63fe0b0d99c359a60ff38ab1d96",
+      "historical_helper_change": "Compiler-log identity includes the complete source inventory, actual Clippy arguments and actual stdout/stderr hashes. Final catalog EOF cleanup changes only the strict CATALOG_SHA constant and the matching CI pins; every function AST is unchanged from the exercised 815fb helper."
     },
     "failed_attempts_preserved_externally": [
-      "The actual fourteen-module build returned zero; the first controller then failed its overly strict prototype archive byte-equality aggregation. A complete byte comparison established the member-name-only difference without rerunning or rewriting that failed record."
-    ]
+      "The actual fourteen-module build returned zero; the first controller then failed its overly strict prototype archive byte-equality aggregation. A complete byte comparison established the member-name-only difference without rerunning or rewriting that failed record.",
+      "Both 0339 native CI attempts failed at checked cached-artifact admission; their full logs, immutable ZIPs and source-specific audit remain retained. The wrapping/eight-negative/unified public steps did not execute."
+    ],
+    "cached_cargo_alias_repair": {
+      "manifest": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/freeze-manifest-v1.json",
+        "bytes": 3320,
+        "sha256": "fd1ad0e9662474790ee1735bc3e29dd7e9297d2cb2647fd8aa148833d0cd0ea1"
+      },
+      "independent_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-review/cached-alias-repair-review-v1.json",
+        "bytes": 14810,
+        "sha256": "1d5d82c9f1f71f210f5fe5f7b3fabf03d8d88a3ab6f0de0043dd028dd56a8e4e"
+      },
+      "baseline_regression": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/evidence/baseline-v1/report.json",
+        "bytes": 54963,
+        "sha256": "24c40458c4486a0f138814b7563f0e8c4cf5eabd9004d4e6308e0f32c93ca8d9"
+      },
+      "repaired_regression": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/evidence/repaired-v1/report.json",
+        "bytes": 176497,
+        "sha256": "4d962e1dc5ceed0d7b7e9739f0c962c0ba90594e823e2aa100cef54a5ce4da18"
+      },
+      "final_validation": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-output-policy-repair/evidence/final-validation-v1.json",
+        "bytes": 14455,
+        "sha256": "6447108d1be89697fbb9159b408b5eacb6f44f0dfbbb56f7c69d87d3c35ef31d"
+      },
+      "actual_baseline_commands": 7,
+      "actual_repaired_commands": 31,
+      "successful_admissions": 9,
+      "executed_policy_drivers": 4,
+      "actual_rejections": 5,
+      "admission": "An explicit Cargo publication alias requires the unique hashed peer in the same actual Cargo row, matching actual crate/features/out-dir/extra-filename/emit event, one immutable compiler receipt and exact alias/canonical bytes. Only then is its alias index refreshed with Cargo-log provenance.",
+      "scope": "Real pinned Rust/Cargo with all 73 original Similar files and a small control owner. Complete Codex owner, eight original policy negatives and unified public qualification remain pending on the repaired source.",
+      "hia_algorithms_or_artifacts_changed": false,
+      "whole_product_qualified": false
+    }
   },
   "patch_summary_increment": {
     "source_sha256": "50dd79660f44dd6ed5bcaf835364478875528a2050fdaad2199077b74529b84e",

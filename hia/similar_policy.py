@@ -336,6 +336,79 @@ def select_receipt(cfg, selected_path, kind):
     return actual, value
 
 
+def select_cargo_receipt(cfg, record, selected_path, cargo_log):
+    selected = Path(selected_path).resolve(strict=True)
+    index = index_path(cfg, selected)
+    require(index.exists(), 'missing consumer policy receipt: ' + str(selected))
+    pointer = json.loads(index.read_text())
+    if pointer.get('relation') != 'cargo-publication-alias':
+        return select_receipt(cfg, selected, 'consumer')
+    # Cargo can republish an already cached unit without invoking rustc. The
+    # last compiled unit's hashless alias index is therefore not authoritative.
+    # Identify this unit from its hashed peer in the SAME actual Cargo row.
+    require(pointer['lookup_path'] == str(selected), 'receipt index selects another path')
+    require(selected.suffix in ('.rlib', '.rmeta') and record['target']['kind'] == ['lib']
+            and record['target']['crate_types'] == ['lib'], 'unsupported Cargo publication alias class')
+    peers = [Path(p).resolve(strict=True) for p in record['filenames']
+             if Path(p).resolve() != selected and Path(p).resolve().parent == selected.parent / 'deps'
+             and Path(p).suffix in ('.rlib', '.rmeta')]
+    require(len(peers) == 1, 'missing or ambiguous hashed Cargo publication peer')
+    peer = peers[0]
+    peer_index = index_path(cfg, peer)
+    require(peer_index.exists(), 'missing consumer policy receipt: ' + str(peer))
+    peer_pointer = json.loads(peer_index.read_text())
+    require(peer_pointer.get('relation') == 'actual-compiler-event'
+            and peer_pointer['actual_artifact']['path'] == str(peer), 'Cargo peer is not an actual compiler output')
+    peer_actual, value = select_receipt(cfg, peer, 'consumer')
+    argv = value['actual_argv']
+    crate = last_option(argv, '--crate-name')
+    outdir = Path(last_option(argv, '--out-dir')).resolve(strict=True)
+    extra = ''
+    for i, item in enumerate(argv):
+        if item == '-C' and argv[i + 1].startswith('extra-filename='):
+            extra = argv[i + 1].split('=', 1)[1]
+        elif item.startswith('-Cextra-filename='):
+            extra = item.split('=', 1)[1]
+    features = sorted(x[len('feature="'):-1] for x in option_values(argv, '--cfg')
+                      if x.startswith('feature="') and x.endswith('"'))
+    require(crate == cfg['consumer_crate'] and crate == record['target']['name'].replace('-', '_')
+            and option_values(argv, '--crate-type') == ['lib'] and features == sorted(record['features']),
+            'Cargo publication unit differs from the actual compiler invocation')
+    require(extra and '/' not in extra and '\\' not in extra and outdir == peer.parent
+            and outdir == selected.parent / 'deps'
+            and selected.name == 'lib' + crate + selected.suffix
+            and peer.name == 'lib' + crate + extra + peer.suffix,
+            'Cargo publication layout differs from actual out-dir or extra-filename')
+    canonical_path = outdir / ('lib' + crate + extra + selected.suffix)
+    canonical_actual, canonical_value = select_receipt(cfg, canonical_path, 'consumer')
+    canonical_pointer = json.loads(index_path(cfg, canonical_path).read_text())
+    require(canonical_pointer.get('relation') == 'actual-compiler-event'
+            and canonical_pointer['actual_artifact'] == canonical_actual
+            and canonical_pointer['receipt'] == peer_pointer['receipt'] and canonical_value == value,
+            'Cargo publication output and peer do not share one actual compiler receipt')
+    emitted = 'link' if selected.suffix == '.rlib' else 'metadata'
+    events = []
+    for line in Path(value['compiler_output']['stderr']['path']).read_bytes().splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if event.get('$message_type') == 'artifact' and event.get('emit') == emitted:
+            events.append(str(Path(event['artifact']).resolve()))
+    require(events.count(str(canonical_path)) == 1
+            and emitted in (last_option(argv, '--emit') or '').split(','),
+            'Cargo publication class lacks its actual compiler artifact event')
+    actual = binding(selected)
+    require(actual['sha256'] == canonical_actual['sha256'] and actual['bytes'] == canonical_actual['bytes'],
+            'selected actual artifact changed')
+    refreshed = {'lookup_path': str(selected), 'relation': 'cargo-publication-alias',
+                 'actual_artifact': canonical_actual, 'receipt': canonical_pointer['receipt'],
+                 'cargo_publication': {'log': binding(cargo_log), 'peer': peer_actual}}
+    atomic(index, refreshed)
+    journal(cfg, {'event': 'admitted-cargo-publication', **refreshed})
+    return actual, value
+
+
 def policy_mode(defining, owner):
     return {('checked', 'checked'): 0, ('wrapping', 'wrapping'): 1,
             ('checked', 'wrapping'): 2, ('wrapping', 'checked'): 3}[(defining, owner)]
@@ -458,7 +531,7 @@ def verify_cargo_log(log_path):
     for record in selected:
         require(Path(record['target']['src_path']).resolve().is_relative_to(Path(cfg['consumer_root']).resolve()), 'Cargo consumer source is outside the configured package')
         for path in record['filenames']:
-            actual, value = select_receipt(cfg, path, 'consumer')
+            actual, value = select_cargo_receipt(cfg, record, path, log_path)
             results.append({'actual_cargo_artifact': actual, 'selected_extern': value['selected_extern'],
                             'policy_mode': value['policy_mode'], 'cargo_fresh': record['fresh'],
                             'cargo_package_id': record['package_id'], 'cargo_profile': record['profile']})

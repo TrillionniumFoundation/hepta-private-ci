@@ -12,7 +12,7 @@ EXACT = {
     "hia/unified_policy_fix.py": "430de4f64db34d45af073fcc335deeae8f18d5a0169f0a57184306ecf915e26c",
     "hia/unified_policy_fix_outer.py": "0c49c7ac11f17b5d91b75ec9539ccc64e6a45e3fd71a7a3f58c650af8eb2347b",
     "hia/unified_policy_fix_workspace.py": "9a8564f68be52f42810b94b4b843714b2b631c119304b4b179d0eccb7e4c657a",
-    "hia/similar_policy.py": "8d97a44b12a7626ed567789ddede9a17f50ac63fe0b0d99c359a60ff38ab1d96",
+    "hia/similar_policy.py": "ecf924330252841411abde51b138cbfc28b281d72d73337378a3ae4c5501a84c",
     "hia/similar-source.json": "7fceb120e1cefbf4de7677fbc15dfe65ce845c23fb23b64eb73fede8afb8999f",
     "hia/unified_diff.hepta": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
     "hia/unified_diff_buffer_contract.json": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e",

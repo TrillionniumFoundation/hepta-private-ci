@@ -243,6 +243,23 @@ the complete Codex owner gates.
 
 ## Qualification
 
+The first published fourteen-module source, `0339bd5f`, ran both native CI
+attempts. Each had 56 successful steps, one failed cached arithmetic-policy
+admission, and two skipped steps. The checked Cargo build succeeded; its
+hashless publication alias still indexed a different real compiler unit.
+Wrapping, the eight policy rejection commands, and the complete unified public
+comparison did not execute. Both full failed-run archives remain retained.
+
+The current repair selects that alias through the unique hashed peer in the
+same actual Cargo row. Actual compiler output events, crate/features, output
+paths, immutable receipt identity, source/probe/mode checks, and complete
+alias/artifact byte hashes remain required. Seven real baseline commands
+reproduced the failure; 31 repaired commands exercised nine successful
+admissions, four linked policy observers and five genuine rejections. These
+small compiler controls do not qualify the complete owner. Fresh full CI is
+still required for this repaired source; HIA programs and Rust adapters are
+unchanged by the repair.
+
 The current fourteen-module build reproduces the B1/B2/B3 fixed point. All twelve
 existing HIA sources and static archives match the qualified effect parent.
 The summary archive matches its exercised prototype. The unified formatter's
