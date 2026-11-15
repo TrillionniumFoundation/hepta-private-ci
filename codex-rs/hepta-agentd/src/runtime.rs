@@ -25,6 +25,7 @@ use crate::CognitiveRetrievalMode;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
+use crate::state::CognitiveStoreRequirement;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -194,10 +195,9 @@ pub async fn run(
             .await?
         }
     };
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // Every writer-enabled product profile requires an available cognitive
+    // store. The explicit no-default-features read-only profile may continue
+    // with sanitized unavailable reads and no cognitive mutation tools.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
@@ -237,7 +237,13 @@ pub async fn run(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
-    state.mark_runtime_prerequisites_ready()?;
+    let cognitive_requirement =
+        if cfg!(feature = "production-cognitive-write") || production_writer_host.is_some() {
+            CognitiveStoreRequirement::RequiredForWrites
+        } else {
+            CognitiveStoreRequirement::OptionalReadOnly
+        };
+    state.mark_runtime_prerequisites_ready(cognitive_requirement)?;
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),

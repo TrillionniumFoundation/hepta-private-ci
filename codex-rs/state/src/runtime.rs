@@ -41,6 +41,7 @@ use std::time::Instant;
 use tracing::warn;
 
 mod backfill;
+mod configuration_identity;
 mod external_agent_config_imports;
 mod goals;
 mod logs;
@@ -91,6 +92,7 @@ const LOG_PARTITION_ROW_LIMIT: i64 = 1_000;
 #[derive(Clone)]
 pub struct StateRuntime {
     sqlite: SqliteConfig,
+    configured_sqlite: SqliteConfig,
     default_provider: String,
     pool: Arc<sqlx::SqlitePool>,
     logs_pool: Arc<sqlx::SqlitePool>,
@@ -137,6 +139,7 @@ impl StateRuntime {
         // Resolve the configured home exactly once, before opening any
         // database, then retain directory fds for dispatch locking. A later
         // parent-symlink retarget cannot split the queue DB from its locks.
+        let configured_sqlite = sqlite.clone();
         let canonical_home = tokio::fs::canonicalize(sqlite.home()).await?;
         let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(canonical_home)?);
         let dispatch_lock_directory = queued_items::DispatchLockDirectory::open(sqlite.home())?;
@@ -284,6 +287,7 @@ impl StateRuntime {
             pool,
             logs_pool,
             sqlite,
+            configured_sqlite,
             default_provider,
             thread_updated_at_millis: Arc::new(AtomicI64::new(thread_updated_at_millis)),
             thread_recency_at_millis: Arc::new(AtomicI64::new(thread_recency_at_millis)),

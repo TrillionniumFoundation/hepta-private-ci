@@ -7,6 +7,8 @@ mod hia_native_markdown;
 #[cfg(feature = "hia-native")]
 mod hia_native_metric;
 #[cfg(feature = "hia-native")]
+mod hia_native_truncate;
+#[cfg(feature = "hia-native")]
 mod hia_native_uuid;
 mod json;
 mod truncate;

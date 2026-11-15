@@ -130,7 +130,9 @@ async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
         .expect("owner attachment");
     fixture
         .state
-        .mark_runtime_prerequisites_ready()
+        .mark_runtime_prerequisites_ready(
+            crate::state::CognitiveStoreRequirement::RequiredForWrites,
+        )
         .expect("owner prerequisites");
 }
 
@@ -1068,3 +1070,6 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
     result?;
     Ok(())
 }
+
+#[path = "startup_readiness_tests.rs"]
+mod startup_readiness;

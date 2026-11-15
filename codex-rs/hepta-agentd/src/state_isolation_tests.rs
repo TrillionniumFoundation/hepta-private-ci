@@ -449,7 +449,9 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         .attach_cognitive_store(Arc::new(cognitive))
         .expect("attach cognitive owner");
     state
-        .mark_runtime_prerequisites_ready()
+        .mark_runtime_prerequisites_ready(
+            crate::state::CognitiveStoreRequirement::RequiredForWrites,
+        )
         .expect("owner prerequisites");
     state
         .mark_app_server_ready()
@@ -477,7 +479,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    let checkpoint_file = temp
+        .path()
+        .canonicalize()
+        .expect("canonical checkpoint root")
+        .join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(

@@ -310,7 +310,9 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         .expect("owner attachment");
     fixture
         .state
-        .mark_runtime_prerequisites_ready()
+        .mark_runtime_prerequisites_ready(
+            crate::state::CognitiveStoreRequirement::RequiredForWrites,
+        )
         .expect("owner prerequisites");
     fixture.state.mark_app_server_ready().expect("ready");
     fixture.store.create_task(&draft()).await.expect("task");

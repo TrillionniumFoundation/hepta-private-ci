@@ -7,7 +7,6 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -108,11 +107,12 @@ async fn unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry() -> TestRe
     Ok(())
 }
 
+// Provider-proven absence uses the full TaskFlow path exercised by
+// durable_causal_chain::retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence.
 #[derive(Clone, Copy, Debug)]
 enum ReleasePath {
     PreDispatchRetry,
     StaleGeneration,
-    NegativeObservation,
 }
 
 #[tokio::test]
@@ -123,9 +123,6 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
     ] {
         for release in [ReleasePath::PreDispatchRetry, ReleasePath::StaleGeneration] {
             let (_temp, layout, store, lease) = leased_store().await?;
-            if matches!(release, ReleasePath::NegativeObservation) {
-                prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
-            }
             let task_id = lease.task.task_id;
             let retired = match retirement {
                 AutomationTaskState::Disabled => {
@@ -150,18 +147,6 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
                             .await?,
                         1
                     );
-                }
-                ReleasePath::NegativeObservation => {
-                    let proof = Sha256Digest::for_bytes(b"retirement-provider-absence");
-                    store
-                        .reconcile_uncertain_occurrence_absent(
-                            task_id,
-                            lease.occurrence,
-                            &lease.client_user_message_id,
-                            &proof,
-                            103,
-                        )
-                        .await?
                 }
             }
             store.close().await;

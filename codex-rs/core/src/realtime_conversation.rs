@@ -487,6 +487,7 @@ struct RealtimeStartOutput {
     realtime_active: Arc<AtomicBool>,
     events_rx: Receiver<RealtimeEvent>,
     transcript_tail_rx: Receiver<String>,
+    stop_token: CancellationToken,
     sdp: Option<String>,
 }
 
@@ -686,12 +687,13 @@ impl RealtimeConversationManager {
             input_task: task,
             fanout_task: None,
             realtime_active: Arc::clone(&realtime_active),
-            stop_token,
+            stop_token: stop_token.clone(),
         });
         Ok(RealtimeStartOutput {
             realtime_active,
             events_rx,
             transcript_tail_rx,
+            stop_token,
             sdp,
         })
     }
@@ -1552,6 +1554,7 @@ async fn handle_start_inner(
         realtime_active,
         events_rx,
         transcript_tail_rx,
+        stop_token,
         sdp,
     } = start_output;
     if let Some(sdp) = sdp {
@@ -1594,7 +1597,9 @@ async fn handle_start_inner(
             if let Some(text) = maybe_routed_text {
                 debug!(text = %text, "[realtime-text] realtime conversation text output");
                 let sess_for_routed_text = Arc::clone(&sess_clone);
-                sess_for_routed_text.route_realtime_text_input(text).await;
+                sess_for_routed_text
+                    .route_realtime_text_input(text, &stop_token)
+                    .await;
             }
             sess_clone
                 .send_event_raw(ev(EventMsg::RealtimeConversationRealtime(
@@ -1605,7 +1610,9 @@ async fn handle_start_inner(
                 .await;
         }
         if let Ok(text) = transcript_tail_rx.recv().await {
-            sess_clone.route_realtime_text_input(text).await;
+            sess_clone
+                .route_realtime_text_input(text, &stop_token)
+                .await;
         }
         if fanout_realtime_active.swap(false, Ordering::Relaxed) {
             match end {

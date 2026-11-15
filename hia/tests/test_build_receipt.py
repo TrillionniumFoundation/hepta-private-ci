@@ -31,11 +31,15 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--rustc", default=shutil.which("rustc"))
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--mutation-module", help="module whose artifact/receipt mutations are exercised")
     args = parser.parse_args()
     if not args.rustc:
         parser.error("rustc is required; this test never skips the Rust helper")
     artifacts = args.artifacts.resolve()
     modules = json.loads((ROOT / "toolchain.json").read_bytes())["modules"]
+    mutation_module = args.mutation_module if args.mutation_module is not None else modules[0]
+    if mutation_module not in modules:
+        parser.error("--mutation-module must name a locked HIA module")
     observed = []
     with tempfile.TemporaryDirectory(prefix="codex-hia-build-check-") as temporary:
         base = Path(temporary)
@@ -104,7 +108,7 @@ def main():
             staged = base / "out" / f"libcodex_hia_{module}.a"
             if staged.read_bytes() != inputs[native / staged.name]:
                 raise AssertionError("Cargo staging changed archive bytes")
-        module = modules[0]
+        module = mutation_module
         receipt = native / f"{module}.link"
         for path in [fixture_hia / "build.py", helper, fixture_hia / "toolchain.json",
                      *(fixture_hia / f"{m}.hepta" for m in modules), native / "build.json",
@@ -183,6 +187,7 @@ def main():
             raise AssertionError("Python archive inspector accepted a duplicate member")
     result = {"schema": "codex.hia.build-receipt-test.v1", "status": "passed",
               "checks": len(observed), "cases": observed,
+              "mutation_module": mutation_module,
               "helper_sha256": digest((ROOT / "cargo_build.rs").read_bytes()),
               "build_report_sha256": digest((artifacts / "build.json").read_bytes()),
               "whole_codex_rewritten": False}

@@ -897,6 +897,69 @@ async fn subagent_notification_is_included_without_wait() -> Result<()> {
     Ok(())
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn subagent_notification_is_persisted_once_without_client_provenance() -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let server = start_mock_server().await;
+    let (test, _spawned_id, child_requests) = setup_turn_one_with_custom_spawned_child(
+        &server,
+        json!({ "message": CHILD_PROMPT }),
+        /*child_response_delay*/ None,
+        /*wait_for_parent_notification*/ true,
+        |builder| {
+            builder.with_config(|config| {
+                config
+                    .features
+                    .enable(Feature::RetainClientDeveloperMessages)
+                    .expect("test config should allow feature update");
+            })
+        },
+    )
+    .await?;
+    test.codex.flush_rollout().await?;
+    let rollout_path = test
+        .codex
+        .rollout_path()
+        .ok_or_else(|| anyhow::anyhow!("expected parent rollout path"))?;
+    let rollout = tokio::fs::read_to_string(rollout_path).await?;
+    let notifications = rollout
+        .lines()
+        .map(serde_json::from_str::<Value>)
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .filter(|item| {
+            item["type"] == "response_item"
+                && item["payload"]["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                    == json!(["multi_agent.subagent_notification"])
+        })
+        .collect::<Vec<_>>();
+    let [notification] = notifications.as_slice() else {
+        panic!("expected exactly one child completion notification: {notifications:?}");
+    };
+    assert_eq!(notification.get("metadata"), None);
+    assert!(
+        notification["payload"]["content"]
+            .as_array()
+            .expect("context fragment content")
+            .iter()
+            .any(|item| item["text"]
+                .as_str()
+                .is_some_and(|text| text.contains("child done")))
+    );
+    // The mock records requests before its custom matcher runs, so count only
+    // the child requests selected by the same predicate as its responder.
+    let child_request_count = child_requests
+        .requests()
+        .iter()
+        .filter(|request| {
+            request.body_contains_text(CHILD_PROMPT) && !request.body_contains_text(SPAWN_CALL_ID)
+        })
+        .count();
+    assert_eq!(child_request_count, 1);
+    Ok(())
+}
+
 #[test_case(ThreadHistoryMode::Legacy; "legacy")]
 #[test_case(ThreadHistoryMode::Paginated; "paginated")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

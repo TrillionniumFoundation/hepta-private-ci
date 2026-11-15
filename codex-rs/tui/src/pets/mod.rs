@@ -350,6 +350,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let frame = dir.path().join("frame.png");
         std::fs::write(&frame, b"png").unwrap();
+        let frame = frame.canonicalize().unwrap();
         let path_payload =
             base64::engine::general_purpose::STANDARD.encode(frame.to_string_lossy().as_bytes());
         let request = AmbientPetDraw {

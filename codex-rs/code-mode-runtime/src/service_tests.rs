@@ -278,23 +278,32 @@ async fn zero_yield_limit_is_immediate_and_scoped_to_its_session() {
 }
 
 async fn wait_until_finished<T>(task: &tokio::task::JoinHandle<T>) {
-    for _ in 0..10_000 {
-        if task.is_finished() {
-            return;
-        }
-        tokio::task::yield_now().await;
-    }
-    panic!("code-mode response did not finish while virtual time was held in the grace period");
+    wait_with_frozen_clock(
+        || task.is_finished(),
+        "code-mode response did not finish while virtual time was held in the grace period",
+    )
+    .await;
 }
 
 async fn wait_until_tool_started(delegate: &ReleasableToolDelegate) {
-    for _ in 0..10_000 {
-        if delegate.tool_started.load(Ordering::Acquire) {
-            return;
-        }
+    wait_with_frozen_clock(
+        || delegate.tool_started.load(Ordering::Acquire),
+        "nested code-mode tool did not start",
+    )
+    .await;
+}
+
+async fn wait_with_frozen_clock(ready: impl Fn() -> bool, failure: &str) {
+    let virtual_start = tokio::time::Instant::now();
+    let real_start = std::time::Instant::now();
+    while !ready() {
+        // V8 runs on an OS thread. A fixed number of Tokio yields can expire
+        // before that thread is scheduled. Bound readiness by real time while
+        // keeping this task runnable so the paused grace clock cannot advance.
+        assert!(real_start.elapsed() < Duration::from_secs(5), "{failure}");
         tokio::task::yield_now().await;
     }
-    panic!("nested code-mode tool did not start");
+    assert_eq!(tokio::time::Instant::now(), virtual_start);
 }
 
 #[derive(Default)]

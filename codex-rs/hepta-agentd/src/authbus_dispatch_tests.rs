@@ -113,7 +113,11 @@ impl Fixture {
                 .await
                 .unwrap();
         state.attach_cognitive_store(Arc::new(cognitive)).unwrap();
-        state.mark_runtime_prerequisites_ready().unwrap();
+        state
+            .mark_runtime_prerequisites_ready(
+                crate::state::CognitiveStoreRequirement::RequiredForWrites,
+            )
+            .unwrap();
         state.mark_app_server_ready().unwrap();
         let fixture = Self {
             _temp: temp,

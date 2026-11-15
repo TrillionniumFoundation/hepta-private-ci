@@ -80,9 +80,9 @@ impl AgentdState {
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         // Automation remains an explicitly optional plane and therefore does
-        // not gate core Agent readiness. The required cognitive owner is
-        // represented by critical_stores_ready, which is frozen only after
-        // owner-local startup completes under the generation fence.
+        // not gate core Agent readiness. The selected cognitive profile's
+        // prerequisites are represented by critical_stores_ready, frozen only
+        // after owner-local startup completes under the generation fence.
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![

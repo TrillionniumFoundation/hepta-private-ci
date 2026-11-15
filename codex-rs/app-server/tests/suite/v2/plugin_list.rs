@@ -53,6 +53,10 @@ use wiremock::matchers::path;
 use wiremock::matchers::query_param;
 use wiremock::matchers::query_param_is_missing;
 
+#[cfg(test)]
+#[path = "plugin_list_cache_tests.rs"]
+mod cache_tests;
+
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 const TEST_ALLOW_HTTP_REMOTE_PLUGIN_BUNDLE_DOWNLOADS: &str =
@@ -4648,6 +4652,10 @@ fn cached_remote_catalog_plugin_ids(codex_home: &std::path::Path) -> Result<Vec<
     let mut plugin_ids = Vec::new();
     for entry in std::fs::read_dir(cache_dir)? {
         let path = entry?.path();
+        // Atomic cache writes use temporary siblings until publication.
+        if path.extension().is_none_or(|extension| extension != "json") {
+            continue;
+        }
         let cached_catalog: serde_json::Value = serde_json::from_slice(&std::fs::read(path)?)?;
         let Some(plugins) = cached_catalog["plugins"].as_array() else {
             continue;
@@ -4670,6 +4678,9 @@ fn rewrite_cached_remote_catalog_fetched_at(
     let cache_dir = codex_home.join("cache/remote_plugin_catalog");
     for entry in std::fs::read_dir(cache_dir)? {
         let path = entry?.path();
+        if path.extension().is_none_or(|extension| extension != "json") {
+            continue;
+        }
         let mut cached_catalog: serde_json::Value = serde_json::from_slice(&std::fs::read(&path)?)?;
         cached_catalog["fetched_at"] = serde_json::json!(fetched_at);
         std::fs::write(path, serde_json::to_vec_pretty(&cached_catalog)?)?;

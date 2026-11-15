@@ -29,6 +29,8 @@ NATIVE_SYMBOLS = (
     "codex_hia_template_parser",
     "codex_hia_template_render",
     "codex_hia_template_index",
+    "codex_hia_truncate",
+    "codex_hia_token_budget",
 )
 
 

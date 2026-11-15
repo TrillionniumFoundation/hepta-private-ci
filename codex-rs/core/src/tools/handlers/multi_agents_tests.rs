@@ -1454,17 +1454,42 @@ async fn multi_agent_v2_followup_task_rejects_root_target_from_child() {
 
 #[tokio::test]
 async fn multi_agent_v2_list_agents_returns_completed_status() {
+    use core_test_support::responses::ev_assistant_message;
+    use core_test_support::responses::ev_completed;
+    use core_test_support::responses::ev_response_created;
+    use core_test_support::responses::mount_sse_once;
+    use core_test_support::responses::sse;
+    use core_test_support::responses::start_mock_server;
+
+    let server = start_mock_server().await;
+    let request_log = mount_sse_once(
+        &server,
+        sse(vec![
+            ev_response_created("resp-worker"),
+            ev_assistant_message("msg-worker", "done"),
+            ev_completed("resp-worker"),
+        ]),
+    )
+    .await;
     let (mut session, mut turn) = make_session_and_context().await;
-    let manager = thread_manager();
+    let mut config = (*turn.config).clone();
+    config.model_provider.base_url = Some(format!("{}/v1", server.uri()));
+    config.model_provider.supports_websockets = false;
+    let _ = config.features.enable(Feature::MultiAgentV2);
+    // Spawning inherits the live turn provider, not only its config snapshot.
+    turn.provider = create_model_provider(config.model_provider.clone(), turn.auth_manager.clone());
+    set_turn_config(&mut turn, config);
+    let manager = ThreadManager::with_models_provider_for_tests(
+        CodexAuth::from_api_key("dummy"),
+        turn.config.model_provider.clone(),
+    );
     let root = manager
         .start_thread(StartThreadOptions::new((*turn.config).clone()))
         .await
         .expect("root thread should start");
+    root.thread.session.new_default_turn().await;
     session.services.agent_control = manager.agent_control();
     session.thread_id = root.thread_id;
-    let mut config = (*turn.config).clone();
-    let _ = config.features.enable(Feature::MultiAgentV2);
-    set_turn_config(&mut turn, config);
 
     let session = Arc::new(session);
     let turn = Arc::new(turn);
@@ -1492,22 +1517,41 @@ async fn multi_agent_v2_list_agents_returns_completed_status() {
         .get_thread(agent_id)
         .await
         .expect("child thread should exist");
-    let child_turn = child_thread.session.new_default_turn().await;
-    child_thread
-        .session
-        .send_event(
-            child_turn.as_ref(),
-            EventMsg::TurnComplete(TurnCompleteEvent {
-                turn_id: child_turn.sub_id.clone(),
-                started_at: None,
-                last_agent_message: Some("done".to_string()),
-                error: None,
-                completed_at: None,
-                duration_ms: None,
-                time_to_first_token_ms: None,
-            }),
-        )
-        .await;
+    // The spawn handler queues the worker's first turn. Observe its real
+    // completion so a delayed TurnStarted cannot overwrite a synthetic status.
+    let mut observed_events = Vec::new();
+    let completion = timeout(Duration::from_secs(5), async {
+        loop {
+            let event = child_thread
+                .next_event()
+                .await
+                .expect("worker event stream should stay open");
+            observed_events.push(format!("{:?}", event.msg));
+            match event.msg {
+                EventMsg::TurnComplete(event) => {
+                    assert_eq!(event.last_agent_message.as_deref(), Some("done"));
+                    break;
+                }
+                EventMsg::Error(error) => panic!("worker turn failed: {error:?}"),
+                _ => {}
+            }
+        }
+    })
+    .await;
+    assert!(
+        completion.is_ok(),
+        "worker should complete its initial turn: status={:?}, events={observed_events:?}, response_requests={}, request_routes={:?}",
+        child_thread.agent_status().await,
+        request_log.requests().len(),
+        server
+            .received_requests()
+            .await
+            .unwrap_or_default()
+            .iter()
+            .map(|request| format!("{} {}", request.method, request.url.path()))
+            .collect::<Vec<_>>(),
+    );
+    let _ = request_log.single_request();
 
     let output = ListAgentsHandlerV2
         .handle(invocation(

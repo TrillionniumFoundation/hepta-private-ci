@@ -17,6 +17,7 @@ use codex_protocol::turn_input::TurnInputSubmission;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::Mutex;
+use tokio_util::sync::CancellationToken;
 
 pub(crate) type FinishFences = Vec<Arc<StartTransitionCompletion>>;
 
@@ -88,6 +89,48 @@ impl Drop for PendingTurnInputRetry<'_> {
 }
 
 impl Session {
+    /// Realtime fanout is outside the session actor. Preserve its input and ID
+    /// while an exact Finish owner completes, then use the same normal routing
+    /// decision again. Stopping the conversation releases only a pending wait:
+    /// already parsed input still gets its ordinary admission attempt.
+    pub(super) async fn submit_realtime_turn_input_after_finish(
+        self: &Arc<Self>,
+        submission_id: String,
+        request: TurnInputRequest,
+        conversation_stop: &CancellationToken,
+    ) -> CodexResult<TurnInputSubmission> {
+        let retry = self
+            .pending_turn_input_retries
+            .register(submission_id.clone());
+        loop {
+            let result = super::turn_input::handle(
+                self,
+                request.clone(),
+                TurnInputMode::StartOrSteer,
+                submission_id.clone(),
+            )
+            .await?;
+            if !matches!(
+                result,
+                TurnInputSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle
+                }
+            ) {
+                return Ok(result);
+            }
+            let Some(fences) = retry.take() else {
+                return Ok(result);
+            };
+            for completion in fences {
+                tokio::select! {
+                    biased;
+                    () = conversation_stop.cancelled() => return Ok(result),
+                    () = completion.wait() => {},
+                }
+            }
+        }
+    }
+
     /// Called with `active_turn` locked at the ordered routing decision.
     /// Capture only finish owners, never an abort, suspension, live task, or
     /// start reservation. The returned witnesses retain their identity even
@@ -247,3 +290,7 @@ impl CodexThread {
 #[cfg(test)]
 #[path = "turn_input_retry_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "realtime_turn_input_retry_tests.rs"]
+mod realtime_tests;

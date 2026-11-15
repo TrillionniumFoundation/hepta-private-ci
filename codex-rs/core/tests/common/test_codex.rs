@@ -164,7 +164,7 @@ impl TestEnv {
     /// exec-server URL instead of the normal implicit local executor.
     pub async fn local_with_exec_server_url(exec_server_url: Option<String>) -> Result<Self> {
         let local_cwd_temp_dir = Arc::new(TempDir::new()?);
-        let cwd = local_cwd_temp_dir.abs();
+        let cwd = local_cwd_temp_dir.abs().canonicalize()?;
         let selection = match exec_server_url {
             Some(_) => TurnEnvironmentSelection {
                 environment_id: codex_exec_server::REMOTE_ENVIRONMENT_ID.to_string(),

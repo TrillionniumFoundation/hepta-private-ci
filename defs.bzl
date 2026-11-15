@@ -420,6 +420,7 @@ def codex_rust_crate(
         rust_binary(
             name = binary,
             crate_name = binary.replace("-", "_"),
+            crate_features = crate_features,
             crate_root = main,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             edition = crate_edition,
@@ -571,6 +572,7 @@ def codex_rust_crate(
             rust_test(
                 name = integration_test_binary,
                 crate_name = test_crate_name,
+                crate_features = crate_features,
                 crate_root = test,
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
@@ -611,6 +613,7 @@ def codex_rust_crate(
             rust_test(
                 name = test_name,
                 crate_name = test_crate_name,
+                crate_features = crate_features,
                 crate_root = test,
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
@@ -686,6 +689,7 @@ def codex_rust_crate(
         rust_test(
             name = windows_cross_test_binary,
             crate_name = test_crate_name,
+            crate_features = crate_features,
             crate_root = test,
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,

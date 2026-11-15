@@ -59,13 +59,14 @@ use tempfile::TempDir;
 async fn agentd_product_host_commits_through_canonical_cognitive_store()
 -> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
-    let fleet_root = temp.path().join("fleet");
+    let fleet_root = temp.path().canonicalize()?.join("fleet");
     fs::create_dir_all(&fleet_root)?;
     let fleet = HeptaFleetRoot::parse(fleet_root)?;
     let owner = AgentId::parse("00000000-0000-4000-8000-00000000c058")?;
     let layout = fleet.layout().agent(&owner);
     let store = DurableCognitiveStore::open(&layout).await?;
     let before = store.recovery_anchor().await?;
+    let store_to_close = store.clone();
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -109,8 +110,35 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 
     let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
+    // Admission durably records an intent, but does not dispatch it. Releasing
+    // its owner must remain forbidden until this exact intent is settled.
+    let rejected_release = host.writer().release().await.expect_err("queued intent");
+    assert!(matches!(
+        rejected_release,
+        codex_hepta_memory::ProductionWriterError::Local(
+            codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(message)
+        ) if message.contains("unresolved local occurrences: occurrence:product-writer:1")
+    ));
+    assert_eq!(host.writer().recovery_anchor().await?, after);
+    let settled = host
+        .writer()
+        .rollback_occurrence(
+            "occurrence:product-writer:1",
+            "qualification admission completed without target dispatch",
+        )
+        .await?;
+    assert_eq!(settled.occurrence_key, queued.occurrence_key);
+    assert_eq!(settled.lease_id, queued.lease_id);
+    assert_eq!(settled.state, LocalOutcomeState::RolledBack);
+    assert!(!settled.external_effect);
+    assert_eq!(
+        host.writer().status(&settled.occurrence_key).await?,
+        LocalOutcomeState::RolledBack
+    );
     host.writer().release().await?;
     drop(host);
+    store_to_close.close().await;
+    drop(store_to_close);
 
     let reopened = DurableCognitiveStore::open(&layout).await?;
     let reopened_anchor = reopened.recovery_anchor().await?;
@@ -146,6 +174,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    store.close().await;
     drop(store);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
@@ -198,6 +227,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     );
     let unchanged = DurableCognitiveStore::open(&config.identity().layout).await?;
     assert_eq!(unchanged.recovery_anchor().await?, expected);
+    unchanged.close().await;
     drop(unchanged);
 
     let expected_fence = authority.fencing_token_digest()?;

@@ -66,7 +66,6 @@ use crate::session::turn_context::TurnContext;
 use codex_config::types::McpServerConfig;
 use codex_features::Feature;
 use codex_model_provider_info::ModelProviderInfo;
-use codex_protocol::turn_input::TurnInputMode;
 use codex_protocol::turn_input::TurnInputRequest;
 use codex_protocol::turn_input::TurnInputSubmission;
 use codex_protocol::turn_input::TurnStartOptions;
@@ -87,6 +86,9 @@ use super::prompt::GuardianTranscriptCursor;
 use super::prompt::build_guardian_prompt_items_with_parent_turn;
 use super::prompt::guardian_policy_prompt_with_config_and_template;
 use super::review::guardian_review_session_config;
+
+#[path = "review_session_start.rs"]
+mod start;
 
 const GUARDIAN_INTERRUPT_DRAIN_TIMEOUT: Duration = Duration::from_secs(5);
 const GUARDIAN_MAX_IMAGE_ITEM_TOKENS: i64 = 10_000;
@@ -1155,7 +1157,7 @@ async fn run_review_on_session(
         .unwrap_or_else(|| params.parent_context.turn().config.cwd.clone());
 
     let parent_turn = params.parent_context.turn();
-    let submission = review_session.io.submit_turn_input(
+    let submission = review_session.submit_review_input(
         TurnInputRequest::user_input(prompt_items.items)
             .with_thread_settings(codex_protocol::protocol::ThreadSettingsOverrides {
                 environments: Some(codex_protocol::protocol::TurnEnvironmentSelections::new(
@@ -1182,7 +1184,6 @@ async fn run_review_on_session(
                 parent_turn_id: Some(parent_turn.sub_id.clone()),
                 root_turn_id: parent_turn.turn_metadata_state.root_turn_id(),
             }),
-        TurnInputMode::StartIfIdle,
     );
     let submit_result = run_before_review_deadline(
         deadline,
@@ -1531,7 +1532,7 @@ mod tests {
     use codex_protocol::protocol::TurnAbortedEvent;
     use codex_protocol::protocol::TurnCompleteEvent;
 
-    async fn test_review_session() -> (
+    pub(super) async fn test_review_session() -> (
         GuardianReviewSession,
         async_channel::Sender<Event>,
         async_channel::Receiver<Submission>,

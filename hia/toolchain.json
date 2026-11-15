@@ -1,7 +1,7 @@
 {
   "schema": "codex.hia.toolchain.v1",
   "repository": "https://github.com/TrillionniumFoundation/Hepta",
-  "revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+  "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
   "target": "x86_64-unknown-linux-gnu",
   "borrowed_buffer_capacity": 1048576,
@@ -15,6 +15,11 @@
     "uuid_matches",
     "template_parser",
     "template_render",
-    "template_index"
-  ]
+    "template_index",
+    "truncate",
+    "token_budget"
+  ],
+  "entry_profiles": {
+    "token_budget": "u64-pair-to-u64-v1"
+  }
 }
