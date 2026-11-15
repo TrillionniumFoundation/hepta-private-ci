@@ -2,7 +2,7 @@
 
 This directory contains the current HIA implementation and its native build,
 contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **17 compiled modules covering fifteen algorithm groups**.
+candidate contains **18 compiled modules covering sixteen algorithm groups**.
 Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
 The complete Codex rewrite, default release migration, required-platform
 qualification, whole-product performance and legacy retirement remain open.
@@ -33,6 +33,7 @@ complete workspace or a different source tree.
 | `patch_application` | Parser/effects/summary order, diagnostic choice, writer-error priority and committed-delta result selection. | Rust retains original typed errors, individual writer calls and the existing asynchronous effects future. |
 | `patch_standalone` | Standalone argument/stdin, diagnostic/exit, runtime/environment and application sequencing. | Rust performs the original OS, I/O, Tokio and process-exit callbacks; HIA selects their order and results. |
 | `uuid_find` | Complete fixed UUID byte-pattern scanning, match selection, count and span plan. | Rust validates the plan and copies native-selected substrings into owned strings. |
+| `template_parse` | Complete delimiter parsing, Unicode trim, ordered parse errors and literal/placeholder spans. | Rust validates the plan and owns the original template values; rendering retains the original Rust algorithm. |
 
 The patch path composes the native parser, file-update planner, matcher,
 SourceFile owner, effect state machine, unified formatter, summary selector and
@@ -42,21 +43,24 @@ filesystem execution, symlink/sandbox enforcement, string allocation and the
 public writer's formatting/I/O remain host boundaries. The original Rust owners
 remain available to the default platform path and immutable parity tests.
 
-Fifteen CLI-reachable native symbols are required in installed full Codex checks,
+Sixteen CLI-reachable native symbols are required in installed full Codex checks,
 including eight in apply_patch. Standalone apply_patch does not call the unified
 formatter; the full Codex verification path does. `utf8_boundaries` has a separate
 qualification entry. `find_uuids` is an exported library API with no production
 caller in the current full Codex CLI, so `codex_hia_uuid_find` is not a required
 CLI symbol. Its native library behavior is covered by
 [`test_native_uuid_find_caller.py`](tests/test_native_uuid_find_caller.py).
-The default reference executable must still contain none of all sixteen native
+The default reference executable must still contain none of all seventeen native
 symbols, including UUID. Installation reports distinguish both symbol scopes.
-These are required checks, not claims that the repaired installed combination
-has passed.
+These are required checks, not claims that the eighteen-module installed
+combination has passed. The added symbol, codex_hia_template_parse, is reachable
+through actual template consumers, including the CLI login error-page path.
+Its feature forwarding and positive CLI requirement are integrated; current
+installed execution remains pending.
 
 ## Native interfaces
 
-The nine complete buffer contracts are normative:
+The ten complete buffer contracts are normative:
 
 - [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
   trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
@@ -80,6 +84,9 @@ The nine complete buffer contracts are normative:
 - [UUID matching](uuid_find_buffer_contract.json): 32-byte read-only request,
   64-byte result header and 16-byte byte-span rows; operation 0 queries capacity
   and operation 1 emits the complete table.
+
+- [Template parsing](template_parse_buffer_contract.json): 32-byte read-only
+  query/emit request, 64-byte result header and 24-byte span records.
 
 All integer fields in these buffer interfaces are little-endian u64. Their
 capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
@@ -163,6 +170,26 @@ Custom `Write::write_fmt`, partial writes, Interrupted, WriteZero and other writ
 errors retain their original observations and accepted output prefix. The native
 continuation is structural caller-owned state; it does not authenticate a prior
 writer result.
+
+### Template parsing
+
+`Template::parse` delegates the complete delimiter parser to HIA. Four-brace
+escapes take priority over two-brace delimiters. Placeholder names retain the
+original Unicode whitespace trimming, and malformed input keeps the original
+first-error variant and byte offset. The native plan distinguishes a new
+literal, an append to the preceding literal and a placeholder.
+
+The Rust adapter validates the returned frame and each source span while
+materializing independent owned strings, the existing segment vector and
+sorted placeholder set. Malformed plans never return a partial Template.
+The original Debug, Clone, equality and error interfaces remain available.
+Rendering is still the original Rust algorithm in this increment.
+
+Raw operations validate the entire input as UTF-8. Query writes the fixed
+header; emit writes the selected spans after complete validation and capacity
+checks. Transport failures write nothing. A semantic parse error returns an
+error header without constructing a partial template. Exact rules are in the
+template contract; owned public behavior is a separate complete-crate gate.
 
 ### String interfaces
 
@@ -276,6 +303,74 @@ fix command. The small compiler-chain controls described below do not replace
 the complete Codex owner gates.
 
 ## Qualification
+
+### Current eighteen-module template-parse candidate
+
+The formal B1/B2/B3 build reproduced the fixed point, retained all seventeen
+prior module sources and 51 namespaced machine artifacts, and matched the
+three frozen template-parse artifacts. The formal ABI gate ran 52,179 real
+calls, including 9,255 transport error/no-write cases. Its matrix includes
+16,383 brace cases, 5,888 byte-position mutations and 128 independent
+interleavings on one worker. It used actual buffers up to 2,097,159 source
+bytes and 1,572,952 output bytes. The 76-check template receipt gate admitted
+all eighteen modules. These results do not claim simultaneous threads,
+invented maximum-size pointers or public API equivalence by themselves.
+
+The earlier direct-rustc comparison compiled the complete unchanged four-file
+a201 template crate and complete candidate, using three genuine Cargo-produced
+dependency libraries and all 54 locked registry source files. All 14 original
+tests passed on each side with no omissions. Four uncapped strict Clippy
+invocations applied the actual 37 workspace lint levels with warnings denied.
+The public observers matched all 13,206 pairs and 21 constructed template
+values, with 40,287 real parse calls: 32,184 queries and 8,103 emits.
+Public payloads were compared byte for byte; native traces were checked
+separately. Observations include source ownership after drop, iterator,
+AsRef and destructor order, exact errors, Unicode, NUL and inputs over 1 MiB.
+Both sides retained the original Rust rendering algorithm.
+
+Two earlier harness failures remain recorded. The first omitted Rust's
+`cfg(test)` declaration from standalone Clippy; a continuation added that
+exact declaration without reducing the workspace lint levels. The second
+hit a disk reserve guard after the complete original observer finished and
+before the candidate observer started; its continuation ran the candidate.
+Neither failed attempt is relabeled as a successful complete run.
+
+These are historical source-bound direct-rustc results. The current parser
+and adapter bytes match that candidate, but its Cargo manifest/build entry,
+formatted portable harness and final workflow require separate qualification.
+The fifteen-file portable public gate has been integrated and formatted.
+It requires actual default/native ordinary-library and test-library Cargo
+rows, complete fingerprints and dependencies, exact hashed peers and
+publication aliases, and the full original crate. It has not executed on
+the current producer.
+
+The corrected UUID parent at `c468f632` has been adopted. Its initial push and
+PR installation failures and exact scope correction remain recorded below.
+All inherited default-reference absences remain required; adding the template
+parser brings that control to seventeen symbols. The repaired parent's CI
+status is not promoted by this increment.
+
+The final owner workflow is integrated and its actual formatting completed
+without source drift. It selects default/native `just test` for the template
+owner and six direct consumers: `codex-login`, `codex-models-manager`,
+`codex-prompts`, `codex-memories-write`, `codex-goal-extension` and
+`codex-memories-extension`. Each native consumer feature is selected explicitly.
+It also requires default/native uncapped all-target Clippy, actual scoped
+string/template fix with compiler and unchanged-source evidence, final format,
+and the installed full-Codex parser symbol alongside unchanged runtime checks.
+Those Cargo, test, lint/fix, consumer, installed and final-source CI executions
+remain pending. The actual 9,976-file source snapshot and all current input
+hashes are bound in the verification record; only these three metadata files
+are proposed after that snapshot. Source integration does not qualify runtime
+gates. Performance, default dispatch, required platforms and retirement remain
+unqualified. Exact evidence is recorded under
+`verification.json#template_parse_increment`.
+
+#### Inherited checkpoint scope
+
+The following seventeen-module and earlier checkpoint text is preserved
+verbatim. Its references to current or pending describe the producing source
+for that checkpoint; they do not qualify this eighteen-module composition.
 
 ### Current seventeen-module UUID candidate
 
@@ -531,6 +626,27 @@ The public command requires clean producer and complete original checkouts,
 an external Cargo target, genuine locked dependencies and the existing
 admitted policy environment. It performs actual owner Cargo builds itself.
 Its reports do not become passing results merely by listing the command.
+
+Template-specific component and complete-public commands, after the native
+build, are:
+
+```bash
+python3 -B hia/tests/test_template_parse_abi.py \
+  --producer "$PWD" --library-dir "$native_output" \
+  --report "$build_parent/template-parse-abi.json"
+python3 -B hia/tests/test_build_receipt.py \
+  --artifacts "$native_output" --mutation-module template_parse \
+  --rustc "$rustc_binary" --report "$build_parent/template-parse-receipts.json"
+python3 -B hia/tests/test_native_template_parse_caller.py \
+  --producer "$PWD" --original-repo "$original_a201_checkout" \
+  --library-dir "$native_output" --rustc "$rustc_binary" \
+  --work-dir "$build_parent/template-caller" \
+  --report "$build_parent/template-caller.json"
+```
+
+The public command requires clean producer/original checkouts, the actual
+pinned toolchain and dependencies, the native policy environment above and
+an external work directory. Listing a command is not a record of execution.
 
 Useful local commands, after the native build:
 
