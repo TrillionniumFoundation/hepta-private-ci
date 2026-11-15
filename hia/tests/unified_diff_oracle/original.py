@@ -65,4 +65,3 @@ def original_args(receipt, root, directory):
 
 def options(argv, name):
     return [argv[i + 1] for i, value in enumerate(argv) if value == name]
-

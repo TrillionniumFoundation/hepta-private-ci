@@ -175,5 +175,3 @@ def verify(args, native, report):
     report['all_four_policies_transport_checked'] = True
     report['u32_distinct_id_overflow_at_four_billion_tokens_executed'] = False
     report['production_compile_profile_qualification_is_separate'] = True
-
-

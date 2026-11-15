@@ -184,5 +184,3 @@ def verify(args, native, report):
 class CounterMap(dict):
     def __missing__(self, key):
         return 0
-
-

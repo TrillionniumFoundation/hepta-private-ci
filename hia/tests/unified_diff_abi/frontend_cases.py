@@ -120,4 +120,3 @@ def verify(args, native, report):
     report["policies_exercised"] = [0, 1, 2, 3]
     report["mixed_compile_profile_mapping_qualified"] = False
     report["u32_id_overflow_scale_executed"] = False
-

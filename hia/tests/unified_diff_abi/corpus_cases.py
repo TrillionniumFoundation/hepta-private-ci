@@ -89,5 +89,3 @@ def verify(args, native, report):
     report["unmodified_original_reference_algorithms"] = True
     report["public_fs_chunk_adapter_qualified"] = False
     report["whole_product_performance_qualified"] = False
-
-

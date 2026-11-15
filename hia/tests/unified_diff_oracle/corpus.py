@@ -135,4 +135,3 @@ def prepare_cases(context):
     REPORT['route_counts'] = dict(Counter(str(x['route']) for x in cases))
     REPORT['fixture_transform'] = 'Inputs become full-file UpdateFileChunk requests. Expected contents/diff/errors/panics come exclusively from the complete original public crate; public LF normalization is not bypassed.'
     return cases
-
