@@ -6,6 +6,12 @@ common --repo_env=ASPECT_TOOLS_TELEMETRY=-all
 common --xcode_version_config=//:disable_xcode
 
 common --disk_cache=~/.cache/bazel-disk-cache
+
+# Bazel 9.0 asynchronous cache uploads can outlive per-action metadata
+# (bazelbuild/bazel#30683; observed in the V8 canary upload path).
+# Finish uploads before the action returns, including keyless CI fallback.
+# Local uploads also become synchronous; cache reads/writes remain enabled.
+common --remote_cache_async=false
 common --repo_contents_cache=~/.cache/bazel-repo-contents-cache
 common --repository_cache=~/.cache/bazel-repo-cache
 common --remote_cache_compression
