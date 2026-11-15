@@ -184,6 +184,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
+        #[cfg(test)]
+        let _hepta_task_physical_trace = crate::neuron_generation_update_live::task_physical_timing::Trace::new();
         self.require_task_input_current()?;
         let coordinator = wire::decision(&self.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;

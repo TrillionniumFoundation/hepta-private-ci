@@ -138,9 +138,15 @@ impl<W: AnchorWitnessStore> SourceOwner<W> {
         let result = (|| {
             let before = self.witness.current().map_err(|_| Error::CommitUncertain)?;
             let journal: &mut LockedFileProductEvaluationExecutionStoreV1 = &mut self.journal;
+            #[cfg(test)]
+            let hepta_source_anchor_span = crate::neuron_generation_update_live::task_physical_timing::Span::new(
+                crate::neuron_generation_update_live::task_physical_timing::SOURCE_ANCHOR,
+            );
             let physical = journal
                 .read_current_anchor()
                 .map_err(|_| Error::CommitUncertain)?;
+            #[cfg(test)]
+            drop(hepta_source_anchor_span);
             let current = anchor(physical);
             let after = self.witness.current().map_err(|_| Error::CommitUncertain)?;
             if before != Some(current) || after != Some(current) {
