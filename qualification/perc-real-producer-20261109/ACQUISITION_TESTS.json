@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/workspace/scratch/45b9487ed5d1/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_perc1_acquisition.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "wall_ns": 653006011,
+  "tested_sha256s": {
+    "scripts/perc1/acquisition.py": "c8864473964015b5dad289aef0ade7aae0a2c6b957ba10c76d33cdfa972d778c",
+    "scripts/test_perc1_acquisition.py": "a027119b2b39ad732dfab676f23aff9a0a729f1caa9fab591afbc9c4fbd4d936"
+  },
+  "source_unchanged_during_test": true,
+  "formatter": "2 files reformatted",
+  "formatted_sha256s": {
+    "scripts/perc1/acquisition.py": "6dccbfe752343c544050b90d8d3b0f8672e5c5698ae09dd6d817011e6fd4729a",
+    "scripts/test_perc1_acquisition.py": "be1f5af91ab2d831b76c62c0f052bc8bad0987f1b32e1eb2a51e464347c1863d"
+  },
+  "format_ast_unchanged": true
+}

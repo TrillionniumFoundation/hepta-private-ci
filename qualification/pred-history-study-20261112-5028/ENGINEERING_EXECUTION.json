@@ -1,0 +1,57 @@
+{
+  "adoption": "NoUpdate",
+  "attempt": 2,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "hepta_pred1.observed_history_run",
+    "--manifest",
+    "/workspace/scratch/502873993f89/pred-validation/engineering/fixture-inputs/HISTORY_MANIFEST.json",
+    "--output",
+    "/workspace/scratch/502873993f89/pred-validation/engineering/run"
+  ],
+  "completed_at_utc": "2026-11-12T00:34:08.990528+00:00",
+  "dev_samples": 6,
+  "exit_code": 0,
+  "fixture_only": true,
+  "independent_confirmation_units": 0,
+  "live_owner_records_collected": 0,
+  "manifest_sha256": "0ee2d634e0601ecb1f5233dee6b3c11a88ab21b169dee0a50da4a44d17bc8b07",
+  "models": {
+    "empirical": {
+      "checkpoint_sha256": "17d007c1f3dd173257e7511c74afdc6819fe5f114b0629133fb9d93b093103a6",
+      "optimizer_calls": 0,
+      "sample_presentations": 0,
+      "training_source_counts": {
+        "fixture": 12
+      }
+    },
+    "gru": {
+      "checkpoint_sha256": "475a2dd0d9a304d6d6ee881eb23596eaea549e3d1bfc1f9ab051234c556319ab",
+      "optimizer_calls": 8,
+      "sample_presentations": 96,
+      "training_source_counts": {
+        "fixture": 12
+      }
+    },
+    "mlp": {
+      "checkpoint_sha256": "3e2a28fb797f22f120971828ed3a384f5085abe3f00ad36dc881a5bafd5847c7",
+      "optimizer_calls": 8,
+      "sample_presentations": 96,
+      "training_source_counts": {
+        "fixture": 12
+      }
+    }
+  },
+  "new_policy_real_task_comparisons": 0,
+  "physical_cost_complete": false,
+  "prior_preflight_failed": true,
+  "qualification": "HOLD",
+  "report_sha256": "90e7818516c83e779cbbef7bb2d4455e54eefc3e797765fe71ed3f6822a4c44d",
+  "schema": "pred-history-engineering-execution-v1",
+  "source_commit": "10629bab4d5f948854e7c59fed331213956fb974",
+  "started_at_utc": "2026-11-12T00:34:08.210417+00:00",
+  "state": "COMPLETED",
+  "train_samples": 12,
+  "wall_seconds": 0.779580194999653
+}

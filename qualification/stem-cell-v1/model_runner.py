@@ -1,7 +1,9 @@
 """Offline, frozen-encoder Cell head training. Never writes outcome/authority.
 
 Requires torch and transformers separately. All model inputs MUST be local,
-content-pinned snapshots; no automatic network downloads or trust_remote_code.
+content-pinned snapshots; no automatic network downloads. Custom model code is
+disabled by default; the CLI permits the explicitly audited jina_zh snapshot only
+when --allow-audited-custom-code is supplied with its required content pin.
 """
 
 import argparse

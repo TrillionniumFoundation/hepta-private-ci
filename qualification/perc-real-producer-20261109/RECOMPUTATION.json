@@ -1,0 +1,49 @@
+{
+  "schema": "perc1.recomputation.v1",
+  "status": "PASS",
+  "scientific_status": "HOLD",
+  "scope": "fresh-process exact recomputation of actual image tensors, backbone features and projected native Q24 values",
+  "independent_hardware_attestation": false,
+  "original_execution_attestation": false,
+  "recompute_pid": 2,
+  "execution_pins_sha256": "1b8b90fc58bea0b31afdd6dbdb3ff0003ec4888ec89ab474b1687d27795b36c4",
+  "dataset_sha256": "ad7e07138cefdb16e33a819f8aebef4402572acc22c51cefce0df19a9c54502b",
+  "backbone_sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f",
+  "projection_sha256": "7b47cdd001c5a4b1ac060002def334f02e8d85a5ce3d4b71dd3c238c5becdbb0",
+  "producer_code": {
+    "producer": "8d321a2f050ab5669f9d58ba7cef76c9abb5110eda41cba16d1f584ba2320361",
+    "projection": "78923a55fe9ecd5548bd362f18bb85e852c60e793fca54261d83cc8b81f6c5a6",
+    "raster": "ca7a6cf35a5c737070f39203c681c150ba3c6f4965d3482f05001f6cee7cff82",
+    "native": "b5b6e8e4d8301d90344f065796447b6e7eefa3cda524cb1b354de38d799ba355",
+    "schema": "9ed8f7cab76407d7070a79ee3fbed00060447a68cef8726b60b266c4fffdf04e"
+  },
+  "versions": {
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu",
+    "torchvision": "0.29.2+cpu",
+    "pillow": "13.0.0",
+    "numpy": "2.3.5"
+  },
+  "device": "cpu",
+  "device_name": "x86_64",
+  "cold_load_ns": 7515284168,
+  "counts": {
+    "PASS": 799,
+    "FAIL": 0,
+    "SKIPPED_OCR_ONLY": 64
+  },
+  "actual_model_executions": 649,
+  "completed_value_sets": 649,
+  "covered_neural_receipts": 799,
+  "unique_source_representations": 652,
+  "source_groups": 112,
+  "original_worker_pids": [
+    28
+  ],
+  "distinct_recompute_pid": true,
+  "wall_ns": 38476997463,
+  "cpu_ns": 37424768940,
+  "command_code_sha256": "3c6703e7b554e80d1f49ea9707f0086ffdf2dbacde202caf9f3890bef11d2376",
+  "full_report_sha256": "9260006607ff91afde3e5fbffb2fa93df141581d64bbc892d021c16bee219114",
+  "full_report_private_archive_path": "recompute-final/summary.json"
+}
