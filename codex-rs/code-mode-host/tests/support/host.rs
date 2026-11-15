@@ -11,6 +11,10 @@ use tokio::process::Child;
 use tokio::process::Command;
 use tokio::time::timeout;
 
+#[cfg(target_os = "macos")]
+#[path = "startup_observation.rs"]
+mod startup_observation;
+
 pub(crate) struct HostHarness {
     pub(crate) _child: Child,
     pub(crate) endpoint: String,
@@ -57,6 +61,11 @@ impl HostHarness {
                     }
                     None => "stderr was not captured".to_string(),
                 };
+                #[cfg(target_os = "macos")]
+                if status.is_none() {
+                    let observation = startup_observation::observe_failed_child(&mut child).await;
+                    eprintln!("code-mode host failed-readiness observation:\n{observation}");
+                }
                 return Err(error).with_context(|| {
                     format!(
                         "timed out waiting for code-mode host endpoint: program={}, status={status:?}, spawn_elapsed={spawn_elapsed:?}, readiness_elapsed={readiness_elapsed:?}, stderr_prefix={diagnostics:?}",
