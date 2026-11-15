@@ -1719,9 +1719,6 @@ fn stop_supersedes_inflight_paired_restart_after_matrix_exits() -> Result<(), Su
     Ok(())
 }
 
-#[path = "matrix_restart_recovery_tests.rs"]
-mod matrix_restart_recovery_tests;
-
 #[test]
 fn kill_supersedes_inflight_paired_restart_without_replacement() -> Result<(), SupervisorError> {
     let (fleet, control, mut supervisor, now) =

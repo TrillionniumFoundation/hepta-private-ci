@@ -85,7 +85,7 @@ impl DeploymentFinalUseIssuer {
                 "Desktop succession requires a new writer and actual Session pair",
             ));
         }
-        self.with_live_writer(registration, |issuer_lease| {
+        self.with_live_issuer_and_writer(registration, |issuer_lease| {
             let proof = self.retained_writer_authorization(registration)?;
             let _guard = self
                 .request_lock
