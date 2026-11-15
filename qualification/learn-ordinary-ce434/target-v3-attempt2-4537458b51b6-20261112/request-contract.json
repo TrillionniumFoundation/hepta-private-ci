@@ -1,0 +1,162 @@
+{
+  "schema": "learn.original-v3-attempt2.contract.v1",
+  "status": "prepared request; actual archive-only success verified; no attempt2 target creation or native execution is claimed",
+  "source_provenance": {
+    "creation_commit": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "creation_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "creation_worktree": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "preserved_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "preserved_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "preserved_worktree": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "all_original_source_guards_unchanged": true,
+    "future_test_commit": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "future_test_tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443",
+    "future_test_binding": "Separate from the creation source. No native driver or request is frozen here. A later native validator must verify the actual target-creation receipt as source453 provenance while independently verifying its exact test source; it must not relabel the creation as8bf or require these two different roles to have equal commits."
+  },
+  "original_attempt": {
+    "script": "67c8ae900edfdecef3816a4cc40849be9043f7c4",
+    "request": "15d6e1c17bf2bbb72f855cbe45ff334fa45040e9",
+    "key": "learn-ce434-453-private-build-target-recovery-v3",
+    "out": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3",
+    "terminal": "The actual first attempt failed before its first mkdir on missing archive. The original request, output, failure logs and key are preserved and are not replayed.",
+    "actual_failure_evidence_commit": "185f56cd80326052496dfc25824d66977cd739cb",
+    "stdout_blob": "436d38ed0df15ac406ce0929dc1f245f7b03f5c7",
+    "stderr_blob": "1397638ca2916f5866f033a9e215cbaf0010de89"
+  },
+  "attempt2": {
+    "script": {
+      "sha": "0a1b755f18e28317144b33aa25320418e6ec4614",
+      "bytes": 15458,
+      "sha256": "f426b35b64070610974d3ccea50bbcef3489b87de39e97e636a0ec9779274d08"
+    },
+    "request": {
+      "sha": "b21a49b2e8b6d05135c069d0f3d496e9e7360ec2",
+      "bytes": 16457,
+      "sha256": "8aad443ca6bedbe1407e9d4df71e4422b84a73b7366505748b0701b43c68a5d1"
+    },
+    "exact_edits": {
+      "sha": "8f7947ecee4ac6d78a27b6a36dea774db47b0e90",
+      "bytes": 11164,
+      "sha256": "8a51a244c0f3e5091d0b00cd3a108df0df1c669689e0351a18d8c190f6185eaa"
+    },
+    "patch": {
+      "sha": "56fa59df0d3adee6e135ab9a3c2f8c5c3136f48a",
+      "bytes": 6933,
+      "sha256": "6877e4c8386d89e3ca8946f4e287f1cdaeab89b0cad5c8589da2937fa64321b1"
+    },
+    "key": "learn-ce434-453-private-build-target-recovery-v3-attempt2",
+    "out": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3-attempt2",
+    "root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target",
+    "out_root_target_all_exclusive": true,
+    "no_existing_path_removed_changed_or_reused": true,
+    "request_fields": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "request_metadata_unchanged_except_script_and_key": true
+  },
+  "actual_archive_only": {
+    "script": "cd5a0242cd76a9c4bd24719469c83ad311cf7017",
+    "request": "e7a3e64784c844e8815d1038f3f3754a25c0abdf",
+    "prepared_docs_commit": "f41c4a43cc14140e37ba30a44cde3faa70ad1cd0",
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/result.json",
+    "receipt": {
+      "sha": "925d5709a727479bcb08d44c3ed9968d767b92f4",
+      "bytes": 7554,
+      "sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3"
+    },
+    "terminal_sdk": {
+      "sha": "8f22e8efb2d305f8a5c85df843a53a8b50659def",
+      "bytes": 908,
+      "sha256": "fd24c188185434d163b36eed23dd95862b4a408f52a9fa47d6c0bf6b8e9faa09"
+    },
+    "log_sdk": {
+      "sha": "a6324ad7fca8c9d7c6dd4b096d2d9a141bac5e14",
+      "bytes": 2295,
+      "sha256": "8afd31c5ba6a7b1c434039b184030451e2d07c157e59a45d324e6e42674dc94d"
+    },
+    "audit": {
+      "receipt": {
+        "sha": "925d5709a727479bcb08d44c3ed9968d767b92f4",
+        "bytes": 7554,
+        "sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3"
+      },
+      "terminal": "1a1d0d20d4d-2564-1bcb",
+      "exit_code": 0,
+      "stdout_bytes": 586,
+      "stderr_bytes": 0,
+      "full_log_hex_utf8_equal": true,
+      "full_complete_terminal": true,
+      "source_before_after_equal": true,
+      "binding_before_after_equal": true,
+      "artifact_metadata": {
+        "device": 2067,
+        "inode": 40370259,
+        "mode": "0o100400",
+        "nlink": 1,
+        "uid": 1000,
+        "gid": 1000,
+        "bytes": 29366352,
+        "mtime_ns": "1794504802273558861",
+        "ctime_ns": "1794504802472552939"
+      },
+      "not_target_creation": true,
+      "not_native_pass": true
+    },
+    "actual_not_assumed": "The new archive identity is taken from the fully read actual925d receipt, including its new exact decimal timestamps. No old441/e5c inode is projected into the new proof. An inode number coinciding with a historical number does not establish identity by itself."
+  },
+  "new_checks": [
+    "Bound receipt bytes7554 and complete SHA256972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3; actual regular owned single-link file opened read-only NOFOLLOW and complete lstat/fstat identity stable",
+    "Original successful archive schema/state/source, genuine exit0 download, exact mutation-scope flags, matching before/after source, binding and new archive observations",
+    "Both currently fixed source directories and both existing v1 private directories match the actual successful restoration receipt; nanosecond file timestamps remain strings",
+    "Both original V8 inputs are actually hashed again and their complete current device/inode/mode/nlink/UID/GID/size/mtime/ctime equal the actual receipt, not just their digest or historical inode",
+    "These checks occur before the original out mkdir and again after actual root/target creation, before success; complete returned proof is compared before/after"
+  ],
+  "original_preserved": [
+    "All9 original top-level function bodies: git_at, git, identity, meta, hash_owned, source_state, clean, require_absent, save",
+    "Exact source453/tree8cbd and preserved a671/tree647b with original clean checks",
+    "Absence of root and the new exclusive out, and actual absence of old v1/v2 targets",
+    "Canonical original /data device2067/inode2/normal owner and unchanged64GiB free-space gate",
+    "Full original manifest,441 recovery and e5c receipt hashes, used as history rather than new target identity",
+    "Both original V8 paths/sizes/hashes and0400 mode gates before/after",
+    "Original root.mkdir and target.mkdir0700 with parents=False/exist_ok=False, canonical identity readback and receipt schema/state",
+    "Original own-process Popen/communicate/wait/no-signal behavior, error recording and failed-state preservation",
+    "No downloads or asset copies, no source mutation, no deletion/cleanup, no extra tests/retries/timeout/resource fields or authority"
+  ],
+  "mutation_scope": "Only a new attempt2 evidence directory and the still-exclusive original v3 root/target may be created. All old directories, receipts, assets, source worktrees and failed attempt1 output are read-only and preserved. Any newly created directories remain if a later tail check fails; the script records failure and does not claim rollback.",
+  "receipt_schema": {
+    "unchanged_schema": "learn.original-build-root-recovery.v1",
+    "unchanged_success_state": "isolated-build-target-created-original-pins-retained",
+    "unchanged_identity_fields": [
+      "root_identity",
+      "target_identity",
+      "artifacts[*].metadata_before",
+      "artifacts[*].metadata_after"
+    ],
+    "new_fields": [
+      "archive_only_restoration_before",
+      "archive_only_restoration_after"
+    ],
+    "success_v3_identity": "Unknown until Root actually executes this attempt and fully reads its genuine receipt. No v2/e5c or archive-only identity is substituted.",
+    "actual_v3_receipt": null
+  },
+  "verification": {
+    "whole_api_readback_and_git_sha256": true,
+    "original_exact_edits": 7,
+    "unified_hunks": 7,
+    "removed_lines": 1,
+    "added_lines": 51,
+    "forward_inverse_complete_equal": true,
+    "all9_original_function_bodies_equal": true,
+    "python_parse_or_execution": false,
+    "H_dispatch_by_agent": false,
+    "native_driver_frozen": false,
+    "native_tests": 0,
+    "ordinary_acceptance": 0
+  }
+}
