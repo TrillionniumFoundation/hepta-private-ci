@@ -2,7 +2,7 @@
 //!
 //! Delimiters, Unicode trim, error selection and literal coalescing belong to
 //! HIA. This module validates the returned frame and copies its source ranges.
-//! The original rendering algorithm and public error formatting are unchanged.
+//! This parse bridge leaves public error formatting unchanged.
 
 use super::Segment;
 use super::Template;
