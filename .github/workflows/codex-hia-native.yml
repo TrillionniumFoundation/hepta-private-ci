@@ -303,6 +303,25 @@ jobs:
             --report "$RUNNER_TEMP/hia-execpolicy-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-abi.log"
 
+      - name: Verify complete policy summary ABI and atomic errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_policy_summary_abi.py \
+            --library "$RUNNER_TEMP/hia-native/policy_summary.so" \
+            --report "$RUNNER_TEMP/hia-policy-summary-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-policy-summary-abi.log"
+
+      - name: Compare complete policy reduction with original public Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_policy_summary.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
+            --report "$RUNNER_TEMP/hia-policy-summary.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-policy-summary.log"
+
       - name: Verify installed execution policy command
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -529,3 +548,12 @@ jobs:
             ${{ runner.temp }}/hia-installed-execpolicy.json
             ${{ runner.temp }}/hia-installed-execpolicy.log
             ${{ runner.temp }}/hia-core-execpolicy.log
+            ${{ runner.temp }}/hia-policy-summary-abi.json
+            ${{ runner.temp }}/hia-policy-summary-abi.log
+            ${{ runner.temp }}/hia-policy-summary.json
+            ${{ runner.temp }}/hia-policy-summary.log
+            ${{ runner.temp }}/hia-policy-summary-artifacts/*.stdout
+            ${{ runner.temp }}/hia-policy-summary-artifacts/*.stderr
+            ${{ runner.temp }}/hia-policy-summary-artifacts/actual_cli_formatters.rs
+            ${{ runner.temp }}/hia-policy-summary-artifacts/capture_rustc.py
+            ${{ runner.temp }}/hia-policy-summary-artifacts/compiler-*.json

@@ -392,6 +392,12 @@ pub struct Evaluation {
 }
 
 impl Evaluation {
+    #[cfg(feature = "hia-native")]
+    pub fn is_match(&self) -> bool {
+        crate::hia_native_policy_summary::summarize(&self.matched_rules).has_explicit_match
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn is_match(&self) -> bool {
         self.matched_rules
             .iter()
@@ -399,6 +405,19 @@ impl Evaluation {
     }
 
     /// Caller is responsible for ensuring that `matched_rules` is non-empty.
+    #[cfg(feature = "hia-native")]
+    fn from_matches(matched_rules: Vec<RuleMatch>) -> Self {
+        #[expect(clippy::expect_used)]
+        let decision = crate::hia_native_policy_summary::summarize(&matched_rules)
+            .decision
+            .expect("invariant failed: matched_rules must be non-empty");
+        Self {
+            decision,
+            matched_rules,
+        }
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     fn from_matches(matched_rules: Vec<RuleMatch>) -> Self {
         let decision = matched_rules.iter().map(RuleMatch::decision).max();
         #[expect(clippy::expect_used)]

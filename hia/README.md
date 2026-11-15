@@ -1,21 +1,22 @@
 # Codex in HIA
 
-This directory contains twelve native HIA modules compiled with
+This directory contains thirteen native HIA modules compiled with
 [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
-at `0de5657a80f96b138525ac7ee9ce11712a83a10d`: eleven borrowed-buffer
+at `0de5657a80f96b138525ac7ee9ce11712a83a10d`: twelve borrowed-buffer
 entries and one scalar count-admission entry. Their algorithms execute as
 machine code compiled from the checked-in `.hepta` sources.
 
 The opt-in `hia-native` Cargo feature connects the earlier eight components to
 existing production paths on Linux x86-64 GNU: patch matching, four string
 operations, and template parsing, rendering and ordered indexing. The prefix
-matcher and its scalar admission helper reach production callers through
-`codex-execpolicy/hia-native`. The stack-frame adapter's complete execpolicy
-crate and installed standalone caller are qualified locally; its full Codex
-CLI and Core need future V4 CI, and the workspace gate remains pending. The
-published V3 adapter passed its own native CI, including the installed full
-CLI and filtered Core gates; that source-specific evidence is recorded below.
-Published V2 evidence retains its earlier compiler scope. Rust retains
+matcher, scalar admission helper and complete pure RuleMatch reduction reach
+production callers through `codex-execpolicy/hia-native`. Ten production-path
+algorithms are configured; the scalar helper belongs to the prefix algorithm.
+The new policy-summary increment has scoped local build, raw ABI, original-owner
+and standalone execution. Its formatted public harness, full Codex CLI, Core
+and workspace need current-source CI. Published V4 passed its twelve-module
+native gates at `d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f`; those source-specific
+results remain historical. Rust retains
 allocation, owned strings and AST storage, generic iterator effects, public
 formatting, and checked transport across the native interfaces. Static archives are
 verified at build time and incorporated into the caller binary.
@@ -31,7 +32,7 @@ neither historical gate qualifies the current compiler and scalar helper.
 
 [`verification.json`](verification.json) records exact source, artifact and
 report identities. [`migration.json`](migration.json) tracks the remaining
-owners. Template and prefix-matcher performance equivalence, complete owner
+owners. Template, prefix-matcher and policy-summary performance equivalence, complete owner
 migration, default native releases and other platforms remain open:
 
 ```json
@@ -58,6 +59,7 @@ migration, default native releases and other platforms remain open:
 | [`template_index.hepta`](template_index.hepta)           | Template placeholder collection and render variable index                           | AVL byte ordering, duplicate detection, sorted iteration, lookup, usage marks and smallest-unused selection.                     |
 | [`prefix_match.hepta`](prefix_match.hepta)               | [`PrefixPattern::matches_prefix`](../codex-rs/execpolicy/src/rule.rs)                  | Exact command-token prefix and alternative matching, complete frame validation and no-match distinction from native errors.     |
 | [`prefix_admission.hepta`](prefix_admission.hepta)       | Count admission for the same prefix matcher                                          | HIA decides invalid, too-short or full-frame-required from two `u64` counts before Rust sizes or copies the pattern.               |
+| [`policy_summary.hepta`](policy_summary.hepta) | `Evaluation::from_matches`, `Evaluation::is_match` and CLI summary | Complete pure reduction of current RuleMatch tags to presence, strictest decision and explicit-match flag. |
 
 The template feature propagates through
 `codex-cli/hia-native` → `codex-login/hia-native` →
@@ -75,8 +77,9 @@ capacity selects a 512-byte stack buffer when it fits and the existing reserved
 Vec otherwise. Both stores use one generic encoder and the same full-frame HIA
 call. A small same-first/later-token mismatch needs no frame allocation; a
 successful match still clones the selected command prefix into owned strings. HIA owns count
-admission, token and alternative comparisons, and the match decision. Existing decision precedence,
-rule order, justifications, resolved-program metadata, parser behavior and
+admission, token and alternative comparisons, and the prefix-match decision.
+The separate policy-summary module owns aggregate decision precedence and the
+explicit-match flag. Rule order, justifications, resolved-program metadata, parser behavior and
 unmatched-command heuristics remain with their original owners. A native
 error fails the call; it must not become `None` and activate those heuristics.
 
@@ -88,7 +91,7 @@ own incremental validation within their documented framing contracts.
 
 ### Native buffer interface
 
-The eleven borrowed-buffer modules expose this HIA signature:
+The twelve borrowed-buffer modules expose this HIA signature:
 
 ```text
 f0(source:readbuf, output:mutbuf, workspace:mutbuf) -> u32
@@ -121,6 +124,7 @@ these low-bit results:
 | `32` for `template_render` and scalar index results   | One typed policy/index result.                                                        |
 | `32 + 8 * n` for an index ordered page                | Up to 1,024 native-selected IDs.                                                      |
 | `8` for `prefix_match`                               | One little-endian `u64`: matching pattern-token count, or zero for no match.           |
+| `24` for `policy_summary` | Three little-endian `u64` values: presence, strictest decision and explicit-match flag. |
 | `0xffffffff`                                          | Invalid frame/state; also invalid UTF-8 for the original matching/validation entries. |
 | `0xfffffffe`                                          | Insufficient output or workspace capacity.                                            |
 | `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in the JSON fragment encoder.               |
@@ -130,12 +134,24 @@ disjoint. The direct seed wrapper and bootstrap compiler profile have a
 1,048,576-byte capacity. The production B3 ELF entry receives the actual live
 buffer extent; that compiler capacity is not a maximum file size. The patch
 adapter checks all length arithmetic and uses fallible allocation. All modules
-leave the source unchanged. The patch, UTF-8 and prefix-matching modules leave
+leave the source unchanged. The patch, UTF-8, prefix-matching and policy-summary modules leave
 workspace unchanged, reserve it for future use and accept length zero. Their successful
 calls preserve output bytes beyond the result length. The metric module uses
 its workspace and output buffer as streaming state, as described below.
 Returned errors leave the current call's output and workspace unchanged.
 Earlier successful streaming calls and external writer effects remain committed.
+
+`policy_summary` accepts a little-endian `u64` count followed by that many
+pairs of little-endian `u64` kind and decision tags, consuming exactly
+`8 + 16 * count` bytes. Kinds are prefix `0` and heuristics `1`; decisions are
+allow `0`, prompt `1` and forbidden `2`. The 24-byte result contains presence,
+maximum decision and whether any prefix record exists; empty input returns
+three zero values. Output capacity is checked first. The entire frame and all
+tags are validated before any write. Errors write nothing; workspace is never
+written. Rust encodes tags in a 512-byte stack buffer through 31 records and
+uses one reserved Vec for larger frames. It retains original RuleMatch objects,
+metadata and order, and preserves the existing empty-Evaluation panic and
+optional empty CLI decision. Every call sees current public-vector mutations.
 
 `seek_sequence` accepts four little-endian `u64` fields: line count, pattern
 count, start and flags. Bit 0 of flags enables EOF behavior; bit 1 selects
@@ -377,7 +393,70 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Prefix matcher: current stack-frame qualification
+### Policy-summary increment: current scoped qualification
+
+`policy_summary` owns the complete pure result reduction used by Evaluation
+and the CLI. Rule traversal, user callbacks, iterator/as_ref/drop/panic effects,
+strings and serialization remain in Rust. Whole Policy and Core are still open.
+The immutable source manifest covers fifteen changed files over V4 `d7a5044a`.
+
+| Gate | Actual local observation |
+| ---- | ------------------------ |
+| Native build and receipts | B1/B2/B3 fixed point; 13 modules, 12 borrowed and one scalar; 66 receipt checks. Previous twelve source/Core/static identities match V4, but rebuilt shared-library hashes differ. |
+| Raw policy-summary ABI | 3,955 calls, including 875 no-write errors, every tested truncation, invalid tails, short-output precedence, buffer canaries, large frames and 512 concurrent calls; zero skips. |
+| Original public owners | 10,356 complete-result comparisons, 23 mutable states and six complete effect traces against token-pinned original owners at `f75abe3e`; exact metadata, ordering, JSON and panic behavior are included. |
+| Allocations and injected errors | 30 allocation cases, 20 zero-allocation observations and alloc/realloc positive probes; 18 injected callee failures rejected by the actual adapter. |
+| Owning crate | 34 native-feature and 34 default-feature tests passed, zero skips. |
+| Installed standalone | 30 cases and 60 relocated processes passed with three native symbols; exact output, exit and expected JSON were checked. |
+| Owner checks | Both execpolicy all-target Clippy modes passed with `-D warnings`; scoped fix and workspace fmt returned zero. The aggregate final owner report remains **false** because its source-identity guard detected formatting. |
+
+The public report executed harness SHA `0d74f5d82b59affa6b9d0668f93979af343be822479eb03aab97e9ad478cd4ab`.
+Repository formatting only exchanged the two independent `serde_json` imports,
+producing final SHA `323290da9790073f08e66871ba888ac9fa15a1dc24aad89490678437a22faf7b`.
+Reversing that exact 336-byte diff reproduces the executed bytes. Production,
+allocation and failure-harness sources are unchanged. No post-fmt tests ran,
+as required by AGENTS.md; final harness execution is pending CI. The immutable
+failed aggregate reports are preserved, not rewritten as successful runs.
+
+All five diagnostic timing rows were slower than original Rust. Each row below
+contains totals for 10,000 calls using actual dev crate artifacts and an
+opt-level-3 external harness; these observations do not establish equivalence.
+
+| `Evaluation::is_match` case | HIA total ns | Original Rust total ns |
+| -------------------------- | -----------: | ---------------------: |
+| Empty | 1,195,881 | 71,767 |
+| Mixed, three records | 2,687,282 | 52,579 |
+| All heuristics, 31 records | 19,113,968 | 674,938 |
+| First prefix, 31 records | 18,471,439 | 52,568 |
+| Last prefix, 32 records | 16,603,769 | 722,147 |
+
+Observed 32/33-record frames add one allocation versus Rust's zero; frames
+through 31 records fit the stack. Current full Codex CLI (expected 11 symbols),
+Core, whole workspace, required platforms, performance, default release and
+retirement remain unqualified. Exact artifacts, original-owner identities,
+format reconciliation and report hashes are in
+[`policy_summary_qualification`](verification.json#policy_summary_qualification).
+
+### Published V4 native CI: immutable history
+
+V4 push [43679109773](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43679109773)
+checked out `d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f`; PR
+[43679113356](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43679113356)
+checked out merge `18acfc33830d81632ce2b72d87a6eb657d075021` with the same tree.
+Each passed all 41 steps and retained 66 verified artifact members. Each ran
+the installed full CLI's 34 cases plus two startups with ten symbols,
+CLI/arg0/TUI's 4,474 tests with six skips, and 11 explicitly filtered Core tests
+with 3,870 excluded. Component crates passed 198 native and 185 default tests.
+These are scoped suites, not full workspace or complete Core qualification.
+All seven prefix timing rows in each run remained slower than original Rust.
+
+V4's separate broader blocking run finished with 37 terminal jobs: 17 success,
+16 failure and four skipped. Architecture passed; the v8 canary was metadata-only
+with no native build executed. [`published_v4_ci_history`](verification.json#published_v4_ci_history)
+binds the exact source, runs, artifacts and immutable reports. No V4 pass is
+assigned to the current thirteen-module increment.
+
+### Prefix matcher: historical V4 local stack-frame qualification
 
 The adapter increment starts from published V3 revision
 `98429434a266d2165e9d3b4d6f1894bd77916917` and changes three transport/test
@@ -409,9 +488,9 @@ mismatch now has no frame allocation. Successful results retain their owned
 Exact source/binary identities, original report paths and hashes are recorded in
 [`stack_frame_qualification`](verification.json#stack_frame_qualification).
 The V3 adapter's own allocation/standalone/performance records remain below
-and in the recorded `current_qualification` block. This increment has no full
-Codex CLI/Core/workspace qualification; it requires future V4 CI. A V3 CI
-result belongs to its V3 source and cannot qualify this stack adapter.
+and in the recorded `current_qualification` block. This local checkpoint
+predated V4 CI; the subsequently published d7 gates are recorded above. A V3
+result retains its V3 scope, and V4 results do not qualify the new summary source.
 Performance, default release, complete ownership and retirement remain false.
 
 #### Stack-frame performance remains open
@@ -755,6 +834,8 @@ python3 -B hia/tests/test_prefix_admission_abi.py --library "$native_output/pref
 python3 -B hia/tests/test_scalar_build_admission.py --artifacts "$native_output" --module prefix_admission --report "$build_parent/prefix-scalar-admission.json"
 python3 -B hia/tests/test_native_execpolicy_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/prefix-caller-tests.json"
 python3 -B hia/tests/test_native_execpolicy_allocations.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/prefix-allocations.json"
+python3 -B hia/tests/test_policy_summary_abi.py --library "$native_output/policy_summary.so" --report "$build_parent/policy-summary-abi.json"
+python3 -B hia/tests/test_native_policy_summary.py --library-dir "$native_output" --rustc "$rustc_binary" --target-dir "$build_parent/policy-summary-target" --report "$build_parent/policy-summary-public.json"
 
 "$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
 "$build_parent/patch-caller-tests"

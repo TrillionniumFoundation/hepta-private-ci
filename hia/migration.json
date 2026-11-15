@@ -80,27 +80,27 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_12_modules_with_scoped_linux_component_qualification",
+    "qualification_status": "three_generation_fixed_point_13_modules_with_scoped_local_execution_final_harness_ci_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Twelve HIA modules were built through B3 with eleven borrowed-buffer entries and one scalar entry. Published V3 native CI passed its recorded full CLI and filtered Core gates. The current stack adapter has its own local execpolicy and standalone qualification; its V4 full CLI/Core CI remains pending. Whole workspace, performance, complete owners, default release and required platforms remain open.",
+    "qualification_scope": "Actual local thirteen-module build and executed scoped gates, followed by an exact source freeze. The formatted public harness has not executed. Published V4 is historical evidence only. No full CLI/Core/workspace/platform/performance/default-release/retirement closure is claimed.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "module_count": 12,
+    "module_count": 13,
     "entry_profiles": {
-      "borrowed-buffers-u32-v1": 11,
+      "borrowed-buffers-u32-v1": 12,
       "u64-pair-to-u64-v1": 1
     },
-    "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+    "build_report_sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
     "build_driver_source_revision": "7fe65ae990187e6ff1130c791f902728b4e50197",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
-    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The eleven existing borrowed-buffer modules retain their profile."
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The twelve borrowed-buffer modules retain their profile."
   },
   "candidate_modules": [
     {
@@ -943,7 +943,7 @@
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "PrefixPattern::matches_prefix",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_linux_stack_adapter_and_standalone_passed_v4_full_codex_pending",
+      "qualification_status": "published_v4_prefix_gates_passed_current_policy_summary_increment_pending_ci",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1076,7 +1076,7 @@
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "PrefixPattern::matches_prefix count admission",
       "implementation_status": "native_scalar_helper_with_opt_in_production_caller",
-      "qualification_status": "current_linux_stack_adapter_and_standalone_passed_v4_full_codex_pending",
+      "qualification_status": "published_v4_prefix_gates_passed_current_policy_summary_increment_pending_ci",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1150,15 +1150,74 @@
           "native_tests": 34,
           "default_tests": 34,
           "installed_standalone_symbols": 2,
-          "full_codex_and_core": "pending_v4_stack_adapter_ci",
+          "full_codex_and_core": "published_v4_scoped_gates_passed_for_d7_only",
           "report": "hia/verification.json#stack_frame_qualification.current_owner_gates",
-          "public_evidence_scope": "Earlier executed stack 49,938-comparison and 20-allocation fixture evidence is bound by nine identical files; native/default crate and standalone gates were actually executed for integration."
+          "public_evidence_scope": "Earlier executed stack 49,938-comparison and 20-allocation fixture evidence is bound by nine identical files; native/default crate and standalone gates were actually executed for integration.",
+          "published_v4_report": "hia/verification.json#published_v4_ci_history",
+          "applies_to_current_policy_summary_increment": false
         },
         "performance": {
           "qualified": false,
           "report": "hia/verification.json#stack_frame_qualification.performance",
           "scope": "Both complete seven-row stack observations and the once-paired V3 baseline are retained; allocation removal does not establish performance qualification."
         }
+      }
+    },
+    {
+      "id": "policy_summary",
+      "hia_source": "hia/policy_summary.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Evaluation::from_matches / Evaluation::is_match / CLI result reduction",
+      "implementation_status": "complete_pure_reduction_with_opt_in_production_callers",
+      "qualification_status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_policy_summary",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "input": "LE u64 count followed by count pairs of LE u64 kind and decision; exact length 8 + 16 * count.",
+        "kind": {
+          "prefix": 0,
+          "heuristics": 1
+        },
+        "decision": {
+          "allow": 0,
+          "prompt": 1,
+          "forbidden": 2
+        },
+        "output": "24 bytes: LE u64 present, strictest decision, explicit-match flag; empty vector returns 0,0,0.",
+        "success": 24,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "error_contract": "Output capacity first; validate the entire exact frame and all tags before writing; errors write nothing. Source and workspace never change; success preserves output beyond 24 bytes."
+      },
+      "behavior": {
+        "complete_pure_reduction": "Current RuleMatch vector to presence, strictest Allow/Prompt/Forbidden decision and whether any explicit PrefixRuleMatch exists.",
+        "production_callers": [
+          "Evaluation::from_matches",
+          "Evaluation::is_match",
+          "ExecPolicyCheckCommand JSON summary"
+        ],
+        "rust_retains": "Rule traversal; callbacks; iterator/as_ref/drop/panic effects; full RuleMatch metadata/order/owned strings; serialization and checked transport. Public mutable vectors are summarized afresh, without a cached is_match result.",
+        "whole_policy_or_core_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_policy_summary_abi.py",
+        "hia/tests/test_native_policy_summary.py",
+        "hia/tests/native_policy_summary.rs",
+        "hia/tests/native_policy_summary_allocations.rs",
+        "hia/tests/native_policy_summary_failures.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "validation": {
+        "report": "hia/verification.json#policy_summary_qualification",
+        "raw_abi_calls": 3955,
+        "original_full_result_comparisons": 10356,
+        "public_harness_scope": "Executed 0d74f5... source; final formatted 323290... source pending CI.",
+        "full_policy_migrated": false,
+        "performance_qualified": false
       }
     }
   ],
@@ -1287,12 +1346,13 @@
         "filesystem and network isolation",
         "platform sandbox setup and denial behavior"
       ],
-      "next_implementation": "Execute the stack adapter's V4 full Codex/Core CI, workspace and required platform gates, close prefix performance, then migrate remaining policy evaluation and platform integration with the existing denial tests.",
+      "next_implementation": "Execute final thirteen-module CI with the formatted public harness, full Codex CLI/Core consumers, whole workspace and required platforms; close prefix and policy-summary performance/allocation gates; then migrate remaining Policy evaluation and platform integration while preserving the existing denial tests.",
       "candidate_modules": [
         "prefix_match",
-        "prefix_admission"
+        "prefix_admission",
+        "policy_summary"
       ],
-      "partial_scope": "Only PrefixPattern::matches_prefix uses HIA through codex-execpolicy/hia-native, including scalar count admission before allocation and the full-frame matcher. Decision aggregation, rule metadata, resolved-program policy, Core ownership and platform sandbox ownership are not migrated."
+      "partial_scope": "PrefixPattern::matches_prefix uses HIA through codex-execpolicy/hia-native, including scalar count admission and full-frame matching. policy_summary also owns the complete pure RuleMatch reduction (presence, strictest decision and explicit-match flag) for Evaluation::from_matches, Evaluation::is_match and the CLI format_matches_json path. Rust retains rule traversal, callbacks and iterator effects, metadata, resolved-program policy, serialization and checked transport. Whole Policy/Core ownership and platform sandbox integration are not migrated; final thirteen-module source CI remains pending."
     },
     {
       "id": "mcp",
@@ -2929,78 +2989,59 @@
       "template_render",
       "template_index",
       "prefix_match",
-      "prefix_admission"
+      "prefix_admission",
+      "policy_summary"
     ],
-    "checks_passed": 64,
-    "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+    "checks_passed": 66,
+    "build_report_sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "entry_profiles": {
-      "borrowed-buffers-u32-v1": 11,
+      "borrowed-buffers-u32-v1": 12,
       "u64-pair-to-u64-v1": 1
     },
     "scalar_admission_tests": "hia/tests/test_scalar_build_admission.py",
     "scalar_admission_checks_passed": 119,
-    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The eleven existing borrowed-buffer modules retain their profile."
+    "scalar_profile_scope": "Exact v8/v9 exports(f0), (u64,u64)->u64 profile; strict 59-byte entry wrapper, unchanged emitted .text, empty relocation-section normalization and no imports. The twelve borrowed-buffer modules retain their profile.",
+    "receipt_report_sha256": "fae718eb989afac91b39ae3518a49fd651709db90170841c11d074a008c7b4a3",
+    "scalar_admission_checks_scope": "119 checks are recorded V4 evidence; this increment executed the 66 receipt checks, not the scalar artifact suite again."
   },
   "current_qualification": {
-    "report": "hia/verification.json#stack_frame_qualification",
-    "base_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
+    "report": "hia/verification.json#policy_summary_qualification",
+    "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
-    "module_count": 12,
-    "borrowed_module_count": 11,
+    "module_count": 13,
+    "borrowed_module_count": 12,
     "scalar_module_count": 1,
-    "configured_production_path_algorithms": 9,
+    "configured_production_path_algorithms": 10,
     "scalar_helpers": [
       "prefix_admission"
     ],
-    "current_installed_standalone_symbols": 2,
-    "expected_full_codex_symbols": 10,
-    "artifact_continuity": "hia/verification.json#stack_frame_qualification.artifact_continuity",
-    "artifact_scope": "Byte-identical V3 HIA programs, archives and build sources reused; not rebuilt. Original raw/scalar/artifact/receipt counts remain earlier actual observations, not new executions.",
-    "recorded_v3_adapter_qualification": "hia/verification.json#current_qualification",
-    "earlier_stack_public_allocation_binding": "hia/verification.json#stack_frame_qualification.earlier_executed_fixture_binding",
-    "prefix_original_rust_comparisons": 49938,
-    "public_comparisons_reexecuted_during_integration": false,
-    "allocation_cases": 20,
-    "allocation_zero_allocation_cases": 9,
-    "allocation_reexecuted_during_integration": false,
-    "current_owner_steps": 11,
+    "current_installed_standalone_symbols": 3,
+    "expected_full_codex_symbols": 11,
+    "build_receipt_checks": 66,
+    "policy_summary_raw_abi_calls": 3955,
+    "original_full_result_comparisons": 10356,
+    "mutable_states": 23,
+    "effect_trace_scenarios": 6,
+    "allocation_cases": 30,
+    "zero_allocation_cases": 20,
+    "failure_injection_cases": 18,
     "native_execpolicy_tests": 34,
     "default_execpolicy_tests": 34,
     "installed_standalone_cases": 30,
     "installed_standalone_processes": 60,
-    "strict_native_clippy": "passed_execpolicy_all_targets_only",
-    "strict_default_clippy": "passed_execpolicy_all_targets_only",
-    "fix_fmt_frozen_source_unchanged": true,
-    "installed_full_codex_cli": "pending_v4_stack_adapter_ci",
-    "core_exec_policy": "pending_v4_stack_adapter_ci",
-    "whole_workspace_requalification": "pending_stack_adapter_source",
-    "performance_report": "hia/verification.json#stack_frame_qualification.performance",
-    "prefix_performance_closed": false,
-    "template_performance_closed": false,
-    "other_platforms": "pending",
+    "public_report_binding": "Executed public harness 0d74f5...; final import-order-only formatted 323290... harness has not executed. Production, allocation and failure-harness bytes are unchanged.",
+    "owner_final_aggregate_passed": false,
+    "final_source_ci_qualified": false,
+    "installed_full_codex_cli": "pending_current_thirteen_module_ci",
+    "core_exec_policy": "pending_current_thirteen_module_ci",
     "whole_workspace_qualified": false,
+    "required_platforms_qualified": false,
+    "whole_policy_migrated": false,
+    "performance_qualified": false,
     "default_release_migrated": false,
     "retirement_ready": false,
-    "post_test_deltas": "The nine fixture files match earlier executed stack public/allocation reports and remained byte-identical through the actual owner/fix/fmt gates. These three canonical documents are subsequent drafts; full CLI/Core/workspace passes are not inferred.",
-    "reports": {
-      "owner-qualification-stack.json": {
-        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/owner-qualification-stack.json",
-        "sha256": "00f17197295c0422519517c34d30e24c82246f9949e69ebe12308999c08f4354",
-        "bytes": 20543
-      },
-      "candidate-run.json": {
-        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/candidate-run.json",
-        "sha256": "3e003d611abdf3321030fe4b254b3fea17acb4610cc6873e4d9e99802174a5fc",
-        "bytes": 5339
-      },
-      "diagnostic-pair.json": {
-        "path": "/home/qq/codex-hia-work/9f0b-prefix-stack-20261115/diagnostic-pair.json",
-        "sha256": "54ce32168bc8506bd697085e1dd7fd32a06340907f0d3a8c25c9da59eff8362d",
-        "bytes": 114382
-      }
-    },
-    "recorded_v3_native_ci": "hia/verification.json#published_v3_ci_history"
+    "performance_scope": "All five recorded timings are slower than Rust; 32/33-record frames add one observed allocation versus Rust zero. Earlier prefix/template negative evidence remains unchanged."
   },
   "historical_qualification": {
     "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
@@ -3066,5 +3107,18 @@
     "per_run_steps_passed": 41,
     "applies_to_current_stack_adapter": false,
     "scope": "Exact V3 source: full installed CLI 34+2 with 10 symbols, CLI/arg0/TUI 4474 passed with six reported skips, and Core exec-policy 11 passed with 3870 filtered out. Not current stack CI, complete Core/workspace or retirement evidence."
+  },
+  "candidate_module_evidence_scope": "The first twelve entries retain their recorded component/build evidence. Their source/Core/static identities match the new build; this does not transfer behavioral passes. Published V4 and active policy-summary evidence are separate records.",
+  "published_v4_qualification": {
+    "source_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+    "source_tree": "08ca98a7ce509a29c59910c11e10d3a4cdbb1999",
+    "report": "hia/verification.json#published_v4_ci_history",
+    "native_runs": [
+      43679109773,
+      43679113356
+    ],
+    "per_run_steps_passed": 41,
+    "applies_to_current_policy_summary_increment": false,
+    "scope": "Exact twelve-module d7 sources only: full CLI 34+2 and 10 symbols; CLI/arg0/TUI 4474 passed and six skipped; filtered Core 11 passed with 3870 excluded. No current thirteen-module or complete workspace qualification."
   }
 }
