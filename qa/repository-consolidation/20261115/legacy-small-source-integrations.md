@@ -128,3 +128,13 @@ match. All nine incoming files retain exact bytes. The Python harness parses.
 The historical 176-second capacity study was not rerun, so no new capacity
 sample, Rust product qualification or real-task benefit is claimed. The original
 HOLD/NoUpdate, missing main exit code and physical-cost limits remain intact.
+
+## Cargo lock failure diagnostics
+
+Incoming `b3226d21f09ec11d74925d8f667c58d98226b2c9` changes only two existing
+workflow diagnostics. An online/offline resolver failure is now reported as
+unresolved; lock drift is asserted only when a diff was actually observed. The
+original nonzero `--locked` exit code is still returned and the checkout's lockfile
+is restored. Triggers, job conditions, permissions and failure handling are
+unchanged. Both affected shell blocks pass `bash -n`, and both workflows parse.
+No Cargo resolution was launched for this message-classification change.
