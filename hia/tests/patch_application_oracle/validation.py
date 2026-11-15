@@ -96,6 +96,12 @@ def validate_fields(values, case, request, root):
     for i in range(number(values["native_calls"])):
         required.update("native_" + str(i) + suffix for suffix in ("_request_hex", "_response_hex", "_status"))
     require(set(values) == required, "missing or unexpected application observation fields")
+    if case["case"] == "unsupported_heredoc_unicode":
+        require(case["entry"] in (0, 1) and values["status"] == "error"
+                and values["kind"] == "ParseError" and values["delta_exact"] == "true"
+                and number(values["delta_changes"]) == number(values["fs_events"]) == 0
+                and not unhex(values["stdout_hex"]),
+                "unsupported heredoc delimiter was not rejected before filesystem effects")
 
 
 def writer_events(values):

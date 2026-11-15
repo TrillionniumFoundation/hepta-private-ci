@@ -20,6 +20,7 @@ NAMES = (
 INVALID = frozenset(("invalid_patch", "invalid_hunk", "invalid_after_valid_hunk",
                      "invalid_unicode"))
 MANUAL = ("manual_nonutf8_path", "manual_embedded_lines", "manual_empty")
+PARSE_ONLY = ("unsupported_heredoc_unicode",)
 CONTEXTS = {
     "none": "",
     "present_disabled": json.dumps({"permissions": {"type": "disabled"},
@@ -76,6 +77,10 @@ def matrix():
         for entry in ((0, 1) if name in INVALID else (0, 1, 2)):
             for profile, (stdout, stderr) in profiles.items():
                 add(name, entry, profile=profile, stdout=stdout, stderr=stderr)
+    # Preserve the unsupported delimiter as explicit string-entry rejection
+    # cases; it cannot be parsed to construct a direct apply_hunks input.
+    for name, entry in itertools.product(PARSE_ONLY, (0, 1)):
+        add(name, entry)
     return cases
 
 
@@ -109,10 +114,12 @@ def decode(data):
             raise ValueError("truncated observer string")
         values.append(data[offset:offset + length].decode("utf-8"))
         offset += length
-    if offset != len(data) or values[0] not in NAMES + MANUAL:
+    if offset != len(data) or values[0] not in NAMES + MANUAL + PARSE_ONLY:
         raise ValueError("unknown fixture or trailing bytes")
     if values[0] in MANUAL and entry != 2:
         raise ValueError("typed-only fixture requires direct entry")
+    if values[0] in PARSE_ONLY and entry == 2:
+        raise ValueError("parse-only fixture requires string entry")
     return {"entry": entry, "mode": mode, "follow_symlinks": follow,
             "stdout_policy": words[3:7], "stderr_policy": words[7:11],
             "case": values[0], "sandbox_json": values[1]}

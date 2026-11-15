@@ -73,7 +73,7 @@ def observe(binary, side, case, request, directory, fixture, producer, env, cont
 def run(binaries, producer, env, output, contract):
     output.mkdir()
     cases = corpus.matrix()
-    require(len(cases) == 1468 and len({corpus.wire(case) for case in cases}) == 1468,
+    require(len(cases) == 1470 and len({corpus.wire(case) for case in cases}) == 1470,
             "the fixed application public corpus changed")
     for case in cases:
         decoded = corpus.decode(corpus.wire(case))
@@ -140,7 +140,7 @@ def run(binaries, producer, env, output, contract):
             outcomes[(case["entry"], case["context"], original["status"], original.get("kind", "success"))] += 1
             report["compared_pairs"] += 1
             save(directory / "pair.json", pair)
-        require(report["actual_processes"] == 2936 and report["compared_pairs"] == 1468,
+        require(report["actual_processes"] == 2940 and report["compared_pairs"] == 1470,
                 "not all fixed public pairs executed")
         require(set(action_counts) == set(range(1, 14)), "not all native semantic actions were observed")
         expected_transitions = {":".join(str(row[key]) for key in ("entry", "phase", "event"))

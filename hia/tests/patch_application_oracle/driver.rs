@@ -95,6 +95,9 @@ async fn main() -> DriverResult<()> {
     if name.starts_with("manual_") && entry != 2 {
         return Err("typed-only fixture requires apply_hunks".into());
     }
+    if name == "unsupported_heredoc_unicode" && entry == 2 {
+        return Err("parse-only fixture requires string entry".into());
+    }
     let args = std::env::args_os().skip(1).collect::<Vec<_>>();
     if args.len() != 1 {
         return Err("exactly one owned fresh fixture directory is required".into());

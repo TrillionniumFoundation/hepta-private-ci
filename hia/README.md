@@ -271,11 +271,34 @@ source snapshot and machine artifacts remained unchanged. After this
 prepublication test, final preparation changed the three metadata documents and
 formatted the order of two oracle imports; all production inputs remain identical.
 
-The complete public comparison is prepared for 1,468 original/native pairs and
-2,936 actual processes across three public APIs. It has not executed yet. Clean
-published-source public calls, final fix/format, installed executables and the
-complete current consumer CI remain pending. The earlier nextest version failure
-and UNKNOWN durable launch retain their original evidence and status.
+The first clean published `08dfcb76` public run passed the effects gate with
+121 complete original inputs, 13 unchanged root tests and 360 result pairs.
+Application comparison then stopped at case 756 during original fixture
+construction, before `apply_hunks`: the fixture used unsupported literal
+`<<'PATCH' ... PATCH`. It had matched 756 pairs, with 1,512 successful process
+observations and one failed original attempt; the native counterpart of the
+failed case did not run. Source bytes were unchanged. This attempt did not reach
+final fix or formatting and does not qualify the complete application matrix.
+
+The six-file test repair changes 18 materialized heredoc patches from `PATCH`
+to accepted `EOF` delimiters. The previous 1,468 serialized selectors remain an
+identical prefix, but those 18 actual patch inputs change. Two added rejection
+cases retain the exact old `PATCH` bytes through the string APIs with default
+options, no context and normal writers; other option/context combinations are
+not claimed for these two additions. Targeted real-library checks passed
+20 pairs/40 processes and 7 delimiter pairs in 2 processes, with zero mismatches
+or skips. These probes do not qualify the full repaired matrix.
+
+The current requirement is 1,470 original/native pairs and 2,940 processes
+across three public APIs. That complete repaired gate has not run. The three
+metadata documents, earlier two-import ordering follow-up and these six test
+files are outside the original prepublication preflight scope; all production
+inputs and native artifacts remain identical. Final fix/format, installed
+executables and complete current consumer CI remain pending. The direct parent
+is `08dfcb76`; its observed push step failure is not presented as a terminal CI
+result. The earlier nextest version failure and UNKNOWN durable launch retain
+their original evidence and status. The machine-readable failure and targeted
+repair records are linked under `patch_application_increment` in verification.
 
 ### Fourteen-module parent history
 

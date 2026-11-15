@@ -175,8 +175,8 @@ def verify(args, report):
     public = observations.run(binaries, producer, env, work / "public-observations", contract)
     report["public_observations"] = {key: value for key, value in public.items() if key != "cases"}
     report["public_observations"]["report_path"] = str(work / "public-observations/report.json")
-    require(public["passed"] and public["compared_pairs"] == 1468 and
-            public["actual_processes"] == 2936 and public["skipped"] == public["mismatches"] == 0,
+    require(public["passed"] and public["compared_pairs"] == 1470 and
+            public["actual_processes"] == 2940 and public["skipped"] == public["mismatches"] == 0,
             "the complete public writer corpus did not pass")
     for graph in graphs.values():
         cargo.verify_graph(graph)

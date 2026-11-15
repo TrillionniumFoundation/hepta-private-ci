@@ -178,7 +178,8 @@ pub fn prepare_fixture(root: &Path, name: &str) -> DriverResult<String> {
         "prefix_then_nul_path" => {
             patch("*** Add File: prefix.txt\n+committed\n*** Add File: bad\0name.txt\n+after")
         }
-        "heredoc_unicode" => "\u{2003}<<'PATCH'\n*** Begin Patch\n*** Add File: 文档.txt\n+内容😀\n*** End Patch\nPATCH\u{2003}".to_string(),
+        "heredoc_unicode" => "\u{2003}<<'EOF'\n*** Begin Patch\n*** Add File: 文档.txt\n+内容😀\n*** End Patch\nEOF\u{2003}".to_string(),
+        "unsupported_heredoc_unicode" => "\u{2003}<<'PATCH'\n*** Begin Patch\n*** Add File: 文档.txt\n+内容😀\n*** End Patch\nPATCH\u{2003}".to_string(),
         "large_content" => patch(&format!("*** Add File: input.txt\n+{}", "甲😀\0".repeat(16 * 1024))),
         "manual_nonutf8_path" | "manual_embedded_lines" | "manual_empty" => String::new(),
         _ => return Err("unknown fixed fixture".into()),
