@@ -6559,6 +6559,419 @@
           }
         }
       ]
+    },
+    "performance": {
+      "qualified": false,
+      "units": "total elapsed nanoseconds, not ns per call",
+      "three_separate_processes": true,
+      "process_bindings": {
+        "original": {
+          "label": "original",
+          "passed": true,
+          "performance_qualification": false,
+          "scope": "one actual owner crate per process; diagnostic elapsed timings, fixture creation outside timing; no performance acceptance inferred",
+          "skipped": 0,
+          "binary_sha256": "546f8c46921b5c85aace24740e9ed6740f80396c3bb2b02731618e6226251688",
+          "owner_rlib_sha256": "bd9dc06d14760bce0660edf6b9bce78edc393447b01bc86391cff3c92b808bf3",
+          "harness_sha256": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+          "fixture_sha256": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
+          "compiled_now": true,
+          "executed_now": true,
+          "build_method": "current_rustc_compile"
+        },
+        "native15": {
+          "label": "native15",
+          "passed": true,
+          "performance_qualification": false,
+          "scope": "one actual owner crate per process; diagnostic elapsed timings, fixture creation outside timing; no performance acceptance inferred",
+          "skipped": 0,
+          "binary_sha256": "0a1a0e2223ef7c03177ad2eaa8d6848325439f595b3bdd6a4da97966b74989d3",
+          "owner_rlib_sha256": "9a280a84f548d3ecb43c260649bfc02f04eb0037b75606a8810f9b9512d9b92b",
+          "harness_sha256": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+          "fixture_sha256": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
+          "compiled_now": false,
+          "executed_now": true,
+          "build_method": "verified_prelinked_consumer"
+        },
+        "native16": {
+          "label": "native16",
+          "passed": true,
+          "performance_qualification": false,
+          "scope": "one actual owner crate per process; diagnostic elapsed timings, fixture creation outside timing; no performance acceptance inferred",
+          "skipped": 0,
+          "binary_sha256": "d3776065643d78f52fd2fcd9353a13cb1f906d246482e352082b05f6d9fcea87",
+          "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+          "harness_sha256": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+          "fixture_sha256": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
+          "compiled_now": true,
+          "executed_now": true,
+          "build_method": "current_rustc_compile"
+        }
+      },
+      "rows": [
+        {
+          "case": "empty-command",
+          "checksum": 0,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 218232,
+          "native15_ns": 218652,
+          "native16_ns": 6447115
+        },
+        {
+          "case": "empty-command-fallback",
+          "checksum": 10000,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 415605,
+          "native15_ns": 424655,
+          "native16_ns": 15712391
+        },
+        {
+          "case": "unknown-exact",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 777843,
+          "native15_ns": 777932,
+          "native16_ns": 24460966
+        },
+        {
+          "case": "exact-prefix",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4364508,
+          "native15_ns": 4418275,
+          "native16_ns": 27818749
+        },
+        {
+          "case": "exact-no-short-circuit",
+          "checksum": 30000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 3,
+          "original_ns": 6577430,
+          "native15_ns": 6589560,
+          "native16_ns": 46693420
+        },
+        {
+          "case": "exact-none-host-same-bucket",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 11191499,
+          "native15_ns": 11998731,
+          "native16_ns": 74330754
+        },
+        {
+          "case": "host-allowlist-missing",
+          "checksum": 20000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 2,
+          "original_ns": 10408426,
+          "native15_ns": 11105442,
+          "native16_ns": 74110982
+        },
+        {
+          "case": "host-allowlist-empty",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 7067983,
+          "native15_ns": 6837912,
+          "native16_ns": 54556075
+        },
+        {
+          "case": "empty-host-bucket",
+          "checksum": 10000,
+          "command_bytes": 16393,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 9673092,
+          "native15_ns": 9253097,
+          "native16_ns": 63349837
+        },
+        {
+          "case": "absolute-root",
+          "checksum": 10000,
+          "command_bytes": 1,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 1913163,
+          "native15_ns": 1850175,
+          "native16_ns": 31877637
+        },
+        {
+          "case": "reentrant-rule",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4932198,
+          "native15_ns": 4912698,
+          "native16_ns": 43003168
+        },
+        {
+          "case": "giant-tail-exact-miss",
+          "checksum": 0,
+          "command_bytes": 1048580,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 5050,
+          "native15_ns": 4930,
+          "native16_ns": 72377
+        },
+        {
+          "case": "many-exact-none",
+          "checksum": 0,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 259361,
+          "native15_ns": 259551,
+          "native16_ns": 22617260
+        },
+        {
+          "case": "many-exact-match",
+          "checksum": 30720,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 7116301,
+          "native15_ns": 7039604,
+          "native16_ns": 33902316
+        },
+        {
+          "case": "many-host-paths-last-match",
+          "checksum": 30,
+          "command_bytes": 9,
+          "iterations": 30,
+          "paths": 1025,
+          "rules": 1,
+          "original_ns": 3097742,
+          "native15_ns": 3107831,
+          "native16_ns": 35093504
+        },
+        {
+          "case": "host-first-match-giant-unvisited",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 2,
+          "rules": 1,
+          "original_ns": 10871830,
+          "native15_ns": 10825222,
+          "native16_ns": 80146861
+        }
+      ],
+      "slower_than_original_rows": 16,
+      "slower_than_native15_rows": 16
+    },
+    "historical_v1_performance": {
+      "report": "public_v1_three_fresh_links",
+      "source_scope": "Earlier V1 source and harness bytes only; not reassigned to final source.",
+      "all_three_processes_compiled_then_executed": true,
+      "performance_qualified": false,
+      "rows": [
+        {
+          "case": "empty-command",
+          "checksum": 0,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 231852,
+          "native15_ns": 238642,
+          "native16_ns": 6252194
+        },
+        {
+          "case": "empty-command-fallback",
+          "checksum": 10000,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 455734,
+          "native15_ns": 469673,
+          "native16_ns": 14975639
+        },
+        {
+          "case": "unknown-exact",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 828181,
+          "native15_ns": 843300,
+          "native16_ns": 23485442
+        },
+        {
+          "case": "exact-prefix",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4604083,
+          "native15_ns": 4366122,
+          "native16_ns": 27227376
+        },
+        {
+          "case": "exact-no-short-circuit",
+          "checksum": 30000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 3,
+          "original_ns": 7018076,
+          "native15_ns": 7302436,
+          "native16_ns": 46491610
+        },
+        {
+          "case": "exact-none-host-same-bucket",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 13181824,
+          "native15_ns": 11739536,
+          "native16_ns": 74905915
+        },
+        {
+          "case": "host-allowlist-missing",
+          "checksum": 20000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 2,
+          "original_ns": 10810570,
+          "native15_ns": 10754211,
+          "native16_ns": 74064114
+        },
+        {
+          "case": "host-allowlist-empty",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 6856432,
+          "native15_ns": 6890141,
+          "native16_ns": 54326028
+        },
+        {
+          "case": "empty-host-bucket",
+          "checksum": 10000,
+          "command_bytes": 16393,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 9392241,
+          "native15_ns": 8921828,
+          "native16_ns": 64039697
+        },
+        {
+          "case": "absolute-root",
+          "checksum": 10000,
+          "command_bytes": 1,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 1878953,
+          "native15_ns": 1945640,
+          "native16_ns": 32464817
+        },
+        {
+          "case": "reentrant-rule",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4915333,
+          "native15_ns": 4954341,
+          "native16_ns": 43256708
+        },
+        {
+          "case": "giant-tail-exact-miss",
+          "checksum": 0,
+          "command_bytes": 1048580,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4829,
+          "native15_ns": 4960,
+          "native16_ns": 73847
+        },
+        {
+          "case": "many-exact-none",
+          "checksum": 0,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 261620,
+          "native15_ns": 261191,
+          "native16_ns": 22494287
+        },
+        {
+          "case": "many-exact-match",
+          "checksum": 30720,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 7194610,
+          "native15_ns": 7394083,
+          "native16_ns": 33267308
+        },
+        {
+          "case": "many-host-paths-last-match",
+          "checksum": 30,
+          "command_bytes": 9,
+          "iterations": 30,
+          "paths": 1025,
+          "rules": 1,
+          "original_ns": 3250643,
+          "native15_ns": 3165585,
+          "native16_ns": 35187159
+        },
+        {
+          "case": "host-first-match-giant-unvisited",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 2,
+          "rules": 1,
+          "original_ns": 10733652,
+          "native15_ns": 10659725,
+          "native16_ns": 79846126
+        }
+      ]
     }
   }
 }
