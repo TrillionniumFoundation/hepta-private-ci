@@ -2,11 +2,13 @@
 //!
 //! HIA owns token counts, alternative traversal, byte comparisons and the
 //! match decision. This adapter asks HIA to admit the token counts before
-//! serializing a frame, then borrows the buffers and clones the selected prefix.
+//! serializing a complete frame on the stack when it fits, then borrows the
+//! buffers and clones the selected prefix.
 //! A native contract failure must not become `None`: that would enable the
 //! policy layer's unmatched-command heuristics.
 
 use crate::rule::PrefixPattern;
+use std::io::Write;
 
 unsafe extern "C" {
     fn codex_hia_prefix_admission(command_count: u64, pattern_count: u64) -> u64;
@@ -56,28 +58,74 @@ pub(crate) fn matches_prefix(pattern: &PrefixPattern, command: &[String]) -> Opt
             .and_then(|size| size.checked_add(token.len()))
             .unwrap_or_else(|| panic!("HIA prefix frame length overflow"));
     }
-    let mut source = Vec::new();
-    source
-        .try_reserve_exact(capacity)
-        .unwrap_or_else(|error| panic!("HIA prefix frame allocation failed: {error}"));
-    source.extend_from_slice(&(command.len() as u64).to_le_bytes());
-    source.extend_from_slice(&(pattern_len as u64).to_le_bytes());
-    source.extend_from_slice(&1_u64.to_le_bytes());
-    source.extend_from_slice(&(pattern.first.len() as u64).to_le_bytes());
-    source.extend_from_slice(pattern.first.as_bytes());
+    let matched = if capacity <= 512 {
+        let mut source = [0_u8; 512];
+        let mut remaining = &mut source[..capacity];
+        encode_frame(
+            &mut remaining,
+            pattern,
+            commands,
+            command.len(),
+            pattern_len,
+        );
+        assert!(remaining.is_empty(), "HIA prefix frame size mismatch");
+        match_frame(&source[..capacity])
+    } else {
+        let mut source = Vec::new();
+        source
+            .try_reserve_exact(capacity)
+            .unwrap_or_else(|error| panic!("HIA prefix frame allocation failed: {error}"));
+        encode_frame(&mut source, pattern, commands, command.len(), pattern_len);
+        assert_eq!(source.len(), capacity, "HIA prefix frame size mismatch");
+        match_frame(&source)
+    };
+    if matched == 0 {
+        return None;
+    }
+    assert_eq!(matched, pattern_len as u64, "HIA prefix result is invalid");
+    let prefix = command
+        .get(..pattern_len)
+        .unwrap_or_else(|| panic!("HIA prefix matcher returned an out-of-range prefix"));
+    Some(prefix.to_vec())
+}
+
+fn append_bytes(output: &mut impl Write, bytes: &[u8]) {
+    output
+        .write_all(bytes)
+        .unwrap_or_else(|error| panic!("HIA prefix frame encoding failed: {error}"));
+}
+
+fn append_u64(output: &mut impl Write, value: u64) {
+    append_bytes(output, &value.to_le_bytes());
+}
+
+fn encode_frame(
+    output: &mut impl Write,
+    pattern: &PrefixPattern,
+    commands: &[String],
+    command_count: usize,
+    pattern_len: usize,
+) {
+    append_u64(output, command_count as u64);
+    append_u64(output, pattern_len as u64);
+    append_u64(output, /*value*/ 1);
+    append_u64(output, pattern.first.len() as u64);
+    append_bytes(output, pattern.first.as_bytes());
     for token in pattern.rest.iter() {
         let alternatives = token.alternatives();
-        source.extend_from_slice(&(alternatives.len() as u64).to_le_bytes());
+        append_u64(output, alternatives.len() as u64);
         for alternative in alternatives {
-            source.extend_from_slice(&(alternative.len() as u64).to_le_bytes());
-            source.extend_from_slice(alternative.as_bytes());
+            append_u64(output, alternative.len() as u64);
+            append_bytes(output, alternative.as_bytes());
         }
     }
     for token in commands {
-        source.extend_from_slice(&(token.len() as u64).to_le_bytes());
-        source.extend_from_slice(token.as_bytes());
+        append_u64(output, token.len() as u64);
+        append_bytes(output, token.as_bytes());
     }
-    assert_eq!(source.len(), capacity, "HIA prefix frame size mismatch");
+}
+
+fn match_frame(source: &[u8]) -> u64 {
     let mut output = [0xff_u8; 8];
     let mut workspace = [];
     // SAFETY: all three distinct buffers remain live for the synchronous call;
@@ -94,13 +142,5 @@ pub(crate) fn matches_prefix(pattern: &PrefixPattern, command: &[String]) -> Opt
         )
     };
     assert_eq!(status, 8, "HIA prefix matcher rejected the native frame");
-    let matched = u64::from_le_bytes(output);
-    if matched == 0 {
-        return None;
-    }
-    assert_eq!(matched, pattern_len as u64, "HIA prefix result is invalid");
-    let prefix = command
-        .get(..pattern_len)
-        .unwrap_or_else(|| panic!("HIA prefix matcher returned an out-of-range prefix"));
-    Some(prefix.to_vec())
+    u64::from_le_bytes(output)
 }

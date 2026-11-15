@@ -73,7 +73,7 @@ def verify(args, report):
             probe = re.search(r"^allocation_probe alloc=(\d+) realloc=(\d+)$", stdout, re.MULTILINE)
             report["positive_probe"] = {"alloc": int(probe[1]), "realloc": int(probe[2])} if probe else None
     summary = re.search(r"^allocation_summary cases=(\d+)$", stdout, re.MULTILINE)
-    if summary is None or int(summary[1]) != report["cases_completed"] or report["cases_completed"] != 11:
+    if summary is None or int(summary[1]) != report["cases_completed"] or report["cases_completed"] != 20:
         raise RuntimeError("not all allocation cases completed")
     if probe is None or not all(int(value) > 0 for value in probe.groups()):
         raise RuntimeError("the allocator positive control did not observe both allocation operations")

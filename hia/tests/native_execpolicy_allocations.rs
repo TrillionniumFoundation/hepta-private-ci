@@ -152,5 +152,65 @@ fn main() {
         Some(cmd[..1].to_vec()),
         1..=usize::MAX,
     );
+
+    // Normal Policy lookup has already selected rules for this same first token.
+    let ordinary = PrefixPattern {
+        first: "git".into(),
+        rest: vec![PatternToken::Single("status".into())].into(),
+    };
+    let mut ordinary_cmd = vec!["git".into(), "other".into()];
+    completed += check(
+        "same_first_small_mismatch",
+        &ordinary,
+        &ordinary_cmd,
+        None,
+        0..=0,
+    );
+    ordinary_cmd[1] = "status".into();
+    completed += check(
+        "small_match_owned",
+        &ordinary,
+        &ordinary_cmd,
+        Some(ordinary_cmd.clone()),
+        3..=3,
+    );
+
+    let mut boundary = PrefixPattern {
+        first: "p".into(),
+        rest: vec![PatternToken::Single(String::new())].into(),
+    };
+    let boundary_cmd = vec!["p".into(), String::new()];
+    // Fixed headers plus two one-byte first tokens occupy 66 bytes.
+    // Replace a token in the same unique Arc while crossing the threshold both ways.
+    for (name, capacity, allocations) in [
+        ("capacity_511", 511, 0),
+        ("capacity_512", 512, 0),
+        ("capacity_513", 513, 1),
+        ("rest_back_to_stack", 512, 0),
+        ("rest_back_to_heap", 513, 1),
+    ] {
+        Arc::make_mut(&mut boundary.rest)[0] = PatternToken::Single("x".repeat(capacity - 66));
+        completed += check(
+            name,
+            &boundary,
+            &boundary_cmd,
+            None,
+            allocations..=allocations,
+        );
+    }
+    for (name, tail_bytes, allocations) in
+        [("exact_match_512", 223, 3), ("exact_match_514", 224, 4)]
+    {
+        Arc::make_mut(&mut boundary.rest)[0] = PatternToken::Single("x".repeat(tail_bytes));
+        let matching = vec!["p".into(), "x".repeat(tail_bytes)];
+        completed += check(
+            name,
+            &boundary,
+            &matching,
+            Some(matching.clone()),
+            allocations..=allocations,
+        );
+    }
+
     println!("allocation_summary cases={completed}");
 }
