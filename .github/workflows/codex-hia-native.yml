@@ -272,6 +272,28 @@ jobs:
             --report "$RUNNER_TEMP/hia-execpolicy-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-caller.log"
 
+      - name: Verify scalar count admission and closed object profile
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_prefix_admission_abi.py \
+            --library "$RUNNER_TEMP/hia-native/prefix_admission.so" \
+            --report "$RUNNER_TEMP/hia-prefix-admission-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-prefix-admission-abi.log"
+          python3 -B codex/hia/tests/test_scalar_build_admission.py \
+            --artifacts "$RUNNER_TEMP/hia-native" --module prefix_admission \
+            --report "$RUNNER_TEMP/hia-prefix-scalar-admission.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-prefix-scalar-admission.log"
+
+      - name: Verify short-command matching requires no frame allocation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_execpolicy_allocations.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-execpolicy-allocations.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-allocations.log"
+
       - name: Verify prefix matching buffer admission and atomic errors
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -496,6 +518,12 @@ jobs:
             ${{ runner.temp }}/hia-execpolicy-caller.log
             ${{ runner.temp }}/hia-execpolicy-abi.json
             ${{ runner.temp }}/hia-execpolicy-abi.log
+            ${{ runner.temp }}/hia-prefix-admission-abi.json
+            ${{ runner.temp }}/hia-prefix-admission-abi.log
+            ${{ runner.temp }}/hia-prefix-scalar-admission.json
+            ${{ runner.temp }}/hia-prefix-scalar-admission.log
+            ${{ runner.temp }}/hia-execpolicy-allocations.json
+            ${{ runner.temp }}/hia-execpolicy-allocations.log
             ${{ runner.temp }}/hia-installed-execpolicy-build.log
             ${{ runner.temp }}/hia-original-execpolicy-build.log
             ${{ runner.temp }}/hia-installed-execpolicy.json
