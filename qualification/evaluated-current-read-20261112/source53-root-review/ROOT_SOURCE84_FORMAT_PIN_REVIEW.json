@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.root-source84-format-and-pin-review.v1",
+  "parent": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "candidate_tree": "af4235b61a175aea2d67d58f6b498c78c0c2440b",
+  "original_format_job": 131446629264,
+  "full_original_log": {
+    "bytes": 145240,
+    "sha256": "989ad437e46dc561bfc174ba4138b04c9dfcf700b196e65dafb3f77152cb677b",
+    "git_blob": "8697e461e5c467e9878e72154a765f09f2cf0b5b"
+  },
+  "exact_original_format_hunks": 11,
+  "formatter_source_files": 8,
+  "qa_change": "one exact full SERVICE SHA256 pin; no check removed or weakened",
+  "actual_old_and_new_service_bytes_verified": true,
+  "diagnostic_semantic_review": "ROOT_EVAL_DIAGNOSTIC_REVIEW.json",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "base": "17879d20c89446d538c2166f6f61d9fa602a692e",
+      "post": "fbf2f32797c8b64d1cec28112b085a39c4a524f1",
+      "bytes": 18244,
+      "sha256": "01eae2faaac2a92d8f9b436ef3dbf7712c4dc33f61d55726027c42ebfa9f5ee3",
+      "git_blob": "fbf2f32797c8b64d1cec28112b085a39c4a524f1",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "base": "e79c335decb6283335ee60afcdfd76c68db1bd2a",
+      "post": "c2c36fd72e09a6d3278c170f1e97049a3702e41f",
+      "bytes": 20350,
+      "sha256": "d71d1d744a1c977c2533581cb038186ab73369c0ffef8e6cdc040748a068afad",
+      "git_blob": "c2c36fd72e09a6d3278c170f1e97049a3702e41f",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs",
+      "base": "6c075688f8eb85ef77bd9495fcb85810acfe658e",
+      "post": "410a333606d1c6bb9218f1d8925c8989173bc237",
+      "bytes": 4281,
+      "sha256": "63176c118eba216ea07dc37a6923aea5dbfd5e5cf5f85292860bf672e94e74f4",
+      "git_blob": "410a333606d1c6bb9218f1d8925c8989173bc237",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "base": "7180072fe87063749d5526588bb52389b6e798e6",
+      "post": "76fd69c02f190299d51baf2424337c19563707ca",
+      "bytes": 25299,
+      "sha256": "7c15f157e9c84340bb6a7304955f7e960c73186ba3573b393273605647314a08",
+      "git_blob": "76fd69c02f190299d51baf2424337c19563707ca",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs",
+      "base": "9172c02b394661d77375cce81b13003040409be1",
+      "post": "28f2512535eb4a61987868bdcaf1ccec787c350d",
+      "bytes": 15274,
+      "sha256": "0736f7dcfba87c365237bca8b243f90cca4484878d8bae9f3013b6928f8d49bd",
+      "git_blob": "28f2512535eb4a61987868bdcaf1ccec787c350d",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 1
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification.rs",
+      "base": "95126f5c455c9674b8aefb6e51d63f57276bdddd",
+      "post": "092b415541f980a29987c7b8416f03f63c0f673d",
+      "bytes": 1662,
+      "sha256": "12f207448d5e85d13a0a69102dce2be5b368ee37476ea424b725fab56931b8aa",
+      "git_blob": "092b415541f980a29987c7b8416f03f63c0f673d",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 1
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs",
+      "base": "d7d42e80feae8069ab09a7107d1800dc12ce7a4f",
+      "post": "0494c0de5f1fb65c8756c065c26279e2eff9f624",
+      "bytes": 4424,
+      "sha256": "54c6e5d756ba027efaca1ac8d3ec687001445dd29619d46d894247c01f24a0ce",
+      "git_blob": "0494c0de5f1fb65c8756c065c26279e2eff9f624",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 2
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification_file.rs",
+      "base": "c86ef5b2b5824f5d643dd8c0f1724ae1b01f8f65",
+      "post": "be3e4bdea43060702308d877ea5607ef0738afef",
+      "bytes": 1684,
+      "sha256": "5839667880e3526819e85c30b3ed5cba97122f010cbecb79c4b74ca0361fcb9e",
+      "git_blob": "be3e4bdea43060702308d877ea5607ef0738afef",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "base": "a5a2786e6ec8c93d89e608a835d94a5bec26cb8b",
+      "post": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "bytes": 10749,
+      "sha256": "e182bb321b1ac9a31ea9567f3139e0212ee03b9d7be1218fdfc7c6d8ba3ada81",
+      "git_blob": "980b7c9b8d364453e13cd0a220611600d6204891",
+      "exact_forward_and_inverse": true,
+      "actual_formatter_hunks_matched": 0
+    }
+  ],
+  "compiled_formatted_or_source_gate_on_candidate": "NOT_RUN",
+  "owner_decision": null
+}

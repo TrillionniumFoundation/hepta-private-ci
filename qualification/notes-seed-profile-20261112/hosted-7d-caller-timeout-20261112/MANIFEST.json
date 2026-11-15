@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.act6243.hosted-7d-caller-timeout.evidence.v1",
+  "source_sha": "7d31bf9677748330ae17efe964de48d98ba5e542",
+  "source_tree": "cedbad6b47e4ff8db4f87efc9169a4b5c13412be",
+  "run_id": 43201926673,
+  "job_id": 131169924469,
+  "attempt": 1,
+  "status": "completed",
+  "conclusion": "failure",
+  "caller": {
+    "timed_out": true,
+    "returncode": -9,
+    "exit_code": 124,
+    "elapsed_seconds": 120.096684342,
+    "log_bytes_reported": 0
+  },
+  "source_identity": "Original receipt exact before/after equal and dirty=false.",
+  "not_run": [
+    "both executable builds",
+    "original positive",
+    "five regression methods",
+    "named-case receipt"
+  ],
+  "claim_boundary": "V8 succeeded; the newly added120-second caller budget ended before any native build/test. No checker logical success or Rust result is inferred. Original job was not rerun or cancelled by this work.",
+  "owner_decision": null,
+  "qualification": "HOLD",
+  "artifacts": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/hosted-7d-caller-timeout-20261112/JOB_131169924469.log",
+      "representation": "Original full decoded UTF-8 GitHub workflow job log.",
+      "bytes": 82233,
+      "sha256": "d7224b2714789f96217ae76e5ebfe7cea1b3e2700c0b72ad6d48ec13dea78fad",
+      "blob": "68156a60efed4502faa72f2385a79e31f02e2ec1"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/hosted-7d-caller-timeout-20261112/JOBS_ORIGINAL.json",
+      "representation": "Original GitHub jobs endpoint response.",
+      "bytes": 4131,
+      "sha256": "ebb899b3607ab39c7fa7f2b7665af1a93ce015d0379296dab6a7ba48b3564755",
+      "blob": "11eb0c43ea0b52a51a488a87bd49976b2fb074b5"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/hosted-7d-caller-timeout-20261112/CALLER_RECEIPT_EXTRACT.json",
+      "representation": "Exact JSON substring from original job log plus trailing newline; not a separately downloaded artifact.",
+      "bytes": 1283,
+      "sha256": "798cf76094e4310d4971cf39597a0d1a2b7f410c5a007858f214cd2b0d8a876c",
+      "blob": "2c99d6b97c2727c9f530f73553584d6a020590dc"
+    }
+  ]
+}

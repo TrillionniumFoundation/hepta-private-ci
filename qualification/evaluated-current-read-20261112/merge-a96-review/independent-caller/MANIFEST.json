@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.owner-callers-three-way-manifest.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_refs": {
+    "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+    "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+  },
+  "code_bare_tree": "6243efafe3b1bdf6427111ad09724d1faf078d90",
+  "original_files": [
+    {
+      "side": "ancestor",
+      "commit": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+      "path": "CALLERS.toml",
+      "blob_sha": "2038a6abbb39038da02586f651e269a33d4648fb",
+      "bytes": 1102253,
+      "sha256": "446216e0cc4c2a8738394e4c8b7b8aec81319aedd5b44dca6989cc5d50007b24",
+      "newline_count": 10372
+    },
+    {
+      "side": "ancestor",
+      "commit": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+      "path": ".github/blob-size-allowlist.txt",
+      "blob_sha": "5d053669cd3e102c9c03f8f453ad7e72134de500",
+      "bytes": 12204,
+      "sha256": "9298e3ccfeb88d79e4fa5d3956142ef16cc74c2756fff982fed05df582663d84",
+      "newline_count": 103
+    },
+    {
+      "side": "ours",
+      "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+      "path": "CALLERS.toml",
+      "blob_sha": "489c4e65b4579c738591436977105d9c2008747f",
+      "bytes": 1108372,
+      "sha256": "64153616508ffa8319f06cdf209dba5b1b19d4f6dc202293cfe286c8dafbbf02",
+      "newline_count": 10410
+    },
+    {
+      "side": "ours",
+      "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+      "path": ".github/blob-size-allowlist.txt",
+      "blob_sha": "1954e1aaab7791fe4e8d3074ed53117a9eaff37c",
+      "bytes": 12803,
+      "sha256": "007182d5c7e351e5d227b732706a520d2ef8b5dafdd059c6877dd22b1e17cb18",
+      "newline_count": 110
+    },
+    {
+      "side": "upstream",
+      "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "path": "CALLERS.toml",
+      "blob_sha": "6eb79688b56aca6306bc500b96f3b10654660196",
+      "bytes": 1124758,
+      "sha256": "d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903",
+      "newline_count": 10384
+    },
+    {
+      "side": "upstream",
+      "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "path": ".github/blob-size-allowlist.txt",
+      "blob_sha": "d335890b19646a4d9776ffd3a1943bea573b0150",
+      "bytes": 12375,
+      "sha256": "78b1c0a05f309914e94f44b622222d1b328b27e578129fc2cd699e63319cff9e",
+      "newline_count": 106
+    }
+  ],
+  "postimages": [
+    {
+      "path": "CALLERS.toml",
+      "blob_sha": "222d9867d37bf8883e0a86f224f3d9a79f6e372a",
+      "bytes": 1126283,
+      "sha256": "07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf",
+      "lines": 10385,
+      "readback_verified_exact_bytes": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "blob_sha": "fb736ed76a3cd13450ad41831eeda6056fb1da14",
+      "bytes": 13059,
+      "sha256": "c5782625616f80cbf1cf437b5de15b190f140140f8ffe4d55e95edd14ef937d5",
+      "lines": 115,
+      "new_exact_entry": "sha256:07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf CALLERS.toml",
+      "insertion_after": "sha256:446216e0cc4c2a8738394e4c8b7b8aec81319aedd5b44dca6989cc5d50007b24 CALLERS.toml",
+      "readback_verified_exact_bytes": true
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "POSTIMAGE.patch",
+      "blob_sha": "8f16b5ca6cc05e305fafb6f2331ada023b62ccf6",
+      "bytes": 14128,
+      "sha256": "87b05fb632b827f47ad5b78d78a49491e57d3df9c8590716b9ee290716198f8c"
+    },
+    {
+      "path": "THREE_WAY_AUDIT.json",
+      "blob_sha": "0eb163c17899128c8b91fe5690342b073a5417df",
+      "bytes": 265175,
+      "sha256": "f8f5e2b28ece38dee5b8f7c393891238bef911274b798fa8d991ecc3dbe6f75b"
+    },
+    {
+      "path": "SOURCE_BINDINGS.json",
+      "blob_sha": "566c280b139616e4ecd80969ea7b3b60a269a21f",
+      "bytes": 44850,
+      "sha256": "9fcaded5cf0f7e97a0a317a20459aaf2f6cb21d7dda5be8b67455c9bba88b55a"
+    },
+    {
+      "path": "REVIEW.md",
+      "blob_sha": "c3b8835209844e087a60e7340b432d2b18b527d9",
+      "bytes": 3670,
+      "sha256": "98c04c11b5114d6a768b1e9d8bbc4a2449878e02ca65d7460efa6d06c8baf72f"
+    }
+  ],
+  "accounting": {
+    "units": 932,
+    "boundaries": 541,
+    "protected_file_records": 389,
+    "unchanged_upstream_units": 920,
+    "modified_product_caller_rows": 12,
+    "added_source_bound_edges": 22,
+    "removed_edges": 0,
+    "privileged_inventory_byte_equal_to_upstream": true,
+    "all_other_upstream_units_byte_equal": true,
+    "allowlist_parents_preserved_as_ordered_subsequences": true,
+    "new_exact_exception_count": 1,
+    "tests_executed": false
+  },
+  "execution": {
+    "source_qa": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "commit_created": false,
+    "ref_updated": false,
+    "actors_started": 0
+  },
+  "scope": "Two requested source/config postimages plus separate immutable review artifacts. No gate or owner decision claimed."
+}

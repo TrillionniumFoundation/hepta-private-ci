@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "source": {
+    "commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f"
+  },
+  "candidate_tree": "449f1a48a7853fe086680df00552c34f11cb307b",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "base_blob_sha": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "bytes": 4400,
+      "sha256": "26156213658cf0b9bf2e0366308dc82b736348da802b5eeeebe55a7e57c62e0d",
+      "git_blob_sha": "3c799bf03fd99dea05f4905845e45c8bf9107627"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "base_blob_sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "bytes": 12881,
+      "sha256": "2612d41ee5b49db641f288478b2dda7a884fc850d8ed9fdd258c6d1b40ad52e1",
+      "git_blob_sha": "4f54cff102f768355bcf8422cbfbe14250f70d3d"
+    }
+  ],
+  "review_files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/REVIEW.json",
+      "bytes": 5925,
+      "sha256": "e0ff46a20acbc9f3ab3907282bc48ff49f9c1b7f7cce05e6585057c8f0d37989",
+      "git_blob_sha": "73e003cc1446f95421bee9562d27ccf465a21083"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/PATCH.diff",
+      "bytes": 3059,
+      "sha256": "ce8aee6cfa886492f5fc25910704c5018aa7e67cea649b9cee389686e92c5cc8",
+      "git_blob_sha": "844e205895632fba2e4e450cffb735b6b47edf4e"
+    }
+  ],
+  "validation": "Static byte identity and immutable Git readback only; no formatter, compiler or tests executed."
+}

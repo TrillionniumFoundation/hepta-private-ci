@@ -1,0 +1,68 @@
+{
+  "after": {
+    "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "dirty": false,
+    "parents": [
+      "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+      "639f894e088cdc5b30b65ed3732dcaa0a2fbe004"
+    ],
+    "tree": "03dee89cec18fc7275755a77042b973e1d6728a6"
+  },
+  "base_sha": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+  "before": {
+    "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "dirty": false,
+    "parents": [
+      "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+      "639f894e088cdc5b30b65ed3732dcaa0a2fbe004"
+    ],
+    "tree": "03dee89cec18fc7275755a77042b973e1d6728a6"
+  },
+  "build_target": "x86_64-pc-windows-msvc",
+  "cargo_build_target": "x86_64-pc-windows-msvc",
+  "cargo_target_directory": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\target",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--target",
+    "x86_64-pc-windows-msvc",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "--lib",
+    "-E",
+    "(package(=codex-hepta-agentd) & (test(=circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append) | test(=circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs) | test(=circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history) | test(=circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen) | test(=circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only) | test(=circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference) | test(=neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison) | test(=neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison) | test(=neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed) | test(=neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown) | test(=neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes) | test(=neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original) | test(=neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution) | test(=neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact) | test(=neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator) | test(=neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases) | test(=neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work) | test(=neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider) | test(=neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout) | test(=cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims) | test(=cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound) | test(=cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled) | test(=cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads))) | (package(=codex-hepta-intelligence-eval) & (test(=qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor) | test(=qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error) | test(=product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner) | test(=product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed) | test(=product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement) | test(=product_execution_file::tests::current::current_refuses_length_changes_without_repair))) | (package(=codex-hepta-learning-ledger) & (test(=durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor) | test(=durable::current_tests::current_rejects_a_different_valid_same_length_ledger) | test(=durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair) | test(=witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner) | test(=witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm) | test(=witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier) | test(=witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution)))",
+    "--test-threads",
+    "1",
+    "--no-tests",
+    "fail",
+    "--retries",
+    "0"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 354.7339999999999,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T13:12:28.829939+00:00",
+  "job": "windows-secure-private-state",
+  "kind": "native-command-execution",
+  "lane": "source-head",
+  "log_bytes": 57783,
+  "log_file": "native.log",
+  "log_sha256": "4e24e5f1339bc4e0375cde5ed70f1e3b84dc68d78cd7f99357c8d27c07c55cfe",
+  "native_junit_source_path": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\target\\nextest\\local\\junit.xml",
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 36,
+  "run_attempt": "1",
+  "run_id": "43213822708",
+  "schema_version": 1,
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "started_at": "2026-11-12T13:06:34.093738+00:00",
+  "status": "passed",
+  "supervision": "Existing Windows Actions job timeout; no POSIX process-group claim.",
+  "tested_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "working_directory": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs"
+}

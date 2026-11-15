@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.qualification-source-guard-contract.static.v1",
+  "representation": "Read and reasoned from the exact checker and original manifest; no checker or Python test execution",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "checker": {
+    "path": "scripts/verify_hepta_callers.py",
+    "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "protected_file_algorithm": "required raw-text markers; cfg(test)/comment/literal-stripped required_order and per-registered-function order/top-level; entire-file forbidden markers",
+    "whole_file_sha": false,
+    "automatic_public_function_inventory": false,
+    "boundary_inventory": "Exact equality between declared boundary IDs and required_boundary_ids; not a census of all public functions"
+  },
+  "callers": {
+    "path": "CALLERS.toml",
+    "blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+    "changed": false
+  },
+  "qa_exact_set": {
+    "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+    "blob": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+    "expression": "{rule[\"function\"] for rule in rules}",
+    "set": [
+      "fn acquire(",
+      "fn open(",
+      "fn current(",
+      "fn compare_and_swap("
+    ],
+    "scope": "The four rules in the existing witness protected_file row, not every function in witness.rs."
+  },
+  "protected_rows": [
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "registered_functions": [
+        "acquire",
+        "open",
+        "current",
+        "compare_and_swap"
+      ],
+      "all_original_bodies_byte_identical": true,
+      "all_original_required_and_forbidden_markers_retained": true,
+      "new_function": "qualification_file_bytes delegates to a separate private feature-gated module",
+      "new_function_covered_by_old_four_rules": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "registered_functions": [
+        "recover",
+        "require_current",
+        "require_healthy"
+      ],
+      "all_original_bodies_byte_identical": true,
+      "all_original_required_and_forbidden_markers_retained": true,
+      "new_module": "feature-gated qualification",
+      "new_module_covered_by_old_three_rules": false
+    }
+  ],
+  "decision": "Existing closed-set contract does not require a new privileged boundary for this pure read through an already-held original File; existing Ledger qualification_file_bytes likewise has no registered boundary. No existing guards or exact-set assertions are removed/expanded. New qualification helpers are not misrepresented as protected by old body guards.",
+  "independent_scan": {
+    "tree": "8f03bdd5c3977a57a67e96d26bf0505aeec6ee22",
+    "blob": "be26aad01fe2981d2ddbff74c7472e4dfc425449",
+    "qa_python_files": 56,
+    "directory_entries": 57
+  },
+  "source_match_scan": {
+    "file": "SOURCE_SCAN.json",
+    "original_agentd_rust_files": 906,
+    "git_verified": true
+  }
+}

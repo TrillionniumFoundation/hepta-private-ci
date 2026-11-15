@@ -1,0 +1,148 @@
+{
+  "schema": "hepta.source53.model-material-split.independent-review.v1",
+  "reviewer": "replay_perception_research",
+  "status": "STATIC_REVIEW_NO_IDENTIFIED_BLOCKER_NOT_EXECUTED",
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "candidate_tree": "e151fb547586cd25a0e6ade54fc7070a1b233bb3",
+  "candidate_manifest": "f8ab52b6a9cef5d898388822bf37f8c6e45182ee",
+  "source_path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+  "base": {
+    "bytes": 12053,
+    "git_blob_sha": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+    "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed"
+  },
+  "post": {
+    "bytes": 13985,
+    "git_blob_sha": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+    "sha256": "3c79aea5e8bcf03fdfed514ac9f8e0a0b71047d220e0ec62822154d993c53746"
+  },
+  "whole_byte_review": "Read the complete original and postimage, plus candidate manifest, review, patch and statement mapping. Independently verified all six Git blob hashes and SHA256; fetched four runtime/support dependency files at exact53 and verified the reported pins, plus the previously exact53-verified HostFixture.",
+  "equivalence": {
+    "first_group": "The original same-fixture sequence containing wrong-order, wrong-total, wrong-offset, wrong-last and lose-finish is byte-identical. All five faults, subsequent Unavailable refusals, positive peer count and original/upstream byte comparisons remain together.",
+    "missing_and_pending": "Each new body equals the original loop body after exactly one four-space dedent, preceded only by its original literal pair. after-missing/cold-missing and after-pending/cold-pending are not substituted, sampled or merged.",
+    "renewal_and_expiry": "The final original fixture sequence is byte-identical, including renewed full receipt construction, precise Binding error, subsequent Unavailable, >1 original peer frames, exact-expiry refusal with zero peer frames, both byte comparisons and actual finish.",
+    "other_methods": "The two other original tokio test methods and original file prefix/suffix are byte-identical.",
+    "method_denominator": "3 file methods become 6; this candidate adds 3 and removes 0. The old method name now covers only the original first group. All four mapped methods must pass to claim the old combined method coverage.",
+    "assertions": {
+      "method_local_static_before": 25,
+      "method_local_static_after": 35,
+      "method_local_fully_expanded_before": 47,
+      "method_local_fully_expanded_after": 47,
+      "additional_unchanged_complete_helper_assertion_calls": 4,
+      "note": "47 counts method-local statements only; unchanged helper/fixture assertions are additional. This is static coverage, not executed pass count."
+    }
+  },
+  "actual_semantic_review": [
+    {
+      "case": "Missing after successful material plus cold expected-original missing",
+      "source": "neuron_cell_evaluation_model_material_service_support_tests.rs: actual model_material_response executes before wire fault mutation; connection.rs: expected pin is stored only after successful complete verification",
+      "finding": "The first transfer returns material authenticated from the real consumed panel and original Evaluation. The second Begin is changed to Missing after the real owner response. Since the client retained the complete original Evaluation, the original Missing result maps to CommitUncertain; its channel was taken and is not returned on failure, so the next read is Unavailable. A separately held expected-original connection receives cold-missing on its first Begin with the same exact refusal. The split does not pretend that the physical owner journal itself became Missing."
+    },
+    {
+      "case": "Pending after successful material plus cold expected-original pending",
+      "source": "same service and client branches, original after-pending/cold-pending literals",
+      "finding": "Identical original transition and fencing, with wire Pending. Exact CommitUncertain then Unavailable assertions, pages+2 and one-frame counts remain. Physical original/upstream files and successful real fixture cleanup remain checked."
+    },
+    {
+      "case": "Renewed expected signature and expired original window",
+      "source": "connection_support::fixture_model_material_renewed_evaluation plus connection::read_current_with_clock",
+      "finding": "The unchanged test helper copies the actual original attestation, increments expires_at with checked_add(1), signs with the original explicit fixture key [42;32], reauthenticates the complete original snapshot, and asserts the renewed full receipt differs. The client is given that renewed expected pin; actual host material still contains its original receipt, so exact full-receipt mismatch must return the original Binding string. The later exact-expires_at request retains the original expected receipt and fails its existing pre-transfer window check, with close count 0. No new signing API, rewritten journal or namespace relaxation is introduced."
+    }
+  ],
+  "cross_group_and_lifetimes": [
+    "The old method already created four independent HostFixtures: the five page/ACK faults, each of the two loop iterations, and renewal/expiry. Each original group explicitly closed all clients/peers and consumed fixture.finish before starting the next group.",
+    "No earlier group local, client, peer, completed material or original file snapshot is an input to a later group. The new literal pair bindings have the same static string type accepted by the existing helper.",
+    "The existing complete helper remains unchanged and performs the actual original Evaluation before each group. Its own assertion is called four times in both successful expanded routes, in addition to the 47 method-local assertions.",
+    "The same group-specific clone, move, borrow, match, await, close, join and finish order is retained. No private visibility or returned type changes, new shared state or production source changes are present.",
+    "Each new method has the same existing multi_thread/worker_threads=2 annotation. Separate test runtimes, scheduling and total admitted wall-time differ; this is an intentional change of harness granularity, not equal aggregate time or measured acceleration."
+  ],
+  "limits": {
+    "unchanged_original_parameters": "No change to 128 frame caps, original model-material 30s request timeout/300s lifetime, original signatures/clock inputs, fixture number, wire faults or cleanup checks.",
+    "old_timeout": "The original native/shared timeout remains historical. No exact failing internal group was identified by the old logs, and the split is not proof of the unique timeout cause or successful runtime completion.",
+    "tests": "No Rust, fmt, Clippy, source-closure, native, Bazel or actor was executed for this review.",
+    "guard_review": "No product path or module registration changes. Candidate author reports a 61-QA/CALLERS limited reference scan; this independent review does not count that scan as executed source-closure success.",
+    "permissions": "No ref or source modification by this reviewer; only immutable review artifacts."
+  },
+  "required_acceptance": [
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_rejects_completed_missing_and_cold_regression",
+    "original_evaluation_model_material_rejects_completed_pending_and_cold_regression",
+    "original_evaluation_model_material_rejects_renewed_evidence_and_expired_window"
+  ],
+  "input_pins": [
+    {
+      "role": "candidate_or_review_input",
+      "git_blob_sha": "f8ab52b6a9cef5d898388822bf37f8c6e45182ee",
+      "bytes": 2742,
+      "sha256": "11a32af9098959119fb261210b4a46e8c2a553f2ce06cd9252270e76812a547e"
+    },
+    {
+      "role": "candidate_or_review_input",
+      "git_blob_sha": "39298d4e4bae135a72824f353f592b0c2ee5496a",
+      "bytes": 4716,
+      "sha256": "1e7c1a9c7f654e92e5d2a495a26d04a67e89b846c14bac66bc99f960695a4f37"
+    },
+    {
+      "role": "candidate_or_review_input",
+      "git_blob_sha": "fbca4ac2df335121eefcbefd15a58536cffc42b6",
+      "bytes": 9502,
+      "sha256": "283e5a76f71940283e8196e344fbc18100f5ee3b07834cf773c5c5d66ef7ab53"
+    },
+    {
+      "role": "candidate_or_review_input",
+      "git_blob_sha": "bd57edc9bcd9fcc0fa9c40b5fda5cc772ad06046",
+      "bytes": 12281,
+      "sha256": "17b624e4a9f17e4ebf0531ef33cd2d8cc842d92eb7950f2d87fbc4240c36662d"
+    },
+    {
+      "role": "candidate_or_review_input",
+      "git_blob_sha": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+      "bytes": 12053,
+      "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed"
+    },
+    {
+      "role": "candidate_or_review_input",
+      "git_blob_sha": "5cc4db827487dd487cecebe8766fc7e6bab92b0c",
+      "bytes": 13985,
+      "sha256": "3c79aea5e8bcf03fdfed514ac9f8e0a0b71047d220e0ec62822154d993c53746"
+    }
+  ],
+  "dependency_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "git_blob_sha": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "bytes": 6497,
+      "sha256": "a297111c1e321835d832239fee6066efcae57a1681ca944510fcf42462894871",
+      "exact_source_ref": "53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "git_blob_sha": "76fd69c02f190299d51baf2424337c19563707ca",
+      "bytes": 25299,
+      "sha256": "7c15f157e9c84340bb6a7304955f7e960c73186ba3573b393273605647314a08",
+      "exact_source_ref": "53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "git_blob_sha": "25be7a897554634a3b3ec19fafc59e049af7b4e9",
+      "bytes": 8630,
+      "sha256": "39081cce64d5911af8f9c6a189f9348dcffbb0469d2a0bd3f6b8e5d6d1879690",
+      "exact_source_ref": "53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+      "git_blob_sha": "0021b10ea95b2a33960d6d967c3dc61f99834e13",
+      "bytes": 14937,
+      "sha256": "2b616294f151bc3fe23e4c4a2891ade8b0b6465b04dade6772f388a9e28f8ab4",
+      "exact_source_ref": "53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "git_blob_sha": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+      "bytes": 8026,
+      "sha256": "2b401c2ea7c861c27d72d684eda7d9481dfa7500ea7648a302cf88ac3753ac4e",
+      "exact_source_ref": "53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+    }
+  ]
+}

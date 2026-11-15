@@ -1,0 +1,39 @@
+fn verify_complete_local_control_observation(
+    observed: &LocalControlObservation,
+) -> Result<(), LocalControlVerificationError> {
+    if !observed.stable || observed.status == ObservationStatus::Unstable {
+        return Err(verification_error(
+            LocalControlVerificationErrorKind::Unstable,
+            "local_control_inventory_unstable",
+            "local control inventory did not stabilize",
+        ));
+    }
+    if observed.status == ObservationStatus::BoundsExceeded
+        || observed.snapshot.scan_status == ScanStatus::BoundsExceeded
+        || !observed.snapshot.bounds_exceeded.is_empty()
+    {
+        return Err(verification_error(
+            LocalControlVerificationErrorKind::BoundsExceeded,
+            "local_control_inventory_bounds_exceeded",
+            "local control inventory exceeded a fixed bound",
+        ));
+    }
+    if observed.status == ObservationStatus::Unavailable
+        || observed.snapshot.scan_status == ScanStatus::Unavailable
+        || !observed.snapshot.unavailable_inputs.is_empty()
+    {
+        return Err(verification_error(
+            LocalControlVerificationErrorKind::Unavailable,
+            "local_control_inventory_unavailable",
+            "local control inventory acquisition was unavailable",
+        ));
+    }
+    if !observed.snapshot.reachability_complete || !observed.snapshot.ownership_complete {
+        return Err(verification_error(
+            LocalControlVerificationErrorKind::Incomplete,
+            "local_control_inventory_incomplete",
+            "local control inventory was incomplete",
+        ));
+    }
+    Ok(())
+}

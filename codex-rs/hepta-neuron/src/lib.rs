@@ -249,6 +249,7 @@ pub use plasticity::TemporalSplitV1;
 pub use plasticity::accumulate_plasticity;
 pub use plasticity::accumulate_temporal_credit_q24;
 pub use plasticity::accumulate_temporal_credit_q24_online_prefix;
+pub use plasticity::real_time_credit;
 pub use population_v2::ActivationPopulationV2;
 pub use population_v2::PopulationSparseCheckpointV2;
 pub use population_v2::PopulationSparseConfigV2;

@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.windows-tui-recovery-path-static-candidate.v1",
+  "source_head": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "observed_checkout": "7302b0d4d0cd9335c9c505db7995689e8dc9f9c8",
+  "run_id": 43297579660,
+  "job_id": 131460489338,
+  "original_manifest": "82be0a75104713043f560f3d4eb59cdd48a11d6b",
+  "original_evidence_tree": "5f0c77332b3f8a8d0e71ca03fe7b0a4131697755",
+  "original_log": {
+    "bytes": 651260,
+    "sha256": "84a9303e8c58bf860d239cb67d8ae1d6c78c4c6ee01487ccbb1944a9f59c16f3",
+    "parts": [
+      "412c064099648be8b89965181c75fa78e65acb32",
+      "8dfdfc85786a60f650eac2b279246f2580f2539c",
+      "5693d2e5c8d6144e89732e87710e5aaeabb060f6"
+    ],
+    "all_parts_git_size_sha_and_continuous_whole_verified": true
+  },
+  "method": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+  "original_attempts": [
+    {
+      "thread": 608,
+      "temp_leaf": ".tmpPAsGaQ",
+      "failing_harness_block_passed": 87,
+      "failed": 1,
+      "filtered": 3693,
+      "duration_seconds": 11.49
+    },
+    {
+      "thread": 2632,
+      "temp_leaf": ".tmpvdRJbF",
+      "failing_harness_block_passed": 87,
+      "failed": 1,
+      "filtered": 3693,
+      "duration_seconds": 3.17
+    },
+    {
+      "thread": 3720,
+      "temp_leaf": ".tmpTbRUk7",
+      "failing_harness_block_passed": 87,
+      "failed": 1,
+      "filtered": 3693,
+      "duration_seconds": 2.98
+    }
+  ],
+  "fourth_printed_failure": "Replayed final test.log for the same thread 3720, .tmpTbRUk7 and 2.98s result; not a fourth execution.",
+  "failure_kind": "Strict expected Path representation mismatch: actual normalized D: drive path versus standard canonicalize verbatim \\\\?\\ drive form.",
+  "causal_chain": [
+    {
+      "path": "codex-rs/state/src/runtime.rs",
+      "blob": "10b3f4534e426645f12e3737c0056a0dde5e85ea",
+      "function": "StateRuntime::init_inner",
+      "behavior": "Creates the configured home, tokio::fs::canonicalize(home), then AbsolutePathBuf::try_from(canonical_home) before opening the dispatch directory and any runtime database."
+    },
+    {
+      "path": "codex-rs/utils/absolute-path/src/lib.rs",
+      "blob": "fc26cc4f56a97659e9c593570a1b847d3bb345e5",
+      "function": "TryFrom<PathBuf> -> from_absolute_path -> normalize_path_for_platform",
+      "behavior": "On Windows, existing normalize_windows_device_path normalizes supported drive/UNC namespace aliases. This candidate adds or changes no normalization rules."
+    },
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "ec847b1c29b46ce74e7043fab8bac1c00eb8dbda",
+      "function": "SqliteConfig::logs_db_path / open_runtime_db",
+      "behavior": "Derives the exact logs filename from that retained normalized home and includes the actual path in RuntimeDbInitError on open/migration failure."
+    },
+    {
+      "path": "codex-rs/state/src/runtime/recovery.rs",
+      "blob": "d9cf0bcdc9b88319d8af05974f3f434349588c86",
+      "function": "runtime_db_path_for_corruption_error",
+      "behavior": "Only for an actual SQLite corruption error, downcasts RuntimeDbInitError and returns its original stored database path."
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "blob": "3d2c7385057818e11f15b32d8be8499aa51db493",
+      "function": "init_state_db_for_app_server_target",
+      "behavior": "Preserves that failed database path in LocalStateDbStartupError. The failing test correctly identifies logs_2.sqlite but compares it to unnormalized standard PathBuf::canonicalize output."
+    }
+  ],
+  "change": {
+    "path": "codex-rs/tui/src/lib.rs",
+    "base": {
+      "git_blob_sha": "3d2c7385057818e11f15b32d8be8499aa51db493",
+      "bytes": 123185,
+      "sha256": "3e098d622ead84f7865b5d4fcc07be8125715bec205a5b36029f63c081717ced"
+    },
+    "post": {
+      "git_blob_sha": "c67ed467eddde1e557d89d47ecabb04de4d2447c",
+      "bytes": 123213,
+      "sha256": "91da1985177c6284914b9e248232130650d85070170eac3110c55f03980f340b"
+    },
+    "before": "            logs_db_path.canonicalize()?.as_path()",
+    "after": "            AbsolutePathBuf::try_from(logs_db_path.canonicalize()?)?.as_path()",
+    "scope": "One expected-value expression inside the existing tokio test. Existing AbsolutePathBuf import is reused; no runtime code or dependency change."
+  },
+  "preserved": [
+    "Strict Path equality: the entire expected directory and logs database filename still have to match.",
+    "Original std::fs canonicalize and its failure propagation remain; a missing expected database still errors.",
+    "Typed LocalStateDbStartupError downcast and original SQLite-corruption-detail assertion remain unchanged.",
+    "All fixture directory creation, corrupted file write, actual embedded initialization, and all existing function/test names remain unchanged.",
+    "No manual prefix stripping, string suffix/path-only comparison, wildcard, skip, retry, timeout, ACL or namespace policy change.",
+    "All production bytes are unchanged; only the expected canonical path is represented through the same existing absolute-path type as StateRuntime."
+  ],
+  "static_checks": {
+    "single_replacement_inverts_to_original_bytes": true,
+    "all_function_names_and_order_unchanged": true,
+    "original_method_assert_eq_count": 1,
+    "candidate_method_assert_eq_count": 1,
+    "original_method_assert_count": 1,
+    "candidate_method_assert_count": 1,
+    "already_existing_absolute_path_import": true,
+    "new_test_methods": 0,
+    "additional_runtime_io": 0
+  },
+  "assessment": "The observed failure is explained by the expected-path representation diverging from the existing runtime type contract. This does not establish all recovery or isolation behavior, and no new execution result is available.",
+  "execution": {
+    "rust": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "bazel": "NOT_RUN",
+    "actor_calls": 0,
+    "ref_updates": 0
+  },
+  "future_validation": "Run the original Windows target/method with all original assertions and unchanged isolation. Original three failed attempts and replayed tail remain historical evidence.",
+  "bazel_target_summary_original": "//codex-rs/tui:tui-unit-tests FAILED in 3 out of 10 in 65.8s",
+  "recorded_failed_shard_log_paths": [
+    "shard_3_of_8/test.log",
+    "shard_3_of_8/test_attempts/attempt_1.log",
+    "shard_3_of_8/test_attempts/attempt_2.log"
+  ],
+  "attempt_count_scope": "Three failed executions of the same selected harness block, not three distinct failing methods and not a whole-shard method denominator; the final printed block repeats test.log."
+}

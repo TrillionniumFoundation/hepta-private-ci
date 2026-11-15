@@ -52,6 +52,19 @@ silently changing that production-adjacent API.
 
 ## Run
 
+### Real-time and source-level research extension (2026-11-12)
+
+`real_time.py` separates reward occurrence discounting, state response, update
+opportunities and eligibility decay in microseconds; foreign clock/boot envelopes
+are rejected before classifying feedback as future. `source_contrast.py` freezes
+the source roster, ability/evaluator and offered budgets, compares original
+information bytes, and reports equal-weight source differences. UNKNOWN/missing
+outcomes withhold the planned-set summary. `learning_progress` retains interval
+or right-censored attainment. All identities remain unverified declarations.
+See [FOUR_TRACK_PROTOCOL.md](FOUR_TRACK_PROTOCOL.md) for the four research tracks.
+Run all reference checks with `python3 -m unittest discover -s . -p 'test_*.py'`.
+These APIs do not train or adopt weights; real-owner integration remains open.
+
 ```sh
 cd qualification/neuroscience-20261110
 python3 -m unittest -v test_study.py
@@ -83,6 +96,18 @@ steps. It prevents duplicated feedback, updates based on feedback arriving
 after the training cutoff, and feedback occurring before an action. It clips
 per-group and global L1 proposal deltas. Numerical representation is Python
 float for reference testing, **not** the production Q24 bit-exact contract.
+**Frozen-selection view vs forensic audit.** `time_aligned_credit` returns a
+full-audit receipt whose `future_withheld`, `unobserved_action_count`, and
+`transcript_digest` fields can depend on feedback that arrived after the
+training cutoff. These are post-hoc **forensic only**, never candidate or
+controller features. `frozen_credit_view(receipt)` produces a typed frozen
+shadow projection containing only the arm, clipped deltas, matched/expired
+counts observed by cutoff, causal training digest, and `DENY_ALL` status.
+Its payload is invariant to valid future-only receipt additions and label
+changes, unlike the full-audit payload. The projection is not a native
+Owner-authenticated receipt, does not replace correct event-availability
+checking, and is not a production admission or adoption interface.
+
 The action's `source_digest` and outcome's `receipt_digest` are syntax-checked
 SHA-256 strings: **no signer, root authority, source provenance or real effect
 is verified here**. Owner authentication and true outcome attestation remain
@@ -96,9 +121,15 @@ must occur in the original StageOwner and lifecycle with an independent reviewer
 `select_replay` is an algorithmic selector: uniform is hash-seeded, stratified
 round-robins kinds, and exact is source-key matching. These methods are
 **not** interchangeable: exact-key RAG is a strong baseline. The selector
-excludes tombstoned, revoked or future-dated entries; actual deletion owner
-must still enforce CAS/purge/irreversibility and budget independent of this
-demo.
+excludes tombstoned, revoked or future-dated entries. An optional explicit
+`logical_id` groups successive revisions of one declared memory object; only
+the most recent visible non-revoked revision can be replayed, and a visible
+tombstone or rights revocation blocks the whole group (even against an unsigned
+later revision). A matching query `key` alone does not imply common ownership
+or deletion: distinct objects can share a key. Logical IDs and timestamps are
+self-declared, not attested; actual deletion owner must still enforce authenticated
+CAS/purge/irreversibility, valid re-grant policies, and budget independently of
+this demo.
 
 ## Frozen full-cost evaluation input
 
@@ -172,6 +203,17 @@ independently reverified source evidence by this qualification:
 - https://www.nature.com/articles/s41586-026-10190-7
 - https://pmc.ncbi.nlm.nih.gov/articles/PMC13598169/
 - https://arxiv.org/abs/2610.25858
+
+### Frozen shadow-credit input boundary
+
+`frozen_credit_view(time_aligned_credit(...))` only redacts **output** fields.
+A future malformed/orphan feedback receipt can still make full forensic
+validation fail before projection. For shadow candidate evaluation use
+`frozen_credit_from_prefix(...)` instead: it filters records with
+`available_sequence > cutoff_sequence` **before** validation. In-prefix
+invalid observations remain hard failures. All timestamps are still
+self-declared here, and neither API is an owner-attested source or a
+production selector.
 
 ## Promotion blockers (all OPEN by default)
 

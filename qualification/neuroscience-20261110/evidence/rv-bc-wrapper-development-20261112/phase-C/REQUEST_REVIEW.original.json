@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.rv.lifecycle-phase-review.v1",
+  "stage": "C",
+  "dispatch_status": "NOT_DISPATCHED_AWAITING_ROOT_EXACT_APPROVAL",
+  "request": {
+    "bytes": 44486,
+    "sha256": "00810059c5ed9c70f4f9e22823469b054eeee3597f72536e8e3c012ba375303c",
+    "idempotency_key": "neuro4-rv-bc-phase-c-862531d-v1",
+    "timeout_seconds": 600,
+    "host": "ai395",
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python"
+  },
+  "stdin": {
+    "bytes": 20741,
+    "sha256": "490fc49fc76592428007f17778647125899e904bdc63163db31770a2d153c731"
+  },
+  "exact_diff_from_B": [
+    {
+      "path": "args[2]",
+      "before": "B",
+      "after": "C"
+    },
+    {
+      "path": "stdin.stage",
+      "before": "B",
+      "after": "C"
+    },
+    {
+      "path": "idempotency_key",
+      "before": "neuro4-rv-bc-phase-b-862531d-v1",
+      "after": "neuro4-rv-bc-phase-c-862531d-v1"
+    }
+  ],
+  "unchanged": [
+    "executable",
+    "host",
+    "cwd",
+    "env",
+    "timeout_seconds",
+    "cpu_quota_percent",
+    "memory_max_bytes",
+    "nice",
+    "args[0]",
+    "args[1]",
+    "stdin.schema",
+    "stdin.driver_sha256",
+    "stdin.wrapper_utf8",
+    "stdin.registration_utf8",
+    "stdin.expected_frozen_sha256"
+  ],
+  "frozen_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "driver": {
+    "git_blob": "d63ff1216eafcc5b4dfdd98c03a83972b268b25e",
+    "sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb"
+  },
+  "B_observed_before_review": {
+    "job_id": "1a1cfb71a25-2564-1a94",
+    "stdout_git_blob": "b27d282b8bde696d3d75ed74b66b79b70ca27408",
+    "native_report_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
+    "planned": 2,
+    "completed": 2,
+    "incomplete": 0,
+    "scope": "stdout original report verified; disk originals and source versions pending delivery at request preparation"
+  },
+  "C_guard": {
+    "source": "unchanged driver lines 320-327",
+    "requires": [
+      "B controller terminal status RECORDED",
+      "B controller original_inputs_unchanged true",
+      "original wrapper readonly reconcile of B",
+      "B wrapper terminal status RECORDED",
+      "B wrapper terminal native_report_sha256 equals current original reconciled report digest",
+      "B wrapper incomplete equals zero"
+    ],
+    "B_digest_reference_is_not_added_request_field": true,
+    "exact_B_external_readback_before_approval_required": true
+  },
+  "effect_ids": [
+    "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+    "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06"
+  ],
+  "boundaries": {
+    "max_actor_calls": 2,
+    "independent_new_sources": 0,
+    "expected_actions": "two STOP; actual realization must be read back",
+    "owner_decision": null,
+    "qualification_status": "HOLD_NOT_EVALUATED",
+    "production_admission": false,
+    "efficacy_qualification": false,
+    "full_cost_observed": false,
+    "calibration_complete": false,
+    "unknown_retry": "same original h key/arguments only; never redispatch actor after START; read-only reconcile"
+  }
+}

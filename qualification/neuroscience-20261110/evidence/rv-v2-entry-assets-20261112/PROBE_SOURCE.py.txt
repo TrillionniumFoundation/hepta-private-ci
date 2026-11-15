@@ -1,0 +1,241 @@
+import hashlib,json,math,os,signal,stat,sys,time,traceback,types
+from pathlib import Path
+
+def timeout(signum, frame):
+    raise TimeoutError("Read-only entry asset probe exceeded 45 seconds")
+signal.signal(signal.SIGALRM, timeout)
+signal.setitimer(signal.ITIMER_REAL, 45.0)
+sys.dont_write_bytecode = True
+began = time.monotonic()
+observed = {}
+source_pins = []
+checks = []
+blocked = []
+report = {"schema": "hepta.rv.runv2.entry-assets-readonly.v1",
+          "actor_calls": 0, "collection_calls": 0, "fit_calls": 0,
+          "export_calls": 0, "campaign_calls": 0,
+          "wrapper_freeze_called": False, "wrapper_phase_called": False,
+          "production_admission": False, "owner_decision": None,
+          "qualification_status": "HOLD_NOT_EVALUATED"}
+stage = "input"
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def version(value):
+    return [value.st_dev,value.st_ino,value.st_size,value.st_mtime_ns,value.st_ctime_ns]
+
+def read_bytes(path, expected=None, maximum=134217728):
+    path = Path(path)
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode) or before.st_size > maximum:
+        raise ValueError("Bounded regular input required: " + str(path))
+    fd = os.open(str(path), os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        first = os.fstat(fd)
+        if version(first) != version(before):
+            raise ValueError("Input changed before open: " + str(path))
+        parts = []
+        left = first.st_size + 1
+        while left:
+            part = os.read(fd, min(left, 1048576))
+            if not part:
+                break
+            parts.append(part)
+            left -= len(part)
+        raw = b"".join(parts)
+        last = os.fstat(fd)
+    finally:
+        os.close(fd)
+    if len(raw) != first.st_size or version(last) != version(first) or version(path.lstat()) != version(first):
+        raise ValueError("Input changed while reading: " + str(path))
+    pin = digest(raw)
+    if expected is not None and pin != expected:
+        raise ValueError("Input pin mismatch: " + str(path))
+    row = {"path": str(path), "bytes": len(raw), "sha256": pin,
+           "version": version(first), "expected_sha256": expected}
+    if str(path) in observed and observed[str(path)]["sha256"] != pin:
+        raise ValueError("Input changed across validation: " + str(path))
+    observed[str(path)] = row
+    return raw
+
+def strict(raw):
+    def pairs(items):
+        value = {}
+        for key,item in items:
+            if key in value:
+                raise ValueError("Duplicate JSON key")
+            value[key] = item
+        return value
+    def no_constant(value):
+        raise ValueError("Nonfinite JSON constant")
+    def finite(value):
+        result = float(value)
+        if not math.isfinite(result):
+            raise ValueError("Nonfinite JSON float")
+        return result
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=no_constant,parse_float=finite)
+
+def audit(event, args):
+    denied = event in {"subprocess.Popen","os.system","os.posix_spawn","os.posix_spawnp",
+                       "os.exec","os.fork","os.forkpty","os.mkdir","os.remove",
+                       "os.rmdir","os.rename","os.link","os.symlink","os.truncate",
+                       "os.chmod","os.chown","os.utime"}
+    denied = denied or event.startswith("socket.")
+    if event == "open":
+        mode = args[1] if len(args) > 1 else None
+        flags = args[2] if len(args) > 2 else 0
+        denied = denied or (isinstance(mode,str) and any(c in mode for c in "wax+"))
+        denied = denied or (isinstance(flags,int) and bool(flags & (os.O_WRONLY|os.O_RDWR|os.O_CREAT|os.O_TRUNC|os.O_APPEND)))
+    if denied:
+        blocked.append(event)
+        raise PermissionError("Read-only diagnostic forbids side effect: " + event)
+
+try:
+    payload = strict(sys.stdin.buffer.read(1048577))
+    wrapper_source = payload["wrapper_source"].encode()
+    if digest(wrapper_source) != payload["wrapper_sha256"]:
+        raise ValueError("Published wrapper source bytes differ")
+    if hashlib.sha1(b"blob " + str(len(wrapper_source)).encode() + b"\0" + wrapper_source).hexdigest() != payload["wrapper_git_blob"]:
+        raise ValueError("Published wrapper Git blob differs")
+    registration = dict(payload["registration"])
+    training = Path(registration["training_run"])
+    repo = Path(registration["repository"])
+    stage = "externally_pinned_training_assets"
+    frozen = strict(read_bytes(training/"FROZEN.json", registration["training_freeze_sha256"], 16777216))
+    if frozen["schema"] != "ctrl.fresh-experiment-freeze.v1" or frozen["repository"] != str(repo):
+        raise ValueError("Original training freeze schema or repository differs")
+    collection = strict(read_bytes(training/"COLLECTION_PLAN.json", frozen["collection_plan_bytes_sha256"], 16777216))
+    if collection != frozen["collection_plan"]:
+        raise ValueError("Collection plan differs from original freeze")
+    checkpoint = read_bytes(training/"CHECKPOINT.json",registration["checkpoint_sha256"],16777216)
+    checkpoint_pin = strict(read_bytes(training/"CHECKPOINT_PIN.json",payload["checkpoint_pin_file_sha256"],65536))
+    cold = strict(read_bytes(training/"COLD_LOAD.json",payload["cold_load_file_sha256"],65536))
+    if checkpoint_pin["sha256"] != digest(checkpoint) or cold["checkpoint_sha256"] != digest(checkpoint):
+        raise ValueError("Original checkpoint pin or cold-load differs")
+    config,profile = collection["config"],collection["profile"]
+    inventory = [*collection["source_pins"],
+                 {"path":str(repo/"scripts/ctrl_macro_study.py"),"sha256":frozen["driver_sha256"]},
+                 {"path":str(repo/"scripts/ctrl_macro_analysis.py"),"sha256":frozen["analysis_sha256"]}]
+    for pin in inventory:
+        raw = read_bytes(pin["path"],pin["sha256"],67108864)
+        relative = str(Path(pin["path"]).relative_to(repo)) if Path(pin["path"]).is_relative_to(repo) else pin["path"]
+        source_pins.append([relative,len(raw),pin["sha256"]])
+    for path_key,pin_key in (("weights","model_sha256"),("control_plan","control_plan_sha256")):
+        read_bytes(profile[path_key],profile[pin_key])
+    if "source_exposure_ledger_path" in config:
+        read_bytes(config["source_exposure_ledger_path"],config["source_exposure_ledger_sha256"],16777216)
+    if not os.path.samefile(sys.executable,config["python"]):
+        raise ValueError("Probe Python differs from configured executable")
+    checks.append("original_freeze_collection_checkpoint_cold_source_weights_control_exposure_pins")
+    report.update(repository=str(repo),training_run=str(training),
+                  wrapper_git_blob=payload["wrapper_git_blob"],wrapper_sha256=digest(wrapper_source),
+                  native_source_commit_from_original_request=payload["native_source_commit"],
+                  freeze_sha256=registration["training_freeze_sha256"],
+                  checkpoint_sha256=digest(checkpoint),context_sha256=cold["context_sha256"],
+                  python={"requested":config["python"],"actual":sys.executable,
+                          "resolved":str(Path(sys.executable).resolve()),"expected_binary_sha256":None},
+                  source_pin_count=len(collection["source_pins"]),
+                  source_pins_with_driver_analysis=source_pins,
+                  budgets={"action_seconds":collection["action_budget_seconds"],
+                           "read_seconds":frozen["read_seconds_bound"],
+                           "finalizer_seconds":frozen["finalizer_seconds_reserve"],
+                           "episode_wall_seconds":config["episode_wall_seconds"],
+                           "alpha":frozen["alpha"],"ridge":frozen["ridge"],
+                           "latency_weight":config["latency_weight"]},
+                  runtime_roots=config["runtime_roots"],material_root=config["material_root"])
+    stage = "original_wrapper_load_native"
+    sys.path.insert(0,config["pillow_path"])
+    sys.addaudithook(audit)
+    wrapper = types.ModuleType("rv_published_readonly_source")
+    exec(compile(wrapper_source,payload["wrapper_source_url"],"exec"),wrapper.__dict__)
+    modules, loaded, context, model, loaded_checkpoint = wrapper.load_native(registration)
+    if loaded != frozen or loaded_checkpoint != checkpoint or modules["context_digest"](context) != cold["context_sha256"]:
+        raise ValueError("Wrapper admission returned different original artifacts")
+    checks.append("exact_published_wrapper_load_native_including_original_thaw_model_load_cold_record")
+    stage = "original_collection_plan_validator"
+    modules["validate_plan"](collection)
+    checks.append("original_collection_plan_validator")
+    stage = "retained_real_execution_plan"
+    execution_path = training/"EXECUTION_PLAN.json"
+    execution = strict(read_bytes(execution_path,maximum=16777216))
+    execution_pin = strict(read_bytes(training/"EXECUTION_PIN.json",maximum=65536))["canonical_sha256"]
+    if (execution["registered_cases"] != frozen["evaluation_cases"]
+            or execution["config"] != config
+            or execution["source_pins"] != collection["source_pins"]
+            or execution["observer_sha256"] != frozen["observer_sha256"]
+            or set(execution["profiles"]) != set(frozen["methods"])
+            or execution["action_budget_seconds"] != collection["action_budget_seconds"]):
+        raise ValueError("Existing execution plan lineage differs from original training freeze")
+    for arm_profile in execution["profiles"].values():
+        if (arm_profile["model_sha256"] != profile["model_sha256"]
+                or arm_profile["control_plan_sha256"] != profile["control_plan_sha256"]):
+            raise ValueError("Existing execution content or control differs")
+        dep_pin = arm_profile["macro_policy"]
+        deployment = strict(read_bytes(dep_pin["path"],dep_pin["sha256"],16777216))
+        if (deployment["checkpoint_sha256"] != digest(checkpoint)
+                or deployment["checkpoint_utf8"].encode() != checkpoint
+                or deployment["context"] != context.to_wire()):
+            raise ValueError("Existing deployment does not retain the fitted model")
+    modules["macro_execution_plan"].validate_plan(execution,execution_pin)
+    modules["macro_execution_plan"].check_inputs(execution,training/"evaluation")
+    checks.append("original_retained_execution_plan_validate_plan_and_check_inputs")
+    report["retained_execution"] = {"path":str(execution_path),"canonical_sha256":execution_pin,
+        "contexts":len(execution["registered_cases"]),"arms":len(execution["profiles"]),
+        "planned":len(execution["registered_cases"])*len(execution["profiles"]),
+        "new_execution":False}
+    stage = "candidate_development_partition_admission_only"
+    choices = {}
+    for row in frozen["evaluation_cases"]:
+        choices.setdefault(row["source_id"],row)
+    if len(choices) < 2:
+        raise ValueError("Fewer than two original distinct development sources")
+    source_ids = list(choices)
+    phases = {"B":[choices[source_ids[0]]],"C":[choices[source_ids[1]]]}
+    groups = wrapper.validate_partitions(phases,collection,model)
+    checks.append("original_wrapper_partition_validator_on_two_existing_development_sources")
+    report["candidate_partitions"] = {
+        "purpose":"read-only compatibility selection, not a prospective registration",
+        "source_counts":{key:len(value) for key,value in groups.items()},
+        "contexts":{phase:[{key:row[key] for key in ("source_id","case_id","seed")} for row in cases]
+                    for phase,cases in phases.items()},
+        "fresh_source_confirmation":False,"wrapper_B_C_plan_files_created":False,
+        "minimum_observed_gain_registered":False}
+    report["model"] = {"fit_sources":len(model.data["fit_sources"]),
+                       "calibration_sources":len(model.data["calibration_sources"]),
+                       "calibration_complete":model.data["calibration"]["complete"],
+                       "full_cost_observed":model.data.get("full_cost_observed")}
+    case = frozen["evaluation_cases"][0]["case"]
+    report["case_schema_keys"] = sorted(case)
+    reference = case["reference"]
+    reference_path = Path(config["material_root"])/reference["path"]
+    reference_info = reference_path.lstat()
+    report["reference_availability"] = {"path":str(reference_path),
+        "regular":stat.S_ISREG(reference_info.st_mode),"bytes":reference_info.st_size,
+        "expected_bytes":reference["bytes"],"reference_body_read":False,
+        "sha256_rechecked":False}
+    stage = "original_inputs_unchanged_after_native_admission"
+    before = {path:dict(value) for path,value in observed.items()}
+    for path,row in before.items():
+        if version(Path(path).lstat()) != row["version"]:
+            raise ValueError("Input metadata changed after validation: " + path)
+        read_bytes(path,row["sha256"])
+    if any(observed[path]["version"] != row["version"] for path,row in before.items()):
+        raise ValueError("Input version changed across final readback")
+    checks.append("all_observed_input_bytes_and_versions_unchanged_after_native_admission")
+    report["status"] = "READONLY_ENTRY_ASSET_ADMISSION_PASSED"
+except BaseException as error:
+    report["status"] = "READONLY_ENTRY_ASSET_ADMISSION_FAILED"
+    report["error"] = {"stage":stage,"type":type(error).__name__,"message":str(error)}
+    traceback.print_exc()
+finally:
+    signal.setitimer(signal.ITIMER_REAL,0)
+    report["checks_completed"] = checks
+    report["blocked_side_effect_events"] = blocked
+    report["input_assets"] = [row for path,row in sorted(observed.items())
+                              if path not in {pin["path"] for pin in locals().get("inventory",[])}]
+    report["elapsed_seconds"] = time.monotonic()-began
+    report["formal_wrapper_freeze_and_new_B_C_execution_not_performed"] = True
+    print(json.dumps(report,sort_keys=True,separators=(",",":"),allow_nan=False),flush=True)
+if report["status"] != "READONLY_ENTRY_ASSET_ADMISSION_PASSED":
+    raise SystemExit(1)

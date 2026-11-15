@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.root-caller-static-review.v1",
+  "final_blob": "f6efa0852dd91312b3571332bea862908eb8997c",
+  "exact_toml_parse": true,
+  "boundaries": 608,
+  "privileged_inventory": 608,
+  "protected_rows": 426,
+  "protected_unique_paths": 352,
+  "function_guard_rows": 1324,
+  "unique_guarded_path_functions": 1285,
+  "both_parent_boundary_union_preserved": true,
+  "both_parent_protected_path_union_preserved": true,
+  "duplicate_ids_or_callers": 0,
+  "exact15_source_reviewed_tuples": true,
+  "all_guard_sequences_at_least_two": true,
+  "allowlist_single_final_sha": true,
+  "other_allowlist_rules_equal_both_parents": true,
+  "source_manifest": "ded2662c3c3668ef17c49a6f6dcaa8a6af40539e",
+  "status": "STATIC_ONLY_NOT_REPOSITORY_GATE_EXECUTION",
+  "note": "Earlier peer count1127 was labeled function guards. Root counts all required_function_order rows and unique(path,function) independently; do not silently reuse an ambiguous count."
+}

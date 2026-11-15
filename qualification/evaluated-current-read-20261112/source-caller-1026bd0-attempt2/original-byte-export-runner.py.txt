@@ -1,0 +1,24 @@
+import base64,gzip,hashlib,json,os,pathlib,sys
+cfg=json.loads(sys.argv[1]);root=pathlib.Path(cfg["root"]);out=pathlib.Path(cfg["out"]);out.mkdir(parents=True,exist_ok=False)
+files=[];seen={}
+for item in cfg["expected"]:
+ p=root/item["path"];before=p.stat();raw=p.read_bytes();after=p.stat();digest=hashlib.sha256(raw).hexdigest()
+ if (before.st_size,before.st_ino,before.st_mtime_ns)!=(after.st_size,after.st_ino,after.st_mtime_ns):raise RuntimeError("original changed")
+ if len(raw)!=item["bytes"] or digest!=item["sha256"]:raise RuntimeError("original checksum")
+ record={**item,"original_path":str(p),"stat":{"mtime_ns":str(before.st_mtime_ns),"ctime_ns":str(before.st_ctime_ns),"inode":str(before.st_ino)},"parts":[]}
+ if digest in seen:
+  if seen[digest][0]!=raw:raise RuntimeError("duplicate digest differs")
+  record["same_original_bytes_as"]=seen[digest][1]
+ else:
+  codec="identity" if item["path"].endswith(".gz") else "gzip"
+  payload=raw if codec=="identity" else gzip.compress(raw,compresslevel=9,mtime=0)
+  if codec=="gzip" and gzip.decompress(payload)!=raw:raise RuntimeError("transport roundtrip")
+  record["transport"]={"codec":codec,"bytes":len(payload),"sha256":hashlib.sha256(payload).hexdigest(),"original_bytes_preserved":True,"gzip_is_transfer_only":codec=="gzip"}
+  for offset in range(0,len(payload),cfg["chunk_bytes"]):
+   chunk=payload[offset:offset+cfg["chunk_bytes"]];name=f"payload-{len(seen):02d}-{offset:09d}.b64";encoded=base64.b64encode(chunk);(out/name).write_bytes(encoded)
+   record["parts"].append({"path":name,"offset":offset,"bytes":len(chunk),"sha256":hashlib.sha256(chunk).hexdigest(),"base64_bytes":len(encoded),"base64_sha256":hashlib.sha256(encoded).hexdigest()})
+  seen[digest]=(raw,item["path"])
+ files.append(record)
+report={"schema_version":1,"mode":"lossless-original-byte-export","source_sha":cfg["source_sha"],"root":str(root),"source_or_original_evidence_modified":False,"uid":os.getuid(),"euid":os.geteuid(),"files":files}
+data=(json.dumps(report,indent=2,sort_keys=True)+"\n").encode();(out/"EXPORT.json").write_bytes(data)
+print(json.dumps({"status":"exported","manifest":str(out/"EXPORT.json"),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),"parts":sum(len(f["parts"]) for f in files)}),flush=True)

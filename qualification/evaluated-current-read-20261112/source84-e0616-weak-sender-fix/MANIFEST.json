@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.e0616-test-only-weak-sender-fix.v1",
+  "source_parent": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "actual_failed_jobs": [
+    131446361407,
+    131446361493,
+    131446361556
+  ],
+  "compiler": "E0616",
+  "cause": "The shared test-support module is also included outside the handle's owning module, where its private sender field cannot be accessed.",
+  "repair": "Create the same WeakSender inside the handle's owning module via a cfg(test)-only crate-private accessor. The test helper uses that accessor; the sender field stays private.",
+  "invariants": {
+    "accessor_cfg_test_only": true,
+    "field_visibility_unchanged": true,
+    "original_weak_sender_type_unchanged": true,
+    "no_strong_sender_retained_across_await": true,
+    "original_try_send_and_error_mapping_and_receive_unchanged": true,
+    "default_production_graph_unchanged": true,
+    "no_new_test_methods": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "base": "edaca64612927bfd04a41faac7331f4965acc623",
+      "bytes": 17603,
+      "sha256": "ace4fd0d4ac2cf8218333bbc42cc7c3605d1608a5c40462b75dac2ff33963c45",
+      "git_blob": "022ca082e2846c4c969f883c53f591b4400b8282",
+      "edits": [
+        {
+          "before": "impl NeuronGenerationRuntimeHandleV2 {\n",
+          "after": "impl NeuronGenerationRuntimeHandleV2 {\n    #[cfg(test)]\n    pub(crate) fn qualification_file_sender(&self) -> mpsc::WeakSender<GenerationCommand> {\n        self.sender.downgrade()\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "base": "734b249c7cc0ac37209ed9d47f53072ca58a956e",
+      "bytes": 14196,
+      "sha256": "b1a41815873567dd6d9fbd0a297faa6172ccb690be83b1df09ba2a93e736c85a",
+      "git_blob": "37446dfe1c2bb22db40b995a8a4c00db69c1665e",
+      "edits": [
+        {
+          "before": "            sender: handle.sender.downgrade(),\n",
+          "after": "            sender: handle.qualification_file_sender(),\n"
+        }
+      ]
+    }
+  ],
+  "execution": "STATIC_ONLY_NOT_FMT_NOT_COMPILED_NOT_EXECUTED",
+  "owner_decision": null,
+  "all_blockers_closed": false
+}

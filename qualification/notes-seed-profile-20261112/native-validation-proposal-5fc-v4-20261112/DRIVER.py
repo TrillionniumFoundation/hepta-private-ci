@@ -1,0 +1,332 @@
+import hashlib,json,os,signal,stat,subprocess,sys,time,traceback,urllib.parse
+from pathlib import Path
+
+PLAN=json.loads(sys.stdin.buffer.read(1048577))
+ROOT=Path(PLAN["output_root"])
+REPO=ROOT/"source"
+RECORDS=ROOT/"evidence"/"act2-notes-seed"
+PYTHON=PLAN["python"]
+SOURCE=PLAN["source_sha"]
+TREE=PLAN["source_tree"]
+BEFORE=None
+CLANG_BEFORE=None
+STAGES=[]
+env=dict(os.environ)
+def hash_file(path):
+ h=hashlib.sha256()
+ with Path(path).open("rb") as stream:
+  for part in iter(lambda:stream.read(1048576),b""):h.update(part)
+ return h.hexdigest()
+def save(name,value):
+ path=RECORDS/name
+ with path.open("x") as stream:
+  json.dump(value,stream,sort_keys=True,indent=2,allow_nan=False)
+  stream.write("\n");stream.flush();os.fsync(stream.fileno())
+ return hash_file(path)
+def capture(argv,cwd=None,timeout=60):
+ p=subprocess.run(argv,cwd=cwd,env=env,stdin=subprocess.DEVNULL,
+                  stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
+ if p.returncode:
+  raise RuntimeError("Metadata command failed: "+argv[0]+" exit "+str(p.returncode))
+ return p.stdout.decode()
+def snapshot():
+ head=capture(["git","rev-parse","HEAD"],REPO).strip()
+ tree=capture(["git","rev-parse","HEAD^{tree}"],REPO).strip()
+ dirty=capture(["git","status","--porcelain=v1","--untracked-files=all"],REPO)
+ if head!=SOURCE or tree!=TREE or dirty:
+  raise RuntimeError("Exact clean source identity required")
+ entries=[]
+ raw=subprocess.check_output(["git","ls-files","--stage","-z"],cwd=REPO,env=env)
+ for item in raw.split(b"\0"):
+  if not item:continue
+  meta,path_bytes=item.split(b"\t",1)
+  mode,blob,stage=meta.decode().split()
+  if stage!="0":raise RuntimeError("Unmerged source entry")
+  rel=os.fsdecode(path_bytes);path=REPO/rel
+  if mode=="120000":
+   data=os.fsencode(os.readlink(path))
+   sha256=hashlib.sha256(data).hexdigest()
+   actual=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+   size=len(data)
+  elif mode in ("100644","100755") and path.is_file() and not path.is_symlink():
+   size=path.stat().st_size
+   gh=hashlib.sha1(b"blob "+str(size).encode()+b"\0");sh=hashlib.sha256()
+   with path.open("rb") as stream:
+    for part in iter(lambda:stream.read(1048576),b""):gh.update(part);sh.update(part)
+   actual=gh.hexdigest();sha256=sh.hexdigest()
+  else:raise RuntimeError("Unsupported tracked input type: "+mode)
+  if actual!=blob:raise RuntimeError("Tracked bytes differ from index: "+rel)
+  entries.append([rel,mode,blob,size,sha256])
+ return {"commit":head,"tree":tree,"dirty":False,"files":entries}
+def stage(name,argv,timeout,redact=False):
+ save(name+"-START.json",{"stage":name,"argv":"validated exact-source fetch" if redact else argv,
+                         "source_sha":SOURCE,"started_unix_ns":time.time_ns()})
+ began=time.monotonic()
+ with (RECORDS/(name+"-stdout-stderr.log")).open("xb") as log:
+  result=subprocess.run(argv,cwd=REPO if REPO.is_dir() else ROOT,env=env,
+                        stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,
+                        timeout=timeout)
+ record={"stage":name,"exit_code":result.returncode,"elapsed_seconds":time.monotonic()-began,
+         "log_sha256":hash_file(RECORDS/(name+"-stdout-stderr.log"))}
+ STAGES.append(record);save(name+"-TERMINAL.json",record)
+ print(json.dumps(record,sort_keys=True),flush=True)
+ if result.returncode:raise RuntimeError(name+" failed")
+def ci(name,argv,timeout,minimum=0):
+ command=[PYTHON,"-B",str(REPO/"scripts/hepta_ci_exec.py"),
+          "--timeout-seconds",str(timeout),"--output",str(RECORDS/(name+".json"))]
+ if minimum:command+=["--minimum-tests",str(minimum)]
+ stage(name,command+["--"]+argv,timeout+120)
+def preserve_junit(name,before_sha256):
+ path=REPO/"codex-rs/target/nextest/local/junit.xml"
+ record={"expected_path":str(path),"present":path.is_file(),"before_sha256":before_sha256,"role":"raw auxiliary runner output; named-case gate is the original workflow receipt"}
+ if path.is_file():
+  raw=path.read_bytes()
+  with (RECORDS/(name+"-junit.xml")).open("xb") as stream:
+   stream.write(raw);stream.flush();os.fsync(stream.fileno())
+  current=hashlib.sha256(raw).hexdigest()
+  record.update(bytes=len(raw),sha256=current,changed_since_command=current!=before_sha256)
+ save(name+"-JUNIT.json",record)
+def test_ci(name,argv,minimum):
+ junit=REPO/"codex-rs/target/nextest/local/junit.xml"
+ before=hash_file(junit) if junit.is_file() else None
+ try:
+  ci(name,argv,1800,minimum)
+ finally:
+  preserve_junit(name,before)
+def clang_file_pin(spec,read=False):
+ path=Path(spec["path"]);fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+ fields=lambda s:(s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+ digest=hashlib.sha256();parts=[]
+ try:
+  before=os.fstat(fd)
+  if not stat.S_ISREG(before.st_mode):raise RuntimeError("Clang binding must be a regular file")
+  while True:
+   chunk=os.read(fd,1048576)
+   if not chunk:break
+   digest.update(chunk)
+   if read:parts.append(chunk)
+  after=os.fstat(fd);named=path.lstat()
+ finally:os.close(fd)
+ if fields(before)!=fields(after) or fields(after)!=fields(named):
+  raise RuntimeError("Clang input changed while reading")
+ actual=digest.hexdigest()
+ observed={"path":str(path),"bytes":after.st_size,"sha256":actual,
+           "version":":".join(str(x) for x in fields(after))}
+ if observed["bytes"]!=spec["bytes"] or actual!=spec["sha256"]:
+  raise RuntimeError("Registered Clang input bytes differ: "+str(path))
+ if spec.get("version") is not None and observed["version"]!=spec["version"]:
+  raise RuntimeError("Registered Clang input version differs: "+str(path))
+ return (observed,b"".join(parts)) if read else observed
+def prepare_clang_environment():
+ cfg=PLAN["clang_resources"];target=cfg["target"]
+ names={"LIBCLANG_PATH","BINDGEN_EXTRA_CLANG_ARGS","CLANG_PATH","LLVM_CONFIG_PATH",
+        "CPATH","C_INCLUDE_PATH","CPLUS_INCLUDE_PATH","OBJC_INCLUDE_PATH","SDKROOT",
+        "TARGET","HOST","CARGO_BUILD_TARGET",
+        "BINDGEN_EXTRA_CLANG_ARGS_"+target,"BINDGEN_EXTRA_CLANG_ARGS_"+target.replace("-","_")}
+ names.update(k for k in env if k.startswith("BINDGEN_EXTRA_CLANG_ARGS_"))
+ before={k:{"bytes":len(env[k].encode()),"sha256":hashlib.sha256(env[k].encode()).hexdigest()}
+         for k in sorted(names) if k in env}
+ removed=sorted(k for k in env if k.startswith("BINDGEN_EXTRA_CLANG_ARGS_"))
+ for key in removed:env.pop(key)
+ env.update(PLAN["environment"])
+ unknown=[k for k in ("CLANG_PATH","LLVM_CONFIG_PATH","CPATH","C_INCLUDE_PATH",
+                     "CPLUS_INCLUDE_PATH","OBJC_INCLUDE_PATH","SDKROOT","CARGO_BUILD_TARGET")
+          if env.get(k)]
+ unknown.extend(k for k in ("TARGET","HOST") if env.get(k) not in (None,"",target))
+ unknown.extend(k for k in env if k.startswith("BINDGEN_EXTRA_CLANG_ARGS_"))
+ effective={}
+ for key in sorted(names):
+  value=env.get(key)
+  effective[key]=({"unregistered_value_sha256":hashlib.sha256(value.encode()).hexdigest(),
+                   "bytes":len(value.encode())} if key in unknown else value)
+ save("CLANG_ENVIRONMENT.json",{"target":target,"inherited_value_hashes":before,
+      "removed_target_specific_keys":removed,"effective":effective,
+      "original_bindgen_precedence":["BINDGEN_EXTRA_CLANG_ARGS_<TARGET>",
+       "BINDGEN_EXTRA_CLANG_ARGS_<TARGET_WITH_UNDERSCORES>","BINDGEN_EXTRA_CLANG_ARGS"],
+      "unregistered_selection_keys":sorted(set(unknown))})
+ if unknown:raise RuntimeError("Unregistered inherited Clang selection variables")
+ if env.get("LIBCLANG_PATH")!=cfg["files"]["library"]["path"]:
+  raise RuntimeError("LIBCLANG_PATH must select the exact registered library file")
+ if env.get("BINDGEN_EXTRA_CLANG_ARGS")!="-resource-dir="+cfg["resource_dir"]:
+  raise RuntimeError("Exact registered Clang resource argument required")
+def clang_resource_snapshot():
+ cfg=PLAN["clang_resources"];pins={};documents={}
+ for name,spec in cfg["files"].items():
+  if name in ("manifest","preparation_result","capi_result","download"):
+   pins[name],raw=clang_file_pin(spec,read=True);documents[name]=json.loads(raw)
+  else:pins[name]=clang_file_pin(spec)
+ manifest=documents["manifest"]
+ if set(manifest)!={"entries","package_sha256","resource_dir"} or manifest["package_sha256"]!=cfg["package_sha256"] or manifest["resource_dir"]!=cfg["resource_dir"]:
+  raise RuntimeError("Registered Clang resource manifest binding differs")
+ root=Path(cfg["sysroot"])
+ if root.is_symlink() or not root.is_dir() or not Path(cfg["resource_dir"]).resolve().is_relative_to(root.resolve()):
+  raise RuntimeError("Clang resource root binding differs")
+ expected={}
+ for entry in manifest["entries"]:
+  rel=entry["path"];part=Path(rel)
+  if part.is_absolute() or ".." in part.parts or rel in expected:raise RuntimeError("Invalid Clang resource roster")
+  expected[rel]=entry
+ observed=[]
+ for path in sorted(root.rglob("*")):
+  rel=path.relative_to(root).as_posix()
+  if path.is_symlink():
+   entry=expected.get(rel);target=os.readlink(path)
+   if entry is None or entry["type"]!="symlink" or entry["target"]!=target or hashlib.sha256(os.fsencode(target)).hexdigest()!=entry["sha256"] or not path.resolve().is_relative_to(root.resolve()):
+    raise RuntimeError("Clang resource symlink binding differs")
+   observed.append({"path":rel,"type":"symlink","target":target,"sha256":entry["sha256"]})
+  elif path.is_file():
+   entry=expected.get(rel)
+   if entry is None or entry["type"]!="file":raise RuntimeError("Unregistered Clang resource file")
+   actual=clang_file_pin({**entry,"path":str(path)})
+   observed.append({"path":rel,"type":"file",**{k:v for k,v in actual.items() if k!="path"}})
+  elif not path.is_dir():raise RuntimeError("Unexpected Clang resource file type")
+ if {x["path"] for x in observed}!=set(expected):raise RuntimeError("Incomplete Clang resource roster")
+ prepared=documents["preparation_result"];capi=documents["capi_result"];download=documents["download"]
+ if capi["probe"]!=cfg["files"]["probe"] or capi["library"]["sha256"]!=cfg["files"]["library"]["sha256"] or capi["with_resource"]["parse_result"]!=0 or capi["with_resource"]["diagnostics"]:
+  raise RuntimeError("Original Clang C API preparation binding differs")
+ if download["status"]!=200 or download["sha256"]!=cfg["package_sha256"] or download["bytes"]!=cfg["files"]["package"]["bytes"] or download["final_url"]!=cfg["official_package_url"]:
+  raise RuntimeError("Original official package download binding differs")
+ if prepared["status"]!="MATCHED_CLANG21_RESOURCE_PREPARED" or prepared["resource_dir"]!=cfg["resource_dir"] or prepared["library"]["sha256"]!=cfg["files"]["library"]["sha256"] or prepared["resource_manifest"]["sha256"]!=cfg["files"]["manifest"]["sha256"]:
+  raise RuntimeError("Clang preparation result binding differs")
+ return {"files":pins,"resource_count":len(observed),"resource_dir":cfg["resource_dir"],
+         "resource_inventory_sha256":hashlib.sha256(json.dumps(observed,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
+         "effective_LIBCLANG_PATH":env["LIBCLANG_PATH"],"effective_BINDGEN_EXTRA_CLANG_ARGS":env["BINDGEN_EXTRA_CLANG_ARGS"]}
+
+def verify_tools():
+ values={}
+ for name,spec in PLAN["tools"].items():
+  path=Path(spec["path"])
+  if not path.is_file() or not os.access(path,os.X_OK):
+   raise RuntimeError("Required existing tool unavailable: "+name)
+  actual=hash_file(path)
+  if spec.get("sha256") is not None and actual!=spec["sha256"]:
+   raise RuntimeError("Existing tool pin differs: "+name)
+  version=capture([str(path),"--version"]).strip()
+  if spec["version_fragment"] not in version:
+   raise RuntimeError("Existing tool version differs: "+name)
+  values[name]={"path":str(path),"sha256":actual,"version":version}
+ return values
+if os.getuid()!=1000 or os.geteuid()!=1000:
+ raise RuntimeError("This request requires the original ordinary uid/euid 1000")
+os.umask(0o077)
+ROOT.mkdir(parents=True,exist_ok=False)
+RECORDS.mkdir(parents=True,exist_ok=False)
+(ROOT/"tmp").mkdir()
+terminal={"source_sha":SOURCE,"source_tree":TREE,"status":"FAILED",
+          "execution_environment":"ai395 ordinary uid1000; not hosted CI",
+          "owner_decision":None,"production_authority":False,
+          "full_dynamic_tool_handler_qualified":False,"final_use_qualified":False,
+          "learning_gain_qualified":False,"research_B_C_actor_calls":0}
+try:
+ for name in ("RUSTFLAGS","CARGO_ENCODED_RUSTFLAGS","RUSTC_WRAPPER","RUSTC_WORKSPACE_WRAPPER"):
+  if env.get(name):raise RuntimeError("Unregistered compiler override: "+name)
+ prepare_clang_environment()
+ env.update(SOURCE_SHA=SOURCE,TESTED_SHA=SOURCE,HEPTA_CI_LANE="source-head",
+            CODEX_REPO_ROOT=str(REPO),PYTHONPATH=str(REPO/"scripts")+":"+str(REPO),
+            PYTHONDONTWRITEBYTECODE="1",RUNNER_TEMP=str(ROOT/"evidence"),
+            TMPDIR=str(ROOT/"tmp"),CARGO_TARGET_DIR=str(REPO/"codex-rs/target"),
+            GITHUB_ENV=str(RECORDS/"v8-environment.txt"))
+ for name in ("RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH"):env.pop(name,None)
+ save("REQUEST_PLAN.json",PLAN)
+ memory={}
+ for line in Path("/proc/meminfo").read_text().splitlines():
+  key,value=line.split(":",1)
+  if key in ("MemAvailable","MemTotal"):memory[key]=int(value.split()[0])*1024
+ disk=os.statvfs(ROOT)
+ if memory["MemAvailable"]<PLAN["minimum_available_memory_bytes"] or disk.f_bavail*disk.f_frsize<PLAN["minimum_available_disk_bytes"]:
+  raise RuntimeError("Declared native resource floor is not met")
+ save("RESOURCE_AT_START.json",{"uid":os.getuid(),"euid":os.geteuid(),"memory":memory,
+      "disk_available_bytes":disk.f_bavail*disk.f_frsize,"loadavg":os.getloadavg(),
+      "cargo_build_jobs":2,"requested_memory_max_bytes":34359738368,
+      "requested_cpu_quota_percent":200,"native_build_started":False})
+ save("TOOLS.json",verify_tools())
+ CLANG_BEFORE=clang_resource_snapshot();save("CLANG_RESOURCE_BEFORE.json",CLANG_BEFORE)
+ origin=capture(["git","-C",PLAN["existing_source_repository"],"remote","get-url","origin"]).strip()
+ parsed=urllib.parse.urlparse(origin)
+ if (parsed.scheme!="https" or parsed.username is not None or parsed.password is not None
+     or parsed.hostname!="github.com" or parsed.path.rstrip("/") not in
+        ("/TrillionniumFoundation/hepta-private-ci","/TrillionniumFoundation/hepta-private-ci.git")):
+  raise RuntimeError("Expected a credential-free GitHub origin; no remote changed")
+ stage("source-clone",["git","clone","--no-checkout","--no-hardlinks","--no-tags",
+       PLAN["existing_source_repository"],str(REPO)],600)
+ stage("source-fetch",["git","-C",str(REPO),"fetch","--no-tags","--depth=1",origin,
+       SOURCE,PLAN["format_base"]],600,redact=True)
+ stage("source-checkout",["git","-C",str(REPO),"checkout","--detach",SOURCE],120)
+ BEFORE=snapshot();save("SOURCE_BEFORE.json",BEFORE)
+ workflow=REPO/PLAN["workflow_path"]
+ if hash_file(workflow)!=PLAN["workflow_sha256"]:
+  raise RuntimeError("Exact reviewed workflow bytes differ")
+ text=workflow.read_text()
+ prefix="          python3 - <<'PY'\n";suffix="\n          PY\n"
+ if text.count(prefix)!=1:raise RuntimeError("Expected one original named-case receipt program")
+ receipt=text.split(prefix,1)[1].split(suffix,1)[0]
+ receipt="\n".join(line[10:] if line.startswith("          ") else line for line in receipt.splitlines())+"\n"
+ compile(receipt,"original-workflow-receipt","exec")
+ (RECORDS/"source.txt").write_text(SOURCE+"\n"+TREE+"\n")
+ save("LOCK_BEFORE.json",{"path":"codex-rs/Cargo.lock","sha256":hash_file(REPO/"codex-rs/Cargo.lock")})
+ for relative,pin in PLAN["reviewed_source_inputs"].items():
+  if hash_file(REPO/relative)!=pin["sha256"]:raise RuntimeError("Reviewed source input differs: "+relative)
+ save("REVIEWED_SOURCE_INPUTS.json",PLAN["reviewed_source_inputs"])
+ stage("v8-prepare",[PYTHON,"-B",str(REPO/"scripts/hepta_ci_v8.py")],1200)
+ vf=RECORDS/"v8-environment.txt"
+ pairs={}
+ if vf.exists():
+  for line in vf.read_text().splitlines():
+   key,value=line.split("=",1)
+   if key in pairs or key not in {"RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH"} or not value:
+    raise RuntimeError("Unexpected original V8 environment result")
+   pairs[key]=value
+ if pairs and set(pairs)!={"RUSTY_V8_ARCHIVE","RUSTY_V8_SRC_BINDING_PATH"}:
+  raise RuntimeError("Original V8 resolver did not return a complete pair")
+ env.update(pairs)
+ v8={key:{"path":value,"bytes":Path(value).stat().st_size,"sha256":hash_file(value)} for key,value in pairs.items()}
+ save("V8_ARTIFACTS.json",v8)
+ stage("rustc-version",[PLAN["tools"]["rustup"]["path"],"run","1.96.0","rustc","--version","--verbose"],60)
+ ci("caller-proof",[PYTHON,"-B",str(REPO/"scripts/verify_hepta_callers.py"),"verify"],4800)
+ ci("build",["env","--chdir=codex-rs",PLAN["tools"]["rustup"]["path"],"run","1.96.0",
+            "cargo","build","--locked","-p","codex-hepta-agentd",
+            "--bin","codex-hepta-agentd","--bin","hepta-notes-thread-seed"],3000)
+ save("BINARIES.json",{name:{"path":str(REPO/"codex-rs/target/debug"/name),
+      "sha256":hash_file(REPO/"codex-rs/target/debug"/name)}
+      for name in ("codex-hepta-agentd","hepta-notes-thread-seed")})
+ just=PLAN["tools"]["just"]["path"]
+ test_ci("seed",[just,"test","--locked","-p","codex-hepta-agentd","--test","notes_thread_seed_product",
+            "-E","test(launcher_seeds_one_unused_original_thread_without_model_contact)",
+            "--status-level","all","--retries","0"],1)
+ test_ci("seed-regressions",[just,"test","--locked","-p","codex-hepta-agentd","--lib",
+      "--test","notes_thread_seed_product","-E",
+      "test(original_notes_seed_profile_) | test(seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state) | test(standard_profile_rejects_original_notes_seed_before_model_contact)",
+      "--status-level","all","--retries","0"],5)
+ stage("named-case-receipts",[PYTHON,"-B","-c",receipt],60)
+ stage("format",[just,"fmt","--base",PLAN["format_base"],"--check"],600)
+ for value in v8.values():
+  if hash_file(value["path"])!=value["sha256"]:raise RuntimeError("Resolved V8 input changed")
+ terminal["status"]="NATIVE_SIX_METHOD_VALIDATION_PASSED"
+except BaseException as error:
+ terminal["error"]={"type":type(error).__name__,"message":str(error)}
+ traceback.print_exc()
+finally:
+ try:
+  if CLANG_BEFORE is not None:
+   clang_after=clang_resource_snapshot();save("CLANG_RESOURCE_AFTER.json",clang_after)
+   terminal["clang_resources_unchanged"]=(clang_after==CLANG_BEFORE)
+   if clang_after!=CLANG_BEFORE:terminal["status"]="FAILED"
+  else:terminal["clang_resources_unchanged"]=False
+ except BaseException as error:
+  terminal["status"]="FAILED"
+  terminal["final_clang_resource_error"]={"type":type(error).__name__,"message":str(error)}
+ try:
+  if BEFORE is not None:
+   after=snapshot();save("SOURCE_AFTER.json",after)
+   terminal["source_inventory_unchanged"]=(after==BEFORE)
+   terminal["tracked_file_count"]=len(after["files"])
+   if after!=BEFORE:terminal["status"]="FAILED"
+  else:terminal["source_inventory_unchanged"]=False
+ except BaseException as error:
+  terminal["status"]="FAILED"
+  terminal["final_source_error"]={"type":type(error).__name__,"message":str(error)}
+ terminal["stages"]=STAGES
+ terminal["finished_unix_ns"]=time.time_ns()
+ save("TERMINAL.json",terminal)
+ print(json.dumps(terminal,sort_keys=True),flush=True)
+if terminal["status"]!="NATIVE_SIX_METHOD_VALIDATION_PASSED":raise SystemExit(1)

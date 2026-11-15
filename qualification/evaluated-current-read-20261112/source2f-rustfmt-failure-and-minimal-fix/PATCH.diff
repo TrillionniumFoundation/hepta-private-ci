@@ -1,0 +1,29 @@
+--- a/codex-rs/hepta-neuron/src/cell_generation_tests.rs
++++ b/codex-rs/hepta-neuron/src/cell_generation_tests.rs
+@@ -576,10 +576,7 @@
+     assert_eq!(owner.locked_bytes_for_test(), journal);
+     assert_eq!(checked(owner.witness.current()), witness);
+     drop(owner);
+-    assert_eq!(
+-        checked(fs::read(fixture.0.join("witness"))),
+-        witness_bytes
+-    );
++    assert_eq!(checked(fs::read(fixture.0.join("witness"))), witness_bytes);
+     let mut reopened = fixture.open();
+     assert_eq!(reopened.snapshot(), Ok(&snapshot));
+     assert_eq!(reopened.task_cost(), Ok(&costs));
+--- a/codex-rs/hepta-neuron/src/cell_task_cost.rs
++++ b/codex-rs/hepta-neuron/src/cell_task_cost.rs
+@@ -285,8 +285,10 @@
+         // Borrow the immutable history and input, so each accepted entry can be
+         // appended immediately without retaining references into the output.
+         let history = self.entries.clone();
+-        let mut earlier: BTreeMap<_, _> =
+-            history.iter().map(|entry| (entry.event_id, entry)).collect();
++        let mut earlier: BTreeMap<_, _> = history
++            .iter()
++            .map(|entry| (entry.event_id, entry))
++            .collect();
+         for entry in entries {
+             if let Some(existing) = earlier.get(&entry.event_id) {
+                 if *existing != entry {

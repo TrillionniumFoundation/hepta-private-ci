@@ -1,0 +1,885 @@
+{
+  "schema": "hepta.actual-git-tree-incremental-proof.v1",
+  "ancestor_commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "base_commit": "c7ba93274c0e6ccf764120defc642689df499273",
+  "base_tree": "e72ab40aadbfd3f69b3b272f1597ccaeb39fe75b",
+  "upstream_commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "candidate_tree": "ff564227a417febe21a8187e650d5d80223dff42",
+  "overlay_manifest": "2c42bc34807ffecdf227295deb5e0957b155cd0b",
+  "actual_changed_leaves": 47,
+  "overlaid_but_equal": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4a0a1b550ca3314c9d2ffd42c00e2c7c9759fb29",
+      "source": "374 upstream exact",
+      "upstream_sha": "4a0a1b550ca3314c9d2ffd42c00e2c7c9759fb29",
+      "status": "modified"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fce2754635d6fb2eb0d8391bca3a353c8bcf2901",
+      "source": "Both sides removed the same public NextUse caller; retain ours exact tuple text",
+      "upstream_sha": "52495e550746c6086a3dfe9f35ad7dd4209b75e6",
+      "status": "modified"
+    }
+  ],
+  "nodes": [
+    {
+      "path": "",
+      "a": "e72ab40aadbfd3f69b3b272f1597ccaeb39fe75b",
+      "b": "ff564227a417febe21a8187e650d5d80223dff42"
+    },
+    {
+      "path": ".github/",
+      "a": "111f2778a4d68aa896d48fb5f45be9182ed21a3d",
+      "b": "da48350014fc6c84f82d1a6723bf24b1ae1cde8a"
+    },
+    {
+      "path": "codex-rs/",
+      "a": "aa5ec2212a03bcbbf7862b6d9ac3715fb748f9a5",
+      "b": "db964a0a5358ccd700c5ff12ba81ce99de7718f5"
+    },
+    {
+      "path": "qa/",
+      "a": "ac0a8885a2657eea5d470d082e2ab418e40a5a49",
+      "b": "a8a81c5cfcaa365f80741d82821604f781ddbd4f"
+    },
+    {
+      "path": ".github/workflows/",
+      "a": "82ba209f599ffde56589e46db479e3fc21fa9309",
+      "b": "686a120d912da1dea9bc6a3b248d30eaa6b530cd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/",
+      "a": "e66741bfd4bd508a3892a83af1263086b0b25244",
+      "b": "54aab928db089f8df98091509aaa1edb7866fa49"
+    },
+    {
+      "path": "qa/b4-no-bypass/",
+      "a": "b7252ae7914bedb02e526ea17a8e4102c1b95ebb",
+      "b": "54141d377ba80ad719df597677091392bd874c46"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/",
+      "a": "33f1e2430d1ffa0dfdca4d37493485ae141fff28",
+      "b": "8900922f080bb41edbfc4ca8b80a63fb4cb95216"
+    }
+  ],
+  "changes": [
+    {
+      "path": "CALLERS.toml",
+      "before": {
+        "path": "CALLERS.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f6efa0852dd91312b3571332bea862908eb8997c",
+        "size": 1842850,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f6efa0852dd91312b3571332bea862908eb8997c"
+      },
+      "after": {
+        "path": "CALLERS.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "73fdfb4db43bee14530701784ab163a64dbb5956",
+        "size": 1895095,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/73fdfb4db43bee14530701784ab163a64dbb5956"
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before": {
+        "path": "blob-size-allowlist.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3c3a465aa84669eaefb90e1e299f5d2de4695f85",
+        "size": 11847,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3c3a465aa84669eaefb90e1e299f5d2de4695f85"
+      },
+      "after": {
+        "path": "blob-size-allowlist.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+        "size": 11847,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/65d0ebeb88239e283af3d1e3fd1c91685bce9fa4"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "before": {
+        "path": "hepta-daemon-learning-native.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+        "size": 27811,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/72d4b247d90dde972ac592b2d568cd6e470f97ff"
+      },
+      "after": {
+        "path": "hepta-daemon-learning-native.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0f4dffca6dcf24c197b9211e56af1cf80eb640da",
+        "size": 27959,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0f4dffca6dcf24c197b9211e56af1cf80eb640da"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "before": {
+        "path": "test_evaluated_published_read_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f574a6e2b6f47e40beb187214190b215f44f2a2b",
+        "size": 27892,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f574a6e2b6f47e40beb187214190b215f44f2a2b"
+      },
+      "after": {
+        "path": "test_evaluated_published_read_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9de00bac3beab03cc52944032dc5202df7adccbd",
+        "size": 28595,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/9de00bac3beab03cc52944032dc5202df7adccbd"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_version_source_closure.py",
+      "before": {
+        "path": "test_evaluated_version_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6bde735c14e734dc33dd543c64f73502d9a22aea",
+        "size": 69657,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6bde735c14e734dc33dd543c64f73502d9a22aea"
+      },
+      "after": {
+        "path": "test_evaluated_version_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bfe0760741ea951959655f583bfeef80f849e064",
+        "size": 69865,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/bfe0760741ea951959655f583bfeef80f849e064"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "before": {
+        "path": "test_original_evaluation_host_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "700cfedc590cf3e2f7b2d6bcf64680d763e4c1ea",
+        "size": 15792,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/700cfedc590cf3e2f7b2d6bcf64680d763e4c1ea"
+      },
+      "after": {
+        "path": "test_original_evaluation_host_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "34860892ea9b74935d4673afe9a63d5000e85677",
+        "size": 15846,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/34860892ea9b74935d4673afe9a63d5000e85677"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "before": {
+        "path": "test_original_evaluation_panel_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4da0873c757803beb46256d84e27e63b12991347",
+        "size": 12997,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4da0873c757803beb46256d84e27e63b12991347"
+      },
+      "after": {
+        "path": "test_original_evaluation_panel_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d9c5a41caa0cfc559f52274ae35f9baac8929f8",
+        "size": 13298,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/7d9c5a41caa0cfc559f52274ae35f9baac8929f8"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "before": {
+        "path": "test_original_learning_owner_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c21eebe62b86c858453f69b2ed10c535161e400",
+        "size": 12586,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0c21eebe62b86c858453f69b2ed10c535161e400"
+      },
+      "after": {
+        "path": "test_original_learning_owner_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fc413cecd9165679090f5b866a7b7c698e8c46d5",
+        "size": 12685,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/fc413cecd9165679090f5b866a7b7c698e8c46d5"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "before": {
+        "path": "test_original_model_selection_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+        "size": 10167,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6fc51eed804792d4f009697f76f2d3c20a5c9827"
+      },
+      "after": {
+        "path": "test_original_model_selection_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2c90bc01cd0cd6f23e1e7cbc04b087e4f8eb959",
+        "size": 10205,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b2c90bc01cd0cd6f23e1e7cbc04b087e4f8eb959"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "before": {
+        "path": "test_original_published_read_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1acd8e8845e5b276481eab2d73251e0e2605580a",
+        "size": 18964,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1acd8e8845e5b276481eab2d73251e0e2605580a"
+      },
+      "after": {
+        "path": "test_original_published_read_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ac72d8a157447f8b6b5f260d3d061b4b46d1bc6e",
+        "size": 19835,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/ac72d8a157447f8b6b5f260d3d061b4b46d1bc6e"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+      "before": {
+        "path": "test_original_qualification_owner_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+        "size": 12634,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a65614c5bb04d3d22b007213a94c20f318bf73b4"
+      },
+      "after": {
+        "path": "test_original_qualification_owner_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bad5b389ab00c6bb4b500ba6e21fe4c653488753",
+        "size": 12716,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/bad5b389ab00c6bb4b500ba6e21fe4c653488753"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "before": {
+        "path": "test_resident_root_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f93b355d806949ee1bc4f8f6ad6306271f3038a5",
+        "size": 28033,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f93b355d806949ee1bc4f8f6ad6306271f3038a5"
+      },
+      "after": {
+        "path": "test_resident_root_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a57a7cb08131a8d806135817ef0646256ebdbe5a",
+        "size": 28510,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a57a7cb08131a8d806135817ef0646256ebdbe5a"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "before": null,
+      "after": {
+        "path": "test_original_panel_training_transaction_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a5a2786e6ec8c93d89e608a835d94a5bec26cb8b",
+        "size": 10749,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a5a2786e6ec8c93d89e608a835d94a5bec26cb8b"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_current_transaction_source_closure.py",
+      "before": null,
+      "after": {
+        "path": "test_original_published_current_transaction_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "219cf87fa5da3110aea295c8a792d599cb77b6c8",
+        "size": 17974,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/219cf87fa5da3110aea295c8a792d599cb77b6c8"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_origin_source_closure.py",
+      "before": null,
+      "after": {
+        "path": "test_resident_origin_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "39d80c2c5a786b41a188b223985b390232b31bce",
+        "size": 8929,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/39d80c2c5a786b41a188b223985b390232b31bce"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "before": {
+        "path": "authority_host_learning_resident_root_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e16820f8bab3027ab74490f942a34c7ee5470739",
+        "size": 14985,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/e16820f8bab3027ab74490f942a34c7ee5470739"
+      },
+      "after": {
+        "path": "authority_host_learning_resident_root_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "237b9c130161a171085fb6e423580b94b4d92c7d",
+        "size": 15059,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/237b9c130161a171085fb6e423580b94b4d92c7d"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "before": {
+        "path": "authority_host_learning_resident_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3deaa319c779c5121e6e66ea94af14c77363c7d7",
+        "size": 14991,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3deaa319c779c5121e6e66ea94af14c77363c7d7"
+      },
+      "after": {
+        "path": "authority_host_learning_resident_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17b4748cf90ce55d8e0b3dfd1b7af5c09fb8a219",
+        "size": 15451,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/17b4748cf90ce55d8e0b3dfd1b7af5c09fb8a219"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "before": {
+        "path": "authority_host_learning_resident_stages.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9d949be99e4d7c6045bbff34d951ff4b47c0b641",
+        "size": 7649,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/9d949be99e4d7c6045bbff34d951ff4b47c0b641"
+      },
+      "after": {
+        "path": "authority_host_learning_resident_stages.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8d4991acb6172551be1bde562963850f4152378c",
+        "size": 8052,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8d4991acb6172551be1bde562963850f4152378c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "before": {
+        "path": "cell_q24_candidate_stage_owners.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73",
+        "size": 12381,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73"
+      },
+      "after": {
+        "path": "cell_q24_candidate_stage_owners.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "be864ecaa8df20745e04179223ac1a92261eb58b",
+        "size": 12547,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/be864ecaa8df20745e04179223ac1a92261eb58b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "before": {
+        "path": "cell_q24_no_update_stage_owners.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "00fb66e36c64b52ddb40b1250a5375e7437629ec",
+        "size": 7603,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/00fb66e36c64b52ddb40b1250a5375e7437629ec"
+      },
+      "after": {
+        "path": "cell_q24_no_update_stage_owners.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "636ac446ff8ab0f6d5cf325106400644b7ad4a35",
+        "size": 7873,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/636ac446ff8ab0f6d5cf325106400644b7ad4a35"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "before": {
+        "path": "cell_q24_training_bootstrap_original_ports_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "36289de55d67d19d5ed710044efdf7012c08d3a3",
+        "size": 5133,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/36289de55d67d19d5ed710044efdf7012c08d3a3"
+      },
+      "after": {
+        "path": "cell_q24_training_bootstrap_original_ports_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8d2e57069155bc4968a755717bb48ba473a66435",
+        "size": 5301,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8d2e57069155bc4968a755717bb48ba473a66435"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "before": {
+        "path": "cell_q24_training_command_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a93a403597cb69c9360e9861fbe90c95dc83818",
+        "size": 17338,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8a93a403597cb69c9360e9861fbe90c95dc83818"
+      },
+      "after": {
+        "path": "cell_q24_training_command_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "71d28396530520fd9c430856aa019d01f03d7db7",
+        "size": 17561,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/71d28396530520fd9c430856aa019d01f03d7db7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_support_tests.rs",
+      "before": {
+        "path": "circuit_evaluated_version_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "453053d54e8934c58f37a1b93a2523250fbc1457",
+        "size": 3690,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/453053d54e8934c58f37a1b93a2523250fbc1457"
+      },
+      "after": {
+        "path": "circuit_evaluated_version_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e0bd5f09589c8487fb59b207609a7e7b5f86dc70",
+        "size": 3656,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/e0bd5f09589c8487fb59b207609a7e7b5f86dc70"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "before": {
+        "path": "circuit_feature_current.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8bd47c76fc82365daac44acf5061861e0c552011",
+        "size": 16679,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8bd47c76fc82365daac44acf5061861e0c552011"
+      },
+      "after": {
+        "path": "circuit_feature_current.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3052cf32ddbaa99609a27ee38850d1c20a9f595f",
+        "size": 16741,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3052cf32ddbaa99609a27ee38850d1c20a9f595f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "before": {
+        "path": "circuit_feature_current_learning.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "849cdf6406fb746be80c6fb93ce3ee8e4d0f4112",
+        "size": 8039,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/849cdf6406fb746be80c6fb93ce3ee8e4d0f4112"
+      },
+      "after": {
+        "path": "circuit_feature_current_learning.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "69a88e479494dfa9dda77a642c1cc1c85c1ad590",
+        "size": 9246,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/69a88e479494dfa9dda77a642c1cc1c85c1ad590"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "before": {
+        "path": "circuit_feature_current_owner.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "92224a910d3c8050dde8bb079da36e02d73d3373",
+        "size": 8089,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/92224a910d3c8050dde8bb079da36e02d73d3373"
+      },
+      "after": {
+        "path": "circuit_feature_current_owner.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cb3c74f89ee9fa692d16c7d7adf8970d6959411b",
+        "size": 8552,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/cb3c74f89ee9fa692d16c7d7adf8970d6959411b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "before": {
+        "path": "circuit_learning_read_owner_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "752bee454a024280be6d5033b826abff398d2edf",
+        "size": 18406,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/752bee454a024280be6d5033b826abff398d2edf"
+      },
+      "after": {
+        "path": "circuit_learning_read_owner_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5b0d2ae93eabfc79ecbf576d4143fed361fd4812",
+        "size": 18476,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5b0d2ae93eabfc79ecbf576d4143fed361fd4812"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "before": {
+        "path": "circuit_learning_read_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "366400a019bcaf29016d74c9540823be8da7969b",
+        "size": 12237,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/366400a019bcaf29016d74c9540823be8da7969b"
+      },
+      "after": {
+        "path": "circuit_learning_read_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3802bc408a0736dc7c934293dfbb30d0debcf3f0",
+        "size": 13352,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3802bc408a0736dc7c934293dfbb30d0debcf3f0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "before": {
+        "path": "circuit_learning_read_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "47969e32eaeec0e48479c9ec7f05b10ee17a7412",
+        "size": 11423,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/47969e32eaeec0e48479c9ec7f05b10ee17a7412"
+      },
+      "after": {
+        "path": "circuit_learning_read_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9c806b1319cfc9ccd326e58a230a79bd42d2ba00",
+        "size": 11512,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/9c806b1319cfc9ccd326e58a230a79bd42d2ba00"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "before": {
+        "path": "circuit_original_evaluation_host_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+        "size": 7072,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a"
+      },
+      "after": {
+        "path": "circuit_original_evaluation_host_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+        "size": 8026,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_tests.rs",
+      "before": {
+        "path": "deployment_issuer_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bd63fba136764268970ba2df2d2f5be0cbe7a3fd",
+        "size": 7108,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/bd63fba136764268970ba2df2d2f5be0cbe7a3fd"
+      },
+      "after": {
+        "path": "deployment_issuer_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "96d7bfd44f50eba1274f5bbf8adbff1da16acd7e",
+        "size": 7439,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/96d7bfd44f50eba1274f5bbf8adbff1da16acd7e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_host.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "002394b4a405abfdb51c6f80f19a203a68a62e18",
+        "size": 10958,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/002394b4a405abfdb51c6f80f19a203a68a62e18"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_host.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+        "size": 12526,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d8c8a62d8c82397aa23f5bcfd68fee34efe13096"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_host_training_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c8e5ae94ff4753a48cb92c6b46b8a7559f00793",
+        "size": 3464,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6c8e5ae94ff4753a48cb92c6b46b8a7559f00793"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_host_training_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "90b880ff4446600afc669fe36fca7437232fd04e",
+        "size": 3852,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/90b880ff4446600afc669fe36fca7437232fd04e"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_panel.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea8b12aebdfb2441c09efa56830ff9e6417be6ae",
+        "size": 6536,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/ea8b12aebdfb2441c09efa56830ff9e6417be6ae"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_panel.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "07c68b6971721515ad819544d9cc8dc442a20336",
+        "size": 7213,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/07c68b6971721515ad819544d9cc8dc442a20336"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_panel_member.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "162325dfed6dbb61b749806f34c71f95bf4a6f9b",
+        "size": 7129,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/162325dfed6dbb61b749806f34c71f95bf4a6f9b"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_panel_member.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "49f23508db7805fc7fec663af10269f39fa3a271",
+        "size": 7463,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/49f23508db7805fc7fec663af10269f39fa3a271"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_qualification_owner.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b7f4bf79795381a21f77680498cb4431895e673b",
+        "size": 11139,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b7f4bf79795381a21f77680498cb4431895e673b"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_qualification_owner.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "514d6cbf873acddb19c7e4540d198e3a498fe084",
+        "size": 11223,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/514d6cbf873acddb19c7e4540d198e3a498fe084"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_qualification_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a9136612ec334f2d91ac3864193a5b23f9260673",
+        "size": 6365,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a9136612ec334f2d91ac3864193a5b23f9260673"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_qualification_readback.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "91a3a5b87a1746d1cb4178cc652f9480574986c1",
+        "size": 7204,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/91a3a5b87a1746d1cb4178cc652f9480574986c1"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_qualification_sources.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "31c97708e059d1e1a68bc512cd6728cf6df2970c",
+        "size": 4122,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/31c97708e059d1e1a68bc512cd6728cf6df2970c"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_qualification_sources.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a193092ffd45d4c894999b126072f6d9c48fb7b2",
+        "size": 4629,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a193092ffd45d4c894999b126072f6d9c48fb7b2"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+      "before": null,
+      "after": {
+        "path": "authority_host_learning_resident_origin_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bbf4dfbe8777739946ae87654cd5259a004cfad6",
+        "size": 9876,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/bbf4dfbe8777739946ae87654cd5259a004cfad6"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs",
+      "before": null,
+      "after": {
+        "path": "cell_q24_training_panel_read_peer_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0a9a831e06c3499edd00a9eab5cf024e1ff2441",
+        "size": 3544,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b0a9a831e06c3499edd00a9eab5cf024e1ff2441"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "before": null,
+      "after": {
+        "path": "circuit_feature_current_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c469106274329851ea7329f312ed33d55c4a2f8",
+        "size": 5199,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2c469106274329851ea7329f312ed33d55c4a2f8"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs",
+      "before": null,
+      "after": {
+        "path": "circuit_feature_current_read_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a92bb85cab6ca67262c9e4735864facd736e74c",
+        "size": 5026,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5a92bb85cab6ca67262c9e4735864facd736e74c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_tests.rs",
+      "before": null,
+      "after": {
+        "path": "circuit_feature_current_read_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b96054e994054193369cd8c4ca012c95503b24e7",
+        "size": 2266,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b96054e994054193369cd8c4ca012c95503b24e7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "before": null,
+      "after": {
+        "path": "circuit_original_evaluation_training_read_support_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1177429c6cff407e9220929f79dce4805ed03bb6",
+        "size": 6860,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1177429c6cff407e9220929f79dce4805ed03bb6"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "before": null,
+      "after": {
+        "path": "circuit_original_evaluation_training_read_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0",
+        "size": 7766,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/8a7314dcfd9b0fd5f0f12525f1c9d2bc4cfdfec0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs",
+      "before": null,
+      "after": {
+        "path": "neuron_cell_evaluation_training_read_access_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7130b04357861ded3a20c8707d25b280009bd09c",
+        "size": 2891,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/7130b04357861ded3a20c8707d25b280009bd09c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "before": null,
+      "after": {
+        "path": "neuron_cell_evaluation_training_read_proof.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0b328d77083060c943234ae0d8bf68088474bd6f",
+        "size": 8712,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0b328d77083060c943234ae0d8bf68088474bd6f"
+      }
+    }
+  ],
+  "unexpected": [],
+  "execution": "STATIC_GIT_TREE_PROOF_NOT_NATIVE_OR_QA_EXECUTION"
+}

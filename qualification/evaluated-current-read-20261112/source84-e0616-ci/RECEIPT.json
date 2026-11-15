@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.original-source84-e0616-ci.v1",
+  "source_head": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "workflow": 43293663395,
+  "checkout_commit": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99",
+  "checkout_tree_equals_source_head": true,
+  "records": [
+    {
+      "job_id": 131446361407,
+      "label": "gnu-clippy",
+      "raw_log": {
+        "bytes": 1101920,
+        "sha256": "02098360a4a5cd07b3396b62d91b95993b82239b05c018c065ff6567f70863fa",
+        "git_blob": "77d44fab41124ddc0a69f9cf9e064c2c45d23556"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-001.log",
+          "byte_offset": 0,
+          "bytes": 240002,
+          "sha256": "ff25a44356cba9ab068d344cc9cd208f54732c3f248de724a307b328c63b0475",
+          "git_blob": "9ad23cb9f7d0c8d1f6ad4acccec9893cdf26067b"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-002.log",
+          "byte_offset": 240002,
+          "bytes": 240000,
+          "sha256": "6b87a17e9875c8f74c69c666b5c231e86ad272079eef9eb036234e298924e85d",
+          "git_blob": "424116f3f35b8488420b83cb1c0db5a5576591f1"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-003.log",
+          "byte_offset": 480002,
+          "bytes": 240000,
+          "sha256": "0b91891aaaeab8239f6624639873969b980faa806425f52f37fcf21ebc4f574e",
+          "git_blob": "ffd55e4d19d00e5d0c1205ee8d9f52666b73c009"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-004.log",
+          "byte_offset": 720002,
+          "bytes": 240000,
+          "sha256": "23da7496f151d9d992c4ef03521b522ba24d6d723dd8ee72e948e6aafc84a045",
+          "git_blob": "7cae7814640788ff93b760cb710798ce7233e95b"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-clippy.part-005.log",
+          "byte_offset": 960002,
+          "bytes": 141918,
+          "sha256": "1a373aaa6a3cc8177f7a9c675fc5985e97b2e6c86228fd23c73b3726bf30a7c0",
+          "git_blob": "16518d3f837d0d46598c563b8ecc39bece2f70d6"
+        }
+      ],
+      "actual_checkout": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99",
+      "unique_compiler_error_codes": [
+        "E0616"
+      ],
+      "failure_location": "hepta-agentd/src/neuron_generation_runtime_test_support.rs:53",
+      "actual_expression": "sender: handle.sender.downgrade()",
+      "verbatim_original_summary": [
+        "INFO: Build succeeded for only 1292 of 1296 top-level targets",
+        "INFO: Found 1296 targets..."
+      ],
+      "cache_note": "Build target totals are not test-method counts."
+    },
+    {
+      "job_id": 131446361493,
+      "label": "gnu-test",
+      "raw_log": {
+        "bytes": 1023805,
+        "sha256": "d037a73d16dc4a53ae6c988a5e2a493169326395fba1e0e732be81abc2d815b7",
+        "git_blob": "f58b8c14524f5a3afe754c2fc72a1185ac61b5e9"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-001.log",
+          "byte_offset": 0,
+          "bytes": 240002,
+          "sha256": "79ee9be68a7edbfab00215a0531e0174813f9f91135b4df7b8dd4a299acb9036",
+          "git_blob": "88bb6d2e1238ccecb9141c956375b98dd417ce6c"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-002.log",
+          "byte_offset": 240002,
+          "bytes": 240000,
+          "sha256": "223c3ea079b5e1cdc8c37ec21e7c8f39ca8e882cbf050ef96af9ae843182c877",
+          "git_blob": "fa02be2d37ffcd56a9dead6f6ebe63d17db7de8d"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-003.log",
+          "byte_offset": 480002,
+          "bytes": 240000,
+          "sha256": "fdc90f7dc1f6043309c78310deb39ae3043e163b5c5170fbf9a4785c086431e9",
+          "git_blob": "ff6e3b8b5e7c932db19fc7e157d55f8e6fc801d7"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-004.log",
+          "byte_offset": 720002,
+          "bytes": 240000,
+          "sha256": "a8ca2d777ce90078c333308ab9ba747823ea89431dd45a46de61e1f1db4830ba",
+          "git_blob": "6e69f2dac3a78b74b53ae9399087855f0d2d8a28"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/gnu-test.part-005.log",
+          "byte_offset": 960002,
+          "bytes": 63803,
+          "sha256": "82b50090384f4005d4737140c8848b5c5cae9568c9fe561e7d15cebcc3ef2570",
+          "git_blob": "9d754979df9de72a39d26b115a03664b3485f005"
+        }
+      ],
+      "actual_checkout": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99",
+      "unique_compiler_error_codes": [
+        "E0616"
+      ],
+      "failure_location": "hepta-agentd/src/neuron_generation_runtime_test_support.rs:53",
+      "actual_expression": "sender: handle.sender.downgrade()",
+      "verbatim_original_summary": [
+        "INFO: Build succeeded for only 1056 of 1058 top-level targets",
+        "INFO: Found 475 targets and 583 test targets...",
+        "Executed 0 out of 583 tests: 414 tests pass, 2 fail to build, and 167 were skipped."
+      ],
+      "cache_note": "Executed 0/583; the 414 passing targets are cached."
+    },
+    {
+      "job_id": 131446361556,
+      "label": "musl-test",
+      "raw_log": {
+        "bytes": 998446,
+        "sha256": "554571e9e913c6cf39660af285b7d2769e2593971e2e4bc64f095b9a9a16f865",
+        "git_blob": "530828269e01540112d35462447b5a285e1f6222"
+      },
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-001.log",
+          "byte_offset": 0,
+          "bytes": 240002,
+          "sha256": "274eb1788ddacf52e899f0d9af70d1cfedf8047cf3a12375147f7df61517236f",
+          "git_blob": "ff2f62219d1996f3d51ae9d26c50481e46b48d2d"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-002.log",
+          "byte_offset": 240002,
+          "bytes": 240000,
+          "sha256": "ba77ba181247bbc9319772b384bc21fe898f1ef32e0e35969e0b2efc41f5342a",
+          "git_blob": "b1be2a70fe848cb861648aafd85923e0fd1f381a"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-003.log",
+          "byte_offset": 480002,
+          "bytes": 240000,
+          "sha256": "27032dc1075074b640c6a5bb9aba3816f29cdfb20644a512d72b738648f621cd",
+          "git_blob": "760bcc86d0328c348033aac47b2205bb912e2066"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-004.log",
+          "byte_offset": 720002,
+          "bytes": 240000,
+          "sha256": "a463c3e773c68120de4bcfc3b77710f66d272235b87b088f2891f2f59811c9be",
+          "git_blob": "a51fc540e0484d244d238957bac332d187fad612"
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/source84-e0616-ci/musl-test.part-005.log",
+          "byte_offset": 960002,
+          "bytes": 38444,
+          "sha256": "a00f4bc730bfc7bd6cb4d6ac9cbdded29741e869260caf19e7621e0ef878829d",
+          "git_blob": "ff929a1373ff485632b5c31b2aedbab5e968e77f"
+        }
+      ],
+      "actual_checkout": "3fd9ee81bb321f7f7cccd89af077678dc56a5e99",
+      "unique_compiler_error_codes": [
+        "E0616"
+      ],
+      "failure_location": "hepta-agentd/src/neuron_generation_runtime_test_support.rs:53",
+      "actual_expression": "sender: handle.sender.downgrade()",
+      "verbatim_original_summary": [
+        "INFO: Build succeeded for only 1056 of 1058 top-level targets",
+        "INFO: Found 475 targets and 583 test targets...",
+        "Executed 30 out of 583 tests: 414 tests pass, 2 fail to build, and 167 were skipped."
+      ],
+      "cache_note": "Executed 30/583; 414 passing target results include cached results."
+    }
+  ],
+  "scope": "Three original automatic Bazel jobs only; no manual Bazel command, dispatch or retry.",
+  "deduplication": "Repeated compiler renderings and the same E0616 across targets/jobs are not independent experiments.",
+  "test_methods_not_inferred_from_target_counts": true,
+  "repair_candidate_manifest": "d1083684c3cdd2bf900d48848cd64b28817b1385",
+  "child_execution_not_claimed": true,
+  "zip_or_junit_separately_downloaded": false,
+  "owner_decision": null,
+  "all_blockers_closed": false
+}

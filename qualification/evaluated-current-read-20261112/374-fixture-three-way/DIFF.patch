@@ -1,0 +1,195 @@
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs
+@@ -440,6 +440,65 @@
+     Ok(())
+ }
+ 
++#[tokio::test]
++async fn q24_remote_current_set_rejects_source_withdrawal_after_native_completion()
++-> anyhow::Result<()> {
++    let mut f = SelectionFixture::ready().await?;
++    let (trainer, thread) = f.peer(f.config.training_evidence.clone(), 2)?;
++    let mut selector = f.create()?;
++    let selection = selector
++        .attest_original_selection(f.sources(&f.config.decision, &trainer))
++        .await?;
++    drop(selector);
++    finish(trainer, thread)?;
++    let mut selected = LearningIterationCoordinatorV1::from_snapshot(f.config.decision.clone())?;
++    selected.record(selection.0.clone(), selection.0.observed_unix_seconds)?;
++    f.original.config.selection = selected.snapshot().clone();
++    f.original.config.selection_evidence = selection.1;
++    let publication = execute(&f.original.session, 1).await?;
++    let expected = f.original.session.cell.read_learning_next_use(
++        &selected,
++        f.original.session.source.as_ref(),
++        &f.original.session.runtime.identity,
++    )?;
++    let owner = original(&f.original, next_use_context(&f.original.config))?;
++    let before = owner_bytes(&f.original.session)?;
++    let (live, channel) = transport::client(next_use_context(&f.original.config))?;
++    let server = transport::serve(Arc::clone(&owner), channel);
++    let actual = live.read_current().await?;
++    assert_eq!(actual.observation(), &expected);
++    assert_eq!(
++        transport::source_publication(&actual),
++        Some(publication.publication_digest())
++    );
++    assert_eq!(owner_bytes(&f.original.session)?, before);
++    let source_path = f
++        .original
++        .session
++        .runtime
++        .identity
++        .home_root
++        .join("q24-source.journal");
++    owner.fixture_withdraw_source_before_read_tail(
++        std::fs::OpenOptions::new().write(true).open(&source_path)?,
++    )?;
++    assert!(live.read_current().await.is_err());
++    assert_eq!(std::fs::metadata(&source_path)?.len(), 0);
++    assert!(matches!(
++        live.read_current().await,
++        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
++    ));
++    drop(live);
++    assert!(
++        server
++            .join()
++            .map_err(|_| anyhow::anyhow!("original Source tail peer"))?
++            .is_err()
++    );
++    f.original.session.stop().await?;
++    Ok(())
++}
++
+ #[path = "circuit_selection_command_owner_tests.rs"]
+ mod command_owner;
+ 
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs
+@@ -310,3 +310,11 @@
+     })
+ }
+ 
++/// Inspect only the already returned read-only data in a native assertion.
++/// This exposes no production CURRENT getter or capability constructor.
++pub(crate) fn source_publication(
++    read: &super::OriginalCircuitLearningReadbackV1,
++) -> Option<codex_hepta_types::Digest32> {
++    read.source_publication
++}
++
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs
+@@ -20,11 +20,11 @@
+ 
+ pub(super) struct HostFixture {
+     pub(super) host: Option<Arc<OriginalCellEvaluationHostV1>>,
++    pub(super) original: Box<PositiveFixture>,
++    pub(super) primary_b: Box<BFixture>,
++    pub(super) retention_b: Box<BFixture>,
++    primary: Box<PanelMemberFixture>,
++    retention: Box<PanelMemberFixture>,
+-    pub(super) original: PositiveFixture,
+-    pub(super) primary_b: BFixture,
+-    pub(super) retention_b: BFixture,
+-    primary: PanelMemberFixture,
+-    retention: PanelMemberFixture,
+     pub(super) config: OriginalCellEvaluationReceiptConfigV1,
+     pub(super) at: u64,
+     directory: tempfile::TempDir,
+@@ -41,16 +41,18 @@
+ }
+ 
+ impl HostFixture {
++    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Box<Self>> {
+-    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
+         let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
+         Self::from_panel(panel, pending_claim)
+     }
+ 
++    pub(super) async fn before_adoption() -> anyhow::Result<Box<Self>> {
+-    pub(super) async fn before_adoption() -> anyhow::Result<Self> {
+         Box::pin(Self::before_publication(PublicationMode::RetainOriginalA)).await
+     }
+ 
++    pub(super) async fn before_publication(
++        publication: PublicationMode,
++    ) -> anyhow::Result<Box<Self>> {
+-    pub(super) async fn before_publication(publication: PublicationMode) -> anyhow::Result<Self> {
+         let panel = Box::pin(PanelFixture::completed_for_publication(
+             TrainingPeer::Original,
+             publication,
+@@ -59,7 +61,7 @@
+         Self::from_panel(panel, /*pending_claim*/ false)
+     }
+ 
++    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Box<Self>> {
+-    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
+         Self::from_panel_with_training(panel, pending_claim, TrainingComposition::Fixture)
+     }
+ 
+@@ -67,7 +69,7 @@
+         panel: PanelFixture,
+         pending_claim: bool,
+         training: TrainingComposition,
++    ) -> anyhow::Result<Box<Self>> {
+-    ) -> anyhow::Result<Self> {
+         let PanelFixture {
+             panel,
+             original,
+@@ -91,7 +93,7 @@
+             },
+         };
+         let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
++        let mut fixture = Box::new(Self {
+-        let mut fixture = Self {
+             host: None,
+             original,
+             primary_b,
+@@ -101,7 +103,7 @@
+             config,
+             at,
+             directory,
++        });
+-        };
+         let (file, witness) = fixture.files(/*create*/ true)?;
+         let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
+             file,
+@@ -113,13 +115,13 @@
+             evaluator.fixture_pending_original_host()?;
+         }
+         let mut host = match training {
++            TrainingComposition::Fixture => evaluator.into_original_evaluation_host(*panel)?,
+-            TrainingComposition::Fixture => evaluator.into_original_evaluation_host(panel)?,
+             TrainingComposition::Original {
+                 connection,
+                 dataset,
+                 training,
+             } => evaluator
++                .into_host_from_original_training_readback(*panel, connection, dataset, training)?,
+-                .into_host_from_original_training_readback(panel, connection, dataset, training)?,
+         };
+         host.fixture_original_clock(at)?;
+         fixture.host = Some(Arc::new(host));
+@@ -204,7 +206,7 @@
+         let counts = [self.primary.finish()?, self.retention.finish()?];
+         drop(self.primary_b);
+         drop(self.retention_b);
++        Box::pin(self.original.finish()).await?;
+-        self.original.finish().await?;
+         Ok(counts)
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs
+@@ -32,7 +32,7 @@
+ }
+ 
+ struct TrainingFixture {
++    host: Box<HostFixture>,
+-    host: HostFixture,
+     peer: std::thread::JoinHandle<anyhow::Result<u64>>,
+     trace: commands::PanelReadTrace,
+ }

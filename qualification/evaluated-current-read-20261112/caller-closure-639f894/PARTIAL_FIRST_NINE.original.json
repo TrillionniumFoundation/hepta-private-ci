@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "kind": "partial-read-only-diagnostic",
+  "qualification_gate": false,
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "source_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+  "job_id": "1a1cf87d54c-2564-1a51",
+  "complete": false,
+  "requested_boundaries": 537,
+  "requested_protected_files": 386,
+  "observed_index_through": 365,
+  "note": "Original emitted rejection records; elapsed seconds are assigned after emit and will be preserved from final DIAGNOSTIC.json. actual_sources={} is a diagnostic metadata regex extraction defect, not a checker/source change; verified exact-source paths and blobs are separately attached.",
+  "rejections": [
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "identifier": "learning_source_bound_training_stage_readback",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "SourceBoundCellQ24TrainingStageV1",
+        "symbol": "SourceBoundCellQ24TrainingStageV1::readback"
+      },
+      "error": "learning_source_bound_training_stage_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_source_bound_training_stage_readback",
+      "index": 254,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_owner_command_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "identifier": "learning_original_owner_command_channel",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": null,
+        "symbol": "original_owner_command_channel_v1"
+      },
+      "error": "learning_original_owner_command_channel: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/artifact_original_head_client.rs', 'codex-rs/hepta-agentd/src/artifact_original_head_service.rs', 'codex-rs/hepta-agentd/src/artifact_original_registry_source.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_owner_command_channel",
+      "index": 295,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback_remote("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "identifier": "learning_original_circuit_selection_remote_readback",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote"
+      },
+      "error": "learning_original_circuit_selection_remote_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_circuit_selection_remote_readback",
+      "index": 332,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_training("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "identifier": "learning_original_selector_command_context",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionCommandContextV1",
+        "symbol": "OriginalCircuitSelectionCommandContextV1::from_original_training"
+      },
+      "error": "learning_original_selector_command_context: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_selector_command_context",
+      "index": 335,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "identifier": "learning_original_selector_command_owner_factory",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionCommandOwnerV1",
+        "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner"
+      },
+      "error": "learning_original_selector_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_selector_command_owner_factory",
+      "index": 338,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_dataset_readback_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24DatasetCommandReadbackV1",
+        "symbol": "OriginalCellQ24DatasetCommandReadbackV1::readback"
+      },
+      "error": "learning_original_dataset_readback_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_dataset_readback_current",
+      "index": 347,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_command_initial("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_material_initial_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial"
+      },
+      "error": "learning_original_material_initial_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_material_initial_context_check",
+      "index": 360,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_dataset_context("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_material_dataset_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+        "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context"
+      },
+      "error": "learning_original_material_dataset_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_material_dataset_context_check",
+      "index": 361,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "identifier": "learning_original_next_use_command_owner_factory",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitNextUseCommandOwnerV1",
+        "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner"
+      },
+      "error": "learning_original_next_use_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_next_use_command_owner_factory",
+      "index": 365,
+      "phase": "boundary_rejected",
+      "status": "rejected"
+    }
+  ],
+  "source_rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "git_blob_sha": "fae852c8a1d5022347e632787172b99f9d119307",
+      "bytes": 3137,
+      "sha256": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "git_blob_sha": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+      "bytes": 7210,
+      "sha256": "10ecb5252d75d1d31af71f424d4fc7c57ce4e58486062b23953ac9555010c676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "git_blob_sha": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+      "bytes": 4445,
+      "sha256": "439c9edad9175b82fb4298cc3b68feda8298ee16680736a3190f07ebaee6c449"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "git_blob_sha": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+      "bytes": 9325,
+      "sha256": "d0b3994f8186631ea6e88c256e819644072244948922bf219889bf2f2db466ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "git_blob_sha": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "bytes": 4792,
+      "sha256": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "git_blob_sha": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "bytes": 10825,
+      "sha256": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "git_blob_sha": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+      "bytes": 10679,
+      "sha256": "3351b2bde358bbf965a683d67e25b19b68fee773dd07bad0be87cfc5c49ee2cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "git_blob_sha": "6e849c4d06337f809bab785a8b934aca8f85e019",
+      "bytes": 3773,
+      "sha256": "b5f47358eedae703714b8abf8cdbef073ac9e4f4427683900da3a37395d972a4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+      "git_blob_sha": "4a46b73bb8200bd61a6eb43a6338f3695d80ee04",
+      "bytes": 2169,
+      "sha256": "c1df25ab3c5cd6cbd8f84bc2f76b825bfeaa2e232923dc7268a2f135ddd958cb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+      "git_blob_sha": "0418a532daa7460954bec6d421d608c7aa1f16ee",
+      "bytes": 9119,
+      "sha256": "578c7df9e0391209e63151dafcee53ae1d76d00d4ef6e67da51a98633a2687b6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+      "git_blob_sha": "f8cb73a2b9f87e1c866e74771ba10678ef168f90",
+      "bytes": 3072,
+      "sha256": "e882fd75ef43d769b935cce46342880b05b03bee0179349b982a40d046056adc"
+    }
+  ]
+}

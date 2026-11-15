@@ -1,0 +1,40 @@
+2026-11-12T20:21:44.2347398Z FAIL: //codex-rs/exec-server:exec-server-exec_process-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-exec_process-test/test.log)
+2026-11-12T20:21:44.2406295Z INFO: From Testing //codex-rs/exec-server:exec-server-exec_process-test:
+2026-11-12T20:21:44.2506241Z ==================== Test output for //codex-rs/exec-server:exec-server-exec_process-test:
+2026-11-12T20:21:44.2666208Z 
+2026-11-12T20:21:44.2688348Z running 24 tests
+2026-11-12T20:21:44.2726345Z test exec_process_preserves_queued_events_before_subscribe::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3006581Z test exec_process_preserves_queued_events_before_subscribe::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3066280Z test exec_process_pushes_events::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3376147Z test exec_process_pushes_events::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3498979Z test exec_process_rejects_write_without_pipe_stdin::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3650467Z test exec_process_rejects_write_without_pipe_stdin::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3702109Z test exec_process_replays_events_after_close::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3703121Z test exec_process_replays_events_after_close::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3704097Z test exec_process_retains_output_after_exit_until_streams_close::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3705148Z test exec_process_retains_output_after_exit_until_streams_close::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3706116Z test exec_process_signal_interrupts_process::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3821934Z test exec_process_signal_interrupts_process::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.3964411Z test exec_process_signal_terminates_on_windows::test_case_1_local ... ok
+2026-11-12T20:21:44.3981336Z test exec_process_signal_terminates_on_windows::test_case_2_remote ... ok
+2026-11-12T20:21:44.4021096Z test exec_process_starts_and_exits::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4021918Z test exec_process_starts_and_exits::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4022810Z test exec_process_streams_output::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4023722Z test exec_process_streams_output::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4060405Z test exec_process_write_then_read::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4141290Z test exec_process_write_then_read::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4158802Z test exec_process_write_then_read_without_tty::test_case_1_local ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4301864Z test exec_process_write_then_read_without_tty::test_case_2_remote ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4341467Z test remote_exec_process_recovers_after_transport_disconnect ... ignored, Unix-only exec-server process test
+2026-11-12T20:21:44.4461926Z test remote_windows_sandbox_process_accepts_process_write ... FAILED
+2026-11-12T20:21:44.4567101Z 
+2026-11-12T20:21:44.4621376Z failures:
+2026-11-12T20:21:44.4648739Z 
+2026-11-12T20:21:44.4671107Z ---- remote_windows_sandbox_process_accepts_process_write stdout ----
+2026-11-12T20:21:44.4691128Z Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy
+2026-11-12T20:21:44.4760451Z 
+2026-11-12T20:21:44.4930846Z 
+2026-11-12T20:21:44.5001064Z failures:
+2026-11-12T20:21:44.5055606Z     remote_windows_sandbox_process_accepts_process_write
+2026-11-12T20:21:44.5211344Z 
+2026-11-12T20:21:44.5251518Z test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.51s

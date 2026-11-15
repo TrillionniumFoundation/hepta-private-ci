@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.original-guard-schema-diagnostics-review.v1",
+  "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "pushed_and_ref_readback": true,
+  "parent": "320533a257a257bbb8c43c3c1cdb6a645e841b53",
+  "kind": "Static source review, not execution of Python verifier",
+  "helper_static": [
+    {
+      "function": "fn new(",
+      "exact_selector_schema": true,
+      "sequence_is_list_of_at_least_two_nonempty_strings": true,
+      "unique_function": true,
+      "ordered_markers": 4,
+      "top_level": [
+        {
+          "marker": "Self {\n            slot:",
+          "unique": true,
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "function": "fn try_take(",
+      "exact_selector_schema": true,
+      "sequence_is_list_of_at_least_two_nonempty_strings": true,
+      "unique_function": true,
+      "ordered_markers": 8,
+      "top_level": [
+        {
+          "marker": "let value = {",
+          "unique": true,
+          "depth": 1
+        },
+        {
+          "marker": "Ok(ResidentLaneLease {",
+          "unique": true,
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "function": "fn state_mut(",
+      "exact_selector_schema": true,
+      "sequence_is_list_of_at_least_two_nonempty_strings": true,
+      "unique_function": true,
+      "ordered_markers": 2,
+      "top_level": [
+        {
+          "marker": "self.value.as_deref_mut().ok_or(Error::CommitUncertain)",
+          "unique": true,
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "function": "fn drop(",
+      "exact_selector_schema": true,
+      "sequence_is_list_of_at_least_two_nonempty_strings": true,
+      "unique_function": true,
+      "ordered_markers": 6,
+      "top_level": [
+        {
+          "marker": "let value = self.value.take()",
+          "unique": true,
+          "depth": 1
+        },
+        {
+          "marker": "let Ok(mut slot) = self.owner.slot.lock()",
+          "unique": true,
+          "depth": 1
+        },
+        {
+          "marker": "if slot.fenced || slot.value.is_some() || value.is_none()",
+          "unique": true,
+          "depth": 1
+        },
+        {
+          "marker": "slot.value = value",
+          "unique": true,
+          "depth": 1
+        }
+      ]
+    }
+  ],
+  "caller": {
+    "path": "CALLERS.toml",
+    "base": "8e3f621d4c1a67abd574ddeab9decd5188d34a7b",
+    "post_blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+    "bytes": 1129169,
+    "sha256": "d67c2f5595286ddc49c03f7a763d2a8734166060d6cf016d10271194de51419f",
+    "from": "{ function = \"fn state_mut(\", sequence = [\"self.value.as_deref_mut().ok_or(Error::CommitUncertain)\"]",
+    "to": "{ function = \"fn state_mut(\", sequence = [\"fn state_mut(\", \"self.value.as_deref_mut().ok_or(Error::CommitUncertain)\"]"
+  },
+  "pin": {
+    "path": ".github/blob-size-allowlist.txt",
+    "base": "a8f69041bbca28c43f5e9c16093f1c08268172b8",
+    "post_blob": "3032a463b76c44a934ee9338d2bffe51640727b9",
+    "bytes": 11699,
+    "sha256": "8983cbf6ea5bce8098580d840a1c633ca7379062c11d764376dc98e0be7bd07e",
+    "from": "sha256:d4bdc4ff2de50fcc7888c81f533bd2b1ee4da5fd66ef17df1accb76e138e534b CALLERS.toml",
+    "to": "sha256:d67c2f5595286ddc49c03f7a763d2a8734166060d6cf016d10271194de51419f CALLERS.toml"
+  },
+  "diagnostic": {
+    "path": ".github/workflows/blob-size-policy.yml",
+    "base": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+    "post_blob": "d867cbc5cae69837bbcaf4646b41da387d0a49f4",
+    "bytes": 1859,
+    "sha256": "b42ed6aeb9651f771edf01d8d31147f724ad4d36af92e195171da93ad02f48de",
+    "old": "      - uses: openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63 # pin@v0.10.0\n        with:\n          mode: audit",
+    "new": "      - uses: openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63 # pin@v0.10.0\n        env:\n          ACTIONS_STEP_DEBUG: \"true\"\n        with:\n          mode: audit",
+    "mode_pin_permissions_checkers_unchanged": true,
+    "official_action_debug_predicate": true,
+    "resident_child_environment_unchanged": true,
+    "journal_lines": 20,
+    "exact_missing_input_not_guaranteed": true
+  },
+  "source_test_failure": "403/414 pass; 11 identical schema errors. Rust tests not reached.",
+  "new_actor_or_research_effects": 0,
+  "checker_unchanged": true,
+  "ordinary_methods_unchanged": true,
+  "current_result": "PENDING_EXACT_SOURCE_CI"
+}

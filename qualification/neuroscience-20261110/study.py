@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict, dataclass
 from hashlib import sha256
-from itertools import product
+from itertools import islice, product
 import json
 import math
 from pathlib import Path
@@ -23,6 +23,18 @@ SCHEMA = "hepta.neuroscience.shadow.v1"
 
 class ContractError(ValueError):
     """Invalid input or unqualified experiment, never a model error."""
+
+
+def _bounded_materialize(values: Iterable, limit: int, label: str) -> list:
+    """Bound raw iterator consumption before duplicate/identity validation.
+
+    A post-hoc len(list(values)) check does not constrain one-shot streams or
+    infinite iterators; read only the permitted prefix and one overflow item.
+    """
+    items = list(islice(values, limit + 1))
+    if len(items) > limit:
+        raise ContractError(f"{label} input exceeds size limit")
+    return items
 
 
 def _digest(value: object) -> str:
@@ -69,9 +81,49 @@ class CreditReceipt:
     matched: int
     expired: int
     future_withheld: int
+    # Full-audit only. Receipts supplied after cutoff are known to this audit,
+    # not to a frozen selection caller. Do not export this count as a feature.
+    unobserved_action_count: int
     transcript_digest: str
+    # Frozen candidate identity excludes feedback unavailable at the cutoff.
+    # This is a self-declared digest, not an owner-attested witness.
+    causal_training_digest: str
     authority: str = "DENY_ALL"
     qualification: str = "SHADOW_ONLY"
+
+
+@dataclass(frozen=True)
+class FrozenCreditView:
+    """Candidate-facing, shadow-only projection of a full forensic receipt.
+
+    Never exports fields that depend on feedback unavailable at the cutoff:
+    future_withheld, unobserved_action_count, or transcript_digest. This
+    cannot authenticate source, feedback, model ownership or actual effects.
+    """
+    arm: str
+    deltas: tuple[float, ...]
+    matched: int
+    expired: int
+    causal_training_digest: str
+    authority: str = "DENY_ALL"
+    qualification: str = "SHADOW_ONLY"
+
+
+def frozen_credit_view(full_audit: CreditReceipt) -> FrozenCreditView:
+    """Redact hindsight-bearing forensic metadata before frozen selection.
+
+    Only receipts produced by the separate time-aligned shadow audit should
+    be passed here. The type guard is not cryptographic attestation.
+    """
+    if type(full_audit) is not CreditReceipt:
+        raise ContractError("invalid shadow credit audit receipt")
+    return FrozenCreditView(
+        arm=full_audit.arm,
+        deltas=full_audit.deltas,
+        matched=full_audit.matched,
+        expired=full_audit.expired,
+        causal_training_digest=full_audit.causal_training_digest,
+    )
 
 
 def time_aligned_credit(
@@ -91,9 +143,12 @@ def time_aligned_credit(
     coarser projection and thus is NOT an information-matched routing control.
     Routed and shuffled are information-matched routing controls.
     """
-    action_list, feedback_list = list(actions), list(feedback)
-    if arm not in ARMS or not action_list or not feedback_list:
-        raise ContractError("unknown arm or empty trace")
+    action_list = _bounded_materialize(actions, 65_536, "actions")
+    feedback_list = _bounded_materialize(feedback, 65_536, "feedback")
+    if arm not in ARMS or not action_list:
+        raise ContractError("unknown arm or empty action trace")
+    # An empty feedback trace is a legitimate sparse/delayed observation:
+    # zero measured outcomes is not a successful zero-valued outcome.
     if type(cutoff_sequence) is not int or cutoff_sequence < 0:
         raise ContractError("invalid training cutoff")
     if not _finite(decay) or not 0 <= decay <= 1:
@@ -124,7 +179,13 @@ def time_aligned_credit(
     target_ids: set[str] = set()
     accum = [0.0] * groups
     matched = expired = future_withheld = 0
-    for fb in feedback_list:
+    # The transcript digest sorts receipts by identity. Compute numerical credit
+    # in the same canonical order or equal digests can yield different updates
+    # under floating-point cancellation. Reject malformed types before sorting.
+    if any(type(fb) is not Feedback or not _valid_hash(fb.receipt_digest)
+           for fb in feedback_list):
+        raise ContractError("invalid feedback receipt")
+    for fb in sorted(feedback_list, key=lambda item: item.receipt_digest):
         if (not _valid_hash(fb.receipt_digest) or fb.receipt_digest in receipts
                 or fb.action_id in target_ids
                 or fb.action_id not in action_by_id
@@ -173,8 +234,67 @@ def time_aligned_credit(
         "per_group_limit": per_group_limit,
         "global_l1_limit": global_l1_limit,
     }
+    # A complete-input audit contains future feedback. It MUST NOT be used
+    # as a model-selection, training, or evaluator feature at this cutoff.
+    # The separate frozen-prefix identity depends only on feedback whose
+    # availability sequence is no later than the cutoff, independent of how
+    # many subsequent labels are appended or how their content changes.
+    causal_input = {
+        **canonical_input,
+        "feedback": [asdict(f) for f in sorted(
+            (f for f in feedback_list if f.available_sequence <= cutoff_sequence),
+            key=lambda f: f.receipt_digest)],
+    }
     return CreditReceipt(arm, tuple(projected), matched, expired,
-                         future_withheld, _digest(canonical_input))
+                         future_withheld, len(action_by_id) - len(target_ids),
+                         _digest(canonical_input),
+                         _digest(causal_input))
+
+
+def frozen_credit_from_prefix(
+    actions: Iterable[Eligibility],
+    feedback: Iterable[Feedback],
+    *,
+    arm: str,
+    cutoff_sequence: int,
+    decay: float,
+    max_lag: int,
+    per_group_limit: float = 0.5,
+    global_l1_limit: float = 1.0,
+) -> FrozenCreditView:
+    """Compute a shadow candidate view from a frozen feedback prefix.
+
+    The forensic `time_aligned_credit` validates *all* supplied receipts,
+    including future ones. Redacting its output cannot undo a rejection caused
+    by invalid post-cutoff feedback. Filter only by the declared availability
+    timestamp before invoking the ordinary validator, so an unrelated future
+    suffix cannot control frozen candidate admissibility. In-prefix errors
+    still fail closed.
+
+    This is not an owner-attested time source. Callers must obtain independently
+    attested availability for a production decision; no authority is granted.
+    """
+    if type(cutoff_sequence) is not int or cutoff_sequence < 0:
+        raise ContractError("invalid training cutoff")
+    observed: list[Feedback] = []
+    # Match the raw 65,536-receipt forensic input cap even when every event
+    # claims to arrive after cutoff. Otherwise a hostile future-only iterator
+    # bypasses the bounded evaluator by being filtered before validation.
+    # This is a resource refusal, not evidence of a model or owner decision.
+    for index, item in enumerate(feedback):
+        if index >= 65_536:
+            raise ContractError("frozen credit raw feedback exceeds size limit")
+        if type(item) is not Feedback or type(item.available_sequence) is not int:
+            raise ContractError("invalid feedback availability")
+        if item.available_sequence < 0:
+            raise ContractError("invalid feedback availability")
+        if item.available_sequence <= cutoff_sequence:
+            observed.append(item)
+    return frozen_credit_view(time_aligned_credit(
+        actions, observed, arm=arm, cutoff_sequence=cutoff_sequence,
+        decay=decay, max_lag=max_lag, per_group_limit=per_group_limit,
+        global_l1_limit=global_l1_limit,
+    ))
 
 
 @dataclass(frozen=True)
@@ -192,28 +312,61 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
     if set(gaps) != LINEAGES or any(type(x) is not int or x < 1 for x in gaps.values()):
         raise ContractError("all seven lineage clocks must be explicit positive integers")
     last: dict[str, int] = {}
+    # The last admitted clock slot is not the last observed event. A clock-denied
+    # event still advances the per-lineage event-time frontier. Otherwise an
+    # earlier candidate may be processed after a later denied opportunity.
+    last_seen_sequence: dict[str, int] = {}
+    # Track observed candidate generations separately from admitted clock slots.
+    # A denied opportunity must not permit a stale generation to reappear.
+    last_generation: dict[str, int] = {}
+    # A lineage/generation can enter REVIEW_CANDIDATE only once, even if
+    # the clock advances. Evidence-denied generations may receive their first
+    # review when independent evidence subsequently becomes available.
+    last_review_generation: dict[str, int] = {}
     outputs = []
-    for ev in events:
+    # The seven-lineage update stream is also a forensic input. Bound raw
+    # one-shot iterators before an attacker can grow the receipt list without
+    # limit; reject at the first excess item, never read a further item.
+    for index, ev in enumerate(events):
+        if index >= 65_536:
+            raise ContractError("clock raw input exceeds size limit")
+        if type(ev) is not UpdateOpportunity:
+            raise ContractError("invalid update opportunity")
         if (ev.lineage not in LINEAGES or type(ev.sequence) is not int
                 or ev.sequence < 0 or type(ev.candidate_generation) is not int
                 or ev.candidate_generation < 1
                 or type(ev.evaluation_independent) is not bool
                 or type(ev.preregistered_gate_passed) is not bool):
             raise ContractError("invalid update opportunity")
-        if ev.lineage in last and ev.sequence < last[ev.lineage]:
+        if (ev.lineage in last_seen_sequence
+                and ev.sequence < last_seen_sequence[ev.lineage]):
             raise ContractError("clock regression")
+        last_seen_sequence[ev.lineage] = ev.sequence
+        prior_generation = last_generation.get(ev.lineage)
+        if (prior_generation is not None
+                and ev.candidate_generation < prior_generation):
+            raise ContractError("candidate generation regression")
+        last_generation[ev.lineage] = ev.candidate_generation
         previous = last.get(ev.lineage)
         allowed = previous is None or ev.sequence - previous >= gaps[ev.lineage]
         if allowed:
             last[ev.lineage] = ev.sequence
-        qualified = allowed and ev.evaluation_independent and ev.preregistered_gate_passed
+        already_reviewed = (
+            last_review_generation.get(ev.lineage) == ev.candidate_generation
+        )
+        qualified = (allowed and ev.evaluation_independent
+                     and ev.preregistered_gate_passed and not already_reviewed)
+        if qualified:
+            last_review_generation[ev.lineage] = ev.candidate_generation
         outputs.append({
             "lineage": ev.lineage,
             "sequence": ev.sequence,
             "candidate_generation": ev.candidate_generation,
             "status": "REVIEW_CANDIDATE" if qualified else "NO_UPDATE",
             "reason": ("review_only" if qualified else
-                       "clock_gate" if not allowed else "evidence_gate"),
+                       "clock_gate" if not allowed else
+                       "duplicate_reviewed_generation" if already_reviewed else
+                       "evidence_gate"),
             "authority": "DENY_ALL",
         })
     return tuple(outputs)
@@ -228,6 +381,9 @@ class MemoryRecord:
     observed_sequence: int
     tombstoned: bool = False
     rights_revoked: bool = False
+    # Same owner-declared logical object across corrections/tombstones. A bare
+    # event_id means an independent object, never an inferred same-key erase.
+    logical_id: str | None = None
 
 
 def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: str,
@@ -238,16 +394,41 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
     if type(now_sequence) is not int or now_sequence < 0 or not (
             type(max_items) is int and 1 <= max_items <= 256):
         raise ContractError("invalid memory window or budget")
-    entries = list(records)
+    entries = _bounded_materialize(records, 65_536, "memory")
     if len(entries) > 65_536 or len({e.event_id for e in entries}) != len(entries):
         raise ContractError("duplicate memory identities or oversized records")
     for e in entries:
-        if (not e.event_id or not e.key or not _valid_hash(e.source_digest)
+        if (not isinstance(e.event_id, str) or not e.event_id
+                or not isinstance(e.key, str) or not e.key
+                or not _valid_hash(e.source_digest)
                 or e.kind not in MEMORY_KINDS or type(e.observed_sequence) is not int
-                or e.observed_sequence < 0):
+                or e.observed_sequence < 0 or type(e.tombstoned) is not bool
+                or type(e.rights_revoked) is not bool
+                or (e.logical_id is not None and
+                    (not isinstance(e.logical_id, str) or not e.logical_id))):
             raise ContractError("invalid memory event")
-    eligible = [e for e in entries if not e.tombstoned and not e.rights_revoked
-                and e.observed_sequence <= now_sequence]
+    # Visible revisions must be evaluated together. Filtering each tombstone
+    # individually can resurrect an older revision from the same logical object.
+    # A shared query key alone is NOT an identity: unrelated sources may share it.
+    # Explicit logical IDs and implicit per-event IDs are distinct namespaces.
+    # Otherwise a self-declared tombstone for logical_id == another event_id
+    # could suppress an unrelated record that never opted into that identity.
+    by_logical_id: dict[tuple[str, str], list[MemoryRecord]] = {}
+    for e in entries:
+        if e.observed_sequence <= now_sequence:
+            identity = (("logical", e.logical_id) if e.logical_id is not None
+                        else ("event", e.event_id))
+            by_logical_id.setdefault(identity, []).append(e)
+    eligible = []
+    for versions in by_logical_id.values():
+        if (len({e.observed_sequence for e in versions}) != len(versions)
+                or len({(e.key, e.kind) for e in versions}) != 1):
+            raise ContractError("ambiguous logical revision or identity drift")
+        # Revocation / deletion is sticky within this declared logical object.
+        # No unsigned later 'active' revision may grant restoration authority.
+        if any(e.tombstoned or e.rights_revoked for e in versions):
+            continue
+        eligible.append(max(versions, key=lambda e: e.observed_sequence))
     if policy == "exact":
         ordered = sorted((e for e in eligible if e.key == query_key),
                          key=lambda e: (-e.observed_sequence, e.event_id))
@@ -258,11 +439,53 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
                             key=lambda e: _digest([seed, e.event_id]))
                 for kind in MEMORY_KINDS}
         ordered = []
+        # Under a budget smaller than the number of live memory kinds, a
+        # fixed fact-first round robin *never* samples episode/skill/recovery.
+        # Rotate the start using the declared, reproducible per-trial seed.
+        # Seed custody is NOT authenticated in this shadow selector.
+        start = int(_digest(["stratified-kind-start.v1", seed]), 16) % len(MEMORY_KINDS)
+        kind_order = MEMORY_KINDS[start:] + MEMORY_KINDS[:start]
         while any(bins.values()) and len(ordered) < max_items:
-            for kind in MEMORY_KINDS:
+            for kind in kind_order:
                 if bins[kind]:
                     ordered.append(bins[kind].pop(0))
     return tuple(e.event_id for e in ordered[:max_items])
+
+
+def frozen_replay_from_prefix(
+    records: Iterable[MemoryRecord], *, policy: str, query_key: str,
+    now_sequence: int, max_items: int, seed: str,
+) -> tuple[str, ...]:
+    """Causal shadow replay from the owner-*declared* memory time prefix.
+
+    The full forensic selector validates every supplied record. Thus a future
+    revision, malformed hash, or duplicate event ID can make an earlier replay
+    attempt fail even when that future event was unavailable. This entrypoint
+    freezes visibility by declared sequence *before* identity and revision
+    validation; visible tombstones/revocations remain sticky and cannot revive
+    earlier versions. Malformed sequence types cannot safely be classified as
+    future and always fail closed.
+
+    Input sequence claims are NOT attested owner facts; no training, memory
+    deletion, permissions, effect execution, adoption or release is authorized.
+    This still scans the supplied raw records, so input reading is billable.
+    """
+    if type(now_sequence) is not int or now_sequence < 0:
+        raise ContractError("invalid frozen replay cutoff")
+    visible = []
+    for count, item in enumerate(records):
+        if count >= 65_536:
+            raise ContractError("frozen replay input exceeds size limit")
+        if (type(item) is not MemoryRecord
+                or type(item.observed_sequence) is not int
+                or item.observed_sequence < 0):
+            raise ContractError("invalid memory observation timestamp")
+        if item.observed_sequence <= now_sequence:
+            visible.append(item)
+    return select_replay(
+        visible, policy=policy, query_key=query_key, now_sequence=now_sequence,
+        max_items=max_items, seed=seed,
+    )
 
 
 @dataclass(frozen=True)
@@ -287,7 +510,7 @@ class TrialRow:
 
 def paired_evidence(rows: Iterable[TrialRow]) -> dict:
     """Audit complete paired rows; statistics do not grant independent authority."""
-    data = list(rows)
+    data = _bounded_materialize(rows, 400_000, "paired evaluation")
     if not data:
         raise ContractError("empty evaluation")
     keys: dict[tuple[str, int, str], dict[str, TrialRow]] = {}
@@ -312,11 +535,26 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
         block[row.arm] = row
     if len(keys) > 100_000:
         raise ContractError("too many matched evaluation blocks")
+    # Prospective seed clusters must have the same family-by-episode roster.
+    # Complete individual arm blocks alone do not make seed means comparable.
+    roster_by_seed: dict[int, dict[str, int]] = {}
+    for (_, seed, family) in keys:
+        roster = roster_by_seed.setdefault(seed, {})
+        roster[family] = roster.get(family, 0) + 1
+    if len({tuple(sorted(r.items())) for r in roster_by_seed.values()}) != 1:
+        raise ContractError("unequal family/episode roster across seed clusters")
     net_diffs_by_seed: dict[int, list[float]] = {}
     cost_diffs_by_seed: dict[int, list[float]] = {}
     retention_diffs_by_seed: dict[int, list[float]] = {}
     seen_receipts: set[str] = set()
     all_independent = True
+    # The evaluator and offered resource ceilings are pre-registered once per
+    # task family. Within-arm matching alone cannot prevent each new training
+    # seed or episode from silently switching the scoring rule or opportunity.
+    # Different task families may use different locked contracts; trained
+    # model/ability digests may legitimately differ between seeds.
+    frozen_evaluators: dict[str, str] = {}
+    frozen_opportunities: dict[str, tuple[int, int, int, int]] = {}
     for (episode_id, seed, family), block in keys.items():
         if set(block) != set(ARMS):
             raise ContractError("missing matched arm")
@@ -334,6 +572,16 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
             if row.outcome_receipt_digest in seen_receipts:
                 raise ContractError("reused outcome receipt across trial arms or blocks")
             seen_receipts.add(row.outcome_receipt_digest)
+        evaluator = ref.evaluator_digest
+        if family in frozen_evaluators and evaluator != frozen_evaluators[family]:
+            raise ContractError("unfrozen evaluator within task family")
+        frozen_evaluators[family] = evaluator
+        opportunity = (ref.feedback_budget_bits, ref.query_budget,
+                       ref.training_budget, ref.compute_budget_us)
+        if (family in frozen_opportunities
+                and opportunity != frozen_opportunities[family]):
+            raise ContractError("unfrozen resource opportunity within task family")
+        frozen_opportunities[family] = opportunity
         all_independent &= all(row.evaluator_independent for row in block.values())
         shuffled = block["shuffled"]
         net_diffs_by_seed.setdefault(seed, []).append(
@@ -341,7 +589,8 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
             (shuffled.gross_value - shuffled.full_cost))
         cost_diffs_by_seed.setdefault(seed, []).append(
             ref.full_cost - shuffled.full_cost)
-        if ref.retention_value is not None and shuffled.retention_value is not None:
+        # A full four-arm retention panel cannot be inferred from primary arms.
+        if all(row.retention_value is not None for row in block.values()):
             retention_diffs_by_seed.setdefault(seed, []).append(
                 ref.retention_value - shuffled.retention_value)
     # A seed reused across task families is ONE randomization unit, not
@@ -381,15 +630,45 @@ def _exact_one_sided_signflip_p(differences: list[float]) -> float:
     return count / (2 ** len(differences))
 
 
+
+def _iter_bounded_trial_rows(stream):
+    """Limit raw JSONL ingress, including blank lines, before decoding rows.
+
+    This CLI is a shadow evidence reader, not an attested evaluator. A list
+    comprehension before paired_evidence() bypassed its 400,000-record ceiling.
+    readline(size) bounds the parser-facing character count of each row.
+    """
+    max_lines = 400_000
+    max_chars = 65_536
+    for index in range(max_lines + 1):
+        line = stream.readline(max_chars + 1)
+        if not line:
+            return
+        if index == max_lines:
+            raise ContractError("raw trial JSONL input exceeds size limit")
+        if len(line) > max_chars:
+            raise ContractError("trial JSONL line exceeds character limit")
+        if not line.strip():
+            continue
+        try:
+            value = json.loads(line)
+            if type(value) is not dict:
+                raise TypeError("trial row must be an object")
+            yield TrialRow(**value)
+        except (TypeError, ValueError) as error:
+            raise ContractError("invalid trial JSONL row") from error
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--trials", type=Path, required=True,
                         help="JSONL of independent, full-cost paired TrialRow records")
     args = parser.parse_args()
     with args.trials.open(encoding="utf-8") as stream:
-        rows = [TrialRow(**json.loads(line)) for line in stream if line.strip()]
-    print(json.dumps(paired_evidence(rows), sort_keys=True, indent=2))
+        report = paired_evidence(_iter_bounded_trial_rows(stream))
+    print(json.dumps(report, sort_keys=True, indent=2))
 
 
 if __name__ == "__main__":
     main()
+

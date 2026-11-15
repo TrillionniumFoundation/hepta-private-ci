@@ -1,0 +1,44 @@
+{
+  "actual_test_method_names": [
+    "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+    "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+    "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+    "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+    "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "original_evaluation_provider_refuses_renewed_original_signatures",
+    "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+    "original_evaluation_provider_zero_support_consumes_holdout_once"
+  ],
+  "expected_case_names": [
+    "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+    "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+    "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+    "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+    "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "original_evaluation_provider_refuses_renewed_original_signatures",
+    "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+    "original_evaluation_provider_zero_support_consumes_holdout_once"
+  ],
+  "outside_tuple_byte_identical": true,
+  "old_count": 3,
+  "new_count": 8,
+  "collector_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+  "new_native_tests_executed": false,
+  "owner_decision": null,
+  "base_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "fixed_upstream": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+  "canonical_upstream_merge": {
+    "commit": "e932bac20aedfa54b0ce60a50e41ecd5da7db7c8",
+    "tree": "5056e8cd161f5b6005ed02b527c52fa1aba2588c",
+    "actual_parents": [
+      "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "1026bd09bc16e0035e8ea28053def5731d0a235e"
+    ]
+  },
+  "candidate_commit": "d3d5e268c15a22ce337d49d7c4ec35480a749a85",
+  "candidate_tree": "7b2ce6a8dcc8cc466872350d5ad03a0487dd51b4",
+  "candidate_ref_published": false,
+  "code_scope": "Seven exact upstream test fixture files plus one collector tuple; no other bytes change in recomputed tree.",
+  "subsequent_blocker": "Original1026 Linux native CI reported E0659 assert_eq ambiguity in learning-artifacts test support; a further explicit-import candidate fix is being prepared. This eight-path candidate is not yet sufficient or tested.",
+  "observed_at_utc": "2026-11-12 13:25:06 UTC"
+}

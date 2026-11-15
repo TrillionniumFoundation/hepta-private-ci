@@ -1,0 +1,1028 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "upstream_blob": "ab97ea7713fe060932345c5f8a30810ff92df7e0",
+    "ours_blob": "b207f9bf99365f63f65326c80be43b7219d119a1",
+    "post_blob": "c723279063258b677a5feecebf788d782205c1a8",
+    "relative_to_upstream": [
+      {
+        "old": 60,
+        "new": 60,
+        "del": [],
+        "add": [
+          "pub(crate) use learning_read::check_evaluated_profiles;",
+          "#[cfg(test)]"
+        ]
+      }
+    ],
+    "relative_to_ours": [
+      {
+        "old": 53,
+        "new": 53,
+        "del": [],
+        "add": [
+          "pub use learning_read::OriginalCircuitEvaluatedLearningReadContextV1;"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+    "upstream_blob": "4615bd9040ea5522dbbda5ac3a9da698a63f87cd",
+    "ours_blob": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f",
+    "post_blob": "7659699dbf3517e232bdab92449d4c86846fbece",
+    "relative_to_upstream": [
+      {
+        "old": 270,
+        "new": 270,
+        "del": [],
+        "add": [
+          "#[cfg(test)]",
+          "pub(crate) use evaluated::fixture::check_evaluated_profiles;",
+          ""
+        ]
+      }
+    ],
+    "relative_to_ours": [
+      {
+        "old": 27,
+        "new": 27,
+        "del": [
+          "use crate::OriginalCircuitEvaluatedRetentionContextV1;"
+        ],
+        "add": []
+      },
+      {
+        "old": 30,
+        "new": 29,
+        "del": [],
+        "add": [
+          "#[path = \"circuit_evaluated_learning_read.rs\"]",
+          "mod evaluated;",
+          "pub use evaluated::OriginalCircuitEvaluatedLearningReadContextV1;",
+          "",
+          "#[path = \"circuit_learning_read_profile.rs\"]",
+          "mod profile;",
+          "use profile::ReadProfile;",
+          ""
+        ]
+      },
+      {
+        "old": 53,
+        "new": 60,
+        "del": [
+          "// The legacy public input remains strict TrainingNoUpdate. Evaluated retention",
+          "// enters only through its opaque original proof, never through that input DTO.",
+          "struct ReadContext {",
+          "    prefix: LearningIterationSnapshotV1,",
+          "    scope: FrozenLearningScopeV2,",
+          "    verifier: LearningEvidenceVerifierV1,",
+          "    training_evidence: SignedLearningEvidenceV1,",
+          "    selection_evidence: Option<SignedLearningEvidenceV1>,",
+          "    evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,",
+          "}",
+          "",
+          "impl From<OriginalCircuitLearningReadContextV1> for ReadContext {",
+          "    fn from(value: OriginalCircuitLearningReadContextV1) -> Self {",
+          "        Self {",
+          "            prefix: value.prefix,",
+          "            scope: value.scope,",
+          "            verifier: value.verifier,",
+          "            training_evidence: value.training_evidence,",
+          "            selection_evidence: value.selection_evidence,",
+          "            evaluated: None,",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "impl ReadContext {",
+          "    fn from_evaluated(original: OriginalCircuitEvaluatedRetentionContextV1) -> Result<Self, Error> {",
+          "        let proof =",
+          "            OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(&original, now()?)",
+          "                .map_err(|_| Error::Binding(\"original evaluated retention read proof\"))?;",
+          "        Ok(Self {",
+          "            prefix: original.snapshot().clone(),",
+          "            scope: proof.scope.clone(),",
+          "            verifier: proof.verifier.clone(),",
+          "            training_evidence: proof.training.clone(),",
+          "            selection_evidence: None,",
+          "            evaluated: Some(original),",
+          "        })",
+          "    }",
+          "}",
+          ""
+        ],
+        "add": []
+      },
+      {
+        "old": 141,
+        "new": 108,
+        "del": [
+          "    context: ReadContext,"
+        ],
+        "add": [
+          "    context: ReadProfile,"
+        ]
+      },
+      {
+        "old": 157,
+        "new": 124,
+        "del": [
+          "        Self::bind_original_stream("
+        ],
+        "add": [
+          "        Self::from_original_profile("
+        ]
+      },
+      {
+        "old": 162,
+        "new": 129,
+        "del": [
+          "            context.into(),"
+        ],
+        "add": [
+          "            ReadProfile::TrainingNoUpdate(context),"
+        ]
+      },
+      {
+        "old": 168,
+        "new": 135,
+        "del": [
+          "    /// Read Selection CURRENT for a real four-cut negative evaluation. The",
+          "    /// consumed proof grants no publication, Selector or C execution right.",
+          "    pub fn from_original_evaluated_stream("
+        ],
+        "add": [
+          "    fn from_original_profile("
+        ]
+      },
+      {
+        "old": 175,
+        "new": 140,
+        "del": [
+          "        context: OriginalCircuitEvaluatedRetentionContextV1,"
+        ],
+        "add": [
+          "        context: ReadProfile,"
+        ]
+      },
+      {
+        "old": 179,
+        "new": 144,
+        "del": [
+          "        Self::bind_original_stream(",
+          "            stream,",
+          "            original_task_process,",
+          "            original_task_uid,",
+          "            original_task_pidfd,",
+          "            ReadContext::from_evaluated(context)?,",
+          "            timeout,",
+          "            lifetime,",
+          "        )",
+          "    }",
+          "",
+          "    fn bind_original_stream(",
+          "        stream: UnixStream,",
+          "        original_task_process: AgentdRootAuthorityPeer,",
+          "        original_task_uid: u32,",
+          "        original_task_pidfd: OwnedFd,",
+          "        context: ReadContext,",
+          "        timeout: Duration,",
+          "        lifetime: Duration,",
+          "    ) -> Result<Self, Error> {"
+        ],
+        "add": []
+      },
+      {
+        "old": 201,
+        "new": 146,
+        "del": [
+          "        let binding = wire::context_binding(&context, started_at)?;"
+        ],
+        "add": [
+          "        let binding = context.binding(started_at)?;"
+        ]
+      },
+      {
+        "old": 211,
+        "new": 156,
+        "del": [
+          "        if fresh < started_at || wire::context_binding(&context, fresh)? != binding {"
+        ],
+        "add": [
+          "        if fresh < started_at || context.binding(fresh)? != binding {"
+        ]
+      },
+      {
+        "old": 235,
+        "new": 180,
+        "del": [
+          "        if wire::context_binding(&self.context, started_at)? != self.binding {"
+        ],
+        "add": [
+          "        if self.context.binding(started_at)? != self.binding {"
+        ]
+      },
+      {
+        "old": 241,
+        "new": 186,
+        "del": [
+          "        let request = wire::Request::new(&self.context, self.binding, channel.next_request_id)?;"
+        ],
+        "add": [
+          "        let request = self",
+          "            .context",
+          "            .request(self.binding, channel.next_request_id)?;"
+        ]
+      },
+      {
+        "old": 255,
+        "new": 202,
+        "del": [
+          "        let current = response.read.decode(&self.context)?;"
+        ],
+        "add": [
+          "        let current = self.context.decode(response.read)?;"
+        ]
+      },
+      {
+        "old": 258,
+        "new": 205,
+        "del": [
+          "        if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {"
+        ],
+        "add": [
+          "        if fresh < started_at || self.context.binding(fresh)? != self.binding {"
+        ]
+      },
+      {
+        "old": 283,
+        "new": 230,
+        "del": [
+          "        if self.context.evaluated.is_some()",
+          "            || &self.context.prefix != prefix",
+          "            || self.context.scope.binding() != scope.binding()",
+          "            || self.context.verifier.trust_digest() != verifier.trust_digest()",
+          "            || self.context.verifier.scope_digest() != verifier.scope_digest()",
+          "            || self.context.verifier.objective_digest() != verifier.objective_digest()",
+          "            || &self.context.training_evidence != training",
+          "            || self.context.selection_evidence.as_ref() != selection"
+        ],
+        "add": [
+          "        let context = self.context.legacy()?;",
+          "        if &context.prefix != prefix",
+          "            || context.scope.binding() != scope.binding()",
+          "            || context.verifier.trust_digest() != verifier.trust_digest()",
+          "            || context.verifier.scope_digest() != verifier.scope_digest()",
+          "            || context.verifier.objective_digest() != verifier.objective_digest()",
+          "            || &context.training_evidence != training",
+          "            || context.selection_evidence.as_ref() != selection"
+        ]
+      },
+      {
+        "old": 324,
+        "new": 271,
+        "del": [
+          "#[path = \"circuit_evaluated_current_read_tests.rs\"]",
+          "mod evaluated_tests;",
+          "#[cfg(test)]",
+          "pub(crate) use evaluated_tests::check_evaluated_profiles;"
+        ],
+        "add": [
+          "pub(crate) use evaluated::fixture::check_evaluated_profiles;"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+    "upstream_blob": "b4ad6a28ee6f7bf839bc8d029440e4c1b86be33a",
+    "ours_blob": null,
+    "post_blob": "630863456336eb5e90ef4e1f62d4abbf20086f59",
+    "relative_to_upstream": [
+      {
+        "old": 219,
+        "new": 219,
+        "del": [],
+        "add": [
+          "#[cfg(test)]",
+          "#[path = \"circuit_evaluated_current_read_tests.rs\"]",
+          "pub(crate) mod fixture;",
+          ""
+        ]
+      }
+    ],
+    "relative_to_ours": null
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+    "upstream_blob": null,
+    "ours_blob": "2c9d23e02cb8bc0069c1411e846960e416a9dce3",
+    "post_blob": "431f3743032b047ab738e649e43e4db94a9dfd24",
+    "relative_to_upstream": null,
+    "relative_to_ours": [
+      {
+        "old": 1,
+        "new": 1,
+        "del": [
+          "//! Exercises the private read wire using actual opaque Evaluator results from",
+          "//! the host fixture. This is mechanism evidence, not deployed qualification."
+        ],
+        "add": [
+          "//! The canonical evaluated read profile consumes actual opaque T/B results.",
+          "//! Fresh/cold publication origins remain distinct before explicit read-only",
+          "//! conversion. This private fixture neither exports fields nor grants work."
+        ]
+      },
+      {
+        "old": 5,
+        "new": 6,
+        "del": [
+          "use pretty_assertions::assert_ne;"
+        ],
+        "add": []
+      },
+      {
+        "old": 8,
+        "new": 8,
+        "del": [],
+        "add": [
+          "use crate::OriginalCircuitLearningReadContextV1;",
+          "use crate::OriginalCircuitRetainedPublicationErrorV1;"
+        ]
+      },
+      {
+        "old": 12,
+        "new": 14,
+        "del": [],
+        "add": [
+          "    evaluation_expires_at: u64,"
+        ]
+      },
+      {
+        "old": 13,
+        "new": 16,
+        "del": [
+          "    let mut fresh = ReadContext::from_evaluated(fresh)?;",
+          "    let cold = ReadContext::from_evaluated(cold)?;"
+        ],
+        "add": []
+      },
+      {
+        "old": 16,
+        "new": 17,
+        "del": [
+          "    let binding = wire::context_binding(&fresh, at)?;",
+          "    let cold_binding = wire::context_binding(&cold, at)?;",
+          "    assert_ne!(binding, cold_binding);",
+          "    assert_eq!(wire::mode(&fresh)?, wire::Mode::Selection);",
+          "    assert_eq!(wire::mode(&cold)?, wire::Mode::Selection);",
+          "    assert_eq!(wire::decision(&fresh)?.snapshot(), &fresh.prefix);",
+          "    assert_eq!(fresh.prefix, cold.prefix);"
+        ],
+        "add": [
+          "    // The original publication distinction is preserved before conversion.",
+          "    fresh.require_new_original_receipt(at)?;",
+          "    assert!(matches!(",
+          "        cold.require_new_original_receipt(at),",
+          "        Err(OriginalCircuitRetainedPublicationErrorV1::Binding(",
+          "            \"recovered evaluated retention is read-only\"",
+          "        ))",
+          "    ));",
+          "    let (scope, verifier, training_evidence) = fresh.receipt_configuration();",
+          "    let expired = training_evidence",
+          "        .expires_at",
+          "        .max(evaluation_expires_at)",
+          "        .saturating_add(1);",
+          "    let mut legacy = OriginalCircuitLearningReadContextV1 {",
+          "        prefix: fresh.snapshot().clone(),",
+          "        scope,",
+          "        verifier,",
+          "        training_evidence,",
+          "        selection_evidence: None,",
+          "    };",
+          "    let fresh = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(fresh)?;",
+          "    let cold = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(cold)?;",
+          "    for profile in [&fresh, &cold] {",
+          "        let OriginalCut::Selection(original) = &profile.original else {",
+          "            anyhow::bail!(\"Selection input became a NextUse capability\");",
+          "        };",
+          "        assert!(matches!(",
+          "            original.require_new_original_receipt(at),",
+          "            Err(OriginalCircuitRetainedPublicationErrorV1::Binding(",
+          "                \"recovered evaluated retention is read-only\"",
+          "            ))",
+          "        ));",
+          "    }",
+          "    let fresh = ReadProfile::Evaluated(fresh);",
+          "    let cold = ReadProfile::Evaluated(cold);",
+          "    let binding = fresh.binding(at)?;",
+          "    // The public Selection read factory attenuates both origins to the same",
+          "    // read-only purpose; neither retains fresh publication or receipt authority.",
+          "    assert_eq!(binding, cold.binding(at)?);",
+          "    assert_eq!(fresh.mode()?, wire::Mode::Selection);",
+          "    assert_eq!(cold.mode()?, wire::Mode::Selection);",
+          "    assert_eq!(fresh.decision()?.snapshot(), fresh.prefix());",
+          "    assert_eq!(fresh.prefix(), cold.prefix());",
+          "    assert!(fresh.legacy().is_err());",
+          "    assert!(cold.legacy().is_err());"
+        ]
+      },
+      {
+        "old": 24,
+        "new": 63,
+        "del": [
+          "    let request = wire::Request::new(&fresh, binding, /*request_id*/ 1)?;",
+          "    request.require_context(&fresh, binding, /*request_id*/ 1)?;",
+          "    assert!(",
+          "        request",
+          "            .require_context(&cold, cold_binding, /*request_id*/ 1)",
+          "            .is_err()",
+          "    );",
+          "    let mut injected = serde_json::to_value(&request)?;"
+        ],
+        "add": [
+          "    let request = fresh.request(binding, /*request_id*/ 1)?;",
+          "    fresh.require_request(&request, binding, /*request_id*/ 1)?;",
+          "    cold.require_request(&request, binding, /*request_id*/ 1)?;",
+          "    let value = serde_json::to_value(&request)?;",
+          "    for (field, replacement) in [",
+          "        (\"schema\", serde_json::json!(2)),",
+          "        (\"operation\", serde_json::json!(wire::OPERATION)),",
+          "        (\"request_id\", serde_json::json!(2)),",
+          "        (",
+          "            \"binding\",",
+          "            serde_json::json!(Digest32::of_bytes(b\"other-proof\").to_string()),",
+          "        ),",
+          "        (",
+          "            \"prefix_head\",",
+          "            serde_json::json!(Digest32::of_bytes(b\"other-cut\").to_string()),",
+          "        ),",
+          "        (",
+          "            \"operation_id\",",
+          "            serde_json::json!(\"other-source-operation\"),",
+          "        ),",
+          "        (\"mode\", serde_json::json!(\"next_use\")),",
+          "    ] {",
+          "        let mut changed = value.clone();",
+          "        changed[field] = replacement;",
+          "        let changed: wire::Request = serde_json::from_value(changed)?;",
+          "        assert!(matches!(",
+          "            fresh.require_request(&changed, binding, /*request_id*/ 1),",
+          "            Err(Error::Binding(\"original fixed evaluated read request\"))",
+          "        ));",
+          "    }",
+          "    let mut injected = value;"
+        ]
+      },
+      {
+        "old": 35,
+        "new": 97,
+        "del": [
+          "    let legacy: ReadContext = OriginalCircuitLearningReadContextV1 {",
+          "        prefix: fresh.prefix.clone(),",
+          "        scope: fresh.scope.clone(),",
+          "        verifier: fresh.verifier.clone(),",
+          "        training_evidence: fresh.training_evidence.clone(),",
+          "        selection_evidence: None,",
+          "    }",
+          "    .into();"
+        ],
+        "add": [
+          "    // The public legacy DTO cannot relabel CandidateTraining/Evaluation as",
+          "    // TrainingNoUpdate, including a fabricated extra Selector hint.",
+          "    assert!(wire::context_binding(&legacy, at).is_err());",
+          "    legacy.selection_evidence = Some(legacy.training_evidence.clone());"
+        ]
+      },
+      {
+        "old": 44,
+        "new": 102,
+        "del": [
+          "    // Neither a fifth-cut hint nor a Selector signature opens NextUse here.",
+          "    fresh.selection_evidence = Some(fresh.training_evidence.clone());",
+          "    assert!(wire::context_binding(&fresh, at).is_err());",
+          "    fresh.selection_evidence = None;",
+          "    fresh.prefix.request.source_run_id = codex_hepta_types::StableId::new(\"other-source-run\")?;",
+          "    assert!(wire::context_binding(&fresh, at).is_err());",
+          "    fresh.prefix = cold.prefix.clone();",
+          "    fresh.training_evidence.expires_at -= 1;",
+          "    assert!(wire::context_binding(&fresh, at).is_err());",
+          "    let proof = cold.evaluated.as_ref().unwrap().original_read_proof(at)?;",
+          "    let expired = proof",
+          "        .training",
+          "        .expires_at",
+          "        .max(proof.evaluation.expires_at)",
+          "        .saturating_add(1);",
+          "    assert!(wire::context_binding(&cold, expired).is_err());"
+        ],
+        "add": [
+          "    assert!(fresh.binding(expired).is_err());",
+          "    assert!(cold.binding(expired).is_err());"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+    "upstream_blob": null,
+    "ours_blob": "b500835023c268bf7253049bc2264e93d5117b75",
+    "post_blob": "be937fcf611a99aa20c7368ef32479bdb304144d",
+    "relative_to_upstream": null,
+    "relative_to_ours": [
+      {
+        "old": 76,
+        "new": 76,
+        "del": [
+          "        let context = || {",
+          "            if readback {",
+          "                f.readback_context()",
+          "            } else {",
+          "                f.context()",
+          "            }",
+          "        };"
+        ],
+        "add": [
+          "        let context =",
+          "            || -> anyhow::Result<crate::OriginalCircuitEvaluatedLearningReadContextV1> {",
+          "                let original = if readback {",
+          "                    f.readback_context()?",
+          "                } else {",
+          "                    f.context()?",
+          "                };",
+          "                Ok(crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(",
+          "                    original,",
+          "                )?)",
+          "            };"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+    "upstream_blob": "31839e7d688471e97945493bf77f08c0b1fc3ce8",
+    "ours_blob": "f8235bff86212e46d82a354e01fb9efaadbd04c5",
+    "post_blob": "b696b8b740c09705e37872c6a723d8fd3d5779b3",
+    "relative_to_upstream": [
+      {
+        "old": 61,
+        "new": 61,
+        "del": [],
+        "add": [
+          "    let cold = OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(",
+          "        fixture.config.scope.clone(),",
+          "        fixture.config.signing.verifier.clone(),",
+          "        &training,",
+          "        &evaluation,",
+          "    )?;",
+          "    crate::circuit_feature_current::check_evaluated_profiles(",
+          "        context,",
+          "        cold,",
+          "        evaluation.attestation().expires_at,",
+          "    )?;",
+          "    // The fixture's actual changed-model C cannot satisfy retained baseline CURRENT.",
+          "    let fresh = OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(",
+          "        fixture.config.scope.clone(),",
+          "        fixture.config.signing.verifier.clone(),",
+          "        &training,",
+          "        &evaluation,",
+          "    )?;",
+          "    assert!(matches!(",
+          "        crate::OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(",
+          "            fixture.original.session.cell.clone(),",
+          "            fixture.original.session.source.as_ref().clone(),",
+          "            fixture.original.session.runtime.identity.clone(),",
+          "            crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(fresh)?,",
+          "        ),",
+          "        Err(crate::OriginalCircuitLearningReadErrorV1::Owner(crate::AgentdError::Invalid(detail)))",
+          "            if detail == \"learning decision differs from the original published task owner\"",
+          "    ));"
+        ]
+      }
+    ],
+    "relative_to_ours": [
+      {
+        "old": 67,
+        "new": 67,
+        "del": [
+          "    crate::circuit_feature_current::check_evaluated_profiles(context, cold)?;"
+        ],
+        "add": [
+          "    crate::circuit_feature_current::check_evaluated_profiles(",
+          "        context,",
+          "        cold,",
+          "        evaluation.attestation().expires_at,",
+          "    )?;"
+        ]
+      },
+      {
+        "old": 79,
+        "new": 83,
+        "del": [
+          "            fixture.original.session.runtime.identity.clone(), fresh,"
+        ],
+        "add": [
+          "            fixture.original.session.runtime.identity.clone(),",
+          "            crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(fresh)?,"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "upstream_blob": "000b30f33d64ded1d803484679d0df3ccfbc06c3",
+    "ours_blob": "f01bc644bea8a29e6c72e19f39855d11a214eef9",
+    "post_blob": "c18327a1b6ed3a437bdbbee8e6c110f8212d535b",
+    "relative_to_upstream": [
+      {
+        "old": 34,
+        "new": 34,
+        "del": [
+          "    \"learning_original_owner_command_channel\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\", \"codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs\",),"
+        ],
+        "add": [
+          "    \"learning_original_owner_command_channel\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command.rs\", \"codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\", \"codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs\", \"codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs\", \"codex-rs/hepta-agentd/src/artifact_original_head_client.rs\", \"codex-rs/hepta-agentd/src/artifact_original_head_service.rs\", \"codex-rs/hepta-agentd/src/artifact_original_registry_source.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs\",),"
+        ]
+      },
+      {
+        "old": 47,
+        "new": 47,
+        "del": [
+          "    \"learning_original_selector_command_context\": (\"codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\",),"
+        ],
+        "add": [
+          "    \"learning_original_selector_command_context\": (\"codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\",),"
+        ]
+      },
+      {
+        "old": 53,
+        "new": 53,
+        "del": [
+          "    \"learning_original_material_initial_context_check\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs\", \"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_context.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\",),",
+          "    \"learning_original_material_dataset_context_check\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_context.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs\",),"
+        ],
+        "add": [
+          "    \"learning_original_material_initial_context_check\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs\", \"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_context.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_service.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\",),",
+          "    \"learning_original_material_dataset_context_check\": (\"codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\", \"codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\", \"codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\", \"codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\", \"codex-rs/hepta-agentd/src/circuit_retained_version_context.rs\", \"codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs\", \"codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs\",),"
+        ]
+      }
+    ],
+    "relative_to_ours": [
+      {
+        "old": 262,
+        "new": 262,
+        "del": [
+          "            \"request.require_context(&self.context, self.binding, request_id)?\","
+        ],
+        "add": [
+          "            \"request.require_context(self.context.legacy()?, self.binding, request_id)?\","
+        ]
+      },
+      {
+        "old": 264,
+        "new": 264,
+        "del": [
+          "            \"fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding\","
+        ],
+        "add": [
+          "            \"fresh < started_at\\n            || wire::context_binding(self.context.legacy()?, fresh)? != self.binding\","
+        ]
+      }
+    ]
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+    "upstream_blob": "6cc790be198095cf1c9891d6fc4a4ce063b56b7c",
+    "ours_blob": "133424ed5a03d6f695f771e514065b2448a21024",
+    "post_blob": "e6bb60716905a5eca08f54dd8d90d8f6086ad3d2",
+    "relative_to_upstream": [
+      {
+        "old": 32,
+        "new": 32,
+        "del": [],
+        "add": [
+          "    \"learning_original_evaluated_read_selection_context\": (),",
+          "    \"learning_original_evaluated_read_next_use_context\": (),",
+          "    \"learning_original_evaluated_read_client_create\": (),",
+          "    \"learning_original_evaluated_read_owner_create\": (),"
+        ]
+      },
+      {
+        "old": 39,
+        "new": 43,
+        "del": [
+          "    \"learning_original_circuit_selection_remote_readback\": (\"codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs\"),"
+        ],
+        "add": [
+          "    \"learning_original_circuit_selection_remote_readback\": (\"codex-rs/hepta-agentd/src/circuit_selection_command_service.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs\", \"codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs\"),"
+        ]
+      },
+      {
+        "old": 117,
+        "new": 121,
+        "del": [],
+        "add": [
+          "    def test_evaluated_current_read_keeps_opaque_receipts_and_read_only_attenuation(self):",
+          "        context = AGENT + \"circuit_evaluated_retention_context.rs\"",
+          "        cut = AGENT + \"circuit_evaluated_learning_read.rs\"",
+          "        for path, function, markers in (",
+          "            (context, \"fn original_receipt_predecessors(\", (",
+          "                \"self.authenticate(at, PublicationAccess::Readback)?\",",
+          "                \"self.verify_original_predecessors(at)\",",
+          "            )),",
+          "            (context, \"fn clone_for_original_receipt(\", (",
+          "                \"scope: self.scope.clone()\",",
+          "                \"verifier: self.verifier.clone()\",",
+          "                \"training: self.training.clone()\",",
+          "                \"evaluation: self.evaluation.clone()\",",
+          "                \"origin: self.origin\",",
+          "            )),",
+          "            (context, \"fn into_original_receipt_readback(\", (",
+          "                \"self.origin = Origin::Readback\",",
+          "            )),",
+          "            (cut, \"fn for_original_selection(\", (",
+          "                \"context.into_original_receipt_readback()\",",
+          "                \"OriginalCut::Selection(context)\",",
+          "                \"profile.binding(now()?)?\",",
+          "            )),",
+          "            (cut, \"fn for_original_next_use(\", (",
+          "                \"selection.into_original_receipt_readback()\",",
+          "                \"OriginalCut::NextUse(selection)\",",
+          "                \"profile.binding(now()?)?\",",
+          "            )),",
+          "            (MAIN, \"fn require_original_context(\", (\"self.context.legacy()?\",)),",
+          "            (cut, \"fn binding(\", (",
+          "                \".original_receipt_predecessors(at)\",",
+          "                \"LearningIterationStageV1::Selection\",",
+          "                \"context.receipt_context_binding()\",",
+          "                \"prefix.receipts.len() != length\",",
+          "                \"coordinator.next_stage() != Some(stage)\",",
+          "                \"prefix.training_no_update_v2().is_some()\",",
+          "                \"self.scope.validate_snapshot(prefix)?\",",
+          "                \"&encode_original_owner_snapshot_v1(prefix)?\",",
+          "                \"self.scope.binding().as_array()\",",
+          "            )),",
+          "            (context, \"fn receipt_context_binding(\", (",
+          "                \"&self.training.attestation().signing_bytes()\",",
+          "                \"&self.training.attestation().signature\",",
+          "                \"&self.evaluation.attestation().signing_bytes()\",",
+          "                \"&self.evaluation.attestation().signature\",",
+          "            )),",
+          "        ):",
+          "            for marker in markers:",
+          "                with self.subTest(path=path, marker=marker):",
+          "                    self.rejects(path, function, marker)",
+          ""
+        ]
+      },
+      {
+        "old": 210,
+        "new": 265,
+        "del": [],
+        "add": [
+          "            profile = \"&self.profile, \"",
+          "            remote_condition = (",
+          "                \"if matches!(\\n            source.location(),\\n\"",
+          "                \"            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\\n\"",
+          "                \"        )\"",
+          "            )"
+        ]
+      },
+      {
+        "old": 216,
+        "new": 277,
+        "del": [
+          "                \"ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\","
+        ],
+        "add": [
+          "                remote_condition,"
+        ]
+      },
+      {
+        "old": 218,
+        "new": 279,
+        "del": [
+          "                f\"{verifier}(&self.config, &self.profile, &before, now()?)?\","
+        ],
+        "add": [
+          "                f\"{verifier}(&self.config, {profile}&before, now()?)?\","
+        ]
+      },
+      {
+        "old": 235,
+        "new": 296,
+        "del": [
+          "            self.rejects(path, \"fn authenticate_completed(\", f\"{verifier}(&self.config, &self.profile, evidence, current)?\")"
+        ],
+        "add": [
+          "            self.rejects(path, \"fn authenticate_completed(\", f\"{verifier}(&self.config, {profile}evidence, current)?\")"
+        ]
+      }
+    ],
+    "relative_to_ours": [
+      {
+        "old": 32,
+        "new": 32,
+        "del": [
+          "    \"learning_evaluated_current_read_client\": (),",
+          "    \"learning_evaluated_current_read_owner\": (),",
+          "    \"learning_evaluated_retention_read_proof\": (MAIN, WIRE),"
+        ],
+        "add": [
+          "    \"learning_original_evaluated_read_selection_context\": (),",
+          "    \"learning_original_evaluated_read_next_use_context\": (),",
+          "    \"learning_original_evaluated_read_client_create\": (),",
+          "    \"learning_original_evaluated_read_owner_create\": (),"
+        ]
+      },
+      {
+        "old": 36,
+        "new": 37,
+        "del": [
+          "    \"learning_original_published_read_client_current\": (SELECTOR, OBSERVER),"
+        ],
+        "add": [
+          "    \"learning_original_published_read_client_current\": (SELECTOR, OBSERVER, AGENT + \"circuit_evaluated_selection_remote.rs\"),"
+        ]
+      },
+      {
+        "old": 120,
+        "new": 121,
+        "del": [
+          "    def test_evaluated_current_read_keeps_opaque_four_cut_proof_and_cold_origin(self):"
+        ],
+        "add": [
+          "    def test_evaluated_current_read_keeps_opaque_receipts_and_read_only_attenuation(self):"
+        ]
+      },
+      {
+        "old": 122,
+        "new": 123,
+        "del": [],
+        "add": [
+          "        cut = AGENT + \"circuit_evaluated_learning_read.rs\""
+        ]
+      },
+      {
+        "old": 123,
+        "new": 125,
+        "del": [
+          "            (context, \"fn original_read_proof(\", ("
+        ],
+        "add": [
+          "            (context, \"fn original_receipt_predecessors(\", ("
+        ]
+      },
+      {
+        "old": 125,
+        "new": 127,
+        "del": [
+          "                \"training: self.training.attestation()\",",
+          "                \"evaluation: self.evaluation.attestation()\",",
+          "                \"origin: match self.origin\",",
+          "                \"Origin::Fresh =>\",",
+          "                \"Origin::Readback =>\","
+        ],
+        "add": [
+          "                \"self.verify_original_predecessors(at)\",",
+          "            )),",
+          "            (context, \"fn clone_for_original_receipt(\", (",
+          "                \"scope: self.scope.clone()\",",
+          "                \"verifier: self.verifier.clone()\",",
+          "                \"training: self.training.clone()\",",
+          "                \"evaluation: self.evaluation.clone()\",",
+          "                \"origin: self.origin\",",
+          "            )),",
+          "            (context, \"fn into_original_receipt_readback(\", (",
+          "                \"self.origin = Origin::Readback\",",
+          "            )),",
+          "            (cut, \"fn for_original_selection(\", (",
+          "                \"context.into_original_receipt_readback()\",",
+          "                \"OriginalCut::Selection(context)\",",
+          "                \"profile.binding(now()?)?\","
+        ]
+      },
+      {
+        "old": 131,
+        "new": 144,
+        "del": [
+          "            (MAIN, \"fn from_evaluated(\", (",
+          "                \"OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(&original, now()?)\",",
+          "                \"prefix: original.snapshot().clone()\",",
+          "                \"evaluated: Some(original)\","
+        ],
+        "add": [
+          "            (cut, \"fn for_original_next_use(\", (",
+          "                \"selection.into_original_receipt_readback()\",",
+          "                \"OriginalCut::NextUse(selection)\",",
+          "                \"profile.binding(now()?)?\","
+        ]
+      },
+      {
+        "old": 136,
+        "new": 149,
+        "del": [
+          "            (MAIN, \"fn require_original_context(\", (\"self.context.evaluated.is_some()\",)),",
+          "            (WIRE, \"fn mode(\", (",
+          "                \"&context.prefix != original.snapshot()\",",
+          "                \"context.prefix.receipts.len() != 4\",",
+          "                \"context.selection_evidence.is_some()\","
+        ],
+        "add": [
+          "            (MAIN, \"fn require_original_context(\", (\"self.context.legacy()?\",)),",
+          "            (cut, \"fn binding(\", (",
+          "                \".original_receipt_predecessors(at)\",",
+          "                \"LearningIterationStageV1::Selection\",",
+          "                \"context.receipt_context_binding()\",",
+          "                \"prefix.receipts.len() != length\",",
+          "                \"coordinator.next_stage() != Some(stage)\",",
+          "                \"prefix.training_no_update_v2().is_some()\",",
+          "                \"self.scope.validate_snapshot(prefix)?\",",
+          "                \"&encode_original_owner_snapshot_v1(prefix)?\",",
+          "                \"self.scope.binding().as_array()\","
+        ]
+      },
+      {
+        "old": 142,
+        "new": 161,
+        "del": [
+          "            (WIRE, \"fn context_binding(\", (",
+          "                \"OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(original, at)\",",
+          "                \"proof.training != &context.training_evidence\",",
+          "                \"proof.origin\",",
+          "                \"&proof.evaluation.signing_bytes()\",",
+          "                \"&proof.evaluation.signature\","
+        ],
+        "add": [
+          "            (context, \"fn receipt_context_binding(\", (",
+          "                \"&self.training.attestation().signing_bytes()\",",
+          "                \"&self.training.attestation().signature\",",
+          "                \"&self.evaluation.attestation().signing_bytes()\",",
+          "                \"&self.evaluation.attestation().signature\","
+        ]
+      },
+      {
+        "old": 202,
+        "new": 220,
+        "del": [
+          "            \"response.read.decode(&self.context)?\",",
+          "            \"wire::context_binding(&self.context, fresh)? != self.binding\","
+        ],
+        "add": [
+          "            \"self.context.decode(response.read)?\",",
+          "            \"self.context.binding(fresh)? != self.binding\","
+        ]
+      },
+      {
+        "old": 234,
+        "new": 252,
+        "del": [
+          "            \"request.require_context(&self.context, self.binding, request_id)?\","
+        ],
+        "add": [
+          "            \"self.context\\n            .require_request(&request, self.binding, request_id)?\","
+        ]
+      },
+      {
+        "old": 236,
+        "new": 254,
+        "del": [
+          "            \"wire::context_binding(&self.context, fresh)? != self.binding\","
+        ],
+        "add": [
+          "            \"self.context.binding(fresh)? != self.binding\","
+        ]
+      },
+      {
+        "old": 297,
+        "new": 315,
+        "del": [
+          "            \"state_partition.run_id == context.prefix.request.source_run_id\","
+        ],
+        "add": [
+          "            \"state_partition.run_id == prefix.request.source_run_id\","
+        ]
+      },
+      {
+        "old": 299,
+        "new": 317,
+        "del": [
+          "            \"context.scope.validate_observation(&observation)?\","
+        ],
+        "add": [
+          "            \"scope.validate_observation(&observation)?\","
+        ]
+      },
+      {
+        "old": 301,
+        "new": 319,
+        "del": [
+          "            self.rejects(WIRE, \"fn decode(\", marker)"
+        ],
+        "add": [
+          "            self.rejects(WIRE, \"fn decode_original(\", marker)"
+        ]
+      }
+    ]
+  }
+]

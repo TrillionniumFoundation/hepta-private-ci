@@ -1,0 +1,204 @@
+{
+  "schema": "hepta.cost-batch-candidate.v2",
+  "base_source": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "failed_source": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "failed_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "original_job": 131446361362,
+  "original_log_excerpt": {
+    "git_blob_sha": "3473021e19a0ef733dbd019a5d68e7d05fe9f061",
+    "bytes": 27354,
+    "sha256": "86af2b9676a0cba9e5de8dc79e7d162a42a098709d412fe8ea9610311159d10b"
+  },
+  "original_observation": {
+    "declared_methods": 209,
+    "unique_terminal_ok": 208,
+    "terminal_failed": 0,
+    "terminal_ignored": 0,
+    "one_unfinished_method": "cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement",
+    "timeout_at_utc": "2026-11-12 20:04:20",
+    "buffered_report_at_utc": "2026-11-12 20:08:22",
+    "buffered_delay_not_test_duration": true
+  },
+  "diagnosis": {
+    "loop_is_finite": 127,
+    "history_entries": 4048,
+    "original_accumulated_history_entry_validations": 8191128,
+    "candidate_accumulated_history_entry_validations": 256032,
+    "scope": "Only target-history revalidation during the original 127 history commits; incoming validation, entry checks, journal replay/serialization and later capacity/ACK checks remain.",
+    "successful_persist_events_in_original_capacity_method": 258,
+    "real_journal_fsync_and_witness_cas_unchanged": true,
+    "cpu_hotspot_static_not_unique_runtime_cause": true,
+    "file_io_or_host_scheduling_not_excluded": true,
+    "timeout_fixed": false
+  },
+  "contract": [
+    "GenerationState still validates all incoming cost first, then compares identity before invoking the private batch.",
+    "An empty batch returns without validating the target, matching the old zero-iteration merge loop.",
+    "Nonempty batch validates current target once; every subsequent accepted prefix remains valid by the unchanged validate_entry and checked add_metrics rules.",
+    "Existing event replay/conflict precedes capacity; capacity precedes entry validation and checked metric accumulation.",
+    "One local immutable history clone allows each accepted entry to append immediately in original input order; later errors keep the same successful prefix as repeated public record.",
+    "Map references old cloned history and actual incoming entries only. There is no cached proof or value spanning calls.",
+    "Public record, validate_entry, add_metrics, serialization fields, capacity constants and all original tests remain byte-identical.",
+    "Journal persist applies to a cloned next_state before encoding or any write. Rejected cloned prefixes cannot reach live state, journal bytes or witness; original sync_all/CAS/promotion order is unchanged.",
+    "Adds only a crate-private batch reducer method, without new public API, dependencies, features or owner authority."
+  ],
+  "tradeoff": "Each nonempty merge adds one temporary clone of at most 4096 existing entries; this replaces repeated history validation/map construction, not durable writes.",
+  "source_closure_scope_review": {
+    "git_blob_sha": "9000da8b60a4abb54ffdd4a830e4e7ec186ecb24",
+    "reviewer": "repository_research_audit",
+    "qa_files": 61,
+    "caller_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "five_needle_matches": 0,
+    "meaning": "Limited static source/reference scan, not checker execution."
+  },
+  "required_future_validation": [
+    "Compile and run all original cost/journal methods plus the four new methods, through the existing source-bound Rust entry.",
+    "Keep original 127 history commits, 4096 entries, real journal fsync and witness CAS; no timeout increase or skip.",
+    "Run the original formatter and source gates on the eventual published exact tree.",
+    "Only actual later complete Mac/RBE output can establish that the former missing method terminates within its unchanged limit."
+  ],
+  "execution": {
+    "rust": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "bazel": "NOT_RUN",
+    "actor_calls": 0,
+    "ref_updates": 0
+  },
+  "owner_decision": null,
+  "research_status": "HOLD",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-neuron/BUILD.bazel",
+      "git_blob_sha": "2c21b406d557e136eee87fcb88450654325a91b7",
+      "bytes": 631,
+      "sha256": "f5cd12c62fb8613a11f06d63e2ad6a909fa75dec4eed82892846d7d6fe64b9c1"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "git_blob_sha": "a4b0e50fd6f5433ae2f9572f243f1b02d59fb108",
+      "bytes": 556,
+      "sha256": "a4243d4cc007435a7bbe73d18635bda5d5595622951a56e384e05cc1304ee509"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "git_blob_sha": "94ac6624d9fbd5d6c7856aa78380bacaed70ef49",
+      "bytes": 22379,
+      "sha256": "0ad1bcd9e489a7fcfd4a4c142cca4520f6da438afcbe476fcf7ef9d810a660df"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "git_blob_sha": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+      "bytes": 14129,
+      "sha256": "64c39bb7fd9d7e6acd3c03332f86f8c8749e4a367a6e629c4cd8b7b2e70d8e20"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "git_blob_sha": "0db16e687c9c04862fecd15b21321ea94dd929e5",
+      "bytes": 8346,
+      "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "git_blob_sha": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+      "bytes": 26175,
+      "sha256": "2af7ed8d0524e7cf90df1d3501c8943800450e3a2dab830836184fdefcc2e88c"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "git_blob_sha": "c73cb763cbf2bd753ae44ce74e33da0a3f951772",
+      "bytes": 14180,
+      "sha256": "770e1236a973b3f7b13563736619305c38a084a211b8a55b33f630b4e7bebedb"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "git_blob_sha": "37f607609a62e4e35ead10faccce366a2714b3cd",
+      "bytes": 11113,
+      "sha256": "29318a75be218475ff47af44b3e4ed92a8970f7734b299d25cc14517629e7273"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/journal_lock.rs",
+      "git_blob_sha": "8cf8324008b4fdc4e50fbb2e3dfd65e2d26d9722",
+      "bytes": 1270,
+      "sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "git_blob_sha": "099141dafd5877c8687d764c3bbe1ef5ae75922c",
+      "bytes": 12656,
+      "sha256": "cb79cb66e203566220e06b50819df40743eb3ce8c4ed4100c53205c01880eb66"
+    }
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "base": {
+        "git_blob_sha": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+        "bytes": 14129,
+        "sha256": "64c39bb7fd9d7e6acd3c03332f86f8c8749e4a367a6e629c4cd8b7b2e70d8e20"
+      },
+      "post": {
+        "git_blob_sha": "67141c6af0edbe68eeaf93ac943f083c1449e3c6",
+        "bytes": 14057,
+        "sha256": "f59afb7650d5f8ca2fa800fcc55fda008f0fd2c89fca875cef4db9d280105509"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "base": {
+        "git_blob_sha": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+        "bytes": 26175,
+        "sha256": "2af7ed8d0524e7cf90df1d3501c8943800450e3a2dab830836184fdefcc2e88c"
+      },
+      "post": {
+        "git_blob_sha": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790",
+        "bytes": 28714,
+        "sha256": "60b2cd77a6d7581f26c8a8af06c045fabb46f616f9ed053cfb80c680e982bed7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "base": {
+        "git_blob_sha": "c73cb763cbf2bd753ae44ce74e33da0a3f951772",
+        "bytes": 14180,
+        "sha256": "770e1236a973b3f7b13563736619305c38a084a211b8a55b33f630b4e7bebedb"
+      },
+      "post": {
+        "git_blob_sha": "6cbc878cc2d85691dba75c9e21a4699506368164",
+        "bytes": 15642,
+        "sha256": "f25ef2dc77eb9e5d9a6e7f6ae271e9dcfd748a3ea5250d507badc50b4d3d7e95"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "base": {
+        "git_blob_sha": "37f607609a62e4e35ead10faccce366a2714b3cd",
+        "bytes": 11113,
+        "sha256": "29318a75be218475ff47af44b3e4ed92a8970f7734b299d25cc14517629e7273"
+      },
+      "post": {
+        "git_blob_sha": "0e11345a3456c0140be1d609a16be0175b375fc6",
+        "bytes": 15808,
+        "sha256": "eb8eb48b0ac98e7e6e0b8fc309eddb6a328e5de1ee5b0713410bc7447aa8c55a"
+      }
+    }
+  ],
+  "previous_candidate": {
+    "tree": "2392b6842cffd0f062329507d14342dea3f3ee7e",
+    "manifest": "bbbb7a469f23e673a8fc3d16b4e3a24e714900ec",
+    "change": "Only the one added journal test gains cold drop/read/reopen witness full-byte comparison. All runtime and other test bytes are identical."
+  },
+  "transaction_regression": {
+    "initial_committed_cost": 1,
+    "pending_request_retained_on_failed_batch": true,
+    "reducer_successful_prefix_tested_by_public_record_reference": true,
+    "live_journal_complete_bytes_compared": true,
+    "actual_witness_anchor_compared_before_after_and_after_reopen": true,
+    "witness_complete_bytes_compared_cold": true,
+    "cold_reads_only_after_original_owner_drop": true,
+    "same_original_fixture_reopened_without_owner_replacement": true,
+    "corrected_batch_then_uses_real_commit": true,
+    "status": "TEST_SOURCE_ONLY_NOT_EXECUTED"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "cancelled-private-evidence-archive-v1",
+  "source_commit": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "source_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "run_id": 43310500983,
+  "job_id": 131505024543,
+  "conclusion": "cancelled",
+  "full_original_log": {
+    "job_id": 131505024543,
+    "bytes": 236008,
+    "sha256": "0465c9fe65fe2e5acb8c699e7d1cb7ef4dfb4a79f0e560b29e267ab7e6c5cab2",
+    "git_blob": "a79614ac82b89b90088ed1d974dd824773fee685"
+  },
+  "files": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-windows-private-cancelled/JOB.log",
+      "blob": "a79614ac82b89b90088ed1d974dd824773fee685",
+      "bytes": 236008,
+      "sha256": "0465c9fe65fe2e5acb8c699e7d1cb7ef4dfb4a79f0e560b29e267ab7e6c5cab2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-windows-private-cancelled/JOBS_API.json",
+      "blob": "8219458f6d4bf92cf2d60af03366fd42523162f5",
+      "bytes": 4226,
+      "sha256": "cdd652eac44e4f67fa44de46865ebcad43068ad68504938858ea936037991e57"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source0a-windows-private-cancelled/PARTIAL_OBSERVATION.json",
+      "blob": "fadc6c25f82f84e4948ec322d30bfd127b88029a",
+      "bytes": 6623,
+      "sha256": "15aa4ee7be30069debb9f15ea8c7821d01d32d756a1381a59766937cbab54773"
+    }
+  ],
+  "qualification": "Only the four explicit completed preliminary scopes. No whole private-state/native LEARN success."
+}

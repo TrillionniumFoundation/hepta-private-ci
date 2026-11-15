@@ -1,0 +1,112 @@
+test_empty_feedback_cannot_bypass_invalid_actions (test_sparse_no_feedback.SparseNoFeedbackTests.test_empty_feedback_cannot_bypass_invalid_actions) ... ok
+test_future_receipt_is_forensic_only_not_frozen_causal_feature (test_sparse_no_feedback.SparseNoFeedbackTests.test_future_receipt_is_forensic_only_not_frozen_causal_feature) ... ERROR
+test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) ... 
+  test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='routed') ... ERROR
+  test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='shuffled') ... ERROR
+  test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='scalar') ... ERROR
+  test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='no_eligibility') ... ERROR
+test_observed_zero_is_not_absent_feedback (test_sparse_no_feedback.SparseNoFeedbackTests.test_observed_zero_is_not_absent_feedback) ... ERROR
+test_receipt_without_matching_action_is_not_absence (test_sparse_no_feedback.SparseNoFeedbackTests.test_receipt_without_matching_action_is_not_absence) ... ok
+
+======================================================================
+ERROR: test_future_receipt_is_forensic_only_not_frozen_causal_feature (test_sparse_no_feedback.SparseNoFeedbackTests.test_future_receipt_is_forensic_only_not_frozen_causal_feature)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 45, in test_future_receipt_is_forensic_only_not_frozen_causal_feature
+    absent = compute(())
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 19, in compute
+    return time_aligned_credit(
+        actions() if actions_arg is None else actions_arg,
+        feedback, arm=arm, cutoff_sequence=5, decay=0.5,
+        max_lag=4,
+    )
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/study.py", line 99, in time_aligned_credit
+    raise ContractError("unknown arm or empty trace")
+study.ContractError: unknown arm or empty trace
+
+======================================================================
+ERROR: test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='routed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 29, in test_no_feedback_is_valid_missing_not_success_for_all_arms
+    result = compute((), arm=arm)
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 19, in compute
+    return time_aligned_credit(
+        actions() if actions_arg is None else actions_arg,
+        feedback, arm=arm, cutoff_sequence=5, decay=0.5,
+        max_lag=4,
+    )
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/study.py", line 99, in time_aligned_credit
+    raise ContractError("unknown arm or empty trace")
+study.ContractError: unknown arm or empty trace
+
+======================================================================
+ERROR: test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='shuffled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 29, in test_no_feedback_is_valid_missing_not_success_for_all_arms
+    result = compute((), arm=arm)
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 19, in compute
+    return time_aligned_credit(
+        actions() if actions_arg is None else actions_arg,
+        feedback, arm=arm, cutoff_sequence=5, decay=0.5,
+        max_lag=4,
+    )
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/study.py", line 99, in time_aligned_credit
+    raise ContractError("unknown arm or empty trace")
+study.ContractError: unknown arm or empty trace
+
+======================================================================
+ERROR: test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='scalar')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 29, in test_no_feedback_is_valid_missing_not_success_for_all_arms
+    result = compute((), arm=arm)
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 19, in compute
+    return time_aligned_credit(
+        actions() if actions_arg is None else actions_arg,
+        feedback, arm=arm, cutoff_sequence=5, decay=0.5,
+        max_lag=4,
+    )
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/study.py", line 99, in time_aligned_credit
+    raise ContractError("unknown arm or empty trace")
+study.ContractError: unknown arm or empty trace
+
+======================================================================
+ERROR: test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) (arm='no_eligibility')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 29, in test_no_feedback_is_valid_missing_not_success_for_all_arms
+    result = compute((), arm=arm)
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 19, in compute
+    return time_aligned_credit(
+        actions() if actions_arg is None else actions_arg,
+        feedback, arm=arm, cutoff_sequence=5, decay=0.5,
+        max_lag=4,
+    )
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/study.py", line 99, in time_aligned_credit
+    raise ContractError("unknown arm or empty trace")
+study.ContractError: unknown arm or empty trace
+
+======================================================================
+ERROR: test_observed_zero_is_not_absent_feedback (test_sparse_no_feedback.SparseNoFeedbackTests.test_observed_zero_is_not_absent_feedback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 36, in test_observed_zero_is_not_absent_feedback
+    absent = compute(())
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/test_sparse_no_feedback.py", line 19, in compute
+    return time_aligned_credit(
+        actions() if actions_arg is None else actions_arg,
+        feedback, arm=arm, cutoff_sequence=5, decay=0.5,
+        max_lag=4,
+    )
+  File "/tmp/neuro4-sparse-feedback-20261111-t6/study.py", line 99, in time_aligned_credit
+    raise ContractError("unknown arm or empty trace")
+study.ContractError: unknown arm or empty trace
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.003s
+
+FAILED (errors=6)
+Command exited with non-zero status 1
+RED wall=0.05 user=0.04 sys=0.00 rss_kib=22812

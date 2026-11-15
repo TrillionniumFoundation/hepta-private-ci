@@ -1,0 +1,543 @@
+614Z   WARNING: //codex-rs/rollout:rollout-unit-tests: Test execution time (3.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9276470Z //codex-rs/rollout-trace:rollout-trace-unit-tests               (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9277386Z   WARNING: //codex-rs/rollout-trace:rollout-trace-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9278398Z //codex-rs/sandboxing:sandboxing-unit-tests                     (cached) PASSED in 0.3s
+2026-11-12T19:53:29.9279286Z   WARNING: //codex-rs/sandboxing:sandboxing-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9280146Z //codex-rs/secrets:secrets-unit-tests                           (cached) PASSED in 16.6s
+2026-11-12T19:53:29.9280996Z   WARNING: //codex-rs/secrets:secrets-unit-tests: Test execution time (16.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9281861Z //codex-rs/shell-command:shell-command-unit-tests               (cached) PASSED in 0.3s
+2026-11-12T19:53:29.9282765Z   WARNING: //codex-rs/shell-command:shell-command-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9283675Z //codex-rs/shell-escalation:codex-execve-wrapper-bin-unit-tests (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9284656Z   WARNING: //codex-rs/shell-escalation:codex-execve-wrapper-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9285614Z //codex-rs/shell-escalation:shell-escalation-unit-tests         (cached) PASSED in 0.4s
+2026-11-12T19:53:29.9286533Z   WARNING: //codex-rs/shell-escalation:shell-escalation-unit-tests: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9287421Z //codex-rs/skills:skills-unit-tests                             (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9288330Z   WARNING: //codex-rs/skills:skills-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9289304Z //codex-rs/state:state-unit-tests                               (cached) PASSED in 6.1s
+2026-11-12T19:53:29.9289766Z   Stats over 4 runs: max = 6.1s, min = 2.2s, avg = 4.0s, dev = 1.4s
+2026-11-12T19:53:29.9290535Z   WARNING: //codex-rs/state:state-unit-tests: Test execution time (2.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9291648Z   WARNING: //codex-rs/state:state-unit-tests: Test execution time (3.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9292884Z   WARNING: //codex-rs/state:state-unit-tests: Test execution time (6.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9294031Z   WARNING: //codex-rs/state:state-unit-tests: Test execution time (3.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9294876Z //codex-rs/stdio-to-uds:codex-stdio-to-uds-bin-unit-tests       (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9295811Z   WARNING: //codex-rs/stdio-to-uds:codex-stdio-to-uds-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9296736Z //codex-rs/stdio-to-uds:stdio-to-uds-stdio_to_uds-test          (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9297626Z   WARNING: //codex-rs/stdio-to-uds:stdio-to-uds-stdio_to_uds-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9298609Z //codex-rs/stdio-to-uds:stdio-to-uds-unit-tests                 (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9299483Z   WARNING: //codex-rs/stdio-to-uds:stdio-to-uds-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9300377Z //codex-rs/terminal-detection:terminal-detection-unit-tests     (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9301332Z   WARNING: //codex-rs/terminal-detection:terminal-detection-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9302273Z //codex-rs/test-binary-support:test-binary-support-unit-tests   (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9303220Z   WARNING: //codex-rs/test-binary-support:test-binary-support-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9304237Z //codex-rs/thread-manager-sample:codex-thread-manager-sample-bin-unit-tests (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9305327Z   WARNING: //codex-rs/thread-manager-sample:codex-thread-manager-sample-bin-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9306328Z //codex-rs/thread-store:thread-store-unit-tests                 (cached) PASSED in 6.8s
+2026-11-12T19:53:29.9307205Z   WARNING: //codex-rs/thread-store:thread-store-unit-tests: Test execution time (6.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9308080Z //codex-rs/tools:tools-json_schema_policy_fixtures-test         (cached) PASSED in 0.0s
+2026-11-12T19:53:29.9309527Z   WARNING: //codex-rs/tools:tools-json_schema_policy_fixtures-test: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9311074Z //codex-rs/tools:tools-unit-tests                               (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9312727Z   WARNING: //codex-rs/tools:tools-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9314215Z //codex-rs/tui:codex-tui-bin-unit-tests                         (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9315736Z   WARNING: //codex-rs/tui:codex-tui-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9317231Z //codex-rs/tui:md-events-bin-unit-tests                         (cached) PASSED in 0.0s
+2026-11-12T19:53:29.9319031Z   WARNING: //codex-rs/tui:md-events-bin-unit-tests: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9320480Z //codex-rs/tui:tui-all-test                                     (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9321817Z   WARNING: //codex-rs/tui:tui-all-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9323116Z //codex-rs/tui:tui-manager_dependency_regression-test           (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9324618Z   WARNING: //codex-rs/tui:tui-manager_dependency_regression-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9326138Z //codex-rs/tui:tui-test_backend-test                            (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9327797Z   WARNING: //codex-rs/tui:tui-test_backend-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9329425Z //codex-rs/tui:tui-unit-tests                                   (cached) PASSED in 25.1s
+2026-11-12T19:53:29.9330194Z   Stats over 8 runs: max = 25.1s, min = 8.5s, avg = 14.3s, dev = 5.1s
+2026-11-12T19:53:29.9331475Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (16.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9333374Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (11.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9335380Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (25.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9337313Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (15.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9339489Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (10.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9341377Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (16.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9343166Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (8.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9345041Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (9.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9346369Z //codex-rs/uds:uds-unit-tests                                   (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9347738Z   WARNING: //codex-rs/uds:uds-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9349644Z //codex-rs/utils/absolute-path:absolute-path-unit-tests         (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9351042Z   WARNING: //codex-rs/utils/absolute-path:absolute-path-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9352600Z //codex-rs/utils/approval-presets:approval-presets-unit-tests   (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9354139Z   WARNING: //codex-rs/utils/approval-presets:approval-presets-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9355854Z //codex-rs/utils/audio:audio-unit-tests                         (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9357324Z   WARNING: //codex-rs/utils/audio:audio-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9359053Z //codex-rs/utils/build-identity:build-identity-unit-tests       (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9360691Z   WARNING: //codex-rs/utils/build-identity:build-identity-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9362262Z //codex-rs/utils/cache:cache-unit-tests                         (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9363712Z   WARNING: //codex-rs/utils/cache:cache-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9365238Z //codex-rs/utils/cargo-bin:cargo-bin-lookup_result-test         (cached) PASSED in 0.0s
+2026-11-12T19:53:29.9366855Z   WARNING: //codex-rs/utils/cargo-bin:cargo-bin-lookup_result-test: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9368641Z //codex-rs/utils/cargo-bin:cargo-bin-unit-tests                 (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9370163Z   WARNING: //codex-rs/utils/cargo-bin:cargo-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9371671Z //codex-rs/utils/cli:cli-unit-tests                             (cached) PASSED in 0.3s
+2026-11-12T19:53:29.9373097Z   WARNING: //codex-rs/utils/cli:cli-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9374571Z //codex-rs/utils/elapsed:elapsed-unit-tests                     (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9376102Z   WARNING: //codex-rs/utils/elapsed:elapsed-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9377623Z //codex-rs/utils/fuzzy-match:fuzzy-match-unit-tests             (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9379404Z   WARNING: //codex-rs/utils/fuzzy-match:fuzzy-match-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9380976Z //codex-rs/utils/home-dir:home-dir-unit-tests                   (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9382504Z   WARNING: //codex-rs/utils/home-dir:home-dir-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9383977Z //codex-rs/utils/image:image-unit-tests                         (cached) PASSED in 6.6s
+2026-11-12T19:53:29.9385677Z   WARNING: //codex-rs/utils/image:image-unit-tests: Test execution time (6.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9387162Z //codex-rs/utils/json-to-toml:json-to-toml-unit-tests           (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9389064Z   WARNING: //codex-rs/utils/json-to-toml:json-to-toml-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9390625Z //codex-rs/utils/oss:oss-unit-tests                             (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9392288Z   WARNING: //codex-rs/utils/oss:oss-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9393829Z //codex-rs/utils/output-truncation:output-truncation-unit-tests (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9395577Z   WARNING: //codex-rs/utils/output-truncation:output-truncation-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9397284Z //codex-rs/utils/path-uri:path-uri-unit-tests                   (cached) PASSED in 0.3s
+2026-11-12T19:53:29.9399008Z   WARNING: //codex-rs/utils/path-uri:path-uri-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9400583Z //codex-rs/utils/path-utils:path-utils-unit-tests               (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9402202Z   WARNING: //codex-rs/utils/path-utils:path-utils-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9403790Z //codex-rs/utils/plugins:plugins-unit-tests                     (cached) PASSED in 0.3s
+2026-11-12T19:53:29.9405379Z   WARNING: //codex-rs/utils/plugins:plugins-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9406921Z //codex-rs/utils/pty:pty-conpty_search_path-test                (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9408640Z   WARNING: //codex-rs/utils/pty:pty-conpty_search_path-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9410213Z //codex-rs/utils/pty:pty-unit-tests                             (cached) PASSED in 0.4s
+2026-11-12T19:53:29.9411608Z   WARNING: //codex-rs/utils/pty:pty-unit-tests: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9428496Z //codex-rs/utils/readiness:readiness-unit-tests                 (cached) PASSED in 1.2s
+2026-11-12T19:53:29.9430273Z   WARNING: //codex-rs/utils/readiness:readiness-unit-tests: Test execution time (1.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9431867Z //codex-rs/utils/redacted-string:redacted-string-unit-tests     (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9433566Z   WARNING: //codex-rs/utils/redacted-string:redacted-string-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9435374Z //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9437164Z   WARNING: //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9439463Z //codex-rs/utils/rustls-provider:rustls-provider-provider-test  (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9441242Z   WARNING: //codex-rs/utils/rustls-provider:rustls-provider-provider-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9443015Z //codex-rs/utils/rustls-provider:rustls-provider-unit-tests     (cached) PASSED in 1.2s
+2026-11-12T19:53:29.9444717Z   WARNING: //codex-rs/utils/rustls-provider:rustls-provider-unit-tests: Test execution time (1.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9446396Z //codex-rs/utils/sandbox-summary:sandbox-summary-unit-tests     (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9448522Z   WARNING: //codex-rs/utils/sandbox-summary:sandbox-summary-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9450214Z //codex-rs/utils/sleep-inhibitor:sleep-inhibitor-unit-tests     (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9451801Z   WARNING: //codex-rs/utils/sleep-inhibitor:sleep-inhibitor-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9453437Z //codex-rs/utils/stream-parser:stream-parser-unit-tests         (cached) PASSED in 0.4s
+2026-11-12T19:53:29.9455065Z   WARNING: //codex-rs/utils/stream-parser:stream-parser-unit-tests: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9456645Z //codex-rs/utils/string:string-unit-tests                       (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9458230Z   WARNING: //codex-rs/utils/string:string-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9459977Z //codex-rs/utils/template:template-unit-tests                   (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9461573Z   WARNING: //codex-rs/utils/template:template-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9463159Z //codex-rs/websocket-client:websocket-client-unit-tests         (cached) PASSED in 0.2s
+2026-11-12T19:53:29.9464849Z   WARNING: //codex-rs/websocket-client:websocket-client-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9466582Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test (cached) PASSED in 0.1s
+2026-11-12T19:53:29.9468549Z   WARNING: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9470331Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests     (cached) PASSED in 0.3s
+2026-11-12T19:53:29.9472052Z   WARNING: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9473731Z //codex-rs/workload-identity:workload-identity-unit-tests       (cached) PASSED in 0.4s
+2026-11-12T19:53:29.9475406Z   WARNING: //codex-rs/workload-identity:workload-identity-unit-tests: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T19:53:29.9477011Z //codex-rs/app-server:app-server-all-test-windows-cross                 SKIPPED
+2026-11-12T19:53:29.9477904Z //codex-rs/apply-patch:apply-patch-all-test-windows-cross               SKIPPED
+2026-11-12T19:53:29.9479215Z //codex-rs/chatgpt:chatgpt-all-test-windows-cross                       SKIPPED
+2026-11-12T19:53:29.9480081Z //codex-rs/cli:cli-app_server-test-windows-cross                        SKIPPED
+2026-11-12T19:53:29.9480905Z //codex-rs/cli:cli-debug_clear_memories-test-windows-cross              SKIPPED
+2026-11-12T19:53:29.9481658Z //codex-rs/cli:cli-debug_models-test-windows-cross                      SKIPPED
+2026-11-12T19:53:29.9482438Z //codex-rs/cli:cli-delete-test-windows-cross                            SKIPPED
+2026-11-12T19:53:29.9483269Z //codex-rs/cli:cli-doctor_enterprise_network-test-windows-cross         SKIPPED
+2026-11-12T19:53:29.9484081Z //codex-rs/cli:cli-exec_server-test-windows-cross                       SKIPPED
+2026-11-12T19:53:29.9485251Z //codex-rs/cli:cli-execpolicy-test-windows-cross                        SKIPPED
+2026-11-12T19:53:29.9486130Z //codex-rs/cli:cli-features-test-windows-cross                          SKIPPED
+2026-11-12T19:53:29.9486946Z //codex-rs/cli:cli-login-test-windows-cross                             SKIPPED
+2026-11-12T19:53:29.9487790Z //codex-rs/cli:cli-marketplace_add-test-windows-cross                   SKIPPED
+2026-11-12T19:53:29.9488846Z //codex-rs/cli:cli-marketplace_remove-test-windows-cross                SKIPPED
+2026-11-12T19:53:29.9489702Z //codex-rs/cli:cli-marketplace_upgrade-test-windows-cross               SKIPPED
+2026-11-12T19:53:29.9490536Z //codex-rs/cli:cli-mcp_add_remove-test-windows-cross                    SKIPPED
+2026-11-12T19:53:29.9491344Z //codex-rs/cli:cli-mcp_cloud_config-test-windows-cross                  SKIPPED
+2026-11-12T19:53:29.9492170Z //codex-rs/cli:cli-mcp_list-test-windows-cross                          SKIPPED
+2026-11-12T19:53:29.9492986Z //codex-rs/cli:cli-plugin_cli-test-windows-cross                        SKIPPED
+2026-11-12T19:53:29.9493819Z //codex-rs/cli:cli-queue-test-windows-cross                             SKIPPED
+2026-11-12T19:53:29.9494639Z //codex-rs/cli:cli-sandbox_cloud_config-test-windows-cross              SKIPPED
+2026-11-12T19:53:29.9495468Z //codex-rs/cli:cli-sandbox_network_proxy-test-windows-cross             SKIPPED
+2026-11-12T19:53:29.9496314Z //codex-rs/cli:cli-update-test-windows-cross                            SKIPPED
+2026-11-12T19:53:29.9497149Z //codex-rs/cloud-tasks:cloud-tasks-env_filter-test-windows-cross        SKIPPED
+2026-11-12T19:53:29.9498031Z //codex-rs/code-mode-host:code-mode-host-grpc-test-windows-cross        SKIPPED
+2026-11-12T19:53:29.9499139Z //codex-rs/code-mode-host:code-mode-host-grpc_notifications-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9500062Z //codex-rs/code-mode-host:code-mode-host-grpc_tcp-test-windows-cross    SKIPPED
+2026-11-12T19:53:29.9500904Z //codex-rs/code-mode-host:code-mode-host-stdio-test-windows-cross       SKIPPED
+2026-11-12T19:53:29.9501800Z //codex-rs/code-mode-host:code-mode-host-websocket-test-windows-cross   SKIPPED
+2026-11-12T19:53:29.9502780Z //codex-rs/code-mode-runtime:code-mode-runtime-concurrent_startup-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9503778Z //codex-rs/code-mode-runtime:code-mode-runtime-jit-test-windows-cross   SKIPPED
+2026-11-12T19:53:29.9504689Z //codex-rs/codex-api:codex-api-clients-test-windows-cross               SKIPPED
+2026-11-12T19:53:29.9505562Z //codex-rs/codex-api:codex-api-models_integration-test-windows-cross    SKIPPED
+2026-11-12T19:53:29.9506454Z //codex-rs/codex-api:codex-api-realtime_websocket_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9507319Z //codex-rs/codex-api:codex-api-sse_end_to_end-test-windows-cross        SKIPPED
+2026-11-12T19:53:29.9508150Z //codex-rs/core:core-all-test-windows-cross                             SKIPPED
+2026-11-12T19:53:29.9509200Z //codex-rs/core:core-responses_headers-test-windows-cross               SKIPPED
+2026-11-12T19:53:29.9510052Z //codex-rs/exec:exec-all-test-windows-cross                             SKIPPED
+2026-11-12T19:53:29.9510921Z //codex-rs/exec:exec-event_processor_with_json_output-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9512097Z //codex-rs/exec-server:exec-server-accepted_websocket-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9512983Z //codex-rs/exec-server:exec-server-authorized_read_rpc-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9513916Z //codex-rs/exec-server:exec-server-capability_discovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9514864Z //codex-rs/exec-server:exec-server-chatgpt_cloudflare_affinity-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9515817Z //codex-rs/exec-server:exec-server-deferred_environment-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9516726Z //codex-rs/exec-server:exec-server-environment-test-windows-cross       SKIPPED
+2026-11-12T19:53:29.9517611Z //codex-rs/exec-server:exec-server-environment_config-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9518976Z //codex-rs/exec-server:exec-server-exec_process-test-windows-cross      SKIPPED
+2026-11-12T19:53:29.9519843Z //codex-rs/exec-server:exec-server-file_stream-test-windows-cross       SKIPPED
+2026-11-12T19:53:29.9520731Z //codex-rs/exec-server:exec-server-file_system_unix-test-windows-cross  SKIPPED
+2026-11-12T19:53:29.9521622Z //codex-rs/exec-server:exec-server-file_system_windows-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9522508Z //codex-rs/exec-server:exec-server-forward-test-windows-cross           SKIPPED
+2026-11-12T19:53:29.9523364Z //codex-rs/exec-server:exec-server-health-test-windows-cross            SKIPPED
+2026-11-12T19:53:29.9524223Z //codex-rs/exec-server:exec-server-http_client-test-windows-cross       SKIPPED
+2026-11-12T19:53:29.9525057Z //codex-rs/exec-server:exec-server-http_request-test-windows-cross      SKIPPED
+2026-11-12T19:53:29.9525957Z //codex-rs/exec-server:exec-server-http_request_logging-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9526863Z //codex-rs/exec-server:exec-server-initialize-test-windows-cross        SKIPPED
+2026-11-12T19:53:29.9527756Z //codex-rs/exec-server:exec-server-process-test-windows-cross           SKIPPED
+2026-11-12T19:53:29.9528878Z //codex-rs/exec-server:exec-server-relay-test-windows-cross             SKIPPED
+2026-11-12T19:53:29.9529811Z //codex-rs/exec-server:exec-server-selected_capability_roots-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9530759Z //codex-rs/exec-server:exec-server-websocket-test-windows-cross         SKIPPED
+2026-11-12T19:53:29.9531642Z //codex-rs/execpolicy:execpolicy-basic-test-windows-cross               SKIPPED
+2026-11-12T19:53:29.9532519Z //codex-rs/ext/agent:agent-agent_service-test-windows-cross             SKIPPED
+2026-11-12T19:53:29.9533445Z //codex-rs/ext/extension-api:extension-api-capabilities-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9534518Z //codex-rs/ext/extension-api:extension-api-model_provider_input-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9535550Z //codex-rs/ext/extension-api:extension-api-model_provider_policy-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9536557Z //codex-rs/ext/extension-api:extension-api-registry-test-windows-cross  SKIPPED
+2026-11-12T19:53:29.9537468Z //codex-rs/ext/extension-api:extension-api-state-test-windows-cross     SKIPPED
+2026-11-12T19:53:29.9538538Z //codex-rs/ext/goal:goal-accounting-test-windows-cross                  SKIPPED
+2026-11-12T19:53:29.9539391Z //codex-rs/ext/goal:goal-goal_extension_backend-test-windows-cross      SKIPPED
+2026-11-12T19:53:29.9540364Z //codex-rs/ext/history-notes:history-notes-history_notes_extension-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9541389Z //codex-rs/ext/mcp:mcp-executor_plugin_mcp-test-windows-cross           SKIPPED
+2026-11-12T19:53:29.9542251Z //codex-rs/ext/mcp:mcp-hosted_apps_mcp-test-windows-cross               SKIPPED
+2026-11-12T19:53:29.9543094Z //codex-rs/ext/queue:queue-queue_service-test-windows-cross             SKIPPED
+2026-11-12T19:53:29.9544001Z //codex-rs/ext/skills:skills-executor_file_system_authority-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9544946Z //codex-rs/ext/skills:skills-skills_extension-test-windows-cross        SKIPPED
+2026-11-12T19:53:29.9545877Z //codex-rs/hepta-agentd:hepta-agentd-authbus_text_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9547141Z //codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9548131Z //codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9549369Z //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9550315Z //codex-rs/hepta-agentd:hepta-agentd-fleet_harness_diagnostics-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9551242Z //codex-rs/hepta-agentd:hepta-agentd-intuition_policy_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9552179Z //codex-rs/hepta-agentd:hepta-agentd-kernel_evidence_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9553193Z //codex-rs/hepta-agentd:hepta-agentd-neuron_generation_process_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9554451Z //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9555626Z //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9556609Z //codex-rs/hepta-agentd:hepta-agentd-queue_capacity_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9557546Z //codex-rs/hepta-agentd:hepta-agentd-runtime_codex_product_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9558629Z //codex-rs/hepta-agentd:hepta-agentd-runtime_shutdown_outcomes-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9559585Z //codex-rs/hepta-agentd:hepta-agentd-supervised_two_agents-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9560549Z //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9561487Z //codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9562260Z //codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9563190Z //codex-rs/hepta-agentd:hepta-agentd-verify1_kernel_evidence_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9564212Z //codex-rs/hepta-automation:hepta-automation-action_skill_act1-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9565183Z //codex-rs/hepta-automation:hepta-automation-authorized_effect-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9566078Z //codex-rs/hepta-automation:hepta-automation-automation-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9567013Z //codex-rs/hepta-automation:hepta-automation-durable_causal_chain-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9568109Z //codex-rs/hepta-automation:hepta-automation-kernel_operations_destination-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9569462Z //codex-rs/hepta-automation:hepta-automation-operation_timer_fence-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9570510Z //codex-rs/hepta-automation:hepta-automation-retirement_recovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9571525Z //codex-rs/hepta-automation:hepta-automation-taskflow-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9572571Z //codex-rs/hepta-automation:hepta-automation-taskflow_execution_boundary-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9573633Z //codex-rs/hepta-automation:hepta-automation-taskflow_kernel-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9574615Z //codex-rs/hepta-automation:hepta-automation-taskflow_step-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9575033Z //codex-rs/hepta-bao-adapter:hepta-bao-adapter-final_use_host-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9575572Z //codex-rs/hepta-contracts:hepta-contracts-authbus_b3_adapter_qualification-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9576048Z //codex-rs/hepta-contracts:hepta-contracts-authbus_local_qualification-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9576504Z //codex-rs/hepta-contracts:hepta-contracts-final_use_linearization-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9577093Z //codex-rs/hepta-control-plane:hepta-control-plane-runtime_retirement_dependencies-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9577457Z //codex-rs/hepta-fleet:hepta-fleet-spawn_lifecycle-test-windows-cross   SKIPPED
+2026-11-12T19:53:29.9578568Z //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9579077Z //codex-rs/hepta-intelligence:hepta-intelligence-lane_f_shadow_vertical-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9579585Z //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-operator_claim-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9580025Z //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9580497Z //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9580919Z //codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9581616Z //codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9582075Z //codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9582475Z //codex-rs/hepta-matrixd:hepta-matrixd-real_synapse_e2e-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9582874Z //codex-rs/hepta-memory:hepta-memory-root_install_reentry-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9583372Z //codex-rs/hepta-operations:hepta-operations-destination_recovery_binding-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9583780Z //codex-rs/hepta-supervisor:hepta-supervisor-daemon_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9584298Z //codex-rs/hepta-supervisor:hepta-supervisor-isolated_execution_handoff_unix-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9584763Z //codex-rs/hepta-supervisor:hepta-supervisor-paired_process_product-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9585229Z //codex-rs/hepta-supervisor:hepta-supervisor-process_deadline_unix-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9585629Z //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9586088Z //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9586578Z //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9587026Z //codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9587468Z //codex-rs/hepta-supervisor:hepta-supervisor-writer_handoff_production-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9587809Z //codex-rs/http-client:http-client-ca_env-test-windows-cross            SKIPPED
+2026-11-12T19:53:29.9588179Z //codex-rs/keyring-store:keyring-store-store_contract-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9588722Z //codex-rs/linux-sandbox:linux-sandbox-all-test-windows-cross           SKIPPED
+2026-11-12T19:53:29.9589036Z //codex-rs/login:login-all-test-windows-cross                           SKIPPED
+2026-11-12T19:53:29.9589391Z //codex-rs/mcp-server:mcp-server-all-test-windows-cross                 SKIPPED
+2026-11-12T19:53:29.9589805Z //codex-rs/network-proxy:network-proxy-windows_stable_ingress-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9590133Z //codex-rs/otel:otel-tests-test-windows-cross                           SKIPPED
+2026-11-12T19:53:29.9590488Z //codex-rs/rmcp-client:rmcp-client-foreign_stdio_cwd-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9590837Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9591217Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9591567Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test-windows-cross     SKIPPED
+2026-11-12T19:53:29.9591948Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9592336Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9592675Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test-windows-cross    SKIPPED
+2026-11-12T19:53:29.9593061Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9593704Z //codex-rs/rmcp-client:rmcp-client-mcp_events-test-windows-cross        SKIPPED
+2026-11-12T19:53:29.9594089Z //codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9594460Z //codex-rs/rmcp-client:rmcp-client-resources-test-windows-cross         SKIPPED
+2026-11-12T19:53:29.9594830Z //codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9595275Z //codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9595750Z //codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9596137Z //codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9596754Z //codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9597206Z //codex-rs/rmcp-client:rmcp-client-streamable_http_test_support-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9597596Z //codex-rs/rmcp-client:rmcp-client-streamable_http_user_agent-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9597961Z //codex-rs/stdio-to-uds:stdio-to-uds-stdio_to_uds-test-windows-cross    SKIPPED
+2026-11-12T19:53:29.9598514Z //codex-rs/tools:tools-json_schema_policy_fixtures-test-windows-cross   SKIPPED
+2026-11-12T19:53:29.9598843Z //codex-rs/tui:tui-all-test-windows-cross                               SKIPPED
+2026-11-12T19:53:29.9599202Z //codex-rs/tui:tui-manager_dependency_regression-test-windows-cross     SKIPPED
+2026-11-12T19:53:29.9599526Z //codex-rs/tui:tui-test_backend-test-windows-cross                      SKIPPED
+2026-11-12T19:53:29.9599868Z //codex-rs/utils/cargo-bin:cargo-bin-lookup_result-test-windows-cross   SKIPPED
+2026-11-12T19:53:29.9600207Z //codex-rs/utils/pty:pty-conpty_search_path-test-windows-cross          SKIPPED
+2026-11-12T19:53:29.9600656Z //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9601083Z //codex-rs/utils/rustls-provider:rustls-provider-provider-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9601437Z //codex-rs/windows-sandbox-rs:codex-command-runner-bin-unit-tests       SKIPPED
+2026-11-12T19:53:29.9601835Z //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests SKIPPED
+2026-11-12T19:53:29.9602282Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test-windows-cross SKIPPED
+2026-11-12T19:53:29.9602724Z //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test FAILED TO BUILD
+2026-11-12T19:53:29.9603065Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                 FAILED TO BUILD
+2026-11-12T19:53:29.9603073Z 
+2026-11-12T19:53:29.9603402Z Executed 0 out of 583 tests: 414 tests pass, 2 fail to build, and 167 were skipped.
+2026-11-12T19:53:30.8215822Z FAILED: 
+2026-11-12T19:53:37.6085552Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/06902c43-c3ce-4c31-a16b-cb59df4d4f8c
+2026-11-12T19:53:37.6578534Z ##[error]ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:22:17: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin) 
+error[E0616]: field `sender` of struct `neuron_generation_runtime::NeuronGenerationRuntimeHandleV2` is private
+  --> hepta-agentd/src/neuron_generation_runtime_test_support.rs:53:28
+   |
+53 |             sender: handle.sender.downgrade(),
+   |                            ^^^^^^ private field
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0616`.
+
+ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:90:10: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin) 
+error[E0616]: field `sender` of struct `neuron_generation_runtime::NeuronGenerationRuntimeHandleV2` is private
+  --> hepta-agentd/src/neuron_generation_runtime_test_support.rs:53:28
+   |
+53 |             sender: handle.sender.downgrade(),
+   |                            ^^^^^^ private field
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0616`.
+2026-11-12T19:53:37.6584736Z 
+2026-11-12T19:53:37.6584886Z Bazel failed action diagnostics:
+2026-11-12T19:53:37.6585171Z --------------------------------
+2026-11-12T19:53:37.6586603Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:22:17: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin) 
+2026-11-12T19:53:37.6588134Z error[E0616]: field `sender` of struct `neuron_generation_runtime::NeuronGenerationRuntimeHandleV2` is private
+2026-11-12T19:53:37.6589192Z   --> hepta-agentd/src/neuron_generation_runtime_test_support.rs:53:28
+2026-11-12T19:53:37.6589563Z    |
+2026-11-12T19:53:37.6589795Z 53 |             sender: handle.sender.downgrade(),
+2026-11-12T19:53:37.6590126Z    |                            ^^^^^^ private field
+2026-11-12T19:53:37.6590461Z 
+2026-11-12T19:53:37.6590629Z error: aborting due to 1 previous error
+2026-11-12T19:53:37.6590819Z 
+2026-11-12T19:53:37.6591008Z For more information about this error, try `rustc --explain E0616`.
+2026-11-12T19:53:37.6591276Z 
+2026-11-12T19:53:37.6593111Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:90:10: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin) 
+2026-11-12T19:53:37.6595771Z error[E0616]: field `sender` of struct `neuron_generation_runtime::NeuronGenerationRuntimeHandleV2` is private
+2026-11-12T19:53:37.6596748Z   --> hepta-agentd/src/neuron_generation_runtime_test_support.rs:53:28
+2026-11-12T19:53:37.6597299Z    |
+2026-11-12T19:53:37.6597699Z 53 |             sender: handle.sender.downgrade(),
+2026-11-12T19:53:37.6598432Z    |                            ^^^^^^ private field
+2026-11-12T19:53:37.6598745Z 
+2026-11-12T19:53:37.6598904Z error: aborting due to 1 previous error
+2026-11-12T19:53:37.6599190Z 
+2026-11-12T19:53:37.6599479Z For more information about this error, try `rustc --explain E0616`.
+2026-11-12T19:53:37.6600038Z --------------------------------
+2026-11-12T19:53:44.3329135Z No failed Bazel test targets were found in console output.
+2026-11-12T19:53:44.3376084Z ##[error]Process completed with exit code 1.
+2026-11-12T19:53:44.3432180Z ##[group]Run ./.github/scripts/run-bazel-ci.sh \
+2026-11-12T19:53:44.3432761Z [36;1m./.github/scripts/run-bazel-ci.sh \[0m
+2026-11-12T19:53:44.3433318Z [36;1m  --print-failed-action-summary \[0m
+2026-11-12T19:53:44.3433773Z [36;1m  --print-failed-test-logs \[0m
+2026-11-12T19:53:44.3434172Z [36;1m  -- \[0m
+2026-11-12T19:53:44.3434466Z [36;1m  test \[0m
+2026-11-12T19:53:44.3434841Z [36;1m  --strategy=TestRunner=linux-sandbox \[0m
+2026-11-12T19:53:44.3435378Z [36;1m  --test_tag_filters=-argument-comment-lint \[0m
+2026-11-12T19:53:44.3435872Z [36;1m  --nocache_test_results \[0m
+2026-11-12T19:53:44.3436328Z [36;1m  --build_metadata=COMMIT_SHA=${GITHUB_SHA} \[0m
+2026-11-12T19:53:44.3436868Z [36;1m  --build_metadata=TAG_job=native-openssh-test \[0m
+2026-11-12T19:53:44.3437366Z [36;1m  -- \[0m
+2026-11-12T19:53:44.3437903Z [36;1m  //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests[0m
+2026-11-12T19:53:44.3497847Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:53:44.3498842Z env:
+2026-11-12T19:53:44.3499192Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:53:44.3499796Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:53:44.3500417Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:53:44.3500955Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:53:44.3501615Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:53:44.3502534Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-test
+2026-11-12T19:53:44.3503368Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:53:44.3503903Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:53:44.3504354Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:53:44.3504785Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:53:44.3510077Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T19:53:44.3510772Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T19:53:44.3511472Z   BUILDBUDDY_API_KEY: ***
+2026-11-12T19:53:44.3511792Z ##[endgroup]
+2026-11-12T19:53:44.3666946Z BuildBuddy API key is available; using remote Bazel configuration.
+2026-11-12T19:53:44.4097704Z Using generic BuildBuddy configuration: buildbuddy-generic-rbe.
+2026-11-12T19:53:44.8530899Z WARNING: option '--remote_download_outputs' was expanded from both option '--remote_download_toplevel' (source /home/runner/work/hepta-private-ci/hepta-private-ci/.bazelrc) and option '--remote_download_minimal' (source expanded from --config=ci-linux)
+2026-11-12T19:53:44.8532971Z INFO: Invocation ID: 928e1197-996b-4959-b2c7-da519f3c6872
+2026-11-12T19:53:44.8534057Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/928e1197-996b-4959-b2c7-da519f3c6872
+2026-11-12T19:53:59.7485654Z Computing main repo mapping: 
+2026-11-12T19:54:00.3250150Z Loading: 
+2026-11-12T19:54:00.3274498Z Loading: 3 packages loaded
+2026-11-12T19:54:00.8960704Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (4 packages loaded, 0 targets configured)
+2026-11-12T19:54:00.9012768Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (4 packages loaded, 0 targets configured)
+2026-11-12T19:54:00.9013944Z 
+2026-11-12T19:54:01.9060297Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (157 packages loaded, 3643 targets configured)
+2026-11-12T19:54:01.9149259Z 
+2026-11-12T19:54:02.9260410Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (207 packages loaded, 18947 targets configured)
+2026-11-12T19:54:02.9288791Z 
+2026-11-12T19:54:04.1275933Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (210 packages loaded, 29933 targets configured, 42 aspect applications)
+2026-11-12T19:54:04.1319375Z 
+2026-11-12T19:54:05.7530947Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (213 packages loaded, 46158 targets configured, 158 aspect applications)
+2026-11-12T19:54:05.7558980Z 
+2026-11-12T19:54:06.5868839Z INFO: Analyzed target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (215 packages loaded, 47521 targets configured, 200 aspect applications).
+2026-11-12T19:54:06.7539464Z [51 / 278] checking cached actions
+2026-11-12T19:54:09.3310195Z [2,073 / 2,075] [Prepa] Compiling Rust bin //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (28 files)
+2026-11-12T19:54:10.7508951Z [2,073 / 2,075] Compiling Rust bin //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (28 files); 0s remote
+2026-11-12T19:54:12.0531107Z [2,074 / 2,075] [Prepa] runfiles for //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+2026-11-12T19:54:13.1752970Z [2,075 / 2,076] Testing //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests; 0s linux-sandbox
+2026-11-12T19:54:13.2096190Z INFO: Found 1 test target...
+2026-11-12T19:54:13.2925348Z Target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests up-to-date:
+2026-11-12T19:54:13.2926370Z   bazel-bin/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests
+2026-11-12T19:54:13.3053988Z INFO: Elapsed time: 28.874s, Critical Path: 4.79s
+2026-11-12T19:54:13.3054762Z INFO: 6 processes: 2070 action cache hit, 4 internal, 2 linux-sandbox, 1 remote.
+2026-11-12T19:54:13.3055428Z INFO: Build completed successfully, 6 total actions
+2026-11-12T19:54:13.3055860Z INFO: 
+2026-11-12T19:54:13.3065497Z //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     PASSED in 0.5s
+2026-11-12T19:54:13.3067857Z 
+2026-11-12T19:54:13.3069629Z Executed 1 out of 1 test: 1 test passes.
+2026-11-12T19:54:13.3070917Z There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
+2026-11-12T19:54:14.7515551Z INFO: 
+2026-11-12T19:54:15.0323470Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/928e1197-996b-4959-b2c7-da519f3c6872
+2026-11-12T19:54:15.0445162Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T19:54:15.0445592Z with:
+2026-11-12T19:54:15.0445874Z   name: bazel-execution-logs-test-x86_64-unknown-linux-gnu
+2026-11-12T19:54:15.0446254Z   path: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T19:54:15.0446578Z   if-no-files-found: ignore
+2026-11-12T19:54:15.0446836Z   compression-level: 6
+2026-11-12T19:54:15.0447083Z   overwrite: false
+2026-11-12T19:54:15.0447312Z   include-hidden-files: false
+2026-11-12T19:54:15.0447562Z   archive: true
+2026-11-12T19:54:15.0447776Z env:
+2026-11-12T19:54:15.0448002Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:54:15.0448820Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:54:15.0449246Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:54:15.0449600Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:54:15.0450093Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:54:15.0450670Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-test
+2026-11-12T19:54:15.0451194Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:54:15.0451544Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:15.0451847Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:15.0452137Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:54:15.0454998Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T19:54:15.0455427Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T19:54:15.0455867Z ##[endgroup]
+2026-11-12T19:54:15.2077814Z With the provided path, there will be 2 files uploaded
+2026-11-12T19:54:15.2084410Z Artifact name is valid!
+2026-11-12T19:54:15.2085000Z Root directory input is valid!
+2026-11-12T19:54:15.4373699Z Uploading artifact: bazel-execution-logs-test-x86_64-unknown-linux-gnu.zip
+2026-11-12T19:54:15.4414115Z Beginning upload of artifact content to blob storage
+2026-11-12T19:54:15.9776443Z Uploaded bytes 8388608
+2026-11-12T19:54:16.1646708Z Uploaded bytes 16284390
+2026-11-12T19:54:16.1835211Z Finished uploading artifact content to blob storage!
+2026-11-12T19:54:16.1836417Z SHA256 digest of uploaded artifact is eecafdf03d521d2d0f0700796ce61e3da71cdec2e791be70d3fc088f370edbf7
+2026-11-12T19:54:16.1837271Z Finalizing artifact upload
+2026-11-12T19:54:16.5388984Z Artifact bazel-execution-logs-test-x86_64-unknown-linux-gnu successfully finalized. Artifact ID 13978672437
+2026-11-12T19:54:16.5390272Z Artifact bazel-execution-logs-test-x86_64-unknown-linux-gnu has been successfully uploaded! Final size is 16284390 bytes. Artifact ID is 13978672437
+2026-11-12T19:54:16.5393387Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43293663395/artifacts/13978672437
+2026-11-12T19:54:16.5602726Z ##[group]Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-12T19:54:16.5603148Z with:
+2026-11-12T19:54:16.5603446Z   path: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:54:16.5604115Z   key: bazel-cache-bazel-test-x86_64-unknown-linux-gnu-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T19:54:16.5604733Z   enableCrossOsArchive: false
+2026-11-12T19:54:16.5604996Z env:
+2026-11-12T19:54:16.5605237Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:54:16.5605654Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:54:16.5606077Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:54:16.5606446Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:54:16.5606898Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:54:16.5607536Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-test
+2026-11-12T19:54:16.5608097Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:54:16.5608678Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:16.5608997Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:16.5609296Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:54:16.5612153Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T19:54:16.5612590Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T19:54:16.5613031Z ##[endgroup]
+2026-11-12T19:54:16.7145774Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/hepta-private-ci/hepta-private-ci --files-from manifest.txt --use-compress-program zstdmt
+2026-11-12T19:54:19.5139764Z Sent 0 of 1182583195 (0.0%), 0.0 MBs/sec
+2026-11-12T19:54:20.5129826Z Sent 536870912 of 1182583195 (45.4%), 255.9 MBs/sec
+2026-11-12T19:54:21.5129966Z Sent 1006632960 of 1182583195 (85.1%), 319.9 MBs/sec
+2026-11-12T19:54:22.3823121Z Sent 1182583195 of 1182583195 (100.0%), 291.3 MBs/sec
+2026-11-12T19:54:22.5770539Z Cache saved with key: bazel-cache-bazel-test-x86_64-unknown-linux-gnu-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T19:54:22.5944122Z Prepare all required actions
+2026-11-12T19:54:22.5974211Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T19:54:22.5974552Z env:
+2026-11-12T19:54:22.5974797Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:54:22.5975215Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:54:22.5975652Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:54:22.5976019Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:54:22.5976475Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:54:22.5977068Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-test
+2026-11-12T19:54:22.5977616Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:54:22.5978000Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:22.5978526Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:22.5978866Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:54:22.5981734Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T19:54:22.5982198Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T19:54:22.5982638Z ##[endgroup]
+2026-11-12T19:54:22.5986107Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T19:54:22.6004430Z ##[group]Run set -euo pipefail
+2026-11-12T19:54:22.6004767Z [36;1mset -euo pipefail[0m
+2026-11-12T19:54:22.6005017Z [36;1m[0m
+2026-11-12T19:54:22.6005515Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T19:54:22.6006077Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T19:54:22.6006367Z [36;1m  exit 0[0m
+2026-11-12T19:54:22.6006594Z [36;1mfi[0m
+2026-11-12T19:54:22.6006801Z [36;1m[0m
+2026-11-12T19:54:22.6007427Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T19:54:22.6007901Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T19:54:22.6008181Z [36;1mexit 1[0m
+2026-11-12T19:54:22.6030297Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:54:22.6030660Z env:
+2026-11-12T19:54:22.6030913Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:54:22.6031336Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:54:22.6031769Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:54:22.6032150Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:54:22.6032599Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:54:22.6033203Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-test
+2026-11-12T19:54:22.6033752Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:54:22.6034135Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:22.6034437Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:54:22.6034745Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:54:22.6037564Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T19:54:22.6038010Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T19:54:22.6038693Z ##[endgroup]
+2026-11-12T19:54:24.5777074Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=1979]
+2026-11-12T19:54:24.5893876Z Post job cleanup.
+2026-11-12T19:54:24.5898108Z ##[start-action display=Set up Bazel;id=__7b9ad49c-8ca4-4fc1-a975-07c79ac596e9.__bazel-contrib_setup-bazel]
+2026-11-12T19:54:24.5945429Z Post job cleanup.
+2026-11-12T19:54:24.7611630Z ##[end-action id=__7b9ad49c-8ca4-4fc1-a975-07c79ac596e9.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=171]
+2026-11-12T19:54:24.7697530Z Post job cleanup.
+2026-11-12T19:54:24.8658963Z [command]/usr/bin/git version
+2026-11-12T19:54:24.8724159Z git version 2.56.1
+2026-11-12T19:54:24.8763765Z Temporarily overriding HOME='/home/runner/work/_temp/2bec45e9-f672-4643-84b0-097ea56cd5f4' before making global git config changes
+2026-11-12T19:54:24.8765022Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T19:54:24.8770853Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:54:24.8815822Z Removing SSH command configuration
+2026-11-12T19:54:24.8824566Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T19:54:24.8871942Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T19:54:24.9221213Z Removing HTTP extra header
+2026-11-12T19:54:24.9227959Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T19:54:24.9277887Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T19:54:24.9609087Z Removing includeIf entries pointing to credentials config files
+2026-11-12T19:54:24.9619492Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T19:54:24.9674933Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T19:54:25.0137157Z Cleaning up orphan processes
+2026-11-12T19:54:25.0973201Z Terminate orphan process: pid (3072) (java.lang=ALL-UNNAMED)

@@ -1,0 +1,70 @@
+{
+  "after": {
+    "commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "dirty": false,
+    "parents": [
+      "841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+    ],
+    "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+    "dirty": false,
+    "parents": [
+      "841fb932deb95cf4368ef01e28f0c8081a1c48fa"
+    ],
+    "tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-neuron",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 579.314821929,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T15:23:06.845248+00:00",
+  "job": "native",
+  "lane": "source-head",
+  "log_bytes": 1191220,
+  "log_file": "ordinary.json.80250ce947e54bc7baa1574893c30285.log",
+  "log_sha256": "7f2695366573a4b8ae1c5762ae1e7834f8522d891f8a62ab795a6d898c951c36",
+  "minimum_tests": 1,
+  "observed_failed_tests": 36,
+  "observed_passed_tests": 1697,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": "1",
+  "run_id": "43243479903",
+  "schema_version": 1,
+  "source_sha": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "started_at": "2026-11-12T15:13:27.529651+00:00",
+  "status": "failed",
+  "tested_sha": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

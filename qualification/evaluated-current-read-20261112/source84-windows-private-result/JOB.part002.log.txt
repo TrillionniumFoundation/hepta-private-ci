@@ -1,0 +1,529 @@
+) fn require_decision(
+2026-11-12T20:08:22.2183558Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2183684Z 
+2026-11-12T20:08:22.2183789Z warning: method `require_original_input` is never used
+2026-11-12T20:08:22.2184080Z   --> hepta-agentd\src\circuit_task_source_readback.rs:41:19
+2026-11-12T20:08:22.2184328Z    |
+2026-11-12T20:08:22.2184541Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T20:08:22.2184900Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:08:22.2185188Z ...
+2026-11-12T20:08:22.2185347Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T20:08:22.2185565Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2185696Z 
+2026-11-12T20:08:22.2185816Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T20:08:22.2186129Z   --> hepta-agentd\src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T20:08:22.2186382Z    |
+2026-11-12T20:08:22.2186545Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T20:08:22.2186797Z    |                 ----------------------- variant in this enum
+2026-11-12T20:08:22.2187023Z 11 |     HostStageOwners,
+2026-11-12T20:08:22.2187301Z 12 |     OriginalObjective,
+2026-11-12T20:08:22.2187475Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2187630Z    |
+2026-11-12T20:08:22.2188030Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T20:08:22.2188409Z 
+2026-11-12T20:08:22.2188564Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T20:08:22.2188922Z   --> hepta-agentd\src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T20:08:22.2189177Z    |
+2026-11-12T20:08:22.2189355Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T20:08:22.2189663Z    | ---------------------------------------- method in this implementation
+2026-11-12T20:08:22.2189914Z ...
+2026-11-12T20:08:22.2190097Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T20:08:22.2190355Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2190492Z 
+2026-11-12T20:08:22.2190611Z warning: method `original_model_commitments` is never used
+2026-11-12T20:08:22.2190942Z  --> hepta-agentd\src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T20:08:22.2191205Z   |
+2026-11-12T20:08:22.2191399Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T20:08:22.2192036Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T20:08:22.2192398Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T20:08:22.2192751Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2192957Z 
+2026-11-12T20:08:22.2193097Z warning: variant `Notes` is never constructed
+2026-11-12T20:08:22.2193462Z    --> hepta-agentd\src\runtime.rs:633:5
+2026-11-12T20:08:22.2193754Z     |
+2026-11-12T20:08:22.2193976Z 631 | enum OperationReconcileProfile {
+2026-11-12T20:08:22.2194491Z     |      ------------------------- variant in this enum
+2026-11-12T20:08:22.2194817Z 632 |     Full,
+2026-11-12T20:08:22.2195107Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T20:08:22.2195439Z     |     ^^^^^
+2026-11-12T20:08:22.2195569Z 
+2026-11-12T20:08:22.2195766Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T20:08:22.2196211Z    --> hepta-agentd\src\runtime.rs:650:21
+2026-11-12T20:08:22.2196503Z     |
+2026-11-12T20:08:22.2196777Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T20:08:22.2197168Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2197385Z 
+2026-11-12T20:08:22.2197552Z warning: method `close_expired_original` is never used
+2026-11-12T20:08:22.2197975Z    --> hepta-agentd\src\text_session_requests.rs:127:25
+2026-11-12T20:08:22.2198324Z     |
+2026-11-12T20:08:22.2198554Z   3 | impl AgentdTextRequests {
+2026-11-12T20:08:22.2198788Z     | ----------------------- method in this implementation
+2026-11-12T20:08:22.2199027Z ...
+2026-11-12T20:08:22.2199193Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T20:08:22.2199426Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2199581Z 
+2026-11-12T20:08:22.2199918Z warning: `codex-hepta-agentd` (lib) generated 11 warnings (run `cargo fix --lib -p codex-hepta-agentd` to apply 1 suggestion)
+2026-11-12T20:08:22.2200640Z warning: unused import: `std::io::Read`
+2026-11-12T20:08:22.2201083Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:10:5
+2026-11-12T20:08:22.2201472Z    |
+2026-11-12T20:08:22.2201667Z 10 | use std::io::Read;
+2026-11-12T20:08:22.2201899Z    |     ^^^^^^^^^^^^^
+2026-11-12T20:08:22.2202121Z    |
+2026-11-12T20:08:22.2202452Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:08:22.2202798Z 
+2026-11-12T20:08:22.2202953Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T20:08:22.2203395Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:22:5
+2026-11-12T20:08:22.2203818Z    |
+2026-11-12T20:08:22.2204028Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T20:08:22.2204762Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2204893Z 
+2026-11-12T20:08:22.2205064Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T20:08:22.2205525Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:23:5
+2026-11-12T20:08:22.2205898Z    |
+2026-11-12T20:08:22.2206130Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T20:08:22.2206330Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2206442Z 
+2026-11-12T20:08:22.2206534Z warning: unused import: `tokio::time::timeout`
+2026-11-12T20:08:22.2206803Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:24:5
+2026-11-12T20:08:22.2207039Z    |
+2026-11-12T20:08:22.2207174Z 24 | use tokio::time::timeout;
+2026-11-12T20:08:22.2207340Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2207449Z 
+2026-11-12T20:08:22.2207560Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T20:08:22.2207868Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:30:7
+2026-11-12T20:08:22.2208104Z    |
+2026-11-12T20:08:22.2208318Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T20:08:22.2208587Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2208748Z    |
+2026-11-12T20:08:22.2208944Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:08:22.2209160Z 
+2026-11-12T20:08:22.2209264Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T20:08:22.2209551Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:31:7
+2026-11-12T20:08:22.2209790Z    |
+2026-11-12T20:08:22.2209941Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T20:08:22.2210147Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2210256Z 
+2026-11-12T20:08:22.2210353Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T20:08:22.2210629Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:32:7
+2026-11-12T20:08:22.2210991Z    |
+2026-11-12T20:08:22.2211149Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T20:08:22.2211367Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2211482Z 
+2026-11-12T20:08:22.2211581Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T20:08:22.2212155Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:33:7
+2026-11-12T20:08:22.2212396Z    |
+2026-11-12T20:08:22.2212552Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T20:08:22.2212769Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2212883Z 
+2026-11-12T20:08:22.2213053Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T20:08:22.2213406Z   --> hepta-infer-worker-host\src\final_use_authorizer.rs:60:5
+2026-11-12T20:08:22.2213641Z    |
+2026-11-12T20:08:22.2213795Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T20:08:22.2214027Z    |            ---------------------- fields in this struct
+2026-11-12T20:08:22.2214262Z 60 |     issuer_socket: PathBuf,
+2026-11-12T20:08:22.2214435Z    |     ^^^^^^^^^^^^^
+2026-11-12T20:08:22.2214589Z 61 |     issuer_uid: u32,
+2026-11-12T20:08:22.2214751Z    |     ^^^^^^^^^^
+2026-11-12T20:08:22.2214908Z 62 |     issuer_timeout: Duration,
+2026-11-12T20:08:22.2215092Z    |     ^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2215184Z 
+2026-11-12T20:08:22.2215289Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T20:08:22.2215584Z    --> hepta-infer-worker-host\src\final_use_authorizer.rs:170:8
+2026-11-12T20:08:22.2215832Z     |
+2026-11-12T20:08:22.2215975Z 170 | struct IssuerRequest {
+2026-11-12T20:08:22.2216143Z     |        ^^^^^^^^^^^^^
+2026-11-12T20:08:22.2216245Z 
+2026-11-12T20:08:22.2216535Z    Compiling codex-hepta-learning-ledger v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\hepta-learning-ledger)
+2026-11-12T20:08:22.2217234Z warning: `codex-hepta-infer-worker-host` (lib) generated 10 warnings (run `cargo fix --lib -p codex-hepta-infer-worker-host` to apply 4 suggestions)
+2026-11-12T20:08:22.2217808Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T20:08:22.2218256Z    --> hepta-agentd\src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T20:08:22.2218523Z     |
+2026-11-12T20:08:22.2218733Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T20:08:22.2219008Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2219201Z     |
+2026-11-12T20:08:22.2219417Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:08:22.2219635Z 
+2026-11-12T20:08:22.2219769Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T20:08:22.2220051Z   --> hepta-agentd\src\circuit_task.rs:34:16
+2026-11-12T20:08:22.2220254Z    |
+2026-11-12T20:08:22.2220439Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T20:08:22.2220689Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2220829Z 
+2026-11-12T20:08:22.2220916Z warning: unused import: `crate::RunPhase`
+2026-11-12T20:08:22.2221156Z   --> hepta-agentd\src\state_isolation_tests.rs:43:5
+2026-11-12T20:08:22.2221366Z    |
+2026-11-12T20:08:22.2221499Z 43 | use crate::RunPhase;
+2026-11-12T20:08:22.2221656Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2221761Z 
+2026-11-12T20:08:22.2221843Z warning: variable does not need to be mutable
+2026-11-12T20:08:22.2222342Z    --> hepta-agentd\src\prompt_runtime_tests.rs:795:10
+2026-11-12T20:08:22.2222561Z     |
+2026-11-12T20:08:22.2222696Z 795 |     let (mut store, initial) =
+2026-11-12T20:08:22.2222879Z     |          ----^^^^^
+2026-11-12T20:08:22.2223031Z     |          |
+2026-11-12T20:08:22.2223186Z     |          help: remove this `mut`
+2026-11-12T20:08:22.2223365Z     |
+2026-11-12T20:08:22.2223568Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:08:22.2223773Z 
+2026-11-12T20:08:22.2223940Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T20:08:22.2224403Z    --> hepta-agentd\src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:08:22.2224653Z     |
+2026-11-12T20:08:22.2224786Z  84 | impl LedgerFixture {
+2026-11-12T20:08:22.2225004Z     | ------------------ associated items in this implementation
+2026-11-12T20:08:22.2225233Z ...
+2026-11-12T20:08:22.2225438Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:08:22.2225702Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2225880Z ...
+2026-11-12T20:08:22.2226041Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T20:08:22.2226260Z     |                   ^^^^^
+2026-11-12T20:08:22.2226372Z 
+2026-11-12T20:08:22.2226458Z warning: function `append_decision` is never used
+2026-11-12T20:08:22.2226748Z    --> hepta-agentd\src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T20:08:22.2227185Z     |
+2026-11-12T20:08:22.2227489Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T20:08:22.2227829Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2227945Z 
+2026-11-12T20:08:22.2228030Z warning: function `closure` is never used
+2026-11-12T20:08:22.2228293Z    --> hepta-agentd\src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T20:08:22.2228535Z     |
+2026-11-12T20:08:22.2228671Z 212 | pub(super) fn closure(
+2026-11-12T20:08:22.2228839Z     |               ^^^^^^^
+2026-11-12T20:08:22.2228945Z 
+2026-11-12T20:08:22.2229090Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T20:08:22.2229433Z   --> hepta-agentd\src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:08:22.2229674Z    |
+2026-11-12T20:08:22.2229806Z 84 | impl LedgerFixture {
+2026-11-12T20:08:22.2230020Z    | ------------------ associated function in this implementation
+2026-11-12T20:08:22.2230245Z ...
+2026-11-12T20:08:22.2230438Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:08:22.2230701Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2230837Z 
+2026-11-12T20:08:22.2231036Z warning: function `original_evaluation_source` is never used
+2026-11-12T20:08:22.2231382Z  --> hepta-agentd\src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T20:08:22.2231666Z   |
+2026-11-12T20:08:22.2231825Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T20:08:22.2232050Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2232181Z 
+2026-11-12T20:08:22.2232256Z warning: field `at` is never read
+2026-11-12T20:08:22.2232528Z   --> hepta-agentd\src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T20:08:22.2232791Z    |
+2026-11-12T20:08:22.2232930Z 91 | pub(super) struct Fixture {
+2026-11-12T20:08:22.2233128Z    |                   ------- field in this struct
+2026-11-12T20:08:22.2233333Z 92 |     root: PathBuf,
+2026-11-12T20:08:22.2233494Z 93 |     pub(super) at: u64,
+2026-11-12T20:08:22.2233667Z    |                ^^
+2026-11-12T20:08:22.2233759Z 
+2026-11-12T20:08:22.2233950Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T20:08:22.2234352Z    --> hepta-agentd\src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T20:08:22.2234612Z     |
+2026-11-12T20:08:22.2234757Z 108 | enum MaterialFixtureProfile {
+2026-11-12T20:08:22.2234975Z     |      ---------------------- variants in this enum
+2026-11-12T20:08:22.2235183Z 109 |     NoUpdate,
+2026-11-12T20:08:22.2235333Z 110 |     CandidatePages,
+2026-11-12T20:08:22.2235493Z     |     ^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2235664Z 111 |     CandidateMaximumPages,
+2026-11-12T20:08:22.2235843Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2236005Z     |
+2026-11-12T20:08:22.2236378Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T20:08:22.2236835Z 
+2026-11-12T20:08:22.2237160Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T20:08:22.2237678Z    --> hepta-agentd\src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T20:08:22.2237941Z     |
+2026-11-12T20:08:22.2238069Z 114 | impl Fixture {
+2026-11-12T20:08:22.2238269Z     | ------------ associated functions in this implementation
+2026-11-12T20:08:22.2238500Z ...
+2026-11-12T20:08:22.2238678Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T20:08:22.2238906Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2239068Z ...
+2026-11-12T20:08:22.2239261Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T20:08:22.2239512Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2239683Z ...
+2026-11-12T20:08:22.2239951Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T20:08:22.2240271Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2240464Z 
+2026-11-12T20:08:22.2240574Z warning: method `set_test_clock` is never used
+2026-11-12T20:08:22.2240961Z    --> hepta-agentd\src\cell_q24_model_proposal.rs:306:19
+2026-11-12T20:08:22.2241258Z     |
+2026-11-12T20:08:22.2241578Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T20:08:22.2242018Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:08:22.2242383Z ...
+2026-11-12T20:08:22.2242614Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T20:08:22.2259933Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2260130Z 
+2026-11-12T20:08:22.2260265Z warning: fields `executions` and `now` are never read
+2026-11-12T20:08:22.2260681Z   --> hepta-agentd\src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T20:08:22.2260948Z    |
+2026-11-12T20:08:22.2261096Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T20:08:22.2261324Z    |                   --------------- fields in this struct
+2026-11-12T20:08:22.2261542Z ...
+2026-11-12T20:08:22.2261906Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T20:08:22.2262158Z    |     ^^^^^^^^^^
+2026-11-12T20:08:22.2262296Z 63 |     now: u64,
+2026-11-12T20:08:22.2262435Z    |     ^^^
+2026-11-12T20:08:22.2262510Z 
+2026-11-12T20:08:22.2262646Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T20:08:22.2262990Z    --> hepta-agentd\src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T20:08:22.2263235Z     |
+2026-11-12T20:08:22.2263375Z  66 | impl LearningFixture {
+2026-11-12T20:08:22.2263584Z     | -------------------- methods in this implementation
+2026-11-12T20:08:22.2263789Z ...
+2026-11-12T20:08:22.2263923Z 241 |     pub(crate) fn with_training(
+2026-11-12T20:08:22.2264108Z     |                   ^^^^^^^^^^^^^
+2026-11-12T20:08:22.2264273Z ...
+2026-11-12T20:08:22.2264416Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T20:08:22.2264616Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2264740Z 
+2026-11-12T20:08:22.2264848Z warning: method `circuit_learning_source` is never used
+2026-11-12T20:08:22.2265100Z   --> hepta-agentd\src\state_circuit_task.rs:81:19
+2026-11-12T20:08:22.2265303Z    |
+2026-11-12T20:08:22.2265435Z 49 | impl AgentdState {
+2026-11-12T20:08:22.2265622Z    | ---------------- method in this implementation
+2026-11-12T20:08:22.2265825Z ...
+2026-11-12T20:08:22.2266028Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T20:08:22.2266292Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:08:22.2266431Z 
+2026-11-12T20:08:22.2266771Z warning: `codex-hepta-agentd` (lib test) generated 24 warnings (8 duplicates) (run `cargo fix --lib -p codex-hepta-agentd --tests` to apply 4 suggestions)
+2026-11-12T20:08:22.2267726Z    Compiling codex-hepta-intelligence-eval v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\hepta-intelligence-eval)
+2026-11-12T20:08:22.2268280Z     Finished `test` profile [unoptimized] target(s) in 6.53s
+2026-11-12T20:08:22.2268817Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2269531Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2270203Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2270871Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2271559Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2272265Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2272996Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2273675Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2274335Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2275007Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2275680Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2276348Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2277098Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2277777Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2278462Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2279160Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2279826Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2280482Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2281145Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2281803Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2282487Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2283147Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2283797Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2284560Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2285243Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2285939Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2286646Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2287327Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2288234Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2288904Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2289571Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2290232Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2290920Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_msvc@0.52.6` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2291600Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2292257Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2293006Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2293690Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2294365Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2295050Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2295736Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2296426Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2297091Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2297752Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2298413Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2299059Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2299718Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2300458Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2301142Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2301818Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2302471Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2303119Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2303796Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2304469Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2305141Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2305802Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2306473Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2307178Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2308110Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2308907Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2309581Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2310251Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ipconfig@0.3.4` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2310954Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2311647Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2312308Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2313126Z warning: warning: saw package ID `path+file:///D:/a/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2313905Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2314547Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2315195Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2315872Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2317187Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2317835Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#winapi@0.3.9` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2318483Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2319122Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#winreg@0.10.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2319757Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2320418Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2321136Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2321817Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2322464Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2323125Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2323798Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2324514Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2325310Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2326004Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2326703Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2327416Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2328393Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2329062Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2329748Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2330428Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2331084Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2331759Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.39.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2332444Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.39.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2333227Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2333894Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2334549Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.9.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2335225Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2335904Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2336547Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2337197Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2337869Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2338558Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2339235Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2339938Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_msvc@0.53.1` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2340615Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#async-io@2.6.0` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2341649Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+2026-11-12T20:08:22.2342288Z ────────────
+2026-11-12T20:08:22.2342542Z  Nextest run ID b97abf90-ad9c-466d-825c-b8effc90560a with nextest profile: local
+2026-11-12T20:08:22.2342879Z     Starting 36 tests across 3 binaries (597 tests skipped)
+2026-11-12T20:08:22.2343341Z         PASS [   0.738s] codex-hepta-agentd cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads
+2026-11-12T20:08:22.2343984Z         PASS [   5.109s] codex-hepta-agentd cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled
+2026-11-12T20:08:22.2344638Z         PASS [   1.173s] codex-hepta-agentd cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims
+2026-11-12T20:08:22.2345266Z         PASS [   1.513s] codex-hepta-agentd cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound
+2026-11-12T20:08:22.2345914Z         PASS [   2.939s] codex-hepta-agentd circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append
+2026-11-12T20:08:22.2346596Z         PASS [   8.395s] codex-hepta-agentd circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference
+2026-11-12T20:08:22.2347280Z         PASS [   0.274s] codex-hepta-agentd circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only
+2026-11-12T20:08:22.2348217Z         PASS [   0.982s] codex-hepta-agentd circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs
+2026-11-12T20:08:22.2348863Z         PASS [   0.607s] codex-hepta-agentd circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
+2026-11-12T20:08:22.2349583Z         PASS [   0.362s] codex-hepta-agentd circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen
+2026-11-12T20:08:22.2350212Z         PASS [   0.536s] codex-hepta-agentd neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison
+2026-11-12T20:08:22.2350822Z         PASS [   0.483s] codex-hepta-agentd neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison
+2026-11-12T20:08:22.2351423Z         PASS [   0.524s] codex-hepta-agentd neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed
+2026-11-12T20:08:22.2352049Z         PASS [   1.563s] codex-hepta-agentd neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown
+2026-11-12T20:08:22.2352744Z         PASS [   0.460s] codex-hepta-agentd neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes
+2026-11-12T20:08:22.2353493Z         PASS [   1.607s] codex-hepta-agentd neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original
+2026-11-12T20:08:22.2354219Z         PASS [   1.353s] codex-hepta-agentd neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution
+2026-11-12T20:08:22.2354889Z         PASS [   0.465s] codex-hepta-agentd neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact
+2026-11-12T20:08:22.2355680Z         PASS [   0.505s] codex-hepta-agentd neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator
+2026-11-12T20:08:22.2356322Z         PASS [   0.321s] codex-hepta-agentd neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases
+2026-11-12T20:08:22.2357015Z         PASS [   0.292s] codex-hepta-agentd neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work
+2026-11-12T20:08:22.2357622Z         PASS [   0.353s] codex-hepta-agentd neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider
+2026-11-12T20:08:22.2358457Z         PASS [   0.323s] codex-hepta-agentd neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout
+2026-11-12T20:08:22.2359192Z         PASS [   0.147s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_refuses_length_changes_without_repair
+2026-11-12T20:08:22.2359874Z         PASS [   0.051s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement
+2026-11-12T20:08:22.2360666Z         PASS [   0.036s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed
+2026-11-12T20:08:22.2361389Z         PASS [   0.048s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner
+2026-11-12T20:08:22.2362103Z         PASS [   0.007s] codex-hepta-intelligence-eval qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error
+2026-11-12T20:08:22.2362930Z         PASS [   0.006s] codex-hepta-intelligence-eval qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor
+2026-11-12T20:08:22.2363763Z         PASS [   0.024s] codex-hepta-learning-ledger durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor
+2026-11-12T20:08:22.2364439Z         PASS [   0.049s] codex-hepta-learning-ledger durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair
+2026-11-12T20:08:22.2365096Z         PASS [   0.019s] codex-hepta-learning-ledger durable::current_tests::current_rejects_a_different_valid_same_length_ledger
+2026-11-12T20:08:22.2365828Z         PASS [   0.031s] codex-hepta-learning-ledger witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier
+2026-11-12T20:08:22.2366474Z         PASS [   0.081s] codex-hepta-learning-ledger witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm
+2026-11-12T20:08:22.2367096Z         PASS [   0.040s] codex-hepta-learning-ledger witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner
+2026-11-12T20:08:22.2367763Z         PASS [   0.053s] codex-hepta-learning-ledger witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution
+2026-11-12T20:08:22.2368581Z ────────────
+2026-11-12T20:08:22.2368767Z      Summary [  31.477s] 36 tests run: 36 passed, 597 skipped
+2026-11-12T20:08:22.3746921Z {"command": ["just", "test", "--locked", "--target", "x86_64-pc-windows-msvc", "-p", "codex-hepta-agentd", "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-learning-ledger", "--lib", "-E", "(package(=codex-hepta-agentd) & (test(=circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append) | test(=circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs) | test(=circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history) | test(=circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen) | test(=circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only) | test(=circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference) | test(=neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison) | test(=neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison) | test(=neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed) | test(=neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown) | test(=neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes) | test(=neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original) | test(=neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution) | test(=neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact) | test(=neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator) | test(=neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases) | test(=neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work) | test(=neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider) | test(=neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout) | test(=cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims) | test(=cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound) | test(=cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled) | test(=cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads))) | (package(=codex-hepta-intelligence-eval) & (test(=qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor) | test(=qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error) | test(=product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner) | test(=product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed) | test(=product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement) | test(=product_execution_file::tests::current::current_refuses_length_changes_without_repair))) | (package(=codex-hepta-learning-ledger) & (test(=durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor) | test(=durable::current_tests::current_rejects_a_different_valid_same_length_ledger) | test(=durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair) | test(=witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner) | test(=witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm) | test(=witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier) | test(=witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution)))", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "errors": 0, "execution_file": "execution.json", "execution_sha256": "fe0a1efe33fc77c69f512f8d4413d745234f8f13dc893a2e5e3f0ef738587121", "failures": 0, "job": "windows-secure-private-state", "junit_bytes": 9050, "junit_mtime_ns": 1794514102155076300, "junit_sha256": "9141c21cf40994c480ae2db6b9473e562bf66251b98ce6d0c4af56a2d00ea9ab", "kind": "native-junit-collection", "native_path": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\target\\nextest\\local\\junit.xml", "run_attempt": "1", "run_id": "43293663313", "schema_version": 1, "skipped_in_xml": 0, "source_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85", "status": "passed", "total_testcases": 36}
+2026-11-12T20:08:22.3785477Z {"build_target": "x86_64-pc-windows-msvc", "cargo_build_target": "x86_64-pc-windows-msvc", "execution_sha256": "fe0a1efe33fc77c69f512f8d4413d745234f8f13dc893a2e5e3f0ef738587121", "exit_code": 0, "expected_cases": {"dataset_materialization": {"codex-hepta-agentd": ["cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims", "cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound", "cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled", "cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads"]}, "ledger_current_7": {"codex-hepta-learning-ledger": ["durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor", "durable::current_tests::current_rejects_a_different_valid_same_length_ledger", "durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair", "witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner", "witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm", "witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier", "witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution"]}, "original_owner_current_4": {"codex-hepta-intelligence-eval": ["product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner", "product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed", "product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement", "product_execution_file::tests::current::current_refuses_length_changes_without_repair"]}, "original_windows_21": {"codex-hepta-agentd": ["circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append", "circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs", "circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history", "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen", "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only", "circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference", "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison", "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison", "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed", "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown", "neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes", "neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original", "neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution", "neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact", "neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator", "neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases", "neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work", "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider", "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout"], "codex-hepta-intelligence-eval": ["qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor", "qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error"]}}, "expected_test_count": 36, "job": "windows-secure-private-state", "junit_collection_exit_code": 0, "junit_coverage": {"exact_pass_coverage": true, "groups": {"dataset_materialization": {"exact_pass_coverage": true, "expected_count": 4, "observed_testcases": 4}, "ledger_current_7": {"exact_pass_coverage": true, "expected_count": 7, "observed_testcases": 7}, "original_owner_current_4": {"exact_pass_coverage": true, "expected_count": 4, "observed_testcases": 4}, "original_windows_21": {"exact_pass_coverage": true, "expected_count": 21, "observed_testcases": 21}}, "native_suite_identity": true, "total_testcases": 36}, "log_coverage": {"exact_pass_coverage": true, "groups": {"dataset_materialization": {"exact_pass_coverage": true, "expected_count": 4, "observed_pass_rows": 4}, "ledger_current_7": {"exact_pass_coverage": true, "expected_count": 7, "observed_pass_rows": 7}, "original_owner_current_4": {"exact_pass_coverage": true, "expected_count": 4, "observed_pass_rows": 4}, "original_windows_21": {"exact_pass_coverage": true, "expected_count": 21, "observed_pass_rows": 21}}, "observed_failed_tests": 0, "observed_passed_tests": 36, "selected_count": 36, "terminal_rows": [["PASS", "codex-hepta-agentd", "cell_q24_dataset::tests::current_uses_internal_time_and_rechecks_expiry_after_physical_reads"], ["PASS", "codex-hepta-agentd", "cell_q24_dataset::tests::nonterminal_nonrepresentable_and_out_of_range_targets_are_never_clipped_or_filled"], ["PASS", "codex-hepta-agentd", "cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims"], ["PASS", "codex-hepta-agentd", "cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound"], ["PASS", "codex-hepta-agentd", "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append"], ["PASS", "codex-hepta-agentd", "circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference"], ["PASS", "codex-hepta-agentd", "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only"], ["PASS", "codex-hepta-agentd", "circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs"], ["PASS", "codex-hepta-agentd", "circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history"], ["PASS", "codex-hepta-agentd", "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::original_owner::original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::readback::changed_learning_profile_is_refused_before_claim_or_holdout_contact"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::readback::completed_cell_execution_reopens_with_original_evaluator"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider"], ["PASS", "codex-hepta-agentd", "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout"], ["PASS", "codex-hepta-intelligence-eval", "product_execution_file::tests::current::current_refuses_length_changes_without_repair"], ["PASS", "codex-hepta-intelligence-eval", "product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement"], ["PASS", "codex-hepta-intelligence-eval", "product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed"], ["PASS", "codex-hepta-intelligence-eval", "product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner"], ["PASS", "codex-hepta-intelligence-eval", "qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error"], ["PASS", "codex-hepta-intelligence-eval", "qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor"], ["PASS", "codex-hepta-learning-ledger", "durable::current_tests::current_reads_complete_original_bytes_and_preserves_cursor"], ["PASS", "codex-hepta-learning-ledger", "durable::current_tests::current_refuses_truncation_short_tail_extra_tail_and_header_corruption_without_repair"], ["PASS", "codex-hepta-learning-ledger", "durable::current_tests::current_rejects_a_different_valid_same_length_ledger"], ["PASS", "codex-hepta-learning-ledger", "witness::current_tests::current_detects_rehashed_history_even_with_unchanged_latest_frontier"], ["PASS", "codex-hepta-learning-ledger", "witness::current_tests::current_refuses_physical_length_changes_without_repair_or_rearm"], ["PASS", "codex-hepta-learning-ledger", "witness::current_tests::current_reread_preserves_original_cursor_bytes_and_append_owner"], ["PASS", "codex-hepta-learning-ledger", "witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution"]]}, "native_platform": "Windows-2025Server-10.0.26100-SP0", "run_attempt": "1", "run_id": "43293663313", "schema": "hepta.windows-learn-native-regressions.v1", "source_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "status": "passed", "test_retries": 0}
+2026-11-12T20:08:22.4698522Z ##[group]Run git diff --check
+2026-11-12T20:08:22.4698818Z [36;1mgit diff --check[0m
+2026-11-12T20:08:22.4699043Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-12T20:08:22.4699288Z [36;1mgit diff --exit-code[0m
+2026-11-12T20:08:22.4699510Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-12T20:08:22.4699827Z [36;1m$trackedChanges = @(git status --porcelain --untracked-files=no)[0m
+2026-11-12T20:08:22.4700147Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-12T20:08:22.4700473Z [36;1mif ($trackedChanges.Count -ne 0) { throw "unqualified worktree mutation" }[0m
+2026-11-12T20:08:22.4757999Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T20:08:22.4758269Z env:
+2026-11-12T20:08:22.4758411Z   CARGO_INCREMENTAL: 0
+2026-11-12T20:08:22.4758568Z   CARGO_BUILD_JOBS: 2
+2026-11-12T20:08:22.4758734Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T20:08:22.4758909Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T20:08:22.4759125Z   CARGO_BUILD_TARGET: x86_64-pc-windows-msvc
+2026-11-12T20:08:22.4759332Z ##[endgroup]
+2026-11-12T20:08:22.9753433Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T20:08:22.9753790Z with:
+2026-11-12T20:08:22.9754131Z   name: windows-private-state-acquisition-84ee9c2ed0db8b20b792634d775f9b4f97a34578-43293663313-1
+2026-11-12T20:08:22.9754542Z   path: D:\a\_temp/private-state-acquisition
+2026-11-12T20:08:22.9754758Z   if-no-files-found: warn
+2026-11-12T20:08:22.9754924Z   retention-days: 14
+2026-11-12T20:08:22.9755077Z   compression-level: 6
+2026-11-12T20:08:22.9755232Z   overwrite: false
+2026-11-12T20:08:22.9755394Z   include-hidden-files: false
+2026-11-12T20:08:22.9755582Z env:
+2026-11-12T20:08:22.9755716Z   CARGO_INCREMENTAL: 0
+2026-11-12T20:08:22.9755873Z   CARGO_BUILD_JOBS: 2
+2026-11-12T20:08:22.9756023Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T20:08:22.9756189Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T20:08:22.9756372Z   CARGO_BUILD_TARGET: x86_64-pc-windows-msvc
+2026-11-12T20:08:22.9756570Z ##[endgroup]
+2026-11-12T20:08:23.6408198Z (node:6588) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T20:08:23.6408759Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T20:08:23.6461839Z ##[warning]No files were found with the provided path: D:\a\_temp/private-state-acquisition. No artifacts will be uploaded.
+2026-11-12T20:08:23.6743055Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T20:08:23.6743414Z with:
+2026-11-12T20:08:23.6743714Z   name: windows-learn-regressions-84ee9c2ed0db8b20b792634d775f9b4f97a34578-43293663313-1
+2026-11-12T20:08:23.6744122Z   path: D:\a\_temp/hepta-windows-learn-regressions/
+2026-11-12T20:08:23.6744365Z   if-no-files-found: error
+2026-11-12T20:08:23.6744534Z   retention-days: 14
+2026-11-12T20:08:23.6744685Z   compression-level: 6
+2026-11-12T20:08:23.6744837Z   overwrite: false
+2026-11-12T20:08:23.6744987Z   include-hidden-files: false
+2026-11-12T20:08:23.6745152Z env:
+2026-11-12T20:08:23.6745292Z   CARGO_INCREMENTAL: 0
+2026-11-12T20:08:23.6745445Z   CARGO_BUILD_JOBS: 2
+2026-11-12T20:08:23.6745600Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T20:08:23.6745772Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T20:08:23.6745959Z   CARGO_BUILD_TARGET: x86_64-pc-windows-msvc
+2026-11-12T20:08:23.6746158Z ##[endgroup]
+2026-11-12T20:08:23.8283963Z (node:1472) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T20:08:23.8284503Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T20:08:23.8351265Z With the provided path, there will be 6 files uploaded
+2026-11-12T20:08:23.8355050Z Artifact name is valid!
+2026-11-12T20:08:23.8356498Z Root directory input is valid!
+2026-11-12T20:08:24.2430558Z Beginning upload of artifact content to blob storage
+2026-11-12T20:08:24.2693619Z (node:1472) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T20:08:24.5454776Z Uploaded bytes 15732
+2026-11-12T20:08:24.6124169Z Finished uploading artifact content to blob storage!
+2026-11-12T20:08:24.6124862Z SHA256 digest of uploaded artifact zip is d3b9665679e7366c8e10663a182ce5cc99557948bcb50bcc7b85cdb9e060d62e
+2026-11-12T20:08:24.6126736Z Finalizing artifact upload
+2026-11-12T20:08:24.9938782Z Artifact windows-learn-regressions-84ee9c2ed0db8b20b792634d775f9b4f97a34578-43293663313-1.zip successfully finalized. Artifact ID 13979766769
+2026-11-12T20:08:24.9940035Z Artifact windows-learn-regressions-84ee9c2ed0db8b20b792634d775f9b4f97a34578-43293663313-1 has been successfully uploaded! Final size is 15732 bytes. Artifact ID is 13979766769
+2026-11-12T20:08:24.9952279Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43293663313/artifacts/13979766769
+2026-11-12T20:08:25.0256090Z Post job cleanup.
+2026-11-12T20:08:25.1672879Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-12T20:08:25.1963739Z git version 2.56.0.windows.4
+2026-11-12T20:08:25.2022756Z Temporarily overriding HOME='D:\a\_temp\2378f4c5-2237-4740-8012-5d9ac148b45f' before making global git config changes
+2026-11-12T20:08:25.2023328Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:08:25.2031025Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:08:25.2332763Z Removing SSH command configuration
+2026-11-12T20:08:25.2346267Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:08:25.2652979Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T20:08:25.7866024Z Removing HTTP extra header
+2026-11-12T20:08:25.7875257Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:08:25.8169814Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T20:08:26.2548522Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:08:26.2558713Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:08:26.2822206Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T20:08:26.2822678Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T20:08:26.2854356Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T20:08:26.3113701Z D:\a\_temp\git-credentials-6bd1f1c6-2220-44d0-85fb-47a950cfc149.config
+2026-11-12T20:08:26.3147520Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-6bd1f1c6-2220-44d0-85fb-47a950cfc149.config
+2026-11-12T20:08:26.3438348Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T20:08:26.3694863Z D:\a\_temp\git-credentials-6bd1f1c6-2220-44d0-85fb-47a950cfc149.config
+2026-11-12T20:08:26.3727114Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-6bd1f1c6-2220-44d0-85fb-47a950cfc149.config
+2026-11-12T20:08:26.4021247Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T20:08:26.8594570Z Removing credentials config 'D:\a\_temp\git-credentials-6bd1f1c6-2220-44d0-85fb-47a950cfc149.config'
+2026-11-12T20:08:26.8775976Z Cleaning up orphan processes
+2026-11-12T20:08:26.9152480Z Terminate orphan process: pid (8640) (vctip)
+2026-11-12T20:08:26.9234267Z Terminate orphan process: pid (2872) (MSBuild)
+2026-11-12T20:08:26.9294385Z Terminate orphan process: pid (5104) (conhost)
+2026-11-12T20:08:26.9961510Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
