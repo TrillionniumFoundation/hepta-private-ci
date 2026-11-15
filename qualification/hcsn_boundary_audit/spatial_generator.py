@@ -54,6 +54,10 @@ class KilledSpatialGenerator:
         return self.endpoint / self.intervals
 
     @property
+    def nodes(self):
+        return np.linspace(0, self.endpoint, self.intervals + 1)
+
+    @property
     def rates(self):
         h = self.spacing
         diffusion = (self.sigma / h) ** 2 / 2
