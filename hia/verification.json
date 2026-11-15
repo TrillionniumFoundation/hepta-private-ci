@@ -7,6 +7,34 @@
   "build_status": "built",
   "compiler_fixed_point": true,
   "compiler_generations": 3,
+  "native_module_count": 11,
+  "production_algorithm_group_count": 9,
+  "whole_codex_rewritten": false,
+  "production_dispatch_migrated": false,
+  "legacy_source_retired": false,
+  "legacy_retirement_ready": false,
+  "whole_product_performance_qualified": false,
+  "opt_in_production_callers_verified": false,
+  "scope": "Linux x86-64 GNU, opt-in hia-native. Eleven B3 modules cover nine algorithm groups. The current native build and eleven component gates passed. The post-gate adapter lint repair and hidden-fixture upload change are separately bound; all native source/artifact files and prior component gate inputs remain unchanged. The complete combined file-update public owner, Cargo consumers, installed executables, strict lint and fix/clean-diff require fresh CI. Earlier published CI results qualify only their recorded source trees. All 15 complete capabilities, whole-Codex/default migration, required platforms, retirement and whole-product performance remain open.",
+  "current_evidence_record": "patch_integration",
+  "composition_sources": {
+    "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+    "parser": "168080b72c4be242d14eadd47168f2a9326590f2",
+    "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
+    "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
+    "scope": "Single-parent integration of these three sibling candidates; no unrelated main integration tree or target directory is reused."
+  },
+  "production_algorithms": {
+    "seek_sequence": "patch context matching",
+    "utf8_prefix": "UTF-8 prefix selection",
+    "metric_tag": "metric-tag sanitizing",
+    "markdown_location": "Markdown location suffix normalization",
+    "ascii_json_fragment": "ASCII JSON string-fragment encoding",
+    "truncate": "middle truncation and approximate token budgets (five public APIs)",
+    "source_file": "Complete SourceFile owner: parse, line_texts, apply_replacements and into_contents",
+    "file_update": "Candidate complete update computation owner: LF line parsing, chunk/resume planning, stable ordering and reverse NormalizeToLf edits/rendering, composed with existing HIA search and SourceFile.",
+    "parser": "Complete batch and streaming patch grammar, normalization, errors/events and path selection; PathUri joins remain host operations."
+  },
   "sources": {
     "seek_sequence": {
       "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
@@ -280,22 +308,31 @@
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
   "build_report_sha256": "47313f73a5fef297e17d68a92e37e92e2f0e3db8a0f605c4a967b34af3ff9312",
-  "production_dispatch_migrated": false,
-  "whole_codex_rewritten": false,
-  "legacy_source_retired": false,
-  "opt_in_production_callers_verified": false,
-  "production_algorithms": {
-    "seek_sequence": "patch context matching",
-    "utf8_prefix": "UTF-8 prefix selection",
-    "metric_tag": "metric-tag sanitizing",
-    "markdown_location": "Markdown location suffix normalization",
-    "ascii_json_fragment": "ASCII JSON string-fragment encoding",
-    "truncate": "middle truncation and approximate token budgets (five public APIs)",
-    "source_file": "Complete SourceFile owner: parse, line_texts, apply_replacements and into_contents",
-    "file_update": "Candidate complete update computation owner: LF line parsing, chunk/resume planning, stable ordering and reverse NormalizeToLf edits/rendering, composed with existing HIA search and SourceFile.",
-    "parser": "Complete batch and streaming patch grammar, normalization, errors/events and path selection; PathUri joins remain host operations."
-  },
-  "scope": "Linux x86-64 GNU, opt-in hia-native. Eleven B3 modules cover nine algorithm groups. The current native build and eleven component gates passed. The post-gate adapter lint repair and hidden-fixture upload change are separately bound; all native source/artifact files and prior component gate inputs remain unchanged. The complete combined file-update public owner, Cargo consumers, installed executables, strict lint and fix/clean-diff require fresh CI. Earlier published CI results qualify only their recorded source trees. All 15 complete capabilities, whole-Codex/default migration, required platforms, retirement and whole-product performance remain open.",
+  "compiler_generation_evidence": [
+    {
+      "case": "B1",
+      "abi_status": 0,
+      "status": "returned",
+      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
+    },
+    {
+      "case": "B2",
+      "abi_status": 0,
+      "status": "returned",
+      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
+    },
+    {
+      "case": "B3",
+      "abi_status": 0,
+      "status": "returned",
+      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
+    }
+  ],
+  "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
+  "current_source_inputs_scope": "Union of named inputs from the three published candidates and every current HIA source/contract/test/build file. Excludes exactly the three canonical metadata files to avoid self-hashing. Source hashes bind bytes, not execution of pending gates.",
   "current_source_inputs": {
     ".github/workflows/codex-hia-native.yml": "fa4eee1f1f81efaebed421ac0d0d56e4d21e5f3de07df355c8ea6a5ef3ad2907",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
@@ -504,95 +541,6 @@
     "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
     "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
   },
-  "whole_product_performance_qualified": false,
-  "current_evidence_record": "patch_integration",
-  "source_file_increment": {
-    "status": "current_complete_original_owner_and_raw_abi_passed_combined_product_ci_pending",
-    "contract": "hia/source_file_buffer_contract.json",
-    "strict_operations": [
-      0,
-      7
-    ],
-    "trusted_operations": [
-      8,
-      15
-    ],
-    "original_comparisons": 225591,
-    "original_tests_passed": 9,
-    "tests_skipped": 0,
-    "native_calls": 8915,
-    "error_no_write_cases": 6499,
-    "concurrent_native_calls": 2048,
-    "receipt_checks": 62,
-    "original_report": {
-      "report": "source-file-original.json",
-      "sha256": "e2510003d25c1e2fd7a2cadbb302497104cadd23550199e4d787737baefb4fda",
-      "bytes": 7344
-    },
-    "gates": [
-      "source-file-original",
-      "source-file-abi",
-      "receipt-source_file"
-    ],
-    "published_ci": "#historical_published_ci/source_file",
-    "performance_qualified": false
-  },
-  "native_module_count": 11,
-  "production_algorithm_group_count": 9,
-  "current_source_inputs_scope": "Union of named inputs from the three published candidates and every current HIA source/contract/test/build file. Excludes exactly the three canonical metadata files to avoid self-hashing. Source hashes bind bytes, not execution of pending gates.",
-  "file_update_increment": {
-    "status": "current_raw_abi_and_receipts_passed_repaired_combined_public_adapter_ci_pending",
-    "contract": "hia/file_update_buffer_contract.json",
-    "native_calls": 2897,
-    "error_no_write_cases": 1381,
-    "concurrent_native_calls": 768,
-    "receipt_checks": 62,
-    "gates": [
-      "file-update-abi",
-      "receipt-file_update"
-    ],
-    "adapter_sha256": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
-    "original_revision": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
-    "complete_current_public_owner_verified": false,
-    "historical_original_public_gate": "#historical_published_ci/file_update_before_lint_repair",
-    "continuation_scope": "Caller-owned structural state is not authentication of text equality. The adapter binds actual HIA search results to the original strings.",
-    "private_planner_trace_observed": false,
-    "performance_measured": false,
-    "performance_qualified": false
-  },
-  "metadata_publication_incomplete": true,
-  "legacy_retirement_ready": false,
-  "composition_sources": {
-    "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
-    "parser": "168080b72c4be242d14eadd47168f2a9326590f2",
-    "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
-    "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
-    "scope": "Single-parent integration of these three sibling candidates; no unrelated main integration tree or target directory is reused."
-  },
-  "compiler_generation_evidence": [
-    {
-      "case": "B1",
-      "abi_status": 0,
-      "status": "returned",
-      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
-    },
-    {
-      "case": "B2",
-      "abi_status": 0,
-      "status": "returned",
-      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
-    },
-    {
-      "case": "B3",
-      "abi_status": 0,
-      "status": "returned",
-      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
-    }
-  ],
-  "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
   "patch_integration": {
     "status": "eleven_component_gates_passed_combined_cargo_installed_strict_fix_pending",
     "native_build_job": "1a1dd68a6f4-392-207f",
@@ -931,6 +879,57 @@
     ],
     "whole_workspace_qualified": false
   },
+  "source_file_increment": {
+    "status": "current_complete_original_owner_and_raw_abi_passed_combined_product_ci_pending",
+    "contract": "hia/source_file_buffer_contract.json",
+    "strict_operations": [
+      0,
+      7
+    ],
+    "trusted_operations": [
+      8,
+      15
+    ],
+    "original_comparisons": 225591,
+    "original_tests_passed": 9,
+    "tests_skipped": 0,
+    "native_calls": 8915,
+    "error_no_write_cases": 6499,
+    "concurrent_native_calls": 2048,
+    "receipt_checks": 62,
+    "original_report": {
+      "report": "source-file-original.json",
+      "sha256": "e2510003d25c1e2fd7a2cadbb302497104cadd23550199e4d787737baefb4fda",
+      "bytes": 7344
+    },
+    "gates": [
+      "source-file-original",
+      "source-file-abi",
+      "receipt-source_file"
+    ],
+    "published_ci": "#historical_published_ci/source_file",
+    "performance_qualified": false
+  },
+  "file_update_increment": {
+    "status": "current_raw_abi_and_receipts_passed_repaired_combined_public_adapter_ci_pending",
+    "contract": "hia/file_update_buffer_contract.json",
+    "native_calls": 2897,
+    "error_no_write_cases": 1381,
+    "concurrent_native_calls": 768,
+    "receipt_checks": 62,
+    "gates": [
+      "file-update-abi",
+      "receipt-file_update"
+    ],
+    "adapter_sha256": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
+    "original_revision": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+    "complete_current_public_owner_verified": false,
+    "historical_original_public_gate": "#historical_published_ci/file_update_before_lint_repair",
+    "continuation_scope": "Caller-owned structural state is not authentication of text equality. The adapter binds actual HIA search results to the original strings.",
+    "private_planner_trace_observed": false,
+    "performance_measured": false,
+    "performance_qualified": false
+  },
   "parser_increment": {
     "status": "current_complete_original_transcripts_raw_abi_and_fresh_host_admission_passed_combined_product_ci_pending",
     "contract": "hia/parser_buffer_contract.json",
@@ -1099,5 +1098,378 @@
       "final_proof_sha256": "b3cdd9a6eb647133ef944e46d22a5415e2ea5b360bb3895b2a6bc575617e0354"
     },
     "artifact_scope": "Run observations and uploaded regular-file hashes were audited. Uploaded reports do not substitute for unuploaded executable or rlib bytes, and no downloaded executable was rerun locally."
-  }
+  },
+  "historical_performance": {
+    "scope": "These bounded component observations are retained from their published checkpoints. They were not rerun on the combined candidate, and do not qualify current integrated or whole-product performance.",
+    "truncate_and_token_budget": {
+      "commit": "7fe65ae990187e6ff1130c791f902728b4e50197",
+      "qualified": false,
+      "method": "same optimized Rust public APIs; original source token-bound; actual B3 native HIA static archive; black_box inputs and results; 3 alternating-order samples per case; equal iterations per pair",
+      "report_sha256": "b83538199ad0906598935fc5386b9891e57a27a95443a40c5822840ac18f2aee",
+      "raw_sha256": "cee2e5391ab7e52d4184d6c091b3551800aabace89de36b7157d710bffad704c",
+      "binary_sha256": "cf2ba2d8ea1237f804d2ef97640979a9b7cdeae9d2decf21c04f78624e047c2f",
+      "cases": {
+        "bytes_for_17_tokens": {
+          "input_bytes": 0,
+          "budget": 17,
+          "native_ns": 7.3042275,
+          "original_rust_ns": 0.601329,
+          "native_to_original_ratio": 12.146807321782251
+        },
+        "tokens_for_65_bytes": {
+          "input_bytes": 0,
+          "budget": 65,
+          "native_ns": 9.2802005,
+          "original_rust_ns": 0.5578885,
+          "native_to_original_ratio": 16.634507612184155
+        },
+        "saturated_bytes_for_tokens": {
+          "input_bytes": 0,
+          "budget": 4611686018427387904,
+          "native_ns": 6.235631,
+          "original_rust_ns": 0.880882,
+          "native_to_original_ratio": 7.078849380507264
+        },
+        "token_count_small_unicode": {
+          "input_bytes": 132,
+          "budget": 0,
+          "native_ns": 8.959920335972118,
+          "original_rust_ns": 0.8576460501761176,
+          "native_to_original_ratio": 10.447107328404531
+        },
+        "chars_small_ascii": {
+          "input_bytes": 116,
+          "budget": 48,
+          "native_ns": 449.8202676864245,
+          "original_rust_ns": 209.94773741236457,
+          "native_to_original_ratio": 2.1425344861084126
+        },
+        "chars_small_unicode": {
+          "input_bytes": 132,
+          "budget": 48,
+          "native_ns": 578.551,
+          "original_rust_ns": 169.2921,
+          "native_to_original_ratio": 3.4174719316494984
+        },
+        "tokens_small_unicode": {
+          "input_bytes": 132,
+          "budget": 8,
+          "native_ns": 270.19880994049703,
+          "original_rust_ns": 181.3559677983899,
+          "native_to_original_ratio": 1.4898809960357746
+        },
+        "tokens_under_budget_small_unicode": {
+          "input_bytes": 132,
+          "budget": 34,
+          "native_ns": 204.5163,
+          "original_rust_ns": 15.3502,
+          "native_to_original_ratio": 13.323363864965929
+        },
+        "chars_zero_budget_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 0,
+          "native_ns": 1873297.7272727273,
+          "original_rust_ns": 46066.0,
+          "native_to_original_ratio": 40.66551745913966
+        },
+        "chars_zero_budget_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 0,
+          "native_ns": 3004638.153846154,
+          "original_rust_ns": 59646.38461538462,
+          "native_to_original_ratio": 50.37418735805768
+        },
+        "chars_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 512,
+          "native_ns": 1606037.3333333333,
+          "original_rust_ns": 1270297.8333333333,
+          "native_to_original_ratio": 1.2642998288983935
+        },
+        "chars_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 512,
+          "native_ns": 2067840.4615384615,
+          "original_rust_ns": 865391.9230769231,
+          "native_to_original_ratio": 2.3894843554654424
+        },
+        "tokens_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 128,
+          "native_ns": 641.625,
+          "original_rust_ns": 2177892.6875,
+          "native_to_original_ratio": 0.0002946081795869017
+        },
+        "tokens_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 128,
+          "native_ns": 664.8461538461538,
+          "original_rust_ns": 1441712.0,
+          "native_to_original_ratio": 0.00046115046128918525
+        },
+        "tokens_under_budget_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 262146,
+          "native_ns": 26030.533333333333,
+          "original_rust_ns": 25204.95,
+          "native_to_original_ratio": 1.0327548094058243
+        },
+        "tokens_under_budget_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 262147,
+          "native_ns": 25796.828125,
+          "original_rust_ns": 25702.0,
+          "native_to_original_ratio": 1.003689523188857
+        },
+        "tokens_zero_budget_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 0,
+          "native_ns": 391.6875,
+          "original_rust_ns": 64959.5,
+          "native_to_original_ratio": 0.006029718516922082
+        }
+      },
+      "all_cases_within_3_seconds": true,
+      "remaining": "Scalar calls still exceed inline Rust costs. Character paths, especially zero budgets, and small unchanged token inputs retain regressions. These bounded local observations are not a whole-product performance qualification."
+    },
+    "source_file": {
+      "commit": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "qualified": false,
+      "whole_product_performance_qualified": false,
+      "method": "actual parse, line_texts, apply_replacements and into_contents; immutable complete original Rust file; same opt-level=3/codegen-units=1; black_box inputs/results; equal iterations per pair; three alternating samples; one CPU",
+      "case_count": 9,
+      "fixture_parity_passed": true,
+      "all_cases_within_3_seconds": true,
+      "bounded_measurement_passed": true,
+      "measured_native_build_directory": "/workspace/scratch/9f380f39cb05/source-file-trusted-build-v1",
+      "measured_build_report_sha256": "2a83a93eb215442a057f386d2de184ee6d9d337e6c1e8d9243b9c9b43c69b8e8",
+      "formal_build_report_sha256": "4b6994cdea86ff822fc5e2de25df736b317efabacfa8aeb26ffe5c8d4fad9b5c",
+      "measured_build_and_formal_build_source_core_and_linked_artifacts_identical": true,
+      "shared_archive_sha256": "643fc9276b14845e5c2c1c052b3dc45ca1a80f3eac78ad5f5557ac12e3db4fa4",
+      "report_path": "/workspace/scratch/9f380f39cb05/performance/source-file-bounded-v2/report.json",
+      "report_sha256": "d6d80c65511a1d75b12c921bfacd3dbbaab46bf6f41b0a1725da68bedaa51c47",
+      "raw_sha256": "2320c90facc03931cb529e8acdafc440f18613f2b3fe214ec9df65d64e805241",
+      "binary_sha256": "fc66577e7b45f75f3978171b40b92100ea14e6a31895b0564d0f312e136a3209",
+      "rustc_sha256": "4a84e05991ad6f2a84c1361c29b52b38c390365bd1fc269b1936c88d482a8928",
+      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "cases": {
+        "empty_no_round": {
+          "input_bytes": 0,
+          "rounds": 0,
+          "iterations_per_sample": 2590,
+          "samples": 3,
+          "native_ns_per_call_median": 1075.2223938223938,
+          "original_rust_ns_per_call_median": 20.625868725868727,
+          "native_to_original_ratio": 52.129799142659245
+        },
+        "small_mixed_update": {
+          "input_bytes": 23,
+          "rounds": 1,
+          "iterations_per_sample": 1487,
+          "samples": 3,
+          "native_ns_per_call_median": 8133.443174176194,
+          "original_rust_ns_per_call_median": 341.8016139878951,
+          "native_to_original_ratio": 23.7958009597469
+        },
+        "nested_endings_multiple_rounds": {
+          "input_bytes": 12,
+          "rounds": 3,
+          "iterations_per_sample": 1535,
+          "samples": 3,
+          "native_ns_per_call_median": 13285.454723127035,
+          "original_rust_ns_per_call_median": 350.57654723127035,
+          "native_to_original_ratio": 37.89601679875867
+        },
+        "maximum_take_delete_and_reinsert": {
+          "input_bytes": 12,
+          "rounds": 2,
+          "iterations_per_sample": 1920,
+          "samples": 3,
+          "native_ns_per_call_median": 8441.665625,
+          "original_rust_ns_per_call_median": 231.73645833333333,
+          "native_to_original_ratio": 36.42787020097363
+        },
+        "two_mib_single_line_roundtrip": {
+          "input_bytes": 2097152,
+          "rounds": 0,
+          "iterations_per_sample": 2,
+          "samples": 3,
+          "native_ns_per_call_median": 8442511.5,
+          "original_rust_ns_per_call_median": 1278135.5,
+          "native_to_original_ratio": 6.605333706793998
+        },
+        "two_mib_single_line_empty_update": {
+          "input_bytes": 2097152,
+          "rounds": 1,
+          "iterations_per_sample": 2,
+          "samples": 3,
+          "native_ns_per_call_median": 7433899,
+          "original_rust_ns_per_call_median": 1119570,
+          "native_to_original_ratio": 6.639959091436891
+        },
+        "many_ascii_lines_update": {
+          "input_bytes": 786432,
+          "rounds": 1,
+          "iterations_per_sample": 1,
+          "samples": 3,
+          "native_ns_per_call_median": 50733026,
+          "original_rust_ns_per_call_median": 2709842,
+          "native_to_original_ratio": 18.721765328015433
+        },
+        "many_unicode_lines_update": {
+          "input_bytes": 786432,
+          "rounds": 1,
+          "iterations_per_sample": 1,
+          "samples": 3,
+          "native_ns_per_call_median": 86986155,
+          "original_rust_ns_per_call_median": 4616039,
+          "native_to_original_ratio": 18.84432843829959
+        },
+        "many_lines_empty_update": {
+          "input_bytes": 262144,
+          "rounds": 1,
+          "iterations_per_sample": 1,
+          "samples": 3,
+          "native_ns_per_call_median": 154750645,
+          "original_rust_ns_per_call_median": 8591316,
+          "native_to_original_ratio": 18.01244943149571
+        }
+      },
+      "remaining_gap": "The nine bounded API histories remain 6.61 to 52.13 times the original Rust cost. This is a component microbenchmark, not whole-product performance qualification.",
+      "artifact_binding": {
+        "status": "passed",
+        "report_path": "/workspace/scratch/9f380f39cb05/qualification/source-file-fastpath/metadata-binding-proof-v3.json",
+        "report_sha256": "489891b6ea94b255e60494161423a008ce42434a158bd77499f871ab05f85813",
+        "section": "performance_binding",
+        "same_component_artifacts": 5,
+        "source_and_compiler_input_hashes_verified": true,
+        "performance_binary_sha256": "fc66577e7b45f75f3978171b40b92100ea14e6a31895b0564d0f312e136a3209",
+        "scope": "Measured trusted build and final formal build have identical SourceFile source/Core and all five compiled artifacts; every benchmark input, executable and raw-output hash was independently verified."
+      }
+    },
+    "parser": {
+      "commit": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "status": "Historical bounded measurements previously observed; raw reports and timing binaries are unavailable on the recovered host.",
+      "measured_on_recovered_host": false,
+      "artifact_equality_rechecked_after_recovery": false,
+      "qualified": false,
+      "whole_product_performance_qualified": false,
+      "method_previously_observed": "Complete fixture parity before timing; three alternating samples, matched iterations, black-boxed inputs/results, one CPU and less than three seconds per case. Both owners/drivers used opt-level 3, one codegen unit, debug assertions and checked overflow.",
+      "host_dependency_caveat": "The shared actual PathUri dependency used opt-level 0. Path resolution ratios do not qualify a fully optimized host or whole-product performance.",
+      "case_columns": [
+        "case",
+        "input_bytes_or_null",
+        "original_ns_per_call_median",
+        "native_ns_per_call_median",
+        "native_over_original_observed_rounded"
+      ],
+      "cases": [
+        [
+          "batch_empty_patch",
+          29,
+          221.4125,
+          4943.561,
+          22.3274
+        ],
+        [
+          "batch_typical_update",
+          106,
+          1503.264,
+          22364.58,
+          14.8773
+        ],
+        [
+          "batch_heredoc_unicode",
+          189,
+          1915.012,
+          29137.429,
+          15.2153
+        ],
+        [
+          "batch_ascii_2mib",
+          2097199,
+          4232111,
+          15426875,
+          3.6452
+        ],
+        [
+          "batch_unicode_2mib",
+          2097199,
+          2995301,
+          16840322,
+          5.62225
+        ],
+        [
+          "batch_32768_lines",
+          196653,
+          1659240,
+          79783149,
+          48.08415
+        ],
+        [
+          "stream_scalar_4096",
+          4143,
+          170703,
+          1737834,
+          10.18045
+        ],
+        [
+          "stream_scalar_16384",
+          16431,
+          679388,
+          7038466,
+          10.36001
+        ],
+        [
+          "stream_scalar_65536",
+          65583,
+          2749399,
+          28170100,
+          10.24591
+        ],
+        [
+          "stream_unicode_chunks",
+          12333,
+          58734,
+          2209272,
+          37.61487
+        ],
+        [
+          "stream_error_recovery",
+          124,
+          867.381,
+          11091.24,
+          12.78704
+        ],
+        [
+          "path_rename_borrow",
+          null,
+          1.89627,
+          155.992608,
+          82.26285
+        ],
+        [
+          "resolve_rename_source",
+          null,
+          3477.599708,
+          3683.562158,
+          1.059225
+        ]
+      ],
+      "observed_hashes": {
+        "performance/parser-v1/binding.json": "f37afc8f22ea4b23882e826b85e952f5ccee8bd2032bcad23821048472929eb2",
+        "performance/parser-v1/report.raw.json": "3cbe038b45e6d523440fde8eb0dc87f32418d7c115eee5fb62a7e0b871cb6390",
+        "performance/parser-v1/benchmark-binary": "092ad8589d2216a1d884bff4d3e3003517d09074c655c378bba7ed2c624b8e3e",
+        "performance/parser-path-v1/binding.json": "162db71607abd74a47ebaa2a974d782d1956116d2e23764fe176384a3dcd5a41",
+        "performance/parser-path-v1/report.raw.json": "e5387356d35365622ba951f0ab5c4ba17ca86740bbdbfd6a3a202205c2bbc66a",
+        "performance/parser-path-v1/benchmark-binary": "151f26c8b54bacb51a2f84c2dc379f8de592960b1553c2ea996983c836c3b991"
+      }
+    },
+    "file_update": {
+      "measured": false,
+      "qualified": false
+    },
+    "whole_product_performance_qualified": false
+  },
+  "history_policy": "Earlier full qualification records remain in their immutable published commits and external reports. Canonical metadata contains one current composition and explicitly scoped historical CI/performance evidence; it does not duplicate every process attempt."
 }
