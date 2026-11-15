@@ -682,7 +682,7 @@ fn base_evidence(
 ) -> QualificationEvidenceEnvelopeV1 {
     QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
-        evidence_id: EvidenceId::parse(id).unwrap_or_else(|_| panic!("evidence id")),
+        evidence_id: EvidenceId::parse(id).unwrap_or_else(|error| panic!("evidence id: {error}")),
         candidate,
         claim_class,
         receipt_kind: EvidenceReceiptKindV1::Evidence,
@@ -726,7 +726,7 @@ fn independent_decision(
         issuer_role,
         observed,
         Some(expires),
-        serde_json::to_value(receipt).unwrap_or_else(|_| panic!("decision payload")),
+        serde_json::to_value(receipt).unwrap_or_else(|error| panic!("decision payload: {error}")),
     )
 }
 
