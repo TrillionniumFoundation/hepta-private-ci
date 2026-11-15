@@ -359,10 +359,22 @@ def _validate_roster(capsules, roster_dir, primitive):
         raise ValueError("complete N256 denominator")
 
 
-def run(request_path, admission_path, metadata_path, state_path, phase_path, npz_b64_path, roster_dir):
-    """Execute only after an external, hash-bound resource amendment exists."""
+def run(
+    request_path,
+    admission_path,
+    freeze_path,
+    binding_path,
+    metadata_path,
+    state_path,
+    phase_path,
+    npz_b64_path,
+    roster_dir,
+):
+    """Execute only after the current source and all v2 records cross-bind."""
 
-    require_admission(request_path, admission_path)
+    require_admission(
+        request_path, __file__, admission_path, freeze_path, binding_path
+    )
     np, modules = _numeric_modules()
     from qualification.hcsn_currentstate_n256_engineering import candidate as primitive
 

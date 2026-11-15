@@ -1,4 +1,4 @@
-"""Verify the separately frozen v2 source and unchanged authentic originals."""
+"""Verify the separately frozen v3 admission bridge and parent originals."""
 
 import hashlib
 import json
@@ -14,6 +14,10 @@ OLD_SOURCE = (
 )
 PHASE = ROOT / "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json"
 T0_BUILDER = ROOT / "qualification/hcsn_currentstate_n256_t0_capsule_v1/builder.py"
+EXECUTION_BRIDGE = (
+    ROOT
+    / "qualification/hcsn_currentstate_n256_execution_admission_bridge/admission_bridge.py"
+)
 
 
 def digest(path):
@@ -22,14 +26,20 @@ def digest(path):
 
 def main():
     freeze = json.loads(FREEZE.read_text())
-    if freeze["schema"] != "hcsn-n256-sparse-dynamic-source-freeze-v2":
+    if freeze["schema"] != "hcsn-n256-sparse-dynamic-source-freeze-v3":
         raise ValueError("freeze schema")
-    if freeze["base_commit"] != "c749869a68a5f5d26600fdfb49ffd0352d214b39":
+    if freeze["base_commit"] != "1d03be4db492902294bca637b27968ae1de32ca4":
         raise ValueError("base commit")
     for relative, expected in freeze["source_sha256"].items():
         if digest(ROOT / relative) != expected:
             raise ValueError(f"source identity: {relative}")
     bindings = freeze["bindings"]
+    if bindings["parent_v2_source_sha256"] != "7ce716d2cbc00740d646b13498cbf6f935ba388e3bb43363a5bc4e79cd7312bf":
+        raise ValueError("parent v2 source identity")
+    if bindings["parent_v2_request_sha256"] != "1da196b5ddd6ec2b1013cd194fe7da7df3ac895d9285c4b05c529c0041d2f8e1":
+        raise ValueError("parent v2 request identity")
+    if digest(EXECUTION_BRIDGE) != bindings["execution_admission_bridge_sha256"]:
+        raise ValueError("execution admission bridge identity")
     if digest(OLD_SOURCE) != bindings["historical_v1_source_sha256"]:
         raise ValueError("historical v1 source")
     if 'item["content"]' not in OLD_SOURCE.read_text():
@@ -46,7 +56,12 @@ def main():
     new_source = (HERE / "sparse_dynamic.py").read_text()
     if 'item["signed_content"]' not in new_source or 'item["content"]' in new_source:
         raise ValueError("v2 signed-content mapping")
-    print("PASS_N256_SPARSE_DYNAMIC_V2_SIGNED_CONTENT_SOURCE_HOLD")
+    admission_source = (HERE / "admission.py").read_text()
+    if "admission_bridge.validate_preexecution_bundle" not in admission_source:
+        raise ValueError("v2 admission/freeze bridge is not executable")
+    if "candidate_source_sha256" not in admission_source:
+        raise ValueError("current signed-content source is not byte-bound")
+    print("PASS_N256_SPARSE_DYNAMIC_V3_ADMISSION_BRIDGE_SOURCE_HOLD")
 
 
 if __name__ == "__main__":

@@ -1,11 +1,16 @@
-# N256 sparse dynamic v2 signed-content source intent
+# N256 signed-content source admission bridge v3
 
-Status: **PASS_SOURCE_ONLY_SIGNED_CONTENT_HOLD_NUMERICAL / HOLD / all_closed=false**.
+**Status: HOLD / source-only admission bridge / no N256 numerical execution / not qualified.**
 
-This separately frozen successor to Draft #6366 repairs one real source interface gap without modifying the historical v1 lineage. The v1 source reads `item["content"]`; the authentic phase original contains `signed_content`. V2 accepts only the exact five-field authentic packet schema, maps mass plus four signed-content values to five ambient amplitudes, and rejects a legacy `content` alias. The eight authentic phase packets are hash-bound and parsed in static tests without importing NumPy or SciPy.
+Draft #6367 correctly repaired the authentic `signed_content` packet interface, but its numerical entry still consumed the older v1-style local admission record. That record neither validated the #6357 v2 provider-admission plus atomic execution-freeze pair nor bound the exact signed-content source bytes to the reserved execution key. A valid admission for the older uniformization provider could therefore have been mistaken for admission of this different source.
 
-The copied sparse source otherwise preserves the N128 row-vector semantics for active state, permanent upper escape, lower-hit flux, discounted occupation, deterministic delay, reset, and five signed-content channels. Dense `scipy.linalg.expm` remains forbidden; a future admitted execution would use `scipy.sparse.linalg.expm_multiply`.
+This separately frozen v3 stage closes that executable interface gap before NumPy or SciPy can import. It requires:
 
-The source is deliberately fail-closed. NumPy and SciPy are imported only after a separately reviewed admission binds the exact source, runtime, current host and ancestor-cgroup snapshots, allocation, concurrency/calendar, independent oracle, serializer, and the one reserved idempotency key. Those original values do not yet exist, so this branch performs zero N256 dynamics and cannot be amended into a numerical pass by documentation alone.
+- the exact #6357 v2 provider admission and #6349 execution freeze;
+- their existing resource, external-custody, roster, execution-key, and time-window cross-links;
+- a new canonical source-binding record that byte-binds this candidate source and request to the same admission, freeze, key, input, rosters, and independent reviewer identities; and
+- preservation of historical RED/UNKNOWN with no self-granted qualification or production adoption.
 
-The stdlib inspection closes only the source/schema mismatch. It does not qualify N256/N512 dynamics, full-state numerics, warm/cold byte equality, resource safety, historical N256 recovery, arbitrary histories, third or later cycles, continuum/rare-tail behavior, fullprior/migration/fullnetwork AD, asynchronous complete cost, C2 full replay, HPCA external custody, task benefit, or production adoption. Draft #6295 resource RED, the unchanged v1 source, and all historical RED/UNKNOWN remain unchanged.
+The authentic source-binding record and all external resource/custody originals are still absent. Static fixtures are explicitly synthetic and perform zero dynamics, matrix exponentials, oracle work, serialization, Torch, optimization, or training. This source therefore remains fail-closed and cannot be turned into a numerical pass by documentation.
+
+The historical v1 source, Draft #6367 v2 source, Draft #6295 resource RED, Draft #6247 finite-domain failure, and every prior failure, cancellation, and UNKNOWN remain unchanged. N256/N512 dynamics, 18,225,028-coordinate full-state streams, warm/cold byte equality, arbitrary histories, resource safety, finite-domain all-box accuracy, full prior, migration, fullnetwork AD/training, same-budget task benefit, asynchronous complete cost, C2 full replay, HPCA external custody, and production adoption remain open.

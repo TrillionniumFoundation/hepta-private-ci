@@ -48,6 +48,16 @@ def inspect(source_path, admission_path, request_path, phase_path):
             top_level_imports.append(node.module or "")
     if any(name == "numpy" or name.startswith("scipy") for name in top_level_imports):
         raise ValueError("numeric import before admission")
+    admission_imports = {
+        node.module or ""
+        for node in admission.body
+        if isinstance(node, ast.ImportFrom)
+    }
+    if (
+        "qualification.hcsn_currentstate_n256_execution_admission_bridge"
+        not in admission_imports
+    ):
+        raise ValueError("v2 execution admission bridge is not bound")
     numeric = next(node for node in source.body if isinstance(node, ast.FunctionDef) and node.name == "_numeric_modules")
     numeric_imports = []
     for node in ast.walk(numeric):
@@ -74,7 +84,9 @@ def inspect(source_path, admission_path, request_path, phase_path):
     if (
         request["numerical_execution_allowed"] is not False
         or request["execution_key"] is not None
-        or request["admission_sha256"] is not None
+        or request["provider_admission_sha256"] is not None
+        or request["execution_freeze_sha256"] is not None
+        or request["source_binding_sha256"] is not None
         or any(value is not None for value in request["required_external_freeze"].values())
     ):
         raise ValueError("fail-closed request")
@@ -82,7 +94,7 @@ def inspect(source_path, admission_path, request_path, phase_path):
         raise ValueError("input bundle binding")
     if request["roster_identity"] != "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2":
         raise ValueError("roster binding")
-    if request["schema"] != "hcsn-n256-sparse-dynamic-source-intent-v2":
+    if request["schema"] != "hcsn-n256-sparse-dynamic-source-intent-v3":
         raise ValueError("request schema")
     if digest(phase_path) != PHASE_SHA256:
         raise ValueError("authentic phase identity")
@@ -97,8 +109,8 @@ def inspect(source_path, admission_path, request_path, phase_path):
     ):
         raise ValueError("authentic phase schema")
     return {
-        "schema": "hcsn-n256-sparse-dynamic-source-inspection-v2",
-        "status": "PASS_SOURCE_ONLY_SIGNED_CONTENT_HOLD_NUMERICAL",
+        "schema": "hcsn-n256-sparse-dynamic-source-inspection-v3",
+        "status": "PASS_SOURCE_ONLY_ADMISSION_BRIDGE_HOLD_NUMERICAL",
         "source_sha256": digest(source_path),
         "admission_sha256": digest(admission_path),
         "request_sha256": digest(request_path),

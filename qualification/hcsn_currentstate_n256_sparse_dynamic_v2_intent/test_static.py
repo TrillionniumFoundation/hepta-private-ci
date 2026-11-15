@@ -10,11 +10,64 @@ from pathlib import Path
 from qualification.hcsn_currentstate_n256_sparse_dynamic_v2_intent import admission
 from qualification.hcsn_currentstate_n256_sparse_dynamic_v2_intent import sparse_dynamic
 from qualification.hcsn_currentstate_n256_sparse_dynamic_v2_intent.static_inspector import inspect
+from qualification.hcsn_currentstate_n256_execution_admission_bridge.test_admission_bridge import (
+    _records,
+)
 
 
 ROOT = Path(__file__).parent
 PHASE = ROOT.parent / "hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json"
 PHASE_SHA256 = "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548"
+
+
+def _seal(record):
+    payload = dict(record)
+    payload.pop("binding_sha256", None)
+    record["binding_sha256"] = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return record
+
+
+def _binding(provider_admission, freeze):
+    return _seal(
+        {
+            "schema": admission.BINDING_SCHEMA,
+            "candidate_source_sha256": hashlib.sha256(
+                Path(sparse_dynamic.__file__).read_bytes()
+            ).hexdigest(),
+            "candidate_admission_sha256": hashlib.sha256(
+                Path(admission.__file__).read_bytes()
+            ).hexdigest(),
+            "candidate_request_sha256": hashlib.sha256(
+                (ROOT / "REQUEST.json").read_bytes()
+            ).hexdigest(),
+            "provider_admission_sha256": provider_admission["admission_sha256"],
+            "execution_freeze_sha256": freeze["freeze_sha256"],
+            "execution_key": provider_admission["execution_key"],
+            "input_bundle_sha256": sparse_dynamic.INPUT_BUNDLE_SHA256,
+            "roster_identity": json.loads((ROOT / "REQUEST.json").read_text())[
+                "roster_identity"
+            ],
+            "operator_roster_sha256": provider_admission[
+                "operator_roster_sha256"
+            ],
+            "segment_roster_sha256": provider_admission["segment_roster_sha256"],
+            "external_reviewer_identity_sha256": provider_admission[
+                "external_reviewer_identity_sha256"
+            ],
+            "external_reviewer_custody_sha256": provider_admission[
+                "external_reviewer_custody_sha256"
+            ],
+            "external_review_artifact_sha256": provider_admission[
+                "external_review_artifact_sha256"
+            ],
+            "created_at_utc": "2026-11-15T01:05:00Z",
+            "historical_negative_and_unknown_preserved": True,
+            "largegrid_qualification": False,
+            "production_adoption": False,
+        }
+    )
 
 
 class SparseDynamicIntentTest(unittest.TestCase):
@@ -26,7 +79,7 @@ class SparseDynamicIntentTest(unittest.TestCase):
             PHASE,
         )
         self.assertEqual(
-            report["status"], "PASS_SOURCE_ONLY_SIGNED_CONTENT_HOLD_NUMERICAL"
+            report["status"], "PASS_SOURCE_ONLY_ADMISSION_BRIDGE_HOLD_NUMERICAL"
         )
         self.assertEqual(report["dynamic_runs"], 0)
         self.assertEqual(report["authentic_phase_packets"], 8)
@@ -55,29 +108,56 @@ class SparseDynamicIntentTest(unittest.TestCase):
 
     def test_missing_admission_rejects_before_numeric_import(self):
         with self.assertRaises(admission.NumericalAdmissionRequired):
-            admission.require_admission(ROOT / "REQUEST.json", None)
+            admission.require_admission(
+                ROOT / "REQUEST.json", sparse_dynamic.__file__, None, None, None
+            )
 
-    def test_unbound_admission_rejects_even_if_well_formed(self):
-        request = json.loads((ROOT / "REQUEST.json").read_text())
-        payload = {
-            "source_commit": "0" * 64,
-            "source_tree_sha256": "1" * 64,
-            "input_bundle_sha256": request["input_bundle_sha256"],
-            "roster_identity": request["roster_identity"],
-            "runtime_profile_sha256": "2" * 64,
-            "host_snapshot_sha256": "3" * 64,
-            "ancestor_cgroup_snapshot_sha256": "4" * 64,
-            "allocation_sha256": "5" * 64,
-            "concurrency": 1,
-            "calendar_start_utc": "2030-01-01T00:00:00Z",
-            "calendar_end_utc": "2030-01-01T01:00:00Z",
-            "idempotency_key": request["reserved_idempotency_key"],
-        }
+    def test_complete_synthetic_preexecution_bundle_cross_binds_source(self):
+        provider_admission, freeze, _manifest = _records()
+        binding = _binding(provider_admission, freeze)
         with tempfile.TemporaryDirectory() as temporary:
-            path = Path(temporary) / "admission.json"
-            path.write_text(json.dumps(payload))
-            with self.assertRaises(admission.NumericalAdmissionRequired):
-                admission.require_admission(ROOT / "REQUEST.json", path)
+            paths = []
+            for name, record in (
+                ("admission", provider_admission),
+                ("freeze", freeze),
+                ("binding", binding),
+            ):
+                path = Path(temporary) / f"{name}.json"
+                path.write_text(json.dumps(record))
+                paths.append(path)
+            result = admission.require_admission(
+                ROOT / "REQUEST.json", sparse_dynamic.__file__, *paths
+            )
+            self.assertEqual(result.execution_key, provider_admission["execution_key"])
+            self.assertNotIn("numpy", sys.modules)
+            self.assertNotIn("scipy", sys.modules)
+
+    def test_current_source_and_execution_key_mismatches_reject(self):
+        provider_admission, freeze, _manifest = _records()
+        binding = _binding(provider_admission, freeze)
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "sparse_dynamic.py"
+            source.write_bytes(Path(sparse_dynamic.__file__).read_bytes() + b"\n")
+            records = []
+            for name, record in (
+                ("admission", provider_admission),
+                ("freeze", freeze),
+                ("binding", binding),
+            ):
+                path = Path(temporary) / f"{name}.json"
+                path.write_text(json.dumps(record))
+                records.append(path)
+            with self.assertRaisesRegex(ValueError, "source is not byte-bound"):
+                admission.require_admission(
+                    ROOT / "REQUEST.json", source, *records
+                )
+            binding["execution_key"] = "different-key"
+            _seal(binding)
+            records[2].write_text(json.dumps(binding))
+            with self.assertRaisesRegex(ValueError, "execution_key"):
+                admission.require_admission(
+                    ROOT / "REQUEST.json", sparse_dynamic.__file__, *records
+                )
 
 
 if __name__ == "__main__":

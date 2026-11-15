@@ -1,1 +1,1 @@
-"""Source-only N256 sparse dynamic candidate; numerical admission remains HOLD."""
+"""Source-only N256 v3 admission bridge; numerical execution remains HOLD."""

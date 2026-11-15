@@ -1,4 +1,4 @@
-name: hcsn-currentstate-n256-sparse-dynamic-v2-intent
+name: hcsn-currentstate-n256-sparse-dynamic-v3-admission-bridge
 
 on:
   pull_request:
@@ -49,7 +49,7 @@ jobs:
           from pathlib import Path
 
           report = json.loads(Path("qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/ci-artifact/REPORT.json").read_text())
-          if report["status"] != "PASS_SOURCE_ONLY_SIGNED_CONTENT_HOLD_NUMERICAL":
+          if report["status"] != "PASS_SOURCE_ONLY_ADMISSION_BRIDGE_HOLD_NUMERICAL":
               raise SystemExit("unexpected status")
           if any(name in sys.modules for name in ("numpy", "scipy")):
               raise SystemExit("numeric module imported by static admission")
@@ -70,7 +70,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: hcsn-n256-sparse-dynamic-v2-source-${{ github.sha }}
+          name: hcsn-n256-sparse-dynamic-v3-admission-source-${{ github.sha }}
           path: qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/ci-artifact
           if-no-files-found: error
           retention-days: 30
