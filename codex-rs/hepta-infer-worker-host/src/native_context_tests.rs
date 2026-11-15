@@ -38,7 +38,10 @@ pub(super) fn observe_prepared_context(
     delivery: NativeContextDelivery,
 ) {
     if let Some(observed) = PREPARED.get() {
-        let mut observed = observed.lock().expect("prepared context observation");
+        let mut observed = match observed.lock() {
+            Ok(observed) => observed,
+            Err(error) => panic!("prepared context observation poisoned: {error}"),
+        };
         assert!(
             observed.len() < 3,
             "unexpected extra retrieval in isolated fixture"

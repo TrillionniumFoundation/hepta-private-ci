@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "PUBLICATION_MANIFEST.json",
+  "archive_bytes": 531634,
+  "archive_sha256": "0ed5aecb124420b76b5f08428eabe067c1d9cee6b79efa33e860d6a7dc5d0de8",
+  "original_repository_path": "qualification/neuroscience-20261110/PUBLICATION_MANIFEST.json",
+  "original_git_commit": "065fa0dff71a99a9434fa9a47932715d4c2917da",
+  "original_git_blob": "649b103da9cc86d21c3b0958b81cc2d85f93d680",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "PUBLICATION_MANIFEST.json.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "e16488bf2f7112c15479a2aa58829c7c90bbfa704ed2527611a23dce8bdab916"
+    },
+    {
+      "path": "PUBLICATION_MANIFEST.json.part001",
+      "offset": 500000,
+      "bytes": 31634,
+      "sha256": "369f2bab3f46768b6838ad6fc208416b34d43e079cda1bc4df25a4a69aac3bca"
+    }
+  ],
+  "storage_only": true,
+  "original_bytes_unchanged": true,
+  "restoration": {
+    "instructions": "qa/repository-consolidation/20261115/neuro-evidence-storage.md",
+    "no_overwrite": true
+  }
+}

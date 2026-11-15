@@ -433,8 +433,16 @@ fn terminal_readback_does_not_promote_persistent_uncertainty_to_success() {
         port.read_generation(&fixture.request),
         Err(CellGenerationErrorV2::CommitUncertain)
     );
-    checked(port.shutdown());
+    // A short RPC wait can expire while the actor is being descheduled. Keep
+    // observing its original shutdown until the bounded fixture wait expires;
+    // uncertainty is neither an acknowledgement nor permission to rerun work.
+    wait_until(|| match port.shutdown() {
+        Ok(()) => true,
+        Err(CellGenerationErrorV2::CommitUncertain) => false,
+        Err(error) => panic!("unexpected shutdown failure: {error:?}"),
+    });
     assert!(port.is_closed());
+    assert_eq!(worker.calls.load(Ordering::Acquire), 1);
 }
 
 #[test]

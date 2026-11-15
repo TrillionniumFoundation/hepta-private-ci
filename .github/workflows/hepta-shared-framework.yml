@@ -76,6 +76,7 @@ jobs:
         run: |
           python3 scripts/hepta_cell_test_helpers.py \
             --package codex-hepta-infer-worker-host \
+            --package codex-cli \
             --output-dir "$RUNNER_TEMP/shared-framework/helpers" \
             --github-env "$GITHUB_ENV"
       - name: Run original scoped owner libraries
@@ -89,6 +90,7 @@ jobs:
         run: |
           python3 scripts/hepta_cell_test_helpers.py --verify-only \
             --package codex-hepta-infer-worker-host \
+            --package codex-cli \
             --output-dir "$RUNNER_TEMP/shared-framework/helpers" \
             > "$RUNNER_TEMP/shared-framework/helpers-after.json"
           python3 scripts/hepta_ci_junit.py \
