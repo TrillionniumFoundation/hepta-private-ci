@@ -12,6 +12,13 @@ use super::Error;
 use super::validate_digest;
 use super::validate_identity;
 
+#[path = "native_prepared_input_v2.rs"]
+mod prepared_input_v2;
+
+pub use prepared_input_v2::NativeIntelligenceInputBindingV2;
+pub use prepared_input_v2::NativePreparedInputV2;
+pub use prepared_input_v2::NativeRunSnapshotV2;
+
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -202,6 +209,10 @@ pub struct NativeDispatchRejection {
 #[serde(deny_unknown_fields)]
 pub struct NativeRunRecord {
     pub request: NativeRequest,
+    /// Original V3 input, saved in the same frame as reservation. Missing
+    /// historical input cannot be reconstructed from a later caller's values.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub prepared_input_v2: Option<NativePreparedInputV2>,
     pub revision: u64,
     pub state: NativeReservationState,
     pub dispatch: Option<NativeDispatch>,
@@ -227,6 +238,11 @@ enum Event {
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
+    },
+    ReservePreparedV2 {
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        input: NativePreparedInputV2,
     },
     Dispatch {
         request_id: String,
@@ -265,6 +281,27 @@ impl DurableInferenceControl {
         request: NativeRequest,
         maximum_in_flight: usize,
     ) -> Result<NativeRunRecord, Error> {
+        self.reserve_native_with_input(request, maximum_in_flight, /*input*/ None)
+    }
+
+    /// Retain bounded original input atomically with a new reservation. An
+    /// existing digest-only record is returned unchanged, never upgraded.
+    pub fn reserve_native_prepared_v2(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        input: NativePreparedInputV2,
+    ) -> Result<NativeRunRecord, Error> {
+        input.validate_request(&request)?;
+        self.reserve_native_with_input(request, maximum_in_flight, Some(input))
+    }
+
+    fn reserve_native_with_input(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        input: Option<NativePreparedInputV2>,
+    ) -> Result<NativeRunRecord, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
@@ -285,7 +322,9 @@ impl DurableInferenceControl {
             return Err(Error::Conflict);
         }
         if let Some(record) = self.native.records.get(&request.request_id) {
-            return if record.request == request {
+            return if record.request == request
+                && !matches!((&record.prepared_input_v2, &input), (Some(old), Some(new)) if old != new)
+            {
                 Ok(record.clone())
             } else {
                 Err(Error::Conflict)
@@ -298,13 +337,18 @@ impl DurableInferenceControl {
         }
         self.ensure_native_dispatch_space()?;
         let id = request.request_id.clone();
-        self.commit_native(
-            &id,
-            Event::Reserve {
+        let event = match input {
+            Some(input) => Event::ReservePreparedV2 {
+                request,
+                maximum_in_flight,
+                input,
+            },
+            None => Event::Reserve {
                 request,
                 maximum_in_flight,
             },
-        )
+        };
+        self.commit_native(&id, event)
     }
 
     /// Must commit before `turn/start`, including before awaiting its response.
@@ -512,6 +556,24 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
+        if let Event::ReservePreparedV2 {
+            request,
+            maximum_in_flight,
+            input,
+        } = event
+        {
+            input.validate_request(&request)?;
+            let id = request.request_id.clone();
+            self.apply(Event::Reserve {
+                request,
+                maximum_in_flight,
+            })?;
+            self.records
+                .get_mut(&id)
+                .ok_or(Error::RequestNotFound)?
+                .prepared_input_v2 = Some(input);
+            return Ok(());
+        }
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -550,6 +612,7 @@ impl NativeJournal {
                 request.request_id.clone(),
                 NativeRunRecord {
                     request,
+                    prepared_input_v2: None,
                     revision: 1,
                     state: NativeReservationState::Reserved,
                     dispatch: None,
@@ -563,7 +626,9 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::ReservePreparedV2 { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::RejectBeforeStart { request_id, .. }
@@ -574,7 +639,9 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::ReservePreparedV2 { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { dispatch, .. } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);

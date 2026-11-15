@@ -601,3 +601,6 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[path = "native_prepared_input_v2_tests.rs"]
+mod prepared_input_v2;

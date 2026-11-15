@@ -1,8 +1,11 @@
 //! Local durable admission around the actual App Server driver.
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeIntelligenceInputBindingV2;
+use codex_hepta_infer_core::durable_control::native::NativePreparedInputV2;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_infer_core::durable_control::native::NativeRunSnapshotV2;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
@@ -36,6 +39,44 @@ pub struct NativeIntelligenceRunBinding {
 }
 
 impl NativeIntelligenceRunBinding {
+    fn prepared_input(&self) -> NativeIntelligenceInputBindingV2 {
+        NativeIntelligenceInputBindingV2 {
+            snapshot: NativeRunSnapshotV2 {
+                run_id: self.snapshot.run_id.clone(),
+                request_digest: self.snapshot.request_digest.clone(),
+                objective_digest: self.snapshot.objective_digest.clone(),
+                body_digest: self.snapshot.body_digest.clone(),
+                artifact_set_digest: self.snapshot.artifact_set_digest.clone(),
+                authority_epoch: self.snapshot.authority_epoch,
+                generation: self.snapshot.generation,
+                fence_digest: self.snapshot.fence_digest.clone(),
+                deadline_ms: self.snapshot.deadline_ms,
+            },
+            expected_revision: self.expected_revision,
+            context_digest: self.context_digest.clone(),
+            envelope_digest: self.envelope_digest.clone(),
+        }
+    }
+
+    fn from_prepared_input(input: &NativeIntelligenceInputBindingV2) -> Self {
+        Self {
+            snapshot: codex_hepta_agentd::AgentRunSnapshot {
+                run_id: input.snapshot.run_id.clone(),
+                request_digest: input.snapshot.request_digest.clone(),
+                objective_digest: input.snapshot.objective_digest.clone(),
+                body_digest: input.snapshot.body_digest.clone(),
+                artifact_set_digest: input.snapshot.artifact_set_digest.clone(),
+                authority_epoch: input.snapshot.authority_epoch,
+                generation: input.snapshot.generation,
+                fence_digest: input.snapshot.fence_digest.clone(),
+                deadline_ms: input.snapshot.deadline_ms,
+            },
+            expected_revision: input.expected_revision,
+            context_digest: input.context_digest.clone(),
+            envelope_digest: input.envelope_digest.clone(),
+        }
+    }
+
     pub(super) fn expected_run_binding(
         &self,
         expected_revision: u64,
@@ -124,6 +165,55 @@ impl AppServerModelDriver {
         .await
     }
 
+    /// Reconcile a possibly dispatched request using only its retained V3
+    /// input. This never accepts a replacement prompt or admission snapshot and
+    /// cannot enter run_once: the record must already have crossed Reserved.
+    pub async fn resume(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        let record = control
+            .native_record(&admission.request_id)
+            .cloned()
+            .ok_or("resume requires an existing durable native request")?;
+        if record.state == NativeReservationState::Reserved
+            || record.pre_dispatch_stop.is_some()
+            || record.dispatch_rejection.is_some()
+            || record.dispatch.is_none()
+        {
+            return Err("resume requires a possibly dispatched native request".into());
+        }
+        let input = record
+            .prepared_input_v2
+            .ok_or("resume requires the original retained V3 input; legacy input is not inferred")?;
+        if input.payload_digest()? != record.request.payload_digest
+            || record.request.principal_id != self.config.agent_id.to_string()
+            || record.request.worker_generation != self.config.generation
+            || record.request.model != self.config.model
+            || input.agentd_socket != self.config.agentd_socket
+            || u128::from(input.timeout_ms) != self.config.timeout.as_millis()
+        {
+            return Err("resume configuration differs from the durable native request".into());
+        }
+        let intelligence = input
+            .intelligence
+            .as_ref()
+            .map(NativeIntelligenceRunBinding::from_prepared_input);
+        // The exclusive mutable journal owner remains borrowed throughout:
+        // no concurrent caller can replace this non-Reserved record.
+        self.run_bound(
+            control,
+            admission,
+            input.prompt,
+            input.context_query,
+            intelligence.as_ref(),
+            cancellation,
+        )
+        .await
+    }
+
     async fn run_bound(
         &self,
         control: &mut DurableInferenceControl,
@@ -155,7 +245,16 @@ impl AppServerModelDriver {
                 intelligence,
             )?,
         };
-        let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        let prepared = NativePreparedInputV2 {
+            schema_version: 2,
+            prompt: prompt.clone(),
+            context_query: context_query.clone(),
+            agentd_socket: self.config.agentd_socket.clone(),
+            timeout_ms: self.config.timeout.as_millis().try_into()?,
+            intelligence: intelligence.map(NativeIntelligenceRunBinding::prepared_input),
+        };
+        let record =
+            control.reserve_native_prepared_v2(request, admission.maximum_in_flight, prepared)?;
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }

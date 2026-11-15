@@ -41,6 +41,8 @@ enum WorkerMode {
 #[derive(Deserialize, Serialize)]
 struct ChildCase {
     mode: WorkerMode,
+    #[serde(default)]
+    resume: bool,
     socket: PathBuf,
     agent: String,
     spawn_generation: u64,
@@ -68,7 +70,35 @@ async fn retained_app_server_terminal_reconciles_current_agentd_revision() -> Re
     .await
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn resume_retained_terminal_uses_original_v3_input_and_current_agentd_revision() -> Result<()> {
+    recovery_case_with_resume(
+        /*from_thread_read*/ false,
+        "native_app_server::control::intelligence_recovery::tests::process::resume_retained_terminal_uses_original_v3_input_and_current_agentd_revision",
+        /*resume*/ true,
+    )
+    .await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn resume_thread_read_uses_original_v3_input_without_second_dispatch() -> Result<()> {
+    recovery_case_with_resume(
+        /*from_thread_read*/ true,
+        "native_app_server::control::intelligence_recovery::tests::process::resume_thread_read_uses_original_v3_input_without_second_dispatch",
+        /*resume*/ true,
+    )
+    .await
+}
+
 async fn recovery_case(from_thread_read: bool, test_name: &'static str) -> Result<()> {
+    recovery_case_with_resume(from_thread_read, test_name, /*resume*/ false).await
+}
+
+async fn recovery_case_with_resume(
+    from_thread_read: bool,
+    test_name: &'static str,
+    resume: bool,
+) -> Result<()> {
     if let Some(path) = std::env::var_os(CHILD_CASE_ENV) {
         let case: ChildCase = serde_json::from_slice(&std::fs::read(path)?)?;
         return run_worker(case).await;
@@ -164,6 +194,7 @@ async fn recovery_case(from_thread_read: bool, test_name: &'static str) -> Resul
         .await?;
     let mut case = ChildCase {
         mode: WorkerMode::CrashBeforePublication,
+        resume,
         socket: host.control_socket().to_path_buf(),
         agent: agent.to_string(),
         spawn_generation: SPAWN_GENERATION,
@@ -199,6 +230,15 @@ async fn recovery_case(from_thread_read: bool, test_name: &'static str) -> Resul
             .and_then(|dispatch| dispatch.codex_deadline_ms),
         Some(case.run.snapshot.deadline_ms),
     );
+    if resume {
+        let input = record.prepared_input_v2.as_ref().ok_or("missing retained V3 input")?;
+        assert_eq!(input.schema_version, 2);
+        assert_eq!(input.prompt, PROMPT);
+        assert_eq!(
+            serde_json::to_vec(&input.intelligence.as_ref().ok_or("missing retained snapshot")?.snapshot)?,
+            serde_json::to_vec(&case.run.snapshot)?,
+        );
+    }
     assert!(terminal.succeeded());
     assert_eq!(terminal.observed_output_tokens, Some(17));
     drop(original);
@@ -224,7 +264,15 @@ async fn recovery_case(from_thread_read: bool, test_name: &'static str) -> Resul
         // terminal evidence from the real retained App Server thread/read.
         case.journal = directory.path().join("dispatch-prefix.journal");
         let mut prefix = DurableInferenceControl::open(&case.journal, /*capacity*/ 8)?;
-        prefix.reserve_native(record.request, /*maximum_in_flight*/ 1)?;
+        if resume {
+            prefix.reserve_native_prepared_v2(
+                record.request,
+                /*maximum_in_flight*/ 1,
+                record.prepared_input_v2.ok_or("missing original prepared input")?,
+            )?;
+        } else {
+            prefix.reserve_native(record.request, /*maximum_in_flight*/ 1)?;
+        }
         prefix.dispatch_native(
             REQUEST_ID,
             record.dispatch.ok_or("missing dispatch binding")?,
@@ -319,19 +367,32 @@ async fn run_worker(case: ChildCase) -> Result<()> {
     // retained evidence and reconcile Agentd, never dispatch a second turn.
     let mut recovered = None;
     for _ in 0..2 {
-        let output = driver
-            .run_intelligence(
-                &mut control,
-                NativeAdmission {
-                    request_id: REQUEST_ID.to_string(),
-                    maximum_in_flight: 1,
-                },
-                PROMPT.to_string(),
-                /*context_query*/ None,
-                binding.clone(),
-                &CancellationToken::new(),
-            )
-            .await?;
+        let output = if case.resume {
+            driver
+                .resume(
+                    &mut control,
+                    NativeAdmission {
+                        request_id: REQUEST_ID.to_string(),
+                        maximum_in_flight: 1,
+                    },
+                    &CancellationToken::new(),
+                )
+                .await?
+        } else {
+            driver
+                .run_intelligence(
+                    &mut control,
+                    NativeAdmission {
+                        request_id: REQUEST_ID.to_string(),
+                        maximum_in_flight: 1,
+                    },
+                    PROMPT.to_string(),
+                    /*context_query*/ None,
+                    binding.clone(),
+                    &CancellationToken::new(),
+                )
+                .await?
+        };
         if let Some(previous) = &recovered {
             assert_eq!(previous, &output);
         }
