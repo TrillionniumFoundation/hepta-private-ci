@@ -13,7 +13,9 @@ Token arithmetic uses a separate typed scalar entry, and character counting
 uses checked unaligned 64-bit reads. These changes optimize the existing five
 truncation APIs. SourceFile adds the complete `parse`, `line_texts`,
 `apply_replacements` and `into_contents` owner behind the existing preserving-mode
-patch-update caller.
+patch-update caller. Its safe Rust adapter uses trusted valid-string entries and
+proven output bounds to avoid redundant scans and queries; HIA still selects
+every logical line and output span.
 The `hia-native` Cargo feature connects these routines to HIA machine code on
 Linux x86-64 GNU. Rust adapters frame borrowed inputs, check native results
 and preserve the surrounding public interfaces. Static
@@ -29,6 +31,7 @@ dispatch still need migration. The whole-product state is therefore:
 {
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
+  "whole_product_performance_qualified": false,
   "retirement": { "ready": false }
 }
 ```
@@ -55,8 +58,9 @@ The UTF-8 input checks reject overlong encodings, surrogate encodings, values
 above U+10FFFF, lone continuation bytes and truncated sequences. They scan the
 entire input before publishing a result, including bytes beyond the requested
 prefix. These full-input checks belong to `utf8_boundaries` and strict truncation
-operations 0/1, and every SourceFile operation; the production prefix and metric callers accept already-valid
-Rust strings. The JSON fragment
+operations 0/1, and strict SourceFile operations 0–7. SourceFile operations 8–15
+require valid Rust strings and retain all frame, range and UTF-8 boundary checks.
+The production prefix and metric callers also accept already-valid Rust strings. The JSON fragment
 encoder performs its own incremental validation. All listed component algorithms
 are implemented in HIA; the surrounding Rust owners remain tracked separately.
 
@@ -94,7 +98,7 @@ these low-bit results:
 | `0` for `source_file` | A complete 40-byte query header or the complete emitted span plan; see its operation-specific contract below. |
 | `0xffffffff`                                          | Invalid frame/state; also invalid UTF-8 for the original matching/validation entries. |
 | `0xfffffffe`                                          | Insufficient output or workspace capacity.                                            |
-| `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in JSON fragments, strict truncation or SourceFile.      |
+| `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in JSON fragments, strict truncation or strict SourceFile operations. |
 
 Caller allocations must stay live for the call and mutable ranges must be
 disjoint. The direct seed wrapper and bootstrap compiler profile have a
@@ -209,9 +213,9 @@ the original `None` result when rendered text equals the input are preserved.
 
 `source_file` exports `codex_hia_source_file`. Its four operations own
 parsing, preferred endings, replacement selection and output order. The Rust
-adapter owns one text backing, frames requests, checks native-selected spans
-and compacts retained text after edits. It does not parse lines, choose
-replacements or render and reparse intermediate state.
+adapter owns one text backing, frames requests, computes storage bounds, checks
+native-selected spans and compacts retained text after edits. It does not parse
+lines, choose replacements or render and reparse intermediate state.
 
 The exact ABI is [`source_file_buffer_contract.json`](source_file_buffer_contract.json).
 All fields are little-endian `u64`. The read-only workspace starts with a
@@ -220,30 +224,45 @@ inserted_count, preferred_ending, parse_text_id, reserved_zero]`, followed by
 pool lengths, 32-byte old-line records, 24-byte replacement triples and
 inserted text IDs. Its length must match these tables exactly.
 
-| Operation | Query / emit |
-| --- | --- |
-| `0` / `1` | Parse original contents into logical lines. |
-| `2` / `3` | Apply ordered replacements to existing logical lines. |
-| `4` / `5` | Project each logical line's text. |
-| `6` / `7` | Select text and ending spans for final contents. |
+| Operation | Strict query / emit | Trusted query / emit |
+| --- | --- | --- |
+| Parse original contents into logical lines. | `0` / `1` | `8` / `9` |
+| Apply ordered replacements to existing logical lines. | `2` / `3` | `10` / `11` |
+| Project each logical line's text. | `4` / `5` | `12` / `13` |
+| Select text and ending spans for final contents. | `6` / `7` | `14` / `15` |
 
 Parsing borrows the original contents as text pool 3; its four declared pool
 lengths are `[1, 2, 1, source.len]`. Other operations borrow the concatenation
 of all declared pool strings. Pool IDs 0/1/2 are fixed LF/CRLF/CR, and every
-actual text ID is at least 3. HIA validates the complete source as canonical
-UTF-8 and checks pool and subspan boundaries. Ending codes are none (`0`),
-LF (`1`), CRLF (`2`) and CR (`3`).
+actual text ID is at least 3. Strict operations validate the complete source as
+canonical UTF-8. Trusted operations skip only that scan: the adapter selects
+them through a private operation enum and supplies borrowed `&str` or
+concatenated `String`/`Cow<str>` storage. Both profiles check the complete frame, literal pools, ranges,
+pool/subspan boundaries, replacement order and arithmetic. Malformed UTF-8 is
+outside the trusted profile's precondition. Ending codes are none (`0`), LF
+(`1`), CRLF (`2`) and CR (`3`).
 
 Success returns `0`. Every query writes exactly the 40-byte header
 `[required_full_plan_bytes, record_count, logical_line_count, total_text_bytes,
 preferred_ending]`; emit writes that header and all 32-byte span records.
 The byte total includes endings for parse, apply and contents, and excludes
 them for line-text projection. Minimum output/workspace capacity checks
-precede frame validation, UTF-8 validation, span/count checks and final emit
-capacity. Statuses `0xfffffffe`, `0xffffffff` and `0xfffffffd` respectively
-mean short capacity, invalid frame/order/range/arithmetic, and malformed
-UTF-8. Every returned error leaves source, workspace and output unchanged;
+precede metadata validation, the strict profile's UTF-8 scan, boundary/count
+checks and final emit capacity. Statuses `0xfffffffe`, `0xffffffff` and
+`0xfffffffd` respectively mean short capacity, invalid
+frame/order/range/arithmetic, and malformed UTF-8 in the strict profile.
+Every returned error leaves source, workspace and output unchanged;
 success preserves output beyond its complete header or plan.
+
+The adapter can emit directly when a checked storage bound is available.
+Parsing at most 256 input bytes needs at most one record per byte. Replacement
+can retain at most the old line count plus the inserted count; direct emission
+uses this bound when it is at most 256 records. Larger parse/apply requests
+use a query for exact capacity. Line-text projection needs one record per old
+line, and contents needs at most two. These bounds allocate storage only;
+HIA chooses the rows. The adapter validates the returned size and count, checks
+that they fit the allocation, then truncates the buffer's logical length to
+the complete plan so spare capacity cannot become extra output rows.
 
 The first observed ending selects the preferred style, defaulting to LF.
 That style survives total deletion and later insertion. Inserted strings with
@@ -373,58 +392,68 @@ corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
 ### Current nine-module SourceFile increment
 
-The formal v9 B1/B2/B3 build and SourceFile qualification ran on Linux x86-64
-GNU with Rust 1.96.1. The 9,828-path source snapshot and exact compiled
-source/Core/archive identities are recorded in
-[`verification.json`](verification.json#source_file_increment). A separate
-identity report confirms all 40 compiled artifacts of the eight inherited
-modules are unchanged from the published `7fe65ae` checkpoint.
+The trusted-string and bounded-materialization increment passed six local
+gates on Linux x86-64 GNU with Rust 1.96.1: the formal v9 B1/B2/B3 build,
+complete original-Rust differential, raw ABI, Cargo artifact admission,
+scalar admission and standalone strict Clippy. All six used the same
+9,828-path snapshot, `5f1a3ae0d039f0c43df5c1a12cb7480c6b6ae87f5a9900751ca9e389f856178b`.
+The final build is `source-file-fastpath-build-v3`; exact sources, reports and
+compiled identities are recorded in
+[`verification.json`](verification.json#source_file_increment). The identity
+proof verifies all 40 compiled artifacts of the eight inherited modules
+against the preceding `source-file-native-build-v2` build.
 
 | Current check | Observed result |
 | --- | --- |
-| Complete original SourceFile | 8 tests; 224,253 original-Rust comparisons; zero skips. The independent rlib includes the complete original 3,851-byte file from `a3f319cf`, bound by SHA256 and Git blob. |
+| Complete original SourceFile | 9 tests; 225,591 original-Rust comparisons; zero skips. The independent rlib includes the complete original 3,851-byte file from `a3f319cf`, bound by SHA256 and Git blob. |
 | Separate invalid preconditions | Nonmonotonic ordering and index-addition overflow both fail; no post-panic state or release-overflow equivalence is claimed. |
-| Raw SourceFile ABI | 5,631 calls; 4,423 error/no-write cases, 604 query calls, 604 emit calls and 1,024 concurrent native calls. Includes 2.2 MB sources and a 1,120,040-byte plan. |
+| Raw SourceFile ABI | 8,915 calls; 6,499 error/no-write cases; 1,208 query and 1,208 emit calls; 591 strict/trusted plan comparisons. The total includes 2,048 concurrent calls. Sources reach 2.2 MB and plans reach 1,120,040 bytes. |
 | Cargo artifact admission | 58 checks with `source_file` as mutation target, including acceptance and source binding for all nine modules. |
 | Scalar build admission | 115 checks on this nine-module build; the separate typed scalar profile remains unchanged. |
-| Current Cargo / installed executables | Pending the published nine-module workflow; earlier local `rama-net` SIGKILL attempts do not establish a pass. |
+| Standalone strict Clippy | The real adapter, feature-selected source and complete differential target pass `clippy-driver -D warnings`; Cargo all-target lint and required `just fix` remain separate gates. |
+| Current Cargo / installed executables | Pending CI on this fastpath branch, together with Cargo strict lint, scoped `just fix` and its clean-source check. Earlier local `rama-net` SIGKILL attempts do not establish a pass. |
 
-The full original-file oracle checks initial and repeated-edit states through
-all four actual feature-selected methods. Its coverage includes mixed endings,
-all Unicode scalars, owned input/projection storage, embedded newline strings,
-total deletion and reinsertion, finite MAX requests, large line tables and
-concurrency. The raw ABI gate separately verifies exact frames, UTF-8 and span
-boundaries, queries, capacities, canaries and error atomicity.
+The original-file oracle compares initial and repeated-edit states through
+all four actual methods, including mixed endings, every Unicode scalar,
+owned storage, embedded newline strings, deletion and reinsertion, finite
+MAX requests, large tables and concurrency. Dense-line and insertion cases
+cross the 256-record direct-emission threshold. The raw gate keeps strict
+malformed-UTF-8 rejection and adds exact strict/trusted parity on eligible
+valid strings, including frames, boundaries, capacities, canaries and error
+atomicity.
 
-After those local gates, publication changes are limited to these three HIA
-metadata documents and the CI workflow. The workflow adds scoped
-`just fix --locked -p codex-apply-patch --features hia-native` and a clean-diff
-check after its test/lint steps. Implementation, tests and ABI-contract bytes
-remain unchanged. This is not a claim that the final published tree has
-already passed Cargo or installed-executable CI.
+The snapshot already includes the Clippy installation repair inherited from
+`2c02acd`. Only these three HIA metadata documents changed after the six
+gates; all 66 recorded implementation, test, build, workflow and contract
+inputs remain identical. Earlier `e5360387` CI passed its behavioral stages,
+but both runs failed overall because the minimal toolchain omitted
+`cargo-clippy`; strict lint and `just fix` could not complete. Those historical
+observations and the separate `2c02acd` workflow do not qualify this new branch.
 
-The bounded public-API benchmark used the genuine development full B3 build
-whose SourceFile source, Core and linked artifacts are identical to the
-formal build. The recorded binding report verifies the five compiled
-SourceFile artifacts and the benchmark input, compiler and executable hashes.
-Each of its nine histories used identical Rust optimization,
-equal iterations per pair and three alternating samples. All cases stayed
-within three seconds. The earlier and optimized runs retain their original
-reports and hashes.
+The nine-case bounded public-API benchmark uses actual `parse`, `line_texts`,
+`apply_replacements` and `into_contents` calls against the complete original
+file. Its measured `source-file-trusted-build-v1` has the same SourceFile
+source, Core and all five compiled artifacts as the formal build. The binding
+proof also verifies every benchmark input, compiler, executable and raw-output
+hash. Both sides use optimization level 3 and one codegen unit, equal
+iterations per pair, black-box inputs/results, and three alternating samples
+on one CPU. Fixture parity passed and every case finished within three seconds.
 
-| API history | Earlier HIA | Optimized HIA | Original Rust in optimized run | Optimized / Rust |
+| API history | Input bytes | Original Rust | HIA | HIA / Rust |
 | --- | ---: | ---: | ---: | ---: |
-| 2 MiB single-line roundtrip | 289.83 ms | 10.16 ms | 0.988 ms | 10.28x |
-| 2 MiB single-line empty update | 366.07 ms | 13.30 ms | 1.201 ms | 11.07x |
-| 786,432-byte ASCII line update | 257.78 ms | 59.69 ms | 2.633 ms | 22.67x |
-| 786,432-byte Unicode line update | 419.75 ms | 234.15 ms | 4.656 ms | 50.29x |
-| 131,072 short lines, empty update | 524.09 ms | 200.23 ms | 9.140 ms | 21.91x |
+| Empty roundtrip | 0 | 20.63 ns | 1.075 µs | 52.13x |
+| Small mixed-ending update | 23 | 0.342 µs | 8.133 µs | 23.80x |
+| Embedded endings, three updates | 12 | 0.351 µs | 13.285 µs | 37.90x |
+| Maximum take, deletion and reinsertion | 12 | 0.232 µs | 8.442 µs | 36.43x |
+| 2 MiB single-line roundtrip | 2,097,152 | 1.278 ms | 8.443 ms | 6.61x |
+| 2 MiB single-line empty update | 2,097,152 | 1.120 ms | 7.434 ms | 6.64x |
+| ASCII line update | 786,432 | 2.710 ms | 50.733 ms | 18.72x |
+| Unicode line update | 786,432 | 4.616 ms | 86.986 ms | 18.84x |
+| 131,072 short lines, empty update | 262,144 | 8.591 ms | 154.751 ms | 18.01x |
 
-The two long-line histories improved by 28.52x and 27.52x between recorded
-runs. Small histories retain proportionally larger overhead: the empty
-roundtrip takes 2.568 microseconds versus 0.0201 microseconds, or 127.91x.
-Across all nine cases the remaining ratio is approximately 10–128x.
-`whole_product_performance_qualified` remains `false`.
+These bounded histories still cost approximately 6.61–52.13 times the original
+Rust implementation. The measurements establish component performance for
+these fixtures; `whole_product_performance_qualified` remains `false`.
 
 ### Published eight-module checkpoint: 7fe65ae
 

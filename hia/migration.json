@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "nine_module_fixed_point_sourcefile_owner_and_admission_passed_current_cargo_installed_ci_performance_platform_gates_open",
+    "qualification_status": "nine_module_sourcefile_trusted_bounded_owner_component_gates_passed_current_cargo_ci_and_performance_open",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU; nine B3 modules and seven opt-in production algorithm groups. Full SourceFile parse/line_texts/apply_replacements/into_contents behavior passed independent original-Rust and raw-ABI gates on the recorded snapshot. Nine-module Cargo, consumer and installed-executable CI remain pending; performance, all 15 complete capability migrations, default dispatch, retirement and other platforms remain open.",
+    "qualification_scope": "Linux x86-64 GNU; nine B3 modules and seven opt-in production algorithm groups. The complete SourceFile owner, strict byte and trusted valid-string profiles, and bounded direct materialization passed independent original-Rust, raw-ABI, build-admission and standalone strict-Clippy gates on one recorded source snapshot. Current-branch Cargo owners/consumers, installed executables, Cargo strict lint and required just fix remain pending. Performance, all 15 complete capability migrations, default dispatch, retirement and other platforms remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -523,14 +523,14 @@
       ],
       "production_algorithm_group": "source_file",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "complete_owner_original_rust_and_raw_abi_passed_current_cargo_installed_ci_performance_open",
+      "qualification_status": "complete_owner_strict_trusted_bounded_emit_and_standalone_lint_passed_current_cargo_installed_ci_performance_open",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
         "entry": "codex_hia_source_file",
         "profile": "borrowed-buffers-u32-v1",
         "contract": "hia/source_file_buffer_contract.json",
-        "contract_sha256": "0da7ff9106fc1c153a879214075bf0be99ccd5ec6847c6613c27e1f621208b5f",
+        "contract_sha256": "47d50172b6abd2a9449c8eb2e312c7a1588404e25e4480216b0d3241d5f54105",
         "operations": {
           "0": "parse query",
           "1": "parse emit",
@@ -539,7 +539,15 @@
           "4": "line_texts query",
           "5": "line_texts emit",
           "6": "into_contents query",
-          "7": "into_contents emit"
+          "7": "into_contents emit",
+          "8": "parse query (trusted UTF8)",
+          "9": "parse emit (trusted UTF8)",
+          "10": "apply query (trusted UTF8)",
+          "11": "apply emit (trusted UTF8)",
+          "12": "line_texts query (trusted UTF8)",
+          "13": "line_texts emit (trusted UTF8)",
+          "14": "into_contents query (trusted UTF8)",
+          "15": "into_contents emit (trusted UTF8)"
         },
         "workspace_header_bytes": 64,
         "output_header_bytes": 40,
@@ -548,14 +556,21 @@
         "invalid_input_return": 4294967295,
         "short_buffer_return": 4294967294,
         "invalid_utf8_return": 4294967293,
-        "error_effect": "Every returned error preserves every source/workspace/output byte. Successful calls never write source or workspace. No pointer provenance/admission is claimed beyond live/disjoint caller preconditions."
+        "error_effect": "Every returned error preserves every source/workspace/output byte. Successful calls never write source or workspace. No pointer provenance/admission is claimed beyond live/disjoint caller preconditions.",
+        "profiles": {
+          "strict": "Operations 0..7 preserve complete canonical UTF8 validation before span validation and output admission.",
+          "trusted_utf8": "Operations 8..15 require the caller to supply a complete valid UTF8 source. They skip only the whole-source UTF8 scan. All frame, table, literal, range, pool/subspan boundary, replacement, overflow and output-capacity checks remain identical. Invalid UTF8 violates this profile precondition and has no defined validation status.",
+          "production_precondition": "Every source in the safe Rust adapter is a borrowed &str or concatenated String/Cow<str>; only the private typed Operation enum selects the trusted profile.",
+          "base_operation": "operation & 7; bit 0 selects query/emit; all operation values above 15 are INVALID."
+        }
       },
       "behavior": [
         "Preserve mixed CR/LF/CRLF, the first preferred style and absence of a terminal empty sentinel.",
         "Keep inserted strings with internal CR/LF as one logical line across repeated replacements.",
         "Preserve preferred style through total deletion and reinsertion; empty replacement lists repair absent endings.",
         "Separate logical replacement positions from bounded physical take counts, including valid usize::MAX skips/deletes.",
-        "Validate complete UTF-8 pool bytes and every pool/subspan boundary before any result write.",
+        "Strict operations 0..7 validate complete UTF-8; trusted operations 8..15 require valid Rust strings and skip only that full scan. Both profiles validate every frame, pool/subspan boundary, range, replacement and arithmetic bound.",
+        "Use proven storage bounds for direct native emit, and exact native query/emit where bounds would overallocate; trim the logical buffer to the validated returned plan.",
         "Rust retains and compacts storage from HIA-selected spans; no parsing, replacement selection or render/reparse fallback."
       ],
       "tests": [
@@ -568,9 +583,19 @@
       "validation": {
         "report": "hia/verification.json#source_file_increment",
         "artifact_generation": "B3",
-        "current_local_component_gates": "passed",
-        "current_cargo_and_installed_ci": "pending",
-        "performance_qualified": false
+        "current_local_component_gates": "six_passed_on_one_9828_path_snapshot",
+        "current_cargo_and_installed_ci": "pending_new_fastpath_branch",
+        "performance_qualified": false,
+        "standalone_strict_clippy": "passed; separate from Cargo lint and just fix"
+      },
+      "materialization": {
+        "owner": "Rust computes storage bounds only; HIA chooses every logical row and span.",
+        "parse": "Direct emit when input bytes <=256, with at most one result row per byte; larger inputs use exact query then emit.",
+        "apply": "Direct emit when checked(old_line_count + inserted_count) <=256; otherwise exact query then emit.",
+        "line_texts": "Direct emit with old_line_count records as the proven bound.",
+        "into_contents": "Direct emit with checked(2 * old_line_count) records as the proven bound.",
+        "capacity": "Checked 40 + 32 * record_bound allocation; validate native required size and count, require required size <= buffer length, then truncate logical buffer length to the complete returned plan. Spare initialized storage never becomes a row.",
+        "fallback": "The alternative is another HIA query/emit sequence; no Rust algorithm fallback."
       }
     }
   ],
@@ -2317,7 +2342,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_nine_module_sourcefile_receipts_and_scalar_build_admission_passed",
+    "status": "current_nine_module_sourcefile_fastpath_receipts_and_scalar_build_admission_passed",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2335,5 +2360,6 @@
     "mutation_module": "source_file",
     "typed_scalar_mutation_history": "Historical 56-check eight-module 7fe65ae result retained at hia/verification.json#native_optimization; not a current nine-module receipt count.",
     "report": "hia/verification.json#source_file_increment"
-  }
+  },
+  "whole_product_performance_qualified": false
 }
