@@ -6,12 +6,16 @@ on:
       - qualification/hcsn_differentiable/**
       - qualification/hcsn_qvi/**
       - qualification/hcsn_memory_controls/**
+      - proposals/hcsn_persistence_v1/**
+      - proposals/localization-v3/**
       - .github/workflows/hcsn-differentiable.yml
   push:
     paths:
       - qualification/hcsn_differentiable/**
       - qualification/hcsn_qvi/**
       - qualification/hcsn_memory_controls/**
+      - proposals/hcsn_persistence_v1/**
+      - proposals/localization-v3/**
       - .github/workflows/hcsn-differentiable.yml
   workflow_dispatch:
 
@@ -75,6 +79,12 @@ jobs:
           assert source_tree == tested_tree, "tested tree differs from exact source head tree"
           PY
 
+      - name: Verify P0 evidence-chain declarations (HOLDs are not passes)
+        id: provenance
+        run: |
+          python3 -m qualification.hcsn_differentiable.audit_evidence_chain \
+            --output "$RUNNER_TEMP/hcsn-differentiable/provenance.json"
+
       - name: Set up pinned Python
         id: python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -115,24 +125,32 @@ jobs:
         id: c2-recovery
         if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
         run: |
-          python -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 \
-            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-recovery-tests.log"
-          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_successor_wiring.py' -v 2>&1 \
-            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-successor-wiring-tests.log"
-          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_program_source_closure.py' -v 2>&1 \
-            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-program-source-closure-tests.log"
-          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_program_manifest_freeze.py' -v 2>&1 \
-            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-program-manifest-freeze-tests.log"
-          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_execution_decision_freeze.py' -v 2>&1 \
-            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-execution-decision-tests.log"
-          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_terminal_result_json_admission.py' -v 2>&1 \
-            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-terminal-result-json-tests.log"
+          python -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/c2-recovery-tests.log"
+          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/c2-successor-tests.log"
 
       - name: Reject ambiguous recorded P1 posterior traces (evidence-only)
         id: p1-trace-parser
         if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
         run: |
-          python -m unittest -v qualification.hcsn_differentiable.test_training_domain_strict_trace 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/p1-trace-parser-tests.log"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          from qualification.hcsn_differentiable.run_qualification import RecordedResult
+          from qualification.hcsn_differentiable import test_training_domain_strict_trace as module
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+          with (out / "p1-trace-parser-tests.log").open("x") as stream:
+              result = unittest.TextTestRunner(stream=stream, verbosity=2, resultclass=RecordedResult).run(suite)
+          report = {"schema": "hcsn-recorded-trace-parser-ci-v1", "tests_run": result.testsRun,
+                    "failures": len(result.failures), "errors": len(result.errors), "skipped": len(result.skipped),
+                    "scientific_admission": "HOLD_NO_GO", "whole_training_qualification": False,
+                    "source_head": os.environ["SOURCE_HEAD"], "tests": result.records}
+          (out / "p1-trace-parser-tests.json").write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n")
+          print((out / "p1-trace-parser-tests.log").read_text())
+          raise SystemExit(0 if result.wasSuccessful() and result.testsRun > 0 and not result.skipped else 1)
+          PY
 
       - name: Audit recorded-law projected flow Jacobians (no science admission)
         id: p1-projected-gradients
@@ -172,6 +190,30 @@ jobs:
             --output "$RUNNER_TEMP/hcsn-differentiable/error-budget.json" 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/error-budget.log"
 
+      - name: Check persistence successor and inherited synthetic fixtures
+        id: persistence
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
+        run: |
+          trap 'hcsn_persistence_rc=$?; printf "%s\n" "$hcsn_persistence_rc" > "$RUNNER_TEMP/hcsn-differentiable/persistence.exit-code"; exit "$hcsn_persistence_rc"' EXIT
+          python -B -c 'import torch, numpy, mpmath'
+          python -B -m unittest -v \
+            proposals.hcsn_persistence_v1.test_atomic_io \
+            proposals.hcsn_persistence_v1.test_journal \
+            proposals.hcsn_persistence_v1.test_materialize \
+            proposals.hcsn_persistence_v1.test_runtime 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-tests.log"
+          python -B -m proposals.hcsn_persistence_v1.materialize \
+            --repository . \
+            --output "$RUNNER_TEMP/hcsn-differentiable/persistence-successor/source" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-materialize.log"
+          python -B -m proposals.hcsn_persistence_v1.test_successor_terminal \
+            --successor "$RUNNER_TEMP/hcsn-differentiable/persistence-successor/source" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-terminal-tests.log"
+          python -B -m proposals.hcsn_persistence_v1.run_successor_tests \
+            --successor "$RUNNER_TEMP/hcsn-differentiable/persistence-successor/source" \
+            --output "$RUNNER_TEMP/hcsn-differentiable/persistence-inherited-tests.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-inherited-tests.log"
+
       - name: Verify historical and current evidence integrity and links
         id: evidence
         if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
@@ -190,6 +232,10 @@ jobs:
             --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/MANIFEST.json \
             --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
             --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p1-fixed-grid-diagnosis-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-persistence-validation-20261111/MANIFEST.json \
             --markdown qualification/hcsn_differentiable/CURRENT.md \
             --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/README.md \
             --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/terminal-bootstrap/program/README.md \
@@ -218,6 +264,13 @@ jobs:
             --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
             --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md \
             --markdown proposals/localization-v3/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p1-fixed-grid-diagnosis-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-persistence-validation-20261111/README.md \
+            --markdown proposals/hcsn_persistence_v1/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/CODE-PATH-NOTE.md \
             --output "$RUNNER_TEMP/hcsn-differentiable/evidence-integrity.json"
 
       - name: Check the independent finite DP and QVI oracle
@@ -260,12 +313,12 @@ jobs:
           out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
           out.mkdir(exist_ok=True)
           steps = json.loads(os.environ["HCSN_STEPS"])
-          required = ("checkout", "identity", "python", "runtime", "qualification", "c2-recovery", "p1-trace-parser", "p1-projected-gradients", "budget", "evidence", "qvi", "controls", "clean")
+          required = ("checkout", "identity", "provenance", "python", "runtime", "qualification", "c2-recovery", "p1-trace-parser", "p1-projected-gradients", "budget", "persistence", "evidence", "qvi", "controls", "clean")
           outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
           passed = all(value == "success" for value in outcomes.values())
           codes = {name: int((out / (name + ".exit-code")).read_text())
                    if (out / (name + ".exit-code")).exists() else None
-                   for name in ("qualification", "error-budget")}
+                   for name in ("qualification", "error-budget", "persistence")}
           record = {"schema": "hcsn-ci-outcome-v1", "finished_utc": datetime.now(timezone.utc).isoformat(),
                     "science_status": "PASSED_DECLARED_FIXTURES" if passed else "HOLD",
                     "steps": outcomes, "step_exit_codes": codes, "rerun_of_old_evidence": False,

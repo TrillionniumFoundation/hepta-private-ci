@@ -1,0 +1,106 @@
+{
+  "base_commit": "e9b98c03b0a02c4caba9fcca60ec94c475a354a1",
+  "ci_style_green": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 5
+  },
+  "date_utc": "2026-11-11T20:11:16.307636+00:00",
+  "historical_original_c2": {
+    "independent_complete_training_replays": 0,
+    "job_id": "1a1c74f3308-be2a-75",
+    "planned_training_fits": 6,
+    "producer_results": 4,
+    "terminal": "unknown"
+  },
+  "initial_environment_preflight": {
+    "cause": "torch not installed",
+    "errors": 1,
+    "not_semantic_red": true,
+    "python": "/usr/bin/python3"
+  },
+  "native_green": {
+    "environment": "desktop Python 3.12.14, torch 2.8.0+cpu, not frozen C2 Python 3.12.3 CUDA",
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 36
+  },
+  "numeric_admission": "HOLD",
+  "original_training_adequacy": false,
+  "policies": {
+    "CONTRACT.json": {
+      "bytes": 2410,
+      "candidate_path": "qualification/hcsn_differentiable/c2_successor_v1/CONTRACT.json",
+      "git_blob_sha": "6c2d82d9a2b4fc8c3bbf9e97d5ec8c1b8794a3a6",
+      "sha256": "bc814b8913f5d5777f771030623bcd1f862a526f35144a8da0164e1da60f8e51",
+      "source_path": "qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/launch/CONTRACT.json"
+    },
+    "OPTIMIZATION-POSTERIOR-POLICY-v2.json": {
+      "bytes": 1859,
+      "candidate_path": "qualification/hcsn_differentiable/c2_successor_v1/OPTIMIZATION-POSTERIOR-POLICY-v2.json",
+      "git_blob_sha": "c6df89355bc77a75d1b1add9734665b980976e20",
+      "sha256": "a1d5d5b8c11194506e9dea49e6b48eaa9c1edc72c6bc975d1e98bdc241b34875",
+      "source_path": "qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/launch/OPTIMIZATION-POSTERIOR-POLICY-v2.json"
+    },
+    "POSTERIOR-POLICY.json": {
+      "bytes": 2635,
+      "candidate_path": "qualification/hcsn_differentiable/c2_successor_v1/POSTERIOR-POLICY.json",
+      "git_blob_sha": "4387789535d92f9e51460d05865188c7b9b25d53",
+      "sha256": "8be888e29389321a1e41921244931b7950aa2db63a0d870d55cc5e3fc412a137",
+      "source_path": "qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/launch/POSTERIOR-POLICY.json"
+    }
+  },
+  "production_adoption": false,
+  "raw_logs": {
+    "CI-STYLE.native.log": {
+      "bytes": 859,
+      "sha256": "ffec150b908602ad0bacdb8224add0ad9a2827120a5c51184a9151d82644a19a"
+    },
+    "ENV-ERROR.native.log": {
+      "bytes": 1338,
+      "sha256": "eb13574eafdfce91223d7082a06d2934c93f52aaae71939c6843e9e43996bb89"
+    },
+    "ENV.native.log": {
+      "bytes": 18,
+      "sha256": "86b8f43811220bd9066e515de3cab8df81c6c8ea091baa2d41666ba99896d91b"
+    },
+    "GREEN.native.log": {
+      "bytes": 5813,
+      "sha256": "42ce4598edff224dac99d07177f8b7564e53dd16f171aa78a8d13da0213868ec"
+    },
+    "READONLY-PREFLIGHT.native.json": {
+      "bytes": 1207,
+      "sha256": "2efb57aaa00841cd9d4940f9ef8340273ce125317902e7ca6adee0393a5a5ccd"
+    },
+    "READONLY-PREFLIGHT.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "RED.native.log": {
+      "bytes": 14801,
+      "sha256": "437df195622f8ee05dbab3eed4e195ab7bc41ef0aa24b95556e9a3ab08a9fd12"
+    }
+  },
+  "read_only_program_preflight": {
+    "dependencies": 1,
+    "execution_authorized": false,
+    "execution_decision_minted": false,
+    "exit_code": 0,
+    "files": 8,
+    "published_program_manifest": false,
+    "scientific_admission": "HOLD_NO_GO"
+  },
+  "schema": "hcsn-c2-prospective-policy-lineage-r13",
+  "scientific_admission": "HOLD_NO_GO",
+  "scope": "new isolated successor candidate only; historical archived source copied byte-for-byte; no process execution, no historical modification",
+  "semantic_red": {
+    "cause": "missing three prospective policy/contract files",
+    "errors": 9,
+    "exit_code": 1,
+    "tests": 5
+  }
+}
