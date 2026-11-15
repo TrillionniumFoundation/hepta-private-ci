@@ -1,0 +1,48 @@
+{
+  "actual_stage": {
+    "Adam_invocations_and_completions": 9,
+    "adjoint_invocations_and_completions": 13,
+    "current_actor_and_controller_stderr_bytes": 0,
+    "forward_invocations_and_completions": 13,
+    "four_tensor_update_records": 36,
+    "fresh_actors": 8,
+    "full_child_tree_cpu_seconds": 25.452279,
+    "full_child_tree_wall_seconds": 27.20721355,
+    "overlapping_protocol_checks": 46,
+    "reported_child_tree_max_rss_kib": 416776,
+    "unresolved_actor_work": []
+  },
+  "artifact_id": 13948404632,
+  "audit_calls": {
+    "Torch_imports": 0,
+    "adjoint_solves": 0,
+    "candidate_imports": 0,
+    "expm_or_static_kernel": 0,
+    "model_forwards": 0,
+    "optimizer_calls": 0
+  },
+  "complete_restore": "Both geometries exact at step1 and step2 across full tensor and primitive metadata; next actual target/output/loss/all-four-gradients exactly equal.",
+  "full_state_payloads_read": 17,
+  "job_id": 131217519039,
+  "limit": "Fixed source/runtime N7/N12 raw initial amplitudes and first-order synthetic MSE at optimizer boundaries. No physical/support AD, DDE-history checkpoint, n512, full network, cross-runtime, migration, historical-training, task, energy or adoption qualification.",
+  "maxima": {
+    "Adam_first_moment_abs": 5.421010862427522e-20,
+    "Adam_parameter_update_abs": 0.0,
+    "Adam_second_moment_abs": 1.6543612251060553e-24,
+    "cotangent_abs": 0.0,
+    "raw_forward_oldG_abs": 6.538127461305776e-11,
+    "raw_live_vjp_oldG_transpose_abs": 8.281787148428643e-12
+  },
+  "measured_read_sections": {
+    "controller_cpu_seconds": 0.11183657000000001,
+    "controller_wall_seconds": 0.12543035000000025,
+    "primary_cpu_seconds": 0.3224990430000001,
+    "primary_wall_seconds": 0.29025198399904184,
+    "scope": "Only measured read-only inspector sections; excludes source review/formatting/packaging."
+  },
+  "negative_controls": "Actual omitAdam exit42 with zero forwards/adjoints/Adam; actual process-crash exit73 after one unpublished Adam step, old published bytes unchanged and pending full state equals continuous2. Other failure accounting branches were static-only.",
+  "passed": true,
+  "run_id": 43228409724,
+  "schema": "hcsn-6253-independent-actual-audit-summary-v1",
+  "source_commit": "994def0b188c5105d0ceb9ace281af7f4bd0e3b2"
+}
