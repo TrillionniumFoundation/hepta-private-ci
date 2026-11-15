@@ -39,6 +39,18 @@ def original_sources():
     blocks = {"network_reducer": (methods[1] + "\n" + helpers[0], 175,
               "78156630b9cd34343af66d23d755c2f13ae31a13807f9b25f4b621b20089dc93")}
     source = (SOURCE / "rule.rs").read_text()
+    function = r"pub\(crate\) fn normalize_network_rule_host\([\s\S]*?^}\n"
+    methods = re.findall(r"(?m)^" + function, source)
+    native = "pub(crate) fn normalize_network_rule_host(raw: &str) -> Result<String> { crate::hia_native_network_host::normalize(raw) }"
+    def token_values(value):
+        return [item for item in TOKEN.findall(value) if not item.startswith(("//", "/*"))]
+    if len(methods) != 2 or token_values(methods[0]) != token_values(native):
+        raise RuntimeError("exact native normalization delegation and complete default owner are required")
+    source, removed = re.subn(r'(?m)^#\[cfg\(feature = "hia-native"\)\]\n' + function, "", source)
+    source, attributes = re.subn(
+        r'(?m)^#\[cfg\(not\(feature = "hia-native"\)\)\]\n(?=pub\(crate\) fn normalize_network_rule_host\()', "", source)
+    if (removed, attributes) != (1, 1):
+        raise RuntimeError("native/default normalization feature guards differ")
     start = source.index("#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub enum NetworkRuleProtocol")
     source = source[start:source.index("pub trait Rule:", start)]
     blocks["network_types_and_normalization"] = (source, 583, "775fddae2313f22890a6d395c67d98b96e273be7b514724ae4fcb0fadde07d70")
