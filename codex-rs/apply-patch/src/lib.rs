@@ -1,4 +1,12 @@
 mod file_update;
+// BEGIN HIA PATCH APPLICATION ROUTING v1: native-module
+#[cfg(feature = "hia-native")]
+mod hia_native_patch_application;
+#[cfg(feature = "hia-native")]
+use hia_native_patch_application::apply_hunks_with_options;
+#[cfg(feature = "hia-native")]
+pub use hia_native_patch_application::apply_patch_with_options;
+// END HIA PATCH APPLICATION ROUTING v1: native-module
 #[cfg(feature = "hia-native")]
 mod hia_native_patch_effects;
 #[cfg(feature = "hia-native")]
@@ -52,6 +60,9 @@ use codex_utils_path_uri::PathUri;
 use codex_utils_path_uri::PathUriParseError;
 pub use parser::Hunk;
 pub use parser::ParseError;
+// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-parse-error-import
+#[cfg(not(feature = "hia-native"))]
+// END HIA PATCH APPLICATION ROUTING v1: legacy-parse-error-import
 use parser::ParseError::*;
 pub use parser::UpdateFileChunk;
 pub use parser::parse_patch;
@@ -389,6 +400,9 @@ pub async fn apply_patch(
 
 /// Applies the patch using the selected options and prints the result
 /// to stdout/stderr.
+// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-patch-function
+#[cfg(not(feature = "hia-native"))]
+// END HIA PATCH APPLICATION ROUTING v1: legacy-patch-function
 pub async fn apply_patch_with_options(
     patch: &str,
     options: ApplyPatchOptions,
@@ -451,6 +465,9 @@ pub async fn apply_hunks(
 
 /// Applies hunks using the selected file-update mode and continues to update
 /// stdout/stderr.
+// BEGIN HIA PATCH APPLICATION ROUTING v1: legacy-hunks-function
+#[cfg(not(feature = "hia-native"))]
+// END HIA PATCH APPLICATION ROUTING v1: legacy-hunks-function
 async fn apply_hunks_with_options(
     hunks: &[Hunk],
     options: ApplyPatchOptions,
