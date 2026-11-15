@@ -41,6 +41,17 @@ mod qualification_file_observation;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
+mod structural_comparison;
+pub use structural_comparison::FrozenStructuralComparisonV1;
+pub use structural_comparison::SignedStructuralComparisonDecisionV1;
+pub use structural_comparison::SignedStructuralComparisonV1;
+pub use structural_comparison::StructuralComparisonDispositionV1;
+pub use structural_comparison::StructuralComparisonErrorV1;
+pub use structural_comparison::StructuralComparisonObservationV1;
+pub use structural_comparison::StructuralMutationKindV1;
+pub use structural_comparison::assess_signed_structural_comparison_v1;
+pub use structural_comparison::structural_comparison_plan_digest_v1;
+pub use structural_comparison::structural_comparison_signing_payload_v1;
 mod temporal_evaluation;
 mod temporal_fold;
 
