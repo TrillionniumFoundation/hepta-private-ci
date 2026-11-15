@@ -4420,7 +4420,7 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
 
     let builder = TestAppServer::builder().with_codex_home(&codex_home);
     #[cfg(windows)]
-    let builder = builder.with_elevated_windows_sandbox();
+    let builder = builder.with_args(&["-c", "windows.sandbox=\"unelevated\""]);
     let mut mcp = builder.build_initialized().await?;
 
     let ThreadStartResponse { thread, .. } = mcp

@@ -848,7 +848,9 @@ async fn run_image_edit_test(
         .with_codex_home(codex_home.path())
         .with_env_overrides(&[("OPENAI_API_KEY", None)]);
     #[cfg(windows)]
-    let builder = if input
+    let builder = if expects_sandbox_refusal {
+        builder.with_args(&["-c", "windows.sandbox=\"unelevated\""])
+    } else if input
         .iter()
         .any(|item| matches!(item, V2UserInput::LocalImage { .. }))
     {
