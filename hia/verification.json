@@ -1056,7 +1056,7 @@
     }
   },
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "40990ee4974659e5a48c9d5612b727a6aeb642fa8cbb4fa7ed48b8de1a2bf226",
+    ".github/workflows/codex-hia-native.yml": "0408de8f492fb49510093859df35f4f9d8fead1e9900657d7c3acb36314babf0",
     "codex-rs/apply-patch/BUILD.bazel": "b46d28a69e2080c76b980da7d4256c2495154f39baf24602a6434a7de1bea719",
     "codex-rs/apply-patch/Cargo.toml": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
     "codex-rs/apply-patch/build.rs": "1d6b6b25c900f3787050eed7babcaedc8b6059a5732f7e45e8c2c73e305eeb7f",
@@ -2517,6 +2517,40 @@
       "previous_build_sha256": "d4b610babb20b4d297da41f19cf533a67fb215c1e231bf0be685db3dfe881dbe",
       "current_build_sha256": "500d2cce100ca1871e47ecc3ec10da6fb3b1fc8c26f7341dea4a891fbd0cabd3",
       "scope": "All five compiled artifacts for each of the eight inherited modules are byte-identical to the published 7fe65ae checkpoint. Artifact identity does not substitute for current nine-module Cargo or installed CI."
+    },
+    "ci_tooling_repair": {
+      "observed_source": "e53603879b77d215fe4d58b40be87376cd95754d",
+      "push_run": 43660108226,
+      "pull_request_run": 43660207363,
+      "observed_workflow_conclusion": "failure",
+      "failure": "Minimal Rust toolchain omitted cargo-clippy; strict lint and required fix could not start.",
+      "observed_test_groups": [
+        {
+          "scope": "native patch/string",
+          "passed": 139,
+          "skipped": 0
+        },
+        {
+          "scope": "native consumers",
+          "passed": 319,
+          "skipped": 0
+        },
+        {
+          "scope": "native CLI/arg0/TUI",
+          "passed": 4473,
+          "skipped": 6
+        },
+        {
+          "scope": "default owner/consumers without HIA",
+          "passed": 444,
+          "skipped": 0
+        }
+      ],
+      "installed_patch_cases_passed": 3,
+      "installed_full_codex_cases_passed": 6,
+      "installed_full_codex_startup_cases_passed": 2,
+      "repair": "Install Clippy for the exact 1.96.1 toolchain and record its version before builds. Implementation and test sources are unchanged.",
+      "repaired_head_execution": "pending"
     }
   }
 }
