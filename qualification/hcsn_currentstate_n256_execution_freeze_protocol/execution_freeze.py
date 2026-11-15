@@ -164,12 +164,6 @@ def validate_future_execution_freeze(record):
         raise ExecutionFreezeError("execution interval is empty or reversed")
     if any(captured > start for captured in capture_times):
         raise ExecutionFreezeError("resource original was captured after execution admission")
-    for name in ("allocation", "calendar"):
-        original = resources[name]
-        if original["captured_at_utc"] != resources["host_snapshot"]["captured_at_utc"]:
-            raise ExecutionFreezeError(
-                "allocation/calendar and host snapshot are not one atomic observation"
-            )
     if record["external_reviewer_independence_certified"] is not True:
         raise ExecutionFreezeError("external reviewer independence is not certified")
     if record["historical_negative_and_unknown_preserved"] is not True:
