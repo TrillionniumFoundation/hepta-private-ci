@@ -6972,6 +6972,800 @@
           "native16_ns": 79846126
         }
       ]
+    },
+    "allocation": {
+      "cases": 24,
+      "clone_before_callback": [
+        {
+          "at_callback": [
+            4,
+            8351,
+            8351
+          ],
+          "final": [
+            4,
+            0,
+            8351,
+            8351,
+            8351
+          ],
+          "owner": "original"
+        },
+        {
+          "at_callback": [
+            3,
+            8271,
+            8271
+          ],
+          "final": [
+            4,
+            0,
+            8591,
+            8591,
+            8591
+          ],
+          "owner": "candidate"
+        }
+      ],
+      "metric_order": [
+        "allocations",
+        "reallocations",
+        "requested_bytes",
+        "peak_requested_live_bytes",
+        "retained_requested_live_bytes"
+      ],
+      "observations": [
+        {
+          "case": "empty-command",
+          "command_bytes": 0,
+          "matches": 0,
+          "native": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "case": "empty-command-fallback",
+          "command_bytes": 0,
+          "matches": 1,
+          "native": [
+            1,
+            0,
+            320,
+            320,
+            320
+          ],
+          "reference": [
+            1,
+            0,
+            80,
+            80,
+            80
+          ]
+        },
+        {
+          "case": "unknown-exact",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            4,
+            0,
+            378,
+            378,
+            378
+          ],
+          "reference": [
+            4,
+            0,
+            138,
+            138,
+            138
+          ]
+        },
+        {
+          "case": "exact-prefix",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ],
+          "reference": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ]
+        },
+        {
+          "case": "exact-no-short-circuit",
+          "command_bytes": 10,
+          "matches": 3,
+          "native": [
+            16,
+            2,
+            600,
+            558,
+            558
+          ],
+          "reference": [
+            16,
+            2,
+            600,
+            558,
+            558
+          ]
+        },
+        {
+          "case": "exact-none-host-same-bucket",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            16,
+            7,
+            1745,
+            697,
+            489
+          ],
+          "reference": [
+            16,
+            7,
+            1745,
+            697,
+            489
+          ]
+        },
+        {
+          "case": "host-allowlist-missing",
+          "command_bytes": 9,
+          "matches": 2,
+          "native": [
+            14,
+            2,
+            580,
+            517,
+            449
+          ],
+          "reference": [
+            14,
+            2,
+            580,
+            517,
+            449
+          ]
+        },
+        {
+          "case": "host-allowlist-empty",
+          "command_bytes": 9,
+          "matches": 1,
+          "native": [
+            7,
+            1,
+            399,
+            353,
+            353
+          ],
+          "reference": [
+            7,
+            1,
+            159,
+            113,
+            113
+          ]
+        },
+        {
+          "case": "empty-host-bucket",
+          "command_bytes": 16393,
+          "matches": 1,
+          "native": [
+            10,
+            1,
+            33239,
+            16761,
+            16761
+          ],
+          "reference": [
+            10,
+            1,
+            32999,
+            16521,
+            16521
+          ]
+        },
+        {
+          "case": "absolute-root",
+          "command_bytes": 1,
+          "matches": 1,
+          "native": [
+            6,
+            0,
+            355,
+            345,
+            345
+          ],
+          "reference": [
+            6,
+            0,
+            115,
+            105,
+            105
+          ]
+        },
+        {
+          "case": "reentrant-rule",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ],
+          "reference": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ]
+        },
+        {
+          "case": "giant-tail-exact-miss",
+          "command_bytes": 1048580,
+          "matches": 0,
+          "native": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "case": "empty-exact-bucket",
+          "command_bytes": 10,
+          "matches": 0,
+          "native": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "case": "first-path-match-giant-unvisited",
+          "command_bytes": 9,
+          "matches": 1,
+          "native": [
+            12,
+            2,
+            480,
+            417,
+            373
+          ],
+          "reference": [
+            12,
+            2,
+            480,
+            417,
+            373
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 13,
+          "matches": 0,
+          "native": [
+            5,
+            1,
+            102,
+            68,
+            0
+          ],
+          "reference": [
+            5,
+            1,
+            102,
+            68,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 14,
+          "matches": 0,
+          "native": [
+            5,
+            1,
+            104,
+            68,
+            0
+          ],
+          "reference": [
+            5,
+            1,
+            104,
+            68,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 15,
+          "matches": 0,
+          "native": [
+            5,
+            1,
+            106,
+            68,
+            0
+          ],
+          "reference": [
+            5,
+            1,
+            106,
+            68,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 96,
+          "matches": 0,
+          "native": [
+            5,
+            2,
+            525,
+            374,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            525,
+            374,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 97,
+          "matches": 0,
+          "native": [
+            5,
+            2,
+            530,
+            378,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            530,
+            378,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 133,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            2324,
+            1336,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            710,
+            522,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 134,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            2335,
+            1342,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            715,
+            526,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 135,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            2346,
+            1348,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            720,
+            530,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 1030,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            8963,
+            4566,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            5195,
+            4110,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 1048582,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            8389379,
+            4194774,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            5242955,
+            4194318,
+            0
+          ]
+        }
+      ],
+      "passed": true,
+      "positive_probe": [
+        1,
+        1,
+        1026,
+        1025,
+        1025
+      ],
+      "scope": "allocation calls and logical requested-live bytes during the call; excludes fixture construction; not RSS or allocator transient realloc overlap",
+      "skipped": 0,
+      "zero_allocation_cases": 3,
+      "binary_sha256": "fa220c941004f3eb42139e0366667e649b5022e4f0966d129e62b2cba8abef25"
+    },
+    "owner_and_installed": {
+      "report": "owner_v3",
+      "passed": true,
+      "commands": [
+        {
+          "label": "just-test-default-v3",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "test",
+            "-p",
+            "codex-execpolicy",
+            "--locked"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "just-test-native-v3",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "test",
+            "-p",
+            "codex-execpolicy",
+            "--locked",
+            "--features",
+            "hia-native"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "installed-execpolicy-v3",
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/hia/tests/test_installed_execpolicy.py",
+            "--binary",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/command-dispatch-public-v3-artifacts/native-codex-execpolicy",
+            "--reference-binary",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/command-dispatch-public-v3-artifacts/reference-codex-execpolicy",
+            "--dispatch",
+            "standalone",
+            "--report",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/installed-execpolicy-v3.json"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "strict-default-v3",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "clippy",
+            "-p",
+            "codex-execpolicy",
+            "--all-targets",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "strict-native-v3",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "clippy",
+            "-p",
+            "codex-execpolicy",
+            "--all-targets",
+            "--locked",
+            "--features",
+            "hia-native",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        }
+      ],
+      "default_tests": 34,
+      "native_tests": 34,
+      "skipped": 0,
+      "junit": [
+        {
+          "path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/junit-default-v3.xml",
+          "bytes": 5927,
+          "sha256": "8b093aed95198d723e098b20880dc00813f9c1a60a0cb3852147171af7999bb9",
+          "testcases": 34,
+          "skipped": 0
+        },
+        {
+          "path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/junit-native-v3.xml",
+          "bytes": 5927,
+          "sha256": "c0585b994501bcd1d5c348ab051bf118ff8a32fa6792b22d0cc1838648df271c",
+          "testcases": 34,
+          "skipped": 0
+        }
+      ],
+      "strict_default_and_native": "codex-execpolicy --all-targets --locked -- -D warnings; both exit zero.",
+      "actual_default_native_builds": [
+        {
+          "label": "build-reference",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-execpolicy",
+            "--bin",
+            "codex-execpolicy",
+            "--target-dir",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/target",
+            "--message-format=json"
+          ],
+          "returncode": 0
+        },
+        {
+          "label": "build-native",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-execpolicy",
+            "--bin",
+            "codex-execpolicy",
+            "--target-dir",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/target",
+            "--message-format=json",
+            "--features",
+            "hia-native"
+          ],
+          "returncode": 0
+        }
+      ],
+      "installed": {
+        "cases": 30,
+        "processes": 60,
+        "symbols": 4,
+        "hia_dynamic_dependencies": [],
+        "report_sha256": "de59350e7adacfd46aa03922f788bf547aaf9291ecca8cb27bfa1be72eebd84c",
+        "report": "installed_v3",
+        "scope": "Actual relocated standalone check CLI; full JSON, stdout/stderr bytes, exits and independent expected results. Four symbols are link evidence, not a substitute for behavior."
+      },
+      "whole_workspace": false
+    },
+    "formatter_and_content_freeze": {
+      "report": "root_content_freeze",
+      "source_manifest": "exact20_source_manifest",
+      "code_tree_before_canonical_docs": "a56ca0f6faf74b8b0b84a68182e12d30c05fcca8",
+      "scope": "content frozen for scoped Draft publication from actual completed qualification and unchanged bytes; not an invented final-maintenance execution",
+      "content_frozen_for_scoped_draft": true,
+      "runtime18_exact_to_v3": true,
+      "formatter2_exact_to_first32tests": true,
+      "actual_last_just_fmt": {
+        "job": "1a1df10115f-392-263c",
+        "returncode": 0,
+        "report_sha256": "bee85a07143d7f4f3dac7722033a1d146df44595f87bb44b4fe354733b92fc7d",
+        "zero_source_delta": true
+      },
+      "formatter_component_tests": 32,
+      "formatter_component_skipped": 0,
+      "all_source_files_unchanged_after_fmt_through_checks_and_readonly": 9883,
+      "formatter_raw_report_preserved": true,
+      "formatter_raw_claim_correction": "The raw component result rust_or_cargo_run=false is overbroad: existing fixture tests invoke real rustfmt and Cargo metadata/locate-project. They do not compile or test the Codex product. Preserve that raw report and use this narrower scope.",
+      "post_fix_fmt_product_compilation_or_tests_rerun": false,
+      "additional_final_maintenance": {
+        "job": "1a1df15c4ef-392-264f",
+        "status": "UNKNOWN",
+        "replayed": false,
+        "cancellation_confirmed": false,
+        "completed_report_exists": false,
+        "staging_diffcheck_write_tree_observed": false,
+        "subsequent_actions": "normal independent publication guards supply staging, diff and tree validation; do not impute them to the unknown job"
+      },
+      "publication_guard_scope": "Normal subsequent publication guards supply staging/diff/tree validation. They are not an execution or recovery of the unknown maintenance job."
+    },
+    "preserved_negative_attempts": {
+      "first_native_compile": {
+        "report": "native_compile_failure_v1",
+        "passed": false,
+        "cause": "Fixed self-hosted parser rejected a blank line after the module header; the successful source removed blank lines only."
+      },
+      "owner_v1": {
+        "report": "owner_v1_failed",
+        "passed": false,
+        "error": "RuntimeError: strict-native-v1 exited 101; preserve both log files",
+        "guard_error": "AssertionError: source file inventory changed",
+        "note": "Actual three fresh-linked public baselines passed, but native strict Clippy exited 101 and generated JUnit changed the source inventory. The failed aggregate remains false."
+      },
+      "preflight_v2": {
+        "report": "preflight_v2_failed",
+        "passed": false,
+        "error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qq/codex-hia-work/9f0b-prefix-20261115/target/debug/deps/libcodex_execpolicy-ca201f2482955afc.rlib'",
+        "commands_started": 0,
+        "source_modified": false
+      },
+      "maintenance_v3": {
+        "report": "failed_maintenance_v3",
+        "passed": false,
+        "successful_fix_commands": [
+          {
+            "label": "final-fix-default-v3",
+            "command": [
+              "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+              "fix",
+              "-p",
+              "codex-execpolicy",
+              "--locked",
+              "--allow-no-vcs"
+            ],
+            "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+            "returncode": 0
+          },
+          {
+            "label": "final-fix-native-v3",
+            "command": [
+              "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+              "fix",
+              "-p",
+              "codex-execpolicy",
+              "--locked",
+              "--allow-no-vcs",
+              "--features",
+              "hia-native"
+            ],
+            "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+            "returncode": 0
+          }
+        ],
+        "fmt_exit": 2,
+        "error": "RuntimeError: final-fmt-v3 exited 2; preserve both log files"
+      },
+      "maintenance_v4": {
+        "report": "failed_maintenance_v4",
+        "passed": false,
+        "fmt_exit": 0,
+        "changed_harnesses": 4,
+        "error": "AssertionError: final fix/fmt changed tested source; qualification must remain open",
+        "resolution": "Real standalone edition selection was corrected; all four harnesses were restored to exact V3 bytes. The dual-harness admission guard was not relaxed, and product tests were not rerun."
+      },
+      "formatter_prepare_v5": {
+        "report": "formatter_prepare_v5_failed",
+        "passed": false,
+        "commands_started": 0,
+        "error": "AssertionError: required formatter tools are missing"
+      },
+      "formatter_v6": {
+        "report": "formatter_v6_inventory_failed",
+        "passed": false,
+        "fmt_exit": 0,
+        "error": "AssertionError: source file inventory changed",
+        "resolution": "Three generated ruff-cache files were identified and preserved outside source; later V7 formatter execution uses an explicit external cache."
+      },
+      "additional_v7_maintenance": {
+        "status": "UNKNOWN",
+        "job": "1a1df15c4ef-392-264f",
+        "passed": false,
+        "cancelled": false,
+        "replayed": false,
+        "report": "unknown_maintenance_diagnosis"
+      }
+    },
+    "immutable_consumer_link_bundle": {
+      "manifest": "immutable_link_manifest",
+      "proof": "immutable_link_proof",
+      "readonly_recheck": "final_readonly_bindings_v7",
+      "files": 1306,
+      "bytes": 1311650382,
+      "actual_cargo_units": 234,
+      "build_script_linkage_records": 35,
+      "native_artifact_files": 216,
+      "independent_copies_no_hard_links": true,
+      "historical_package_internal_rustc_relink_and_nm_passed": true,
+      "final_readonly_all_file_hashes_verified": true,
+      "original_manifest_pending_field_retained": true,
+      "scope": "Immutable inputs for independent consumer linkage, not a Cargo rebuild environment. The raw manifest is historical; final source promotion is separate. Compiler/sysroot/CRT/system dynamic libraries remain external platform inputs. No old mutable target recovery is claimed."
     }
   }
 }
