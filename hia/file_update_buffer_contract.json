@@ -1,0 +1,233 @@
+{
+  "schema": "codex.hia.file-update-buffer-contract.v1",
+  "status": "Normative component ABI. Qualification and migration claims are recorded separately.",
+  "module": "file_update",
+  "symbol": "codex_hia_file_update",
+  "compiler_pin": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "original_owner": {
+    "base_head": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+    "path": "codex-rs/apply-patch/src/file_update.rs",
+    "bytes": 12365,
+    "git_blob": "b95270b799b31149bd19bf5825e4f68b1d97e954",
+    "sha256": "6f45aabc6d1bb103875df8c8529558a49587db103b1a26aa633b8ea7ada570f2",
+    "scope": "Complete original bytes before reversible routing additions."
+  },
+  "composition": {
+    "owner": "Native LF split, native chunk/resume state machine, native stable permutation, native reverse overlapping line edits and LF rendering.",
+    "search": "HIA emits each search request. Rust calls the existing real HIA seek_sequence on unchanged original lines and the native-selected context/pattern slice, then returns its Option index. No duplicated matcher, Rust matching fallback or cross-archive HIA call.",
+    "preserve": "Existing real HIA SourceFile parses/projects original logical lines and applies/renders the native-sorted replacement plan.",
+    "rust": "Allocation, metadata encoding, owned String/Vec storage, checked native indices/spans, synchronous callback transport and exact error formatting. Static enum dispatch selects native components. Original filesystem, PathUri, symlink/sandbox policy and similar TextDiff remain host boundaries.",
+    "continuation": "Explicit caller-owned continuation, not a cryptographic token. Native admission checks structural state and callback ranges. Production binds lengths and callback truth to actual Strings/native results; raw metadata alone cannot authenticate text equality.",
+    "evidence": "Whole public oracle parity does not imply observation of every original private search/replacement trace. Raw continuation tests are a separate contract gate."
+  },
+  "abi": {
+    "c": "uint64_t f0(const uint8_t *source,uint64_t source_len,uint8_t *output,uint64_t output_capacity,uint8_t *workspace,uint64_t workspace_len)",
+    "hia": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->(u32)",
+    "encoding": "All fields are LE u64. Exact descriptor length; unaligned buffers allowed. Caller supplies live disjoint buffers and does not mutate them during the call. No pointers retained.",
+    "statuses": {
+      "0": "Success, including planner semantic outcomes.",
+      "4294967293": "INVALID_UTF8 for LF source.",
+      "4294967294": "SHORT fixed workspace/output header or required emit output capacity.",
+      "4294967295": "INVALID metadata, reserved field, continuation/callback range, extent or checked capacity/byte bound overflow."
+    },
+    "atomicity": "All nonzero returns leave output/source/workspace unchanged. Source/workspace are never written. Query writes only its fixed output header. Sort/render use admitted output memory as scratch after validation; successful emit may alter every byte before needed_bytes. Bytes after needed_bytes remain unchanged.",
+    "precedence": [
+      "output>=32 and workspace>=8 else SHORT",
+      "operation0..7 else INVALID",
+      "operation-specific fixed headers else SHORT",
+      "non-LF source must be empty; exact descriptor tables, flags and state admission else INVALID",
+      "LF full UTF8 validation else INVALID_UTF8",
+      "semantic analysis, record/count/byte-bound overflow admission",
+      "emit output>=needed else SHORT",
+      "publish; no subsequent returned error"
+    ],
+    "scale": "No bootstrap 1MiB production cap. All extents use actual buffer lengths; numeric sums use checked bounds before stores."
+  },
+  "operations": {
+    "0/1": {
+      "name": "LF parse query/emit",
+      "source": "Complete strict UTF8 original contents",
+      "workspace_header": [
+        "operation"
+      ],
+      "output_header": [
+        "needed_bytes",
+        "logical_line_count",
+        "source_byte_length",
+        "last_logical_line_length_or_0"
+      ],
+      "record": [
+        "start",
+        "length"
+      ],
+      "needed": "32+16*logical_line_count",
+      "semantics": "LF byte split only, followed by removal of exactly one trailing empty split item. CR remains text; empty source gives zero lines. Headers identical for query/emit."
+    },
+    "2/3": {
+      "name": "Planner step query/emit",
+      "source": "Empty; metadata-only operation.",
+      "workspace_header": [
+        "operation",
+        "mode",
+        "original_line_count",
+        "original_last_line_byte_length",
+        "chunk_count",
+        "chunk_index",
+        "line_cursor",
+        "phase",
+        "match_found",
+        "match_index",
+        "has_change_context",
+        "is_end_of_file",
+        "old_line_count",
+        "new_line_count",
+        "context_pair_count",
+        "zero"
+      ],
+      "workspace_tables": [
+        "old_line_byte_lengths[old_line_count]",
+        "new_line_byte_lengths[new_line_count]",
+        "[old_index,new_index][context_pair_count]"
+      ],
+      "modes": {
+        "0": "NormalizeToLf",
+        "1": "PreserveLineEndings"
+      },
+      "phases": {
+        "0": "Begin chunk",
+        "1": "Context callback answer",
+        "2": "Full old-pattern callback answer",
+        "3": "Single trailing-empty retry callback answer"
+      },
+      "admission": [
+        "mode<=1; phase<=3; booleans<=1; reserved0; index<=chunk_count; cursor<=L; if L=0 then last length0",
+        "phase0 requires found=index0; absent callback requires index0",
+        "at index==chunk_count require phase0, no answer and empty chunk metadata/flags; return Done",
+        "phase1 requires context_present; uses pattern1 and eof=false regardless of chunk EOF flag",
+        "phase2/3 require old_count>0; phase3 additionally requires final old length0",
+        "Found nonempty pattern must fit L; non-EOF index>=cursor; EOF index=L-P, with cursor constraint retained for Preserve",
+        "Empty retry requires Some(cursor); None differs from Some(0)"
+      ],
+      "output_header": [
+        "needed_bytes",
+        "action",
+        "chunk_index",
+        "line_cursor",
+        "phase",
+        "requested_pattern_count",
+        "requested_eof",
+        "replacement_count",
+        "mode",
+        "semantic_code",
+        "zero",
+        "zero"
+      ],
+      "record": [
+        "start",
+        "old_length",
+        "new_offset_in_current_chunk",
+        "new_count"
+      ],
+      "needed": "96+32*replacement_count",
+      "actions": {
+        "0": "All chunks complete",
+        "1": "Search current chunk context, phase1, singleton pattern, eof0",
+        "2": "Search current chunk old_lines[..requested_pattern_count], phase2/3, requested EOF",
+        "3": "Current chunk complete; replacement records in discovery order, next chunk index+1, native cursor, phase0",
+        "4": "Semantic error; current chunk index; code1 missing context, code2 missing expected old lines, code3 reached invalid Preserve context ordering"
+      },
+      "semantics": [
+        "Context search precedes old-empty branch.",
+        "Original old=[] inserts at L, except Normalize with final empty original row inserts at L-1. This branch does not advance cursor beyond any prior successful context search.",
+        "Full old search only retries after None and final old length0. Drop exactly one old empty and, only when empty, exactly one new tail. No second retry.",
+        "Normalize ignores context index values and emits one whole replacement.",
+        "Preserve checks each pair against effective old/new lengths first. First out-of-range pair means break, including MAX; later pairs are ignored. Only reached in-range decreasing/repeated indices causing subtraction/slice failure produce code3.",
+        "Kept context rows remain original text/ending. Normal match advances cursor to matched start+effective old length.",
+        "Ignored metadata values remain legal in Normalize, original-old-empty branch, failed lookups and after first out-of-range pair.",
+        "Zero-record query may be committed directly; nonzero-record emit repeats the same immutable step and the entire query header."
+      ]
+    },
+    "4/5": {
+      "name": "Stable permutation query/emit",
+      "source": "Empty",
+      "workspace_header": [
+        "operation",
+        "replacement_count",
+        "zero",
+        "zero"
+      ],
+      "workspace_tables": [
+        "start_keys[replacement_count]"
+      ],
+      "output_header": [
+        "needed_bytes",
+        "replacement_count",
+        "zero",
+        "zero"
+      ],
+      "records": "Original discovery indices sorted by (start key, original index). All u64 keys including MAX allowed.",
+      "needed": "32+8*replacement_count",
+      "implementation": "Native in-place heap sort; O(R log R), stable tie equivalence without Rust sorting."
+    },
+    "6/7": {
+      "name": "Normalize reverse edit/render query/emit",
+      "source": "Empty; IDs bound by host to real UTF8 Strings.",
+      "workspace_header": [
+        "operation",
+        "original_line_count",
+        "replacement_count",
+        "pool_count",
+        "zero",
+        "zero",
+        "zero",
+        "zero"
+      ],
+      "workspace_tables": [
+        "pool_byte_lengths[pool_count]",
+        "original_pool_ids[original_line_count]",
+        "[start,old_length,new_first_pool_id,new_line_count][replacement_count]"
+      ],
+      "pools": "P>=2. Pool0 is LF length1; pool1 is empty length0. Original IDs in [2,P). New first in [2,P], count<=P-first. Strings with embedded LF/CR/NUL retain logical identity.",
+      "admission": [
+        "Exact table lengths and reserved zero.",
+        "Nondecreasing starts <= original L, overlap allowed. Delete min(old_length,current_count-start); old_length may be any u64.",
+        "Per-occurrence original/new byte sums plus possible final LF count must fit u64 before any store. Repeated IDs/ranges count repeatedly.",
+        "Reverse-count simulation includes initial L and every post-insert count in the scratch peak. All count/capacity arithmetic admitted before writes."
+      ],
+      "output_query": [
+        "needed_bytes",
+        "scratch_word_count",
+        "final_logical_count_before_empty_rule",
+        "text_byte_upper_bound"
+      ],
+      "output_emit": [
+        "same_needed_bytes",
+        "actual_render_pool_id_count",
+        "final_logical_count_after_empty_rule",
+        "exact_output_byte_length"
+      ],
+      "needed": "32+8*max(maximum_intermediate_logical_count,2*final_count_before_empty_rule+1)",
+      "records": "Emit prefix contains actual_render_pool_id_count pool IDs; remaining admitted bytes are unspecified scratch.",
+      "algorithm": [
+        "Copy original IDs into native output scratch.",
+        "Process stable-sorted replacements in reverse, shift surviving tail once in the correct direction and insert native IDs.",
+        "Append pool1 iff result empty or final text nonempty.",
+        "Expand backward to text/LF/text/.../text. Host only copies emitted pool IDs; it does not join or split."
+      ]
+    }
+  },
+  "errors": {
+    "context": "ApplyPatchError::ComputeReplacements: Failed to find context '{original_context}' in {path}",
+    "old": "ApplyPatchError::ComputeReplacements: Failed to find expected lines in {path}:\\n{original_old_lines joined by LF}",
+    "malformed_context": "Adapter panics for semantic3; no claim that panic payload/post-panic scratch equals Rust.",
+    "native_seek": "Propagate existing HIA seek error unchanged; never fallback.",
+    "native_transport": "Explicit HIA file_update ComputeReplacements failure."
+  },
+  "qualification": {
+    "full_original_file_required": true,
+    "whole_public_FS_diff_application_required": true,
+    "raw_contract_separate_from_original_trace": true,
+    "global_migration_complete": false,
+    "legacy_safe_to_delete": false
+  }
+}

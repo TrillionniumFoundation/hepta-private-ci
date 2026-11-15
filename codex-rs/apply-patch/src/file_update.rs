@@ -8,8 +8,17 @@ use crate::ApplyPatchError;
 use crate::ApplyPatchFileUpdateMode;
 use crate::IoError;
 use crate::UpdateFileChunk;
+// BEGIN HIA_NATIVE file_update_seek_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE file_update_seek_import
 use crate::seek_sequence;
+// BEGIN HIA_NATIVE file_update_replacement_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE file_update_replacement_import
 use crate::text_file::Replacement;
+// BEGIN HIA_NATIVE file_update_source_file_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE file_update_source_file_import
 use crate::text_file::SourceFile;
 
 #[cfg(test)]
@@ -45,6 +54,9 @@ pub(crate) async fn derive_new_contents_from_chunks(
         })?;
 
     let path_text = path.inferred_native_path_string();
+    // BEGIN HIA_NATIVE file_update_legacy_contents
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA_NATIVE file_update_legacy_contents
     let new_contents = match update_file_mode {
         ApplyPatchFileUpdateMode::NormalizeToLf => {
             let mut original_lines = original_contents
@@ -75,6 +87,15 @@ pub(crate) async fn derive_new_contents_from_chunks(
             source_file.into_contents()
         }
     };
+    // BEGIN HIA_NATIVE file_update_native_contents
+    #[cfg(feature = "hia-native")]
+    let new_contents = crate::hia_native_file_update::new_contents(
+        &original_contents,
+        &path_text,
+        chunks,
+        update_file_mode,
+    )?;
+    // END HIA_NATIVE file_update_native_contents
     Ok(AppliedPatch {
         original_contents,
         new_contents,
@@ -84,6 +105,9 @@ pub(crate) async fn derive_new_contents_from_chunks(
 /// Compute a list of replacements needed to transform `original_lines` into the
 /// new lines, given the patch `chunks`. Each replacement is returned as
 /// `(start_index, old_len, new_lines)`.
+// BEGIN HIA_NATIVE file_update_legacy_plan
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE file_update_legacy_plan
 fn compute_replacements(
     original_lines: &[String],
     path: &str,
@@ -222,6 +246,9 @@ fn compute_replacements(
 
 /// Apply the `(start_index, old_len, new_lines)` replacements to `original_lines`,
 /// returning the modified file contents as a vector of lines.
+// BEGIN HIA_NATIVE file_update_legacy_apply
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE file_update_legacy_apply
 fn apply_replacements(mut lines: Vec<String>, replacements: &[Replacement]) -> Vec<String> {
     // We must apply replacements in descending order so that earlier replacements
     // don't shift the positions of later ones.
