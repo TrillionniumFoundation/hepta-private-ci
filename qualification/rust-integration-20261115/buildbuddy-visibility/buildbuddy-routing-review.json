@@ -24,7 +24,7 @@
       "expanded_relevant_rc_flags": []
     },
     {
-      "case": "private-ci-linux-no-key",
+      "case": "repository-ci-linux-no-key",
       "explicit_dummy_environment": {
         "GITHUB_ACTIONS": "true",
         "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
@@ -46,7 +46,7 @@
       "expanded_relevant_rc_flags": []
     },
     {
-      "case": "private-ci-linux-dummy-key",
+      "case": "repository-ci-linux-dummy-key",
       "explicit_dummy_environment": {
         "GITHUB_ACTIONS": "true",
         "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
@@ -108,7 +108,7 @@
       ]
     },
     {
-      "case": "private-ci-windows-dummy-key",
+      "case": "repository-ci-windows-dummy-key",
       "explicit_dummy_environment": {
         "GITHUB_ACTIONS": "true",
         "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
@@ -166,7 +166,7 @@
       ]
     },
     {
-      "case": "private-cache-only-dummy-key",
+      "case": "repository-cache-only-dummy-key",
       "explicit_dummy_environment": {
         "GITHUB_ACTIONS": "true",
         "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
@@ -282,9 +282,21 @@
   "findings": [
     "No endpoint is enabled by the unconfigured ordinary local Bazel invocation.",
     "A nonempty configured BUILDBUDDY_API_KEY is the wrapper opt-in; existing workflow injects the configured secret without an additional run-level boolean.",
-    "This private repository selects generic BuildBuddy endpoints; it cannot select the OpenAI tenant via normal GitHub repository identity.",
+    "The TrillionniumFoundation/hepta-private-ci repository identity selects generic BuildBuddy endpoints; it cannot select the OpenAI tenant via normal GitHub repository identity. This routing does not depend on repository visibility; the current repository API reports public.",
     "Keyed CI configurations inherit PUBLIC visibility and the incorrect upstream repository URL.",
     "Retained 566 CI logs prove generic BES streaming occurred; anonymous retrieval and the exact externally visible content were not tested."
   ],
-  "authorityGranted": false
+  "authorityGranted": false,
+  "repository_visibility_observation": {
+    "observed_at_utc": "2026-11-15 11:52:26 UTC",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+    "method": "GET",
+    "full_name": "TrillionniumFoundation/hepta-private-ci",
+    "private": false,
+    "visibility": "public",
+    "description": "Private verification-only mirror for Hepta hosted CI",
+    "limitation": "Current repository metadata is distinct from the name/description and does not prove historical repository visibility or anonymous access to any BuildBuddy invocation.",
+    "raw_response_archive": "audit/privacy-repository-api-raw.json",
+    "raw_response_sha256": "dc7860ede700f49cefe0fe0a5db5887910da79925459056346b82084634d7a9f"
+  }
 }

@@ -70,6 +70,21 @@
       "finding": "Public visibility is an explicit opt-in for authenticated CI build result pages."
     }
   ],
-  "verification": "Exact byte comparison against parent confirms only two line removals; no new test or remote build was run.",
-  "authorityGranted": false
+  "verification": "Original source comparison against base_commit and checkpoint comparison against checkpoint_application_base_commit both confirm exactly the same two .bazelrc line removals. No new test or remote build was run. Original CI log bytes and quoted runtime evidence are unchanged.",
+  "authorityGranted": false,
+  "repository_visibility_observation": {
+    "observed_at_utc": "2026-11-15 11:52:26 UTC",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+    "method": "GET",
+    "full_name": "TrillionniumFoundation/hepta-private-ci",
+    "private": false,
+    "visibility": "public",
+    "description": "Private verification-only mirror for Hepta hosted CI",
+    "limitation": "Current repository metadata is distinct from the name/description and does not prove historical repository visibility or anonymous access to any BuildBuddy invocation.",
+    "raw_response_archive": "audit/privacy-repository-api-raw.json",
+    "raw_response_sha256": "dc7860ede700f49cefe0fe0a5db5887910da79925459056346b82084634d7a9f"
+  },
+  "checkpoint_application_base_commit": "ea28b2253ccf5ad8d05095d1aec9a6a116f4e145",
+  "original_source_fix_commit": "b55dfb116802c960d4c35560538996c957df8683",
+  "repository_policy_scope": "GitHub currently reports this repository as public. The name and description were not used as permission evidence. The change removes an explicit PUBLIC BuildBuddy override and an incorrect REPO_URL, independently of source repository visibility; GitHub visibility itself is unchanged."
 }

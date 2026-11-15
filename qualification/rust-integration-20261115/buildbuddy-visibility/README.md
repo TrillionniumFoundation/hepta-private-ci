@@ -5,6 +5,17 @@ The source change removes two inherited `.bazelrc` lines: the unconditional
 URL override. Every other byte of that file, including `ROLE=CI`, authenticated
 remote-cache and RBE configuration, targets, and test settings is preserved.
 
+## Repository visibility observation
+
+A read-only GET of the [repository API](https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci)
+on 2026-11-15 at 11:52:26 UTC reported `private: false` and
+`visibility: public`. The description still said “Private verification-only mirror
+for Hepta hosted CI”; that descriptive text does not establish access permissions.
+This observation establishes the current API state, not historical repository
+visibility or anonymous access to any BuildBuddy invocation. The correction removes
+a forced-public BuildBuddy metadata policy; it does not change GitHub repository
+visibility. The response identity and hash are recorded in `receipt.json`.
+
 ## Observed execution path
 
 An ordinary local Bazel invocation selects no BuildBuddy endpoint. The existing
@@ -25,8 +36,9 @@ BuildBuddy's official [metadata guide](https://www.buildbuddy.io/docs/guide-meta
 and [GitHub Actions guide](https://www.buildbuddy.io/docs/rbe-github-actions/)
 state that authenticated build results default to organization access and that
 the explicit public visibility setting makes them available outside that
-organization to people with the link. Removing the override restores that
-default behavior for subsequent authenticated invocations.
+organization to people with the link. Removing the override stops this file from
+forcing public visibility and permits the documented authenticated default to
+apply. Actual permissions of future invocations were not tested.
 
 ## Scope and verification
 
