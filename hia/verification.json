@@ -9359,6 +9359,767 @@
             "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a",
             "c6f0960500f6ad0bc87480ae1bf19969730cea4e85cb6311fb3fa22e284a5a7a"
           ]
+        },
+        {
+          "case": "uppercase",
+          "raw_bytes": 16,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "471fe016cfe588db30f270823c2d5973f317166b792707adfef6933abae542d8",
+            "canonical_json_bytes": 46
+          },
+          "nanoseconds": [
+            1186932,
+            1245929,
+            2903866
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              15,
+              15,
+              15,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              15,
+              15,
+              15,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              15,
+              15,
+              15,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "18ba9a0f1e1247d1e283f5a3fc123ea5d3d5b8690d9e0a0661662bd1721ea20b",
+            "e99b7fe3aea8a82218a22b5f1c324224d69e20220956da67e4e813c781d9c390",
+            "8d79ae633b6f30ad88961c34a9c810c12caede789db18290b67e335fc94798ee"
+          ],
+          "complete_allocation_row_sha256": [
+            "37b3e3a2a0c118fd7a1c58906a1b440ea5fd29816642e9a7293a31345b9ee0c6",
+            "37b3e3a2a0c118fd7a1c58906a1b440ea5fd29816642e9a7293a31345b9ee0c6",
+            "37b3e3a2a0c118fd7a1c58906a1b440ea5fd29816642e9a7293a31345b9ee0c6"
+          ]
+        },
+        {
+          "case": "unicode-trim",
+          "raw_bytes": 12,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "19d89a3e46e3be90c9dc3b1e7b30e3b9e996f2e6f8ce75a38b32b7050c099780",
+            "canonical_json_bytes": 35
+          },
+          "nanoseconds": [
+            1001878,
+            1006558,
+            2724411
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "5d2ce4a678024a524b974c681e63a7bf38b799b9a3a87259c3ef127bc103c166",
+            "a961c0724f06a81c62e24d4ddea7e3f70593f73981b79b92f80ef3c78ba31a75",
+            "02cf068e6edfc76cc5c712c9b2af91f19ed41c293b5ccc05a0c80ea7ab59a46e"
+          ],
+          "complete_allocation_row_sha256": [
+            "c38193348067b892f7988c704c46e34fb022ab72c6345937bf1bb71e489a6127",
+            "c38193348067b892f7988c704c46e34fb022ab72c6345937bf1bb71e489a6127",
+            "c38193348067b892f7988c704c46e34fb022ab72c6345937bf1bb71e489a6127"
+          ]
+        },
+        {
+          "case": "ascii-port",
+          "raw_bytes": 16,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "7b2fd96f356b16f42febe2e0e142922774546d12fe790eedf0600c903b7c25fd",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1363486,
+            1339186,
+            2626994
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "966cfbfd511e24487d63b8eacccffce37c19a2c7cd93308fbc03af7964ea3fec",
+            "5a3fd64f7e1ac20148a733d700dc76714f49bae6152ca6168786645a38e5b121",
+            "8aef5c3ede0f4766f9deb76ac48a77c08c579590d653d3a683219968a83da5bf"
+          ],
+          "complete_allocation_row_sha256": [
+            "883ceb6496e7053094c82e404ae47a7c698fbe46d7e19acb4a66dbd8dfc470cb",
+            "883ceb6496e7053094c82e404ae47a7c698fbe46d7e19acb4a66dbd8dfc470cb",
+            "883ceb6496e7053094c82e404ae47a7c698fbe46d7e19acb4a66dbd8dfc470cb"
+          ]
+        },
+        {
+          "case": "bracket-port",
+          "raw_bytes": 22,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "6b6c756e1e47c02991756f8358b2901f46330de151072e7444355bbd323c38fc",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1388805,
+            1333037,
+            3227255
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "e58a2cf169ece661be981d1edc575d9d0e2141dc6d60e10e153561defe95a3c6",
+            "cf3be7a82a2cb68651e5661934627ebb8b7413958f19fbd2f05333ced1354a37",
+            "10d055d4c6cdf1ea8974384943ad3a4ad0f3557902b456417b52ffabc3a8a8b9"
+          ],
+          "complete_allocation_row_sha256": [
+            "8f5cfa639b41e62447b36ec87eeb8d7aaab1231c1d86717126d98c36795f19a8",
+            "8f5cfa639b41e62447b36ec87eeb8d7aaab1231c1d86717126d98c36795f19a8",
+            "8f5cfa639b41e62447b36ec87eeb8d7aaab1231c1d86717126d98c36795f19a8"
+          ]
+        },
+        {
+          "case": "trim-order",
+          "raw_bytes": 10,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "ff47df17e8e7c22b8a8861f241d4f03e1537d5ad9c015e754f896fdc6be6d2a8",
+            "canonical_json_bytes": 35
+          },
+          "nanoseconds": [
+            993618,
+            1068395,
+            1901849
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              4,
+              4,
+              4,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "1e1947a6d2ed82d55c8807222066b81c17251e61a43c76efe79ecc1315d57fe6",
+            "c0052b7f5686fc676654d7d96b53f2689914b15952ee9ce953df42fd34f61347",
+            "315943663d92fd8b552d69cca0eb166c755683a683e714fe2eaaf5e1890b6cbe"
+          ],
+          "complete_allocation_row_sha256": [
+            "3f1225f634c86c6eaf079017b69dbf6347cf5de22ffd06aa3dffefffe627724b",
+            "3f1225f634c86c6eaf079017b69dbf6347cf5de22ffd06aa3dffefffe627724b",
+            "3f1225f634c86c6eaf079017b69dbf6347cf5de22ffd06aa3dffefffe627724b"
+          ]
+        },
+        {
+          "case": "non-numeric-port",
+          "raw_bytes": 11,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "510160a172eaf607a60971f18d77c434eb90550caa41182583af22d566b8ffd9",
+            "canonical_json_bytes": 42
+          },
+          "nanoseconds": [
+            1205211,
+            1217391,
+            2514928
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              11,
+              11,
+              11,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "6d8b475b021f84c6cae0183ca6ee4b17c380e6a10e7b3fb6e055e7b4dfb77f0f",
+            "33213b8678d6e02a11daa5b2daa660c38ee35ecb487bea02d24673ba4c727558",
+            "2ddcdcc6c522ca0101883036b16dd050d4e710613a2848a82ca92cae453ba44b"
+          ],
+          "complete_allocation_row_sha256": [
+            "c16710066ccad1e432dbc337950ba2fcb0d975b1bbac301b87cf11f55aa89f79",
+            "c16710066ccad1e432dbc337950ba2fcb0d975b1bbac301b87cf11f55aa89f79",
+            "c16710066ccad1e432dbc337950ba2fcb0d975b1bbac301b87cf11f55aa89f79"
+          ]
+        },
+        {
+          "case": "nul",
+          "raw_bytes": 3,
+          "iterations": 2048,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "d828c8f559f3e9959a18c0e7b19105ce2dba4e34d84d22c59d729380dbcfb8c4",
+            "canonical_json_bytes": 39
+          },
+          "nanoseconds": [
+            548682,
+            683017,
+            1407824
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              3,
+              3,
+              3,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "da652cc41b318687386764d2b209b74389e37b75f3f305e5cf96fb4f37891b06",
+            "de2af748535c4b4d0ba26edef1dc43aa204cb4eaecb0b0f888db1222af222159",
+            "bea0b6f1ebb398ac695021b9da398813b19c7e4c8c1a56f23f54cba3332d9d1b"
+          ],
+          "complete_allocation_row_sha256": [
+            "6dc47fde4c5a787a5fe5f1420c9901b7717af6f457bf4b8146d36b1e9c07e933",
+            "6dc47fde4c5a787a5fe5f1420c9901b7717af6f457bf4b8146d36b1e9c07e933",
+            "6dc47fde4c5a787a5fe5f1420c9901b7717af6f457bf4b8146d36b1e9c07e933"
+          ]
+        },
+        {
+          "case": "empty",
+          "raw_bytes": 0,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host cannot be empty",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            163355,
+            186664,
+            249231
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "24f79f29cc335b61749c9f620b166f94ea068402ca8f3e37926b5bdee81fd0a3",
+            "050885e5aa74342a8ebdbab0eb1b763454eb703ebba08453f8e9df657f1d028b",
+            "99d1340dc46d0f7c06eeeb7d74e6a24a5f12eda452933df045c2e86c60bd30e4"
+          ],
+          "complete_allocation_row_sha256": [
+            "5c71d1aab10311282f2ffe069760f714ab907ae94a6b57110918380bd675fe42",
+            "5c71d1aab10311282f2ffe069760f714ab907ae94a6b57110918380bd675fe42",
+            "5c71d1aab10311282f2ffe069760f714ab907ae94a6b57110918380bd675fe42"
+          ]
+        },
+        {
+          "case": "all-whitespace",
+          "raw_bytes": 7,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host cannot be empty",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            303570,
+            327579,
+            638299
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              33,
+              33,
+              33,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "3307b67b8c9db46c8918751247be2ff0ee3abbda6715188f748b6cf372d185e0",
+            "06e5a187238ef0bfc4193a1f5720b381131c4d63135361b31b40fa7341aabce5",
+            "9cea9f7908fc16dfe37ba8cf048d29d30a58894f9b9c257c7685f0c1eb1d9f07"
+          ],
+          "complete_allocation_row_sha256": [
+            "87f0911f504406c222ce3f685a446e0c7c446e45143cc605b62b05e0536e3491",
+            "87f0911f504406c222ce3f685a446e0c7c446e45143cc605b62b05e0536e3491",
+            "87f0911f504406c222ce3f685a446e0c7c446e45143cc605b62b05e0536e3491"
+          ]
+        },
+        {
+          "case": "suffix-error",
+          "raw_bytes": 9,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host contains an unsupported suffix:  [A]oops ",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            559692,
+            589891,
+            654609
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              100,
+              100,
+              100,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              100,
+              100,
+              100,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              100,
+              100,
+              100,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "a452c419d32ad2b404625a689c505c5ceb670c59dbad1026fdae31f03d702733",
+            "2ca3b134edf0b8396d8e04e8b7ec9b5fddbcbd1458d92eaf6393aad71cce9a80",
+            "801868d1a580c25f63810cad1bc8a8f6e12d4f249fbd666835224a1d305c2dd7"
+          ],
+          "complete_allocation_row_sha256": [
+            "8eb3d72815290d2aff4622c1764681409968b91e07b928c96239f02bb4fcd908",
+            "8eb3d72815290d2aff4622c1764681409968b91e07b928c96239f02bb4fcd908",
+            "8eb3d72815290d2aff4622c1764681409968b91e07b928c96239f02bb4fcd908"
+          ]
+        },
+        {
+          "case": "wildcard-before-whitespace",
+          "raw_bytes": 4,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host must be a specific host; wildcards are not allowed",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            663328,
+            733706,
+            719257
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              72,
+              72,
+              68,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              72,
+              72,
+              68,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              68,
+              68,
+              68,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "b539ef4cfe4d6c5165aa146bbdbdaa46a877a7ef560e7a4ecc5f119739fdbb34",
+            "0e8d506c44ecde6e8e3d082740d4cad92d088a11ee2c6a60afca90ec45ff14d5",
+            "3da60f9851965383d3d8c408d954f1381ad2ec49cf445fc255d564a7a2c6a65a"
+          ],
+          "complete_allocation_row_sha256": [
+            "23b0043e8cacf7ab9fa563d8840e93a622adbdafc4df41cb0e5eeb5e1247ceea",
+            "23b0043e8cacf7ab9fa563d8840e93a622adbdafc4df41cb0e5eeb5e1247ceea",
+            "c27c53eddab1a8276acd914abcae90a0f9715f62457df4400fa6d0016f9c4a8d"
+          ]
+        },
+        {
+          "case": "internal-whitespace",
+          "raw_bytes": 5,
+          "iterations": 2048,
+          "result": {
+            "Err": {
+              "display": "invalid rule: network_rule host cannot contain whitespace",
+              "kind": "InvalidRule",
+              "location": null
+            }
+          },
+          "rules": {
+            "count": 0,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "canonical_json_bytes": 2
+          },
+          "nanoseconds": [
+            762575,
+            909400,
+            864631
+          ],
+          "allocation_vectors": [
+            [
+              2,
+              0,
+              1,
+              48,
+              48,
+              43,
+              0
+            ],
+            [
+              2,
+              0,
+              1,
+              48,
+              48,
+              43,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              43,
+              43,
+              43,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "e78ccd69296de90f4a288d0f219168d0bdbb277e0e971cdf641e681fa0dfa4b8",
+            "632c57887cbd62940c7572e256dfe60cd3682fd55c066eb3ad896bd00398de9b",
+            "050678177f7fbdae2be6e3da16bdb2719301910494ab42f55ef1c389a523bd95"
+          ],
+          "complete_allocation_row_sha256": [
+            "dbf6f346911d3edcf64e094acd466be2a265e437a6c6e24990fb01617303f568",
+            "dbf6f346911d3edcf64e094acd466be2a265e437a6c6e24990fb01617303f568",
+            "c53ff543f93f691c33da2cbd9edb15ef5606d8cc6f852f3787bff55a17d8e5cc"
+          ]
+        },
+        {
+          "case": "large-valid",
+          "raw_bytes": 2097153,
+          "iterations": 3,
+          "result": {
+            "Ok": null
+          },
+          "rules": {
+            "count": 1,
+            "canonical_json_sha256": "a33c1972ac239b0cdeaecb172839cb8d072515963e2bdeb6d9ff1fa999310725",
+            "canonical_json_bytes": 2097184
+          },
+          "nanoseconds": [
+            92835931,
+            85870057,
+            368695496
+          ],
+          "allocation_vectors": [
+            [
+              1,
+              0,
+              0,
+              2097153,
+              2097153,
+              2097153,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              2097153,
+              2097153,
+              2097153,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              2097153,
+              2097153,
+              2097153,
+              0
+            ]
+          ],
+          "complete_timing_row_sha256": [
+            "d6385f2b6eca1c88cf9708e84526f50c563b85b015491e8c523e973e658e15cd",
+            "8b2a2ee722f8dd99cb952a8bf3f17dd06edf348e4b8741cd10bb557451ce2a16",
+            "c76a74b464da608d12099b4a9687913aeacba56c340ebd9266a0e095d995f720"
+          ],
+          "complete_allocation_row_sha256": [
+            "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3",
+            "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3",
+            "982d00fa6575d968b68bc1c80d1f80ba4dbbadac8c17dce259278c7feaa799f3"
+          ]
         }
       ],
       "canonical_row_digest_encoding": "UTF-8 JSON with sorted keys, ensure_ascii=false and separators comma/colon, no trailing newline.",
@@ -9376,7 +10137,7 @@
       "timing_scope": "Actual public add_network_rule; raw input, empty Policies with one reserved slot and result-vector capacity constructed before timing; complete results checked outside timing. Each large case has three calls; one diagnostic observation, no statistical or performance acceptance.",
       "allocation_observation": "Four error cases avoid one temporary allocation; the other 15 measured allocation vectors equal both baselines. No zero-allocation row is claimed. This does not qualify performance.",
       "timing_observation": "The early-scheme three-call row is 3,051,661 ns native17 versus 1,870 ns original and 1,710 ns native16; complete UTF-8 input validation remains in the raw contract.",
-      "inlined_measurement_rows": 1
+      "inlined_measurement_rows": 14
     }
   }
 }
