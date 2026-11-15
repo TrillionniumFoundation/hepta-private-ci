@@ -1,0 +1,700 @@
+{
+  "schema": "codex.hia.patch-parser-buffer-contract.v1",
+  "status": "normative_v1_contract_qualification_recorded_separately",
+  "base_head": "e53603879b77d215fe4d58b40be87376cd95754d",
+  "source_identity": {
+    "codex-rs/apply-patch/src/parser.rs": "6b8086467d0500f4fc9aa9a35cd33a0bce53c01bcb74b915b9efc6fcf187f7ce",
+    "codex-rs/apply-patch/src/streaming_parser.rs": "5f4b8e60fd24ada7c1b6a696155de3da2b946f7b5436da90e377c9de04b1e578",
+    "codex-rs/core/src/tools/handlers/apply_patch.rs": "b82b1d22be68fc9a11538e09f7c6363776e610c4f450a8447447e38358d601c2",
+    "hia/toolchain.json": "b3702deeea68aabb92db83e5fcb681a7c58fd775de3ce9c9bfc2435d13ae7a59"
+  },
+  "compiler": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "schema": "hepta.hia.program.v9",
+    "private_result_limit": 3,
+    "function_and_block_parameter_limit": 16,
+    "no_compiler_change": true
+  },
+  "component": {
+    "source": "hia/parser.hepta",
+    "module": "codex_patch_parser",
+    "export_source_symbol": "f0",
+    "namespaced_symbol": "codex_hia_parser",
+    "entry": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "native_abi": "three pointer/u64-length pairs; zero-extended u32 return; Linux x86-64 GNU"
+  },
+  "ownership": {
+    "source_and_workspace": "read-only for every call, including semantic errors; no retained pointers",
+    "output": "written only on transport success; query writes exactly 160 bytes; emit writes exactly required_bytes; suffix/canaries unchanged",
+    "caller_preconditions": "valid live nonwrapping disjoint allocations for all borrowed extents; stable bytes during the synchronous call",
+    "persistent_state": "eight native words plus native-selected unfinished text and host AST storage; no source pointers or historical input arena retained"
+  },
+  "operations": [
+    {
+      "code": 0,
+      "name": "push_strict_query",
+      "family": "streaming",
+      "command": "push",
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": false
+    },
+    {
+      "code": 1,
+      "name": "push_strict_emit",
+      "family": "streaming",
+      "command": "push",
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": true
+    },
+    {
+      "code": 2,
+      "name": "finish_strict_query",
+      "family": "streaming",
+      "command": "finish",
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": false
+    },
+    {
+      "code": 3,
+      "name": "finish_strict_emit",
+      "family": "streaming",
+      "command": "finish",
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": true
+    },
+    {
+      "code": 4,
+      "name": "push_trusted_query",
+      "family": "streaming",
+      "command": "push",
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": false
+    },
+    {
+      "code": 5,
+      "name": "push_trusted_emit",
+      "family": "streaming",
+      "command": "push",
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": true
+    },
+    {
+      "code": 6,
+      "name": "finish_trusted_query",
+      "family": "streaming",
+      "command": "finish",
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": false
+    },
+    {
+      "code": 7,
+      "name": "finish_trusted_emit",
+      "family": "streaming",
+      "command": "finish",
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": true
+    },
+    {
+      "code": 8,
+      "name": "normalize_strict_query",
+      "family": "normalize",
+      "lenient": false,
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": false
+    },
+    {
+      "code": 9,
+      "name": "normalize_strict_emit",
+      "family": "normalize",
+      "lenient": false,
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": true
+    },
+    {
+      "code": 10,
+      "name": "normalize_lenient_query",
+      "family": "normalize",
+      "lenient": true,
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": false
+    },
+    {
+      "code": 11,
+      "name": "normalize_lenient_emit",
+      "family": "normalize",
+      "lenient": true,
+      "trusted_utf8_and_opaque_pending": false,
+      "emit_records": true
+    },
+    {
+      "code": 12,
+      "name": "normalize_strict_trusted_query",
+      "family": "normalize",
+      "lenient": false,
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": false
+    },
+    {
+      "code": 13,
+      "name": "normalize_strict_trusted_emit",
+      "family": "normalize",
+      "lenient": false,
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": true
+    },
+    {
+      "code": 14,
+      "name": "normalize_lenient_trusted_query",
+      "family": "normalize",
+      "lenient": true,
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": false
+    },
+    {
+      "code": 15,
+      "name": "normalize_lenient_trusted_emit",
+      "family": "normalize",
+      "lenient": true,
+      "trusted_utf8_and_opaque_pending": true,
+      "emit_records": true
+    },
+    {
+      "code": 16,
+      "name": "select_affected_path",
+      "family": "path"
+    },
+    {
+      "code": 17,
+      "name": "select_source_path",
+      "family": "path"
+    }
+  ],
+  "request": {
+    "bytes": 128,
+    "exact_length": true,
+    "word_encoding": "unaligned little-endian u64",
+    "words": [
+      {
+        "word": 0,
+        "offset": 0,
+        "name": "abi_version"
+      },
+      {
+        "word": 1,
+        "offset": 8,
+        "name": "operation"
+      },
+      {
+        "word": 2,
+        "offset": 16,
+        "name": "argument_0"
+      },
+      {
+        "word": 3,
+        "offset": 24,
+        "name": "argument_1"
+      },
+      {
+        "word": 4,
+        "offset": 32,
+        "name": "state.flags"
+      },
+      {
+        "word": 5,
+        "offset": 40,
+        "name": "state.line_number"
+      },
+      {
+        "word": 6,
+        "offset": 48,
+        "name": "state.pending_bytes"
+      },
+      {
+        "word": 7,
+        "offset": 56,
+        "name": "state.hunk_count"
+      },
+      {
+        "word": 8,
+        "offset": 64,
+        "name": "state.update_header_line"
+      },
+      {
+        "word": 9,
+        "offset": 72,
+        "name": "state.chunk_count"
+      },
+      {
+        "word": 10,
+        "offset": 80,
+        "name": "state.old_count"
+      },
+      {
+        "word": 11,
+        "offset": 88,
+        "name": "state.new_count"
+      },
+      {
+        "word": 12,
+        "offset": 96,
+        "name": "reserved_0"
+      },
+      {
+        "word": 13,
+        "offset": 104,
+        "name": "reserved_1"
+      },
+      {
+        "word": 14,
+        "offset": 112,
+        "name": "reserved_2"
+      },
+      {
+        "word": 15,
+        "offset": 120,
+        "name": "reserved_3"
+      }
+    ],
+    "version": 1,
+    "reserved": "all four reserved words must be zero",
+    "arguments": "streaming/normalize require argument_0=argument_1=0; path requires argument_0 in 1=Add,2=Delete,3=Update and argument_1 in 0/1 move-present; non-Update move-present is invalid",
+    "state_for_nonstreaming": "all eight state words must be zero",
+    "source_for_path": "exactly empty",
+    "default_state": "eight zero words; this is the canonical NotStarted/empty state"
+  },
+  "state": {
+    "words": [
+      "flags",
+      "line_number",
+      "pending_bytes",
+      "hunk_count",
+      "update_header_line",
+      "chunk_count",
+      "old_count",
+      "new_count"
+    ],
+    "flags": {
+      "bits_0_2_mode": {
+        "0": "NotStarted",
+        "1": "StartedPatch",
+        "2": "AddFile",
+        "3": "DeleteFile",
+        "4": "UpdateFile",
+        "5": "EndedPatch"
+      },
+      "bits_3_4_last_hunk_kind": {
+        "0": "none",
+        "1": "Add",
+        "2": "Delete",
+        "3": "Update"
+      },
+      "bit_5": "environment_present",
+      "bit_6": "move_present_for_last_update",
+      "bit_7": "last_chunk_is_eof",
+      "bits_8_63": "must be zero"
+    },
+    "meaning": "chunk_count/old_count/new_count concern only the last UpdateFile and its last chunk; flags and these counters choose grammar without scanning the historical AST",
+    "constraints": [
+      "hunk_count==0 iff last_hunk_kind==0; hunk_count<=line_number.",
+      "NotStarted: no hunks, environment absent, update fields zero. line_number may be nonzero after earlier first-marker errors.",
+      "StartedPatch: no hunks; environment may be absent or present; update fields zero.",
+      "AddFile/DeleteFile/UpdateFile mode must agree with nonempty last_hunk_kind.",
+      "For non-Update last kind, update_header_line/chunk_count/old_count/new_count/move_present/last_chunk_is_eof are zero.",
+      "For Update last kind, 1<=update_header_line<=line_number; chunk_count<=line_number; old_count<=line_number and new_count<=line_number.",
+      "chunk_count==0 implies old_count==new_count==0 and EOF=false; a present last chunk may be empty while UpdateFile is active.",
+      "EOF=true implies a present last chunk with old_count>0 or new_count>0.",
+      "EndedPatch with an Update last kind requires a present nonempty last chunk; other valid last kinds and zero hunks are allowed.",
+      "push: pending_bytes<=source.len; finish: pending_bytes==source.len. pending_bytes must be a UTF-8 boundary.",
+      "Strict commands validate complete source UTF-8 and reject LF within source[0..pending_bytes]. Trusted commands require the prefix to be the unchanged previous native-selected pending string; they do not rescan that prefix.",
+      "Counters are full u64 on the supported 64-bit target. Every increment and plan-size operation is checked before publication; no synthetic 1 MiB input cap or arbitrary counter truncation."
+    ]
+  },
+  "result": {
+    "header_bytes": 160,
+    "record_bytes": 64,
+    "required_size_formula": "160 + 64 * record_count, checked in u64 and against actual output extent",
+    "header_words": [
+      {
+        "word": 0,
+        "offset": 0,
+        "name": "required_bytes"
+      },
+      {
+        "word": 1,
+        "offset": 8,
+        "name": "record_count"
+      },
+      {
+        "word": 2,
+        "offset": 16,
+        "name": "semantic_error"
+      },
+      {
+        "word": 3,
+        "offset": 24,
+        "name": "error_line"
+      },
+      {
+        "word": 4,
+        "offset": 32,
+        "name": "error_argument_kind"
+      },
+      {
+        "word": 5,
+        "offset": 40,
+        "name": "error_argument_0"
+      },
+      {
+        "word": 6,
+        "offset": 48,
+        "name": "error_argument_1"
+      },
+      {
+        "word": 7,
+        "offset": 56,
+        "name": "processed_end"
+      },
+      {
+        "word": 8,
+        "offset": 64,
+        "name": "keep_start"
+      },
+      {
+        "word": 9,
+        "offset": 72,
+        "name": "keep_length"
+      },
+      {
+        "word": 10,
+        "offset": 80,
+        "name": "next.flags"
+      },
+      {
+        "word": 11,
+        "offset": 88,
+        "name": "next.line_number"
+      },
+      {
+        "word": 12,
+        "offset": 96,
+        "name": "next.hunk_count"
+      },
+      {
+        "word": 13,
+        "offset": 104,
+        "name": "next.update_header_line"
+      },
+      {
+        "word": 14,
+        "offset": 112,
+        "name": "next.chunk_count"
+      },
+      {
+        "word": 15,
+        "offset": 120,
+        "name": "next.old_count"
+      },
+      {
+        "word": 16,
+        "offset": 128,
+        "name": "next.new_count"
+      },
+      {
+        "word": 17,
+        "offset": 136,
+        "name": "result_kind"
+      },
+      {
+        "word": 18,
+        "offset": 144,
+        "name": "auxiliary"
+      },
+      {
+        "word": 19,
+        "offset": 152,
+        "name": "abi_version"
+      }
+    ],
+    "record_words": [
+      "kind",
+      "hunk_index",
+      "chunk_index",
+      "source_start",
+      "source_length",
+      "old_index",
+      "new_index",
+      "reserved_zero"
+    ],
+    "result_kind": {
+      "0": "streaming",
+      "1": "normalized patch plan",
+      "2": "path selection"
+    },
+    "query": "publishes the complete future state/error header, including required_bytes and record_count, without records or input mutation. For record_count==0 the header is already a complete plan and the adapter may commit it without another call.",
+    "emit": "same header bytes as the paired query plus exact event records; runs its own no-write admission/count pass before publishing anything",
+    "unused_fields": "zero unless explicitly assigned below",
+    "streaming": {
+      "auxiliary": 0,
+      "next_pending_bytes": "keep_length; other native state words copy from next.* fields",
+      "processed_end": "absolute end of consumed source bytes, including failing LF for push; finish uses source.len",
+      "keep_success": "exact unfinished suffix [keep_start,keep_start+keep_length); no complete line remains in it",
+      "keep_semantic_error": "keep_start=processed_end, keep_length=0; all suffix after the failing line is discarded, not buffered"
+    },
+    "normalize": {
+      "semantic_errors": "only first-marker=1 or last-marker=2; no partial normalization records on these preflight errors",
+      "fields": "processed_end, keep fields and next-state fields all zero; auxiliary=normalized_byte_count; error argument and error_line zero; result_kind=1",
+      "success_records": "ordered COPY_NORMALIZED_SOURCE and COPY_NORMALIZED_LF records implementing the exact selected str::lines().join(\"\\n\") result"
+    },
+    "path": {
+      "fields": "required_bytes=160, record_count=0, semantic_error=0, all error/state/keep/processed fields zero; result_kind=2; auxiliary is 0=source path or 1=move path",
+      "policy": "affected path selects move exactly for Update+move-present; source resolution always selects the source path"
+    }
+  },
+  "event_kinds": [
+    {
+      "code": 1,
+      "name": "SET_ENVIRONMENT",
+      "effect": "Copy the source span into Some(environment_id); hunk/chunk/index operands zero."
+    },
+    {
+      "code": 2,
+      "name": "BEGIN_ADD",
+      "effect": "Append AddFile at hunk_index with the source path and empty contents; chunk/index operands zero."
+    },
+    {
+      "code": 3,
+      "name": "BEGIN_DELETE",
+      "effect": "Append DeleteFile at hunk_index with the source path; chunk/index operands zero."
+    },
+    {
+      "code": 4,
+      "name": "BEGIN_UPDATE",
+      "effect": "Append UpdateFile at hunk_index with the source path, no move path, and no chunks; chunk/index operands zero."
+    },
+    {
+      "code": 5,
+      "name": "APPEND_ADD_LINE",
+      "effect": "Append source span and exactly one LF to the indicated AddFile contents; chunk/index operands zero."
+    },
+    {
+      "code": 6,
+      "name": "SET_MOVE_PATH",
+      "effect": "Set the indicated UpdateFile move path to the source span; chunk/index operands zero."
+    },
+    {
+      "code": 7,
+      "name": "BEGIN_CHUNK",
+      "effect": "Append a default chunk at the exact hunk/chunk indices; source/index operands zero."
+    },
+    {
+      "code": 8,
+      "name": "BEGIN_CONTEXT_CHUNK",
+      "effect": "Append a chunk with Some(source span) as change_context; line/index operands otherwise empty."
+    },
+    {
+      "code": 9,
+      "name": "APPEND_OLD_LINE",
+      "effect": "Append source span to old_lines at the HIA-supplied old_index; new_index zero."
+    },
+    {
+      "code": 10,
+      "name": "APPEND_NEW_LINE",
+      "effect": "Append source span to new_lines at the HIA-supplied new_index; old_index zero."
+    },
+    {
+      "code": 11,
+      "name": "APPEND_CONTEXT_LINE",
+      "effect": "Append source span to both sides and the exact native pair (old_index,new_index) to context_line_indices."
+    },
+    {
+      "code": 12,
+      "name": "SET_EOF",
+      "effect": "Set the indicated existing chunk is_end_of_file=true; source/index operands zero."
+    },
+    {
+      "code": 13,
+      "name": "COPY_NORMALIZED_SOURCE",
+      "effect": "Normalization-only record: append source span; hunk/chunk/index operands zero."
+    },
+    {
+      "code": 14,
+      "name": "COPY_NORMALIZED_LF",
+      "effect": "Normalization-only record: append one LF; source_start=0, source_length=1; hunk/chunk/index operands zero."
+    }
+  ],
+  "errors": [
+    {
+      "code": 1,
+      "id": "first_marker",
+      "variant": "InvalidPatchError",
+      "message": "The first line of the patch must be '*** Begin Patch'",
+      "sources": [
+        "parser.rs:267",
+        "streaming_parser.rs:183"
+      ],
+      "line_number": null,
+      "argument_kind": 0
+    },
+    {
+      "code": 2,
+      "id": "last_marker",
+      "variant": "InvalidPatchError",
+      "message": "The last line of the patch must be '*** End Patch'",
+      "sources": [
+        "parser.rs:270",
+        "streaming_parser.rs:167",
+        "streaming_parser.rs:373"
+      ],
+      "line_number": null,
+      "argument_kind": 0
+    },
+    {
+      "code": 3,
+      "id": "duplicate_environment",
+      "variant": "InvalidPatchError",
+      "message": "apply_patch environment_id cannot be specified more than once",
+      "sources": [
+        "streaming_parser.rs:89"
+      ],
+      "line_number": null,
+      "argument_kind": 0
+    },
+    {
+      "code": 4,
+      "id": "empty_environment",
+      "variant": "InvalidPatchError",
+      "message": "apply_patch environment_id cannot be empty",
+      "sources": [
+        "streaming_parser.rs:95"
+      ],
+      "line_number": null,
+      "argument_kind": 0
+    },
+    {
+      "code": 5,
+      "id": "invalid_header",
+      "variant": "InvalidHunkError",
+      "message_template": "'{trimmed}' is not a valid hunk header. Valid hunk headers: '*** Add File: {path}', '*** Delete File: {path}', '*** Update File: {path}'",
+      "sources": [
+        "streaming_parser.rs:191",
+        "streaming_parser.rs:209",
+        "streaming_parser.rs:220"
+      ],
+      "line_number": "current 1-based line",
+      "parameter_note": "{path} in the valid-header list is literal text, not an interpolated path.",
+      "argument_kind": 1
+    },
+    {
+      "code": 6,
+      "id": "empty_update_file",
+      "variant": "InvalidHunkError",
+      "message_template": "Update file hunk for path '{path.display()}' is empty",
+      "sources": [
+        "streaming_parser.rs:58"
+      ],
+      "line_number": "line of the Update File header",
+      "argument_kind": 2
+    },
+    {
+      "code": 7,
+      "id": "empty_update_chunk",
+      "variant": "InvalidHunkError",
+      "message": "Update hunk does not contain any lines",
+      "sources": [
+        "streaming_parser.rs:68",
+        "streaming_parser.rs:295"
+      ],
+      "line_number": "current 1-based line",
+      "argument_kind": 0
+    },
+    {
+      "code": 8,
+      "id": "unexpected_update_line",
+      "variant": "InvalidHunkError",
+      "message_template": "Unexpected line found in update hunk: '{line}'. Every line should start with ' ' (context line), '+' (added line), or '-' (removed line)",
+      "sources": [
+        "streaming_parser.rs:73",
+        "streaming_parser.rs:268",
+        "streaming_parser.rs:362"
+      ],
+      "line_number": "current 1-based line",
+      "parameter_note": "Direct invalid-line and repeated-@@ cases interpolate the original line; ensure_update_hunk_is_not_empty interpolates the argument passed by the header/end path, which may already be right/full trimmed.",
+      "argument_kind": 1
+    },
+    {
+      "code": 9,
+      "id": "expected_context_marker",
+      "variant": "InvalidHunkError",
+      "message_template": "Expected update hunk to start with a @@ context marker, got: '{line}'",
+      "sources": [
+        "streaming_parser.rs:244",
+        "streaming_parser.rs:354"
+      ],
+      "line_number": "current 1-based line",
+      "parameter_note": "Interpolate the original untrimmed line.",
+      "argument_kind": 1
+    }
+  ],
+  "error_arguments": {
+    "0": "no dynamic argument; argument words zero",
+    "1": "source span [error_argument_0, +error_argument_1), with exact raw/full-trim/right-trim choice made in HIA",
+    "2": "source path of already-materialized hunk error_argument_0; error_argument_1=0; Rust uses PathBuf::display for exact host formatting"
+  },
+  "return_codes": {
+    "0": "transport success, including semantic_error 1..9 in a complete native result",
+    "4294967294": "SHORT: output<160 or workspace<128; or otherwise valid emit output shorter than computed required_bytes",
+    "4294967295": "INVALID: unknown operation/version, non-exact workspace, reserved fields, incoherent state, command/source mismatch, ranges, prefix LF in strict command, or checked counter/plan arithmetic overflow",
+    "4294967293": "INVALID_UTF8: complete source is not canonical UTF-8 for strict source commands"
+  },
+  "error_precedence": [
+    "1. output minimum 160 and workspace minimum 128 -> SHORT.",
+    "2. exact request length, version/op/arguments/reserved/state numeric coherence and source extent -> INVALID.",
+    "3. strict source complete UTF-8 validation -> INVALID_UTF8; then prefix boundary/strict prefix-LF rules -> INVALID. Trusted source validity and native-origin unchanged pending-prefix contract is a caller precondition, while checked numeric framing still applies.",
+    "4. Complete no-write grammar/event count pass; counter/size overflow -> INVALID. A grammar error is recorded as a valid semantic outcome with committed-prefix events and post-error state.",
+    "5. Emit required output capacity -> SHORT.",
+    "6. Publish fixed header and, for emit, exactly the selected records. Every returned transport error leaves source/workspace/output and canaries unchanged."
+  ],
+  "streaming_semantics": {
+    "push": "Borrow the existing pending string with the new delta appended. Begin newline scanning at the native pending_bytes; line_start initially zero. Each LF removes exactly one directly preceding CR from the processed line, increments line_number, then runs state dispatch. On success keep the exact final incomplete suffix. On first syntax error stop, retain previous events/state, clear pending and drop the rest of this input delta.",
+    "finish": "With nonempty pending, take the entire residual span without removing CR and increment line_number. If full trim equals End Patch, call ensure-update-nonempty using the exact End Patch literal and enter EndedPatch regardless of previous mode. Otherwise run ordinary line dispatch. If that succeeds but mode is not EndedPatch, produce last-marker error while retaining those successful residual-line mutations. With empty pending, only test EndedPatch; do not implicitly validate an unfinished Update hunk.",
+    "ensure_update": "Uses last UpdateFile; no chunks while mode Update -> error6 anchored at update_header_line. Empty last chunk with exact End Patch argument -> error7 at current line. Empty last chunk for another header argument -> error8 with the passed trimmed argument at current line.",
+    "error_commit": "The failed complete/residual line is already removed and line_number incremented. Syntax errors never rewind accepted hunks/environment/line changes. Query plans are not committed until all necessary records exist. After committing a semantic-error plan, adapter returns Err and remains usable for later push_delta/finish/clone.",
+    "context_provenance": "Only APPEND_CONTEXT_LINE creates context_line_indices, using HIA-supplied old/new pre-insert counters; equality of strings is never used to infer provenance."
+  },
+  "batch_semantics": {
+    "normalization": "Apply full Unicode trim to the whole input, Rust LF/CRLF str::lines behavior (strip exactly one CR before each LF), strict first/last boundary checks, optional eligible heredoc unwrapping, then emit selected original line spans with LF records between them.",
+    "heredoc": "Public lenient mode first tries strict boundaries; only if that fails accept exact first line <<EOF, <<'EOF', or <<\"EOF\", last line ending in EOF, and at least four outer lines. Inner boundary errors replace the original outer error; otherwise preserve the original strict error.",
+    "parse_sequence": "Rust materializes only the native normalization span plan, then creates the native StreamingPatchParser, calls push_delta on that normalized string and calls finish, and returns original ApplyPatchArgs fields (workdir None). No Rust trim/lines/join/marker/grammar helper is invoked.",
+    "double_cr": "The batch lines pass and subsequent streaming push each strip one CR before LF. With two CR bytes the returned patch retains one CR while AST payload can retain none; direct streaming retains one. This difference is mandatory."
+  },
+  "rust_boundary": {
+    "allowed": [
+      "allocate/reserve/append raw input storage",
+      "copy HIA-selected spans and literal fragments",
+      "encode constant operation codes and opaque state words",
+      "validate output counts/ranges/UTF-8 slicing and AST target/index consistency",
+      "materialize the explicit event kind into the unchanged String/Vec/PathBuf types",
+      "format nine error families from HIA error code/argument selector/line number",
+      "clone owned state and borrow the HIA-selected environment string",
+      "call original PathUri.join and PathBuf::to_string_lossy/display after HIA path selection"
+    ],
+    "forbidden": [
+      "marker matching, prefix/suffix grammar checks, trim/trim_end/lines in native adapters",
+      "Rust mode/chunk/EOF/move/environment acceptance decisions",
+      "Rust-generated chunk creation or context index choices",
+      "reparse history to rebuild state",
+      "call original Rust parser or streaming grammar as fallback",
+      "query-result commit before its required records are materialized"
+    ],
+    "buffer_strategy": "Keep only unfinished text. Append new delta into that same growable String when pending exists; never rebuild pending+delta by copying old pending on every call. When pending is empty an implementation may borrow delta and copy only the native-selected suffix. Compact/clear using native keep_start/keep_length after event/error text materialization; keep_start==0 must not copy the existing prefix.",
+    "public_traits": "Default uses the canonical zero native state; Clone deep-copies pending/AST/environment/state. Preserve Debug field naming/order through formatting wrappers if the new storage representation differs."
+  },
+  "implementation_limits": {
+    "organization": "One new HIA parser owner, separate private functions for admission, Unicode endpoint trim, LF scanning, batch preflight/normalization, line classification, state/event plan, and path selection. Tiny word primitives inline in hot loops.",
+    "arity": "Pack grammar flags; source/output/control + cursor/start/event_count + line/hunk/header/chunk/old/new/flags fit <=16 block parameters. Decision helper returns only (action,payload_start,payload_length); plan return stays <=3 scalars and serializes full future state only at a successful terminal block.",
+    "no_query_quadratic": "Trusted streaming newline scan starts at old pending_bytes. Trim scans only complete line endpoints. No validation of historical AST or old pending on each public push. Strict diagnostic raw mode may revalidate its supplied full source and must not be confused with production trusted mode.",
+    "growth": "Input, paths, payloads and output plan use caller-owned growable buffers; no total patch, line or hunk cap derived from compiler bootstrap workspace."
+  },
+  "source_identity_scope": "Immutable pre-edit sources at base_head; these are not modified-tree/toolchain identities.",
+  "qualification_record": "hia/verification.json#parser_increment"
+}
