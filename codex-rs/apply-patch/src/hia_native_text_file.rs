@@ -120,7 +120,7 @@ fn request(
             lines
                 .len()
                 .checked_mul(2)
-                .expect("HIA contents record bound overflow"),
+                .unwrap_or_else(|| panic!("HIA contents record bound overflow")),
         ),
     };
     let frame_size = [
@@ -135,7 +135,7 @@ fn request(
             .checked_mul(width)
             .and_then(|extra| bytes.checked_add(extra))
     })
-    .expect("HIA request frame size overflow");
+    .unwrap_or_else(|| panic!("HIA request frame size overflow"));
     let mut bytes = Vec::with_capacity(frame_size);
     for value in [
         operation as u64,
@@ -196,7 +196,7 @@ fn plan_size(records: usize) -> usize {
     records
         .checked_mul(RECORD_SIZE)
         .and_then(|records| records.checked_add(HEADER_SIZE))
-        .expect("HIA plan length overflow")
+        .unwrap_or_else(|| panic!("HIA plan length overflow"))
 }
 
 fn plan(source: &str, mut request: Request) -> Plan {
@@ -297,7 +297,7 @@ impl SourceFile {
             LITERALS
                 .len()
                 .checked_add(contents.len())
-                .expect("HIA backing size overflow"),
+                .unwrap_or_else(|| panic!("HIA backing size overflow")),
         );
         backing.push_str(LITERALS);
         backing.push_str(contents);
@@ -340,7 +340,7 @@ impl SourceFile {
                 .try_fold(self.backing.len(), |bytes, text| {
                     bytes.checked_add(text.len())
                 })
-                .expect("HIA payload size overflow");
+                .unwrap_or_else(|| panic!("HIA payload size overflow"));
             let mut bytes = String::with_capacity(capacity);
             bytes.push_str(&self.backing);
             for text in &pools[4..] {
@@ -368,7 +368,7 @@ impl SourceFile {
             LITERALS
                 .len()
                 .checked_add(plan.total_bytes)
-                .expect("HIA backing size overflow"),
+                .unwrap_or_else(|| panic!("HIA backing size overflow")),
         );
         backing.push_str(LITERALS);
         let mut lines = Vec::with_capacity(plan.count);

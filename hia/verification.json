@@ -1061,7 +1061,7 @@
     "codex-rs/apply-patch/Cargo.toml": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
     "codex-rs/apply-patch/build.rs": "1d6b6b25c900f3787050eed7babcaedc8b6059a5732f7e45e8c2c73e305eeb7f",
     "codex-rs/apply-patch/src/file_update.rs": "6f45aabc6d1bb103875df8c8529558a49587db103b1a26aa633b8ea7ada570f2",
-    "codex-rs/apply-patch/src/hia_native_text_file.rs": "226c9ee9fe3453e7a54072124b0bc5ccdfa869544e7714132a2a620195a144cf",
+    "codex-rs/apply-patch/src/hia_native_text_file.rs": "c5cb63a376005418dc10d83dae8beda8d97a2db0e63e8033470d72e69b3aa76d",
     "codex-rs/apply-patch/src/lib.rs": "cfe2e97bbed395c2016cf74e3a927c51d5a062457e248b38f43afeb1c5b39556",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/apply-patch/src/text_file.rs": "f8552845979411008c856f77b378d16e39966fa877a53a1ebd29f5e4cc74f2e2",
@@ -1618,7 +1618,7 @@
         {
           "name": "saturated_bytes_for_tokens",
           "input_bytes": 0,
-          "budget": 4611686018427387904,
+          "budget": 4611686018427388000,
           "native_ns_per_call_median": 150.52028690071725,
           "rust_ns_per_call_median": 0.812321630804077,
           "native_to_original_ratio": 185.29641609041565
@@ -1963,7 +1963,7 @@
         },
         "saturated_bytes_for_tokens": {
           "input_bytes": 0,
-          "budget": 4611686018427387904,
+          "budget": 4611686018427388000,
           "native_ns": 6.235631,
           "original_rust_ns": 0.880882,
           "native_to_original_ratio": 7.078849380507264
@@ -2007,7 +2007,7 @@
           "input_bytes": 1048581,
           "budget": 0,
           "native_ns": 1873297.7272727273,
-          "original_rust_ns": 46066.0,
+          "original_rust_ns": 46066,
           "native_to_original_ratio": 40.66551745913966
         },
         "chars_zero_budget_large_unicode": {
@@ -2042,7 +2042,7 @@
           "input_bytes": 1048586,
           "budget": 128,
           "native_ns": 664.8461538461538,
-          "original_rust_ns": 1441712.0,
+          "original_rust_ns": 1441712,
           "native_to_original_ratio": 0.00046115046128918525
         },
         "tokens_under_budget_large_ascii": {
@@ -2056,7 +2056,7 @@
           "input_bytes": 1048586,
           "budget": 262147,
           "native_ns": 25796.828125,
-          "original_rust_ns": 25702.0,
+          "original_rust_ns": 25702,
           "native_to_original_ratio": 1.003689523188857
         },
         "tokens_zero_budget_large_unicode": {
@@ -2152,7 +2152,7 @@
     "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
     "target": "x86_64-unknown-linux-gnu",
     "rust_version": "1.96.1",
-    "status": "trusted_utf8_and_bounded_native_materialization_six_local_gates_passed_current_cargo_ci_and_performance_open",
+    "status": "six_expect_sites_repaired_local_fixed_point_original_parity_and_workspace_lint_levels_passed_current_head_cargo_ci_pending",
     "native_modules": 9,
     "production_algorithm_groups": 7,
     "source_snapshot": {
@@ -2438,7 +2438,7 @@
       "final-standalone-lint-report-v3.json": "530e6f8459a3f391d1a2d4962ae9c1d7c52a19ad32fb49ee38582fb0638f4300"
     },
     "current_cargo_and_installed_ci": {
-      "status": "pending_new_fastpath_branch_published_head",
+      "status": "pending_six_site_clippy_repair_head",
       "required_symbol": "codex_hia_source_file",
       "required_checks": [
         "actual native and default Cargo owners",
@@ -2451,15 +2451,52 @@
       "historical_e536_behavioral_success_is_not_current_branch_qualification": true,
       "tooling_repair_base": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
       "tooling_repair_base_ci_is_not_this_fastpath_ci": true,
-      "local_environment_limit": "Earlier local consumer compilation was terminated by SIGKILL in rama-net before tests ran; the standalone component lint does not replace required Cargo/installed/fix gates."
+      "local_environment_limit": "Earlier local consumer compilation was terminated by SIGKILL in rama-net before tests ran; the standalone component lint does not replace required Cargo/installed/fix gates.",
+      "previous_fastpath_head": {
+        "head": "065e91815f496a0d90293f69906353aab2817ef3",
+        "runs": [
+          {
+            "event": "push",
+            "run_id": 43665801855,
+            "job_id": 132664754882,
+            "conclusion": "failure",
+            "artifact_id": 14142711642,
+            "artifact_sha256": "44732fb3896479dad81295f4157076ae92c64847ce3ccff66cadca075fc771a0"
+          },
+          {
+            "event": "pull_request",
+            "run_id": 43665860307,
+            "job_id": 132664939720,
+            "conclusion": "failure",
+            "artifact_id": 14143262686,
+            "artifact_sha256": "58297afaac6bea03bfa85bbfd454ee3e86f0a29710218d125aec0f1743f534ea"
+          }
+        ],
+        "failure": "Native all-target strict Clippy denied six Option.expect calls through workspace clippy::expect_used. The subsequent default strict invocation did not run.",
+        "rust_tests": {
+          "passed": 5375,
+          "skipped": 6,
+          "groups": [
+            139,
+            319,
+            4473,
+            444
+          ]
+        },
+        "installed_apply_patch_cases": 3,
+        "installed_full_codex_patch_cases": 6,
+        "installed_full_codex_startup_cases": 2,
+        "scoped_fix_and_post_fix_diff_check": "passed; this did not remove or admit the six denied expect calls",
+        "scope": "These are actual failed workflow outcomes for 065e918, not current repair-head qualifications."
+      }
     },
     "publication_changes_after_tests": [
       "hia/README.md",
       "hia/migration.json",
       "hia/verification.json"
     ],
-    "publication_scope": "All six local terminal gates used the same 9828-path snapshot, including the Clippy-install workflow repair inherited from 2c02acd. Only these three metadata documents changed afterward. Implementation, tests, contract and workflow bytes remain identical to the tested snapshot. Current published-branch Cargo/installed/strict/fix CI remains pending.",
-    "current_source_inputs_scope": "All 66 current HIA, adapter, framing/build, test, CI and contract input hashes match the six-gate snapshot. The three metadata documents are excluded to avoid self-hash cycles. The external metadata-binding proof verifies this exact input set.",
+    "publication_scope": "The 065e918 fastpath checkpoint completed six local gates; its historical gate records and input hashes below are preserved. Its native push and PR CI passed behavior and installed stages but failed strict Clippy at six Option.expect sites. The repair changes only those six adapter sites to unwrap_or_else with the same panic messages and records a fresh fixed-point build, complete-original comparison and standalone lint with workspace lint levels. Current-head Cargo/default/installed/all-target/fix gates remain pending.",
+    "current_source_inputs_scope": "The current 66-input map differs from the historical six-gate input snapshot only at codex-rs/apply-patch/src/hia_native_text_file.rs. Historical gate and performance input hashes are not rewritten. clippy_expect_repair records fresh current-adapter proof; the historical metadata binding applies to 065e918 only.",
     "whole_codex_rewritten": false,
     "production_dispatch_migrated": false,
     "legacy_retirement_ready": false,
@@ -2533,8 +2570,8 @@
           "rounds": 1,
           "iterations_per_sample": 2,
           "samples": 3,
-          "native_ns_per_call_median": 7433899.0,
-          "original_rust_ns_per_call_median": 1119570.0,
+          "native_ns_per_call_median": 7433899,
+          "original_rust_ns_per_call_median": 1119570,
           "native_to_original_ratio": 6.639959091436891
         },
         "many_ascii_lines_update": {
@@ -2542,8 +2579,8 @@
           "rounds": 1,
           "iterations_per_sample": 1,
           "samples": 3,
-          "native_ns_per_call_median": 50733026.0,
-          "original_rust_ns_per_call_median": 2709842.0,
+          "native_ns_per_call_median": 50733026,
+          "original_rust_ns_per_call_median": 2709842,
           "native_to_original_ratio": 18.721765328015433
         },
         "many_unicode_lines_update": {
@@ -2551,8 +2588,8 @@
           "rounds": 1,
           "iterations_per_sample": 1,
           "samples": 3,
-          "native_ns_per_call_median": 86986155.0,
-          "original_rust_ns_per_call_median": 4616039.0,
+          "native_ns_per_call_median": 86986155,
+          "original_rust_ns_per_call_median": 4616039,
           "native_to_original_ratio": 18.84432843829959
         },
         "many_lines_empty_update": {
@@ -2560,8 +2597,8 @@
           "rounds": 1,
           "iterations_per_sample": 1,
           "samples": 3,
-          "native_ns_per_call_median": 154750645.0,
-          "original_rust_ns_per_call_median": 8591316.0,
+          "native_ns_per_call_median": 154750645,
+          "original_rust_ns_per_call_median": 8591316,
           "native_to_original_ratio": 18.01244943149571
         }
       },
@@ -2684,12 +2721,412 @@
       "report_path": "/workspace/scratch/9f380f39cb05/qualification/source-file-fastpath/final-standalone-lint-report-v3.json",
       "report_sha256": "530e6f8459a3f391d1a2d4962ae9c1d7c52a19ad32fb49ee38582fb0638f4300",
       "cargo_all_target_lint_qualified": false,
-      "required_just_fix_qualified": false
+      "required_just_fix_qualified": false,
+      "checkpoint_scope": "Historical 065e918 standalone default Clippy levels. This invocation did not load workspace.lints.clippy, and therefore did not detect expect_used; it is not workspace or Cargo lint qualification."
     },
     "metadata_binding_proof": {
       "path": "/workspace/scratch/9f380f39cb05/qualification/source-file-fastpath/metadata-binding-proof-v3.json",
       "sha256": "489891b6ea94b255e60494161423a008ce42434a158bd77499f871ab05f85813",
-      "all_66_current_inputs_match_tested_snapshot": true
+      "all_66_current_inputs_match_tested_snapshot": true,
+      "checkpoint_scope": "Historical 065e918 fastpath input set; not the repaired adapter."
+    },
+    "clippy_expect_repair": {
+      "base": "065e91815f496a0d90293f69906353aab2817ef3",
+      "changed_sites": 6,
+      "change": "Replace Option.expect with unwrap_or_else(|| panic!(same_message)) while preserving every checked arithmetic operation and overflow panic.",
+      "result_path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/result.json",
+      "result_sha256": "5685cf823f08677e704fa8d8019e442eb2383118d6c1af810beecafe23058318",
+      "passed": true,
+      "changed_expect_sites": 6,
+      "current_inputs": {
+        "codex-rs/apply-patch/src/hia_native_text_file.rs": "c5cb63a376005418dc10d83dae8beda8d97a2db0e63e8033470d72e69b3aa76d",
+        "hia/source_file.hepta": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
+        "hia/tests/native_source_file_caller.rs": "ae3e97453f530cc80dd1287ec1c56b789b147a3198bf8d98ecc8c396489bb390",
+        "hia/tests/test_native_source_file_caller.py": "a7f00401280170a4b49adf7c5b73ff09526bd48e119190c6cebaca209690733e",
+        "hia/toolchain.json": "5006164b7d3703f55cf9eacd6b0327c8d8a8b5386922f93f4da6bccb47816479",
+        "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8"
+      },
+      "workspace_clippy_levels": [
+        [
+          -1,
+          "correctness",
+          "deny"
+        ],
+        [
+          0,
+          "await_holding_invalid_type",
+          "deny"
+        ],
+        [
+          0,
+          "await_holding_lock",
+          "deny"
+        ],
+        [
+          0,
+          "disallowed_methods",
+          "deny"
+        ],
+        [
+          0,
+          "expect_used",
+          "deny"
+        ],
+        [
+          0,
+          "identity_op",
+          "warn"
+        ],
+        [
+          0,
+          "manual_clamp",
+          "warn"
+        ],
+        [
+          0,
+          "manual_filter",
+          "warn"
+        ],
+        [
+          0,
+          "manual_find",
+          "warn"
+        ],
+        [
+          0,
+          "manual_flatten",
+          "warn"
+        ],
+        [
+          0,
+          "manual_map",
+          "warn"
+        ],
+        [
+          0,
+          "manual_memcpy",
+          "warn"
+        ],
+        [
+          0,
+          "manual_non_exhaustive",
+          "warn"
+        ],
+        [
+          0,
+          "manual_ok_or",
+          "warn"
+        ],
+        [
+          0,
+          "manual_range_contains",
+          "warn"
+        ],
+        [
+          0,
+          "manual_retain",
+          "warn"
+        ],
+        [
+          0,
+          "manual_strip",
+          "warn"
+        ],
+        [
+          0,
+          "manual_try_fold",
+          "warn"
+        ],
+        [
+          0,
+          "manual_unwrap_or",
+          "warn"
+        ],
+        [
+          0,
+          "needless_borrow",
+          "warn"
+        ],
+        [
+          0,
+          "needless_borrowed_reference",
+          "warn"
+        ],
+        [
+          0,
+          "needless_collect",
+          "warn"
+        ],
+        [
+          0,
+          "needless_late_init",
+          "warn"
+        ],
+        [
+          0,
+          "needless_option_as_deref",
+          "warn"
+        ],
+        [
+          0,
+          "needless_question_mark",
+          "warn"
+        ],
+        [
+          0,
+          "needless_update",
+          "warn"
+        ],
+        [
+          0,
+          "redundant_clone",
+          "warn"
+        ],
+        [
+          0,
+          "redundant_closure",
+          "warn"
+        ],
+        [
+          0,
+          "redundant_closure_for_method_calls",
+          "warn"
+        ],
+        [
+          0,
+          "redundant_static_lifetimes",
+          "warn"
+        ],
+        [
+          0,
+          "trivially_copy_pass_by_ref",
+          "warn"
+        ],
+        [
+          0,
+          "uninlined_format_args",
+          "warn"
+        ],
+        [
+          0,
+          "unnecessary_filter_map",
+          "warn"
+        ],
+        [
+          0,
+          "unnecessary_lazy_evaluations",
+          "warn"
+        ],
+        [
+          0,
+          "unnecessary_sort_by",
+          "warn"
+        ],
+        [
+          0,
+          "unnecessary_to_owned",
+          "warn"
+        ],
+        [
+          0,
+          "unwrap_used",
+          "deny"
+        ]
+      ],
+      "source_unchanged_during_checks": true,
+      "source_file_archive_sha256": "643fc9276b14845e5c2c1c052b3dc45ca1a80f3eac78ad5f5557ac12e3db4fa4",
+      "build_report_sha256": "229e51bf9bd1cf1dae51f8d3fc50206bfeb68db3dfcc70463b3a3ff352c426c7",
+      "original_report_sha256": "96e89f03976e799f66a3593f19bd43d71e32ea598d0cda4941458c0bf097a587",
+      "commands": [
+        {
+          "argv": [
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/tools/just-1.51.0/just",
+            "--version"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f38-recovery-20261115",
+          "exit": 0,
+          "seconds": 0.001,
+          "log": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/just-version.log",
+          "log_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+          "log_bytes": 12
+        },
+        {
+          "argv": [
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/tools/just-1.51.0/just",
+            "fmt"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-fastpath/codex-rs",
+          "exit": 0,
+          "seconds": 0.189,
+          "log": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/fmt.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "log_bytes": 0
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-fastpath",
+          "exit": 0,
+          "seconds": 0.084,
+          "log": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/diff-check.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "log_bytes": 0
+        },
+        {
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "hia/build.py",
+            "--hepta-root",
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/Hepta",
+            "--output",
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-clippy-repair-native-v2"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-fastpath",
+          "exit": 0,
+          "seconds": 2.885,
+          "log": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/build.log",
+          "log_sha256": "b706b62594b0e620ed5a57ee85dcb394bf0f8c743e9a2e9fc4caffc377ef571d",
+          "log_bytes": 325
+        },
+        {
+          "argv": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/clippy-driver",
+            "--edition=2024",
+            "--crate-name",
+            "source_file_production_lint",
+            "--cfg",
+            "feature=\"hia-native\"",
+            "--emit=metadata",
+            "-L",
+            "native=/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-clippy-repair-native-v2",
+            "-l",
+            "static=codex_hia_source_file",
+            "--deny",
+            "clippy::correctness",
+            "--deny",
+            "clippy::await_holding_invalid_type",
+            "--deny",
+            "clippy::await_holding_lock",
+            "--deny",
+            "clippy::disallowed_methods",
+            "--deny",
+            "clippy::expect_used",
+            "--warn",
+            "clippy::identity_op",
+            "--warn",
+            "clippy::manual_clamp",
+            "--warn",
+            "clippy::manual_filter",
+            "--warn",
+            "clippy::manual_find",
+            "--warn",
+            "clippy::manual_flatten",
+            "--warn",
+            "clippy::manual_map",
+            "--warn",
+            "clippy::manual_memcpy",
+            "--warn",
+            "clippy::manual_non_exhaustive",
+            "--warn",
+            "clippy::manual_ok_or",
+            "--warn",
+            "clippy::manual_range_contains",
+            "--warn",
+            "clippy::manual_retain",
+            "--warn",
+            "clippy::manual_strip",
+            "--warn",
+            "clippy::manual_try_fold",
+            "--warn",
+            "clippy::manual_unwrap_or",
+            "--warn",
+            "clippy::needless_borrow",
+            "--warn",
+            "clippy::needless_borrowed_reference",
+            "--warn",
+            "clippy::needless_collect",
+            "--warn",
+            "clippy::needless_late_init",
+            "--warn",
+            "clippy::needless_option_as_deref",
+            "--warn",
+            "clippy::needless_question_mark",
+            "--warn",
+            "clippy::needless_update",
+            "--warn",
+            "clippy::redundant_clone",
+            "--warn",
+            "clippy::redundant_closure",
+            "--warn",
+            "clippy::redundant_closure_for_method_calls",
+            "--warn",
+            "clippy::redundant_static_lifetimes",
+            "--warn",
+            "clippy::trivially_copy_pass_by_ref",
+            "--warn",
+            "clippy::uninlined_format_args",
+            "--warn",
+            "clippy::unnecessary_filter_map",
+            "--warn",
+            "clippy::unnecessary_lazy_evaluations",
+            "--warn",
+            "clippy::unnecessary_sort_by",
+            "--warn",
+            "clippy::unnecessary_to_owned",
+            "--deny",
+            "clippy::unwrap_used",
+            "-D",
+            "warnings",
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/caller-lint.rs",
+            "-o",
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/caller.rmeta"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-fastpath",
+          "exit": 0,
+          "seconds": 0.054,
+          "log": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/workspace-lints.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "log_bytes": 0
+        },
+        {
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "hia/tests/test_native_source_file_caller.py",
+            "--library-dir",
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-clippy-repair-native-v2",
+            "--rustc",
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+            "--report",
+            "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/original-report.json"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f38-recovery-20261115/source-file-fastpath",
+          "exit": 0,
+          "seconds": 1.607,
+          "log": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v2/original.log",
+          "log_sha256": "9d68921c1b172872dadc2589757f84a3f53078eb32c374815a56203eff9b02fc",
+          "log_bytes": 2727
+        }
+      ],
+      "qualification_scope": "Actual fixed-point build, complete original SourceFile comparison, and a standalone complete production owner compiled with the lint levels parsed from workspace.lints.clippy. This does not replace Cargo all-target, default, installed, or scoped just fix CI.",
+      "original_comparison": {
+        "passed": true,
+        "comparisons": 225591,
+        "tests": 9,
+        "skipped": 0
+      },
+      "historical_abi_and_performance_scope": "HIA source and compiled archive are unchanged. The historical ABI and performance reports retain their original adapter and executable identities; performance was not rerun for the six-site panic-style repair.",
+      "current_cargo_all_target_lint_qualified": false,
+      "current_required_just_fix_qualified": false,
+      "unresolved_prior_attempt": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/source-file-clippy-repair-v1/result.json",
+        "outcome": "failed before build because just was absent from PATH; retained as a failed attempt"
+      },
+      "historical_cloud_evidence_access": "Historical records remain unchanged; the original Cloud workspace became inaccessible during recovery and was not re-read here."
     }
   }
 }
