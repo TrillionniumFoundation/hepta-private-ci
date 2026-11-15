@@ -1031,7 +1031,7 @@
     "native_windows_runtime": "pending",
     "checkpoint_scope": "Inherited six-module checkpoint at a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095; not a seven-module qualification. Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
   },
-  "scope": "Linux x86-64 GNU; ten real B3 modules cover eight algorithm groups including the new file_update candidate. The current native build, file_update raw ABI, 60 receipt checks and 116 shared scalar/build-admission checks passed. Complete-original public file_update parity, current Cargo/consumers/installed executables, strict lint/fix and performance remain pending. All 15 complete capabilities, default dispatch, global migration and retirement remain open.",
+  "scope": "Linux x86-64 GNU; ten B3 modules cover eight algorithm groups including file_update. Published head 5ce8 passed the complete-original public owner, native/default consumer tests and installed executables, but failed native strict lint and post-fix clean-source checks. The current minimal adapter repair has only formatting, exact-source and arithmetic/dispatch review evidence; new-head runtime and lint/fix qualification are pending. HIA raw ABI/build receipts remain separate recorded component checkpoints. All 15 complete capabilities, default dispatch, global migration and retirement remain open.",
   "evidence_reports": {
     "build": {
       "sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195",
@@ -1116,7 +1116,7 @@
     "codex-rs/apply-patch/src/file_update.rs": "035c8933e3c1282c04cce7a5419e4f7d1909b823efd2cb8d0c19229bde7faf5d",
     "codex-rs/apply-patch/src/file_update_tests.rs": "59fc1e6db897fd61be7ee865a741dc7fdb709501426c4f9603ef8a532fe08282",
     "codex-rs/apply-patch/src/hia_native.rs": "80981c210f252b24915c077cbd8b3b84356c7a0b4c3c4906d375cb9f42727749",
-    "codex-rs/apply-patch/src/hia_native_file_update.rs": "5d4537451c3da845dfcaec48a02f00af07b48ff80f45c75fc63c24b9d9cbf671",
+    "codex-rs/apply-patch/src/hia_native_file_update.rs": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
     "codex-rs/apply-patch/src/hia_native_text_file.rs": "6c4af87c8981be96a636d311fc6adb384289f67d6f06433d75ef8e206d1e4f7f",
     "codex-rs/apply-patch/src/invocation.rs": "ab6ce54396919236a2b68a5dc33f670663c67c12fa8def3b80588933d297047a",
     "codex-rs/apply-patch/src/lib.rs": "573ee4413ec18c448da649e91466521f60e129011fae9e54ceb7ccb403a82e11",
@@ -2314,7 +2314,7 @@
     "published_commit": "7fe65ae990187e6ff1130c791f902728b4e50197",
     "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197 checkpoint, six production algorithm groups. Original local source/artifact identities and exact-head CI are retained; this does not qualify the current nine-module SourceFile increment. Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
   },
-  "opt_in_production_callers_verification_scope": "Historical component callers are retained separately. The new file_update production adapter is implemented behind hia-native; its complete original public owner and current full consumer/installed qualification have not executed.",
+  "opt_in_production_callers_verification_scope": "The complete-original file_update owner, current consumers and installed executables actually passed at published 5ce8, as scoped in file_update_increment.historical_ci_checkpoint_5ce8. The current adapter differs by a native-dispatch/strict-lint repair and awaits a new complete CI; historical results do not qualify these changed adapter bytes.",
   "whole_product_performance_qualified": false,
   "current_evidence_record": "file_update_increment",
   "source_file_increment": {
@@ -2806,7 +2806,7 @@
   },
   "native_module_count": 10,
   "production_algorithm_group_count": 8,
-  "evidence_reports_scope": "Existing top-level evidence_reports identify historical component checkpoints. Current ten-module evidence is listed under file_update_increment.reports.",
+  "evidence_reports_scope": "Existing top-level evidence_reports remain historical component checkpoints. file_update_increment.reports retains the original ten-module component evidence; historical_ci_checkpoint_5ce8 records actual published-head CI, and current_lint_repair binds the changed adapter without claiming new execution.",
   "current_source_inputs_scope": "Previous canonical inputs, all tracked/untracked nonignored HIA source/contracts/tests, complete apply-patch and utils/string crates, existing edited paths, workspace Cargo inputs and repository test runners; excludes exactly the three metadata files. These hashes bind source bytes; they do not assert that pending execution gates ran.",
   "file_update_increment": {
     "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
@@ -2815,7 +2815,7 @@
     "target": "x86_64-unknown-linux-gnu",
     "rust_version": "1.96.1",
     "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
-    "status": "native_build_raw_abi_and_receipts_passed_complete_original_public_owner_and_current_consumers_pending",
+    "status": "minimal_native_dispatch_and_lint_repair_prepared_pending_new_ci",
     "native_modules": 10,
     "production_algorithm_groups": 8,
     "new_algorithm_owner_candidate": "file_update",
@@ -3220,7 +3220,8 @@
       "durable_job_id": "1a1dd4486ce-392-1fe7",
       "exit_code": 0,
       "report_sha256": "4550d38eef46d24f7866fc9b1bfe14a5415cc494f6ebfb9a6da88d9354e980d6",
-      "scope": "Actual bytes of ten HIA sources, raw libraries, namespaced libraries/objects and static archives match the build report."
+      "scope": "Actual bytes of ten HIA sources, raw libraries, namespaced libraries/objects and static archives match the build report.",
+      "checkpoint_scope": "This binding was executed before current_lint_repair. Its original source snapshot and HIA artifact bytes are retained; the changed Rust adapter has not been rebuilt or executed by this checkpoint."
     },
     "oracle": {
       "entry": "hia/tests/test_native_file_update_caller.py",
@@ -3351,7 +3352,7 @@
     "ci": {
       "workflow": ".github/workflows/codex-hia-native.yml",
       "workflow_sha256": "0d406d84e1d0d82bc99fb000127f9410ad5546ca4a20cbae1d656610bdf39081",
-      "execution_status": "pending_publication",
+      "execution_status": "5ce8_behavior_passed_native_strict_and_post_fix_clean_diff_failed_current_repair_pending_new_ci",
       "complete_original_checkout": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
       "new_gates": [
         "raw file_update ABI",
@@ -3368,7 +3369,7 @@
         "hia/migration.json",
         "hia/verification.json"
       ],
-      "scope": "The source freeze precedes only a 13-line additive receipt CI step/upload change and these three metadata documents. Existing code/tests remain byte-identical. Final proof is retained outside the repository; metadata hashes exclude themselves."
+      "scope": "Historical first-publication boundary: the original source freeze preceded only the recorded receipt CI addition and three metadata files. That proof remains unchanged; the subsequent current_lint_repair is a separate two-path change and is not covered by this historical unchanged-code assertion."
     },
     "cohesive_compilation_unit": {
       "path": "hia/file_update.hepta",
@@ -3380,6 +3381,242 @@
     "all_capabilities_migrated": false,
     "default_native_dispatch_migrated": false,
     "legacy_retirement_ready": false,
-    "whole_product_performance_qualified": false
+    "whole_product_performance_qualified": false,
+    "source_inputs_at_abi_scope": "Immutable source bytes present during the original ABI/build checkpoint, including the old adapter SHA; not a receipt for the changed current_lint_repair adapter.",
+    "pending_gates_scope": "These gates apply to the current repaired adapter. The corresponding published 5ce8 executions are retained separately in historical_ci_checkpoint_5ce8; no pending value is silently promoted from the old head.",
+    "historical_ci_checkpoint_5ce8": {
+      "scope": "Actual first-attempt results for the published 5ce8 tree before CI automatic fixes and before current_lint_repair; historical evidence only for those exact source bytes.",
+      "head": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
+      "tree": "752e546a431b8bde7e42c05a8d4cb37870a1953c",
+      "adapter_sha256": "5d4537451c3da845dfcaec48a02f00af07b48ff80f45c75fc63c24b9d9cbf671",
+      "overall_result": "failure",
+      "failure_reasons": [
+        "Native strict lint rejects the now-unused seek_sequence_checked dispatcher.",
+        "Native strict lint rejects two nonminimal checked-add rejection expressions.",
+        "Scoped just fix succeeds and changes those two expressions; git diff --exit-code then returns 1. The default strict command never executes after native strict returns 101."
+      ],
+      "complete_original_public_owner": {
+        "passed": true,
+        "original_source_files_checked_in_ci": 121,
+        "original_source_bytes": 851098,
+        "original_tests_passed": 5,
+        "other_original_library_tests_filtered_out": 64,
+        "case_definitions": 56,
+        "paired_process_inputs": 159,
+        "semantic_comparisons_passed": 157,
+        "separate_preconditions_observed": 2,
+        "actual_child_processes": 318,
+        "mismatches": 0,
+        "original_private_planner_transcripts_observed": false,
+        "post_panic_recovery_equivalence_required": false
+      },
+      "actual_cargo_dependency_admission": {
+        "default_and_native_builds_succeeded": true,
+        "units_per_graph": 666,
+        "rust_library_files_per_graph": 1284,
+        "direct_libraries_including_owner": 15,
+        "actual_oracle_commands_succeeded_per_run": 13,
+        "fixed_rustc_sha256": "4a84e05991ad6f2a84c1361c29b52b38c390365bd1fc269b1936c88d482a8928"
+      },
+      "owner_test_groups": [
+        {
+          "name": "hia-native-crates.log",
+          "passed": 139,
+          "skipped": 0
+        },
+        {
+          "name": "hia-truncate-consumers.log",
+          "passed": 319,
+          "skipped": 0
+        },
+        {
+          "name": "hia-codex-owners.log",
+          "passed": 4473,
+          "skipped": 6
+        },
+        {
+          "name": "hia-default-crates.log",
+          "passed": 444,
+          "skipped": 0
+        }
+      ],
+      "installed": {
+        "apply_patch_cases_passed": 3,
+        "full_codex_cases_passed": 6,
+        "full_codex_startup_cases_passed": 2,
+        "file_update_static_symbol_checked": true
+      },
+      "raw_file_update_abi": {
+        "native_calls": 2897,
+        "error_no_write_cases": 1381,
+        "concurrent_calls_included": 768,
+        "skipped": 0
+      },
+      "file_update_receipt_checks": 60,
+      "strict_native_passed": false,
+      "strict_default_executed": false,
+      "scoped_fix_command_completed": true,
+      "post_fix_clean_diff_passed": false,
+      "artifact_retention_limit": "The actual source gate checked all 121 original files. actions/upload-artifact default hidden-file exclusion omitted only tests/fixtures/scenarios/.gitattributes, so each ZIP contains 120 source snapshot files; the omitted manifest entry was checked against the immutable Git blob, not claimed present in the ZIP. Staged Rust/native binary bytes are not uploaded.",
+      "read_only_artifact_audit": {
+        "sha256": "eb5f506fb16c3fa7bc07cc2eec767899ac2c49815b7c4ba9d76e3b8bf2c37687",
+        "bytes": 38742,
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/file-update-lint-repair-v1/5ce8-terminal-audit.json",
+        "all_retained_raw_streams_and_exact_root_normalization_rechecked": true,
+        "local_owner_rerun": false
+      },
+      "runs": [
+        {
+          "event": "push",
+          "run_id": 43674452219,
+          "job_id": 132691415254,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43674452219",
+          "status": "completed",
+          "conclusion": "failure",
+          "tested_commit": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
+          "tested_tree": "752e546a431b8bde7e42c05a8d4cb37870a1953c",
+          "started_at": "2026-11-15T03:55:02Z",
+          "completed_at": "2026-11-15T04:22:27Z",
+          "successful_steps": 41,
+          "failed_steps": 2,
+          "failed_step_numbers": [
+            37,
+            38
+          ],
+          "job_log": {
+            "bytes": 1444426,
+            "sha256": "f87c6c104f631d2966f98347e03acb8d517e2b53667d5a869637f4801972b842"
+          },
+          "artifact": {
+            "id": 14145808301,
+            "bytes": 7623856,
+            "sha256": "24cc8c82bf784f0a52764c654d07919228ca1f7a7ad0489dc139188e30b7273f",
+            "members": 2249
+          },
+          "reports": {
+            "hia-file-update-caller.json": {
+              "bytes": 664353,
+              "sha256": "ee63f4741b9328c8f3bd65d709aaf787cacf113847b9169f8a5266177c01e92b"
+            },
+            "hia-file-update-abi.json": {
+              "bytes": 1404,
+              "sha256": "aa5a2b08f988c0e98bfe84c67f5d220584077c98cfc400ce6c3df978b6669a8a"
+            },
+            "hia-file-update-receipt.json": {
+              "bytes": 2315,
+              "sha256": "8256461af1cf64f1359f9e98eed7162b09511bc3a339e2ab6a74618f804268e7"
+            },
+            "hia-native/build.json": {
+              "bytes": 155433,
+              "sha256": "58d454b34fdd373dfc1aff356c453f6228bb6ff0b0184dd5bd1132497ddb5f3a"
+            },
+            "hia-file-update-caller/commands/commands.json": {
+              "bytes": 23655,
+              "sha256": "40e146c58afaee8bc28b47ad5bb154fec7c1b529d416f9065c9e7f85874657d1"
+            },
+            "hia-file-update-caller/observations/report.json": {
+              "bytes": 922757,
+              "sha256": "f80b8dadcc4fec8532bab9c700131bde433036b831647fb43fe952f4b13519f4"
+            }
+          },
+          "published_test_or_network_retry_markers": false
+        },
+        {
+          "event": "pull_request",
+          "run_id": 43674490206,
+          "job_id": 132691525718,
+          "attempt": 1,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43674490206",
+          "status": "completed",
+          "conclusion": "failure",
+          "tested_commit": "d63773376df4809e029081c3c2f24fe394297e76",
+          "tested_tree": "752e546a431b8bde7e42c05a8d4cb37870a1953c",
+          "started_at": "2026-11-15T03:55:32Z",
+          "completed_at": "2026-11-15T04:21:05Z",
+          "successful_steps": 41,
+          "failed_steps": 2,
+          "failed_step_numbers": [
+            37,
+            38
+          ],
+          "job_log": {
+            "bytes": 1444909,
+            "sha256": "cb5c1ac4550074dfee440322d538ce67fe868ef137207570dafb3e7b46b128e5"
+          },
+          "artifact": {
+            "id": 14146617600,
+            "bytes": 7623051,
+            "sha256": "e7b52bc134159260ac759d0cb159aebc8170b5d4d92d6e8bf8422edade0ea2f2",
+            "members": 2249
+          },
+          "reports": {
+            "hia-file-update-caller.json": {
+              "bytes": 664353,
+              "sha256": "d3da66f568d2afd54acad79cfcdf817a0e20afb2a8a1ed60965432f55e881f81"
+            },
+            "hia-file-update-abi.json": {
+              "bytes": 1404,
+              "sha256": "0bc71b76bb7a2a51667dbdcf09673cf840b2fd9da6c42547c3522f6952e3e9f2"
+            },
+            "hia-file-update-receipt.json": {
+              "bytes": 2315,
+              "sha256": "0dc725ce310309bcab53e813995cf49e8e1ebf967939a9dcd8f9624f689e57d5"
+            },
+            "hia-native/build.json": {
+              "bytes": 155430,
+              "sha256": "13489835b4d3fdd3e74a4fdc524dce4c01df89d8ce7b742e05f06f85f62b0746"
+            },
+            "hia-file-update-caller/commands/commands.json": {
+              "bytes": 23655,
+              "sha256": "81edf1ff72dfba3fe0c49214c56c2dffca69f7fcbcbf0dbb650a6348687b1788"
+            },
+            "hia-file-update-caller/observations/report.json": {
+              "bytes": 922757,
+              "sha256": "e322c3b0a3b1d354b66b602e981dcb354d1428200342d581c80b3ee2f8bcba40"
+            }
+          },
+          "published_test_or_network_retry_markers": false
+        }
+      ]
+    },
+    "current_lint_repair": {
+      "status": "source_repaired_new_ci_pending",
+      "parent_commit": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
+      "parent_tree": "752e546a431b8bde7e42c05a8d4cb37870a1953c",
+      "paths": [
+        "codex-rs/apply-patch/src/hia_native_file_update.rs",
+        "hia/verification.json"
+      ],
+      "adapter_before_sha256": "5d4537451c3da845dfcaec48a02f00af07b48ff80f45c75fc63c24b9d9cbf671",
+      "adapter_sha256": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
+      "adapter_bytes": 18397,
+      "adapter_lines": 493,
+      "changes": [
+        "Route native-selected search requests through the existing seek_sequence_checked dispatcher. Its hia-native branch calls the same actual HIA function with the same arguments.",
+        "Use is_none_or with a strict greater-than bound at both checked-add rejection sites. Overflow remains rejected; successful bounds and error text are unchanged."
+      ],
+      "semantic_review": "For Option<usize>, not is_some_and(value <= bound) equals is_none_or(value > bound), including None. The dispatch change preserves the feature-selected native callee and all call parameters; no Rust matching fallback, allow attribute, threshold or CI weakening was added.",
+      "local_validation": {
+        "just_fmt_exit": 0,
+        "git_diff_check_exit": 0,
+        "durable_job_id": "1a1dd7cda03-392-20cf",
+        "format_result_sha256": "a92418885303fc56a4f8bdaf0e2d79cfca3978999345fa9215eb6fb397d62b8a",
+        "exact_original_owner_restored": true,
+        "blocks_removed": 7,
+        "original_bytes": 12365,
+        "original_sha256": "6f45aabc6d1bb103875df8c8529558a49587db103b1a26aa633b8ea7ada570f2",
+        "actual_index_unchanged": true
+      },
+      "new_adapter_cargo_tests_executed": false,
+      "new_adapter_public_owner_executed": false,
+      "new_adapter_clippy_executed": false,
+      "new_adapter_fix_gate_executed": false,
+      "runtime_qualified": false,
+      "current_source_inputs_scope": "Only the adapter hash changes in the existing 184-path source inventory. The three metadata files remain excluded from self-hashing; original ABI/source snapshot hashes are preserved as historical evidence.",
+      "global_migration_complete": false,
+      "legacy_retirement_ready": false,
+      "whole_product_performance_qualified": false
+    }
   }
 }

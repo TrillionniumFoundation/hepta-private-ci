@@ -8,7 +8,7 @@
 use crate::ApplyPatchError;
 use crate::ApplyPatchFileUpdateMode;
 use crate::UpdateFileChunk;
-use crate::hia_native;
+use crate::seek_sequence;
 use crate::text_file::Replacement;
 use crate::text_file::SourceFile;
 
@@ -278,7 +278,7 @@ fn replacements(
                         .ok_or_else(|| rejected("native pattern range is invalid"))?
                 };
                 let answer =
-                    hia_native::seek_sequence_checked(lines, pattern, cursor, eof == 1, mode)?;
+                    seek_sequence::seek_sequence_checked(lines, pattern, cursor, eof == 1, mode)?;
                 state = Continuation {
                     chunk: next,
                     cursor,
@@ -301,7 +301,7 @@ fn replacements(
                 for row in output[96..].chunks_exact(32) {
                     let start = number(word(row, /*offset*/ 0)?)?;
                     let old = number(word(row, /*offset*/ 8)?)?;
-                    if !start.checked_add(old).is_some_and(|end| end <= lines.len()) {
+                    if start.checked_add(old).is_none_or(|end| end > lines.len()) {
                         return Err(rejected("native replacement is outside the source"));
                     }
                     let first = number(word(row, /*offset*/ 16)?)?;
@@ -455,10 +455,10 @@ fn render_lf(lines: &[String], replacements: &[Replacement]) -> Result<String> {
         let text = pools
             .get(number(word(row, /*offset*/ 0)?)?)
             .ok_or_else(|| rejected("native render pool ID is invalid"))?;
-        if !contents
+        if contents
             .len()
             .checked_add(text.len())
-            .is_some_and(|length| length <= total)
+            .is_none_or(|length| length > total)
         {
             return Err(rejected("native render byte total is invalid"));
         }
