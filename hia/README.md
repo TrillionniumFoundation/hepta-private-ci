@@ -2,7 +2,7 @@
 
 This directory contains the current HIA implementation and its native build,
 contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **18 compiled modules covering sixteen algorithm groups**.
+candidate contains **19 compiled modules covering seventeen algorithm groups**.
 Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
 The complete Codex rewrite, default release migration, required-platform
 qualification, whole-product performance and legacy retirement remain open.
@@ -33,7 +33,8 @@ complete workspace or a different source tree.
 | `patch_application` | Parser/effects/summary order, diagnostic choice, writer-error priority and committed-delta result selection. | Rust retains original typed errors, individual writer calls and the existing asynchronous effects future. |
 | `patch_standalone` | Standalone argument/stdin, diagnostic/exit, runtime/environment and application sequencing. | Rust performs the original OS, I/O, Tokio and process-exit callbacks; HIA selects their order and results. |
 | `uuid_find` | Complete fixed UUID byte-pattern scanning, match selection, count and span plan. | Rust validates the plan and copies native-selected substrings into owned strings. |
-| `template_parse` | Complete delimiter parsing, Unicode trim, ordered parse errors and literal/placeholder spans. | Rust validates the plan and owns the original template values; rendering retains the original Rust algorithm. |
+| `template_parse` | Complete delimiter parsing, Unicode trim, ordered parse errors and literal/placeholder spans. | Rust validates the plan and owns the original template values; the opt-in renderer uses the separate HIA render entry. |
+| `template_render` | Duplicate, missing and extra variable selection, segment lookup, checked output length and exact rendered bytes. | Rust preserves generic iteration, AsRef, original owned errors and destructor order while decoding the HIA result. |
 
 The patch path composes the native parser, file-update planner, matcher,
 SourceFile owner, effect state machine, unified formatter, summary selector and
@@ -43,24 +44,17 @@ filesystem execution, symlink/sandbox enforcement, string allocation and the
 public writer's formatting/I/O remain host boundaries. The original Rust owners
 remain available to the default platform path and immutable parity tests.
 
-Sixteen CLI-reachable native symbols are required in installed full Codex checks,
-including eight in apply_patch. Standalone apply_patch does not call the unified
-formatter; the full Codex verification path does. `utf8_boundaries` has a separate
-qualification entry. `find_uuids` is an exported library API with no production
-caller in the current full Codex CLI, so `codex_hia_uuid_find` is not a required
-CLI symbol. Its native library behavior is covered by
-[`test_native_uuid_find_caller.py`](tests/test_native_uuid_find_caller.py).
-The default reference executable must still contain none of all seventeen native
-symbols, including UUID. Installation reports distinguish both symbol scopes.
-These are required checks, not claims that the eighteen-module installed
-combination has passed. The added symbol, codex_hia_template_parse, is reachable
-through actual template consumers, including the CLI login error-page path.
-Its feature forwarding and positive CLI requirement are integrated; current
-installed execution remains pending.
+Seventeen CLI-reachable native symbols are required in installed full Codex
+checks, including eight in apply_patch and both template entries. The full
+Codex path also reaches the unified formatter. `utf8_boundaries` remains a
+separate qualification entry. UUID matching has library-positive coverage;
+it is not a required CLI symbol. The default reference must contain none
+of all eighteen native symbols, including UUID. These are configured
+requirements; current nineteen-module installed execution remains pending.
 
 ## Native interfaces
 
-The ten complete buffer contracts are normative:
+The eleven complete buffer contracts are normative:
 
 - [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
   trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
@@ -87,6 +81,9 @@ The ten complete buffer contracts are normative:
 
 - [Template parsing](template_parse_buffer_contract.json): 32-byte read-only
   query/emit request, 64-byte result header and 24-byte span records.
+
+- [Template rendering](template_render_buffer_contract.json): 32-byte read-only
+  candidate-check/query/emit request and 80-byte result header.
 
 All integer fields in these buffer interfaces are little-endian u64. Their
 capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
@@ -304,7 +301,48 @@ the complete Codex owner gates.
 
 ## Qualification
 
-### Current eighteen-module template-parse candidate
+### Current nineteen-module template-render candidate
+
+The opt-in renderer delegates duplicate, missing and extra-variable selection,
+segment lookup, checked output length and final rendered bytes to HIA. The Rust
+boundary retains the original generic iteration, key/value `AsRef` calls, owned
+errors and destructor order. The default implementation remains available.
+Whole-product migration, default release, performance and retirement are open.
+
+One fresh B1/B2/B3 bootstrap and all nineteen modules built successfully. All
+54 inherited namespaced artifacts remain byte-identical; the three new renderer
+artifacts match the frozen prototype. The initial qualification controller then
+failed while reading the receipt format header. Its failure is retained. The
+corrected continuation reused the same successful build, checked complete
+canonical receipt bytes and ran the previously unexecuted component gates.
+The formal renderer ABI passed 66,026 calls, including 54,262 whole-output
+no-write transport failures, with zero skips. The receipt mutation gate passed
+78 checks. These results do not qualify the current Cargo owner or product.
+
+Historical direct-rustc observations against the complete four-file original
+template crate remain separate: fourteen original tests, 13,206 public pairs,
+21 constructed values and the exact ownership/iteration/error observations.
+The current portable gate uses both actual native links and twenty-word traces,
+retains the complete original crate and tests, and checks each Cargo-staged
+archive against the admitted formal archive by complete bytes and digest.
+Its actual Cargo linkage directory is the build script's `OUT_DIR`.
+
+Both eighteen-module CI runs failed at the old public observer's incorrect
+linkage-directory assertion. Their full logs and API responses are preserved;
+the failed Cargo JSON row inside the undownloaded archive was not independently
+read. This increment contains the observer repair, whose current Cargo execution
+remains pending. The corrected seventeen-module UUID push and PR runs each
+completed all 69 steps and their complete uploaded archives were audited. Those
+historical results do not qualify this nineteen-module source; UUID scoped fix
+also remains outside their qualified scope.
+
+Current owner and six-consumer suites, default/native uncapped strict Clippy,
+scoped string/template fix, installed Codex checks and final-source CI remain
+pending. Installed checks require seventeen reachable CLI symbols and eighteen
+default-reference absences, with UUID positive coverage at the library boundary.
+Required platforms, release/LTO and scan-based renderer performance remain open.
+
+### Published eighteen-module template-parse checkpoint
 
 The formal B1/B2/B3 build reproduced the fixed point, retained all seventeen
 prior module sources and 51 namespaced machine artifacts, and matched the
@@ -372,7 +410,7 @@ The following seventeen-module and earlier checkpoint text is preserved
 verbatim. Its references to current or pending describe the producing source
 for that checkpoint; they do not qualify this eighteen-module composition.
 
-### Current seventeen-module UUID candidate
+### Published seventeen-module UUID checkpoint
 
 The formal B1/B2/B3 build reproduced the fixed point, retained all sixteen
 prior module sources and 48 namespaced machine artifacts, and matched the
@@ -424,7 +462,7 @@ The following existing checkpoint sections are retained verbatim. Their
 uses of current or pending describe their original producing sources;
 they do not qualify this seventeen-module composition.
 
-### Current sixteen-module standalone candidate
+### Published sixteen-module standalone checkpoint
 
 The B3 build contains all sixteen locked modules and preserves the preceding
 45 namespaced machine artifacts. The standalone ABI gate executed 6,310 native
