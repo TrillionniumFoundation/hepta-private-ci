@@ -151,6 +151,7 @@ impl<'owner> NativeProcessInputWaitObserver<'owner> {
         let writer_number = self.input_writer.as_raw_fd();
         let current_writer = fs::read_link(format!("/proc/self/fd/{writer_number}"))?;
         if before.0 != self.process_start_ticks
+            || before.1 != 'S'
             || task_count != 1
             || child_input.to_str() != Some(self.input_pipe_target.as_str())
             || current_writer.to_str() != Some(self.input_pipe_target.as_str())

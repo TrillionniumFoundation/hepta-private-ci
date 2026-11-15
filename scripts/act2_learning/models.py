@@ -113,6 +113,7 @@ def gradient_check():
             value[index] = original
             numerical = (upper - lower) / 2e-5
             error = abs(numerical - grad[key][index])
-            assert error < 2e-7, (kind, key, error)
+            if not error < 2e-7:
+                raise AssertionError((kind, key, error))
             checked.append({"model": kind, "parameter": key, "absolute_error": float(error)})
     return checked

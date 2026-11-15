@@ -94,7 +94,8 @@ class Destination:
         staged = self.db.execute("SELECT value FROM staged WHERE key=?", (key,)).fetchone()
         prior = self.db.execute("SELECT payload FROM applied WHERE operation=?", (operation,)).fetchone()
         if prior is not None:
-            assert prior[0] == payload
+            if not prior[0] == payload:
+                raise AssertionError
             return
         if staged != (goal,):
             return

@@ -129,3 +129,81 @@ fn wrong_reader_descriptor_is_refused_before_observation() {
     child.kill().unwrap();
     child.wait().unwrap();
 }
+
+#[test]
+fn stopped_original_reader_remains_unknown_until_resumed() {
+    struct OwnedChild(std::process::Child);
+
+    impl Drop for OwnedChild {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+
+    let mut child = OwnedChild(
+        Command::new("/bin/sh")
+            .args(["-c", "IFS= read -r line; test \"$line\" = resume"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap(),
+    );
+    let pid = child.0.id();
+    let writer: OwnedFd = child.0.stdin.take().unwrap().into();
+    let process = rustix::process::Pid::from_raw(pid as i32).unwrap();
+    let pidfd = rustix::process::pidfd_open(process, rustix::process::PidfdFlags::empty()).unwrap();
+    let observer = NativeProcessInputWaitObserver::from_inherited(
+        pidfd.as_fd(),
+        writer.as_fd(),
+        pid,
+        0,
+        binding(),
+    )
+    .unwrap();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        if matches!(
+            observer.observe().unwrap(),
+            NativeProcessInputWaitObservationV1::WaitingForInput { .. }
+        ) {
+            break;
+        }
+        assert!(Instant::now() < deadline, "reader never reached input wait");
+        std::thread::sleep(Duration::from_millis(5));
+    }
+
+    rustix::process::pidfd_send_signal(pidfd.as_fd(), rustix::process::Signal::STOP).unwrap();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while process_snapshot(pid).unwrap().1 != 'T' {
+        assert!(Instant::now() < deadline, "original reader never stopped");
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    assert!(
+        blocked_in_read(pid, 0).unwrap(),
+        "stopped reader must retain the original read syscall for this regression"
+    );
+    for _ in 0..3 {
+        assert_eq!(
+            observer.observe().unwrap(),
+            NativeProcessInputWaitObservationV1::Unknown
+        );
+    }
+
+    rustix::process::pidfd_send_signal(pidfd.as_fd(), rustix::process::Signal::CONT).unwrap();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        if matches!(
+            observer.observe().unwrap(),
+            NativeProcessInputWaitObservationV1::WaitingForInput { .. }
+        ) {
+            break;
+        }
+        assert!(Instant::now() < deadline, "resumed reader lost input wait");
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    drop(observer);
+    drop(writer);
+    assert!(!child.0.wait().unwrap().success());
+}
