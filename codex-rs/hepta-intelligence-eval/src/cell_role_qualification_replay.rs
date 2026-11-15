@@ -32,6 +32,8 @@ impl CellRoleQualificationReplayV1 {
             || self.evaluator.evaluator_id.as_str().is_empty()
             || self.evaluator.proposer_id.as_str().is_empty()
             || self.evaluator.evaluated_receipt_digest.is_zero()
+            || self.evaluator.evaluated_receipt_digest
+                != self.qualification.pre_evaluator_evidence_digest()
             || self.evaluator.evidence_digest.is_zero()
             || self.evaluator.evaluator_id == self.evaluator.proposer_id
             || self.evaluator.authority != AuthorityPosture::DENY_ALL

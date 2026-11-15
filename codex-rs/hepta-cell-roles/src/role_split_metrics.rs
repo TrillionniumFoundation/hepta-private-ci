@@ -161,6 +161,14 @@ impl RoleSplitMetricAdmissionReceiptV1 {
         {
             return Err(RoleSplitMetricBindingErrorV1::ReceiptMismatch);
         }
+        split.validate()?;
+        if metrics.cell_id != split.parent_cell_id
+            || metrics.generation != split.successor_generation
+            || metrics.proposer_id != split.proposer_id
+            || metrics.evaluator_id != split.evaluation.evaluator_id
+        {
+            return Err(RoleSplitMetricBindingErrorV1::ReceiptMismatch);
+        }
         bindings.validate_against(profile, metrics)
     }
 }

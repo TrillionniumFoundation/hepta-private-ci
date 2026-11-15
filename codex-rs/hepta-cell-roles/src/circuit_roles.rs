@@ -482,6 +482,9 @@ impl RouterAdapterV1 {
         context
             .validate(CellRoleV1::Router)
             .map_err(CircuitRoleErrorV1::Adapter)?;
+        if context.generation != input.expected_generation {
+            return Err(CircuitRoleErrorV1::GenerationMismatch);
+        }
         let owner_module = StableId::new(Self::OWNER_MODULE)
             .map_err(|_| CircuitRoleErrorV1::EmptyId("router owner module"))?;
         let legal = legal_ids(&input.legal_route_ids)?;
