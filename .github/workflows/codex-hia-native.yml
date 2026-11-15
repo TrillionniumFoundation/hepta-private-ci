@@ -76,6 +76,7 @@ jobs:
         run: |
           set -euo pipefail
           rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          rustup component add --toolchain 1.96.1 clippy
           rustc_path="$(rustup which --toolchain 1.96.1 rustc)"
           test -x "$rustc_path"
           echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
@@ -84,6 +85,7 @@ jobs:
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hia-cargo-target" >> "$GITHUB_ENV"
           {
             "$rustc_path" --version
+            cargo +1.96.1 clippy --version
             python3 --version
             ld --version
             git -C codex rev-parse HEAD
@@ -184,6 +186,36 @@ jobs:
               -o "$RUNNER_TEMP/hia-patch-caller-tests"
             "$RUNNER_TEMP/hia-patch-caller-tests" --nocapture
           } 2>&1 | tee "$RUNNER_TEMP/hia-patch-caller.log"
+
+      - name: Compare native SourceFile with the complete original Rust owner
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_source_file_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-source-file-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-source-file-caller.log"
+
+      - name: Verify SourceFile frame and no-write contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_source_file_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-source-file-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-source-file-abi.log"
+
+      - name: Verify SourceFile archive and source admission
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module source_file \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-source-file-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-source-file-receipt.log"
 
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -375,6 +407,27 @@ jobs:
             -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
 
+      - name: Run strict native and default owner lint
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string \
+            --features codex-apply-patch/hia-native,codex-utils-string/hia-native -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
+            -p codex-apply-patch -p codex-utils-string -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-default-owner-clippy.log"
+
+      - name: Run scoped native owner fixes without source drift
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just fix --locked -p codex-apply-patch --features hia-native \
+            2>&1 | tee "$RUNNER_TEMP/hia-native-owner-fix.log"
+          git diff --exit-code
+
       - name: Upload original build and test results
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -386,6 +439,12 @@ jobs:
             ${{ runner.temp }}/hia-native/build.json
             ${{ runner.temp }}/hia-toolchain.log
             ${{ runner.temp }}/hia-patch-caller.log
+            ${{ runner.temp }}/hia-source-file-caller.json
+            ${{ runner.temp }}/hia-source-file-caller.log
+            ${{ runner.temp }}/hia-source-file-abi.json
+            ${{ runner.temp }}/hia-source-file-abi.log
+            ${{ runner.temp }}/hia-source-file-receipt.json
+            ${{ runner.temp }}/hia-source-file-receipt.log
             ${{ runner.temp }}/hia-string-caller.json
             ${{ runner.temp }}/hia-string-caller.log
             ${{ runner.temp }}/hia-metric-caller.json
@@ -417,6 +476,9 @@ jobs:
             ${{ runner.temp }}/hia-installed-patch.json
             ${{ runner.temp }}/hia-installed-patch.log
             ${{ runner.temp }}/hia-default-crates.log
+            ${{ runner.temp }}/hia-native-owner-clippy.log
+            ${{ runner.temp }}/hia-default-owner-clippy.log
+            ${{ runner.temp }}/hia-native-owner-fix.log
             ${{ runner.temp }}/hia-codex-owners.log
             ${{ runner.temp }}/hia-installed-codex-build.log
             ${{ runner.temp }}/hia-original-codex-build.log

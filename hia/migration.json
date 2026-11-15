@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "eight_module_fixed_point_and_string_owner_passed_current_consumer_ci_performance_platform_gates_open",
+    "qualification_status": "nine_module_fixed_point_sourcefile_owner_and_admission_passed_current_cargo_installed_ci_performance_platform_gates_open",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU; eight B3 modules and six opt-in production algorithm groups. The separate scalar entry and v9 word loads optimize the existing five truncation APIs. Current local component/string-owner gates passed; current consumer and installed CLI CI, full workspace, performance, default dispatch, complete owners and other platforms remain open.",
+    "qualification_scope": "Linux x86-64 GNU; nine B3 modules and seven opt-in production algorithm groups. Full SourceFile parse/line_texts/apply_replacements/into_contents behavior passed independent original-Rust and raw-ABI gates on the recorded snapshot. Nine-module Cargo, consumer and installed-executable CI remain pending; performance, all 15 complete capability migrations, default dispatch, retirement and other platforms remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -420,7 +420,7 @@
         "truncate_middle_with_token_budget"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_component_and_string_owner_passed_current_consumer_ci_performance_platform_gates_open",
+      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_nine_module_integration_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -465,7 +465,8 @@
         "native_string_tests_passed": 38,
         "default_string_tests_passed": 26,
         "skipped": 0,
-        "performance_qualified": false
+        "performance_qualified": false,
+        "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197; nine-module integration has separate pending gates."
       }
     },
     {
@@ -479,7 +480,7 @@
       ],
       "production_algorithm_group": "truncate",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "typed_abi_original_rust_and_string_owner_passed_current_consumer_ci_open",
+      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_nine_module_integration_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -504,6 +505,71 @@
         "native_calls": 74552,
         "admission_checks": 114,
         "original_rust_comparisons": 229173,
+        "performance_qualified": false,
+        "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197; nine-module integration has separate pending gates."
+      }
+    },
+    {
+      "id": "source_file",
+      "hia_source": "hia/source_file.hepta",
+      "source_path": "codex-rs/apply-patch/src/text_file.rs",
+      "source_blob": "b7d598ca973ec73f0ed064d2360f4d218e2a792d",
+      "source_type": "SourceFile",
+      "source_methods": [
+        "parse",
+        "line_texts",
+        "apply_replacements",
+        "into_contents"
+      ],
+      "production_algorithm_group": "source_file",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "complete_owner_original_rust_and_raw_abi_passed_current_cargo_installed_ci_performance_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_source_file",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/source_file_buffer_contract.json",
+        "contract_sha256": "0da7ff9106fc1c153a879214075bf0be99ccd5ec6847c6613c27e1f621208b5f",
+        "operations": {
+          "0": "parse query",
+          "1": "parse emit",
+          "2": "apply query",
+          "3": "apply emit",
+          "4": "line_texts query",
+          "5": "line_texts emit",
+          "6": "into_contents query",
+          "7": "into_contents emit"
+        },
+        "workspace_header_bytes": 64,
+        "output_header_bytes": 40,
+        "record_bytes": 32,
+        "success_return": 0,
+        "invalid_input_return": 4294967295,
+        "short_buffer_return": 4294967294,
+        "invalid_utf8_return": 4294967293,
+        "error_effect": "Every returned error preserves every source/workspace/output byte. Successful calls never write source or workspace. No pointer provenance/admission is claimed beyond live/disjoint caller preconditions."
+      },
+      "behavior": [
+        "Preserve mixed CR/LF/CRLF, the first preferred style and absence of a terminal empty sentinel.",
+        "Keep inserted strings with internal CR/LF as one logical line across repeated replacements.",
+        "Preserve preferred style through total deletion and reinsertion; empty replacement lists repair absent endings.",
+        "Separate logical replacement positions from bounded physical take counts, including valid usize::MAX skips/deletes.",
+        "Validate complete UTF-8 pool bytes and every pool/subspan boundary before any result write.",
+        "Rust retains and compacts storage from HIA-selected spans; no parsing, replacement selection or render/reparse fallback."
+      ],
+      "tests": [
+        "hia/tests/native_source_file_caller.rs",
+        "hia/tests/test_native_source_file_caller.py",
+        "hia/tests/test_source_file_abi.py",
+        "hia/tests/test_installed_patch.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "report": "hia/verification.json#source_file_increment",
+        "artifact_generation": "B3",
+        "current_local_component_gates": "passed",
+        "current_cargo_and_installed_ci": "pending",
         "performance_qualified": false
       }
     }
@@ -710,9 +776,10 @@
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
+      "next_implementation": "Qualify nine-module Cargo/installed dispatch and migrate remaining patch grammar, compute_replacements planning, NormalizeToLf path, filesystem effects and file-search owners.",
       "candidate_modules": [
-        "seek_sequence"
+        "seek_sequence",
+        "source_file"
       ]
     },
     {
@@ -2250,7 +2317,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_source_and_artifact_mutation_tests_passed",
+    "status": "current_nine_module_sourcefile_receipts_and_scalar_build_admission_passed",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2259,11 +2326,14 @@
       "markdown_location",
       "ascii_json_fragment",
       "truncate",
-      "token_budget"
+      "token_budget",
+      "source_file"
     ],
-    "checks_passed": 56,
-    "typed_scalar_mutation_checks_passed": 56,
-    "scalar_build_admission_checks_passed": 114,
-    "shared_cargo_helper_changed": false
+    "checks_passed": 58,
+    "scalar_build_admission_checks_passed": 115,
+    "shared_cargo_helper_changed": false,
+    "mutation_module": "source_file",
+    "typed_scalar_mutation_history": "Historical 56-check eight-module 7fe65ae result retained at hia/verification.json#native_optimization; not a current nine-module receipt count.",
+    "report": "hia/verification.json#source_file_increment"
   }
 }

@@ -1,5 +1,9 @@
+#[cfg(feature = "hia-native")]
+pub(super) use crate::hia_native_text_file::SourceFile;
+
 pub(super) type Replacement = (usize, usize, Vec<String>);
 
+#[cfg(not(feature = "hia-native"))]
 #[derive(Clone, Copy)]
 enum LineEnding {
     Lf,
@@ -7,6 +11,7 @@ enum LineEnding {
     Cr,
 }
 
+#[cfg(not(feature = "hia-native"))]
 impl LineEnding {
     fn as_str(self) -> &'static str {
         match self {
@@ -17,16 +22,19 @@ impl LineEnding {
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 struct SourceLine {
     text: String,
     ending: Option<LineEnding>,
 }
 
+#[cfg(not(feature = "hia-native"))]
 pub(super) struct SourceFile {
     lines: Vec<SourceLine>,
     preferred_ending: LineEnding,
 }
 
+#[cfg(not(feature = "hia-native"))]
 impl SourceFile {
     /// Splits contents into logical lines while retaining each line ending.
     ///
