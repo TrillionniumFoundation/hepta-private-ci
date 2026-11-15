@@ -1,0 +1,228 @@
+name: Hepta foundation owner validation
+
+on:
+  push:
+    branches: ["codex/hia-foundation-contract-*"]
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  development-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify complete development contract and derived projections
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-implementation-maps.py verify --profile development
+          python3 scripts/hepta-module-docs.py verify --profile development
+          python3 scripts/hepta-docs.py verify --profile development
+          python3 scripts/hepta-docs.py self-test
+
+      - name: Require unchanged source after contract validation
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+  agentd-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEPTA_CI_LANE: source-head
+      RUSTUP_TOOLCHAIN: "1.96.1"
+      RUST_BACKTRACE: "1"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      TMPDIR: /tmp
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind clean candidate and validate manifest graph
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$SOURCE_SHA" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          python3 scripts/hepta_workspace.py
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/foundation-owner-target" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/foundation-owner-records"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/foundation-owner-records/source.txt"
+
+      - name: Install pinned Rust toolchain and lint components
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import tomllib
+          from pathlib import Path
+          toolchain = tomllib.loads(Path("codex-rs/rust-toolchain.toml").read_text())
+          assert toolchain["toolchain"]["channel"] == "1.96.1"
+          PY
+          rustup toolchain install 1.96.1 --profile minimal --no-self-update \
+            --component clippy --component rustfmt --component rust-src
+          rustc -vV > "$RUNNER_TEMP/foundation-owner-records/rustc.txt"
+
+      - name: Install pinned repository test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Provision executable-scoped Bubblewrap namespace policy
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential libcap-dev pkg-config libssl-dev libclang-dev \
+            bubblewrap apparmor apparmor-profiles
+          command -v bwrap
+          bwrap --version
+          # Use the distribution-maintained profile already qualified by the
+          # native owner workflow. Keep the host-wide AppArmor restriction on.
+          profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$profile"
+          sudo apparmor_parser -Q -T "$profile"
+          sudo apparmor_parser -r "$profile"
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 1
+          bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc -- /bin/true
+
+      - name: Resolve checksum-verified sandboxed V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Check Agentd formatting without mutation
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check
+
+      - name: Execute real cognitive context owner tests in the default profile
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/cognitive-context.json" \
+            --minimum-tests 1 -- \
+            just test --locked -p codex-hepta-agentd --lib \
+              -E 'test(cognitive_context::)' --test-threads=1
+
+      - name: Execute real plasticity owner, readiness, attachment and restart tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/plasticity-runtime.json" \
+            --minimum-tests 2 -- \
+            just test --locked -p codex-hepta-agentd --lib \
+              -E 'test(plasticity_runtime::)' --test-threads=1
+
+      - name: Build the actual Agentd child for the process qualification profile
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          # FleetHarness resolves this binary through codex_utils_cargo_bin.
+          # App Server and arg0 helpers are embedded; Supervisor is a library.
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/agentd-binary.json" -- \
+            cargo build --locked -p codex-hepta-agentd \
+              --features qualification-cognitive-write --bin codex-hepta-agentd
+          test -x "$CARGO_TARGET_DIR/debug/codex-hepta-agentd"
+
+      - name: Execute the durable-descriptor process test against real Agentd
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/plasticity-process.json" \
+            --minimum-tests 1 -- \
+            just test --locked -p codex-hepta-agentd \
+              --features qualification-cognitive-write \
+              --test plasticity_process_e2e --test-threads=1
+
+      - name: Enforce strict all-target Agentd lint including qualification targets
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/agentd-clippy.json" -- \
+            cargo clippy --locked -p codex-hepta-agentd --all-targets \
+              --features qualification-cognitive-write -- -D warnings
+
+      - name: Run required scoped Agentd lint fixes after tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/agentd-fix.json" -- \
+            just fix --locked -p codex-hepta-agentd --all-targets \
+              --features qualification-cognitive-write
+
+      - name: Require unchanged candidate and namespace restriction after execution
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 1
+
+      - name: Retain exact execution records and raw logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: foundation-owner-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/foundation-owner-records
+          if-no-files-found: error
+          retention-days: 14
+
+  foundation-owner-required:
+    if: ${{ always() }}
+    needs: [development-contract, agentd-owner]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require both complete validation jobs to succeed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: '["development-contract","agentd-owner"]'
+        run: python3 .github/scripts/check_ci_results.py

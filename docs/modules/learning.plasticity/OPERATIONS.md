@@ -11,20 +11,23 @@ The product-workspace adapter entrypoint is
 It can construct and persist a proposal only. It has no selection, training,
 installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now called by the long-lived
 `PlasticityRuntimeOwnerV1` supervised from the real Agentd `runtime.rs` task set.
-`AgentdState` retains the generation's bounded `PlasticityRuntimeHandleV1` directly;
-its parameter and topology submission methods do not create an automatic product
-producer. The owner recomputes the current artifact and durable learning-ledger frontiers
+`AgentdState` retains the generation's bounded `AgentdLearningPlasticityProducerV1`.
+`PlasticityRuntimeHandleV1` remains the public alias for this same sender. Its
+`submit_parameter` and `submit_topology` methods enqueue requests for the owner; the
+compatible `propose_parameter` and `propose_topology` methods forward to those methods.
+The upstream automatic product trigger remains uncomposed. The owner recomputes the current artifact and durable learning-ledger frontiers
 and requires context-bound owner evidence for dataset, update-rule, modulator,
 modulator-broadcast, eligibility, mutation-policy and per-parameter signals before
 invoking the adapter. Every owner query binds the live artifact/ledger heads; parameter signals additionally bind the exact eligibility, modulator, learning-rate and bound values used by deterministic generation. `DatasetSnapshotReceiptV3` and immutable Policy artifacts have concrete owner adapters; NDU projection state supplies the current modulator, the immutable broadcast-policy artifact binds projection weights, neuron.runtime supplies the anchored eligibility checkpoint, and exact ParameterSignal receipts recompute the consumed numeric values. All of these paths fail closed on stale, rolled-back, unavailable, wrong-owner or value-substituted state. A complete evidence-kind→owner allowlist is enforced
 separately from resolver authentication, so a valid receipt from the wrong owner
 cannot satisfy admission. The owner is attached explicitly through `AgentdConfig`, uses a bounded in-process
 queue and is fenced by the current Running/ready Agentd generation. No public plasticity
-wire method or fallback writer is created. The lifetime test calls
-`PlasticityRuntimeHandleV1::propose_parameter` and `propose_topology` to exercise
-first write, daemon restart, anchored reopen and idempotent replay for both proposal
-registries, and checks that a handle cannot submit after its owner exits. These
-test callers do not establish a non-test production proposal trigger. This source
+wire method or fallback writer is created. The lifetime test calls the named producer
+and the compatible handle API to exercise first write, daemon restart, anchored reopen
+and idempotent replay for both proposal registries. It rejects requests before readiness
+without changing either registry or anchor file, rejects a duplicate attachment, and
+checks that a handle cannot submit after its owner exits. These test callers do not
+establish a non-test production proposal trigger. This source
 composition is not evidence that a deployed target host executed or accepted it,
 so product execution remains unproved.
 
@@ -49,9 +52,10 @@ anchored reopen reconciles the durable file with previously acknowledged history
 ## Topology proposal operations
 
 Topology proposal construction is available through the generation-bound
-`PlasticityRuntimeHandleV1::propose_topology` submission capability, then
-`propose_authenticated_topology_plasticity_v1` and
-`propose_agentd_topology_plasticity_v1`. Every update binds a typed
+`AgentdLearningPlasticityProducerV1::submit_topology` capability and its bounded
+channel to `PlasticityRuntimeOwnerV1`, then `propose_agentd_topology_plasticity_v1`
+and `propose_authenticated_topology_plasticity_v1`. The compatible
+`PlasticityRuntimeHandleV1::propose_topology` method uses the same path. Every update binds a typed
 `WriterHandoffPlanV1` with distinct owners, an advancing writer fence, source-store,
 migration, rollback and acknowledgement-contract digests. The complete governed
 proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same

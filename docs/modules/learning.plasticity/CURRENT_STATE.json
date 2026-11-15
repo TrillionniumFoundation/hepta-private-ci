@@ -4,13 +4,13 @@
   "module": "learning.plasticity",
   "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
   "sourceBase": {
-    "commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
-    "tree": "475a24b1d0e96520327767e618b7e69c7fbe9b4a"
+    "commit": "b8d80c36a2f00dcffa48b01177aa6c327c0bfc3b",
+    "tree": "403ef2d8f2fc6caa704507146e9c89aa65b16445"
   },
   "current": {
     "sourceRootPresent": true,
     "productionImplementation": false,
-    "productCallerState": "agentd_process_bootstrap_source_composed_generation_bound_submission_handle_available_self_iteration_trigger_not_product_composed_or_target_host_qualified",
+    "productCallerState": "agentd_process_bootstrap_source_composed_named_generation_bound_producer_available_self_iteration_trigger_not_product_composed_or_target_host_qualified",
     "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
     "claimBoundary": {
       "nativeSourceMappingComplete": true,
@@ -133,16 +133,16 @@
     },
     {
       "operation": "agentd_named_parameter_submission",
-      "state": "generation_bound_typed_submission_handle_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified",
-      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "generation_bound_named_producer_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
       ]
     },
     {
       "operation": "agentd_named_topology_submission",
-      "state": "generation_bound_typed_submission_handle_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified",
-      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "generation_bound_named_producer_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
       ]

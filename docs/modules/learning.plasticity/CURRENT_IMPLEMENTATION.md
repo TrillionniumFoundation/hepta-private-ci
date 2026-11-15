@@ -13,7 +13,7 @@ This block is generated only from `IMPLEMENTATION_MAP.json`. Run
 changing the map. Hand-written sections below explain semantics but do not
 override these machine status facts.
 
-- Product caller: `agentd_process_bootstrap_source_composed_generation_bound_submission_handle_available_self_iteration_trigger_not_product_composed_or_target_host_qualified`
+- Product caller: `agentd_process_bootstrap_source_composed_named_generation_bound_producer_available_self_iteration_trigger_not_product_composed_or_target_host_qualified`
 - Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved`
 - Production implementation: `false`
 - Product execution proved: `false`
@@ -35,8 +35,8 @@ override these machine status facts.
 | `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
 | `agentd_process_bootstrap` | `source_implemented_child_process_reconstructs_owner_native_stores_from_independent_receipts_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs` | 3 |
 | `agentd_plasticity_runtime_owner` | `named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 2 |
-| `agentd_named_parameter_submission` | `generation_bound_typed_submission_handle_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 1 |
-| `agentd_named_topology_submission` | `generation_bound_typed_submission_handle_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 1 |
+| `agentd_named_parameter_submission` | `generation_bound_named_producer_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_learning_producer.rs` | 1 |
+| `agentd_named_topology_submission` | `generation_bound_named_producer_source_implemented_final_owner_revalidation_autonomous_product_trigger_not_composed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_learning_producer.rs` | 1 |
 | `agentd_parameter_host` | `host_entrypoint_called_by_long_lived_agentd_owner_with_real_append_ack_crash_registry_only_rollback_rejection_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 4 |
 | `agentd_owner_evidence_resolution` | `host_enforced_live_frontier_exact_signal_value_owner_allowlist_and_dynamic_ndu_neuron_broadcast_resolution` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 5 |
 | `concrete_owner_evidence_adapters` | `dataset_policy_ndu_neuron_broadcast_and_parameter_signal_adapters_bind_live_frontiers_and_exact_values_fail_closed` | `codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs` | 5 |
@@ -94,8 +94,8 @@ override these machine status facts.
 | Agentd topology host adapter + external anchor/fence | **Implemented and called by the long-lived Agentd plasticity owner; not target-host executed/qualified** | `topology_plasticity_host.rs` |
 | Process-safe Agentd plasticity bootstrap | **Implemented source composition; child process reconstructs owner-native stores from independent receipts; target-host execution unproved** | `load_plasticity_process_bootstrap_v1` + `--plasticity-bootstrap-descriptor` |
 | Long-lived Agentd plasticity owner | **Implemented source composition; bounded queue, generation/readiness fenced, no ambient writer fallback** | `PlasticityRuntimeOwnerV1` in `hepta-agentd/src/plasticity_runtime.rs` |
-| Typed Agentd parameter submission | **Implemented generation-bound submission capability; automatic product trigger and target-host execution remain unproved** | `PlasticityRuntimeHandleV1::propose_parameter` → the long-lived owner |
-| Typed Agentd topology submission | **Implemented through the same bounded handle and owner; automatic product trigger and target-host execution remain unproved** | `PlasticityRuntimeHandleV1::propose_topology` → the long-lived owner |
+| Typed Agentd parameter submission | **Implemented generation-bound submission capability; automatic product trigger and target-host execution remain unproved** | `AgentdLearningPlasticityProducerV1::submit_parameter` → bounded channel → `PlasticityRuntimeOwnerV1` |
+| Typed Agentd topology submission | **Implemented through the same bounded handle and owner; automatic product trigger and target-host execution remain unproved** | `AgentdLearningPlasticityProducerV1::submit_topology` → bounded channel → `PlasticityRuntimeOwnerV1` |
 | Bounded structural canary controller | **Implemented durable-candidate/plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
 | Authenticated structural-canary observation | **Implemented source boundary; every safety/lineage/rollback/health assertion is Observer-signed before state transition** | `observe_authenticated_structural_canary_v1` in `hepta-intelligence` |
 | Topology application / migration / writer handoff execution | **Implemented in the external runtime owner; plasticity itself remains proposal-only** | `codex-hepta-runtime::HeptaRuntime::apply_governed_topology` requires exact governed handoff + plan-bound `RuntimeTopologyMigrationOwnerV1` + single-use `FinalUseAuthority` |
@@ -124,13 +124,15 @@ host is now a long-lived `PlasticityRuntimeOwnerV1` supervised by the real Agent
 `runtime.rs` task set. It exclusively retains the proposal writers, external
 anchor/fence stores, learning-evidence verifier, ArtifactRegistry, DurableLedger and
 owner-evidence resolver behind a bounded typed channel. `AgentdState` retains the
-generation's `PlasticityRuntimeHandleV1` directly. The handle carries only the bounded
-sender; it receives no writer, anchor store, trust root or owner-evidence store.
-Its `propose_parameter` and `propose_topology` methods are submission capabilities,
-not an automatic learning producer. The lifetime test exercises first write and
-anchored-restart idempotence through those methods, and rejects the old handle after
-its owner exits. An automatic product trigger and target-host execution remain
-unproved. Every proposal is fenced on
+generation's `AgentdLearningPlasticityProducerV1`. It carries only the bounded sender;
+it receives no writer, anchor store, trust root or owner-evidence store. Its
+`submit_parameter` and `submit_topology` methods send requests to that exclusive owner.
+`PlasticityRuntimeHandleV1` remains a public alias, with `propose_parameter` and
+`propose_topology` forwarding to those methods. The lifetime test covers both public
+names, first write, anchored-restart idempotence and submissions after owner shutdown.
+It also requires rejection before readiness with unchanged registry and anchor files,
+and rejects a duplicate attachment without retaining the replacement sender. An
+automatic product trigger and target-host execution remain unproved. Every proposal is fenced on
 the current Running/ready Agentd generation before it reaches the parameter or topology
 host entrypoint. There is no public Agentd wire method and no ambient/default writer:
 if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
@@ -276,13 +278,14 @@ target-host telemetry, rollback-domain independence and operator evidence remain
 ## Remaining external and composition gates
 
 The Agentd binary reconstructs its owner from an explicit process bootstrap
-descriptor and retains the generation's bounded submission handle. The former
-private forwarding facade has been removed; it was not an automatic producer.
-`PlasticityRuntimeHandleV1::propose_parameter` and `propose_topology` retain the
-submission capability, and the lifetime test invokes both methods. This does not
-establish a non-test proposal trigger: `IterationEnvelopeV1` and the current
-`control.engineering` implementation still have no production coordinator that
-submits requests after frozen independent evaluation. The repository contains a
+descriptor and retains the generation's bounded `AgentdLearningPlasticityProducerV1`.
+This public producer is the actual sender, with `PlasticityRuntimeHandleV1` retained
+as its compatibility alias. The lifetime test enters through the named submission
+methods, exercises the compatible methods after restart, and checks readiness,
+attachment and shutdown rejection. The upstream product trigger remains uncomposed:
+`IterationEnvelopeV1` and the current `control.engineering` implementation still have
+no production coordinator that submits requests after frozen independent evaluation.
+The repository contains a
 long-lived Agentd plasticity owner that calls the
 parameter/topology host entrypoints, supplies current owner frontiers and retains
 independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete; NDU owns current modulator projections, neuron.runtime owns eligibility checkpoints, broadcast policy binds the low-dimensional mapping, and exact ParameterSignal evidence recomputes the consumed numeric values. These source adapters still require the selected target host to open the corresponding authoritative owner stores. The registry/anchor fault fixtures prove that a retained
