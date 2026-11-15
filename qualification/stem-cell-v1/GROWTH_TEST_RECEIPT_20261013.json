@@ -1,0 +1,97 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "full_repository": "not_run",
+    "hosted_success": "not_claimed",
+    "remote_blob_matches": true,
+    "rust_fmt_build": "not_run_no_full_checkout",
+    "staged_diff_check": "passed"
+  },
+  "code_candidate": "27a7b790affe81f19a0b39d3b31b71b066990f61",
+  "date": "2026-10-13",
+  "execution_surface": "session CPU source slice; not full repository or target cloud",
+  "independent_gain_established": false,
+  "installed_hf": {
+    "architecture_tests_executed": 0,
+    "error": "ModuleNotFoundError: transformers",
+    "installation_attempts": 2,
+    "result": "no matching distribution; dependency remains unavailable"
+  },
+  "package_logs_sha256": {
+    "export-first.log": "b9a90b10d710b24642af138d1d46b373b2f0a49ce7c6a8b9bc7085e7fe86e7ae",
+    "full-final-1.log": "817f36ed9e5680c4469c1641ef984f9b0f93a518dd5eb477c1ea2ac372e45495",
+    "full-final-2.log": "2fcd3f182293fbb18b81f970740b1dae6226335472f8c04f8a20a1b84f1c72c6",
+    "full-first.log": "2d3de09748e94f8cb77a8f92231a2d96825813ba162118e7f4e69cf4a23e0683",
+    "growth-diagnostic.json": "4af2653700ee5d66134cb31ee1561cb033587c4597f9a8db22251e181e7973ca",
+    "growth-first.log": "6192fd9132bd13ae18e069d688983c3f09a2f7b0b5eb785c535de2425f32998f",
+    "growth-second.log": "509bd1a69e3ef2ad511a76736037ac7b01f2541b80b688db87a5c4b47f783cc5",
+    "hf-check.log": "4d351a093a9830615bf59a1112c12e6a5991ce0321f45848e081de8a44cc7bcb",
+    "hf-install-explicit.log": "e7d8f1ecf240694325f53da96347b87f7d2efce32b7f16c4036e620c25eca6da",
+    "integration-pretest.log": "4829194adcebb5f43e6f0743a7cee898a1e3ac69f236905272afa4c34e90d29b",
+    "run_growth_diagnostic.py": "4218802d5aba8d3104132ca96b647f406815abf59b68248137b788830b5be51b",
+    "source-blobs.json": "4feb1037bae0bf372e687697b3438422da4ad6b69e1b35db4cee4e61d8d7be61"
+  },
+  "parent": "8aa4a71664e11ff29916f1c8904fdf69f055cf3c",
+  "pretrained_model_executed": false,
+  "production_authorized": false,
+  "python": "3.13.5",
+  "runtime": {
+    "numpy": "2.3.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.stem.growth-local-tests.v1",
+  "source_blobs": {
+    "growth_test_support.py": {
+      "bytes": 1537,
+      "git_blob_sha1": "1ab77a576bae386cd6ef49aa7b8debf0233b1c8e",
+      "sha256": "623a9b4ad819db5be83bb3d597aba71cadde0da672d1179bbfea91fc44696beb"
+    },
+    "matrix_export.py": {
+      "bytes": 16008,
+      "git_blob_sha1": "611eb28baab67ed3f1d1ef9299bed3e25f2cc3ab",
+      "sha256": "85a577a5fd502017eb3cd1acb21ef19cf04c8d4c64824dffdffc84c93b587f31"
+    },
+    "matrix_growth.py": {
+      "bytes": 11026,
+      "git_blob_sha1": "519377eff660f5fb100e2dbee96f2537c8313488",
+      "sha256": "35c37fecd19f56c0cbb6783069ae258fea8c5115e3463f8e32652834c7522fb5"
+    },
+    "matrix_materials.py": {
+      "bytes": 9682,
+      "git_blob_sha1": "5a8619c21567d4b9bf192bd38d6ffc77a4bd6bf0",
+      "sha256": "9a86bb6d1abbd59dadada3b3b346d35a23f4101d2636f251cb27175b6c2409e0"
+    },
+    "matrix_runtime.py": {
+      "bytes": 18321,
+      "git_blob_sha1": "3b7857043f0669db9a623d8cf72fa7f7d5c979a0",
+      "sha256": "8639a406c556cc189240e185e8bf347d05dc926a76cb077a27bb038a4ed6cbf4"
+    },
+    "paired_execution.py": {
+      "bytes": 14441,
+      "git_blob_sha1": "30d6066221f7859102e1fd12b74d8facf4119339",
+      "sha256": "08000f97a41c98018e53d75996bff6c523d20a7c8d2240a27f38c1c4f593efc6"
+    },
+    "test_growth_export.py": {
+      "bytes": 9542,
+      "git_blob_sha1": "0c964c19ecc5a3b90038b4a77c6218173c094bee",
+      "sha256": "170f8049e95ef83223b2e164835f54b49cf8975869e79802f91162f8ba360a6b"
+    },
+    "test_matrix_growth.py": {
+      "bytes": 9143,
+      "git_blob_sha1": "bc0f442d1ce29c8e83ffaa973304d5d0440127bb",
+      "sha256": "9326fff34858385c787d0a899f6ea7fbac9fa0b60a5c66b7f4acc6e279c36280"
+    }
+  },
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "final_runs": 2,
+    "new_export_lifecycle": 9,
+    "new_growth": 13,
+    "passed": 142,
+    "retained": 120,
+    "run": 142,
+    "skips": 0
+  }
+}

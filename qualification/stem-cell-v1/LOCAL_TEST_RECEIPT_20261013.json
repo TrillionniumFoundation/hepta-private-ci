@@ -1,0 +1,68 @@
+{
+  "code_candidate": "978bcc1ff9aac8e7ce93dc57173e824de656ad47",
+  "compileall": "passed",
+  "cuda_available": false,
+  "date": "2026-10-13",
+  "execution_surface": "session CPU container; eight-file source mirror, not full checkout",
+  "full_repo_tests": "not_run",
+  "git_diff_check": "passed",
+  "independent_future_eval": false,
+  "log_sha256": "c1f222f5e2c0ecb554e8008bb430a97f19f7e85b688e1439e159a1f22488be53",
+  "native_target_host_test": false,
+  "production_authorized": false,
+  "python": "3.13.5",
+  "real_pretrained_run": false,
+  "remote_actions": "not_run_or_claimed",
+  "rust_fmt": "not_run: no full codex-rs checkout or just executable",
+  "schema": "hepta.stem.local-source-test-observation.v1",
+  "source_baseline": "8c8003d9164edbdb997b37c78156e1ad9b91d52b",
+  "source_blobs": {
+    "head_surgery.py": {
+      "git_blob_sha1": "b02d9649e6507dc9e02755f50c4e2c3629ceb8f5",
+      "sha256": "34e1c6844d29847041bd43ad1abd66a6cff4b393735e3ad8c32d0624fbabf523"
+    },
+    "next_round_matrix.py": {
+      "git_blob_sha1": "a5aa11e0afd0c5ef494fb029146d42cb06f9cfeb",
+      "sha256": "fb75d80a96764dd9e967d6a94845258cdda7dfd14c46f2da32bb1dda4d771d8f"
+    },
+    "paired_execution.py": {
+      "git_blob_sha1": "48bb2fc9663731cef755564316bf9c418ea9797d",
+      "sha256": "49d3763d3646a34aadecdbf3da9d5a67dd263a648632ecaf419a99c9c23e08e7"
+    },
+    "system2_execution.py": {
+      "git_blob_sha1": "525b71bb678847d5c387c1efec66e194a1cf9f2e",
+      "sha256": "f3185288aaabc27b8c60c0afd8b84a17e51d5463cf15bf214a97930ab4f47128"
+    },
+    "test_head_surgery.py": {
+      "git_blob_sha1": "90123c65ec849b305758edf5c877142147274db7",
+      "sha256": "c7818550f435af97b7e88a94747da8a7ba5556b7027f5fad2a8c18f0bd93aee3"
+    },
+    "test_next_round_matrix.py": {
+      "git_blob_sha1": "496d644bd7b58442abfd5ec922660270facfe753",
+      "sha256": "f9d421aa25afc553608212f8bdadfbf2f10ac430a3281e38cd76a51e5459270f"
+    },
+    "test_paired_execution.py": {
+      "git_blob_sha1": "4444b2bf7dbad77cd84cbbf89b3bacb7850e71c3",
+      "sha256": "19fe4ec8caa4f9884ccca3c3d232cf013fe90dcc1c89f5ddf88dbecddf25ed70"
+    },
+    "test_system2_execution.py": {
+      "git_blob_sha1": "350d82c861d01b65f6014c629dd6d1b559663b25",
+      "sha256": "449df191b083cde03939b93fd561bcfd5abb6794a22e97dbc2ff81d603f3a5c2"
+    }
+  },
+  "test_command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "tests": {
+    "by_module": {
+      "head_surgery": 8,
+      "matrix": 9,
+      "paired_execution": 13,
+      "system2_execution": 8
+    },
+    "errors": 0,
+    "failures": 0,
+    "passed": 38,
+    "run": 38,
+    "skips": 0
+  },
+  "torch": "2.10.0+cpu"
+}

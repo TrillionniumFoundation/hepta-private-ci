@@ -1,0 +1,30 @@
+{
+  "code_candidate": "5babf2b0a85ef3c5c3ad4468d78c176871b8dee1",
+  "independent_efficacy_established": false,
+  "kind": "synthetic_4d_encoder_real_torch_training",
+  "pretrained_execution": false,
+  "runs": [
+    {
+      "arm_id": "shared_421m_sparse_split_no_ndu",
+      "passed": true,
+      "peak_live_trainable_params": 1792,
+      "status": "accepted_internal_fixture",
+      "student_parameters": 448,
+      "teacher_parameters": 896,
+      "teacher_relative_passed": true
+    },
+    {
+      "arm_id": "shared_421m_sparse_direct32_no_ndu",
+      "passed": false,
+      "peak_live_trainable_params": 1344,
+      "status": "rejected",
+      "student_parameters": 448,
+      "teacher_parameters": 896,
+      "teacher_relative_passed": true
+    }
+  ],
+  "schema": "hepta.consolidation-diagnostic-summary.v1",
+  "scope": "Head-plus-gate parameters only; not full Encoder size, runtime memory, latency or energy",
+  "selection_thresholds": "permissive synthetic fixture, not validated task acceptance",
+  "successful_paired_experiment": false
+}
