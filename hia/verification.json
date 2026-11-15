@@ -422,15 +422,63 @@
         ],
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
+    },
+    "network_host": {
+      "source_sha256": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+      "core_sha256": "5041dff01436a53d3ac0f592ee488ac0e6b82af8dfdf1e6b6a928d2e82e7d68a",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "library_sha256": "3f278af62de3adaf8910ad448a1ae0b7616f66579563bf682308d8bce40e6b2f",
+      "library_bytes": 33576,
+      "static_link": {
+        "symbol": "codex_hia_network_host",
+        "library": "libcodex_hia_network_host.so",
+        "object": "network_host.namespaced.o",
+        "archive": "libcodex_hia_network_host.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 22416,
+        "archive_sha256": "d03ed9eb11191e5ae4cd18e3cf4c95a7672b1c21f0f55b3551b6cef9417bd677",
+        "text_sha256": "04b4c29ba86c35f384aa94879407cf7a37402f4ebde510c957700266d32cb388",
+        "defined_symbols": [
+          "codex_hia_network_host"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "a04753a6a760d4a377ad5364abc0d5966e96602af73a3fd9b9820ad94e596a34",
+        "library_sha256": "bad214129de736912e494feddc89cff343b9b7198b6fe9f0ad62d650ccdc61f3",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_network_host",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.o",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/network_host.namespaced.o",
+          "-o",
+          "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1/libcodex_hia_network_host.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
+    "toolchain_lock_sha256": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "ee2fae74cbb9dcad2d380d9efc3d653351cde067f43e5d01ffde032128d9d36e",
+  "build_report_sha256": "d9bcdd869aed50775d752e55c8050c46176607a53eab559ea520e6dd9de7c343",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
@@ -448,7 +496,8 @@
     "policy_summary": "Complete pure RuleMatch reduction for Evaluation and CLI summary: presence, strictest decision and explicit-match flag.",
     "network_domains": "Complete Policy::compiled_network_domains: HIA selects non-Prompt rules and computes ordered last-winner raw-host Allow/Forbidden vectors.",
     "allowed_prefixes": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication.",
-    "command_dispatch": "Complete Policy command-rule dispatch: exact/host/fallback routing, ordered callbacks, component path equality, retention and scheduled original host effects."
+    "command_dispatch": "Complete Policy command-rule dispatch: exact/host/fallback routing, ordered callbacks, component path equality, retention and scheduled original host effects.",
+    "network_host": "Complete normalize_network_rule_host; Rust retains owned allocation and original policy/parser/file effects."
   },
   "seek_sequence": {
     "schema": "codex.hia.seek-sequence-differential.v1",
@@ -1237,7 +1286,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "scope": "Exact twenty-file content freeze for scoped Draft publication: eighteen dispatcher files equal actual V3 execution inputs; two formatter files bind 32 component tests. The successful last V7 just fmt and all 9,883 unchanged source files establish the content identity. Additional maintenance job remains UNKNOWN, with no invented completion/staging/diff/tree result. No Codex product compilation/tests were rerun after final fix/fmt; formatter fixtures invoke real rustfmt and Cargo metadata. Current full CLI/Protocol/Core/prior-component and receipt-mutation CI, workspace, platform, performance, default-release and retirement qualification remain open.",
+  "scope": "Local qualification of the exact 21-source network-host increment on Linux GNU, from published16 b762/9c6. Initial formatting preceded all behavioral gates; the final scoped fixes and fmt exited 0 and left all 9,893 source files unchanged. No product build or test was run after final maintenance. Original/native16/native17 allocation and timing harnesses were separately compiled and executed; the frozen native16 owner itself was not rebuilt. Current seventeen-module full CLI, Protocol/Core/prior-component and platform CI remain pending. Complete Policy/Core/workspace, performance, default release and retirement are not qualified.",
   "evidence_reports": {
     "seek_sequence": {
       "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
@@ -1489,26 +1538,36 @@
       "file": "native-v2/build.json",
       "sha256": "cfa066b9abbf52781c15f0313301d3eea5b6bba41471358d5ebe8da7b4826016",
       "bytes": 159164
+    },
+    "network_host_public": {
+      "path": "network-host-root-review/observations-v1/network-host-public-v1.json",
+      "bytes": 13052765,
+      "sha256": "f6bbfc0a7eb058ce39ad88269b7b629f82a8e89d5add64e028822f3a6614098c"
+    },
+    "network_host_observations_archive": {
+      "path": "network-host-root-review/observations-v1/observations.tar.xz",
+      "bytes": 8725728,
+      "sha256": "26971981c45becb796b1dd8aade8af1e1853a27074df84ed0131b15ccc85e615"
     }
   },
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "4f2626f21959f1ff0ef86c37c47eba8976bbc5b6bfc411da1de02b3ca419397c",
+    ".github/workflows/codex-hia-native.yml": "216fdf2b7a3c2581bc45a8ac54b13fb0e0054605fd758228dae9a94a1be40c64",
     ".github/workflows/rusty-v8-release.yml": "25eb9da672e26f1da7f0c186c8f1b7395530f4f139aad6dcce5e234e9e3ced59",
     ".github/workflows/v8-canary.yml": "89f6a2bfeb3a6dbec431c64872c61dfb5e3f0f5444bf0c62a62237129734679d",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/cli/Cargo.toml": "b85af25d93b7994e9c7bc74ec8a29087be056f5cfe853f76ca63332b64275119",
     "codex-rs/execpolicy/BUILD.bazel": "1e5a7a8c87ce0a8f95fb482269d7f2624b94242f1a2082237f660f8386a3fdb8",
     "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
-    "codex-rs/execpolicy/build.rs": "78b10ea09beb3834b6ec7080ce41eab824028e7c11b52e5cec02c71f40a415dc",
+    "codex-rs/execpolicy/build.rs": "adc1a1911a74d09df3e2eef5f4b4c140d55204695b79fd7924befed39b49d423",
     "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
     "codex-rs/execpolicy/src/hia_native_allowed_prefixes.rs": "d00759c4308e11d16943480394c1573f8071cd887a9657bf7e1987503dfd3262",
     "codex-rs/execpolicy/src/hia_native_command_dispatch.rs": "1f492c5fcb9febf6da77658ee4db36f6502cfad4faca400bdb7bff264fd3a34a",
     "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
     "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
     "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
-    "codex-rs/execpolicy/src/lib.rs": "c720b4ad431822f5fdebb43de044b972870d29a14309a5e6557730e35a6e77f9",
+    "codex-rs/execpolicy/src/lib.rs": "e47234f22384dec734368c1c09c6f78ddc5e1b3e2cfe4f147fe9d16ae657db35",
     "codex-rs/execpolicy/src/policy.rs": "ef8ff4f7e23771dde26ba7082bc04f3ee3fe8fb272eee67788907c564d82dadd",
-    "codex-rs/execpolicy/src/rule.rs": "2bb6276d98078f67b67717b265b006c280ec503007c94daa1ec7f58ca4959221",
+    "codex-rs/execpolicy/src/rule.rs": "2e27abf0ab6c719c23fadcb2e95cb68af2004c73b1c624e7b99d7aa43a29bd68",
     "codex-rs/linux-sandbox/tests/suite/landlock.rs": "3301d411053aaf43bf60435261aef451b115a1ba775a19d395cc104a203a9fcd",
     "codex-rs/login/Cargo.toml": "09f35415c4cdd324a270eaa95d27a99f16c9bf5519c55c8c128207a9235f2f50",
     "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70",
@@ -1580,14 +1639,14 @@
     "hia/tests/test_allowed_prefixes_abi.py": "c1201cf6fe526bd71b8a4c9b26f0b2e27a3eae7f7756ac137f8a44e48728cd1c",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_command_dispatch_abi.py": "f528809a00e654dfe1c69c4985a5b31e9d41ef1efa12a080bfd1ee1dacc855f7",
-    "hia/tests/test_installed_codex.py": "53acf908b3de7c8c8c05991772737bd83a90fef9673db1d8d4d0e8c86bb15edf",
-    "hia/tests/test_installed_execpolicy.py": "1f752d7deebc8e3a49e81096c1da0c7adb3a8a5dc5447df9ea60b731aab6d843",
+    "hia/tests/test_installed_codex.py": "e072f0a095f67d62bd3275a5b6427ca6a8d6bd531e91272742a349a9db1c5e9d",
+    "hia/tests/test_installed_execpolicy.py": "27986b3a3d3bef975b2846239b28cf89e64575abb618e6f82be7c489cc52571e",
     "hia/tests/test_native_allowed_prefixes.py": "68d2ed564c9e9271179d5432d558ee12700026fd0869af0d82e1185e12a682e3",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
     "hia/tests/test_native_command_dispatch.py": "5f7da2f0ceb96205846118f905bfd43d73e8ac1a112f45bebb9fa6061bf521cd",
     "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe",
     "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
-    "hia/tests/test_native_network_domains.py": "d797d2315e00793ff7fac53e0cff3c2f3e551bff5ff2cc3b8c231dee89d35dde",
+    "hia/tests/test_native_network_domains.py": "47f3a82ba11d11746e0896bc2d90a34149ff9e69d4837ce176880cad9871e9d1",
     "hia/tests/test_native_policy_summary.py": "277d4215eb243555fc591c54fa050928d01fd1f9e38191919de46eb31879b377",
     "hia/tests/test_native_template_parser.py": "3442b35bae2e3620fcb9ff8c262307a131bd49e7c47ba2e5a6167d9a10917074",
     "hia/tests/test_native_uuid_caller.py": "a0dd3b0b6848a0ab9080839f562b918f9b5a8d75b1bb53400fec647badd50fb0",
@@ -1600,12 +1659,23 @@
     "hia/tests/test_template_parser_abi.py": "0c8b599c6792903891d9ee0abb88a6367661aef0b4c29a525c09dcc7efcab964",
     "hia/tests/test_template_render_abi.py": "a5a2ea257c35e3f8ce3589f03e23facc9c7fdd4daf12517862e9a253921558e7",
     "hia/tests/test_uuid_abi.py": "33d355c8fdcec9663f048f01e1e93184dce12c52177b32375e2ef656e8aaaaf8",
-    "hia/toolchain.json": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
+    "hia/toolchain.json": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
     "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
-    "scripts/format.py": "7d850af7e8dd5d664ff2359238041de91eaa8f64283fd0cdb79f3699ba2e2ecf",
-    "scripts/test_hepta_format_scope.py": "2f2b6d344c708bed4ed8681c78041a02fb1177bb1fcf9aaf84d879eee36ae46c"
+    "scripts/format.py": "5be1f8fa3ba123794debcdb49f42536e3ab5dd5737260b28a38c27a816b4bd53",
+    "scripts/test_hepta_format_scope.py": "97633a7d4163be146a33b9f632866467c601c04670a82e32e00d2a2e4ad5edb4",
+    "codex-rs/execpolicy/src/hia_native_network_host.rs": "2e4c32c076ff91c4130eb4f26e89cd4e069f911cecba5b7f584da28c1b25efa9",
+    "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+    "hia/tests/native_network_host.rs": "464e18c81372b7aac71b919c9e5cd378f5f54393ff00f3aaad4db8fc790af9db",
+    "hia/tests/native_network_host_allocations.rs": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+    "hia/tests/native_network_host_failures.rs": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50",
+    "hia/tests/native_network_host_performance.rs": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+    "hia/tests/network_host_fixtures.rs": "b03d89002a472730924575a8ba19d15f872bb10b559ae9ac2a64234a42aa9f6c",
+    "hia/tests/network_host_predecessor16.py": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428",
+    "hia/tests/test_native_network_host.py": "a0802a18144ae1bc8cb82ec2781799c0eb834ac24668f19a9ce925f5ce67a036",
+    "hia/tests/test_network_host_abi.py": "61f78166c8d003da19d4c8ca53c6f186692b779a990511ee51d14e717ac2e18e",
+    "patches/rama-dns_hermetic_toolchain.patch": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3"
   },
   "workspace_requalification": {
     "status": "passed",
@@ -1647,7 +1717,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "module_count": 16,
+  "module_count": 17,
   "public_api_components": {
     "uuid_matches": {
       "api": "codex_utils_string::find_uuids",
@@ -2625,8 +2695,8 @@
     "applies_to_current_prefix_increment": false,
     "evidence_rule": "Existing per-component reports retain their original hashes and scopes. Historical full CLI, Core consumers and workspace results are not a pass for the newly added prefix path."
   },
-  "production_callers_verification_scope": "Active local scope is command_dispatch_qualification. Published fifteen-module native CI and separate SDK follow-up remain immutable history. Current full CLI, Protocol/Core and previous-component execution requires new sixteen-module CI.",
-  "current_source_inputs_scope": "Exact published ae397 inputs plus twenty frozen files. Eighteen dispatcher files retain V3 execution identity; two formatter files bind their first 32 component checks. Workflow/full-CLI wiring still awaits current CI. Additional maintenance remains UNKNOWN; no product tests were rerun after fix/fmt.",
+  "production_callers_verification_scope": "Current local complete network-host normalization/public owner, standalone execpolicy and listed behavioral gates only. Whole product dispatch and current full CLI/Core/Protocol/prior-component CI remain separate.",
+  "current_source_inputs_scope": "Exact published b762 inputs plus 21 frozen candidate files, 125 total bindings. Actual public execution binds 58 source inputs; other wiring/formats carry their own stated gates. All tested candidate bytes survived final fixes/fmt unchanged. New seventeen-module product CI remains pending.",
   "prefix_match": {
     "schema": "codex.hia.prefix-match-qualification.v1",
     "status": "linux_gnu_component_and_standalone_passed",
@@ -3260,7 +3330,7 @@
       "artifact_admission": "current_qualification.gates.scalar_artifact"
     }
   },
-  "borrowed_module_count": 15,
+  "borrowed_module_count": 16,
   "scalar_module_count": 1,
   "entry_profile_rule": {
     "default": "borrowed-buffers-u32-v1",
@@ -3271,7 +3341,7 @@
   "historical_evidence_scopes": {
     "recorded_at_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
     "applies_to_current_compiler": false,
-    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification retains its recorded fifteen-module local scope; published_allowed_prefixes15_ci records its exact published CI. command_dispatch_qualification is the active sixteen-module local scope. Identity continuity does not transfer historical passes.",
+    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification retains its recorded fifteen-module local scope; published_allowed_prefixes15_ci records its exact published CI. command_dispatch_qualification retains its recorded sixteen-module local scope; published_command_dispatch16_ci records its exact published CI. network_host_qualification is the active seventeen-module local scope. Identity continuity does not transfer historical passes.",
     "fields": [
       "seek_sequence",
       "utf8_boundaries",
@@ -4333,7 +4403,7 @@
     },
     "scope": "Only the exact twelve-module d7/merge sources above. Counts are per run, not added together. All seven prefix timings in each run were slower than original Rust. The source-specific reports retain all timing rows, exact build/artifact identities and limitations; no historical pass qualifies the current thirteen-module source."
   },
-  "active_qualification": "command_dispatch_qualification",
+  "active_qualification": "network_host_qualification",
   "policy_summary_qualification": {
     "status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
     "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
@@ -10873,5 +10943,6 @@
       "publication_promotion_pending": true,
       "scope": "Retained actual pre-maintenance compile/nm/run evidence and independently copied existing bytes. No fresh consumer was linked from copied paths; a separately authorized successor must qualify that operation."
     }
-  }
+  },
+  "source_artifact_record_scope": "The first16 source/artifact records remain byte-preserved history; their source/Core/object/text/archive/library identities equal the current full17 build. Embedded historical command paths are not new executions. The network_host record comes from the actual full17 build."
 }
