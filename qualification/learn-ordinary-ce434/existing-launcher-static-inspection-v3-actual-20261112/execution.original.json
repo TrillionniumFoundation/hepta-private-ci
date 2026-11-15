@@ -1,0 +1,54 @@
+{
+  "schema": "original-launcher-static-classification-execution-v3",
+  "state": "inspection-recorded-static-classification",
+  "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "source_before": {
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": "",
+    "head_after_status": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "sampled_head_stable": true,
+    "clean": true
+  },
+  "source_after": {
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "status": "",
+    "head_after_status": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "sampled_head_stable": true,
+    "clean": true
+  },
+  "inspector_git_blob": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+  "inspector_bytes": 21070,
+  "inspector_sha256": "7efe06fadf8ea6f13b8cfd55945a2a730f2f87d6a98484df1bac2a0e13102315",
+  "contract_git_blob": "b80dd6405702b6cf0074ac823a746eae7b8d3505",
+  "peer_review_git_blob": "a99e1a80bfe820c6d66e643ef47c7529007f2b09",
+  "command": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-classify-root01-v3/inspect.py"
+  ],
+  "child_pid": 1754107,
+  "actual_returncode": 0,
+  "original_process_complete": true,
+  "stdout_complete": true,
+  "stdout_file": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-classify-root01-v3/result.json",
+  "stdout_bytes": 3133,
+  "stdout_sha256": "ac5c699e9f5610f3522f5eb1675bdb2f2e1702b0da4f880b7989c2c5c8dc2b39",
+  "stderr_policy": "discarded to DEVNULL; no source-line diagnostic exported",
+  "target_read_only": true,
+  "target_executed": false,
+  "classification": "unknown_static_purpose",
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "inspection_status": "ok",
+  "seconds": 0.2270744440611452,
+  "wrapper_returncode": 0
+}
