@@ -370,7 +370,8 @@ jobs:
           
           
           def verify_acl_results():
-              report = Path(ENV["CARGO_TARGET_DIR"]) / "nextest" / "local" / "junit.xml"
+              # Nextest 0.9.103 stores reports relative to the Cargo workspace root.
+              report = ROOT / "codex-rs" / "target" / "nextest" / "local" / "junit.xml"
               raw = report.read_bytes()
               (OUT / "acl.junit.xml").write_bytes(raw)
               root = ET.fromstring(raw)
