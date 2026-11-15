@@ -360,6 +360,25 @@ jobs:
             --report "$RUNNER_TEMP/hia-allowed-prefixes.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-allowed-prefixes.log"
 
+      - name: Verify complete command dispatcher continuation ABI
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_command_dispatch_abi.py \
+            --library "$RUNNER_TEMP/hia-native/command_dispatch.so" \
+            --report "$RUNNER_TEMP/hia-command-dispatch-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-command-dispatch-abi.log"
+
+      - name: Compare complete command dispatch with original public Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_command_dispatch.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
+            --report "$RUNNER_TEMP/hia-command-dispatch.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-command-dispatch.log"
+
       - name: Verify installed execution policy command
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -631,3 +650,11 @@ jobs:
             ${{ runner.temp }}/hia-allowed-prefixes-artifacts/*.stderr
             ${{ runner.temp }}/hia-allowed-prefixes-artifacts/capture_rustc.py
             ${{ runner.temp }}/hia-allowed-prefixes-artifacts/compiler-*.json
+            ${{ runner.temp }}/hia-command-dispatch-abi.json
+            ${{ runner.temp }}/hia-command-dispatch-abi.log
+            ${{ runner.temp }}/hia-command-dispatch.json
+            ${{ runner.temp }}/hia-command-dispatch.log
+            ${{ runner.temp }}/hia-command-dispatch-artifacts/*.stdout
+            ${{ runner.temp }}/hia-command-dispatch-artifacts/*.stderr
+            ${{ runner.temp }}/hia-command-dispatch-artifacts/capture_rustc.py
+            ${{ runner.temp }}/hia-command-dispatch-artifacts/compiler-*.json

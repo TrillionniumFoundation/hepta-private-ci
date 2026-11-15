@@ -1,6 +1,7 @@
 use crate::decision::Decision;
 use crate::error::Error;
 use crate::error::Result;
+#[cfg(not(feature = "hia-native"))]
 use crate::executable_name::executable_path_lookup_key;
 use crate::rule::NetworkRule;
 use crate::rule::NetworkRuleProtocol;
@@ -314,6 +315,22 @@ impl Policy {
         self.matches_for_command_with_options(cmd, heuristics_fallback, &MatchOptions::default())
     }
 
+    #[cfg(feature = "hia-native")]
+    pub fn matches_for_command_with_options(
+        &self,
+        cmd: &[String],
+        heuristics_fallback: HeuristicsFallback<'_>,
+        options: &MatchOptions,
+    ) -> Vec<RuleMatch> {
+        crate::hia_native_command_dispatch::matches_for_command(
+            self,
+            cmd,
+            heuristics_fallback,
+            options,
+        )
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn matches_for_command_with_options(
         &self,
         cmd: &[String],
@@ -343,6 +360,7 @@ impl Policy {
         }
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn match_exact_rules(&self, cmd: &[String]) -> Option<Vec<RuleMatch>> {
         let first = cmd.first()?;
         Some(
@@ -353,6 +371,7 @@ impl Policy {
         )
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn match_host_executable_rules(&self, cmd: &[String]) -> Vec<RuleMatch> {
         let Some(first) = cmd.first() else {
             return Vec::new();

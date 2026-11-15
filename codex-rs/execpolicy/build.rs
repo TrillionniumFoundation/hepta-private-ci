@@ -6,4 +6,5 @@ fn main() {
     link_native("policy_summary");
     link_native("network_domains");
     link_native("allowed_prefixes");
+    link_native("command_dispatch");
 }

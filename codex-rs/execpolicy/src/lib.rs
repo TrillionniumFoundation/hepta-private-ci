@@ -39,3 +39,6 @@ pub use rule::Rule;
 pub use rule::RuleMatch;
 pub use rule::RuleRef;
 pub use sandbox_migration::prefix_rule_migration;
+
+#[cfg(feature = "hia-native")]
+mod hia_native_command_dispatch;

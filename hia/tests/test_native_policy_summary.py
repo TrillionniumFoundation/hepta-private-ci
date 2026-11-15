@@ -38,11 +38,11 @@ def sha(path):
 def original_sources():
     originals = {name: (SOURCE / f"{name}.rs").read_text() for name in PINNED}
     for name, indent, native_count, default_count in [
-        ("policy", "    ", 4, 6), ("execpolicycheck", "", 1, 1),
+        ("policy", "    ", 5, 10), ("execpolicycheck", "", 1, 1),
     ]:
         native = re.compile(
             rf'(?m)^{indent}#\[cfg\(feature = "hia-native"\)\]\n'
-            rf'{indent}(?:pub )?fn (?:is_match|from_matches|format_matches_json|compiled_network_domains|get_allowed_prefixes)\('
+            rf'{indent}(?:pub )?fn (?:is_match|from_matches|format_matches_json|compiled_network_domains|get_allowed_prefixes|matches_for_command_with_options)\('
             rf'[\s\S]*?^{indent}\}}\n'
         )
         originals[name], removed = native.subn("", originals[name])

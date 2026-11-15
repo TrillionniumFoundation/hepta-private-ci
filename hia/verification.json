@@ -374,15 +374,63 @@
         "object_sha256": "62b17705ee393f4fd12b07eefc65b2dd76c066e64ca352fdc89323aa1173bb78",
         "library_sha256": "ffc1238130508620f6cf6885d9a5d5406339d7177e271095d84ff01a909943f7"
       }
+    },
+    "command_dispatch": {
+      "source_sha256": "b45b7592b5df2df5fee21ccec693fc9c8e12f445c3883a96b1ab7581cdf4a9c7",
+      "core_sha256": "08fa79e8954e503bd931acab320df8e11a222d857537f5ae58da7565ac7100d2",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "library_sha256": "d2f50a48e8bee61ca358560051436eae2b07c7fa7481183f8fdc1c25b15aa5d6",
+      "library_bytes": 49960,
+      "static_link": {
+        "symbol": "codex_hia_command_dispatch",
+        "library": "libcodex_hia_command_dispatch.so",
+        "object": "command_dispatch.namespaced.o",
+        "archive": "libcodex_hia_command_dispatch.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 40100,
+        "archive_sha256": "fd42b1e13e4247c203cae4eaa6b03d7df742e7a7b6c75739bd84695ed640e559",
+        "text_sha256": "984d42dbc4b0e5120d3ee3b69e49cce9e24ad49dde40f3f95e98690027221d74",
+        "defined_symbols": [
+          "codex_hia_command_dispatch"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "6529fb234ebfff8dcc50be9dab1c33fd0102480684722d4c765c85814baa8605",
+        "library_sha256": "f623638e35b87114821e541ed32d6d7797f3a8a51ea92c7078e4754c012ca401",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_command_dispatch",
+          "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/native-v2/command_dispatch.o",
+          "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/native-v2/command_dispatch.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/native-v2/command_dispatch.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/native-v2/libcodex_hia_command_dispatch.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "f79b9e1280eb54cf0ef0a71c52c5f63fbe4f6710b9a75521f85b6cb21b80236e",
+    "toolchain_lock_sha256": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "47c8c51dfc739096187e5f8adc8ed3cdf55219e22d2b7bdd688ea7d0dd16ccc8",
+  "build_report_sha256": "ee2fae74cbb9dcad2d380d9efc3d653351cde067f43e5d01ffde032128d9d36e",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
@@ -399,7 +447,8 @@
     "prefix_match": "Complete PrefixPattern matching, alternative byte equality and scalar count admission through the opt-in execpolicy caller; HIA owns both decisions.",
     "policy_summary": "Complete pure RuleMatch reduction for Evaluation and CLI summary: presence, strictest decision and explicit-match flag.",
     "network_domains": "Complete Policy::compiled_network_domains: HIA selects non-Prompt rules and computes ordered last-winner raw-host Allow/Forbidden vectors.",
-    "allowed_prefixes": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication."
+    "allowed_prefixes": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication.",
+    "command_dispatch": "Complete Policy command-rule dispatch: exact/host/fallback routing, ordered callbacks, component path equality, retention and scheduled original host effects."
   },
   "seek_sequence": {
     "schema": "codex.hia.seek-sequence-differential.v1",
@@ -1188,7 +1237,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "scope": "Actual fifteen-module local B1/B2/B3 build, exact transferred artifacts and scoped original allowed-prefix owner gates. Fourteen final code files match actual tested bytes; final fix/fmt changed no bytes and no post-fmt tests ran. Current fifteen-module full CLI, Protocol/Core consumers, previous component reruns, whole workspace and platforms remain pending; no whole Policy/Core, performance, default-release or retirement closure.",
+  "scope": "Exact twenty-file content freeze for scoped Draft publication: eighteen dispatcher files equal actual V3 execution inputs; two formatter files bind 32 component tests. The successful last V7 just fmt and all 9,883 unchanged source files establish the content identity. Additional maintenance job remains UNKNOWN, with no invented completion/staging/diff/tree result. No Codex product compilation/tests were rerun after final fix/fmt; formatter fixtures invoke real rustfmt and Cargo metadata. Current full CLI/Protocol/Core/prior-component and receipt-mutation CI, workspace, platform, performance, default-release and retirement qualification remain open.",
   "evidence_reports": {
     "seek_sequence": {
       "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
@@ -1443,21 +1492,22 @@
     }
   },
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "9078f6f27a37e7b164ced2034e6fa0ae7ee3dbb5f1761e925c7c46b364236b66",
+    ".github/workflows/codex-hia-native.yml": "4f2626f21959f1ff0ef86c37c47eba8976bbc5b6bfc411da1de02b3ca419397c",
     ".github/workflows/rusty-v8-release.yml": "25eb9da672e26f1da7f0c186c8f1b7395530f4f139aad6dcce5e234e9e3ced59",
     ".github/workflows/v8-canary.yml": "89f6a2bfeb3a6dbec431c64872c61dfb5e3f0f5444bf0c62a62237129734679d",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/cli/Cargo.toml": "b85af25d93b7994e9c7bc74ec8a29087be056f5cfe853f76ca63332b64275119",
     "codex-rs/execpolicy/BUILD.bazel": "1e5a7a8c87ce0a8f95fb482269d7f2624b94242f1a2082237f660f8386a3fdb8",
     "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
-    "codex-rs/execpolicy/build.rs": "a1eebc438f0000fc025e9de44fe3c2ba4adb4671f1b3ebf1c23c5d8afd0fc7a9",
+    "codex-rs/execpolicy/build.rs": "78b10ea09beb3834b6ec7080ce41eab824028e7c11b52e5cec02c71f40a415dc",
     "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
     "codex-rs/execpolicy/src/hia_native_allowed_prefixes.rs": "d00759c4308e11d16943480394c1573f8071cd887a9657bf7e1987503dfd3262",
+    "codex-rs/execpolicy/src/hia_native_command_dispatch.rs": "1f492c5fcb9febf6da77658ee4db36f6502cfad4faca400bdb7bff264fd3a34a",
     "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
     "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
     "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
-    "codex-rs/execpolicy/src/lib.rs": "83f34b8a77ee2e7aef43f30f622bf5fca813785b352c87476f5dca8663e536d7",
-    "codex-rs/execpolicy/src/policy.rs": "82683563297d7379bde5593662482042525554145816ebf9cbaf5c81f995b10b",
+    "codex-rs/execpolicy/src/lib.rs": "c720b4ad431822f5fdebb43de044b972870d29a14309a5e6557730e35a6e77f9",
+    "codex-rs/execpolicy/src/policy.rs": "ef8ff4f7e23771dde26ba7082bc04f3ee3fe8fb272eee67788907c564d82dadd",
     "codex-rs/execpolicy/src/rule.rs": "2bb6276d98078f67b67717b265b006c280ec503007c94daa1ec7f58ca4959221",
     "codex-rs/linux-sandbox/tests/suite/landlock.rs": "3301d411053aaf43bf60435261aef451b115a1ba775a19d395cc104a203a9fcd",
     "codex-rs/login/Cargo.toml": "09f35415c4cdd324a270eaa95d27a99f16c9bf5519c55c8c128207a9235f2f50",
@@ -1491,6 +1541,7 @@
     "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
     "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "hia/command_dispatch.hepta": "b45b7592b5df2df5fee21ccec693fc9c8e12f445c3883a96b1ab7581cdf4a9c7",
     "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
     "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
     "hia/network_domains.hepta": "7ef166afa54278b0ec0957a9e210141cc58ca31652518a5d127ffff4a0eb9859",
@@ -1501,10 +1552,16 @@
     "hia/template_index.hepta": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
     "hia/template_parser.hepta": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
     "hia/template_render.hepta": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
+    "hia/tests/command_dispatch_fixtures.rs": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
     "hia/tests/native_allowed_prefixes.rs": "e918da1f2dfb3a6ab26ae906f8224a138c5bef6d67718b7bb4db87f13349616a",
     "hia/tests/native_allowed_prefixes_allocations.rs": "8be873261d160e41d19ca888541684905fd294c1dd53cbc5b13c71b24262f0f8",
     "hia/tests/native_allowed_prefixes_failures.rs": "d1cf8b55b9f2b04119336fd7c57fd5ca925747fd0bdd1e82d1879a2af89f6155",
     "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
+    "hia/tests/native_command_dispatch.rs": "08f7356550d8009422c7de080d676121009850ed3bc9401ad828d5db22c54e4c",
+    "hia/tests/native_command_dispatch_allocations.rs": "cb7abaa46b70a49727769a3fccf6d0ae0bbcd5e9a370e49d56dc8a9b6d441457",
+    "hia/tests/native_command_dispatch_effects.rs": "3f0453beac3fed2b892fd2cd23f7bd62a46b65d25428b1763ff7890247377456",
+    "hia/tests/native_command_dispatch_failures.rs": "022f16a1e046902da226a94ec1a077aaf18944240913a57c41ea68558873b54f",
+    "hia/tests/native_command_dispatch_performance.rs": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
     "hia/tests/native_execpolicy_allocations.rs": "7510b8911787fd638becdd63b70ec9df86228f11b62125e12cf7649e88b1c358",
     "hia/tests/native_execpolicy_caller.rs": "67760e2fb3ec5103a548b746c0e49f5978a05b4d5ca59e3785aea79d805e3b6f",
     "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
@@ -1522,14 +1579,16 @@
     "hia/tests/native_uuid_caller.rs": "ea5abc5c9efe0f3c09a257d23853b572ec266ef9358b39296f1e221fc7bff81f",
     "hia/tests/test_allowed_prefixes_abi.py": "c1201cf6fe526bd71b8a4c9b26f0b2e27a3eae7f7756ac137f8a44e48728cd1c",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
-    "hia/tests/test_installed_codex.py": "a3e763e5ac7b8c230c42523f3e9b1065ffa2dc2bc5f5086c8b6a5a0a5fe976a5",
-    "hia/tests/test_installed_execpolicy.py": "cde069eecea4b0b1e470aa3ee94e456a49b3dfd763fc4be19638e87d2cbc8e66",
+    "hia/tests/test_command_dispatch_abi.py": "f528809a00e654dfe1c69c4985a5b31e9d41ef1efa12a080bfd1ee1dacc855f7",
+    "hia/tests/test_installed_codex.py": "53acf908b3de7c8c8c05991772737bd83a90fef9673db1d8d4d0e8c86bb15edf",
+    "hia/tests/test_installed_execpolicy.py": "1f752d7deebc8e3a49e81096c1da0c7adb3a8a5dc5447df9ea60b731aab6d843",
     "hia/tests/test_native_allowed_prefixes.py": "68d2ed564c9e9271179d5432d558ee12700026fd0869af0d82e1185e12a682e3",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
+    "hia/tests/test_native_command_dispatch.py": "5f7da2f0ceb96205846118f905bfd43d73e8ac1a112f45bebb9fa6061bf521cd",
     "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe",
     "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
     "hia/tests/test_native_network_domains.py": "d797d2315e00793ff7fac53e0cff3c2f3e551bff5ff2cc3b8c231dee89d35dde",
-    "hia/tests/test_native_policy_summary.py": "c4475772e34ca24d0d32b5f30b2ca5589924c2b43d935f0196cf248d96c1c8e4",
+    "hia/tests/test_native_policy_summary.py": "277d4215eb243555fc591c54fa050928d01fd1f9e38191919de46eb31879b377",
     "hia/tests/test_native_template_parser.py": "3442b35bae2e3620fcb9ff8c262307a131bd49e7c47ba2e5a6167d9a10917074",
     "hia/tests/test_native_uuid_caller.py": "a0dd3b0b6848a0ab9080839f562b918f9b5a8d75b1bb53400fec647badd50fb0",
     "hia/tests/test_network_domains_abi.py": "77bed8474ea1859d7f0b071069c8ec34c9a36882b8cb756652dd87b9e15d32da",
@@ -1541,10 +1600,12 @@
     "hia/tests/test_template_parser_abi.py": "0c8b599c6792903891d9ee0abb88a6367661aef0b4c29a525c09dcc7efcab964",
     "hia/tests/test_template_render_abi.py": "a5a2ea257c35e3f8ce3589f03e23facc9c7fdd4daf12517862e9a253921558e7",
     "hia/tests/test_uuid_abi.py": "33d355c8fdcec9663f048f01e1e93184dce12c52177b32375e2ef656e8aaaaf8",
-    "hia/toolchain.json": "f79b9e1280eb54cf0ef0a71c52c5f63fbe4f6710b9a75521f85b6cb21b80236e",
+    "hia/toolchain.json": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-    "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0"
+    "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
+    "scripts/format.py": "7d850af7e8dd5d664ff2359238041de91eaa8f64283fd0cdb79f3699ba2e2ecf",
+    "scripts/test_hepta_format_scope.py": "2f2b6d344c708bed4ed8681c78041a02fb1177bb1fcf9aaf84d879eee36ae46c"
   },
   "workspace_requalification": {
     "status": "passed",
@@ -1586,7 +1647,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "module_count": 15,
+  "module_count": 16,
   "public_api_components": {
     "uuid_matches": {
       "api": "codex_utils_string::find_uuids",
@@ -2564,8 +2625,8 @@
     "applies_to_current_prefix_increment": false,
     "evidence_rule": "Existing per-component reports retain their original hashes and scopes. Historical full CLI, Core consumers and workspace results are not a pass for the newly added prefix path."
   },
-  "production_callers_verification_scope": "Active local scope is allowed_prefixes_qualification. Published fourteen-module CI is immutable history; current full CLI, exact Protocol consumer, Core consumers and prior component reruns remain pending.",
-  "current_source_inputs_scope": "Exact published b39 source inputs plus fourteen frozen allowed-prefix files. Every changed hash binds actual execution; final fix/fmt changed zero bytes.",
+  "production_callers_verification_scope": "Active local scope is command_dispatch_qualification. Published fifteen-module native CI and separate SDK follow-up remain immutable history. Current full CLI, Protocol/Core and previous-component execution requires new sixteen-module CI.",
+  "current_source_inputs_scope": "Exact published ae397 inputs plus twenty frozen files. Eighteen dispatcher files retain V3 execution identity; two formatter files bind their first 32 component checks. Workflow/full-CLI wiring still awaits current CI. Additional maintenance remains UNKNOWN; no product tests were rerun after fix/fmt.",
   "prefix_match": {
     "schema": "codex.hia.prefix-match-qualification.v1",
     "status": "linux_gnu_component_and_standalone_passed",
@@ -3199,7 +3260,7 @@
       "artifact_admission": "current_qualification.gates.scalar_artifact"
     }
   },
-  "borrowed_module_count": 14,
+  "borrowed_module_count": 15,
   "scalar_module_count": 1,
   "entry_profile_rule": {
     "default": "borrowed-buffers-u32-v1",
@@ -3210,7 +3271,7 @@
   "historical_evidence_scopes": {
     "recorded_at_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
     "applies_to_current_compiler": false,
-    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification is the active fifteen-module local scope. Identity continuity does not transfer historical passes.",
+    "rule": "The listed objects retain their historical source scopes. current_qualification is V3 local evidence; published_v3_ci_history, stack_frame_qualification and published_v4_ci_history retain their V3/V4 scopes. policy_summary_qualification and network_domains_qualification retain pre-CI local checkpoints; published_policy_summary13_ci_history and published_network_domains14_ci_history record their exact published CI. allowed_prefixes_qualification retains its recorded fifteen-module local scope; published_allowed_prefixes15_ci records its exact published CI. command_dispatch_qualification is the active sixteen-module local scope. Identity continuity does not transfer historical passes.",
     "fields": [
       "seek_sequence",
       "utf8_boundaries",
@@ -4272,7 +4333,7 @@
     },
     "scope": "Only the exact twelve-module d7/merge sources above. Counts are per run, not added together. All seven prefix timings in each run were slower than original Rust. The source-specific reports retain all timing rows, exact build/artifact identities and limitations; no historical pass qualifies the current thirteen-module source."
   },
-  "active_qualification": "allowed_prefixes_qualification",
+  "active_qualification": "command_dispatch_qualification",
   "policy_summary_qualification": {
     "status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
     "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
@@ -5645,6 +5706,2277 @@
       "durable_job_successes": 6,
       "durable_job_failures": 2,
       "scope": "Independent source/blob/preimage/archive/log/capture/runtime-status review, not new test execution. Unknown earlier worktree-setup terminal state remains unknown; failed owner/maintenance jobs remain failed."
+    },
+    "recorded_at_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
+    "applies_to_current_command_dispatch_increment": false,
+    "publication_followup": "published_allowed_prefixes15_ci"
+  },
+  "published_allowed_prefixes15_ci": {
+    "status": "published_fifteen_module_native_ci_passed_broader_ci_failed",
+    "source_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
+    "source_tree": "6d15a6c7cb648af9e85418d3aa03f1260f77548c",
+    "merge_revision": "c28ba747003858d306a4ac827996bddea3958a8d",
+    "merge_tree": "6d15a6c7cb648af9e85418d3aa03f1260f77548c",
+    "applies_to_current_command_dispatch_increment": false,
+    "module_count": 15,
+    "borrowed_module_count": 14,
+    "scalar_module_count": 1,
+    "source_bindings_verified": 91,
+    "native_runs": [
+      {
+        "run_id": 43701762416,
+        "event": "push",
+        "job_id": 132774232496,
+        "actual_checkout": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "successful_steps": 49,
+        "artifact_id": 14158605093,
+        "zip_sha256": "bd6f30caa63411734265cd75e4b03c66bbe7a4594f5feab6716fe8514a8bd7ea",
+        "all_members_verified": 162,
+        "available_local_members_compared": 162,
+        "receipt_checks": 70,
+        "scalar_artifact_checks": 122,
+        "build_report_sha256": "1cb19af244e46b1f082f4870f869aa83f8a0a53cf324d78c7da4a5cafac0c72b",
+        "owner_tests": {
+          "hia-native-crates.log": {
+            "passed": 198,
+            "reported_skipped": 0,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-default-crates.log": {
+            "passed": 185,
+            "reported_skipped": 0,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-codex-owners.log": {
+            "passed": 4474,
+            "reported_skipped": 6,
+            "packages": [
+              "codex-cli",
+              "codex-arg0",
+              "codex-tui"
+            ]
+          },
+          "hia-core-execpolicy.log": {
+            "passed": 11,
+            "reported_skipped": 3870,
+            "packages": [
+              "codex-core"
+            ]
+          },
+          "hia-core-network-domains.log": {
+            "passed": 1,
+            "reported_skipped": 3880,
+            "packages": [
+              "codex-core"
+            ]
+          },
+          "hia-protocol-allowed-prefixes.log": {
+            "passed": 1,
+            "reported_skipped": 300,
+            "packages": [
+              "codex-protocol"
+            ]
+          }
+        },
+        "standalone": {
+          "cases": 30,
+          "processes": 60,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match"
+          ],
+          "native_binary_sha256": "bcce66e4089134a98f8a993beb67a530e66d577d6c79ee1662543225b5301541",
+          "reference_binary_sha256": "4855456b198005fbf449b2aeb33730702b496665df1979801f298ee4c54a2041",
+          "relocated_copies_match": true
+        },
+        "full_cli": {
+          "cases": 34,
+          "startup_cases": 2,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_allowed_prefixes",
+            "codex_hia_ascii_json_fragment",
+            "codex_hia_markdown_location",
+            "codex_hia_metric_tag",
+            "codex_hia_network_domains",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match",
+            "codex_hia_seek_sequence",
+            "codex_hia_template_index",
+            "codex_hia_template_parser",
+            "codex_hia_template_render",
+            "codex_hia_utf8_prefix"
+          ],
+          "native_binary_sha256": "8d1cf445962763d40be858a7bfae2fcf66d13be84fbd70678101745b29e0df15",
+          "reference_binary_sha256": "da2b08c9a7a73af85e8cbed6a74532632905772b97545a36bc2d51a7b0757b4b",
+          "relocated_copies_match": true,
+          "case_dispatch_counts": {
+            "codex": 30,
+            "stdin": 2,
+            "codex_arg1": 2
+          }
+        }
+      },
+      {
+        "run_id": 43701773665,
+        "event": "pull_request",
+        "job_id": 132774266363,
+        "actual_checkout": "c28ba747003858d306a4ac827996bddea3958a8d",
+        "successful_steps": 49,
+        "artifact_id": 14157976605,
+        "zip_sha256": "e1f85d9b4380372d4b7f340e9cb2af6c39d84f2c436b08d478a37ea856e1fcf5",
+        "all_members_verified": 162,
+        "available_local_members_compared": 135,
+        "receipt_checks": 70,
+        "scalar_artifact_checks": 122,
+        "build_report_sha256": "2014cfa9ad0f8adab9757bcbb3bb455a17d185427b3d8fd62cb2a2c074487b89",
+        "owner_tests": {
+          "hia-native-crates.log": {
+            "passed": 198,
+            "reported_skipped": 0,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-default-crates.log": {
+            "passed": 185,
+            "reported_skipped": 0,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-codex-owners.log": {
+            "passed": 4474,
+            "reported_skipped": 6,
+            "packages": [
+              "codex-cli",
+              "codex-arg0",
+              "codex-tui"
+            ]
+          },
+          "hia-core-execpolicy.log": {
+            "passed": 11,
+            "reported_skipped": 3870,
+            "packages": [
+              "codex-core"
+            ]
+          },
+          "hia-core-network-domains.log": {
+            "passed": 1,
+            "reported_skipped": 3880,
+            "packages": [
+              "codex-core"
+            ]
+          },
+          "hia-protocol-allowed-prefixes.log": {
+            "passed": 1,
+            "reported_skipped": 300,
+            "packages": [
+              "codex-protocol"
+            ]
+          }
+        },
+        "standalone": {
+          "cases": 30,
+          "processes": 60,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match"
+          ],
+          "native_binary_sha256": "bcce66e4089134a98f8a993beb67a530e66d577d6c79ee1662543225b5301541",
+          "reference_binary_sha256": "4855456b198005fbf449b2aeb33730702b496665df1979801f298ee4c54a2041",
+          "relocated_copies_match": true
+        },
+        "full_cli": {
+          "cases": 34,
+          "startup_cases": 2,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_allowed_prefixes",
+            "codex_hia_ascii_json_fragment",
+            "codex_hia_markdown_location",
+            "codex_hia_metric_tag",
+            "codex_hia_network_domains",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match",
+            "codex_hia_seek_sequence",
+            "codex_hia_template_index",
+            "codex_hia_template_parser",
+            "codex_hia_template_render",
+            "codex_hia_utf8_prefix"
+          ],
+          "native_binary_sha256": "8d1cf445962763d40be858a7bfae2fcf66d13be84fbd70678101745b29e0df15",
+          "reference_binary_sha256": "da2b08c9a7a73af85e8cbed6a74532632905772b97545a36bc2d51a7b0757b4b",
+          "relocated_copies_match": true,
+          "case_dispatch_counts": {
+            "codex": 30,
+            "stdin": 2,
+            "codex_arg1": 2
+          }
+        }
+      }
+    ],
+    "counts_per_native_run": {
+      "allowed_prefixes": {
+        "raw_calls": 6118,
+        "raw_success": 3810,
+        "raw_error_no_write": 2308,
+        "raw_concurrent_included": 256,
+        "public_comparisons": 11270,
+        "public_concurrent_included": 512,
+        "entry_observations": 16,
+        "effect_and_panic_cases": 6,
+        "allocation_cases": 31,
+        "zero_allocation_cases": 12,
+        "callee_rejections": 35,
+        "ignored_pattern_transport_cases": 5
+      },
+      "network_domains": {
+        "raw_calls": 8244,
+        "raw_error_no_write": 997,
+        "public_comparisons": 67976,
+        "public_concurrent_included": 512,
+        "allocation_cases": 25,
+        "zero_allocation_cases": 10,
+        "callee_rejections": 23
+      },
+      "policy_summary": {
+        "raw_calls": 3955,
+        "raw_error_no_write": 875,
+        "public_comparisons": 10356,
+        "mutable_states": 23,
+        "allocation_cases": 30,
+        "zero_allocation_cases": 20,
+        "callee_rejections": 18
+      },
+      "prefix": {
+        "raw_calls": 5937,
+        "raw_error_no_write": 2310,
+        "scalar_calls": 158100,
+        "public_comparisons": 49938,
+        "allocation_cases": 20,
+        "zero_allocation_cases": 9
+      }
+    },
+    "prior_component_reports_per_run": {
+      "total": 32,
+      "boolean_passed": 23,
+      "status_passed": 8,
+      "legacy_assertion_counts": 1
+    },
+    "diagnostic_timing_rows_per_run": 37,
+    "slower_than_original_rows_per_run": 37,
+    "performance_qualified": false,
+    "broader_runs": [
+      {
+        "id": 43701773797,
+        "name": "blocking-ci",
+        "event": "pull_request",
+        "conclusion": "failure",
+        "head_sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "total_jobs": 37,
+        "job_counts": {
+          "success": 17,
+          "failure": 15,
+          "cancelled": 1,
+          "skipped": 4
+        }
+      },
+      {
+        "id": 43701773658,
+        "name": "Hepta architecture convergence",
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "total_jobs": 3,
+        "job_counts": {
+          "success": 3
+        }
+      },
+      {
+        "id": 43701773600,
+        "name": "v8-canary",
+        "event": "pull_request",
+        "conclusion": "success",
+        "head_sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "total_jobs": 3,
+        "job_counts": {
+          "success": 1,
+          "skipped": 2
+        }
+      }
+    ],
+    "failure_log_coverage": {
+      "nonsuccess_jobs": 16,
+      "available_original_logs": 13,
+      "actual_checkout_bound_jobs": [
+        132774918580,
+        132774918740,
+        132774918762,
+        132774918782,
+        132774918807,
+        132774918824,
+        132774918831,
+        132774918833,
+        132774918839,
+        132774918845,
+        132774918884,
+        132789833870
+      ],
+      "workflow_only_bound_jobs": [
+        132783415776
+      ],
+      "unavailable_original_log_jobs": [
+        132774918803,
+        132774918822,
+        132774918891
+      ]
+    },
+    "root_broader_review": {
+      "passed_read_only_review": true,
+      "verified_job_count_across_three_workflows": 43,
+      "evidence_references_verified": 49,
+      "blocking_ci_passed": false,
+      "product_builds_or_tests_executed": false
+    },
+    "paired_base_comparison_performed": false,
+    "historical_failure_causes_substituted": false,
+    "count_caveat": "Bazel targets, cached passes, retries, Rust test cases and replayed log tails are separate quantities and are not added together.",
+    "remaining_limits": {
+      "whole_policy_migrated": false,
+      "whole_core_suite_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "whole_codex_rewritten": false,
+      "legacy_source_retired": false
+    },
+    "evidence_path_scope": "Paths are relative to the external evidence root /workspace/scratch/9f0b8ba180a8, not checked-in repository paths.",
+    "reports": [
+      {
+        "path": "ci-evidence/allowed-prefixes15/root-native-ci-verification.json",
+        "bytes": 35127,
+        "sha256": "f4370945ee0cc477f7f61a94e36cef1f264e725f4a730e710dd540e55969990a"
+      },
+      {
+        "path": "ci-evidence/allowed-prefixes15/root-component-supplement.json",
+        "bytes": 4536,
+        "sha256": "5defc9eb637faafe6e2d9a734db7c235b81b9937ac0cc528ffb13fc9fbea24a0"
+      },
+      {
+        "path": "ci-evidence/allowed-prefixes15/native-ci-summary.json",
+        "bytes": 674961,
+        "sha256": "bee371e504dbb2052caad5beb819c2d69a609bf9906c9cb0edf96f2bc33c79e5"
+      },
+      {
+        "path": "ci-evidence/allowed-prefixes15/broader-final-audit.json",
+        "bytes": 58369,
+        "sha256": "9219ec20986a29b0557793434bd4983884c2c9bb757b29174650be5788f72d0a"
+      },
+      {
+        "path": "ci-evidence/allowed-prefixes15/root-broader-final-verification.json",
+        "bytes": 13306,
+        "sha256": "15be17bb55beb1a32716c56523f86f7cba4d4fad0db068a81d10f309f6048775"
+      }
+    ],
+    "scope": "Exact published fifteen-module push and pull-request native execution; no current sixteen-module qualification is inherited. Earlier local checkpoint failures and performance values remain unchanged."
+  },
+  "separate_sdk_resolver_followup": {
+    "status": "separate_sdk_patch_selected_jobs_passed",
+    "pull_request": 6374,
+    "source": {
+      "head": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+      "base": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "merge": "4e67c46faeee0e85cc92913fba5b0f2c4a3715bf",
+      "head_tree": "af3866ee30de32f6b7b9c7cfe368a4fb8f3e0c81",
+      "merge_tree": "af3866ee30de32f6b7b9c7cfe368a4fb8f3e0c81",
+      "merge_parents": [
+        "ae39735ac801c33c2166f043ea1471c3c445460a",
+        "e744466830b5c823b723d81c2b6cab9c95abd60b"
+      ]
+    },
+    "patch": {
+      "path": "published-patch.patch",
+      "bytes": 4014,
+      "sha256": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+      "git_blob_sha1": "a360709903961c9d656d455959b142f3b1a3eaca"
+    },
+    "included_in_command_dispatch_source": false,
+    "run_id": 43706434299,
+    "jobs": [
+      {
+        "job_id": 132789040781,
+        "name": "sdk / sdks",
+        "actual_checkout": "4e67c46faeee0e85cc92913fba5b0f2c4a3715bf",
+        "conclusion": "success"
+      },
+      {
+        "job_id": 132789040784,
+        "name": "sdk / python-sdk",
+        "actual_checkout": "4e67c46faeee0e85cc92913fba5b0f2c4a3715bf",
+        "conclusion": "success"
+      }
+    ],
+    "sdk_steps_passed": 19,
+    "typescript_suites_passed": 5,
+    "typescript_tests_passed": 47,
+    "python_steps_passed": 6,
+    "python_tests_passed": 131,
+    "python_tests_skipped": 38,
+    "python_binary_scope": "Python CI installs the existing codex-cli-bin 0.147.0 package; it is not a binary compiled from this source.",
+    "binding_generation_independently_observed": false,
+    "offline_rust_object_nm_completed": false,
+    "dns_runtime_qualified": false,
+    "whole_repository_ci_passed": false,
+    "broader_final_runs": [
+      {
+        "id": 43706434299,
+        "head_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+        "counts": {
+          "success": 16,
+          "failure": 13,
+          "skipped": 8
+        }
+      },
+      {
+        "id": 43706434309,
+        "head_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+        "counts": {
+          "success": 3
+        }
+      },
+      {
+        "id": 43706434295,
+        "head_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+        "counts": {
+          "success": 1,
+          "skipped": 2
+        }
+      }
+    ],
+    "broader_failure_log_coverage": {
+      "failed_jobs": 13,
+      "cancelled_jobs": 0,
+      "available_original_logs": 13,
+      "actual_checkout_bound_jobs": [
+        132789041019,
+        132789041069,
+        132789040960,
+        132789041055,
+        132789041029,
+        132789041036,
+        132789041081,
+        132789041085,
+        132789041078,
+        132789041087,
+        132789041049,
+        132801624395
+      ],
+      "workflow_only_bound_jobs": [
+        132794247181
+      ],
+      "unavailable_original_log_jobs": []
+    },
+    "broader_root_reviewed_jobs": 43,
+    "broader_root_evidence_references": 31,
+    "required_aggregate_rejects_only_bazel": true,
+    "gnu_clippy": {
+      "job_id": 132789040958,
+      "steps_passed": 10,
+      "warnings_observed": true,
+      "strict_D_warnings_qualified": false
+    },
+    "gnu_compile": {
+      "job_id": 132789041027,
+      "steps_passed": 11,
+      "mode": "fastbuild; target and exec Rust debug assertions disabled",
+      "fully_optimized_release_qualified": false
+    },
+    "root_read_only_review_passed": true,
+    "root_evidence_references_verified": 7,
+    "log_excerpt_normalization": {
+      "method": "Remove ANSI SGR color sequences only; full original log bytes independently SHA-256 verified",
+      "changed_excerpt_count": 3
+    },
+    "offline_probe_failures": [
+      {
+        "attempt": 1,
+        "job_id": "1a1deddbe3e-392-2588",
+        "result": "failed_exit_1",
+        "cause": "Offline Cargo directory-source checksum missing for unrelated crc32fast; no candidate binding generation."
+      },
+      {
+        "attempt": 2,
+        "job_id": "1a1dee24947-392-25a0",
+        "result": "failed_exit_1",
+        "cause": "All 30 locked archive checksums verified; offline candidate build script ran, then libclang could not find builtin stddef.h."
+      },
+      {
+        "attempt": 3,
+        "job_id": "1a1dee68ff0-392-25b4",
+        "result": "failed_exit_1",
+        "cause": "Both explicitly checked clang-21 resource include paths lacked required headers; no Cargo command ran. This was not an exhaustive host search."
+      }
+    ],
+    "evidence_path_scope": "Paths are relative to the external evidence root /workspace/scratch/9f0b8ba180a8, not checked-in repository paths.",
+    "reports": [
+      {
+        "path": "ci-evidence/sdk-resolver-abi6374/sdk-terminal-audit.json",
+        "bytes": 13712,
+        "sha256": "2bf4a1dcc80a1cc92642439147f328e3553f1d89687642150d165ad1169bb232"
+      },
+      {
+        "path": "ci-evidence/sdk-resolver-abi6374/root-sdk-terminal-verification.json",
+        "bytes": 4938,
+        "sha256": "bb77a917431404d8369b6371bab752bddc17302c9cb3e4b68b3770b0b88c3664"
+      },
+      {
+        "path": "ci-evidence/sdk-resolver-abi6374/root-broader-final-verification.json",
+        "bytes": 11625,
+        "sha256": "d741836a6a92dce108c273358997be15824babf4881531a2575fcdcc1489156d"
+      },
+      {
+        "path": "ci-evidence/sdk-resolver-abi6374/root-gnu-success-verification.json",
+        "bytes": 3895,
+        "sha256": "0a01f1faf2bbdfc82a482947f2945093f9dc21c615a7855ab7150b28120bccec"
+      },
+      {
+        "path": "sdk-resolver-root-review/sdk-abi-probe-summary.json",
+        "bytes": 9708,
+        "sha256": "ac7b08976e912885d215e3b1b893bbbebb7e552755ba28f22719440f33a1e533"
+      }
+    ],
+    "scope": "Independent Draft PR 6374; selected actual SDK/Python jobs do not modify the recorded module-15 failure or qualify module-16/HIA-native. Offline probe failures remain preserved."
+  },
+  "command_dispatch_qualification": {
+    "status": "exact_content_frozen_scoped_local_runtime_and_formatter_qualified_current_ci_pending",
+    "base_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
+    "base_tree": "6d15a6c7cb648af9e85418d3aa03f1260f77548c",
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "target": "x86_64-unknown-linux-gnu",
+    "rustc": "1.96.1",
+    "module_count": 16,
+    "scope": "Exact twenty-file content freeze for scoped Draft publication: eighteen dispatcher files equal actual V3 execution inputs; two formatter files bind 32 component tests. The successful last V7 just fmt and all 9,883 unchanged source files establish the content identity. Additional maintenance job remains UNKNOWN, with no invented completion/staging/diff/tree result. No Codex product compilation/tests were rerun after final fix/fmt; formatter fixtures invoke real rustfmt and Cargo metadata. Current full CLI/Protocol/Core/prior-component and receipt-mutation CI, workspace, platform, performance, default-release and retirement qualification remain open.",
+    "whole_policy_migrated": false,
+    "performance_qualified": false,
+    "additional_final_maintenance_passed": false,
+    "build_and_artifacts": {
+      "report": "native_build",
+      "execution_report": "native_build_v2_execution",
+      "build_command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/source-v2/hia/build.py",
+        "--hepta-root",
+        "/workspace/scratch/9f380f39cb05/v9-truncate-experiment/Hepta",
+        "--output",
+        "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/native-v2"
+      ],
+      "build_exit_code": 0,
+      "modules": 16,
+      "borrowed_modules": 15,
+      "scalar_modules": 1,
+      "build_mode": "native-selfhost",
+      "compiler_fixed_point": true,
+      "compiler_generations": [
+        "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
+      ],
+      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "toolchain_lock_sha256": "7ae0835945e34a6e251711492d349de392bda130a03ccccd169ce9db929262a4",
+      "prior15_source_core_library_archive_records_unchanged": true,
+      "artifact_identity_scope": "The first fifteen HIA module bytes retain their exact prior artifact identities. This does not qualify changed Rust dispatch or claim that all old component gates reran.",
+      "transferred_artifact_files": 216,
+      "transferred_raw_bytes": 26676245,
+      "remote_rebuilt": false,
+      "actual_public_native_archive_bindings": 6,
+      "current_receipt_mutation_suite_executed": false,
+      "current_receipt_mutation_suite_status": "pending current sixteen-module CI",
+      "actual_cargo_build_receipt_admission": "Executed by real default/native Cargo builds; not equivalent to the separate mutation suite."
+    },
+    "raw_abi": {
+      "passed": true,
+      "native_calls": 148057,
+      "sequential_session_steps": 137850,
+      "success": 141492,
+      "completed_sessions": 37157,
+      "unusable_path": 5,
+      "truncation": 2038,
+      "error_no_write": 6565,
+      "trailing": 30,
+      "word_mutation": 2032,
+      "capacity_precedence": 160,
+      "unaligned": 40,
+      "components": 49,
+      "component_truncation": 2702,
+      "invalid_tail_after_mismatch": 49,
+      "large_components": 14,
+      "full_width_counters": 512,
+      "concurrent": 2576,
+      "skipped": 0,
+      "concurrent_sessions": 256,
+      "error_contract": "complete frame/state validation before output capacity; errors write no bytes",
+      "buffer_contract": "disjoint buffers; source/workspace unchanged; successful output prefix exactly 200 bytes",
+      "whole_policy_qualification": false,
+      "performance_qualification": false,
+      "report": "actual_remote_raw",
+      "earlier_local_report": "earlier_local_raw_v3",
+      "concurrent_calls_are_included": true,
+      "scope": "Real f0 buffer/state transitions and independent wire model; actual original Rust semantics are checked separately by public_v3."
+    },
+    "public_owner": {
+      "comparisons": 33311,
+      "concurrent": 256,
+      "evaluation_cases": 12,
+      "explicit": [
+        "empty-command",
+        "empty-command-fallback",
+        "unknown-exact",
+        "exact-prefix",
+        "exact-no-short-circuit",
+        "exact-none-host-same-bucket",
+        "host-allowlist-missing",
+        "host-allowlist-empty",
+        "empty-host-bucket",
+        "absolute-root",
+        "reentrant-rule",
+        "giant-tail-exact-miss"
+      ],
+      "mutations_and_overlays": 8,
+      "owned_result_cases": 1,
+      "parser_cases": 4,
+      "passed": true,
+      "scope": "actual default/native public dispatch, return ownership, full serialized variants/metadata, callbacks, parser example consumer",
+      "sequential": 33055,
+      "skipped": 0,
+      "binary_sha256": "2debf82c96b6cc21a9acdbd57a038bdb790a9a1b43c8e58d219baae85c55ac9c",
+      "oracle": {
+        "revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+        "owners": {
+          "policy": {
+            "token_count": 2372,
+            "token_sha256": "080a1946165e5555b5789e5705fdae77f117f4c0300f6159e682f1678ff79254"
+          },
+          "decision": {
+            "token_count": 134,
+            "token_sha256": "62c968bd0e18a20e2c4e4e814f115f7be66f5ddb69455679b28155be2a4dc9d2"
+          },
+          "execpolicycheck": {
+            "token_count": 491,
+            "token_sha256": "579b4542a2a063435c8f5ea7f9bea744f5140feb5aaaa294128cae948ec466e3"
+          },
+          "rule": {
+            "token_count": 208,
+            "token_sha256": "229f094dded61b39578ae0cdd453e12e14bb0720a3147082075d2c9997812e7f"
+          },
+          "dispatcher": {
+            "token_count": 459,
+            "token_sha256": "10c23ef41a88326d5ea451cf5a81a3f695063d64fedbb32879bfe2a282edd2e9",
+            "overlap": "subregion of the complete 2372-token Policy pin; not additive"
+          },
+          "original_path_services": {
+            "codex-rs/execpolicy/src/executable_name.rs": "85414e488db0dba6a0b077cc038cc8f7ad0aa5695f927fc1fb05886f4d8adf7b",
+            "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+            "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7"
+          }
+        }
+      },
+      "report": "public_v3",
+      "source_inputs": 54,
+      "source_bindings_review": "root_runtime_review",
+      "concurrent_count_is_included": true
+    },
+    "host_effects": {
+      "cases": 14,
+      "passed": true,
+      "scope": "isolated process cwd/HOME path service, callback/panic ordering, iterator AsRef/Drop, nested sessions",
+      "skipped": 0,
+      "binary_sha256": "cad7979341a7be964b49253a92ef4e06ca8639413824dae125848f24b44cfd33",
+      "case_names": [
+        "relative-cwd-after-callback",
+        "relative-dot",
+        "tilde-home",
+        "empty-token-resolves-cwd",
+        "exact-rule-panic-after-forbidden",
+        "host-rule-panic",
+        "deleted-cwd",
+        "deleted-cwd",
+        "normal",
+        "empty",
+        "rule-panic",
+        "fallback-panic",
+        "iterator-panic",
+        "as-ref-panic"
+      ],
+      "report": "public_v3"
+    },
+    "failure_injection": {
+      "cases": 33,
+      "passed": true,
+      "scope": "actual adapter structural replies, status/error propagation and scheduled effects; structurally valid semantic lies require the real HIA/public differential gates",
+      "skipped": 0,
+      "transport_script_cases": 2,
+      "binary_sha256": "05b2a6538871b4af6414f42e713e890901dbceb11a0777263cc7177dc8ace257",
+      "transport_script_cases_included_in_total": true,
+      "report": "public_v3"
+    },
+    "predecessor_and_loader": {
+      "published_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "current_mode": "verified-prelinked-consumer",
+      "native15_compiled_now": false,
+      "native15_executed_now": true,
+      "prelinked_binary_sha256": "0a1a0e2223ef7c03177ad2eaa8d6848325439f595b3bdd6a4da97966b74989d3",
+      "dual_harness_sha256": {
+        "hia/tests/native_command_dispatch_performance.rs": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+        "hia/tests/command_dispatch_fixtures.rs": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda"
+      },
+      "exact_actual_cargo_captures_and_metadata_units_verified": true,
+      "original_target_unchanged": false,
+      "original_target_missing_dependencies": 11,
+      "missing_input_scope": "Original V1 links succeeded, then eleven old-target files were observed missing. Cause is not inferred, files are not reconstructed, and the target is not claimed unchanged.",
+      "earlier_v1_three_fresh_links": "public_v1_three_fresh_links",
+      "v2_preflight_failed_before_commands": true,
+      "v3_admission": {
+        "passed": true,
+        "negative_cases": 11,
+        "cargo_executed": false,
+        "report": "prelinked_admission_v3"
+      },
+      "admission_scope": "Ten direct negative cases make no subprocess calls; the separate CLI conflict case exits through argparse before Cargo. Dual-harness, actual historical compiler arguments/Cargo units, binary and source guards are retained.",
+      "case_details": [
+        {
+          "case": "binary-corruption",
+          "rejected": true,
+          "error": "prelinked input changed: /home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/prelinked-consumer-admission-v3-artifacts/corrupt-native15-consumer",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "performance-harness-change",
+          "rejected": true,
+          "error": "prelinked harness closure changed: hia/tests/native_command_dispatch_performance.rs",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "shared-fixture-change",
+          "rejected": true,
+          "error": "prelinked harness closure changed: hia/tests/command_dispatch_fixtures.rs",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "historical-oracle-change",
+          "rejected": true,
+          "error": "prelinked historical and current original-owner oracle disagree",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "descriptor-label-change",
+          "rejected": true,
+          "error": "prelinked descriptor schema/label is invalid",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "historical-completion-label-change",
+          "rejected": true,
+          "error": "native15: completion label/count/skip contract failed",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "failed-historical-compile",
+          "rejected": true,
+          "error": "prelinked historical command did not succeed uniquely: compile-performance-native15",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "historical-extern-mismatch",
+          "rejected": true,
+          "error": "prelinked historical compile externs/dependency directories differ from original15 Cargo captures",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "historical-cargo-unit-mismatch",
+          "rejected": true,
+          "error": "prelinked original15 dependency lacks one exact Cargo/capture/history unit: serde",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "both-modes-direct",
+          "rejected": true,
+          "error": "strict and prelinked predecessor descriptors are mutually exclusive",
+          "subprocess_calls": 0
+        },
+        {
+          "case": "both-modes-actual-cli",
+          "rejected": true,
+          "returncode": 2,
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/hia/tests/test_native_command_dispatch.py",
+            "--library-dir",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/native-root-v1",
+            "--target-dir",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/target",
+            "--predecessor-manifest",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/predecessor15-performance-descriptor.json",
+            "--prelinked-consumer-manifest",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/prelinked-consumer-descriptor-v3.json",
+            "--report",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/prelinked-consumer-admission-v3-artifacts/both-cli.json"
+          ],
+          "stdout": {
+            "path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/prelinked-consumer-admission-v3-artifacts/both-cli.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/prelinked-consumer-admission-v3-artifacts/both-cli.stderr",
+            "bytes": 598,
+            "sha256": "59e00288ef9389f8a988404974e5b4d43974f5211d6c510762c19d29700515f0"
+          }
+        }
+      ]
+    },
+    "performance": {
+      "qualified": false,
+      "units": "total elapsed nanoseconds, not ns per call",
+      "three_separate_processes": true,
+      "process_bindings": {
+        "original": {
+          "label": "original",
+          "passed": true,
+          "performance_qualification": false,
+          "scope": "one actual owner crate per process; diagnostic elapsed timings, fixture creation outside timing; no performance acceptance inferred",
+          "skipped": 0,
+          "binary_sha256": "546f8c46921b5c85aace24740e9ed6740f80396c3bb2b02731618e6226251688",
+          "owner_rlib_sha256": "bd9dc06d14760bce0660edf6b9bce78edc393447b01bc86391cff3c92b808bf3",
+          "harness_sha256": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+          "fixture_sha256": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
+          "compiled_now": true,
+          "executed_now": true,
+          "build_method": "current_rustc_compile"
+        },
+        "native15": {
+          "label": "native15",
+          "passed": true,
+          "performance_qualification": false,
+          "scope": "one actual owner crate per process; diagnostic elapsed timings, fixture creation outside timing; no performance acceptance inferred",
+          "skipped": 0,
+          "binary_sha256": "0a1a0e2223ef7c03177ad2eaa8d6848325439f595b3bdd6a4da97966b74989d3",
+          "owner_rlib_sha256": "9a280a84f548d3ecb43c260649bfc02f04eb0037b75606a8810f9b9512d9b92b",
+          "harness_sha256": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+          "fixture_sha256": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
+          "compiled_now": false,
+          "executed_now": true,
+          "build_method": "verified_prelinked_consumer"
+        },
+        "native16": {
+          "label": "native16",
+          "passed": true,
+          "performance_qualification": false,
+          "scope": "one actual owner crate per process; diagnostic elapsed timings, fixture creation outside timing; no performance acceptance inferred",
+          "skipped": 0,
+          "binary_sha256": "d3776065643d78f52fd2fcd9353a13cb1f906d246482e352082b05f6d9fcea87",
+          "owner_rlib_sha256": "b57b3c3fa0d4a2a562e2917f8cdb2e2de820fd655f490e35d654537c8b52ff3b",
+          "harness_sha256": "3026720c696551eca9be3af628c43186abe6b095d0689026e28496ae015dbfb5",
+          "fixture_sha256": "2267f35d8ebb3947750f13dc661ebb7ed5e965db75d3a4d9c603f09d33604bda",
+          "compiled_now": true,
+          "executed_now": true,
+          "build_method": "current_rustc_compile"
+        }
+      },
+      "rows": [
+        {
+          "case": "empty-command",
+          "checksum": 0,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 218232,
+          "native15_ns": 218652,
+          "native16_ns": 6447115
+        },
+        {
+          "case": "empty-command-fallback",
+          "checksum": 10000,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 415605,
+          "native15_ns": 424655,
+          "native16_ns": 15712391
+        },
+        {
+          "case": "unknown-exact",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 777843,
+          "native15_ns": 777932,
+          "native16_ns": 24460966
+        },
+        {
+          "case": "exact-prefix",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4364508,
+          "native15_ns": 4418275,
+          "native16_ns": 27818749
+        },
+        {
+          "case": "exact-no-short-circuit",
+          "checksum": 30000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 3,
+          "original_ns": 6577430,
+          "native15_ns": 6589560,
+          "native16_ns": 46693420
+        },
+        {
+          "case": "exact-none-host-same-bucket",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 11191499,
+          "native15_ns": 11998731,
+          "native16_ns": 74330754
+        },
+        {
+          "case": "host-allowlist-missing",
+          "checksum": 20000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 2,
+          "original_ns": 10408426,
+          "native15_ns": 11105442,
+          "native16_ns": 74110982
+        },
+        {
+          "case": "host-allowlist-empty",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 7067983,
+          "native15_ns": 6837912,
+          "native16_ns": 54556075
+        },
+        {
+          "case": "empty-host-bucket",
+          "checksum": 10000,
+          "command_bytes": 16393,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 9673092,
+          "native15_ns": 9253097,
+          "native16_ns": 63349837
+        },
+        {
+          "case": "absolute-root",
+          "checksum": 10000,
+          "command_bytes": 1,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 1913163,
+          "native15_ns": 1850175,
+          "native16_ns": 31877637
+        },
+        {
+          "case": "reentrant-rule",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4932198,
+          "native15_ns": 4912698,
+          "native16_ns": 43003168
+        },
+        {
+          "case": "giant-tail-exact-miss",
+          "checksum": 0,
+          "command_bytes": 1048580,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 5050,
+          "native15_ns": 4930,
+          "native16_ns": 72377
+        },
+        {
+          "case": "many-exact-none",
+          "checksum": 0,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 259361,
+          "native15_ns": 259551,
+          "native16_ns": 22617260
+        },
+        {
+          "case": "many-exact-match",
+          "checksum": 30720,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 7116301,
+          "native15_ns": 7039604,
+          "native16_ns": 33902316
+        },
+        {
+          "case": "many-host-paths-last-match",
+          "checksum": 30,
+          "command_bytes": 9,
+          "iterations": 30,
+          "paths": 1025,
+          "rules": 1,
+          "original_ns": 3097742,
+          "native15_ns": 3107831,
+          "native16_ns": 35093504
+        },
+        {
+          "case": "host-first-match-giant-unvisited",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 2,
+          "rules": 1,
+          "original_ns": 10871830,
+          "native15_ns": 10825222,
+          "native16_ns": 80146861
+        }
+      ],
+      "slower_than_original_rows": 16,
+      "slower_than_native15_rows": 16
+    },
+    "historical_v1_performance": {
+      "report": "public_v1_three_fresh_links",
+      "source_scope": "Earlier V1 source and harness bytes only; not reassigned to final source.",
+      "all_three_processes_compiled_then_executed": true,
+      "performance_qualified": false,
+      "rows": [
+        {
+          "case": "empty-command",
+          "checksum": 0,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 231852,
+          "native15_ns": 238642,
+          "native16_ns": 6252194
+        },
+        {
+          "case": "empty-command-fallback",
+          "checksum": 10000,
+          "command_bytes": 0,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 455734,
+          "native15_ns": 469673,
+          "native16_ns": 14975639
+        },
+        {
+          "case": "unknown-exact",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 828181,
+          "native15_ns": 843300,
+          "native16_ns": 23485442
+        },
+        {
+          "case": "exact-prefix",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4604083,
+          "native15_ns": 4366122,
+          "native16_ns": 27227376
+        },
+        {
+          "case": "exact-no-short-circuit",
+          "checksum": 30000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 3,
+          "original_ns": 7018076,
+          "native15_ns": 7302436,
+          "native16_ns": 46491610
+        },
+        {
+          "case": "exact-none-host-same-bucket",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 13181824,
+          "native15_ns": 11739536,
+          "native16_ns": 74905915
+        },
+        {
+          "case": "host-allowlist-missing",
+          "checksum": 20000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 2,
+          "original_ns": 10810570,
+          "native15_ns": 10754211,
+          "native16_ns": 74064114
+        },
+        {
+          "case": "host-allowlist-empty",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 6856432,
+          "native15_ns": 6890141,
+          "native16_ns": 54326028
+        },
+        {
+          "case": "empty-host-bucket",
+          "checksum": 10000,
+          "command_bytes": 16393,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 9392241,
+          "native15_ns": 8921828,
+          "native16_ns": 64039697
+        },
+        {
+          "case": "absolute-root",
+          "checksum": 10000,
+          "command_bytes": 1,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 0,
+          "original_ns": 1878953,
+          "native15_ns": 1945640,
+          "native16_ns": 32464817
+        },
+        {
+          "case": "reentrant-rule",
+          "checksum": 10000,
+          "command_bytes": 10,
+          "iterations": 10000,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4915333,
+          "native15_ns": 4954341,
+          "native16_ns": 43256708
+        },
+        {
+          "case": "giant-tail-exact-miss",
+          "checksum": 0,
+          "command_bytes": 1048580,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1,
+          "original_ns": 4829,
+          "native15_ns": 4960,
+          "native16_ns": 73847
+        },
+        {
+          "case": "many-exact-none",
+          "checksum": 0,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 261620,
+          "native15_ns": 261191,
+          "native16_ns": 22494287
+        },
+        {
+          "case": "many-exact-match",
+          "checksum": 30720,
+          "command_bytes": 10,
+          "iterations": 30,
+          "paths": 0,
+          "rules": 1024,
+          "original_ns": 7194610,
+          "native15_ns": 7394083,
+          "native16_ns": 33267308
+        },
+        {
+          "case": "many-host-paths-last-match",
+          "checksum": 30,
+          "command_bytes": 9,
+          "iterations": 30,
+          "paths": 1025,
+          "rules": 1,
+          "original_ns": 3250643,
+          "native15_ns": 3165585,
+          "native16_ns": 35187159
+        },
+        {
+          "case": "host-first-match-giant-unvisited",
+          "checksum": 10000,
+          "command_bytes": 9,
+          "iterations": 10000,
+          "paths": 2,
+          "rules": 1,
+          "original_ns": 10733652,
+          "native15_ns": 10659725,
+          "native16_ns": 79846126
+        }
+      ]
+    },
+    "allocation": {
+      "cases": 24,
+      "clone_before_callback": [
+        {
+          "at_callback": [
+            4,
+            8351,
+            8351
+          ],
+          "final": [
+            4,
+            0,
+            8351,
+            8351,
+            8351
+          ],
+          "owner": "original"
+        },
+        {
+          "at_callback": [
+            3,
+            8271,
+            8271
+          ],
+          "final": [
+            4,
+            0,
+            8591,
+            8591,
+            8591
+          ],
+          "owner": "candidate"
+        }
+      ],
+      "metric_order": [
+        "allocations",
+        "reallocations",
+        "requested_bytes",
+        "peak_requested_live_bytes",
+        "retained_requested_live_bytes"
+      ],
+      "observations": [
+        {
+          "case": "empty-command",
+          "command_bytes": 0,
+          "matches": 0,
+          "native": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "case": "empty-command-fallback",
+          "command_bytes": 0,
+          "matches": 1,
+          "native": [
+            1,
+            0,
+            320,
+            320,
+            320
+          ],
+          "reference": [
+            1,
+            0,
+            80,
+            80,
+            80
+          ]
+        },
+        {
+          "case": "unknown-exact",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            4,
+            0,
+            378,
+            378,
+            378
+          ],
+          "reference": [
+            4,
+            0,
+            138,
+            138,
+            138
+          ]
+        },
+        {
+          "case": "exact-prefix",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ],
+          "reference": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ]
+        },
+        {
+          "case": "exact-no-short-circuit",
+          "command_bytes": 10,
+          "matches": 3,
+          "native": [
+            16,
+            2,
+            600,
+            558,
+            558
+          ],
+          "reference": [
+            16,
+            2,
+            600,
+            558,
+            558
+          ]
+        },
+        {
+          "case": "exact-none-host-same-bucket",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            16,
+            7,
+            1745,
+            697,
+            489
+          ],
+          "reference": [
+            16,
+            7,
+            1745,
+            697,
+            489
+          ]
+        },
+        {
+          "case": "host-allowlist-missing",
+          "command_bytes": 9,
+          "matches": 2,
+          "native": [
+            14,
+            2,
+            580,
+            517,
+            449
+          ],
+          "reference": [
+            14,
+            2,
+            580,
+            517,
+            449
+          ]
+        },
+        {
+          "case": "host-allowlist-empty",
+          "command_bytes": 9,
+          "matches": 1,
+          "native": [
+            7,
+            1,
+            399,
+            353,
+            353
+          ],
+          "reference": [
+            7,
+            1,
+            159,
+            113,
+            113
+          ]
+        },
+        {
+          "case": "empty-host-bucket",
+          "command_bytes": 16393,
+          "matches": 1,
+          "native": [
+            10,
+            1,
+            33239,
+            16761,
+            16761
+          ],
+          "reference": [
+            10,
+            1,
+            32999,
+            16521,
+            16521
+          ]
+        },
+        {
+          "case": "absolute-root",
+          "command_bytes": 1,
+          "matches": 1,
+          "native": [
+            6,
+            0,
+            355,
+            345,
+            345
+          ],
+          "reference": [
+            6,
+            0,
+            115,
+            105,
+            105
+          ]
+        },
+        {
+          "case": "reentrant-rule",
+          "command_bytes": 10,
+          "matches": 1,
+          "native": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ],
+          "reference": [
+            7,
+            1,
+            431,
+            410,
+            410
+          ]
+        },
+        {
+          "case": "giant-tail-exact-miss",
+          "command_bytes": 1048580,
+          "matches": 0,
+          "native": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "case": "empty-exact-bucket",
+          "command_bytes": 10,
+          "matches": 0,
+          "native": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "case": "first-path-match-giant-unvisited",
+          "command_bytes": 9,
+          "matches": 1,
+          "native": [
+            12,
+            2,
+            480,
+            417,
+            373
+          ],
+          "reference": [
+            12,
+            2,
+            480,
+            417,
+            373
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 13,
+          "matches": 0,
+          "native": [
+            5,
+            1,
+            102,
+            68,
+            0
+          ],
+          "reference": [
+            5,
+            1,
+            102,
+            68,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 14,
+          "matches": 0,
+          "native": [
+            5,
+            1,
+            104,
+            68,
+            0
+          ],
+          "reference": [
+            5,
+            1,
+            104,
+            68,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 15,
+          "matches": 0,
+          "native": [
+            5,
+            1,
+            106,
+            68,
+            0
+          ],
+          "reference": [
+            5,
+            1,
+            106,
+            68,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 96,
+          "matches": 0,
+          "native": [
+            5,
+            2,
+            525,
+            374,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            525,
+            374,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 97,
+          "matches": 0,
+          "native": [
+            5,
+            2,
+            530,
+            378,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            530,
+            378,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 133,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            2324,
+            1336,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            710,
+            522,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 134,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            2335,
+            1342,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            715,
+            526,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 135,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            2346,
+            1348,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            720,
+            530,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 1030,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            8963,
+            4566,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            5195,
+            4110,
+            0
+          ]
+        },
+        {
+          "case": "path-transport-length",
+          "command_bytes": 1048582,
+          "matches": 0,
+          "native": [
+            6,
+            3,
+            8389379,
+            4194774,
+            0
+          ],
+          "reference": [
+            5,
+            2,
+            5242955,
+            4194318,
+            0
+          ]
+        }
+      ],
+      "passed": true,
+      "positive_probe": [
+        1,
+        1,
+        1026,
+        1025,
+        1025
+      ],
+      "scope": "allocation calls and logical requested-live bytes during the call; excludes fixture construction; not RSS or allocator transient realloc overlap",
+      "skipped": 0,
+      "zero_allocation_cases": 3,
+      "binary_sha256": "fa220c941004f3eb42139e0366667e649b5022e4f0966d129e62b2cba8abef25"
+    },
+    "owner_and_installed": {
+      "report": "owner_v3",
+      "passed": true,
+      "commands": [
+        {
+          "label": "just-test-default-v3",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "test",
+            "-p",
+            "codex-execpolicy",
+            "--locked"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "just-test-native-v3",
+          "command": [
+            "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+            "test",
+            "-p",
+            "codex-execpolicy",
+            "--locked",
+            "--features",
+            "hia-native"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "installed-execpolicy-v3",
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/hia/tests/test_installed_execpolicy.py",
+            "--binary",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/command-dispatch-public-v3-artifacts/native-codex-execpolicy",
+            "--reference-binary",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/command-dispatch-public-v3-artifacts/reference-codex-execpolicy",
+            "--dispatch",
+            "standalone",
+            "--report",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/installed-execpolicy-v3.json"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "strict-default-v3",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "clippy",
+            "-p",
+            "codex-execpolicy",
+            "--all-targets",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        },
+        {
+          "label": "strict-native-v3",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "clippy",
+            "-p",
+            "codex-execpolicy",
+            "--all-targets",
+            "--locked",
+            "--features",
+            "hia-native",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+          "returncode": 0
+        }
+      ],
+      "default_tests": 34,
+      "native_tests": 34,
+      "skipped": 0,
+      "junit": [
+        {
+          "path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/junit-default-v3.xml",
+          "bytes": 5927,
+          "sha256": "8b093aed95198d723e098b20880dc00813f9c1a60a0cb3852147171af7999bb9",
+          "testcases": 34,
+          "skipped": 0
+        },
+        {
+          "path": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/junit-native-v3.xml",
+          "bytes": 5927,
+          "sha256": "c0585b994501bcd1d5c348ab051bf118ff8a32fa6792b22d0cc1838648df271c",
+          "testcases": 34,
+          "skipped": 0
+        }
+      ],
+      "strict_default_and_native": "codex-execpolicy --all-targets --locked -- -D warnings; both exit zero.",
+      "actual_default_native_builds": [
+        {
+          "label": "build-reference",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-execpolicy",
+            "--bin",
+            "codex-execpolicy",
+            "--target-dir",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/target",
+            "--message-format=json"
+          ],
+          "returncode": 0
+        },
+        {
+          "label": "build-native",
+          "command": [
+            "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-execpolicy",
+            "--bin",
+            "codex-execpolicy",
+            "--target-dir",
+            "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/target",
+            "--message-format=json",
+            "--features",
+            "hia-native"
+          ],
+          "returncode": 0
+        }
+      ],
+      "installed": {
+        "cases": 30,
+        "processes": 60,
+        "symbols": 4,
+        "hia_dynamic_dependencies": [],
+        "report_sha256": "de59350e7adacfd46aa03922f788bf547aaf9291ecca8cb27bfa1be72eebd84c",
+        "report": "installed_v3",
+        "scope": "Actual relocated standalone check CLI; full JSON, stdout/stderr bytes, exits and independent expected results. Four symbols are link evidence, not a substitute for behavior."
+      },
+      "whole_workspace": false
+    },
+    "formatter_and_content_freeze": {
+      "report": "root_content_freeze",
+      "source_manifest": "exact20_source_manifest",
+      "code_tree_before_canonical_docs": "a56ca0f6faf74b8b0b84a68182e12d30c05fcca8",
+      "scope": "content frozen for scoped Draft publication from actual completed qualification and unchanged bytes; not an invented final-maintenance execution",
+      "content_frozen_for_scoped_draft": true,
+      "runtime18_exact_to_v3": true,
+      "formatter2_exact_to_first32tests": true,
+      "actual_last_just_fmt": {
+        "job": "1a1df10115f-392-263c",
+        "returncode": 0,
+        "report_sha256": "bee85a07143d7f4f3dac7722033a1d146df44595f87bb44b4fe354733b92fc7d",
+        "zero_source_delta": true
+      },
+      "formatter_component_tests": 32,
+      "formatter_component_skipped": 0,
+      "all_source_files_unchanged_after_fmt_through_checks_and_readonly": 9883,
+      "formatter_raw_report_preserved": true,
+      "formatter_raw_claim_correction": "The raw component result rust_or_cargo_run=false is overbroad: existing fixture tests invoke real rustfmt and Cargo metadata/locate-project. They do not compile or test the Codex product. Preserve that raw report and use this narrower scope.",
+      "post_fix_fmt_product_compilation_or_tests_rerun": false,
+      "additional_final_maintenance": {
+        "job": "1a1df15c4ef-392-264f",
+        "status": "UNKNOWN",
+        "replayed": false,
+        "cancellation_confirmed": false,
+        "completed_report_exists": false,
+        "staging_diffcheck_write_tree_observed": false,
+        "subsequent_actions": "normal independent publication guards supply staging, diff and tree validation; do not impute them to the unknown job"
+      },
+      "publication_guard_scope": "Normal subsequent publication guards supply staging/diff/tree validation. They are not an execution or recovery of the unknown maintenance job."
+    },
+    "preserved_negative_attempts": {
+      "first_native_compile": {
+        "report": "native_compile_failure_v1",
+        "passed": false,
+        "cause": "Fixed self-hosted parser rejected a blank line after the module header; the successful source removed blank lines only."
+      },
+      "owner_v1": {
+        "report": "owner_v1_failed",
+        "passed": false,
+        "error": "RuntimeError: strict-native-v1 exited 101; preserve both log files",
+        "guard_error": "AssertionError: source file inventory changed",
+        "note": "Actual three fresh-linked public baselines passed, but native strict Clippy exited 101 and generated JUnit changed the source inventory. The failed aggregate remains false."
+      },
+      "preflight_v2": {
+        "report": "preflight_v2_failed",
+        "passed": false,
+        "error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qq/codex-hia-work/9f0b-prefix-20261115/target/debug/deps/libcodex_execpolicy-ca201f2482955afc.rlib'",
+        "commands_started": 0,
+        "source_modified": false
+      },
+      "maintenance_v3": {
+        "report": "failed_maintenance_v3",
+        "passed": false,
+        "successful_fix_commands": [
+          {
+            "label": "final-fix-default-v3",
+            "command": [
+              "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+              "fix",
+              "-p",
+              "codex-execpolicy",
+              "--locked",
+              "--allow-no-vcs"
+            ],
+            "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+            "returncode": 0
+          },
+          {
+            "label": "final-fix-native-v3",
+            "command": [
+              "/home/qq/codex-hia-work/9f0b-prefix-wide-20261115/tools/just",
+              "fix",
+              "-p",
+              "codex-execpolicy",
+              "--locked",
+              "--allow-no-vcs",
+              "--features",
+              "hia-native"
+            ],
+            "cwd": "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/codex-rs",
+            "returncode": 0
+          }
+        ],
+        "fmt_exit": 2,
+        "error": "RuntimeError: final-fmt-v3 exited 2; preserve both log files"
+      },
+      "maintenance_v4": {
+        "report": "failed_maintenance_v4",
+        "passed": false,
+        "fmt_exit": 0,
+        "changed_harnesses": 4,
+        "error": "AssertionError: final fix/fmt changed tested source; qualification must remain open",
+        "resolution": "Real standalone edition selection was corrected; all four harnesses were restored to exact V3 bytes. The dual-harness admission guard was not relaxed, and product tests were not rerun."
+      },
+      "formatter_prepare_v5": {
+        "report": "formatter_prepare_v5_failed",
+        "passed": false,
+        "commands_started": 0,
+        "error": "AssertionError: required formatter tools are missing"
+      },
+      "formatter_v6": {
+        "report": "formatter_v6_inventory_failed",
+        "passed": false,
+        "fmt_exit": 0,
+        "error": "AssertionError: source file inventory changed",
+        "resolution": "Three generated ruff-cache files were identified and preserved outside source; later V7 formatter execution uses an explicit external cache."
+      },
+      "additional_v7_maintenance": {
+        "status": "UNKNOWN",
+        "job": "1a1df15c4ef-392-264f",
+        "passed": false,
+        "cancelled": false,
+        "replayed": false,
+        "report": "unknown_maintenance_diagnosis"
+      }
+    },
+    "immutable_consumer_link_bundle": {
+      "manifest": "immutable_link_manifest",
+      "proof": "immutable_link_proof",
+      "readonly_recheck": "final_readonly_bindings_v7",
+      "files": 1306,
+      "bytes": 1311650382,
+      "actual_cargo_units": 234,
+      "build_script_linkage_records": 35,
+      "native_artifact_files": 216,
+      "independent_copies_no_hard_links": true,
+      "historical_package_internal_rustc_relink_and_nm_passed": true,
+      "final_readonly_all_file_hashes_verified": true,
+      "original_manifest_pending_field_retained": true,
+      "scope": "Immutable inputs for independent consumer linkage, not a Cargo rebuild environment. The raw manifest is historical; final source promotion is separate. Compiler/sysroot/CRT/system dynamic libraries remain external platform inputs. No old mutable target recovery is claimed."
+    },
+    "pending": {
+      "current_published_ci": true,
+      "full_cli_fourteen_symbol_gate": true,
+      "protocol_allowed_prefix_consumer": true,
+      "core_execpolicy_and_network_consumers": true,
+      "all_previous_components_on_current_source": true,
+      "current_receipt_mutation_suite": true,
+      "ci_three_baseline_scope": "Current workflow uses the default two-process dispatcher timing mode. Local V3 executed all three; CI does not acquire that status without an explicitly verified predecessor descriptor.",
+      "whole_policy_migrated": false,
+      "whole_codex_rewritten": false,
+      "workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "retirement_ready": false
+    },
+    "report_path_scope": {
+      "description": "Every alias below identifies either its exact absolute local file or an explicit member of the pinned observation archive. Do not prepend report_root to local paths or archive members.",
+      "report_root": "ai395:/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115",
+      "raw_original_reports_unchanged": true,
+      "reports_are_external_evidence_not_repository_runtime_dependencies": true
+    },
+    "reports": {
+      "root_content_freeze": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-root-review/root-exact20-content-freeze-v7.json",
+        "bytes": 14680,
+        "sha256": "50ffe9706b7ed4fd0e8c20d7c994338e84a193aba31de93579ad73788aa85f20"
+      },
+      "root_runtime_review": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-root-review/root-observed-runtime-verification-v3.json",
+        "bytes": 67789,
+        "sha256": "7f386b190d902c41dd96370a07ea412b4c14a7f6d05dab926522272efc1b7ac9"
+      },
+      "exact20_source_manifest": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/source-manifest-exact20-v7.json",
+        "bytes": 11463,
+        "sha256": "ec61642b1f03d6566e84f6d0e4edd006552e9300188569f8a50aaf2aa918e1d0"
+      },
+      "exact20_source_payload": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/source-files-exact20-v7.json.gz",
+        "bytes": 67739,
+        "sha256": "a0a64e4a84dabb76d176e9158390134a459d5eea2a1cc02d465b88704ecef5d4"
+      },
+      "final_handoff": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/final-source-freeze-handoff-v7.json",
+        "bytes": 8071,
+        "sha256": "de1e50bd78fa7f48024cde3b024e4533c12c673ada876a90bd11bffca7281dfe"
+      },
+      "normalized_v3_execution": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-docs/executed-v3-inputs.json",
+        "bytes": 30446,
+        "sha256": "04eabd17e9e94fb58eea77cdfaba247a449701400557dc42c9e836551f442010"
+      },
+      "public_v3": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/command-dispatch-public-v3.json",
+        "bytes": 123622,
+        "sha256": "eef2ce2356eeeee04d6d1fe59aeb62b83ec6890c7e7dce51f15df1d28ea49192"
+      },
+      "native_build": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/native-v2/build.json",
+        "bytes": 190624,
+        "sha256": "ee2fae74cbb9dcad2d380d9efc3d653351cde067f43e5d01ffde032128d9d36e"
+      },
+      "native_build_v2_execution": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/hia-qualification-v2.json",
+        "bytes": 10531,
+        "sha256": "8b7beffce13cb57af2fe7834aed8fd86d3de5fb105ba51662ee7f3d616e5b792"
+      },
+      "native_compile_failure_v1": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/hia-qualification-v1.json",
+        "bytes": 9803,
+        "sha256": "08ab10dea36d3a0609133202fcb86ac61925a877a7c7243ffb41f892ce973729"
+      },
+      "earlier_local_raw_v3": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/raw-abi-v3.json",
+        "bytes": 2317,
+        "sha256": "5205f9b6d1fc04c4d5459878dd03207e9c8c164a708c44402fc9cad3fcd83ecc"
+      },
+      "artifact_continuity": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-docs/artifact-continuity.json",
+        "bytes": 5461,
+        "sha256": "0478e168523e3237ca916aaf7aec31d8596de303788279d95ed87efe2df7dae7"
+      },
+      "runtime_observation_archive": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "bytes": 13448668,
+        "sha256": "a33310cdae6fd57000578855dacd704053ad0f4907c90a684626831a41fcbd39"
+      },
+      "actual_remote_raw": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/raw-command-dispatch-v1.json",
+        "bytes": 2373,
+        "sha256": "45fd8d8d8e678b4e4a3cfaa5aa0261e1b2b29a3205b3e930699a5cb95345c6cf"
+      },
+      "owner_v3": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/owner-qualification-v3.json",
+        "bytes": 5626180,
+        "sha256": "90465a8f4451abf54af296c5885f57ec23a1a1a7b4f510f6c1284f316d8970ee"
+      },
+      "owner_v1_failed": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/owner-qualification-v1.json",
+        "bytes": 2826451,
+        "sha256": "9aab93b34b11c4066bb69e3e0e8452fc0ccfebeeffa7bf4ebdf844aa75504f68"
+      },
+      "public_v1_three_fresh_links": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/command-dispatch-public-v1.json",
+        "bytes": 108522,
+        "sha256": "568f8555ec8530cf18b32412101c1a55d20c79c7002b6ada693e9f881c308b58"
+      },
+      "preflight_v2_failed": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/initial-format-v2.json",
+        "bytes": 14927,
+        "sha256": "ed77678cbb2000e87ba578cc236de7f5923e3e97b95f23b924710787598d6573"
+      },
+      "missing_old_target_inputs": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/predecessor-consumer-audit-v2.json",
+        "bytes": 68153,
+        "sha256": "4bab303b7adad77e1b0e2d2a25a1e2eed007061cb47efa3e12db1ec7c0b0c380"
+      },
+      "old_target_readonly_audit": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/frozen15-audit-v1.json",
+        "bytes": 17672,
+        "sha256": "a3fce7857e48d87f7a722cc5002dfbb31ec02b35dc1d80df4ec96fcfc2b0f121"
+      },
+      "installed_v3": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/installed-execpolicy-v3.json",
+        "bytes": 119862,
+        "sha256": "de59350e7adacfd46aa03922f788bf547aaf9291ecca8cb27bfa1be72eebd84c"
+      },
+      "prelinked_admission_v3": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/prelinked-consumer-admission-v3.json",
+        "bytes": 4420,
+        "sha256": "e064fedf7f684e2a9c4fb751e11575e48ff1322393b6772aadd91a926e12221e"
+      },
+      "native_transfer": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/native-transfer-proof.json",
+        "bytes": 1256,
+        "sha256": "ff38e59d2cd7b5526a7bc9fbbab7319e05b2ffd4afa8d80b478519ad41205690"
+      },
+      "immutable_link_manifest": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/owner16-consumer-link-inputs-v3/manifest.json",
+        "bytes": 1525089,
+        "sha256": "62d7c78ddd44d8dbe3f0b79c37e338ffc4d964b60aa7074bd3b51cfa24252a5b"
+      },
+      "immutable_link_proof": {
+        "archive": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v3/observations-download/observations-v3.tar.xz",
+        "member": "outer/owner16-consumer-link-inputs-v3/link-proof.json",
+        "bytes": 4643,
+        "sha256": "685b2e9272b1993029a55c6de01a48ade5831bd518ec70e95dc9c7682037d3ef"
+      },
+      "actual_last_fmt_v7": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/formatter-initial-v7.json",
+        "bytes": 2829917,
+        "sha256": "bee85a07143d7f4f3dac7722033a1d146df44595f87bb44b4fe354733b92fc7d"
+      },
+      "formatter_checks_v7": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/formatter-validation-v7.json",
+        "bytes": 5620816,
+        "sha256": "c4ad8e65875c97d1f7c5a094d9bce442894e6b4e31b7c5bf637114e30985bd40"
+      },
+      "formatter_component_v7": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/formatter-component-result-v7.json",
+        "bytes": 1421,
+        "sha256": "eb7e31975dda237d6a5a74eaf01e3f8871ffe132075ac9a117e60ff0177a7ecb"
+      },
+      "final_readonly_bindings_v7": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/final-readonly-binding-result-v7.json",
+        "bytes": 2289,
+        "sha256": "a9d83f4488e6b70dba9f9a491c460a3834a6ec464fc2570c712d81359c9fc17d"
+      },
+      "failed_maintenance_v3": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/final-maintenance-v3.json",
+        "bytes": 5622442,
+        "sha256": "510c326ad96016ee259de53596a85f075c8619273b09e7e0af909a5ede103db7"
+      },
+      "failed_maintenance_v4": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/final-maintenance-v4.json",
+        "bytes": 5622914,
+        "sha256": "a3a9d29fe5d8927d22cf971f3c64b4da57dde9a6a6366341beef6d05a94d2aca"
+      },
+      "formatter_prepare_v5_failed": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/formatter-prepare-v5.json",
+        "bytes": 5619888,
+        "sha256": "7dbe52435f4721424410b9db5d27b177d7dbc76b47f67c4610117fdd00e976da"
+      },
+      "formatter_v6_inventory_failed": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/formatter-initial-v6.json",
+        "bytes": 2829604,
+        "sha256": "e0f3608322027e6828c484bb484ee0bbe8253c2377b1aa784905e18f9b6aaa38"
+      },
+      "formatter_v6_inventory_diagnosis": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/formatter-inventory-diagnosis-v6.json",
+        "bytes": 17883,
+        "sha256": "8fe12e4ea7c7015629dbd0749e8f58832a916daea4dc565de93de9c82699a476"
+      },
+      "unknown_maintenance_diagnosis": {
+        "path": "/workspace/scratch/9f0b8ba180a8/command-dispatch-preparation-9f0b/revision-v7/evidence/final-launch-diagnosis-v7.json",
+        "bytes": 18056,
+        "sha256": "0c8fd6e2c1cea0d0ee57565b5547ba20c96dc627ebbdb96ce2d2d076b186ebf6"
+      }
     }
   }
 }
