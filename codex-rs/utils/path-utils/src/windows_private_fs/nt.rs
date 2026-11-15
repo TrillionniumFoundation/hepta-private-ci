@@ -184,6 +184,11 @@ fn open(
         )
     };
     if status < 0 {
+        #[cfg(test)]
+        eprintln!(
+            "windows_private_fs diagnostic NtCreateFile ntstatus=0x{:08x}",
+            status as u32
+        );
         if status == STATUS_REPARSE_POINT_ENCOUNTERED {
             return Err(invalid_name("state path contains a reparse point"));
         }
@@ -227,7 +232,13 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
             u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?,
         ) == 0
         {
-            return Err(io::Error::last_os_error());
+            let error = io::Error::last_os_error();
+            #[cfg(test)]
+            eprintln!(
+                "windows_private_fs diagnostic FileRenameInfo win32={:?}",
+                error.raw_os_error()
+            );
+            return Err(error);
         }
     }
     Ok(())

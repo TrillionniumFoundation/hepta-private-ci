@@ -38,8 +38,14 @@ fn private_state_publishes_reopens_and_retains_file_identity() -> io::Result<()>
     file.write_all(b"first durable state")?;
     file.sync_all()?;
     let before = snapshot_private_file(&file)?;
-    directory.replace("state.next", "state.json")?;
-    directory.sync_all()?;
+    directory
+        .replace("state.next", "state.json")
+        .inspect_err(|error| {
+            eprintln!("windows_private_fs diagnostic private_state.initial_replace: {error:?}");
+        })?;
+    directory.sync_all().inspect_err(|error| {
+        eprintln!("windows_private_fs diagnostic private_state.initial_dir_sync: {error:?}");
+    })?;
     let after = snapshot_private_file(&directory.open_read("state.json")?)?;
     assert!(before.same_file(&after));
     assert!(!directory.entry_exists("state.next")?);
@@ -56,8 +62,14 @@ fn private_state_publishes_reopens_and_retains_file_identity() -> io::Result<()>
     let mut next = reopened.create_new("state.next")?;
     next.write_all(b"second durable state")?;
     next.sync_all()?;
-    reopened.replace("state.next", "state.json")?;
-    reopened.sync_all()?;
+    reopened
+        .replace("state.next", "state.json")
+        .inspect_err(|error| {
+            eprintln!("windows_private_fs diagnostic private_state.reopened_replace: {error:?}");
+        })?;
+    reopened.sync_all().inspect_err(|error| {
+        eprintln!("windows_private_fs diagnostic private_state.reopened_dir_sync: {error:?}");
+    })?;
     assert_eq!(fs::read(root.join("state.json"))?, b"second durable state");
     Ok(())
 }
@@ -73,8 +85,14 @@ fn retained_parent_does_not_follow_a_replacement_path() -> io::Result<()> {
     let mut file = directory.create_new("state.next")?;
     file.write_all(b"retained directory")?;
     file.sync_all()?;
-    directory.replace("state.next", "state.json")?;
-    directory.sync_all()?;
+    directory
+        .replace("state.next", "state.json")
+        .inspect_err(|error| {
+            eprintln!("windows_private_fs diagnostic retained_parent_replace: {error:?}");
+        })?;
+    directory.sync_all().inspect_err(|error| {
+        eprintln!("windows_private_fs diagnostic retained_parent_dir_sync: {error:?}");
+    })?;
     assert_eq!(fs::read(moved.join("state.json"))?, b"retained directory");
     assert!(!replacement.entry_exists("state.json")?);
     Ok(())
