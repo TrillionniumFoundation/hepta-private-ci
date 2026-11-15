@@ -1,0 +1,92 @@
+{
+  "schema": "pred-owner-source-identity-v1",
+  "base_commit": "a3aa398580cbd052f9decbc08af36deea25c6155",
+  "source_commit": "74d3fddbc6e6cf28184848558422a81711460dc8",
+  "files": {
+    "owner_capture.py": {
+      "sha256": "15a94cb10234b2d970c8032f1d7cdcd4d341dac7b3c8f9a82363f1557b1838f5",
+      "git_blob_sha": "1f21e7304c5e7438ebb169961e0adbf9bfa30b0f",
+      "lines": 136,
+      "test_count": 0
+    },
+    "test_owner_capture.py": {
+      "sha256": "5cb8a5c0b3e6be4e630482c9df8bd379396606c7bfbe6d4b0f85f50f07764910",
+      "git_blob_sha": "ca12bbe92ffe58acd259d12555426e796169cbbc",
+      "lines": 89,
+      "test_count": 3
+    },
+    "observed_evaluation.py": {
+      "sha256": "7d086a33cbddf57d7da9b8762e930bb801ca55d6f924b33f6fab534b51dcca9d",
+      "git_blob_sha": "de32a2e15a8beeaa94ed484b695d2380725d546d",
+      "lines": 463,
+      "test_count": 0
+    },
+    "test_observed_evaluation.py": {
+      "sha256": "42f111623310e032bcb98695e11a02aaccafd23c41f10bf9ca1019d6caf52a54",
+      "git_blob_sha": "96c496561aa517a09130e3100ebbf5ca52ce60f4",
+      "lines": 283,
+      "test_count": 16
+    },
+    "observed_models.py": {
+      "sha256": "679626f8b91cbbe840cee4e9897dd0e530e55629a9546440d3d7ced3288270eb",
+      "git_blob_sha": "d5c486b55f43c8982a570c21f6efb2c471ffc775",
+      "lines": 382,
+      "test_count": 0
+    },
+    "test_observed_models.py": {
+      "sha256": "adac3ca0ef36d1627819df7be3928d8f281b955231962835d9a331cd532ea1b7",
+      "git_blob_sha": "7c7c0f48ea144f3e554d3fb3e757df89068b31f1",
+      "lines": 200,
+      "test_count": 8
+    },
+    "owner_bridge.py": {
+      "sha256": "b2288f9ae060c0bf744f2967b4c5cbd030066b4605db42f0898c68e9370bde24",
+      "git_blob_sha": "c85470260aa9139bc6143ce9961f49a967b395b0",
+      "lines": 254,
+      "test_count": 0
+    },
+    "test_owner_bridge.py": {
+      "sha256": "c1e94651e1909adbae82c776cc673e557c99bc94245378382890d2cfa2d57aac",
+      "git_blob_sha": "5d217eca2341f31787863a0d7133a205754f0c73",
+      "lines": 153,
+      "test_count": 6
+    },
+    "observed_policy.py": {
+      "sha256": "7be0050c5016f7485be637eaefd10f8af84b10acd7ca0f31da02a383fb245da6",
+      "git_blob_sha": "39caeb43c4a233c2c878fc06bb73d4e357a2a03c",
+      "lines": 94,
+      "test_count": 0
+    },
+    "test_observed_policy.py": {
+      "sha256": "374cc9309dc2b5829d82f6b1ddeabd59d91f96f2e2849cab7fc4023604a98f47",
+      "git_blob_sha": "3c69087fd1b0438640e4e6dc5eb1867b4278ad6c",
+      "lines": 57,
+      "test_count": 4
+    },
+    "observed_run.py": {
+      "sha256": "296a32275124ec9d389e108300441d374211c62ff72a0ff793d200b19a3d968f",
+      "git_blob_sha": "4e4dbef1ef1d03fa133df39d5a79829762d5d7de",
+      "lines": 181,
+      "test_count": 0
+    },
+    "test_observed_run.py": {
+      "sha256": "5365dbca49a42e2b9077e471705c5e5eadaee4562ae2923f0da6ff9f6971a3d0",
+      "git_blob_sha": "b380cc61df22c99592b5737b5f4a329b9d6ed327",
+      "lines": 147,
+      "test_count": 4
+    }
+  },
+  "historical_frozen_training_sources_unchanged": {
+    "__init__.py": true,
+    "contracts.py": true,
+    "crossed_design.py": true,
+    "crossed_training.py": true,
+    "crossed_training_fit.py": true,
+    "evaluation.py": true,
+    "models.py": true,
+    "preparation.py": true,
+    "simulator.py": true
+  },
+  "new_test_count": 41,
+  "source_modified_after_full_suite_started": []
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "pred-owner-tests-v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts/hepta_pred1",
+    "-p",
+    "test_*.py",
+    "-t",
+    "scripts",
+    "-v"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 8.106011696999758,
+  "child_cpu_seconds": 7.829993,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "engineering_fixtures_only": true,
+  "real_owner_records_added": 0
+}

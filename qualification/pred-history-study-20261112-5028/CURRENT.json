@@ -1,0 +1,98 @@
+{
+  "adoption_decision": "NoUpdate",
+  "engineering_fixture": {
+    "checkpoints": 3,
+    "dev": 6,
+    "optimizer_calls": 16,
+    "sample_presentations": 192,
+    "train": 12
+  },
+  "hosted_final_source_ci": {
+    "details": "HOSTED_CI.json",
+    "macos": {
+      "passed_non_skipped": 176,
+      "reported_ran_tests": 182,
+      "skipped": 6,
+      "status": "success"
+    },
+    "observed_at_utc": "2026-11-12T00:47:25Z",
+    "pred_workflow_conclusion": "success",
+    "repository_wide_green_asserted": false,
+    "run_id": 43127994207,
+    "ubuntu": {
+      "passed_non_skipped": 182,
+      "reported_ran_tests": 182,
+      "skipped": 0,
+      "status": "success"
+    },
+    "windows": {
+      "passed_non_skipped": 176,
+      "reported_ran_tests": 182,
+      "skipped": 6,
+      "status": "success"
+    }
+  },
+  "hosted_stages_archive": {
+    "all_members_readback_verified": true,
+    "bytes": 43040,
+    "path": "hosted-stages.tar.xz",
+    "sha256": "fe23b0c7214a253ecb511f4db951a00ea35c888a67bc5512174e5370e2fdf121"
+  },
+  "implementation_prs": [
+    6033,
+    6039,
+    6040,
+    6045
+  ],
+  "independent_confirmation_units_added": 0,
+  "legacy_pred_python_files_unchanged": 47,
+  "live_owner_records_collected": 0,
+  "local_pred_suite": {
+    "discovered": 182,
+    "passed": 182,
+    "skipped": 0
+  },
+  "models_trained_on_live_owner_data": 0,
+  "native_provenance_authenticated": false,
+  "new_policy_real_task_comparisons": 0,
+  "new_python_files": 8,
+  "new_tests": 23,
+  "owner_host_list_recheck": {
+    "configured_hosts": 7,
+    "details": "OWNER_HOST_RECHECK.json",
+    "establishes_host_health_or_owner_data": false,
+    "observed_after_result_utc": "2026-11-12T00:45:24Z",
+    "status": "success"
+  },
+  "owner_source_recovery": {
+    "archive": "owner-source-recovery.tar.xz",
+    "confirmed_exited_zero": 2,
+    "current_connection_globally_unavailable_asserted": false,
+    "details": "OWNER_SOURCE_RECOVERY.json",
+    "effective_config": "success",
+    "host_list": "success",
+    "independent_effect_observer_located": false,
+    "new_readonly_observation_start_requests": 3,
+    "new_unknown_host": "ai395",
+    "new_unknown_without_session_id": 1,
+    "old_pocket4_unknown_reconciled": false,
+    "owner_database_located": false,
+    "pocket4_authenticated_ssh_health": "success",
+    "source_absence_established": false
+  },
+  "physical_cost_complete": false,
+  "prediction_deployed": false,
+  "production_activation": false,
+  "recursive_latent_rollout": false,
+  "remaining_blockers": [
+    "current real owner database and host/boot clock",
+    "actual single arrival cursor and process-recovery binding",
+    "independent business effect observer and complete resource-cost sources",
+    "fresh real train/dev data and separately registered prospective policy trial"
+  ],
+  "schema": "pred-history-current-v1",
+  "scientific_qualification": "HOLD",
+  "survival_model_fitted": false,
+  "tested_source_commit": "10629bab4d5f948854e7c59fed331213956fb974",
+  "upstream_commit": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377"
+}

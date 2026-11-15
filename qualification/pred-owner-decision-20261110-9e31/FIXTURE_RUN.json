@@ -1,0 +1,79 @@
+{
+  "schema": "pred-owner-engineering-fixture-v1",
+  "source_commit": "74d3fddbc6e6cf28184848558422a81711460dc8",
+  "input_sha256": "ed1d422d2813d6860584affa047a145878574247c6a6908c37ce97e403eb9b6f",
+  "report_sha256": "7474d9d04769eab2420e85d15c4b54404576cc82b3318b5cbc51b5f84d760483",
+  "source": "synthetic engineering fixture only",
+  "train_samples": 12,
+  "dev_samples": 6,
+  "models": {
+    "empirical": {
+      "checkpoint_sha256": "e74bb5dc38a0e76ba171dd9fe786acccfe65d3e3ab9790f11cf042cffa818433",
+      "optimizer_calls": 0,
+      "sample_presentations": 0,
+      "holdout_scores": {
+        "cost_crps": {
+          "mean": 0.0008888888888888887,
+          "observed_count": 6
+        },
+        "duration_crps": {
+          "mean": 0.003111111111111111,
+          "observed_count": 6
+        },
+        "quality_brier": {
+          "mean": 0.0,
+          "observed_count": 6
+        }
+      },
+      "unsupported_holdout_actions": 0
+    },
+    "mlp": {
+      "checkpoint_sha256": "99bf8976e385c9153f1afb5f60e86b21d3b05b29669adbaa22b28ba94f6ecee2",
+      "optimizer_calls": 16,
+      "sample_presentations": 192,
+      "holdout_scores": {
+        "cost_crps": {
+          "mean": 0.0011978671754440241,
+          "observed_count": 6
+        },
+        "duration_crps": {
+          "mean": 0.004221894484679692,
+          "observed_count": 6
+        },
+        "quality_brier": {
+          "mean": 0.2178047841616225,
+          "observed_count": 6
+        }
+      },
+      "unsupported_holdout_actions": 0
+    }
+  },
+  "adoption": {
+    "budget_limits": {
+      "max_total_cost": 100.0,
+      "max_wall_seconds": 100.0
+    },
+    "candidate_eligible": false,
+    "counterfactual_scope": "only actual paired task replicas; other unexecuted actions remain unidentified",
+    "decision": "NoUpdate",
+    "mean_net_gain": null,
+    "one_sided_signflip_p": null,
+    "over_budget_samples": null,
+    "paired_groups": 0,
+    "production_activation": false,
+    "reasons": [
+      "new_preregistration_missing"
+    ],
+    "verification_scope": "conditional numerical eligibility under supplied owner, preregistration, pairing and independence declarations; not authentication or external adoption approval",
+    "within_budget": null
+  },
+  "confirmation_data_opened": false,
+  "real_owner_records_collected": 0,
+  "independent_confirmation_units_added": 0,
+  "physical_cost_complete": false,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "qualification": "HOLD",
+  "production_activation": false
+}

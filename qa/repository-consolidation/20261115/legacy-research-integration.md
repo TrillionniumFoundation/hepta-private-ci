@@ -11,7 +11,7 @@ Incoming tip: `255c4fdfad374c08200847761040c4eadaa16f7d`
 (`research/v11-fleet-clippy-test-20261016`). This tip covers 52 distinct frozen
 unmerged tips and 52 branch names; coverage overlaps with other selected tips.
 
-Despite its single conflicted path, the ordinary merge brings 243 changed paths,
+Despite its single conflicted path, the initial ordinary-merge preview contains 243 paths,
 including two new Rust binaries, five workflows, and 187 Python files under
 `qualification/stem-cell-v1`. The historical qualification reports and logs are
 retained observations of their original sources, not test results for this merge.
@@ -81,3 +81,77 @@ The helper regression added during integration brings the directory delta to
 Python execution, the owning Rust tests, native-binary comparisons, formatter
 and linter checks on the prepared native host. Local Rust, Cargo, just and Bazel
 commands are unavailable in this execution environment.
+
+## PRED observed-history and retained research ancestry
+
+Incoming tip: `ed9918ab1c2642e0c866425a700ca0eb5f806c70`
+(`evidence/pred-history-study-20261112-5028`), merged normally after the Fleet
+checkpoint. It covers 28 frozen tips and branch names. This merge adds 40 Python
+files to `scripts/hepta_pred1` and retains their associated evidence; it does not
+replace Rust source or introduce workflows.
+
+### Conflict resolution and evidence integrity
+
+The only conflict is `.github/blob-size-allowlist.txt`: the current side appends
+ordinary-owner and other preserved evidence, while the incoming side appends 18
+independent, exact-byte PRED archive-part exceptions. Both sets are retained.
+Every new exception was checked against the file's SHA-256 before resolution;
+there is no path overlap, wildcard or size-threshold change. Exact stage OIDs
+and the 18 checked digests are recorded in `legacy/pred-allowlist-resolution.json`.
+
+All 20 archive parts match their recorded sizes, SHA-256 values and Git blob
+identities. In-memory reconstruction matches both original XZ archive digests;
+all 599 training and 200 replay regular members match the frozen inventories.
+All 22 adjacent history-evidence inventory records also match their files.
+`legacy/pred-archive-validation.json` records this byte-integrity check. Archives
+were read without filesystem extraction, and their historical drivers were not
+executed. Their original `HOLD`, `HOLD_UNCHANGED`, `NoUpdate`, missing live-owner
+data and incomplete physical-cost conclusions remain unchanged.
+
+### Source review and correction
+
+The active Python modules were reviewed across causal action-prefix encoding,
+fixed/cached preparation, crossed train/dev design and replay, native ledger
+readback, observed empirical/MLP/GRU fitting, calibration, owner-effect joins and
+shadow inference. Source and regression coverage preserve unknown/censored
+labels, separate training from confirmation, bound schemas and numeric input,
+retain failed work, and prevent numerical eligibility from granting production
+activation. The SQLite adapters use existing databases in read-only/query-only
+transactions and bind parameterized identity keys; their selected columns match
+the current TaskFlow dispatch/reconciliation migrations. Checkpoint loading uses
+bounded, pinned JSON or NPZ bytes, with object arrays disallowed and explicit NPY
+shape/expanded-byte checks at the native shadow boundary. The only subprocess
+training wrapper launches a copied, source-pinned module in its own process group;
+its timeout terminates that owned child session and retains failure receipts.
+No remote publish, service restart or model-acquisition path was introduced.
+
+Review found a concrete replay admission gap: the gate ignored fields already
+produced by its outer wrapper. A temporary fixture with a zeroed result digest,
+a nonzero child exit code or a false source-closure flag was still accepted.
+The gate now requires a successful integer child exit, an unchanged source
+closure, a matching terminal-result digest, and matching original/executed source
+readbacks before opening fit outcomes/checkpoints or creating replay output.
+The new regression covers these inconsistencies, boolean exit-code confusion,
+changed source readbacks and post-receipt result changes. These checks validate
+consistency of supplied artifacts; they do not authenticate the operator.
+
+Because the replay source changed, historical registrations tied to the original
+source hashes remain historical evidence. A new execution must use a registration
+for the revised source; none of the retained scientific results was relabeled.
+
+### Verification
+
+The original 55-file PRED source closure passed 182 tests in isolation, with no
+skips. Its bytes matched the actual ordinary merge before the gate correction.
+`legacy/pred-python-tests.json` and its log record the complete suite on the
+corrected merged source: 183 passed, without skips, including the added rejection
+regression. These are
+source/fixture checks, not a live-owner study or a new training campaign.
+
+The staged merge passes the unchanged 512,000-byte blob policy, including all
+18 verified exact-byte exceptions. The source/allowlist/audit diff whitespace
+check passes. The full diff whitespace check reports CRLF or trailing spaces in
+three unchanged historical hosted logs (546 reported lines); those bytes match
+their historical inventory and were retained. No whitespace-check exclusion or
+global size limit was changed. The scoped and full outcomes are distinguished
+in `legacy/pred-static-checks.json`.

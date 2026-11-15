@@ -1,0 +1,168 @@
+{
+  "schema": "pred1-hosted-stage-readback-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "collected_at_utc": "2026-11-12 00:34:24 UTC",
+  "scope": "PRED-1 targeted CPU workflow only; not repository-wide CI, native owner provenance, policy gain or deployment qualification",
+  "readback_snapshots_per_run": {
+    "43126915108": 1,
+    "43127377649": 1,
+    "43127383981": 2
+  },
+  "raw_log_count": 9,
+  "raw_log_total_bytes": 567855,
+  "checkout_identity_matches_all": true,
+  "details_file": "SUMMARY.json",
+  "skip_reason": "Linux research execution wrapper",
+  "stages": [
+    {
+      "pr": 6033,
+      "run_id": 43126915108,
+      "run_attempt": 1,
+      "head": "9c68b133b6c8566916f3b8bf943b77b5c7cee356",
+      "status": "completed",
+      "conclusion": "success",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43126915108",
+      "jobs": [
+        {
+          "job_id": 130881230106,
+          "name": "PRED-1 (ubuntu-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 163,
+          "skipped_tests": 0,
+          "non_skipped_tests": 163,
+          "test_summary_lines": [
+            "2026-11-12T00:25:00.8927940Z Ran 163 tests in 8.593s",
+            "2026-11-12T00:25:00.8928462Z OK"
+          ],
+          "raw_log": "job-130881230106.raw.log"
+        },
+        {
+          "job_id": 130881230516,
+          "name": "PRED-1 (macos-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 163,
+          "skipped_tests": 6,
+          "non_skipped_tests": 157,
+          "test_summary_lines": [
+            "2026-11-12T00:24:59.6983380Z Ran 163 tests in 8.802s",
+            "2026-11-12T00:24:59.6983590Z OK (skipped=6)"
+          ],
+          "raw_log": "job-130881230516.raw.log"
+        },
+        {
+          "job_id": 130881230623,
+          "name": "PRED-1 (windows-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 163,
+          "skipped_tests": 6,
+          "non_skipped_tests": 157,
+          "test_summary_lines": [
+            "2026-11-12T00:24:36.3939220Z Ran 163 tests in 20.650s",
+            "2026-11-12T00:24:36.3939427Z OK (skipped=6)"
+          ],
+          "raw_log": "job-130881230623.raw.log"
+        }
+      ]
+    },
+    {
+      "pr": 6039,
+      "run_id": 43127377649,
+      "run_attempt": 1,
+      "head": "19909e7e526062a5c1341113abab0afe49f5f7cb",
+      "status": "completed",
+      "conclusion": "success",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127377649",
+      "jobs": [
+        {
+          "job_id": 130882782669,
+          "name": "PRED-1 (ubuntu-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 168,
+          "skipped_tests": 0,
+          "non_skipped_tests": 168,
+          "test_summary_lines": [
+            "2026-11-12T00:31:10.3964145Z Ran 168 tests in 5.414s",
+            "2026-11-12T00:31:10.3964340Z OK"
+          ],
+          "raw_log": "job-130882782669.raw.log"
+        },
+        {
+          "job_id": 130882783032,
+          "name": "PRED-1 (macos-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 168,
+          "skipped_tests": 6,
+          "non_skipped_tests": 162,
+          "test_summary_lines": [
+            "2026-11-12T00:27:47.6238030Z Ran 168 tests in 4.727s",
+            "2026-11-12T00:27:47.6238210Z OK (skipped=6)"
+          ],
+          "raw_log": "job-130882783032.raw.log"
+        },
+        {
+          "job_id": 130882783112,
+          "name": "PRED-1 (windows-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 168,
+          "skipped_tests": 6,
+          "non_skipped_tests": 162,
+          "test_summary_lines": [
+            "2026-11-12T00:31:18.6614613Z Ran 168 tests in 15.503s",
+            "2026-11-12T00:31:18.6614750Z OK (skipped=6)"
+          ],
+          "raw_log": "job-130882783112.raw.log"
+        }
+      ]
+    },
+    {
+      "pr": 6040,
+      "run_id": 43127383981,
+      "run_attempt": 1,
+      "head": "02f93e99cfeed81a459175d2e4d8ce706efca3aa",
+      "status": "completed",
+      "conclusion": "success",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127383981",
+      "jobs": [
+        {
+          "job_id": 130882804511,
+          "name": "PRED-1 (macos-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 176,
+          "skipped_tests": 6,
+          "non_skipped_tests": 170,
+          "test_summary_lines": [
+            "2026-11-12T00:27:49.3011390Z Ran 176 tests in 4.252s",
+            "2026-11-12T00:27:49.3012090Z OK (skipped=6)"
+          ],
+          "raw_log": "job-130882804511.raw.log"
+        },
+        {
+          "job_id": 130882804869,
+          "name": "PRED-1 (windows-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 176,
+          "skipped_tests": 6,
+          "non_skipped_tests": 170,
+          "test_summary_lines": [
+            "2026-11-12T00:31:13.7415708Z Ran 176 tests in 27.416s",
+            "2026-11-12T00:31:13.7416053Z OK (skipped=6)"
+          ],
+          "raw_log": "job-130882804869.raw.log"
+        },
+        {
+          "job_id": 130882804907,
+          "name": "PRED-1 (ubuntu-latest)",
+          "checkout_matches": true,
+          "reported_ran_tests": 176,
+          "skipped_tests": 0,
+          "non_skipped_tests": 176,
+          "test_summary_lines": [
+            "2026-11-12T00:33:18.7762690Z Ran 176 tests in 8.996s",
+            "2026-11-12T00:33:18.7762974Z OK"
+          ],
+          "raw_log": "job-130882804907.raw.log"
+        }
+      ]
+    }
+  ]
+}
