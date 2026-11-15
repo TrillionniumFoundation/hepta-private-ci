@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified",
+  "productCallerState": "agentd_bounded_runtime_handle_source_composed_self_iteration_trigger_not_target_host_qualified",
   "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
   "operations": [
     {
@@ -250,9 +250,9 @@
     },
     {
       "operation": "agentd_named_parameter_submission",
-      "nativeSymbol": "AgentdLearningPlasticityProducerV1::submit_parameter",
-      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "state": "named_non_test_agentd_learning_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
+      "nativeSymbol": "PlasticityRuntimeHandleV1::propose_parameter",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "bounded_agentd_runtime_handle_source_implemented_dispatches_to_long_lived_owner_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -280,9 +280,9 @@
     },
     {
       "operation": "agentd_named_topology_submission",
-      "nativeSymbol": "AgentdLearningPlasticityProducerV1::submit_topology",
-      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "state": "named_non_test_agentd_learning_topology_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
+      "nativeSymbol": "PlasticityRuntimeHandleV1::propose_topology",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "bounded_agentd_runtime_handle_source_implemented_dispatches_to_long_lived_owner_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -652,9 +652,9 @@
       "state": "explicit_process_bootstrap_not_autonomous_trigger"
     },
     {
-      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "nativeSymbol": "AgentdLearningPlasticityProducerV1",
-      "state": "compiled_producer_trigger_not_product_composed"
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "nativeSymbol": "pub async fn propose_parameter(",
+      "state": "bounded_runtime_handle_source_composed_not_target_host_qualified"
     }
   ],
   "sourceObjects": [
@@ -667,10 +667,6 @@
       "object": "085d85fde32b89d59eb3169d8d8f6e7f005c2ac5"
     },
     {
-      "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "object": "507dc9a4e89399a3a67dc48c8f8b12f2a1a46a67"
-    },
-    {
       "path": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
       "object": "c3db02b42db094556889774b40306198292dc27e"
     },
@@ -680,7 +676,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
-      "object": "d1c57448d9c344171ae85d0abe888fe990e7a021"
+      "object": "f26e632de7772228ff107135966c20855d633244"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
