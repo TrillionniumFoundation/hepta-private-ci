@@ -855,18 +855,22 @@ async fn steer(
 }
 
 impl Session {
-    pub(crate) async fn route_realtime_text_input(self: &Arc<Self>, text: String) {
+    pub(crate) async fn route_realtime_text_input(
+        self: &Arc<Self>,
+        text: String,
+        conversation_stop: &tokio_util::sync::CancellationToken,
+    ) {
         let submission_id = Uuid::now_v7().to_string();
-        let submission = handle(
-            self,
-            TurnInputRequest::user_input(vec![UserInput::Text {
-                text,
-                text_elements: Vec::new(),
-            }]),
-            TurnInputMode::StartOrSteer,
-            submission_id.clone(),
-        )
-        .await;
+        let submission = self
+            .submit_realtime_turn_input_after_finish(
+                submission_id.clone(),
+                TurnInputRequest::user_input(vec![UserInput::Text {
+                    text,
+                    text_elements: Vec::new(),
+                }]),
+                conversation_stop,
+            )
+            .await;
         match submission {
             Ok(TurnInputSubmission::Started { .. } | TurnInputSubmission::Steered { .. }) => {}
             Ok(TurnInputSubmission::NotSubmitted { reason }) => {
