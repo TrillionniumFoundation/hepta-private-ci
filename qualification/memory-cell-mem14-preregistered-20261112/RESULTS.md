@@ -93,6 +93,8 @@ Totals are 34,928 input tokens and 4,799 output tokens. Provider wall including 
 
 ## Source, recovery and independent reproduction
 
+`run-original.tar.xz` and `independent-audit-completed.tar.xz` are stored as ordered byte parts: [run manifest](run-original.tar.xz.parts.json) and [audit manifest](independent-audit-completed.tar.xz.parts.json). Use the [storage and restoration instructions](../memory-cell-archive-storage-20261115/README.md) before following the archive commands below; the compressed bytes and the original SHA256 values are unchanged.
+
 - Execution commit: `7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d`; full tree: `491484a45e05d05d2b72fec472f96405c37decac`.
 - Frozen plan SHA256: `1aa291205146cffec039a583640be9c9c33a4afedff8dc31d2cdf32874d4c8e0`.
 - Original operation: `mem14-causal-execute-20261112-ef0c-v1`; durable job: `1a1ced26052-2564-186f`.
