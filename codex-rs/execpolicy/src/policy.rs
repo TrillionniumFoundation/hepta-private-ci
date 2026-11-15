@@ -101,6 +101,12 @@ impl Policy {
         &self.host_executables_by_name
     }
 
+    #[cfg(feature = "hia-native")]
+    pub fn get_allowed_prefixes(&self) -> Vec<Vec<String>> {
+        crate::hia_native_allowed_prefixes::collect(&self.rules_by_program)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn get_allowed_prefixes(&self) -> Vec<Vec<String>> {
         let mut prefixes = Vec::new();
 
@@ -383,6 +389,7 @@ fn upsert_domain(entries: &mut Vec<String>, host: &str) {
     entries.push(host.to_string());
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn render_pattern_token(token: &PatternToken) -> String {
     match token {
         PatternToken::Single(value) => value.clone(),
