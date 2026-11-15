@@ -18,12 +18,21 @@ use tokio_util::sync::CancellationToken;
 
 /// A retry retains the original unannotated items and the exact owners seen at
 /// the same admission decision. Internal injection callers keep strict refusal.
-enum ClientResponseItemsInjection {
+enum ResponseItemsInjection {
     Injected,
     Finishing {
         items: Vec<ResponseItem>,
         fences: FinishFences,
     },
+}
+
+/// Client API items carry caller provenance and a prepared turn context.
+/// Internal context fragments retain their original untrusted envelope and
+/// only need a default context when an idle history write is admitted.
+#[derive(Clone, Copy)]
+enum ResponseItemsOrigin<'a> {
+    Client(&'a TurnContext),
+    ContextFragment,
 }
 
 impl Session {
@@ -193,12 +202,12 @@ impl Session {
     /// This lets external callers wait before preparing any initial context.
     async fn client_response_items_finish_fences(&self) -> CodexResult<Option<FinishFences>> {
         let active = self.active_turn.lock().await;
-        self.client_response_items_admission(active.as_ref())
+        self.response_items_admission(active.as_ref())
     }
 
     /// Called only while holding active_turn. Registry retirement may occur
     /// independently, so capture Clear/Finishing/Blocked in one observation.
-    fn client_response_items_admission(
+    fn response_items_admission(
         &self,
         active: Option<&crate::state::ActiveTurn>,
     ) -> CodexResult<Option<FinishFences>> {
@@ -246,11 +255,11 @@ impl Session {
             ));
         }
         match self
-            .try_inject_client_response_items(items, turn_context)
+            .try_inject_response_items(items, ResponseItemsOrigin::Client(turn_context))
             .await?
         {
-            ClientResponseItemsInjection::Injected => Ok(()),
-            ClientResponseItemsInjection::Finishing { .. } => Err(CodexErr::InvalidRequest(
+            ResponseItemsInjection::Injected => Ok(()),
+            ResponseItemsInjection::Finishing { .. } => Err(CodexErr::InvalidRequest(
                 "turn is terminalizing or shutting down and cannot accept injected context"
                     .to_string(),
             )),
@@ -261,18 +270,21 @@ impl Session {
         clippy::await_holding_invalid_type,
         reason = "active turn checks, recovery revoke, and injection must remain atomic"
     )]
-    async fn try_inject_client_response_items(
+    async fn try_inject_response_items(
         &self,
         items: Vec<ResponseItem>,
-        turn_context: &TurnContext,
-    ) -> CodexResult<ClientResponseItemsInjection> {
+        origin: ResponseItemsOrigin<'_>,
+    ) -> CodexResult<ResponseItemsInjection> {
         let mut active = self.active_turn.lock().await;
-        if let Some(fences) = self.client_response_items_admission(active.as_ref())? {
-            return Ok(ClientResponseItemsInjection::Finishing { items, fences });
+        if let Some(fences) = self.response_items_admission(active.as_ref())? {
+            return Ok(ResponseItemsInjection::Finishing { items, fences });
         }
         let items = items
             .into_iter()
-            .map(|item| self.annotate_client_response_item(item))
+            .map(|item| match origin {
+                ResponseItemsOrigin::Client(_) => self.annotate_client_response_item(item),
+                ResponseItemsOrigin::ContextFragment => ResponseItemEnvelope::new(item),
+            })
             .collect::<Vec<_>>();
         if let Some(active_turn) = active.as_mut() {
             if let Some(task) = active_turn.task.as_ref()
@@ -292,7 +304,7 @@ impl Session {
                         .collect(),
                 )
                 .await;
-            return Ok(ClientResponseItemsInjection::Injected);
+            return Ok(ResponseItemsInjection::Injected);
         }
         if self.shutdown_started() || self.has_pending_task_terminalization() {
             return Err(CodexErr::InvalidRequest(
@@ -301,13 +313,21 @@ impl Session {
             ));
         }
         let consumed_recovery = self.consume_recovery_candidate_for_mutation().await?;
+        let default_turn_context;
+        let turn_context = match origin {
+            ResponseItemsOrigin::Client(turn_context) => turn_context,
+            ResponseItemsOrigin::ContextFragment => {
+                default_turn_context = self.new_default_turn().await;
+                default_turn_context.as_ref()
+            }
+        };
         self.record_annotated_conversation_items(turn_context, items)
             .await;
         if consumed_recovery {
             self.settle_consumed_recovery_status();
         }
         drop(active);
-        Ok(ClientResponseItemsInjection::Injected)
+        Ok(ResponseItemsInjection::Injected)
     }
 
     pub(crate) fn annotate_client_response_item(&self, item: ResponseItem) -> ResponseItemEnvelope {
@@ -412,6 +432,34 @@ impl Session {
 }
 
 impl SessionIo {
+    /// Completion watchers run outside the session actor. Keep their ordinary
+    /// context provenance while waiting for the exact Finish owners that
+    /// prevented admission; this never starts a turn or an initial client step.
+    pub(crate) async fn inject_context_fragment_after_finish(
+        &self,
+        session: &Arc<Session>,
+        mut items: Vec<ResponseItem>,
+    ) -> CodexResult<()> {
+        loop {
+            if self.tx_sub.is_closed() {
+                return Err(CodexErr::InternalAgentDied);
+            }
+            match session
+                .try_inject_response_items(items, ResponseItemsOrigin::ContextFragment)
+                .await?
+            {
+                ResponseItemsInjection::Injected => return Ok(()),
+                ResponseItemsInjection::Finishing {
+                    items: original_items,
+                    fences,
+                } => {
+                    items = original_items;
+                    self.wait_for_injection_finish(fences).await?;
+                }
+            }
+        }
+    }
+
     /// Only the external caller waits. Internal injection remains a strict
     /// attempt, and every retry re-enters the original admission decision.
     pub(crate) async fn inject_response_items_after_finish(
@@ -429,7 +477,7 @@ impl SessionIo {
                 return Err(CodexErr::InternalAgentDied);
             }
             if let Some(fences) = session.client_response_items_finish_fences().await? {
-                self.wait_for_client_injection_finish(fences).await?;
+                self.wait_for_injection_finish(fences).await?;
                 continue;
             }
 
@@ -445,7 +493,7 @@ impl SessionIo {
                     return Err(CodexErr::InternalAgentDied);
                 }
                 if let Some(fences) = session.client_response_items_finish_fences().await? {
-                    self.wait_for_client_injection_finish(fences).await?;
+                    self.wait_for_injection_finish(fences).await?;
                     continue;
                 }
                 session
@@ -454,22 +502,25 @@ impl SessionIo {
             }
 
             match session
-                .try_inject_client_response_items(items, turn_context.as_ref())
+                .try_inject_response_items(
+                    items,
+                    ResponseItemsOrigin::Client(turn_context.as_ref()),
+                )
                 .await?
             {
-                ClientResponseItemsInjection::Injected => return Ok(()),
-                ClientResponseItemsInjection::Finishing {
+                ResponseItemsInjection::Injected => return Ok(()),
+                ResponseItemsInjection::Finishing {
                     items: original_items,
                     fences,
                 } => {
                     items = original_items;
-                    self.wait_for_client_injection_finish(fences).await?;
+                    self.wait_for_injection_finish(fences).await?;
                 }
             }
         }
     }
 
-    async fn wait_for_client_injection_finish(&self, fences: FinishFences) -> CodexResult<()> {
+    async fn wait_for_injection_finish(&self, fences: FinishFences) -> CodexResult<()> {
         for completion in fences {
             tokio::select! {
                 biased;

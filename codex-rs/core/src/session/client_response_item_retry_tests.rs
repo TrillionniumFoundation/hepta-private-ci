@@ -500,3 +500,6 @@ async fn external_live_injection_preserves_durable_recovery_revocation(poisoned:
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
 }
+
+#[path = "context_fragment_retry_tests.rs"]
+mod context_fragment_tests;

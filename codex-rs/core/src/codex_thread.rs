@@ -931,9 +931,13 @@ impl CodexThread {
     /// Records a context fragment without creating a new user turn boundary.
     pub(crate) async fn inject_fragment_without_turn(&self, fragment: impl ContextualUserFragment) {
         let item = ContextualUserFragment::into(fragment);
-        self.session
-            .inject_no_new_turn(vec![item], /*current_turn_context*/ None)
-            .await;
+        if let Err(err) = self
+            .io
+            .inject_context_fragment_after_finish(&self.session, vec![item])
+            .await
+        {
+            tracing::error!(%err, "failed to inject context fragment without starting a turn");
+        }
     }
 
     /// Record raw Responses API items without starting a new turn.
