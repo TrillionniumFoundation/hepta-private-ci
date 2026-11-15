@@ -1,0 +1,70 @@
+name: hcsn-currentstate-n256-joint-admission
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_joint_admission/**"
+      - ".github/workflows/hcsn-currentstate-n256-joint-admission.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-joint-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify fail-closed joint envelope without numerical work
+        run: |
+          set -euo pipefail
+          package=qualification/hcsn_currentstate_n256_joint_admission
+          mkdir -p "$package/ci-artifact"
+          /usr/bin/time -v python -m unittest \
+            qualification.hcsn_currentstate_n256_joint_admission.test_admission -v \
+            > "$package/ci-artifact/TEST_STDOUT.txt" \
+            2> "$package/ci-artifact/TEST_STDERR.txt"
+          python "$package/inspector.py" \
+            --package-root "$package" \
+            --qualification-root qualification \
+            > "$package/ci-artifact/REPORT.json"
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          package = Path("qualification/hcsn_currentstate_n256_joint_admission")
+          report = json.loads((package / "ci-artifact/REPORT.json").read_text())
+          if report["status"] != "RED_JOINT_ADMISSION_HOLD":
+              raise SystemExit("unexpected status")
+          if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
+              raise SystemExit("numerical module imported by joint admission audit")
+          (package / "ci-artifact/COUNTS.json").write_text(
+              json.dumps(
+                  {
+                      "new_idempotency_keys": 0,
+                      "n256_dynamic_runs": 0,
+                      "matrix_exponential_actions": 0,
+                      "candidate_oracle_calls": 0,
+                      "n256_serializer_calls": 0,
+                      "torch_calls": 0,
+                      "optimizer_steps": 0,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              )
+              + "\n"
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hcsn-n256-joint-admission-${{ github.sha }}
+          path: qualification/hcsn_currentstate_n256_joint_admission/ci-artifact
+          if-no-files-found: error
+          retention-days: 30

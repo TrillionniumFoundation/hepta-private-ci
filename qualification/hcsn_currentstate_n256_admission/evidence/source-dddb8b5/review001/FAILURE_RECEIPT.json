@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-n256-input-lineage-review-failure-receipt-v1",
+  "identity": "hcsn-n256-input-lineage-independent-review-20261113-c06d-001",
+  "job_id": "1a1d3ede555-392-23a",
+  "idempotency_key": "hcsn-n256-input-lineage-independent-review-20261113-c06d-001",
+  "request_digest": "d749812b6ffac3d803031488001ce271443bb6be3634e01710385624192e9536",
+  "exit_code": 1,
+  "failure": "review.py treated REPORT.original_sha256 values as relative paths; FileNotFoundError before REVIEW.json publication",
+  "review_published": false,
+  "main_verifier_rerun": false,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "oracle_numeric_calls": 0,
+  "serializer_numeric_calls": 0,
+  "torch_calls": 0,
+  "backward_calls": 0,
+  "optimizer_steps": 0,
+  "training_runs": 0,
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

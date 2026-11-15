@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn-n256-streaming-fullstate-static-request-v1",
+  "identity": "hcsn-n256-streaming-fullstate-static-20261113-c06d-001",
+  "base_commit": "3a1f51acf100405fac7435731ceaef8d4a5ed497",
+  "dependency_source_commit": "8b0d34034902a699b7a437a4076fbe76ad032368",
+  "scope": "stdlib-only static storage/comparator resource arithmetic",
+  "fixed_chunk_coordinates": 65536,
+  "fixed_chunk_bytes": 524288,
+  "retained_caps": {
+    "per_buffer_bytes": 8388608,
+    "cumulative_preserved_bytes": 201326592,
+    "canonical_archive_bytes": 268435456
+  },
+  "forbidden_execution": [
+    "dynamic propagation",
+    "matrix exponential",
+    "numeric oracle",
+    "numeric serializer or cold loader",
+    "Torch, backward, optimizer, or training"
+  ],
+  "required_result": "storage representation may pass only if the 18225028-coordinate denominator is unchanged and every numerical/dynamic qualification remains HOLD",
+  "execution_key": null,
+  "largegrid_qualification": false,
+  "all_closed": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-n256-engineering-independent-review-v1",
+  "status": "PASS_INDEPENDENT_ZERO_EXECUTION_REVIEW",
+  "job_id": "1a1d39d3100-392-18b",
+  "idempotency_key": "hcsn-n256-engineering-resource-static-review-20261113-c06d-001",
+  "request_digest": "95b1f8ac6ce5f06bc9b041cd36e55672a6fd316f8a49b643e0582bc3f0b08585",
+  "source_files": 5,
+  "candidate_operators": 4,
+  "candidate_operator_nnz": 3058,
+  "verified_zero_fields": [
+    "dynamic_runs",
+    "matrix_exponentials",
+    "oracle_numeric_calls",
+    "serializer_numeric_calls",
+    "torch_calls",
+    "backward_calls",
+    "optimizer_steps",
+    "training_runs"
+  ],
+  "largegrid_qualification": false,
+  "all_closed": false
+}
