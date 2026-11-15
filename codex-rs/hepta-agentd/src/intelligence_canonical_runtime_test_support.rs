@@ -215,10 +215,9 @@ pub(super) async fn runtime_fixture(body_generation: u64, drain_on_build: bool) 
         .expect("actual replay frontier");
     drop(evidence);
     let checkpoint = root.join("replay-checkpoint.json");
-    let mut checkpoint_file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .mode(0o600)
+    let mut checkpoint_options: OpenOptions = OpenOptions::new();
+    checkpoint_options.write(true).create_new(true).mode(0o600);
+    let mut checkpoint_file = checkpoint_options
         .open(&checkpoint)
         .expect("new independent checkpoint");
     serde_json::to_writer(
@@ -265,13 +264,10 @@ pub(super) async fn runtime_fixture(body_generation: u64, drain_on_build: bool) 
         expires_at_ms: now + 120_000,
     };
     let path = root.join("run-start.journal");
+    let mut new_journal_options: OpenOptions = OpenOptions::new();
+    new_journal_options.create_new(true).read(true).write(true);
     let mut journal = DurableRunStartJournal::create(
-        OpenOptions::new()
-            .create_new(true)
-            .read(true)
-            .write(true)
-            .open(&path)
-            .expect("journal file"),
+        new_journal_options.open(&path).expect("journal file"),
         digest("original-run-start-owner"),
         16,
     )
@@ -313,12 +309,10 @@ pub(super) async fn runtime_fixture(body_generation: u64, drain_on_build: bool) 
         .expect("published")
         .clone();
     drop(journal);
+    let mut recovery_journal_options: OpenOptions = OpenOptions::new();
+    recovery_journal_options.read(true).write(true);
     let journal = DurableRunStartJournal::recover(
-        OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(path)
-            .expect("reopen file"),
+        recovery_journal_options.open(path).expect("reopen file"),
         digest("original-run-start-owner"),
         16,
         RunStartRecovery::Acknowledged(RunStartAnchor {
