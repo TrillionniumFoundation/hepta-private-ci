@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.learn.fde-diagnostic-preparation-failure.v1",
+  "source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+  "frozen_request_commit": "93486a67d3fa864c6cba1caeffad2c7396013283",
+  "idempotency_key": "learn-ce434-fde-diagnostic-e5c7dbd-layout-timeout-C-v2",
+  "original_pty": {
+    "archive_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-fe1e224e4b74d554b1dd0705b1f56f9b0535a28de507c9d1e1dc02384a83e7cd/output.log",
+    "available_end": 349,
+    "bytes_hex": "7b227374617465223a2022646961676e6f737469632d6e61746976652d72756e6e696e67222c2022736f75726365223a202265356337646264393039333866316339616333396464333036356336396131623737303764366334222c2022726573756c74223a20222f686f6d652f7169616e2d71692f68657074612d6c6561726e2d63653433342d65766964656e63652d32303236313131312f6e61746976652f756e69666965642d6535633764626439303933382d646961676e6f737469632d76312f726573756c742e6a736f6e227d0d0a7b227374617465223a20226661696c6564222c2022726573756c74223a20222f686f6d652f7169616e2d71692f68657074612d6c6561726e2d63653433342d65766964656e63652d32303236313131312f6e61746976652f756e69666965642d6535633764626439303933382d646961676e6f737469632d76312f726573756c742e6a736f6e227d0d0a",
+    "chunk_sha256": "4055c02f4d1ac30cedd057c38caa11606a2993a5aef52d74de881cdd21cbc2da",
+    "host": "desktop",
+    "next_offset": 349,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-fe1e224e4b74d554b1dd0705b1f56f9b0535a28de507c9d1e1dc02384a83e7cd",
+    "status": {
+      "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+      "bytes_seen": 349,
+      "bytes_stored": 349,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794488615034,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 1208513,
+      "pid": 1208532,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"state\": \"diagnostic-native-running\", \"source\": \"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\", \"result\": \"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-e5c7dbd90938-diagnostic-v1/result.json\"}\r\n{\"state\": \"failed\", \"result\": \"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-e5c7dbd90938-diagnostic-v1/result.json\"}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "full_files": [
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-e5c7dbd90938-diagnostic-v1/result.json",
+      "bytes": 1489,
+      "sha256": "feee41611c9138b0d17d05e03727061e55138d654a12925392640128f58a3610"
+    },
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-e5c7dbd90938-diagnostic-v1/original-full-native.log",
+      "bytes": 679,
+      "sha256": "c3c859a3cc6f803e9cb7fda625a48d52c97c6d96445a792d7bdcc49960bc9a9f"
+    }
+  ],
+  "observed": {
+    "state": "preparation-failed",
+    "stage": "private target lstat before helper build",
+    "native_exit_code": 1,
+    "native_seconds": 0.531492801848799,
+    "helper_build_started": false,
+    "rust_compile_started": false,
+    "diagnostic_tests_started": 0,
+    "source_clean_after": true,
+    "missing_path": "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+    "missing_path_error": "FileNotFoundError / errno 2",
+    "cause_of_path_disappearance": "not established"
+  },
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "unknown_requests": {
+    "earlier_start_timeouts": "reconciled by the identical typed request and final PTY read; no new test key used",
+    "original_observer_key": "learn-ce434-e5c7-three-diagnostic-evidence-watch-v1",
+    "original_observer_status": "no acknowledged original result; do not repurpose its key"
+  },
+  "scope": "Exact original preparation failure; no fixture layout, C timing or timeout-phase conclusions. No process signalled."
+}
