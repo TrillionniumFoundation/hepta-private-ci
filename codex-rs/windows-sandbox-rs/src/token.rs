@@ -462,11 +462,13 @@ unsafe fn create_token_with_caps_user_and_additional_restrictions_from(
     let mut extra_restricting_sids = Vec::with_capacity(additional_restricting_sids.len() + 1);
     extra_restricting_sids.push(psid_user);
     extra_restricting_sids.extend_from_slice(additional_restricting_sids);
+    // Keep the dedicated account for owner-scoped named pipes, but do not let
+    // ambient Everyone or logon grants substitute for the selected capabilities.
     create_token_with_caps_from(
         base_token,
         psid_capabilities,
         &extra_restricting_sids,
-        RestrictingIdentity::Include,
+        RestrictingIdentity::Exclude,
     )
 }
 
@@ -499,7 +501,7 @@ unsafe fn create_token_with_caps_from(
         .collect();
     // A restricting SID is an alternative ACE match, not an additional requirement.
     // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
-    // Readonly and dedicated elevated-account tokens retain their existing policy.
+    // The readonly legacy mechanism retains its existing identity policy.
     if matches!(restricting_identity, RestrictingIdentity::Include) {
         entries.push(SID_AND_ATTRIBUTES {
             Sid: psid_logon,
