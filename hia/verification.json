@@ -297,24 +297,26 @@
   },
   "scope": "Linux x86-64 GNU, opt-in hia-native. Eleven B3 modules cover nine algorithm groups. The current native build and eleven component gates passed. The post-gate adapter lint repair and hidden-fixture upload change are separately bound; all native source/artifact files and prior component gate inputs remain unchanged. The complete combined file-update public owner, Cargo consumers, installed executables, strict lint and fix/clean-diff require fresh CI. Earlier published CI results qualify only their recorded source trees. All 15 complete capabilities, whole-Codex/default migration, required platforms, retirement and whole-product performance remain open.",
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "0d406d84e1d0d82bc99fb000127f9410ad5546ca4a20cbae1d656610bdf39081",
+    ".github/workflows/codex-hia-native.yml": "fa4eee1f1f81efaebed421ac0d0d56e4d21e5f3de07df355c8ea6a5ef3ad2907",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
     "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
     "codex-rs/apply-patch/BUILD.bazel": "b46d28a69e2080c76b980da7d4256c2495154f39baf24602a6434a7de1bea719",
     "codex-rs/apply-patch/Cargo.toml": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
-    "codex-rs/apply-patch/build.rs": "c0a59d02105e37b2df24f20faf0af540f16c19b7b1f17ca0d49c93c0241750e4",
+    "codex-rs/apply-patch/build.rs": "e3ae4ac4b6dd24b62e05149364cda90643ea2bfe1d757ffe8f75b51bf10c7232",
     "codex-rs/apply-patch/src/file_update.rs": "035c8933e3c1282c04cce7a5419e4f7d1909b823efd2cb8d0c19229bde7faf5d",
     "codex-rs/apply-patch/src/file_update_tests.rs": "59fc1e6db897fd61be7ee865a741dc7fdb709501426c4f9603ef8a532fe08282",
     "codex-rs/apply-patch/src/hia_native.rs": "80981c210f252b24915c077cbd8b3b84356c7a0b4c3c4906d375cb9f42727749",
     "codex-rs/apply-patch/src/hia_native_file_update.rs": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
-    "codex-rs/apply-patch/src/hia_native_text_file.rs": "6c4af87c8981be96a636d311fc6adb384289f67d6f06433d75ef8e206d1e4f7f",
+    "codex-rs/apply-patch/src/hia_native_parser.rs": "77826bfa61b2d38f37eda19edf0de12c2794b2680236e6b3338baec78b8b56e8",
+    "codex-rs/apply-patch/src/hia_native_streaming_parser.rs": "ab294ac591cecd8a31dc15d4d73c6c22ee26b612eeffcfbf059736670be2710a",
+    "codex-rs/apply-patch/src/hia_native_text_file.rs": "c5cb63a376005418dc10d83dae8beda8d97a2db0e63e8033470d72e69b3aa76d",
     "codex-rs/apply-patch/src/invocation.rs": "ab6ce54396919236a2b68a5dc33f670663c67c12fa8def3b80588933d297047a",
-    "codex-rs/apply-patch/src/lib.rs": "573ee4413ec18c448da649e91466521f60e129011fae9e54ceb7ccb403a82e11",
+    "codex-rs/apply-patch/src/lib.rs": "cf5d8da4d881a24d3f5651aeb1f07aea0f34d45229fb2372d3f7a2d812334e29",
     "codex-rs/apply-patch/src/main.rs": "31de3e573a13c50c81af81d262a11fdb758540408cbab3fafb5e638c66a50117",
-    "codex-rs/apply-patch/src/parser.rs": "6b8086467d0500f4fc9aa9a35cd33a0bce53c01bcb74b915b9efc6fcf187f7ce",
+    "codex-rs/apply-patch/src/parser.rs": "c5dd2d20dada169f7b4d9910b4b126707bb4cd040c38f1c2039c5c6f1c2e5a38",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/apply-patch/src/standalone_executable.rs": "33d7979c976a21b57fbb0c576ccf45b38127fef4cca4bf7af62077ce78d0c8ab",
-    "codex-rs/apply-patch/src/streaming_parser.rs": "5f4b8e60fd24ada7c1b6a696155de3da2b946f7b5436da90e377c9de04b1e578",
+    "codex-rs/apply-patch/src/streaming_parser.rs": "ef7eafad49a7b881c35ac5bd3ede38a867c5a84fe54522e0da24627e705a31cb",
     "codex-rs/apply-patch/src/text_file.rs": "f8552845979411008c856f77b378d16e39966fa877a53a1ebd29f5e4cc74f2e2",
     "codex-rs/apply-patch/tests/all.rs": "76a945d282d61edbe1dbcd9788e7bc7c2073ebecf42c934cfb4bb2f6c47fb8cd",
     "codex-rs/apply-patch/tests/fixtures/scenarios/.gitattributes": "ef13f8bdcd38dc117a6b547edffe61c437da4e821443528705e85e9fc900f15b",
@@ -408,9 +410,20 @@
     "codex-rs/apply-patch/tests/suite/tool.rs": "1c6c784d9f4d1bca2bd3275b7143d228ac0a3930eadfa2de62d6a94fc9d4160f",
     "codex-rs/arg0/Cargo.toml": "d5d7c6d652ef06c623de0dafe121b3b4f41bb0f98ed8e8d946d9e6c68880a152",
     "codex-rs/cli/Cargo.toml": "1ab01dc7d288e62af6c9e2eefcd2d88a29a384d067842f4258971e7f81085b77",
+    "codex-rs/core/src/tools/handlers/apply_patch.rs": "b82b1d22be68fc9a11538e09f7c6363776e610c4f450a8447447e38358d601c2",
     "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70",
     "codex-rs/rust-toolchain.toml": "47f5c5c59856700915beeb7e5ff46a5eeed1c08420579af27698e6740f396a82",
     "codex-rs/tui/Cargo.toml": "a9949f5c09dcbf05c4c1feeab89d26cf1ca52c0cd0d364d51c732711085e24a5",
+    "codex-rs/utils/absolute-path/Cargo.toml": "ad98dc1a75333700db00f6bde0685ce7a3e0f5558b0520e7a09e9bbcc6576736",
+    "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7",
+    "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+    "codex-rs/utils/path-uri/Cargo.toml": "d45031c71d6dbcf8c7770ce1feebabbc2f3224841c5eb770d9e2dc70d19d9d20",
+    "codex-rs/utils/path-uri/src/absolute_path_normalization.rs": "e050e7bee691b2696ef8ebbdcfa5805f695b94a903b1a9b584f8724f37dd7ea3",
+    "codex-rs/utils/path-uri/src/api_path_string.rs": "6bb02a76fcd6d2fff8471e9f32b5322e0573ec3e9abe041109461a1cd6b63049",
+    "codex-rs/utils/path-uri/src/api_path_string_tests.rs": "6c1edafb7636d484cf79bf4329266747d14393e3d23d8a20a60a4a0941b9ce2c",
+    "codex-rs/utils/path-uri/src/lib.rs": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc",
+    "codex-rs/utils/path-uri/src/native_path_bytes.rs": "6295f7e680d774d38cd6d6c5ad9245e58b8e0321d6f5a248260b14cc941411d1",
+    "codex-rs/utils/path-uri/src/tests.rs": "caa94d4ea84a8d54a972a2c7bfd5db5e6abf6f89a8df95a013c1f8008c3af0a1",
     "codex-rs/utils/string/BUILD.bazel": "c10a3ee27f80de0062b4f6c5b3d32516bccf348d008d940dd00b984ac53a44dc",
     "codex-rs/utils/string/Cargo.toml": "b6b11402e1448cb2fbafbb944be985fa71c9a476a703ae3a9a47bf38e3ee0a93",
     "codex-rs/utils/string/build.rs": "315b128aaef52ef17bcd0168e4dab0c7989b23b6f295791c9d9026d7e8f83a48",
@@ -436,9 +449,11 @@
     "hia/file_update_buffer_contract.json": "ba4ae185438fb19401fe92d0602c32c6f1d4e4891987937ad05cefb6f1f8be95",
     "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
     "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+    "hia/parser.hepta": "4bc5c33576b56b27214d21dae686a7242f81ea01ac81516bd0be6583424b827f",
+    "hia/parser_buffer_contract.json": "f5c56e0e49455faa925b60306b1de72b7575391ce154c26b914250a4b0b47706",
     "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-    "hia/source_file.hepta": "318444262135fbb1ca506ecce7dcc28fac4fc92d776d2d8d9f7c94a5a121b710",
-    "hia/source_file_buffer_contract.json": "0da7ff9106fc1c153a879214075bf0be99ccd5ec6847c6613c27e1f621208b5f",
+    "hia/source_file.hepta": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
+    "hia/source_file_buffer_contract.json": "47d50172b6abd2a9449c8eb2e312c7a1588404e25e4480216b0d3241d5f54105",
     "hia/tests/file_update_oracle/__init__.py": "1a2b6ac67893128518bd6254f31f4d71c9b76f9bf56a5fb0f423e07c4945729b",
     "hia/tests/file_update_oracle/cargo.py": "25cb55322926d9b807d162407fc49f3cbd3f9eb87edc8525f101ebb00541f89c",
     "hia/tests/file_update_oracle/corpus.py": "ee95bce3930ad2409d61b9056c576c81ee18f2cb058a8eddc689d7d1036d4221",
@@ -448,37 +463,44 @@
     "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
     "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
     "hia/tests/native_metric_caller.rs": "3ddb875dbca6480d340f04e2df777e4b380294366107d05d238b3be3c9b60c64",
+    "hia/tests/native_parser_caller.rs": "39c31295517136de71be69b447a0db2e1e3e05ba202d611bc35f06ca9a8e2cb1",
     "hia/tests/native_patch_caller.rs": "5e3e0527cd69997170db7402e43b0bb84be4c9f8964f6d74417dbb1470083ac2",
-    "hia/tests/native_source_file_caller.rs": "48b2e9127131b502a73f5c98c1fa53667af776a64eef174b3c688f485c4270fd",
+    "hia/tests/native_source_file_caller.rs": "ae3e97453f530cc80dd1287ec1c56b789b147a3198bf8d98ecc8c396489bb390",
     "hia/tests/native_string_caller.rs": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
     "hia/tests/native_truncate_caller.rs": "de88b426d2330a5013fc3a2fb0fab300a51382ef45bd0f735257284138c7c451",
+    "hia/tests/parser_cases.py": "fd506798eb666edbcc880f414f980b352226452bf71a1ac12f07f293c7ddfacd",
+    "hia/tests/parser_oracle_Cargo.lock": "0617730b9259af552e2028a3716fb8a1a53f9e757c164b3015cccc5ab7ea142a",
     "hia/tests/seek_sequence_oracle.rs": "a858319766e0e5a9c5ca9069f894c987895f3a7f28da6f61db547f24983554e0",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
     "hia/tests/test_file_update_abi.py": "d591e493a70ffc43923d9cd84341c72238aa6072d1c3403ca7bc1aade02930f5",
-    "hia/tests/test_installed_codex.py": "e0a4999af969194dcc3a737e22383d157c3864759278ddb5316c7a44258e0269",
-    "hia/tests/test_installed_patch.py": "ebc9829df702a96c7f5f8e3e0ec52295a99ba4a1197ee1a6eaa5313ff357135f",
+    "hia/tests/test_installed_codex.py": "ac4c7e4ffa699efbad36918f70109b1abfdc84f8a26abdfae0ecc4a6f867760b",
+    "hia/tests/test_installed_patch.py": "63426985c4335ee88cd2315d3b500efc418fbbf89b0544834bbd102177fb0f57",
     "hia/tests/test_markdown_location_abi.py": "bac67c99f75d4899571db903acd570a548ed62a7b3b2943f850c9d46ef06ca1d",
     "hia/tests/test_metric_tag_abi.py": "6d10774c87586c9ab428809acf9fa2007b2658cf074909d09b44b7851e3239be",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
     "hia/tests/test_native_file_update_caller.py": "6c94dd28e2569ae3c4db4e529b84b1284746e706da19ee4e3d22ece75deeadca",
     "hia/tests/test_native_markdown_caller.py": "92fb33c542e50e55d81b20abce470c4bec54359b3a2a79b488d55e4f45220157",
     "hia/tests/test_native_metric_caller.py": "31f1965f7620e392e123dfa5c908454dad3f2e179976b2132d30705345ef8adc",
+    "hia/tests/test_native_parser_caller.py": "f4ff47173bd8954634039b4f5efda70f842bb4d44656026c58d5968685b850a4",
     "hia/tests/test_native_source_file_caller.py": "a7f00401280170a4b49adf7c5b73ff09526bd48e119190c6cebaca209690733e",
     "hia/tests/test_native_string_caller.py": "4dbe9843e6f04e3fabc40783bbf0402aa64e6b5da84f6202795905f273066636",
     "hia/tests/test_native_truncate_caller.py": "48c85d7a30d0b261b8831eb46c83c16514eda1f2826c0c184384962aeaf0f9b6",
+    "hia/tests/test_parser_abi.py": "72530c2b2c4f554028c4786cefc625b15ccfab5face9c477dfad71e995a758ba",
+    "hia/tests/test_parser_host_receipt.py": "84829f52edd05a7ff18998dfef83a7254c9b19673100c1be808910591207cdd7",
     "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
     "hia/tests/test_seek_sequence.py": "674df1a3014c764fc425e4ebcb8f19a3fa3ab6462e173eb2e71eaddacbc730bc",
-    "hia/tests/test_source_file_abi.py": "7826a9812dfbf06e72a1d17f3bbbc725194cca183d7d156d2a073fd29de751be",
+    "hia/tests/test_source_file_abi.py": "6d0cd17d55a0c349c550bd88743f288cc12eb419b14c1dda069d86d8e58fb8ca",
     "hia/tests/test_token_budget_abi.py": "af2b3e5cd8b12577175c07797917f28db6713ecc683bf081d2dcf7403359a4ba",
     "hia/tests/test_truncate_abi.py": "c9d7a2ade87809136d92e731681fba498a2cf3ad06942dc9364f3868bbd3049a",
     "hia/tests/test_utf8_boundaries.py": "5d670e37ac739b42f0d54479d40a429e01ac20da8b3a959fca1f798f24e17fd1",
     "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-    "hia/toolchain.json": "21dda7f77d48505111a01142a41cd7796d7f8da38459bc0bc884ca4ab1ddff00",
+    "hia/toolchain.json": "979ff92b47a73edf13a815f34d9d9042cb61f12193455bb8fc792a1815536856",
     "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
     "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/format.py": "44ccd393a2fc2516fba691cad743bd07d0149c6a3e16e18d13965428fcbaddd6",
     "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
     "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
   },
@@ -893,7 +915,7 @@
   },
   "native_module_count": 11,
   "production_algorithm_group_count": 9,
-  "current_source_inputs_scope": "Previous canonical inputs, all tracked/untracked nonignored HIA source/contracts/tests, complete apply-patch and utils/string crates, existing edited paths, workspace Cargo inputs and repository test runners; excludes exactly the three metadata files. These hashes bind source bytes; they do not assert that pending execution gates ran.",
+  "current_source_inputs_scope": "Union of named inputs from the three published candidates and every current HIA source/contract/test/build file. Excludes exactly the three canonical metadata files to avoid self-hashing. Source hashes bind bytes, not execution of pending gates.",
   "file_update_increment": {
     "base_commit": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
     "implementation_commit": "0ada4c2d2b9ba4465b0ce05577bbf256b46e98c5",
@@ -1713,5 +1735,367 @@
     "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
     "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
     "scope": "Single-parent integration of these three sibling candidates; no unrelated main integration tree or target directory is reused."
+  },
+  "compiler_generation_evidence": [
+    {
+      "case": "B1",
+      "abi_status": 0,
+      "status": "returned",
+      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
+    },
+    {
+      "case": "B2",
+      "abi_status": 0,
+      "status": "returned",
+      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
+    },
+    {
+      "case": "B3",
+      "abi_status": 0,
+      "status": "returned",
+      "produced_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "source_sha256": "3c02cbd29bf932ee81d809a5915bcfdec4fc474d252820fbe7b80ebadcac2760"
+    }
+  ],
+  "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
+  "patch_integration": {
+    "status": "eleven_component_gates_passed_combined_cargo_installed_strict_fix_pending",
+    "native_build_job": "1a1dd68a6f4-392-207f",
+    "component_job": "1a1dd6d3708-392-2092",
+    "post_repair_job": "1a1dd80c285-392-20e0",
+    "component_code_tree": "abf5c5a66698c05a6f7283a8bd1d3cab106f2dc3",
+    "post_repair_code_tree": "e27a4e4576645e6f9063698734134c1a8044bf0f",
+    "source_snapshot_files": 9849,
+    "component_source_before_sha256": "facd4785dda45646d1ba4a8a681f1689593f4ff956e83de3650e8a6288a8e057",
+    "component_source_after_sha256": "facd4785dda45646d1ba4a8a681f1689593f4ff956e83de3650e8a6288a8e057",
+    "source_unchanged_during_component_execution": true,
+    "post_repair_source_snapshot_sha256": "1e92207aefd9ca341caa7eb6fa61f9a6acda8333462b786148b636e5d7020740",
+    "actual_source_and_artifact_files": 55,
+    "gates": [
+      {
+        "name": "source-file-abi",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_source_file_abi.py",
+          "--library-dir",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/source-file-abi.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.582687,
+        "stdout_sha256": "e189a5bd97e4e9b0e373131022a075e25eb4e4dd9fb4e4b31278b84fb0bdc5de",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "ad22f75fd3516558f90f2fc4f6c4abb99ac0aacec241a81e5a207669647a6656",
+        "observed": {
+          "passed": true,
+          "native_calls": 8915,
+          "error_no_write_cases": 6499,
+          "concurrent_native_calls": 2048
+        }
+      },
+      {
+        "name": "file-update-abi",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_file_update_abi.py",
+          "--library-dir",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/file-update-abi.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.306046,
+        "stdout_sha256": "47cc93188831a1c17610e9cfb078c79f2766a6357f97eb8d332827a1f79f37e7",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "d21420219a615f80c6981357c2e9cf1daa56b477d4fc56b93bcc341911b102b8",
+        "observed": {
+          "passed": true,
+          "native_calls": 2897,
+          "error_no_write_cases": 1381,
+          "concurrent_native_calls": 768
+        }
+      },
+      {
+        "name": "parser-abi",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_parser_abi.py",
+          "--library-dir",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/parser-abi.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.344487,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "405d0775ee73f8a248ddd84872c382403cb1085e030876727996d3ece9ed887d",
+        "observed": {
+          "passed": true,
+          "native_calls": 11715,
+          "transport_error_no_write_cases": 4029,
+          "concurrent_native_calls": 1024
+        }
+      },
+      {
+        "name": "source-file-original",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_native_source_file_caller.py",
+          "--library-dir",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--rustc",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/source-file-original.json"
+        ],
+        "returncode": 0,
+        "seconds": 1.621495,
+        "stdout_sha256": "757b701a02e25537981d1e4401c2246ac8399d4e86cd773cbc983857cfeee6b4",
+        "stderr_sha256": "36581f6b99d2eb94636a2cf189b970bfd95de4b9cc0073fff36d57c3c0cf98be",
+        "report_sha256": "e2510003d25c1e2fd7a2cadbb302497104cadd23550199e4d787737baefb4fda",
+        "observed": {
+          "passed": true,
+          "tests_skipped": 0,
+          "original_rust_comparisons": 225591
+        }
+      },
+      {
+        "name": "receipt-source_file",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_build_receipt.py",
+          "--artifacts",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--mutation-module",
+          "source_file",
+          "--rustc",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/receipt-source_file.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.65793,
+        "stdout_sha256": "02ce77212423bdcbd7711f06095c4d51a5c1f3eb88d678b3cece849dd3ff5f66",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "7279a8909635f03adb7fc96ca59cbd27a571d4a060c8e3fa002236c25ea674ef",
+        "observed": {
+          "status": "passed",
+          "checks": 62
+        }
+      },
+      {
+        "name": "receipt-file_update",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_build_receipt.py",
+          "--artifacts",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--mutation-module",
+          "file_update",
+          "--rustc",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/receipt-file_update.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.663616,
+        "stdout_sha256": "d54da4d39032f6905b78c837d9d35d9b7f0157cbcc272d98e02c664d78f65cf8",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "380251d49bc0a80361466899ee817485084d2b5e00dc2e922163e6e3d3e475fa",
+        "observed": {
+          "status": "passed",
+          "checks": 62
+        }
+      },
+      {
+        "name": "receipt-parser",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_build_receipt.py",
+          "--artifacts",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--mutation-module",
+          "parser",
+          "--rustc",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/receipt-parser.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.67368,
+        "stdout_sha256": "7c9c47c083b6b426a94fb924f14f11d57a17c3f5091d70287ad2487e056f14e6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "407104578aadfa92e62126c7e0b5e11f175a00ffaf6d311983816b8d3d24dc13",
+        "observed": {
+          "status": "passed",
+          "checks": 62
+        }
+      },
+      {
+        "name": "scalar-admission",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_scalar_build_admission.py",
+          "--artifacts",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/scalar-admission.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.039369,
+        "stdout_sha256": "a082c8cb08fb6b40cf5dbda8539d5cca1abccb55aeb847c307cf0e87ce155f4e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "735a92726b3da38ae77be9b7092c6ac1368061b5a641fc73f2eb02d48e3642ab",
+        "observed": {
+          "status": "passed",
+          "checks": 117
+        }
+      },
+      {
+        "name": "fresh-host-build",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-c",
+          "import sys,json,pathlib;sys.path.insert(0,sys.argv[1]);import test_native_parser_caller as o;r={'commands':[]};o.host_dependencies(sys.argv[2],pathlib.Path(sys.argv[3]),r);r['passed']=True;pathlib.Path(sys.argv[4]).write_text(json.dumps(r,indent=2)+'\\n');print(json.dumps({'passed':True,'packages':r['host_dependencies']['package_count'],'receipt':r['host_dependencies']['receipt_path']}))",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration/hia/tests",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/host-build",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/fresh-host-build.json"
+        ],
+        "returncode": 0,
+        "seconds": 16.744966,
+        "stdout_sha256": "5bd42c3e6dbefcc650a858be1ce002f0c82dc5d7ae5d0bf47c469dd4c905d4d4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "f99b73852087eaa2afd0e1104096c9649f8135421b7aed68b75a865018953c30",
+        "observed": {
+          "passed": true
+        }
+      },
+      {
+        "name": "parser-original",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_native_parser_caller.py",
+          "--library-dir",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/patch-integration-native-v1",
+          "--rustc",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "--dependency-receipt",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/host-build/host-dependencies/host-dependencies-receipt.json",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/parser-original.json"
+        ],
+        "returncode": 0,
+        "seconds": 9.361562,
+        "stdout_sha256": "e2322de47c580001713d6d1d007333e000c0fe59b69b624bae7b16223ebfdef6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "3af4c09f45a64a0ea863575d9a78f2cf2f8747681b7e16bce41635b55d9e47ee",
+        "observed": {
+          "passed": true,
+          "original_rust_comparisons": 3836,
+          "tests_skipped": 0
+        }
+      },
+      {
+        "name": "parser-host-admission",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "hia/tests/test_parser_host_receipt.py",
+          "--rustc",
+          "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "--dependency-receipt",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/host-build/host-dependencies/host-dependencies-receipt.json",
+          "--report",
+          "/home/qq/codex-hia-work/9f38-recovery-20261115/qualification/patch-integration-components-v1/parser-host-admission.json"
+        ],
+        "returncode": 0,
+        "seconds": 0.659316,
+        "stdout_sha256": "45c1f01e76cb8dcd88a4f957f31743bf884e627ccc7d525de7a725852585c3f1",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "report_sha256": "e9787f2443214fdf8de471bc2e21ab52aa7b49618cc36cce4c1b005eeb01be23",
+        "observed": {
+          "passed": true,
+          "rejection_count": 11,
+          "tests_skipped": 0
+        }
+      }
+    ],
+    "after_component_checks": {
+      "passed": true,
+      "source_paths": 9849,
+      "before_source_snapshot_sha256": "facd4785dda45646d1ba4a8a681f1689593f4ff956e83de3650e8a6288a8e057",
+      "after_source_snapshot_sha256": "1e92207aefd9ca341caa7eb6fa61f9a6acda8333462b786148b636e5d7020740",
+      "code_tree": "e27a4e4576645e6f9063698734134c1a8044bf0f",
+      "changed_since_component_checks": [
+        ".github/workflows/codex-hia-native.yml",
+        "codex-rs/apply-patch/src/hia_native_file_update.rs"
+      ],
+      "changed_source_sha256": {
+        "codex-rs/apply-patch/src/hia_native_file_update.rs": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
+        ".github/workflows/codex-hia-native.yml": "fa4eee1f1f81efaebed421ac0d0d56e4d21e5f3de07df355c8ea6a5ef3ad2907"
+      },
+      "native_source_and_artifact_files_unchanged": 55,
+      "just_fmt_unchanged": true,
+      "actual_index_unchanged": true,
+      "all_prior_component_gate_input_files_unchanged": true,
+      "complete_public_file_update_adapter_and_combined_cargo_installed_lint_fix": "pending_new_CI",
+      "global_qualified": false
+    },
+    "metadata_changes": "Only README.md, migration.json and verification.json are subsequently consolidated; executable source identities are separately frozen and all three metadata files are excluded from the input hash map.",
+    "reports": {
+      "build.json": {
+        "report": "build.json",
+        "sha256": "47313f73a5fef297e17d68a92e37e92e2f0e3db8a0f605c4a967b34af3ff9312",
+        "bytes": 163575
+      },
+      "components.json": {
+        "report": "components.json",
+        "sha256": "12f14e25d0d60931c3e8690096499b0d7cf514f511fdf18c721a256fc229aecd",
+        "bytes": 21099
+      },
+      "post-repair.json": {
+        "report": "post-repair.json",
+        "sha256": "20e004baf884d137b898da096c9e4e2037e4fbef34ec8f44c2416d2e31e4908b",
+        "bytes": 1028
+      },
+      "root-identity-audit.json": {
+        "report": "root-identity-audit.json",
+        "sha256": "a582afac9a0dcc1e3a0ffee5f2111dd53f7fbf70f8d27ef80cf7c0f74efa9131",
+        "bytes": 6336
+      }
+    },
+    "cross_host_identity": {
+      "matching_fields": [
+        "source_sha256",
+        "static archive SHA256",
+        "namespaced object SHA256",
+        ".text SHA256"
+      ],
+      "shared_library_byte_identity": false,
+      "scope": "The ten modules compared with the separate published SourceFile/parser CI artifacts match in the listed fields. Their shared-library hashes differ. No cause is asserted. Current shared libraries were exercised by the fresh component gates; production static archives match. File-update source/archive also match its recorded native build.",
+      "initial_overbroad_equality_failure_preserved": true
+    },
+    "pending_gates": [
+      "Complete original file-update public differential and five unchanged owner tests on this combined adapter/parser/SourceFile tree.",
+      "Current native and feature-off owner/consumer Cargo suites, CLI/arg0/TUI suites and installed apply_patch/full Codex.",
+      "Current native/default all-target strict Clippy and scoped just fix with a clean source diff.",
+      "Current integrated performance and required-platform/release qualification."
+    ],
+    "whole_workspace_qualified": false
   }
 }
