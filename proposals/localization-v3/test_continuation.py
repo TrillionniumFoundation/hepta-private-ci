@@ -10,6 +10,7 @@ import contextlib
 import hashlib
 import importlib.util
 import io
+import itertools
 import json
 import math
 import os
@@ -299,6 +300,36 @@ class ContinuationTests(unittest.TestCase):
             self.assertEqual(last["model_configuration"]["plif_configuration"], PLIF)
         if arm == "hcsn":
             self.assertEqual(last["model_configuration"]["hcsn_grid"], GRID)
+
+    def test_epoch_cost_fields_share_one_clock_sample(self):
+        parent, outer, _ = self.run_original(
+            self.arguments(self.root / "clock-parent", "gru")
+        )
+        resumed = self.root / "clock-continued"
+        with mock.patch.object(
+            CONTINUATION.time,
+            "monotonic",
+            side_effect=itertools.count(1000.0, 0.001),
+        ):
+            result = self.run_continuation(
+                self.continuation_args(parent, outer, resumed)
+            )
+        self.assertEqual(result["status"], "completed_development", result.get("error"))
+        parent_wall = json.loads(outer.read_bytes())["whole_process_wall_seconds"]
+        epoch_events = [
+            json.loads(line)
+            for line in (resumed / "events.jsonl").read_text().splitlines()
+            if json.loads(line)["kind"] == "epoch_completed"
+        ]
+        self.assertEqual(len(epoch_events), len(result["epochs"]))
+        for row, event in zip(result["epochs"], epoch_events):
+            self.assertEqual(
+                row["cumulative_process_wall_seconds"],
+                parent_wall + row["phase_process_wall_seconds"],
+            )
+            self.assertEqual(
+                event["phase_process_wall_seconds"], row["phase_process_wall_seconds"]
+            )
 
     def test_gru_epoch_boundary_is_bitwise_identical(self):
         self.exact_continuation("gru")

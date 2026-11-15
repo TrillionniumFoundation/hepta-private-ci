@@ -253,6 +253,7 @@ def continue_fit(args):
                 )
                 losses.append(receipt)
             development = evaluate(data["dev"])
+            phase_wall_seconds = elapsed()
             row = {
                 "epoch": epoch,
                 "complete": True,
@@ -265,9 +266,9 @@ def continue_fit(args):
                     v["weighted_loss_numerator"] for v in losses
                 ),
                 "development": development,
-                "phase_process_wall_seconds": elapsed(),
+                "phase_process_wall_seconds": phase_wall_seconds,
                 "cumulative_process_wall_seconds": outer["whole_process_wall_seconds"]
-                + elapsed(),
+                + phase_wall_seconds,
                 "phase_full_process_cpu_seconds": time.process_time(),
             }
             report["epochs"].append(row)
