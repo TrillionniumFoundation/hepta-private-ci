@@ -1,0 +1,784 @@
+{
+  "assessment": "unknown_from_static_ast",
+  "limitations": [
+    "Only the same pinned target is read; no referenced file or directory is opened.",
+    "The script is parsed, never imported, evaluated, executed or spawned.",
+    "Literal values, environment values, argv contents and source lines are omitted.",
+    "Names, assignment syntax and path-use categories do not prove runtime identity or deployment.",
+    "No command or factory is classified as production, fixture or authorized from these shapes.",
+    "Metadata equality is sampled; no filesystem lock or external supervisor guarantee is claimed."
+  ],
+  "ordinary_execution_authority_proven": false,
+  "prior_result_git_blob": "ec6d9be38af816b8e74bd6746193547b0b671ae9",
+  "projection": {
+    "ast_nodes_visited": 233,
+    "bindings_are_syntactic_not_runtime_dataflow": true,
+    "calls": [
+      {
+        "allowed_name": "pathlib.Path",
+        "column": 5,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 119,
+        "end_line": 2,
+        "keyword_count": 0,
+        "line": 2,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "p.exists",
+        "column": 5,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 15,
+        "end_line": 6,
+        "keyword_count": 0,
+        "line": 6,
+        "positional_argument_count": 0
+      },
+      {
+        "allowed_name": "p.rename",
+        "column": 16,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 51,
+        "end_line": 6,
+        "keyword_count": 0,
+        "line": 6,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "pathlib.Path",
+        "column": 7,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 124,
+        "end_line": 7,
+        "keyword_count": 0,
+        "line": 7,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "str",
+        "column": 198,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 209,
+        "end_line": 8,
+        "keyword_count": 0,
+        "line": 8,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "time.monotonic",
+        "column": 2,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 18,
+        "end_line": 9,
+        "keyword_count": 0,
+        "line": 9,
+        "positional_argument_count": 0
+      },
+      {
+        "allowed_name": null,
+        "column": 5,
+        "dynamic_or_unlisted_callee": true,
+        "end_column": 59,
+        "end_line": 10,
+        "keyword_count": 0,
+        "line": 10,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "subprocess.run",
+        "column": 67,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 129,
+        "end_line": 10,
+        "keyword_count": 3,
+        "line": 10,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "dict",
+        "column": 7,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 157,
+        "end_line": 11,
+        "keyword_count": 5,
+        "line": 11,
+        "positional_argument_count": 0
+      },
+      {
+        "allowed_name": null,
+        "column": 38,
+        "dynamic_or_unlisted_callee": true,
+        "end_column": 85,
+        "end_line": 11,
+        "keyword_count": 0,
+        "line": 11,
+        "positional_argument_count": 0
+      },
+      {
+        "allowed_name": "hashlib.sha256",
+        "column": 38,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 73,
+        "end_line": 11,
+        "keyword_count": 0,
+        "line": 11,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "binary.read_bytes",
+        "column": 53,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 72,
+        "end_line": 11,
+        "keyword_count": 0,
+        "line": 11,
+        "positional_argument_count": 0
+      },
+      {
+        "allowed_name": "time.monotonic",
+        "column": 112,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 128,
+        "end_line": 11,
+        "keyword_count": 0,
+        "line": 11,
+        "positional_argument_count": 0
+      },
+      {
+        "allowed_name": null,
+        "column": 0,
+        "dynamic_or_unlisted_callee": true,
+        "end_column": 90,
+        "end_line": 12,
+        "keyword_count": 0,
+        "line": 12,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "json.dumps",
+        "column": 57,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 84,
+        "end_line": 12,
+        "keyword_count": 1,
+        "line": 12,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "print",
+        "column": 91,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 125,
+        "end_line": 12,
+        "keyword_count": 0,
+        "line": 12,
+        "positional_argument_count": 1
+      },
+      {
+        "allowed_name": "json.dumps",
+        "column": 97,
+        "dynamic_or_unlisted_callee": false,
+        "end_column": 124,
+        "end_line": 12,
+        "keyword_count": 1,
+        "line": 12,
+        "positional_argument_count": 1
+      }
+    ],
+    "imports": [
+      {
+        "alias_present": false,
+        "allowed_module": "pathlib",
+        "column": 7,
+        "end_column": 14,
+        "end_line": 1,
+        "line": 1,
+        "unlisted_identifier_omitted": false
+      },
+      {
+        "alias_present": false,
+        "allowed_module": "json",
+        "column": 15,
+        "end_column": 19,
+        "end_line": 1,
+        "line": 1,
+        "unlisted_identifier_omitted": false
+      },
+      {
+        "alias_present": false,
+        "allowed_module": "subprocess",
+        "column": 20,
+        "end_column": 30,
+        "end_line": 1,
+        "line": 1,
+        "unlisted_identifier_omitted": false
+      },
+      {
+        "alias_present": false,
+        "allowed_module": "os",
+        "column": 31,
+        "end_column": 33,
+        "end_line": 1,
+        "line": 1,
+        "unlisted_identifier_omitted": false
+      },
+      {
+        "alias_present": false,
+        "allowed_module": "time",
+        "column": 34,
+        "end_column": 38,
+        "end_line": 1,
+        "line": 1,
+        "unlisted_identifier_omitted": false
+      },
+      {
+        "alias_present": false,
+        "allowed_module": "hashlib",
+        "column": 39,
+        "end_column": 46,
+        "end_line": 1,
+        "line": 1,
+        "unlisted_identifier_omitted": false
+      }
+    ],
+    "observed_record_counts": {
+      "calls": 17,
+      "imports": 6,
+      "path_uses": 9,
+      "subprocess_calls": 1
+    },
+    "omitted_record_counts": {
+      "calls": 0,
+      "imports": 0,
+      "path_uses": 0,
+      "subprocess_calls": 0
+    },
+    "path_uses": [
+      {
+        "column": 5,
+        "end_column": 119,
+        "end_line": 2,
+        "expression": {
+          "column": 18,
+          "end_column": 118,
+          "end_line": 2,
+          "kind": "Constant",
+          "line": 2,
+          "resolution": "literal_value_omitted"
+        },
+        "line": 2,
+        "role": "path_constructor_argument"
+      },
+      {
+        "column": 5,
+        "end_column": 15,
+        "end_line": 6,
+        "line": 6,
+        "receiver": {
+          "column": 5,
+          "end_column": 6,
+          "end_line": 6,
+          "kind": "Name",
+          "known_path_name": "p",
+          "line": 6,
+          "resolution": "no_unique_prior_top_level_assignment"
+        },
+        "receiver_runtime_type_proven": false,
+        "role": "existence_probe"
+      },
+      {
+        "column": 16,
+        "end_column": 51,
+        "end_line": 6,
+        "line": 6,
+        "receiver": {
+          "column": 16,
+          "end_column": 17,
+          "end_line": 6,
+          "kind": "Name",
+          "known_path_name": "p",
+          "line": 6,
+          "resolution": "no_unique_prior_top_level_assignment"
+        },
+        "receiver_runtime_type_proven": false,
+        "role": "rename_source"
+      },
+      {
+        "column": 25,
+        "end_column": 50,
+        "end_line": 6,
+        "expression": {
+          "base": {
+            "assignment": {
+              "column": 167,
+              "end_column": 210,
+              "end_line": 2,
+              "line": 2
+            },
+            "column": 25,
+            "end_column": 29,
+            "end_line": 6,
+            "kind": "Name",
+            "known_path_name": null,
+            "line": 6,
+            "origin": {
+              "base": {
+                "assignment": {
+                  "column": 0,
+                  "end_column": 119,
+                  "end_line": 2,
+                  "line": 2
+                },
+                "column": 172,
+                "end_column": 176,
+                "end_line": 2,
+                "kind": "Name",
+                "known_path_name": "root",
+                "line": 2,
+                "origin": {
+                  "allowed_call": "pathlib.Path",
+                  "argument": {
+                    "column": 18,
+                    "end_column": 118,
+                    "end_line": 2,
+                    "kind": "Constant",
+                    "line": 2,
+                    "resolution": "literal_value_omitted"
+                  },
+                  "column": 5,
+                  "end_column": 119,
+                  "end_line": 2,
+                  "kind": "Call",
+                  "line": 2,
+                  "resolution": "allowed_single_argument_call_syntax"
+                },
+                "resolution": "single_top_level_assignment_syntax"
+              },
+              "column": 172,
+              "component": {
+                "column": 177,
+                "end_column": 210,
+                "end_line": 2,
+                "kind": "Constant",
+                "line": 2,
+                "resolution": "literal_value_omitted"
+              },
+              "end_column": 210,
+              "end_line": 2,
+              "kind": "BinOp",
+              "line": 2,
+              "resolution": "path_join_operator_syntax"
+            },
+            "resolution": "single_top_level_assignment_syntax"
+          },
+          "column": 25,
+          "component": {
+            "column": 31,
+            "end_column": 49,
+            "end_line": 6,
+            "kind": "BinOp",
+            "line": 6,
+            "resolution": "expression_values_omitted"
+          },
+          "end_column": 50,
+          "end_line": 6,
+          "kind": "BinOp",
+          "line": 6,
+          "resolution": "path_join_operator_syntax"
+        },
+        "line": 6,
+        "role": "rename_destination"
+      },
+      {
+        "column": 7,
+        "end_column": 124,
+        "end_line": 7,
+        "expression": {
+          "column": 20,
+          "end_column": 123,
+          "end_line": 7,
+          "kind": "Constant",
+          "line": 7,
+          "resolution": "literal_value_omitted"
+        },
+        "line": 7,
+        "role": "path_constructor_argument"
+      },
+      {
+        "column": 5,
+        "end_column": 59,
+        "end_line": 10,
+        "line": 10,
+        "receiver": {
+          "base": {
+            "assignment": {
+              "column": 167,
+              "end_column": 210,
+              "end_line": 2,
+              "line": 2
+            },
+            "column": 6,
+            "end_column": 10,
+            "end_line": 10,
+            "kind": "Name",
+            "known_path_name": null,
+            "line": 10,
+            "origin": {
+              "base": {
+                "assignment": {
+                  "column": 0,
+                  "end_column": 119,
+                  "end_line": 2,
+                  "line": 2
+                },
+                "column": 172,
+                "end_column": 176,
+                "end_line": 2,
+                "kind": "Name",
+                "known_path_name": "root",
+                "line": 2,
+                "origin": {
+                  "allowed_call": "pathlib.Path",
+                  "argument": {
+                    "column": 18,
+                    "end_column": 118,
+                    "end_line": 2,
+                    "kind": "Constant",
+                    "line": 2,
+                    "resolution": "literal_value_omitted"
+                  },
+                  "column": 5,
+                  "end_column": 119,
+                  "end_line": 2,
+                  "kind": "Call",
+                  "line": 2,
+                  "resolution": "allowed_single_argument_call_syntax"
+                },
+                "resolution": "single_top_level_assignment_syntax"
+              },
+              "column": 172,
+              "component": {
+                "column": 177,
+                "end_column": 210,
+                "end_line": 2,
+                "kind": "Constant",
+                "line": 2,
+                "resolution": "literal_value_omitted"
+              },
+              "end_column": 210,
+              "end_line": 2,
+              "kind": "BinOp",
+              "line": 2,
+              "resolution": "path_join_operator_syntax"
+            },
+            "resolution": "single_top_level_assignment_syntax"
+          },
+          "column": 6,
+          "component": {
+            "column": 11,
+            "end_column": 48,
+            "end_line": 10,
+            "kind": "Constant",
+            "line": 10,
+            "resolution": "literal_value_omitted"
+          },
+          "end_column": 48,
+          "end_line": 10,
+          "kind": "BinOp",
+          "line": 10,
+          "resolution": "path_join_operator_syntax"
+        },
+        "receiver_runtime_type_proven": false,
+        "role": "file_open"
+      },
+      {
+        "column": 38,
+        "end_column": 73,
+        "end_line": 11,
+        "expression": {
+          "allowed_call": "binary.read_bytes",
+          "column": 53,
+          "end_column": 72,
+          "end_line": 11,
+          "kind": "Call",
+          "line": 11,
+          "resolution": "call_arguments_omitted"
+        },
+        "line": 11,
+        "role": "hash_input_syntax"
+      },
+      {
+        "column": 53,
+        "end_column": 72,
+        "end_line": 11,
+        "line": 11,
+        "receiver": {
+          "assignment": {
+            "column": 0,
+            "end_column": 124,
+            "end_line": 7,
+            "line": 7
+          },
+          "column": 53,
+          "end_column": 59,
+          "end_line": 11,
+          "kind": "Name",
+          "known_path_name": "binary",
+          "line": 11,
+          "origin": {
+            "allowed_call": "pathlib.Path",
+            "argument": {
+              "column": 20,
+              "end_column": 123,
+              "end_line": 7,
+              "kind": "Constant",
+              "line": 7,
+              "resolution": "literal_value_omitted"
+            },
+            "column": 7,
+            "end_column": 124,
+            "end_line": 7,
+            "kind": "Call",
+            "line": 7,
+            "resolution": "allowed_single_argument_call_syntax"
+          },
+          "resolution": "single_top_level_assignment_syntax"
+        },
+        "receiver_runtime_type_proven": false,
+        "role": "file_read"
+      },
+      {
+        "column": 0,
+        "end_column": 90,
+        "end_line": 12,
+        "line": 12,
+        "receiver": {
+          "base": {
+            "assignment": {
+              "column": 167,
+              "end_column": 210,
+              "end_line": 2,
+              "line": 2
+            },
+            "column": 1,
+            "end_column": 5,
+            "end_line": 12,
+            "kind": "Name",
+            "known_path_name": null,
+            "line": 12,
+            "origin": {
+              "base": {
+                "assignment": {
+                  "column": 0,
+                  "end_column": 119,
+                  "end_line": 2,
+                  "line": 2
+                },
+                "column": 172,
+                "end_column": 176,
+                "end_line": 2,
+                "kind": "Name",
+                "known_path_name": "root",
+                "line": 2,
+                "origin": {
+                  "allowed_call": "pathlib.Path",
+                  "argument": {
+                    "column": 18,
+                    "end_column": 118,
+                    "end_line": 2,
+                    "kind": "Constant",
+                    "line": 2,
+                    "resolution": "literal_value_omitted"
+                  },
+                  "column": 5,
+                  "end_column": 119,
+                  "end_line": 2,
+                  "kind": "Call",
+                  "line": 2,
+                  "resolution": "allowed_single_argument_call_syntax"
+                },
+                "resolution": "single_top_level_assignment_syntax"
+              },
+              "column": 172,
+              "component": {
+                "column": 177,
+                "end_column": 210,
+                "end_line": 2,
+                "kind": "Constant",
+                "line": 2,
+                "resolution": "literal_value_omitted"
+              },
+              "end_column": 210,
+              "end_line": 2,
+              "kind": "BinOp",
+              "line": 2,
+              "resolution": "path_join_operator_syntax"
+            },
+            "resolution": "single_top_level_assignment_syntax"
+          },
+          "column": 1,
+          "component": {
+            "column": 6,
+            "end_column": 44,
+            "end_line": 12,
+            "kind": "Constant",
+            "line": 12,
+            "resolution": "literal_value_omitted"
+          },
+          "end_column": 44,
+          "end_line": 12,
+          "kind": "BinOp",
+          "line": 12,
+          "resolution": "path_join_operator_syntax"
+        },
+        "receiver_runtime_type_proven": false,
+        "role": "text_output"
+      }
+    ],
+    "position_units": "line: 1-based; column: CPython UTF-8 byte offset, 0-based",
+    "subprocess_calls": [
+      {
+        "all_argument_literal_values_omitted": true,
+        "callee_is_syntax_only": true,
+        "column": 67,
+        "command_source": {
+          "assignment": {
+            "column": 0,
+            "end_column": 356,
+            "end_line": 8,
+            "line": 8
+          },
+          "column": 82,
+          "end_column": 85,
+          "end_line": 10,
+          "kind": "Name",
+          "known_path_name": null,
+          "line": 10,
+          "origin": {
+            "column": 4,
+            "element_count": 10,
+            "end_column": 356,
+            "end_line": 8,
+            "first_element": {
+              "column": 5,
+              "end_column": 11,
+              "end_line": 8,
+              "kind": "Constant",
+              "line": 8,
+              "resolution": "literal_value_omitted"
+            },
+            "kind": "List",
+            "line": 8,
+            "remaining_values_omitted": true,
+            "resolution": "sequence_syntax"
+          },
+          "resolution": "single_top_level_assignment_syntax"
+        },
+        "double_star_keywords_present": false,
+        "end_column": 129,
+        "end_line": 10,
+        "environment_argument_present": false,
+        "environment_argument_value_not_resolved": true,
+        "line": 10,
+        "remaining_keyword_values_omitted": true,
+        "shell_argument_present": false,
+        "stderr_binding": {
+          "column": 111,
+          "end_column": 128,
+          "end_line": 10,
+          "kind": "Attribute",
+          "line": 10,
+          "resolution": "expression_values_omitted"
+        },
+        "stdout_binding": {
+          "column": 102,
+          "end_column": 103,
+          "end_line": 10,
+          "kind": "Name",
+          "known_path_name": null,
+          "line": 10,
+          "resolution": "no_unique_prior_top_level_assignment"
+        },
+        "working_directory_source": {
+          "assignment": {
+            "column": 120,
+            "end_column": 166,
+            "end_line": 2,
+            "line": 2
+          },
+          "column": 90,
+          "end_column": 94,
+          "end_line": 10,
+          "kind": "Name",
+          "known_path_name": null,
+          "line": 10,
+          "origin": {
+            "base": {
+              "assignment": {
+                "column": 0,
+                "end_column": 119,
+                "end_line": 2,
+                "line": 2
+              },
+              "column": 125,
+              "end_column": 129,
+              "end_line": 2,
+              "kind": "Name",
+              "known_path_name": "root",
+              "line": 2,
+              "origin": {
+                "allowed_call": "pathlib.Path",
+                "argument": {
+                  "column": 18,
+                  "end_column": 118,
+                  "end_line": 2,
+                  "kind": "Constant",
+                  "line": 2,
+                  "resolution": "literal_value_omitted"
+                },
+                "column": 5,
+                "end_column": 119,
+                "end_line": 2,
+                "kind": "Call",
+                "line": 2,
+                "resolution": "allowed_single_argument_call_syntax"
+              },
+              "resolution": "single_top_level_assignment_syntax"
+            },
+            "column": 125,
+            "component": {
+              "column": 130,
+              "end_column": 166,
+              "end_line": 2,
+              "kind": "Constant",
+              "line": 2,
+              "resolution": "literal_value_omitted"
+            },
+            "end_column": 166,
+            "end_line": 2,
+            "kind": "BinOp",
+            "line": 2,
+            "resolution": "path_join_operator_syntax"
+          },
+          "resolution": "single_top_level_assignment_syntax"
+        }
+      }
+    ],
+    "summary_complete": true
+  },
+  "runtime_owner_custody_observed": false,
+  "schema": "hepta.service-root01.safe-static-locator-shape.v2",
+  "source": {
+    "ctime_ns": 1792775306676468050,
+    "device": 2067,
+    "inode": 83,
+    "mode": "0o664",
+    "mtime_ns": 1792775306676468050,
+    "nlink": 1,
+    "read_before_after_identity_equal": true,
+    "sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "size_bytes": 1379
+  },
+  "status": "ok",
+  "target": "/data/hepta-service-root-01.py"
+}
