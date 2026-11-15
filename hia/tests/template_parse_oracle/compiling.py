@@ -60,7 +60,8 @@ def observers(rustc, original_build, graphs, output, commands, env):
         library = (original_build["library"]["path"] if name == "original"
                    else graph["direct"]["codex_utils_template"]["path"])
         binary = output / (name + "-observer")
-        selected = (["--cfg=native_observer", "-Clink-arg=-Wl,--wrap=codex_hia_template_parse"]
+        selected = (["--cfg=native_observer", "-Clink-arg=-Wl,--wrap=codex_hia_template_parse",
+                     "-Clink-arg=-Wl,--wrap=codex_hia_template_render"]
                     if name == "native" else [])
         commands.run("compile-" + name + "-public-observer", [rustc, root / "observer.rs",
             "--crate-name=template_public_observer", "--check-cfg=cfg(native_observer)",

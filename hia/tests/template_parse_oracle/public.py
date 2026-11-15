@@ -9,7 +9,7 @@ import subprocess
 import time
 
 from .common import binding, require, save, verify
-from . import observations
+from . import observations, native_traces
 
 
 def capture(variant, binary, fixture, fixtures, output, env, resources, reference=None):
@@ -44,12 +44,14 @@ def capture(variant, binary, fixture, fixtures, output, env, resources, referenc
                 for expected in [None, *fixtures]:
                     header = read(24)
                     number, size, call_count = struct.unpack('<QQQ', header)
-                    assert size < 128*1024*1024 and call_count <= 16
+                    assert size < 128*1024*1024
+                    bound = 0 if expected is None else 16 + 2 * len(expected['values']) + 2 * expected['source_bytes']
+                    assert call_count <= bound
                     wanted = (1 << 64)-1 if expected is None else expected['id']
                     assert number == wanted
                     payload = read(size)
-                    call_bytes = read(call_count*17*8)
-                    calls = list(struct.iter_unpack('<17Q', call_bytes))
+                    call_bytes = read(call_count*native_traces.WORDS*8)
+                    calls = list(struct.iter_unpack('<20Q', call_bytes))
                     public_hash.update(struct.pack('<QQ', number, size)+payload)
                     if reference is not None:
                         reference_header = reference.read(24)
@@ -66,7 +68,7 @@ def capture(variant, binary, fixture, fixtures, output, env, resources, referenc
                     else:
                         observed = observations.public(payload, expected)
                         if variant == 'native':
-                            counts.update(observations.native(calls, observed))
+                            counts.update(native_traces.validate(calls, observed))
                         else:
                             assert not calls
                         parse_tags[str(observed['parse_tag'])] += 1
@@ -153,7 +155,7 @@ def observe(compiled, corpus, output, env, resources):
         inputs.extend([side['binary'], side['owner_library']])
     for item in inputs:
         verify(item)
-    report = dict(schema='codex.hia.template-current-cargo-public-results.v1', passed=False,
+    report = dict(schema='codex.hia.template-current-cargo-public-results.v2', passed=False,
         inputs=inputs, intended_case_pairs=13206, constructor_values_compared=21,
         comparison='Literal complete public payload bytes; native ABI trace is a separate appended channel.',
         tests_skipped=0, runs={})
@@ -170,9 +172,10 @@ def observe(compiled, corpus, output, env, resources):
         for key in ['public_payloads_sha256', 'parse_tags', 'render_outcomes', 'render_errors',
                     'actual_input_panics', 'lifecycle_events']:
             require(original[key] == native[key], 'original/native complete observation differs: '+key)
-        require(native['native_calls'] == 40287
-                and native['native_operations'] == {'query': 32184, 'emit': 8103},
-                'actual native query/emit coverage differs')
+        require(native['native_calls'] == 66549
+                and native['native_operations'] == {'parse_query': 32184, 'parse_emit': 8103,
+                    'render_check_candidate': 11502, 'render_query': 8554, 'render_emit': 6206},
+                'actual parse/render native operation coverage differs')
         for item in inputs:
             verify(item)
         report.update(passed=True, case_pairs=13206, public_payloads_sha256=original['public_payloads_sha256'],

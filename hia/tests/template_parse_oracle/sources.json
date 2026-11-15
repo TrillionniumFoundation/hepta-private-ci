@@ -70,6 +70,41 @@
       "text": "// BEGIN HIA TEMPLATE PLACEHOLDER ORIGINAL GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE PLACEHOLDER ORIGINAL GUARD\n",
       "sha256": "95acda1d69c7abe3c1fb5bcdf0113316433bd3fbe7a5f6e6670f2d9dbd440b56",
       "occurrences": 1
+    },
+    {
+      "name": "template_render_module",
+      "anchor_before": "use std::collections::BTreeMap;",
+      "text": "// BEGIN HIA TEMPLATE RENDER MODULE\n#[cfg(feature = \"hia-native\")]\nmod hia_native_render;\n// END HIA TEMPLATE RENDER MODULE\n\n",
+      "sha256": "6dedc07fcc7c07bf8c1208f4d3e4d4e891d6cfefe840d255f6730cc5720886fb",
+      "occurrences": 1
+    },
+    {
+      "name": "template_render_map_import_guard",
+      "anchor_before": "use std::collections::BTreeMap;",
+      "text": "// BEGIN HIA TEMPLATE RENDER MAP IMPORT GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE RENDER MAP IMPORT GUARD\n",
+      "sha256": "ae79d61053d1a60719d8b3326f2271351ee4a83b669ddfb0b71e50bce30858c4",
+      "occurrences": 1
+    },
+    {
+      "name": "template_render_native_entry",
+      "anchor_before": "    pub fn render<I, K, V>(&self, variables: I) -> Result<String, TemplateRenderError>",
+      "text": "    // BEGIN HIA TEMPLATE RENDER NATIVE ENTRY\n    #[cfg(feature = \"hia-native\")]\n    pub fn render<I, K, V>(&self, variables: I) -> Result<String, TemplateRenderError>\n    where\n        I: IntoIterator<Item = (K, V)>,\n        K: AsRef<str>,\n        V: AsRef<str>,\n    {\n        hia_native_render::render(self, variables)\n    }\n    // END HIA TEMPLATE RENDER NATIVE ENTRY\n\n",
+      "sha256": "efd54c7b4769f4a508abdef8940acf9385045b17750c6952c5017d5b8b8f3e4b",
+      "occurrences": 1
+    },
+    {
+      "name": "template_render_original_guard",
+      "anchor_before": "    pub fn render<I, K, V>(&self, variables: I) -> Result<String, TemplateRenderError>",
+      "text": "    // BEGIN HIA TEMPLATE RENDER ORIGINAL GUARD\n    #[cfg(not(feature = \"hia-native\"))]\n    // END HIA TEMPLATE RENDER ORIGINAL GUARD\n",
+      "sha256": "2bd45d95ef6aa4134e9e5e582432255b97a677cf7daf87095c706cb6b65cf7d9",
+      "occurrences": 1
+    },
+    {
+      "name": "template_render_variable_helper_original_guard",
+      "anchor_before": "fn build_variable_map<I, K, V>(",
+      "text": "// BEGIN HIA TEMPLATE RENDER VARIABLE HELPER ORIGINAL GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE RENDER VARIABLE HELPER ORIGINAL GUARD\n",
+      "sha256": "d25f135c168e41ca67cb7e250ab7b99802b27221b3284427c9785cfadca4661c",
+      "occurrences": 1
     }
   ],
   "registry_packages": {
@@ -340,8 +375,8 @@
       "sha256": "c4f049a3e5148fbbeca47a15aa763a1120e40ca00d4452e8ded415930c8a1280"
     },
     "counter.rs": {
-      "bytes": 2653,
-      "sha256": "008d58fb09438ec66a4027a7686ac1b8d9d26a7e22bfbeafbaeb2ca825376c4a"
+      "bytes": 4300,
+      "sha256": "34feed34a7805e099dc7974bd8bdd69ac44d6096ba9c72d8a0706b887df131b9"
     },
     "lifecycle.rs": {
       "bytes": 3681,

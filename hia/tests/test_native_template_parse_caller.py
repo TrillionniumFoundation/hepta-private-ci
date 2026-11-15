@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Whole original template crate versus the current real Cargo native public API."""
+"""Whole original template crate versus the real Cargo parse18+render19 owner."""
 import argparse
 import json
 from pathlib import Path
@@ -12,8 +12,11 @@ from template_parse_oracle import artifacts, cargo, compiling, corpus, fingerpri
 from template_parse_oracle.common import Commands, Resources, binding, clean_identity, outside, producer_files, require, save, verify
 
 
+NATIVE_MODULES = ('template_parse', 'template_render')
+
+
 def run(args, report, work):
-    from template_parse_oracle import admission
+    from template_render_oracle import admission
 
     producer, original_repo = args.producer, args.original_repo
     require(sys.flags.optimize == 0, "qualification cannot disable assertions")
@@ -67,9 +70,9 @@ def run(args, report, work):
         path = cargo.capture(actual_cargo, producer, env, native, commands)
         graphs[name] = cargo.admit(path, packages, owner, dependencies, target,
                                   work / (name + "-graph"), native=native)
-        expected_search = ["native=" + str(args.library_dir)] if native else []
-        require(graphs[name]["native_paths"] == expected_search,
-                "actual Cargo linkage does not name the admitted current native build")
+        modules = NATIVE_MODULES if native else ()
+        graphs[name]["native_linkage"] = artifacts.native_linkage(
+            graphs[name], target, args.library_dir, build, native_inputs, modules)
         consumed[name] = fingerprints.owner_dependencies(graphs[name], packages)
         save(work / (name + "-graph.json"), graphs[name])
         save(work / (name + "-consumed-units.json"), consumed[name])
@@ -98,8 +101,12 @@ def run(args, report, work):
     report["actual_native_calls"] = observed["actual_native_calls"]
     report["actual_native_operations"] = observed["actual_native_operations"]
     report["public_payloads_sha256"] = observed["public_payloads_sha256"]
-    for graph in graphs.values():
+    for name, graph in graphs.items():
         cargo.verify_graph(graph)
+        modules = NATIVE_MODULES if name == "native" else ()
+        require(artifacts.native_linkage(graph, target, args.library_dir, build,
+                                        native_inputs, modules) == graph["native_linkage"],
+                "the actual Cargo OUT_DIR or staged native archives changed")
     report["last_actual_cargo_publication_aliases"] = artifacts.verify_final_aliases(graphs)
     for record in consumed.values():
         fingerprints.verify_fingerprints(record)
@@ -150,9 +157,9 @@ def main():
     require(report_path != work and not report_path.is_relative_to(work), "report must be separate from its work directory")
     report_path.parent.mkdir(parents=True, exist_ok=True)
     work.mkdir(parents=True, exist_ok=False)
-    report = {"schema": "codex.hia.template-complete-original-cargo-public.v1", "passed": False,
+    report = {"schema": "codex.hia.template-complete-original-cargo-public.v2", "passed": False,
         "controller": binding(Path(__file__)), "started_unix": time.time(), "work_dir": str(work),
-        "scope": "Complete unchanged a201 four-file template crate and all fourteen original tests; actual default/native Cargo library and lib-test graphs with the full 54-file assertion dependency sources; literal complete native public observations. Render remains the original Rust implementation.",
+        "scope": "Complete unchanged a201 four-file template crate and all fourteen original tests; actual default/native Cargo library and lib-test graphs with the full 54-file assertion dependency sources; literal complete native public observations. Both parsing and rendering use admitted HIA components; the trace carries twenty-word rows tagged with the real symbol.",
         "tests_skipped": 0, "current_cargo_owner_public_qualified": False,
         "current_native_full_suite_claimed": False, "current_strict_clippy_claimed": False,
         "performance_qualified": False, "whole_codex_rewritten": False, "legacy_retirement": False}
