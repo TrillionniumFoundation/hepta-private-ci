@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-c2-desktop-cgroup-witness-request-v1",
+  "identity": "hcsn-c2-desktop-cgroup-readonly-witness-c06d-v1",
+  "idempotency_key": "hcsn-c2-desktop-cgroup-readonly-witness-c06d-v1",
+  "host": "desktop",
+  "executable": "/bin/sh",
+  "args": [
+    "-c",
+    "set -eu\nprintf 'schema=hcsn-c2-desktop-cgroup-witness-v1\\n'\nprintf 'sampled_at_utc='\ndate -u +%Y-%m-%dT%H:%M:%SZ\nprintf 'hostname='\nhostname\nprintf 'kernel='\nuname -srmo\nawk '/^(MemTotal|MemAvailable|SwapTotal|SwapFree):/ {print \"meminfo_\" $1 \"=\" $2 \" \" $3}' /proc/meminfo\nprintf 'self_cgroup_begin\\n'\ncat /proc/self/cgroup\nprintf 'self_cgroup_end\\n'\nrel=$(awk -F: '$1==\"0\" {print $3}' /proc/self/cgroup)\ncase \"$rel\" in\n  /*) ;;\n  *) printf 'error=non_absolute_cgroup_path\\n'; exit 41 ;;\nesac\npath=\"/sys/fs/cgroup$rel\"\nroot=\"/sys/fs/cgroup\"\ndepth=0\nwhile :; do\n  printf 'ancestor_begin depth=%s path=%s\\n' \"$depth\" \"$path\"\n  for name in memory.current memory.max memory.high memory.low memory.min memory.swap.current memory.swap.max memory.events memory.events.local cpu.max cpu.weight pids.current pids.max cgroup.controllers cgroup.events; do\n    file=\"$path/$name\"\n    if [ -f \"$file\" ]; then\n      printf 'file=%s value_begin\\n' \"$name\"\n      cat \"$file\"\n      printf 'file=%s value_end\\n' \"$name\"\n    else\n      printf 'file=%s missing\\n' \"$name\"\n    fi\n  done\n  printf 'ancestor_end depth=%s path=%s\\n' \"$depth\" \"$path\"\n  [ \"$path\" = \"$root\" ] && break\n  parent=$(dirname \"$path\")\n  case \"$parent\" in\n    \"$root\"|\"$root\"/*) ;;\n    *) printf 'error=escaped_cgroup_root\\n'; exit 42 ;;\n  esac\n  path=\"$parent\"\n  depth=$((depth + 1))\n  [ \"$depth\" -le 32 ] || { printf 'error=ancestor_depth\\n'; exit 43; }\ndone\nprintf 'complete=true\\n'\n"
+  ],
+  "timeout_seconds": 30,
+  "expected": {
+    "exit_code": 0,
+    "stdout_schema": "hcsn-c2-desktop-cgroup-witness-v1",
+    "stderr_bytes": 0,
+    "model_calls": 0,
+    "optimizer_calls": 0,
+    "native_training_calls": 0
+  },
+  "limits": {
+    "model_calls": 0,
+    "optimizer_calls": 0,
+    "native_training_calls": 0,
+    "new_keys": 1,
+    "max_stdout_bytes": 65536,
+    "max_stderr_bytes": 4096
+  },
+  "refusal": [
+    "do not retry with a new key",
+    "do not launch any model or training process",
+    "nonzero/timeout/missing output remains RED or UNKNOWN",
+    "point-in-time cgroup values do not constitute campaign allocation"
+  ]
+}
