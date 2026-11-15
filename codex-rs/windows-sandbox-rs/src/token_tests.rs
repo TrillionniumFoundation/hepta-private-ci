@@ -198,23 +198,26 @@ fn observe_fixture_dacl(label: &str, path: &std::path::Path) {
 fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
     let capability_sid = LocalSid::from_string("S-1-5-21-10-20-30-40")?;
     let network_proxy_sid = LocalSid::from_string("S-1-5-21-50-60-70-80")?;
-    let base_token = unsafe { get_current_token_for_restriction()? };
-    let restricted_token = unsafe {
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    let base_token = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let mut user = unsafe { get_user_sid_bytes(base_token.0)? };
+    let mut logon = unsafe { get_logon_sid_bytes(base_token.0)? };
+    let restricted_token = OwnedToken(unsafe {
         create_readonly_token_with_caps_and_user_from(
-            base_token,
+            base_token.0,
             &[capability_sid.as_ptr()],
             &[network_proxy_sid.as_ptr()],
         )?
-    };
+    });
 
     let has_network_proxy_sid =
-        unsafe { token_has_restricting_sid(restricted_token, network_proxy_sid.as_ptr()) };
-    unsafe {
-        CloseHandle(restricted_token);
-        CloseHandle(base_token);
-    }
+        unsafe { token_has_restricting_sid(restricted_token.0, network_proxy_sid.as_ptr()) };
 
     assert!(has_network_proxy_sid?);
+    assert!(unsafe { token_has_restricting_sid(restricted_token.0, capability_sid.as_ptr())? });
+    assert!(unsafe { token_has_restricting_sid(restricted_token.0, user.as_mut_ptr().cast())? });
+    assert!(!unsafe { token_has_restricting_sid(restricted_token.0, logon.as_mut_ptr().cast())? });
+    assert!(!unsafe { token_has_restricting_sid(restricted_token.0, everyone.as_ptr())? });
     Ok(())
 }
 
