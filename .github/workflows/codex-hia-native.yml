@@ -145,7 +145,6 @@ jobs:
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_patch_standalone_abi.py \
-            --producer "$GITHUB_WORKSPACE/codex" \
             --library-dir "$RUNNER_TEMP/hia-native" \
             --report "$RUNNER_TEMP/hia-patch-standalone-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-patch-standalone-abi.log"

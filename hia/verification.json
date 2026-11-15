@@ -463,7 +463,7 @@
   "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
   "current_source_inputs_scope": "Named inherited producing inputs plus every current HIA program, contract, test, policy helper and native dispatch input. Excludes exactly hia/README.md, hia/migration.json and hia/verification.json to avoid metadata self-hashing. These byte identities do not claim execution of pending gates.",
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "6294cdc1f10fd57805eb48fc6445abe5fae1c62b020f2b7aa2b124af7da9154e",
+    ".github/workflows/codex-hia-native.yml": "a6262bc79b3d54025c19b5a52a388d67f7d91c05299628a7a6bc8e608721e9b7",
     "NOTICE": "b47d6a3bd64f5bbf9b3f9a14ea672dedbb1c483f1a3bf48c011d0782603c0854",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
     "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
@@ -1176,10 +1176,10 @@
     "performance_qualified": false
   },
   "current_product_ci": {
-    "status": "sixteen_module_candidate_not_published_owner_preflight_passed_public_ci_pending",
+    "status": "sixteen_module_workflow_invocation_repaired_current_ci_pending",
     "qualified": false,
     "candidate_parent": "cae5db67213f2621910bf39ff048ee60c887317b",
-    "parent_ci": "Historical fifteen-module and earlier results remain bound to their exact producing source and reports; no result transfers to this unpublished sixteen-module composition.",
+    "parent_ci": "Historical results remain bound to their exact producing source. The first published sixteen-module candidate is 4b8bbf2ace5200c8db74af3c40ef3431acf30340; its standalone ABI CI invocation passed an unsupported --producer option. The corrected candidate requires its own completed CI evidence.",
     "pending_gates": [
       "Fresh clean-source complete effects360, application1470 and standalone994 paired observations; no skipped or missing process terminals.",
       "Current complete consumer CI, real scoped just fix and final formatting with unchanged tested source.",
@@ -3028,6 +3028,39 @@
       "source_unchanged": true,
       "clean_public_comparisons_executed": false,
       "final_fix_or_fmt_executed": false
+    },
+    "ci_invocation_repair": {
+      "predecessor_head": "4b8bbf2ace5200c8db74af3c40ef3431acf30340",
+      "predecessor_tree": "33a77a5ba9bbb5d2fdedfbf51cf93abf7be0dc58",
+      "failed_step_observed_in_jobs": [
+        132880020726,
+        132880145262
+      ],
+      "job_terminal_or_error_log_observed_at_preparation": false,
+      "local_exact_published_cli_exit_code": 2,
+      "local_exact_published_cli_error": "unrecognized arguments: --producer",
+      "local_failure_occurred_before_report_creation_or_native_call": true,
+      "change": "Remove only the unsupported --producer argument from the standalone_abi workflow step; the script still derives and admits its actual producing checkout.",
+      "runner_admission_matrix_or_native_algorithm_changed": false,
+      "corrected_actual_native_calls": 6310,
+      "corrected_actual_error_no_write_calls": 5097,
+      "corrected_actual_success_calls": 1213,
+      "corrected_current_ci_qualified": false,
+      "local_reproduction_and_corrected_execution": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-standalone/ci-argument-repair-v1/reproduction.json",
+        "bytes": 4203,
+        "sha256": "164248c0b30cc12f55ebd905c0289b7b9847922b606fe7f6d0ad92a870ef2c6f"
+      },
+      "corrected_raw": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-standalone/ci-argument-repair-v1/corrected-raw.json",
+        "bytes": 24245,
+        "sha256": "21440777fe05173cb3be75a479cfd0ddd5cdfa5d89dd7e6c6738b7caba03093a"
+      },
+      "corrected_trace": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-standalone/ci-argument-repair-v1/corrected-raw.calls.jsonl",
+        "bytes": 1931734,
+        "sha256": "94da19705ecb0b8f7511235fcaeb881491a89095da4e54e75249bd72ef428f78"
+      }
     }
   }
 }
