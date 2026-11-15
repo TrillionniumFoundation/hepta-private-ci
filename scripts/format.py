@@ -21,7 +21,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 # Cargo-less inputs compiled with --edition=2024 by
-# hia/tests/test_native_command_dispatch.py, including their shared module.
+# the command-dispatch and network-host runners, including their shared modules.
 # Other standalone inputs keep their own fallback (the seek oracle uses 2021).
 STANDALONE_RUST_EDITIONS = {
     "hia/tests/command_dispatch_fixtures.rs": "2024",
@@ -30,6 +30,11 @@ STANDALONE_RUST_EDITIONS = {
     "hia/tests/native_command_dispatch_effects.rs": "2024",
     "hia/tests/native_command_dispatch_failures.rs": "2024",
     "hia/tests/native_command_dispatch_performance.rs": "2024",
+    "hia/tests/native_network_host.rs": "2024",
+    "hia/tests/native_network_host_allocations.rs": "2024",
+    "hia/tests/native_network_host_failures.rs": "2024",
+    "hia/tests/native_network_host_performance.rs": "2024",
+    "hia/tests/network_host_fixtures.rs": "2024",
 }
 
 
