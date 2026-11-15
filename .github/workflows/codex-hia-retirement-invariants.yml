@@ -1,0 +1,35 @@
+name: HIA retirement invariants
+
+"on":
+  pull_request:
+    paths:
+      - 'hia/migration.json'
+      - 'hia/verification.json'
+      - 'hia/validate_migration_invariants.py'
+      - 'hia/tests/test_migration_invariants.py'
+      - '.github/workflows/codex-hia-retirement-invariants.yml'
+  push:
+    paths:
+      - 'hia/migration.json'
+      - 'hia/verification.json'
+      - 'hia/validate_migration_invariants.py'
+      - 'hia/tests/test_migration_invariants.py'
+      - '.github/workflows/codex-hia-retirement-invariants.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migration-consistency:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test retirement guard
+        run: python -m unittest discover -s hia/tests -p test_migration_invariants.py
+      - name: Refuse inconsistent retirement claims
+        run: python hia/validate_migration_invariants.py
