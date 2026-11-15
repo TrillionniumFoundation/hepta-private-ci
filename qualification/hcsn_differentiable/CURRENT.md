@@ -1,38 +1,35 @@
+# HCSN evidence status after source-branch integration
+
+This page preserves dated source-branch reports and their provenance restrictions.
+Combining these records does not rerun the reported experiments, authenticate an
+unavailable receipt, or grant scientific or production admission. The source
+candidate remains HOLD. Historical job states and test counts below belong to
+the original dated sources, not to this integration.
+
+> **P0 provenance review (2026-11-10, baseline 81da60b):** This page contains
+> historical reported results; the originally linked localization-v2 receipt
+> directory is not present in the reviewed Git tree. The reported 75 tests,
+> 18 interface fits, 72 updates, 90 checkpoints, and 528 audit checks must
+> **not** be reclassified as independently source-bound on this candidate
+> until their original source, logs and identity chain are restored and audited.
+> The independently readable [trainer archive](../hcsn-localization-trainer-20261108/MANIFEST.json)
+> documents a *different* five-arm, seed-101 development attempt (140
+> updates, no formal fits), not evidence for the 18-run summary. See the
+> [P0 evidence ledger](EVIDENCE_CHAIN.json) for separately checked artifacts,
+> unverified claims and the machine-readable HOLD boundary.
+
+## Retained 2026-11-11 status snapshot
+
+The following report is retained from original Git blob
+6cb70cfb8f3faae52bf13833918bcd65a83a36ba. Its claims remain bounded by the
+provenance restriction above and by the underlying archived receipts.
+
 # HCSN research: current evidence and qualified scope
 
 Updated 2026-11-11. HCSN is a **regenerative probability flow and content memory
 network constrained by a shared generator**. Its numerical operators, learned
 observation updates and content memory have separate evidence requirements.
 The legacy He--Xiong equity kernel already exists and is not being reinvented.
-
-> **Latest separate observation (2026-11-11 08:50 UTC; engineering status addendum,
-> not a rewrite of the archived 01:52 UTC observation):** The original desktop
-> C2 job `1a1c74f3308-be2a-75` is still `finalizing/outcome unknown`,
-> `status_authoritative=false`, `terminal_publication_confirmed=false`.
-> A fresh independent **read-only** check of the original eight frozen file
-> identities finds **4/6 immutable producer-reported `result.json`**, two
-> missing producer results with **zero-byte `interrupted.pt`**, two separately
-> pinned `best.pt` files (not interrupted-state recovery), and the unchanged
-> **28,672-byte** `commands.jsonl` SHA-256
-> `1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f`
-> with **16 complete rows and a torn 17th**. The original controller
-> `RESULT.json` remains absent. The [original reconciliation](evidence/p0p5-c2-terminal-reconcile-20261111/README.md)
-> and [independent structural inventory](evidence/p0p5-c2-independent-inventory-20261111/README.md)
-> distinguish **4/6 producer reports** from **0/6 confirmed full independent
-> native training replays**. None of the missing original work was restarted.
->
-> **New successor candidate, not historical reclassification:** Stacked Draft
-> [#5952](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5952)
-> preserves the [strict JSON admission red/green logs](evidence/p0p5-c2-strict-json-20261111/README.md).
-> Its exact-source HCSN [CPU fixture CI](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42990086869)
-> passed **95** qualification, **27** C2 I/O/structural checks (including
-> real Torch CPU checkpoint interop, no skips), **3** QVI oracle and **3**
-> nondiffusion memory controls; [artifact 13841800543](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42990086869/artifacts/13841800543)
-> retains the original hosted output. This is **`PASSED_DECLARED_FIXTURES`**,
-> not an independently replayed six-training result or repository-wide,
-> numerical-full-domain, scientific, or production GO. **P0–P5 remain
-> `HOLD_NO_GO`.** The previous historical timestamps below are retained
-> verbatim as observations at their own times, not live current status.
 
 The [P0--P5 evidence index](evidence/p0p5-20261110/README.md) binds each new claim
 to exact source, runtime, data, configuration, model, raw execution records and
@@ -63,14 +60,14 @@ restores the later original observation bytes after unavailable scratch contents
 and explicitly inventories missing local preparation records. Its
 [append-only link correction](evidence/p0p5-recovery-20261111/link-closure/CLOSURE.json)
 retains the first failed check and restores two omitted context files under
-their exact original names. At the latest
+their exact original names. At that appendix's
 archived C2 observation, 2026-11-10 23:49:03 UTC, three fits remained active
 and three had producer terminal reports. No all-six
 independent C2 adequacy, new common-rate selection or scientific benefit is
 inferred from those intermediate records. The
 [terminal verification preparation](evidence/p0p5-terminal-preparation-20261111/README.md)
 preserves later original control responses and newly validated replacement
-software. The last valid whole-job status was read at 00:25:25.440--00:25:38.584
+software. Its first recorded whole-job status was read at 00:25:25.440--00:25:38.584
 UTC on November 11; it has no native sample timestamp. Subsequent status and
 existing observer-result reads through 01:30 UTC returned internal errors.
 A later read at 01:50:50.391--01:50:52.855 UTC recovered the same original job's
@@ -79,14 +76,48 @@ read at 01:52:00.712--01:52:05.137 UTC still has only three terminal records.
 No replacement training or observer job was launched. The subject-E exposure clarification below
 supersedes the older progress appendix's phrase "E remains unread".
 
+The later [read-only terminal reconciliation](evidence/p0p5-c2-terminal-reconcile-20261111/README.md)
+records the original job at observed host time **2026-11-11 04:33:07 UTC** as
+`finalizing`, `outcome=unknown`, and `status_authoritative=false`. It supersedes
+the earlier running observations in that snapshot; the original controller
+`RESULT.json` is absent. The [bounded report](evidence/p0p5-c2-terminal-reconcile-20261111/REPORT.json)
+retains 16 complete journal rows and a torn seventeenth row. Four candidates
+have producer terminal claims; `hcsn-s211-lr0.001` and `hcsn-s307-lr0.001`
+remain unresolved by the last valid rows. The subsequent
+[original-fit inventory](evidence/p0p5-c2-terminal-reconcile-20261111/FIT-INVENTORY-READONLY.json)
+finds both `interrupted.pt` files empty and their `result.json` files missing.
+Their nonempty `best.pt` files do not establish the latest interrupted state
+or a completed attempt. The [code-path note](evidence/p0p5-c2-terminal-reconcile-20261111/CODE-PATH-NOTE.md)
+identifies crash-consistency obligations without establishing a cause.
+The [appendix manifest](evidence/p0p5-c2-terminal-reconcile-20261111/MANIFEST.json)
+binds all five unchanged historical files. That snapshot did not establish
+independent replay or all-six terminal completion.
+
+The [independent C2 recovery appendix](evidence/p2-c2-independent-recovery-20261111/README.md)
+adds the **2026-11-11 04:53:58 UTC** original-fit observation and separately
+recorded read-only audits. All six retained last/best checkpoint pairs and 289
+immutable epoch commits pass structural and chain checks. The four available
+producer results agree with their first prescribed plateau stops at epochs
+**116, 76, 50 and 72**. A separate
+[full-development model replay](evidence/p2-c2-independent-recovery-20261111/FULL-D-REPLAY-RESULT.json)
+runs each of those four best checkpoints through **128 episodes and 31,952
+labeled events** and reproduces the saved logits bitwise, with maximum absolute
+error zero. This is independent reproduction on the original development set.
+The original controller outcome remains unknown; the two missing fit terminals,
+their zero-byte interrupted checkpoints and incomplete final process costs
+remain unresolved. Neither independent held-out benefit nor all-six completion
+is established. Any successor experiment needs its own source and evidence
+identity; the original attempt remains **HOLD_NO_GO**.
+
 ## Admission status
 
 | Gate | Current evidence | Status |
 | --- | --- | --- |
 | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
+| Persistence software | 65 distinct native tests on the frozen ten-file source; failed wrapper and targeted follow-up retained separately | Scoped synthetic checks pass; new training and hosted CI remain separate |
 | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
 | Actual training-domain accuracy | 49/60 terminal finite fixtures pass the original scaled gate; 12 tiny-gap pressure failures and six log-risk ordinary-FD holds remain | Selected fixtures pass; full training domain HOLD |
-| Recorded quality and resource comparison | Original42/C1 reproduced; the 01:50 running/01:52 three-terminal snapshots are historical; new 08:50 desktop read confirms original terminal unknown, four producer JSON reports, two missing results and zero-byte interrupted checkpoints, with independent all-six replay still absent | All-six independent adequacy and full resource accounting **HOLD** |
+| Recorded quality and resource comparison | Original42/C1 results reproduced; four original C2 first-plateau stops and full-D model outputs independently reproduced; two fit terminals absent and controller finalizing/unknown | All-six completion, independent adequacy and complete later resource view HOLD |
 | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
 | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
 | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
@@ -141,6 +172,19 @@ separate from whether a scientific claim is justified. The earlier
 and [first math-closure snapshot](evidence/math-closure-20261108/README.md)
 remain historical. They earn no new full-training or old S81 completion credit.
 
+The [persistence successor tooling](../../proposals/hcsn_persistence_v1/README.md)
+builds a separate candidate from the exact archived v4 program. It adds atomic
+checkpoint publication, immutable receipt chains and terminal/process identity
+checks. Its [native validation](evidence/p0p5-persistence-validation-20261111/README.md)
+passes 65 distinct tests on the frozen ten-file source: 18 standard-library,
+four Torch/runtime, 15 terminal and 28 inherited tests, with no skips or source
+changes. The first wrapper passes the first 37 tests but exits 1 because its
+last command invokes the inherited runner as a script; the retained follow-up
+uses the correct module entry point and passes the remaining 28. No failed
+wrapper is relabeled. These synthetic checks do not reconstruct missing
+original C2 receipts or supply a new trained result. Hosted workflow outcomes,
+numerical qualification and scientific benefit remain separate.
+
 ## P1: train-visited numerical qualification
 
 [Training-domain tools](TRAINING_DOMAIN.md) capture actual priors/posteriors,
@@ -150,6 +194,21 @@ The independent reference uses 80-digit arithmetic, continuum basis integrals
 and separately evaluated finite renewal continuations. Future observations are
 disabled in those continuations: this checks the reconstructed starting law,
 not equivalence to an exact continuous observation filter.
+
+The [P1 integration and mechanism diagnosis](evidence/p1-fixed-grid-diagnosis-20261111/README.md)
+now binds the exact finite-oracle fixes and a complete **6/6 test-module pass**
+on `ai395`, with no skips, CPU tensors and eight source dependencies checked
+before and after execution. This closes that module's execution gap; it does
+not grant a whole-repository or whole-training-domain pass.
+
+The same appendix retains **48 executed scalar mechanism cases** and one
+portable replay whose input identities and numeric rows match exactly. They
+expose small-gap source-quadrature error, early release from repeated phase
+projection and distinct tail moments hidden by equal stored tail mass. These
+isolated cases do not test the full killed/reset operator or apportion the
+original twelve perpetual-pressure failures. They establish a reproducible
+mechanism diagnosis while rare-tail, trained-posterior and full-trajectory
+qualification remain **HOLD**.
 
 The [exact v8 recorder scope audit](evidence/p0p5-20261110/review/v8-recorder-scope-v1/RESULT.json)
 establishes a further limit for fresh42. Its 4,096-record and 32-MiB caps retain
@@ -339,6 +398,29 @@ source capture; a fresh source-bound reproduction confirms its 0/135 result
 and is the basis for the current claim. Neither history is rewritten.
 
 ## P2: real-data training and fair comparison
+
+The current [independent C2 audit](evidence/p2-c2-independent-recovery-20261111/README.md)
+reconciles four original producer terminals against their first plateau stops
+and independently recomputes their development metrics. The full model replay
+reproduces every retained logit from those four best checkpoints on all 128 D
+episodes, with 31,952 labeled events per fit. The retained histories for
+`hcsn-s211-lr0.001` and `hcsn-s307-lr0.001` stop at complete epochs 126 and 127,
+with stale-epoch counts only two and one. Neither reaches the required plateau;
+neither has an original terminal result. Their torn journals preserve additional
+completed updates beyond those epochs and cannot authorize resumption or erase
+unknown work.
+
+The [selected original-state archive](evidence/p2-c2-independent-recovery-20261111/original-selected-state/README.md)
+preserves the four completed-fit best checkpoints, two incomplete-fit last
+checkpoints, all 289 immutable epoch commit records and original interrupted
+evidence. Its manifest states the omitted intermediate checkpoints, nonempty
+full-D logit payloads and dataset payloads. The independent replay reports
+506.567670 seconds of wall time through report creation, 502.387291 seconds of
+CPU and 1,030,684,672 bytes peak RSS. These are replay costs, not the missing
+whole-campaign envelope. Four original child process receipts are retained;
+the other two final costs and the original controller outcome remain unknown.
+Development-set reproduction therefore leaves all-six completion, complete
+cost accounting and independent held-out benefit on **HOLD**.
 
 The [executable temporal-core protocol](../../proposals/localization-v3/README.md)
 uses all 89,216 ABC training events and all 31,952 D development events in
@@ -969,9 +1051,20 @@ python -B -m qualification.hcsn_differentiable.evidence_chain \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/LINK-CLOSURE-MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p1-fixed-grid-diagnosis-20261111/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-persistence-validation-20261111/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
   --markdown qualification/hcsn_differentiable/CURRENT.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p1-fixed-grid-diagnosis-20261111/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-persistence-validation-20261111/README.md \
+  --markdown proposals/hcsn_persistence_v1/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/CODE-PATH-NOTE.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/terminal-bootstrap/program/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/README.md \
@@ -999,11 +1092,12 @@ python -B -m qualification.hcsn_differentiable.evidence_chain \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md \
   --markdown proposals/localization-v3/README.md \
-  --output /tmp/hcsn-terminal-preparation-integrity.json
+  --output /tmp/hcsn-terminal-reconciliation-integrity.json
 ```
 
 Choose a new result path if that output already exists. The science workflow
-checks all thirteen historical/current manifests and the explicit Markdown inputs above. Running
+checks all seventeen historical/current manifests and the 35 explicit Markdown
+inputs above. Running
 the Python file directly can shadow the standard-library `operator` module;
 use `python -B -m` as above. Integrity validates bytes and links; it does not
 grant scientific or training-domain credit.
@@ -1020,3 +1114,237 @@ FP32/mixed precision, fused kernels, state compression, event-sparse inference,
 HCSN-plus-attention pretraining and ordinary production-entry adoption remain
 gated on demonstrated real-task benefit. Exact caching above is a measured
 training-enablement change; it is not evidence of energy or scaling superiority.
+
+
+## Separate 08:50 UTC source-branch addendum
+
+This original addendum comes from Git blob
+e1fefad67d9464d6735462390f58d522e37a851a. Its use of latest refers to the
+2026-11-11 observation. It is not a present-time status check.
+
+> **Latest separate observation (2026-11-11 08:50 UTC; engineering status addendum,
+> not a rewrite of the archived 01:52 UTC observation):** The original desktop
+> C2 job `1a1c74f3308-be2a-75` is still `finalizing/outcome unknown`,
+> `status_authoritative=false`, `terminal_publication_confirmed=false`.
+> A fresh independent **read-only** check of the original eight frozen file
+> identities finds **4/6 immutable producer-reported `result.json`**, two
+> missing producer results with **zero-byte `interrupted.pt`**, two separately
+> pinned `best.pt` files (not interrupted-state recovery), and the unchanged
+> **28,672-byte** `commands.jsonl` SHA-256
+> `1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f`
+> with **16 complete rows and a torn 17th**. The original controller
+> `RESULT.json` remains absent. The [original reconciliation](evidence/p0p5-c2-terminal-reconcile-20261111/README.md)
+> and [independent structural inventory](evidence/p0p5-c2-independent-inventory-20261111/README.md)
+> distinguish **4/6 producer reports** from **0/6 confirmed full independent
+> native training replays**. None of the missing original work was restarted.
+>
+> **New successor candidate, not historical reclassification:** Stacked Draft
+> [#5952](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5952)
+> preserves the [strict JSON admission red/green logs](evidence/p0p5-c2-strict-json-20261111/README.md).
+> Its exact-source HCSN [CPU fixture CI](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42990086869)
+> passed **95** qualification, **27** C2 I/O/structural checks (including
+> real Torch CPU checkpoint interop, no skips), **3** QVI oracle and **3**
+> nondiffusion memory controls; [artifact 13841800543](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42990086869/artifacts/13841800543)
+> retains the original hosted output. This is **`PASSED_DECLARED_FIXTURES`**,
+> not an independently replayed six-training result or repository-wide,
+> numerical-full-domain, scientific, or production GO. **P0–P5 remain
+> `HOLD_NO_GO`.** The previous historical timestamps below are retained
+> verbatim as observations at their own times, not live current status.
+
+## Earlier P0 review and localization scope
+
+The complete earlier review from Git blob
+b0f4e7b3d5b1b7279f5e4e62db3524d62c8ca2d6 is retained below. Its source-bound
+versus unverified distinction is unchanged. Older intermediate observations
+remain in their original Git parents and the linked append-only evidence.
+
+# HCSN research: current qualified scope
+
+> **P0 provenance review (2026-11-10, baseline 81da60b):** This page contains
+> historical reported results; the originally linked localization-v2 receipt
+> directory is not present in the reviewed Git tree. The reported 75 tests,
+> 18 interface fits, 72 updates, 90 checkpoints, and 528 audit checks must
+> **not** be reclassified as independently source-bound on this candidate
+> until their original source, logs and identity chain are restored and audited.
+> The independently readable [trainer archive](../hcsn-localization-trainer-20261108/MANIFEST.json)
+> documents a *different* five-arm, seed-101 development attempt (140
+> updates, no formal fits), not evidence for the 18-run summary. See the
+> [P0 evidence ledger](EVIDENCE_CHAIN.json) for separately checked artifacts,
+> unverified claims and the machine-readable HOLD boundary.
+
+This page supersedes the *status claims* in the immutable first math-closure
+snapshot; it does not alter that snapshot's source or execution records. The
+current source includes the stable interval-probability repair. Its native
+qualification passed **75 tests**, the **four original error-budget fixtures**,
+and the separately declared **0.2-second frozen-physics localization profile**.
+Six real model interfaces each completed three independently initialized runs:
+**18 interface fits and 72 optimizer updates**. Formal comparative fits remain
+**zero**. There is no model-superiority, full-domain, energy-efficiency, or
+repository-wide CI-pass claim.
+
+The currently accessible source-bound receipts are the separate
+[trainer-development archive](../hcsn-localization-trainer-20261108/README.md)
+and [P0 evidence ledger](EVIDENCE_CHAIN.json). The missing localization-v2
+receipt cannot be cited as a checked source. The historical
+[math-closure snapshot](evidence/math-closure-20261108/README.md)
+retains its original 71-test result and blocked data attempt; those numbers are
+historical and are not substituted for the new execution.
+
+## Mathematical objects and fixed policy
+
+`MODEL.md` distinguishes original financial equity `E`, killed single-cycle
+value `C`, regenerative value `U`, first-hit probability `F`, discounted first-hit
+mass `G`, instantaneous event-rate density `J`, and cumulative expected event
+count `M`. The implemented Brownian policy uses a fixed trigger, a fixed absolute
+reset, and a deterministic refractory delay. It does not solve an endogenous
+optimal boundary or the original financial equity/rollover model.
+
+For discount `q>0`, log drift `mu`, diffusion `sigma>0`, active margin `x>0`,
+reset margin `xr>0`, and refractory delay `d>=0`, the first-hit Laplace transform is
+
+```text
+lambda = (mu + sqrt(mu**2 + 2*q*sigma**2)) / sigma**2
+g(x) = exp(-lambda*x)
+C^(a,h)(x) = a*(1-g(x))/q + h*g(x)
+U(xr) = C^(a,h)(xr) / (1-exp(-q*d)*g(xr))
+U(x) = C^(a,h)(x) + g(x)*exp(-q*d)*U(xr)
+```
+
+`C^(a,h)` here equals the perpetual killed running value plus `h*g(x)`, where
+`h` is a scalar hit payoff. `MODEL.md` separately defines its killed `C_T` with
+zero absorption payoff and a terminal survival payoff function; that function
+is not this scalar `h`. The finite renewal implementation additionally requires
+`d>0`. The implementation rationalizes cancellation-prone
+roots and uses `expm1` for small denominators. Finite-horizon renewal sums and
+the projected-chain linear/backward equations are separate implementations.
+They pay a requested terminal reward once. The legacy `call`, now explicitly
+aliased as `interval_value`, still includes its one-interval terminal feature;
+adding it across intervals is not an implementation of `U`.
+
+## Numerical repair and measured budgets
+
+The first 0.2-second profile attempt failed on a refined active grid. Subtracting
+two separately rounded killed survivor tails produced a negative cell mass of
+`-1.1102230246251565e-16`, while an independent 80-digit computation gave the
+positive probability `1.11885857336992304804e-16`. The repair computes reflected
+Gaussian *interval* probabilities directly, chooses a CDF or survival-function
+representation before differencing, and uses stable exponential differences.
+It adds four targeted regression/gradient checks. It does not clip a negative
+mass, renormalize a row, loosen a tolerance, or change the profile's physics,
+window identities, quadrature, grid, or pass limits.
+
+The locked 0.2-second model uses 128 active cells, one returning tail and 16
+remaining-time cells. It freezes the actual instantiated FP64 physics and
+source hashes. The maximum observed scaled sensitivities were:
+
+| Quantity | Observed | Declared limit |
+| --- | ---: | ---: |
+| Common-prior perpetual value error | 0.208556% | 1% |
+| Space refinement | 0.172347% | 0.5% |
+| Remaining-time refinement | 0.002155% | 0.5% |
+| Tail refinement | 0.023340% | 0.5% |
+| Fixed-basis step-halving sensitivity | 0.228295% | 0.5% |
+| Quadrature refinement | 2.47e-10 | 1e-5 |
+| Rounded-residual error estimate | 6.59e-13 | 2e-10 |
+| Interface probability-mass error | 5.55e-15 | 5e-11 |
+| Locked unconditioned sequence continuation error | 0.087844% | 1% |
+| Locked sequence mass drift | 6.22e-15 | 2e-6 |
+
+All 325 distinct data gaps passed the interface checks. The fixed windows and
+the predetermined refinement anchors passed their declared gates. These
+refinement differences are empirical sensitivities, not additive certified
+error bounds. The residual estimate is not a certified bound either. Step
+halving compares fixed-basis resolvents; the actual data gaps were not
+subdivided. A retained row-wise diagnostic reached **1.6974%**, with denominator
+`max(1, ||continuum basis U||_inf)`, not each row's own value. The common prior's
+passing result does not qualify every basis row or arbitrary initial state.
+Observation-conditioned neural posteriors, long contexts, a trainable
+physics domain and alternative reset laws still need their own qualification.
+
+## What the real-data runs established
+
+The official UCI localization data retain the original integer timestamps,
+subject identifiers and source rows. A fixed whole-file integer clock model
+exactly explains all 164,860 displayed dates. It corrects the original guard's
+use of a per-record quantization tolerance for an adjacent difference. It does
+not establish that the data authors used SQL or .NET. The original rejected
+attempt remains in the first evidence snapshot.
+
+The 18 runs used the same frozen 25-dimensional frontend, unchanged A01 first
+128 training events, D01 first 64 development events, and four 32-event training
+episodes. Each run started with fresh model and optimizer state. Official CfC
+received real elapsed times. Official recurrent PLIF and S4D-Lin used their
+declared event-indexed dynamics plus the common elapsed-time feature. S4D is
+the SSM arm; it is not named Mamba. Attention was causal. HCSN physics stayed
+frozen and matched the new numerical receipt.
+
+The historical localization-v2 summary reports that an independent audit checked 90 checkpoints, the 18 logits/result records,
+the actual changed tensors at 72 optimizer updates, independent initialization
+identities, source rows, frontend features, loaded dependency hashes, and frozen
+HCSN physics. It reports **528 checks passed**, but those original receipts were not present at the baseline reference inspected for this P0 review, so that count is not independently revalidated here. A reported separate final read verified all
+36 live source files against the source archive. Metrics were recomputed from
+saved logits without further training or model forwards.
+
+The run also exposed concrete reasons it cannot support comparative effects:
+
+| Interface | Trainable parameter count |
+| --- | ---: |
+| GRU | 427 |
+| Official CfC | 807 |
+| Official recurrent PLIF | 176 |
+| Official S4D-Lin | 335 |
+| Causal Transformer | 1,179 |
+| HCSN | 9,804 |
+
+The training window contains 122 walking and six sitting-down events. All 64
+development events are walking. Eight of the PLIF's 12 training windows have
+zero spikes. Four updates, these unequal capacities, and a single-class
+development window cannot establish adequate SNN training or a model ranking.
+The three independent initializations are real; they do not remove those
+limitations. Episodes are not additional independent fits.
+
+The E subject's raw records were read for schema, clock and global-gap metadata,
+but never used for model training, tuning or scoring. The 0.2-second delay was
+chosen after that global metadata audit. A subsequent ABC-only audit finds the
+same maximum gap, 0.162175 seconds, in C02; this does not rewrite the selection
+history as ABC-only. The prospective formal protocol must preserve that
+disclosure when interpreting E as a held-out scoring subject.
+
+## Costs, CI, and remaining work
+
+The actual interface driver took 175.057531 seconds; suite and worker times have
+separate scopes in the evidence. These include imports, construction and
+checkpoint I/O and are not steady inference throughput or p99 measurements.
+Peak worker RSS was 625,102,848--782,454,784 bytes. Persistent state bytes,
+steady throughput, p99, peak VRAM and complete system energy remain `null` with
+reasons. A CPU execution does not count as a measured zero GPU-memory peak.
+Setup failures, numerical qualification and evidence transport have separate
+receipts and are not hidden inside the training total.
+
+The [formal protocol](../../proposals/localization-v2/formal_protocol.json)
+specifies full subject-separated data, capacity matching, equal tuning
+opportunities, adequate training, independent confirmation seeds, calibration,
+requested ablations and an all-attempt resource ledger. The accompanying
+[implementation boundary](../../proposals/localization-v2/PROTOCOL.md) explicitly
+lists the missing constructors, dynamics, numerical domains and formal runner.
+It is a specification, not a completed study. In particular, a matched ordinary
+dual gate and a true physical-readout removal must expose a content-only or
+ordinary-gating explanation rather than assume that either explanation is false.
+
+The pinned hosted science workflow discovers the current tests and enforces the
+four original budget fixtures. Native 0.2-second/data-interface evidence is
+separately identified; that profile is not silently credited to the hosted lane.
+Hosted source head, tested tree and actual job outcomes must be read at their
+exact run. Historical repository-wide required checks remain HOLD until actual
+fresh checks establish otherwise. No merge or main modification is included.
+
+The separate Colab attempt never bound a runtime or executed qualification;
+its cleanup is unconfirmed after the recorded account-manager state error.
+No old S81 or 170-run campaign receives completion credit. FP32, mixed precision,
+GPU kernel work, long-gap strategies and HCSN-plus-attention pretraining remain
+gated on a fair real-task benefit; this interface exercise supplies no such
+benefit claim.
+
+## P0/P1 independent gate boundary (2026-11-10)
+
+Run `python -m qualification.hcsn_differentiable.audit_evidence_chain --output /new/path.json` to validate in-tree links and the available byte-pinned trainer artifacts. Its result intentionally remains `HOLD` while the localization-v2 receipts are missing. This integrity audit is neither a rerun of the reported 75 tests nor scientific admission. `first_hit_regime` in `regenerative.py` adds a **non-differentiable diagnostic** of eventual hit probability, mean first-hit time and asymptotic event rate across negative, zero and positive drift. It is not a newly qualified neural training domain. Posterior-conditioned numerical accuracy, trainable physics, full fair comparison, QVI, and hardware gates remain open.

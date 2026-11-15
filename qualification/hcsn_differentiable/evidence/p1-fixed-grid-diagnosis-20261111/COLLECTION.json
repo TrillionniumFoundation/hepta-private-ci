@@ -1,0 +1,33 @@
+{
+  "all_native_source_hashes_match_current_files": true,
+  "base_head": "4ed61beacd9e8cf08cd1f7f8c938b75d747149e4",
+  "fixed_grid_scope": "48 standard-library scalar cases; one independent exact-row replay; no trained posterior or full HCSN operator",
+  "integration_files": [
+    {
+      "bytes": 13004,
+      "git_blob": "8bbb1fde0f9e1ab08a16257c4bb598b114209210",
+      "path": "qualification/hcsn_differentiable/training_domain_finite.py",
+      "sha256": "56c75ba1f0253b24591fd574cc767151ef581986c5718e3910bc21ae2c227c02"
+    },
+    {
+      "bytes": 6625,
+      "git_blob": "2ac24a7d05b17f9acf4cf15cc88ecde2ae382fbe",
+      "path": "qualification/hcsn_differentiable/tests/test_training_domain_finite.py",
+      "sha256": "af0945d4007cd18f278f2ab9428d84ada1b73035ec8272d31ee5180884112e2b"
+    },
+    {
+      "bytes": 6083,
+      "git_blob": "cfb5890e05f55fbb59a0f5a93843568ea7b825b6",
+      "path": "qualification/hcsn_differentiable/TRAINING_DOMAIN.md",
+      "sha256": "55c6fb2017b2e2cdc2f1ef7dffe055faae72f3b12078cb25926e4a955e514c48"
+    }
+  ],
+  "native_terminal_publication_confirmed": true,
+  "native_test_host": "ai395",
+  "native_test_job": "1a1c8f96154-135c4-34a",
+  "native_tests_passed": 6,
+  "result_provenance": "native-finite/native.json is JSON decoded from the final JSON line in original native stdout.txt, not a separate readback of the native RESULT.json file",
+  "schema": "hcsn-p1-integrated-evidence-collection-v1",
+  "scientific_admission": "HOLD",
+  "whole_repository_ci": "not_run_by_this_subtask"
+}
