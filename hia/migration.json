@@ -80,22 +80,24 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "joint29_source_only_pending_full_build_and_original_gates",
+    "qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
     "remaining_work": [
-      "Regenerate all B1/B2/B3, module objects and exact static-link receipts for this complete lock.",
-      "Execute the current joint workflow without relaxing either original job budget, assertion or oracle.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Nineteen B3 modules cover seventeen algorithm groups. One actual fresh B1/B2/B3 and nineteen-module build completed; all 54 inherited namespaced artifacts are byte-identical and the three renderer artifacts match the frozen prototype. A subsequent controller receipt-reader failure is retained. The corrected continuation reused that exact successful build, rechecked its complete artifacts and executed the previously unrun formal renderer ABI and receipt gates: 66026 calls, 54262 whole-output no-write transport failures, zero skips, and 78 receipt checks. Historical complete-original direct-rustc public parity remains separately scoped. Current Cargo/public, owner and six-consumer suites, strict/fix, installed combination and CI remain pending. The public gate now verifies actual Cargo OUT_DIR staged archive bytes against admitted formal archives; both prior eighteen-module CI failures remain failures. Corrected seventeen-module push and PR CI archives were fully audited, but do not qualify this new source. All15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and legacy retirement remain open.",
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. At revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, run 43805537036 completed the current29 job (104 API steps) and separately checked-out exact74d1 historical17 job (54 API steps), within their unchanged 60-minute budgets. Original logs report a fresh 29-module B1/B2/B3 build, both scalar profiles, current/default selected owners, public/raw/installed gates and final strict/maintenance success. The nine nextest groups overlap and are not a full-workspace count. The two artifact ZIPs remain metadata-only; detailed report and binary payloads have not received independent complete custody. The documentation successor, all15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and retirement remain unqualified.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/history/owner19-d2fb9ecd/verification.json#template_render_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "scope": "Linux x86-64 GNU, opt-in hia-native. Nineteen B3 modules cover seventeen algorithm groups. One actual fresh B1/B2/B3 and nineteen-module build completed; all 54 inherited namespaced artifacts are byte-identical and the three renderer artifacts match the frozen prototype. A subsequent controller receipt-reader failure is retained. The corrected continuation reused that exact successful build, rechecked its complete artifacts and executed the previously unrun formal renderer ABI and receipt gates: 66026 calls, 54262 whole-output no-write transport failures, zero skips, and 78 receipt checks. Historical complete-original direct-rustc public parity remains separately scoped. Current Cargo/public, owner and six-consumer suites, strict/fix, installed combination and CI remain pending. The public gate now verifies actual Cargo OUT_DIR staged archive bytes against admitted formal archives; both prior eighteen-module CI failures remain failures. Corrected seventeen-module push and PR CI archives were fully audited, but do not qualify this new source. All15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and legacy retirement remain open."
+    "scope": "Linux x86-64 GNU, opt-in hia-native. At revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, run 43805537036 completed the current29 job (104 API steps) and separately checked-out exact74d1 historical17 job (54 API steps), within their unchanged 60-minute budgets. Original logs report a fresh 29-module B1/B2/B3 build, both scalar profiles, current/default selected owners, public/raw/installed gates and final strict/maintenance success. The nine nextest groups overlap and are not a full-workspace count. The two artifact ZIPs remain metadata-only; detailed report and binary payloads have not received independent complete custody. The documentation successor, all15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and retirement remain unqualified.",
+    "current_report": "hia/verification.json#ci_qualification_at_revision",
+    "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report."
   },
   "candidate_modules": [
     {
@@ -104,8 +106,8 @@
       "source_path": "codex-rs/apply-patch/src/seek_sequence.rs",
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -135,7 +137,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -147,7 +149,7 @@
       "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
-      "qualification_status": "joint29_not_executed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -174,7 +176,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "retained_oracle_only"
@@ -184,8 +186,8 @@
       "hia_source": "hia/utf8_prefix.hepta",
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "take_bytes_at_char_boundary",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -208,7 +210,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -218,8 +220,8 @@
       "hia_source": "hia/metric_tag.hepta",
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "sanitize_metric_tag_value",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -254,7 +256,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -289,8 +291,8 @@
         "hia/tests/test_markdown_location_abi.py",
         "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "historical_source_entry": {
@@ -300,7 +302,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -335,8 +337,8 @@
         "hia/tests/test_ascii_json_abi.py",
         "codex-rs/utils/string/src/ascii_json_tests.rs"
       ],
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "historical_source_entry": {
@@ -346,7 +348,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -360,8 +362,8 @@
         "truncate_middle_chars",
         "truncate_middle_with_token_budget"
       ],
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -404,7 +406,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -419,8 +421,8 @@
         "approx_tokens_from_byte_count"
       ],
       "production_algorithm_group": "truncate",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -447,7 +449,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -465,8 +467,8 @@
         "into_contents"
       ],
       "production_algorithm_group": "source_file",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -539,7 +541,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -555,8 +557,8 @@
         "apply_replacements"
       ],
       "production_algorithm_group": "file_update",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "performance_qualified": false,
@@ -603,7 +605,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -624,8 +626,8 @@
         "Hunk::resolve_path"
       ],
       "production_algorithm_group": "parser",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -679,7 +681,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -702,8 +704,8 @@
         "apply_hunks"
       ],
       "production_algorithm_group": "patch_effects",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -736,7 +738,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -748,8 +750,8 @@
       "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
       "source_function": "unified_diff_from_chunks_with_context_and_mode",
       "production_algorithm_group": "unified_diff",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -778,7 +780,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -790,8 +792,8 @@
       "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
       "source_function": "print_summary",
       "production_algorithm_group": "patch_summary",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -819,7 +821,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -838,8 +840,8 @@
         "apply_hunks"
       ],
       "production_algorithm_group": "patch_application",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -867,7 +869,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -883,8 +885,8 @@
         "line_ending_mode_from_env"
       ],
       "production_algorithm_group": "patch_standalone",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -912,7 +914,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -926,8 +928,8 @@
         "find_uuids"
       ],
       "production_algorithm_group": "uuid_find",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -954,7 +956,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -970,8 +972,8 @@
         "push_literal"
       ],
       "production_algorithm_group": "template_parse",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -998,7 +1000,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1013,8 +1015,8 @@
         "render_template"
       ],
       "production_algorithm_group": "template_render",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1041,7 +1043,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1051,8 +1053,8 @@
       "hia_source": "hia/template_index.hepta",
       "source_path": "codex-rs/utils/template/src/lib.rs",
       "source_function": "Template placeholder ordering/deduplication through HIAIndexBuilder",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1084,7 +1086,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production",
@@ -1096,7 +1098,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "find_uuids",
       "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
-      "qualification_status": "joint29_not_executed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1128,7 +1130,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "retained_oracle_only"
@@ -1139,7 +1141,7 @@
       "source_path": "codex-rs/utils/template/src/lib.rs",
       "source_function": "Template::parse",
       "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
-      "qualification_status": "joint29_not_executed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1171,7 +1173,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "retained_oracle_only"
@@ -1182,8 +1184,8 @@
       "source_path": "codex-rs/execpolicy/src/rule.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "PrefixPattern::matches_prefix",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1220,7 +1222,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1231,8 +1233,8 @@
       "source_path": "codex-rs/execpolicy/src/rule.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "PrefixPattern::matches_prefix count admission",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1270,7 +1272,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1281,8 +1283,8 @@
       "source_path": "codex-rs/execpolicy/src/policy.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "Evaluation::from_matches / Evaluation::is_match / CLI result reduction",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1330,7 +1332,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1341,8 +1343,8 @@
       "source_path": "codex-rs/execpolicy/src/policy.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "Policy::compiled_network_domains / upsert_domain",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1381,7 +1383,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1392,8 +1394,8 @@
       "source_path": "codex-rs/execpolicy/src/policy.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "Policy::get_allowed_prefixes / render_pattern_token",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1436,7 +1438,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1447,8 +1449,8 @@
       "source_path": "codex-rs/execpolicy/src/policy.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "Policy::matches_for_command / check_matches / match_with_heuristics",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1490,7 +1492,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -1501,8 +1503,8 @@
       "source_path": "codex-rs/execpolicy/src/rule.rs",
       "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
       "source_function": "normalize_network_rule_host",
-      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
-      "qualification_status": "joint29_not_executed",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -1557,7 +1559,7 @@
       },
       "validation": {
         "current": "hia/verification.json#current_qualification",
-        "status": "source_composed_not_built_or_tested",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
         "historical_evidence_is_not_current_qualification": true
       },
       "current_role": "current_opt_in_production"
@@ -3313,7 +3315,7 @@
     "helper": "hia/cargo_build.rs",
     "builder": "hia/build.py",
     "tests": "hia/tests/test_build_receipt.py",
-    "status": "joint29_not_executed",
+    "status": "ci_gate_success_at_483_independent_payload_audit_pending",
     "accepted_build_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -3380,13 +3382,17 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "build_report_sha256": null,
+    "build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7",
     "checks_passed": null,
-    "existing_link_or_build_reports_reusable_without_regeneration": false
+    "existing_link_or_build_reports_reusable_without_regeneration": false,
+    "build_report_payload_independently_read": false,
+    "current_report": "hia/verification.json#ci_qualification_at_revision"
   },
   "current_qualification": {
-    "status": "source_integration_only",
-    "report": "hia/verification.json#current_qualification"
+    "status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+    "report": "hia/verification.json#current_qualification",
+    "documentation_successor_exact_head_qualified": false
   },
   "source_owner_histories": {
     "17": {

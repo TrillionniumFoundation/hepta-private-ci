@@ -6,10 +6,26 @@
   "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "target": "x86_64-unknown-linux-gnu",
   "build_mode": "native-selfhost",
-  "build_status": "not_executed_on_joint_tree",
-  "compiler_fixed_point": null,
-  "compiler_generations": [],
-  "build_report_sha256": null,
+  "build_status": "ci_build_passed_at_483_independent_artifact_custody_pending",
+  "compiler_fixed_point": true,
+  "compiler_generations": [
+    {
+      "name": "B1",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
+    },
+    {
+      "name": "B2",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
+    },
+    {
+      "name": "B3",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
+    }
+  ],
+  "build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7",
   "native_module_count": 29,
   "current_opt_in_linked_kernel_count": 26,
   "retained_oracle_only_kernel_count": 3,
@@ -26,18 +42,24 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "Source-only composition of fixed17 and fixed19 plus reviewed template Index bridge. No compiler, Cargo, formatter, native, product, CI or benchmark command was executed for this joint tree.",
+  "scope": "The Linux x86-64 opt-in joint workflow passed at qualification_revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, with the separately checked-out exact74d1 historical job also passing. Original API metadata and decoded logs are retained. This documentation successor is not exact-head qualified. Full workspace, platforms, default migration, performance, retirement and independent whole-artifact custody remain unqualified.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
-    "status": "not_executed",
+    "status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+    "report": "hia/verification.json#ci_qualification_at_revision",
     "source_composed": true,
     "full_native29_admission": false,
-    "complete_current_workflow_passed": false,
-    "historical_exact17_job_passed_this_run": false,
-    "joint_job_runtime_cost_verified": false,
+    "full_native29_admission_scope": "The original CI build/admission gates succeeded; independent full report, object, archive and link-receipt payload audit remains pending.",
+    "complete_current_workflow_passed": true,
+    "historical_exact17_job_passed_this_run": true,
+    "joint_job_runtime_cost_verified": true,
     "per_job_budget_minutes": 60,
-    "all_static_link_receipts_require_regeneration": true,
-    "new_native_artifacts_created": false,
+    "all_static_link_receipts_require_regeneration": false,
+    "receipt_regeneration_scope": "Fresh receipts were produced and admitted in the recorded CI revision. A future changed source or lock requires its own fresh binding; old artifacts are not relabeled.",
+    "new_native_artifacts_created": true,
+    "complete_independent_artifact_custody": false,
+    "documentation_successor_exact_head_qualified": false,
     "retirement_authorized": false
   },
   "source_owner_histories": {
@@ -90,11 +112,259 @@
   },
   "history_policy": "Each original metadata file is kept byte-exact under its immutable owner revision. None of its passes, build hashes, CI states or performance values qualifies the current joint source or the other owner's wire protocol.",
   "pending_gates": [
-    "Actual complete29 native-selfhost build and B1/B2/B3, all source/object/library/archive/.link identities.",
-    "Both scalar profiles, all existing receipt rejection cases, current full-native29 network-host admission.",
-    "Template 13206 pairs / 21 constructors / complete payload and callback, AsRef, Drop, eight panic-fault behavior / 100 unnormalized raw private DTO calls.",
-    "All original current/default Cargo owners, source inverses, supported platforms, installed patch and full CLI cases, strict lint and unchanged-source fixes.",
-    "Exact74d1 historical original workflow, including the incompatible v8 renderer raw ABI; results separately named and not current-v9 evidence.",
-    "Complete current workspace and integrated performance, then any explicit legacy retirement proposal."
-  ]
+    "Acquire and independently verify the two recorded artifacts, complete build report, all current source/object/library/archive/.link identities and detailed report payloads; current API/upload digests alone do not close custody.",
+    "Keep the four public differential case counts null until their exact report payloads are read; original log pass/report SHA evidence remains valid.",
+    "Qualify the complete current workspace and required platform/app-exec combinations; the nine overlapping nextest selections are not a full-workspace denominator.",
+    "Qualify integrated performance and default production release separately, then review any explicit legacy retirement proposal.",
+    "Keep exact74d1 v8 renderer evidence separate from current v9 evidence; retain original owner histories and earlier failing CI runs.",
+    "This three-document successor has no new exact-head CI result; the recorded qualification belongs only to revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c."
+  ],
+  "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+  "build_report_payload_independently_read": false,
+  "platform_qualified": false,
+  "full_independent_artifact_qualified": false,
+  "ci_qualification_at_revision": {
+    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+    "qualification_tree": "e96ac49ec70c97b7e5bd1938b060be65f094cb70",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 43805537036,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43805537036",
+    "event": "push",
+    "attempt": 1,
+    "run_conclusion": "success",
+    "evidence_scope": "Original GitHub API metadata and complete decoded job logs; exact report and binary payloads inside the artifacts have not been independently acquired.",
+    "jobs": [
+      {
+        "id": 133095329288,
+        "name": "native-components",
+        "conclusion": "success",
+        "started_at": "2026-11-16T04:40:48Z",
+        "completed_at": "2026-11-16T05:24:18Z",
+        "success_steps": 104,
+        "failure_steps": 0,
+        "skipped_steps": 0,
+        "api_step_counts_are_not_test_counts": true,
+        "actual_checkout": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+        "elapsed_seconds": 2610,
+        "per_job_budget_minutes": 60,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43805537036/job/133095329288"
+      },
+      {
+        "id": 133095329558,
+        "name": "Exact 74d1 legacy ABI and original owner gates",
+        "conclusion": "success",
+        "started_at": "2026-11-16T04:40:49Z",
+        "completed_at": "2026-11-16T05:20:17Z",
+        "success_steps": 54,
+        "failure_steps": 0,
+        "skipped_steps": 0,
+        "api_step_counts_are_not_test_counts": true,
+        "actual_checkout": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "elapsed_seconds": 2368,
+        "per_job_budget_minutes": 60,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43805537036/job/133095329558"
+      }
+    ],
+    "original_logs": [
+      {
+        "path": "483-current-job-133095329288.log",
+        "bytes": 2138385,
+        "sha256": "18742a9e9da5517f1d7cdebe5aef1052a91216f9dc78176182b75a395a9c08c2",
+        "retrieval": "Complete decoded original job log, including original leading BOM; no line normalization."
+      },
+      {
+        "path": "483-legacy-job-133095329558.log",
+        "bytes": 1640806,
+        "sha256": "7d6b8b04e3020083fcb96a55bbb52df1f3b465f1dc338fd02c5bbb6f1ba38093",
+        "retrieval": "Complete decoded original job log, including original leading BOM; no line normalization."
+      }
+    ],
+    "terminal_receipt_sha256": "6f496bebee9c0fe4e3b4d443f450acd80719647d9021b346e2fc01f2ee4ed6f9",
+    "actual_hepta_checkout": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "compiler_sha256_observed": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+    "build_report_sha256_observed": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7",
+    "build_report_payload_independently_read": false,
+    "native_module_count_built_in_log": 29,
+    "scalar_profile_gates": [
+      {
+        "module": "token_budget",
+        "passed": true,
+        "checks": 136,
+        "source_sha256": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda"
+      },
+      {
+        "module": "prefix_admission",
+        "passed": true,
+        "checks": 136,
+        "source_sha256": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb"
+      }
+    ],
+    "four_corrected_public_differentials": [
+      {
+        "module": "policy_summary",
+        "api_step": 75,
+        "api_conclusion": "success",
+        "passed_in_original_log": true,
+        "report_sha256": "07ac84a47677783efe39d021efe13bd4f7de164d66b6821e4b833207d0aee78f",
+        "public_comparison_case_count": null,
+        "report_payload_independently_read": false,
+        "original_log_line": 14263
+      },
+      {
+        "module": "network_domains",
+        "api_step": 77,
+        "api_conclusion": "success",
+        "passed_in_original_log": true,
+        "report_sha256": "ae45d2c6b031a69249e9378e07db0c6b3254ee24260b929ee435cd1abf2dc307",
+        "public_comparison_case_count": null,
+        "report_payload_independently_read": false,
+        "original_log_line": 14310
+      },
+      {
+        "module": "allowed_prefixes",
+        "api_step": 79,
+        "api_conclusion": "success",
+        "passed_in_original_log": true,
+        "report_sha256": "c7b066e7c2472bdf77aaa7c16fca6d466d19bd4d2a83310b097b43ce01569f69",
+        "public_comparison_case_count": null,
+        "report_payload_independently_read": false,
+        "original_log_line": 14357
+      },
+      {
+        "module": "command_dispatch",
+        "api_step": 81,
+        "api_conclusion": "success",
+        "passed_in_original_log": true,
+        "report_sha256": "32a49c1a86658c73cd9bf31846a182a0a56413e740c31cbd74fd28c1986dc599",
+        "public_comparison_case_count": null,
+        "report_payload_independently_read": false,
+        "original_log_line": 14404
+      }
+    ],
+    "public_differential_count_policy": "Counts are null because the original log prints pass and report SHA only. Raw ABI counts are not substituted.",
+    "current_nextest_groups": [
+      {
+        "scope": "production crates: apply-patch, utils-string, utils-template, execpolicy",
+        "passed": 202,
+        "reported_skipped_or_filtered": 0,
+        "selection": "package selection",
+        "raw_summary": "2026-11-16T04:47:01.8810562Z      Summary [   1.482s] 202 tests run: 202 passed, 0 skipped",
+        "original_log_line": 1931
+      },
+      {
+        "scope": "output-truncation, protocol, context-fragments consumers",
+        "passed": 319,
+        "reported_skipped_or_filtered": 0,
+        "selection": "package selection",
+        "raw_summary": "2026-11-16T04:48:25.9269289Z      Summary [   0.595s] 319 tests run: 319 passed, 0 skipped",
+        "original_log_line": 3394
+      },
+      {
+        "scope": "CLI, arg0, TUI owner group",
+        "passed": 4473,
+        "reported_skipped_or_filtered": 6,
+        "selection": "package selection",
+        "raw_summary": "2026-11-16T04:58:07.8932614Z      Summary [  88.361s] 4473 tests run: 4473 passed, 6 skipped",
+        "original_log_line": 9552
+      },
+      {
+        "scope": "seven-package template owner/native consumer selection",
+        "passed": 387,
+        "reported_skipped_or_filtered": 0,
+        "selection": "package selection",
+        "raw_summary": "2026-11-16T05:02:13.7828005Z      Summary [  22.714s] 387 tests run: 387 passed, 0 skipped",
+        "original_log_line": 10589
+      },
+      {
+        "scope": "same seven-package template selection in default mode",
+        "passed": 384,
+        "reported_skipped_or_filtered": 0,
+        "selection": "package selection",
+        "raw_summary": "2026-11-16T05:03:43.5795546Z      Summary [  21.821s] 384 tests run: 384 passed, 0 skipped",
+        "original_log_line": 11392
+      },
+      {
+        "scope": "default production crates and truncation consumers",
+        "passed": 504,
+        "reported_skipped_or_filtered": 0,
+        "selection": "package selection",
+        "raw_summary": "2026-11-16T05:10:44.2288307Z      Summary [   2.021s] 504 tests run: 504 passed, 0 skipped",
+        "original_log_line": 12810
+      },
+      {
+        "scope": "Core exec-policy filtered integration tests",
+        "passed": 11,
+        "reported_skipped_or_filtered": 3870,
+        "selection": "explicit nextest filter",
+        "raw_summary": "2026-11-16T05:20:28.6894200Z      Summary [   1.615s] 11 tests run: 11 passed, 3870 skipped",
+        "original_log_line": 15747
+      },
+      {
+        "scope": "Core network-domain filtered consumer test",
+        "passed": 1,
+        "reported_skipped_or_filtered": 3880,
+        "selection": "explicit nextest filter",
+        "raw_summary": "2026-11-16T05:20:31.2950497Z      Summary [   0.029s] 1 test run: 1 passed, 3880 skipped",
+        "original_log_line": 16146
+      },
+      {
+        "scope": "protocol allowed-prefix filtered consumer test",
+        "passed": 1,
+        "reported_skipped_or_filtered": 300,
+        "selection": "explicit nextest filter",
+        "raw_summary": "2026-11-16T05:20:47.8695017Z      Summary [   0.008s] 1 test run: 1 passed, 300 skipped",
+        "original_log_line": 16241
+      }
+    ],
+    "group_count": 9,
+    "groups_overlap_and_are_not_summed": true,
+    "historical_exact74d1_counts": {
+      "production_crates": {
+        "passed": 198,
+        "skipped": 0
+      },
+      "cli_arg0_tui": {
+        "passed": 4474,
+        "skipped": 6
+      },
+      "default_crates": {
+        "passed": 185,
+        "skipped": 0
+      },
+      "scope": "Separate exact74d1 historical17 owner selection, not current483 source"
+    },
+    "historical_results_do_not_qualify_current_abi": true,
+    "artifacts_api_and_upload_metadata_only": [
+      {
+        "id": 14200325804,
+        "name": "codex-hia-current29-results",
+        "bytes": 142198783,
+        "digest_api_and_upload_log": "sha256:47fd7687940381e53a2e113d3b407602815d9017fe3f60176b05410b1b182892",
+        "expired": false,
+        "uploaded_files": 39184,
+        "downloaded": false,
+        "independent_whole_zip_sha_crc_member_or_source_custody": false
+      },
+      {
+        "id": 14199372814,
+        "name": "codex-hia-exact74d1-legacy17-results",
+        "bytes": 20570859,
+        "digest_api_and_upload_log": "sha256:87f5c98796b962fffe423d0e3df115b5e72ecbefdb43615bf4744cb9fa9d998a",
+        "expired": false,
+        "uploaded_files": 262,
+        "downloaded": false,
+        "independent_whole_zip_sha_crc_member_or_source_custody": false
+      }
+    ],
+    "complete_independent_artifact_custody": false,
+    "prior_failures_retained": {
+      "zerojob_run": 43796727946,
+      "reference_wrapper_rejection_run": 43798556181,
+      "intermediate_733_run": 43801627157,
+      "kept_as_negative": true,
+      "not_replaced_by_this_success": true
+    },
+    "documentation_successor_exact_head_qualified": false,
+    "scope_applies_only_to_qualification_revision": true
+  }
 }
