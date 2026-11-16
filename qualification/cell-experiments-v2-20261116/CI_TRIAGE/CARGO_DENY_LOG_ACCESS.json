@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.cargo-deny-ci-triage.v2",
+  "observed_at_utc": "2026-11-16 14:52:34 UTC",
+  "scope": "One read-only exact-log request per specified source/base job; stop when logs are unavailable.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "evidence_publication_base": "8dd202989833b96aec94dfe62feb40bf774dc558",
+  "known_status_source": "Parent/root had read workflow-run jobs metadata; this child did not repeat those reads.",
+  "known_jobs": [
+    {
+      "kind": "source",
+      "head": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+      "run_id": 43886751098,
+      "job_id": 133370507993,
+      "job_name": "cargo-deny",
+      "conclusion": "failure",
+      "reported_failed_step": "Run cargo-deny",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133370507993"
+    },
+    {
+      "kind": "base",
+      "head": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "run_id": 43879070795,
+      "job_id": 133340025052,
+      "job_name": "cargo-deny",
+      "conclusion": "failure",
+      "reported_failed_step": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43879070795/job/133340025052"
+    }
+  ],
+  "log_fetch_attempts": [
+    {
+      "key": "source",
+      "head": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+      "run_id": 43886751098,
+      "job_id": 133370507993,
+      "attempts_in_this_context": 1,
+      "logs_obtained": false,
+      "error_result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/github.fetch_workflow_job_logs`\n\nCaused by:\n    Transport closed"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "key": "base",
+      "head": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "run_id": 43879070795,
+      "job_id": 133340025052,
+      "attempts_in_this_context": 1,
+      "logs_obtained": false,
+      "error_result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/github.fetch_workflow_job_logs`\n\nCaused by:\n    Transport closed"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ],
+  "exact_failure_reasons": {
+    "source": "UNKNOWN: exact job log unavailable",
+    "base": "UNKNOWN: exact job log unavailable"
+  },
+  "reason_comparison": "UNKNOWN: failed statuses alone do not establish that the reasons are identical.",
+  "attribution": "UNKNOWN: do not attribute the source-head failure to the base, dependencies, network, or this change without the logs.",
+  "raw_logs_retained": false,
+  "dependencies_or_gates_modified": false,
+  "tests_or_workflows_rerun": false,
+  "remote_mutations_performed": false,
+  "separate_pull_request_created": false,
+  "followup": "Stopped after the permitted single log attempt for each job; no speculative cause assigned."
+}

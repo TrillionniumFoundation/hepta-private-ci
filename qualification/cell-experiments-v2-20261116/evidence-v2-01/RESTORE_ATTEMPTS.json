@@ -1,0 +1,46 @@
+{
+  "adoption_performed": false,
+  "corrected_attempt": {
+    "inference_calls": 2,
+    "model_manifest_count": 8,
+    "path": "/home/qq/hepta-cell-experiments-20261116-0c078a/restored-v2-02",
+    "restore_receipt_sha256": "f989b245f09ebd6419846ecaaa89b8e5c97c35dd2acf84781930db233c00c1c3",
+    "status": "COMPLETE",
+    "verified_original_files": 973,
+    "wall_seconds": 18.914373320993036
+  },
+  "failed_attempt_discarded": false,
+  "initial_attempt": {
+    "emitted_inference_calls": 1,
+    "failure_receipt": "restore-failed/RESTORE_FAILED.json",
+    "path": "/home/qq/hepta-cell-experiments-20261116-0c078a/restored-v2-01",
+    "prediction": {
+      "answer": "{\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == 123\\n    assert subject(123) == ",
+      "elapsed_seconds": 10.668900314951316,
+      "eos_seen": false,
+      "external_effect_executed": false,
+      "finish_reason": "max_new_tokens",
+      "hit_output_limit": true,
+      "input_sha256": "2c4932531815f9e2c950a4390a14060afa6785f717ccc9c4ee451be19a8c9f44",
+      "input_tokens": 602,
+      "loaded_model_digest": "dd0d27485233e953e56cdfde67940d6fa7c0148bb20fb3f239b7d46afbc85c00",
+      "max_new_tokens": 256,
+      "message_protocol": "native_chat_v2",
+      "output_tokens": 256,
+      "pid": 3638814,
+      "rendered_input_sha256": "f35b0e9546d0a180573eea8e4f67c375c651353aa9b5eee2ce48b6eb32231d6d",
+      "time_scope": "generate and decode; excludes load and input tokenization"
+    },
+    "process_exit_code": 1,
+    "process_wall_seconds": 13.22357946797274,
+    "status": "FAILED_RESOURCE_RECEIPT_COLLISION"
+  },
+  "new_independent_samples": 0,
+  "optimizer_resume_verified": false,
+  "portable_owner_recovery_verified": false,
+  "schema": "hepta.restore-attempts-summary.v2",
+  "semantic_verifier_calls": 0,
+  "total_post_campaign_inference_calls": 3,
+  "total_post_campaign_input_tokens": 1575,
+  "total_post_campaign_output_tokens": 538
+}

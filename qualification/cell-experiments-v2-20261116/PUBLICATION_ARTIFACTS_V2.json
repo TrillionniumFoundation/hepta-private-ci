@@ -1,0 +1,845 @@
+{
+  "schema": "hepta.repository-study.publication-artifacts.v2",
+  "publication_base_commit": "8017119833636df14c842172fd124e166f91ce71",
+  "source_snapshot_commit": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+  "source_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+  "frozen_python_files": {
+    "scripts/cell_experiments/__init__.py": {
+      "sha256": "2e67b225cd36fa27d71ee9da202418be16037287581438e20ce0a3b5d3b518d6",
+      "git_blob": "6deac8e2e9f77ca207467a8911356e206a416554"
+    },
+    "scripts/cell_experiments/adapter_mix_v2.py": {
+      "sha256": "325caacb86a0abe5b1ac66e9a6999cdff960f200ea787d706941e9d020eb9100",
+      "git_blob": "d34b8323a06e8c520505ab85b825005f0b82ff75"
+    },
+    "scripts/cell_experiments/adoption.py": {
+      "sha256": "d3b91bf960cc66086f4026c9024c738a584f0777ff4bbfe62e09291122d7cdf7",
+      "git_blob": "7081221645b10962097ab9d342c4873bb2bbaf47"
+    },
+    "scripts/cell_experiments/campaign.py": {
+      "sha256": "9d54c9bafafa960cc5441810fea75cbf2ca41de56aab39ce7a706d20385072ae",
+      "git_blob": "a845278e7245670aa06189c3f698eda8e8f16138"
+    },
+    "scripts/cell_experiments/chat_protocol.py": {
+      "sha256": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+      "git_blob": "dfb0d33ed6e1aa48e55f81641a4c63f87e207aee"
+    },
+    "scripts/cell_experiments/circuit_study_v2.py": {
+      "sha256": "e2c5ac63e25fe820edccf774885e913a6b5838ecace9b82d93dc6fce380c66b3",
+      "git_blob": "8b9a41aa4116a1098f67509fbc44f99ac7d3fa70"
+    },
+    "scripts/cell_experiments/circuit_task_bindings_v2.py": {
+      "sha256": "30fc1277db9ebb3986ad386969e0f1cfaafa8889c0e5ef06ce32b782e91da721",
+      "git_blob": "3fa0bc82805b5acbbbdb2ea2775c3ce949fe6108"
+    },
+    "scripts/cell_experiments/circuit_task_readout_v2.py": {
+      "sha256": "20312e28ddb8adc0e4af88e8a3998ee1b5a3492e6692a0f6d756b6d18f1a5605",
+      "git_blob": "1c11b926b4d3037f1275179befab827e62273097"
+    },
+    "scripts/cell_experiments/circuit_v2.py": {
+      "sha256": "f13f7e0ba50aa12ab68e2e7b48bd0dfaaa788b0378c1620179e1eb99113b5514",
+      "git_blob": "63e3da539ccbded0920000fecb3a7dce799b99ea"
+    },
+    "scripts/cell_experiments/coding_sft.py": {
+      "sha256": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+      "git_blob": "8ccaaf2443a6aa2893500aad89a70d83a7b1dbb7"
+    },
+    "scripts/cell_experiments/composition.py": {
+      "sha256": "fbe3d7002872fccfc2b6ecb654f10695a9f2a98cf1502a1f1884126e1cb88b8f",
+      "git_blob": "4fd27499d00552b4ed32c54bfdecae3442b76bb2"
+    },
+    "scripts/cell_experiments/composition_core.py": {
+      "sha256": "98370c35240c505f882800c8244dd3b7bc2a0c6c279bbe35c7d693811b9c92bc",
+      "git_blob": "06eb3dbac9ed09b3e0754eb2b2ec68ed063950ad"
+    },
+    "scripts/cell_experiments/data.py": {
+      "sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+      "git_blob": "1f32cb00fb815ced989580a31dd8d39424d3e1e8"
+    },
+    "scripts/cell_experiments/data_builder.py": {
+      "sha256": "6d40912ff91df04ba59c43e450a974967c6e2d117da8576633cbcc6e7cbbb57b",
+      "git_blob": "01afb313916171c13aceeb57780af5bb962e62be"
+    },
+    "scripts/cell_experiments/interaction.py": {
+      "sha256": "125f19a02673a115f6e25e1285e7ee9f40fe27ec9ae5bfeffa7b558160439556",
+      "git_blob": "281f35cde9712e9046d4192db86fe47d1a8922e9"
+    },
+    "scripts/cell_experiments/interaction_campaign.py": {
+      "sha256": "fbae77975f330805a0ce677908de2ac4cad9a5a8b1c401af12600511b71fe4b8",
+      "git_blob": "89ca359422ab8e1ead2cd7e7f14e1a264c5b0cf2"
+    },
+    "scripts/cell_experiments/repo_execution.py": {
+      "sha256": "ee37e28567944ab542a21926f66957cf663c0ec7e7ceab62a4c30da5fce4282b",
+      "git_blob": "f6b4b82f6aac21875c27813762a7d03dc1a0b125"
+    },
+    "scripts/cell_experiments/repo_interaction_v2.py": {
+      "sha256": "26513f13b1bfc9d88ff40ea9234a3222f930a18117f8f966cb9dbbaec0180ae3",
+      "git_blob": "6b7712e1879bac41b6ce533fd999521a7659e6d3"
+    },
+    "scripts/cell_experiments/repo_tasks.py": {
+      "sha256": "428e04fbfa4a2cc78ecd50d3b119426d82d1cbbbdec1ab7c2286460a38e1cf66",
+      "git_blob": "46c2dc2b6772a4fe7b3e92e4ae2e405b72562d16"
+    },
+    "scripts/cell_experiments/run_study_v2.py": {
+      "sha256": "0f2fe6fe45a27a4aa54450e4f67bc8e5ec66d686cefe9dbfc16e220cd02db237",
+      "git_blob": "02e4ccce86e7abc962b6c25e743d77a8e838bfe0"
+    },
+    "scripts/cell_experiments/sequence.py": {
+      "sha256": "63d3ea056aa7f343acc37a36f158ceed7df26c4c71924fd984d0c2256dbb52a9",
+      "git_blob": "4cdc47188baa6c3d10317b6316061ea794a21763"
+    },
+    "scripts/cell_experiments/stage_resources_v2.py": {
+      "sha256": "486ace04b180516aa3c60cda7b83c16162a805770eed2166abb02eca06bfcc6f",
+      "git_blob": "7964a0a0f146b3707879c75e5eb62ea62aa3b294"
+    },
+    "scripts/cell_experiments/study_v2.py": {
+      "sha256": "33b32cfa76c66b7d59b8049491168753cac63dd5cf78feecde92632748749f6d",
+      "git_blob": "9e55d53f105201f05f0a615ffd0b47cc28d92dbf"
+    },
+    "scripts/cell_experiments/study_v2_confirm.py": {
+      "sha256": "7bc9dce5853cccee17fca96d72715ac62d87a8f7970ca61c28a5c0bd5a97ceb6",
+      "git_blob": "a17a70125027cc243a569ec241758a39a6df2803"
+    },
+    "scripts/cell_experiments/study_v2_evidence.py": {
+      "sha256": "5e7b460722c148067a17166a684d18ded06eeea5dc3f5a2b47981c2bea074720",
+      "git_blob": "1545a727ecaa74d374ad28b4369762569328b967"
+    },
+    "scripts/cell_experiments/study_v2_reporting.py": {
+      "sha256": "9f0cbc6989939679e1e3c76484a8e1ed53837ce126fcf13493e6ed06064e76b6",
+      "git_blob": "f3391ddf9a49a74aee05c9b7a322b040589a532b"
+    },
+    "scripts/cell_experiments/study_v2_support.py": {
+      "sha256": "74bbf8fef8c19fbb9a8968f49ba7596e3238646968f7be711d924c05b4807a64",
+      "git_blob": "85a62561c1df2f75b32313f385788ae64b6e71f1"
+    },
+    "scripts/cell_experiments/test_adapter_mix_v2.py": {
+      "sha256": "55117fddd9506d1ae68968292aaaeba95a925f4f4a0d6b9073751f7f6b95b086",
+      "git_blob": "55ab92ca9a4e2459dff6e0b6195a5217f5a81820"
+    },
+    "scripts/cell_experiments/test_adoption.py": {
+      "sha256": "b2c2be9761dc064a5debb16a9ff8828b2092c0a8ea527cf6905679055c65edea",
+      "git_blob": "6157bb3d6cff0c645307cfd67789b5cfc033d131"
+    },
+    "scripts/cell_experiments/test_campaign.py": {
+      "sha256": "3a179a2dc5b57e55c7d44e0dcfd739055c1e7011ac33c0afb15c18c6c86099ec",
+      "git_blob": "0c96b86632fb0b4fc6d72b5cb5b602402279663e"
+    },
+    "scripts/cell_experiments/test_chat_protocol.py": {
+      "sha256": "19c93cf74ed88c5b0e368b413aba107f358f9c75062c83f78cedcbafedff3340",
+      "git_blob": "a91ae3963f0fd4f619a2096a14a05ef1da18067f"
+    },
+    "scripts/cell_experiments/test_circuit_task_readout_v2.py": {
+      "sha256": "1bde4ed31dbe9620cc16974b3be3c285b1e2c472b756704eb4bf0948a7327cd9",
+      "git_blob": "ed5431ce0870ead0d87d46747504b13c748e5589"
+    },
+    "scripts/cell_experiments/test_circuit_v2.py": {
+      "sha256": "de7d6cd8ead8736ff827289611240d6651a9c22cc79f2c6625dce69201421b0e",
+      "git_blob": "b289959f53975138aa6e76180ea0f1a9fad0afe1"
+    },
+    "scripts/cell_experiments/test_coding_sft.py": {
+      "sha256": "9c42f212b54d913007c980158d733f4d41cf32b126caac021b49cae048611d16",
+      "git_blob": "3e6274b517cb93408efbca5020387cde2f9cedbe"
+    },
+    "scripts/cell_experiments/test_composition.py": {
+      "sha256": "c1f7931cb590b842eea69d702f39e62d85af4521ea7e9db80d01493b40b39d98",
+      "git_blob": "0e1a964cf1e56774b9a71994912c43f0782bce32"
+    },
+    "scripts/cell_experiments/test_composition_core.py": {
+      "sha256": "d8931ab80ca6d29a52b6460ef3d822e73a2bf7864f58c9eb7fe2a0e95507edb5",
+      "git_blob": "745a8ab97e4ace589d27cbffe8712a5445e77d4e"
+    },
+    "scripts/cell_experiments/test_data.py": {
+      "sha256": "782b2b6cd922f56e3f44c4983c7ab43522a6b822c808f596b1ff7d057f0640c0",
+      "git_blob": "0e9c16af65ff992c59669cdc5cd4ef719bb72474"
+    },
+    "scripts/cell_experiments/test_interaction.py": {
+      "sha256": "1b481f92f3c4631361a5781e2ebc7454621bad726c0aae26160b0f16945258af",
+      "git_blob": "7ed4de9218618b60c0591b4299692cd01911260c"
+    },
+    "scripts/cell_experiments/test_interaction_campaign.py": {
+      "sha256": "534c2ac21df6af74d34522891cf29c718f76e165068465d71faff90a65f8cb42",
+      "git_blob": "729b7ed61451b2d97a09683fb31d16710b1bc23c"
+    },
+    "scripts/cell_experiments/test_repo_execution.py": {
+      "sha256": "f15e1db7d54457b7bc9d9b999811d7c8e4381df6e3b68725b73f9d76219a576d",
+      "git_blob": "e57f7a6eaaf5bc9324ada5391c385e1e1106b196"
+    },
+    "scripts/cell_experiments/test_repo_interaction_v2.py": {
+      "sha256": "70cfcba0d0b608f642c8ef9f2e77bd624926d39b32f6a62ec2da4c926f21c2a7",
+      "git_blob": "18a42c8990d0e921651de54cf0dbb6b670e4ef47"
+    },
+    "scripts/cell_experiments/test_sequence.py": {
+      "sha256": "1a507108057fe7bc90329a554df8948c154e30b8f35b96d7fb9037b4201a4699",
+      "git_blob": "5987e279f6d8c8754f7cfda1ea094c799c21362f"
+    },
+    "scripts/cell_experiments/test_study_v2.py": {
+      "sha256": "4dcb54c3333b18b94a4ace802f3acedcec1e21e0862c4e428fdf75bc4c766080",
+      "git_blob": "e866a2ed757988d21b5c493c236bbe2bc952aa35"
+    },
+    "scripts/cell_experiments/test_study_v2_confirm.py": {
+      "sha256": "67236682d11b0428a30c44107d8415d64cc3dfe904364cd152cd2eeab4dd14ca",
+      "git_blob": "c4f31e7c2ec7d6df64e16278c2c9d76417407b3a"
+    }
+  },
+  "final_export_manifest": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/EXPORT.json",
+  "final_export_sha256": "2f554acf9e774469dfa5d078da08186954dfc93d05e1be66f9a9eb4f086f2d2f",
+  "original_inventory": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/INVENTORY.json",
+  "original_files": 973,
+  "external_base": {
+    "bytes": 269060552,
+    "file": "model.safetensors",
+    "git_blob": "033cd580d4d498e62d6347340ea2c6a323499bb7",
+    "path": "run/base/model.safetensors",
+    "repository": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+  },
+  "archive_parts": 42,
+  "all_container_git_blobs_verified": true,
+  "maximum_container_bytes": 491640,
+  "strict_binary_limit_bytes": 512000,
+  "whole_zip_streams_published": false,
+  "final_restore_receipt": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_RESULT.json",
+  "final_restore_sha256": "f989b245f09ebd6419846ecaaa89b8e5c97c35dd2acf84781930db233c00c1c3",
+  "verified_original_files": 973,
+  "verified_model_manifests": 8,
+  "successful_matching_replay_probes": 2,
+  "all_restore_attempt_replays_including_failure": 3,
+  "restoration_new_independent_samples": 0,
+  "restoration_adoption_performed": false,
+  "historical_export01_manifest": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export-attempt-01/EXPORT.json",
+  "historical_restore_failure": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_FAILED.json",
+  "repository_mapping": {
+    "RESTORE_ATTEMPTS.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/RESTORE_ATTEMPTS.json",
+    "RESTORE_V2.md": "qualification/cell-experiments-v2-20261116/RESTORE_V2.md",
+    "archive-tools-v2-02/TOOL_IDENTITIES.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-tools-v2-02/TOOL_IDENTITIES.json",
+    "archive-v2-02-operations/ARCHIVE_EQUALITY.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/ARCHIVE_EQUALITY.json",
+    "archive-v2-02-operations/EXPORT_COMMAND.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/EXPORT_COMMAND.json",
+    "archive-v2-02-operations/EXPORT_PROCESS.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/EXPORT_PROCESS.json",
+    "archive-v2-02-operations/RESULT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/RESULT.json",
+    "corrected-export-job.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/corrected-export-job.json",
+    "corrected-restore-job.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/corrected-restore-job.json",
+    "diagnostic-job.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/diagnostic-job.json",
+    "execution-logs/RESULT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/execution-logs/RESULT.json",
+    "export-attempt-01/EXPORT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export-attempt-01/EXPORT.json",
+    "export-job.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export-job.json",
+    "export/EXPORT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/EXPORT.json",
+    "export/INVENTORY.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/INVENTORY.json",
+    "posthoc/COMMAND.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/posthoc/COMMAND.json",
+    "posthoc/DIAGNOSTICS.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/posthoc/DIAGNOSTICS.json",
+    "restore-failed/RESTORE_FAILED.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_FAILED.json",
+    "restore-failed/RESTORE_PROBES/final_answer/PROCESS.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_PROBES/final_answer/PROCESS.json",
+    "restore-failed/RESTORE_STARTED.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_STARTED.json",
+    "restore-job.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-job.json",
+    "restore/RESTORE_PROBES/final_answer/PROCESS.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/final_answer/PROCESS.json",
+    "restore/RESTORE_PROBES/final_answer/RESULT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/final_answer/RESULT.json",
+    "restore/RESTORE_PROBES/trajectory/PROCESS.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/trajectory/PROCESS.json",
+    "restore/RESTORE_PROBES/trajectory/RESULT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/trajectory/RESULT.json",
+    "restore/RESTORE_RESULT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_RESULT.json",
+    "restore/RESTORE_STARTED.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_STARTED.json",
+    "run/B_SELECTION.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/run/B_SELECTION.json",
+    "run/FREEZE.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/run/FREEZE.json",
+    "run/RESULT.json": "qualification/cell-experiments-v2-20261116/evidence-v2-01/run/RESULT.json",
+    "tools/diagnose_run_v2.py": "qualification/cell-experiments-v2-20261116/diagnose_run_v2.py",
+    "tools/export_run_v2.py": "qualification/cell-experiments-v2-20261116/export_run_v2.py",
+    "tools/restore_run_v2.py": "qualification/cell-experiments-v2-20261116/restore_run_v2.py"
+  },
+  "new_evidence_files_excluding_this_index": [
+    {
+      "path": "qualification/cell-experiments-v2-20261116/CI_TRIAGE/CARGO_DENY_LOG_ACCESS.json",
+      "bytes": 2933,
+      "git_blob": "6d52fa38bd93d6b90655cc2543845ca5879ea2d4",
+      "role": "bounded log-access triage; exact reasons remain unknown"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/CI_TRIAGE/SOURCE_FINAL_CHECKS.json",
+      "git_blob": "6f42c1cc40e5398c90d5b28b3622318929d74dca",
+      "bytes": 20134,
+      "role": "root readout or independent engineering review"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/COST_SUMMARY_REQUEST.json",
+      "git_blob": "6e97d819af91086e4a7fb570f372b9ee1ac88085",
+      "bytes": 2522,
+      "role": "root readout or independent engineering review"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/COST_SUMMARY.json",
+      "git_blob": "545dc305d402b5b6fcdf60456c621cca5a1c129a",
+      "bytes": 4644,
+      "role": "root readout or independent engineering review"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/E4_E5_FINAL_REVIEW.json",
+      "git_blob": "6ce87a4c81cf8b2a4559a41d42bcdbc57e4e4cf5",
+      "bytes": 32732,
+      "role": "root readout or independent engineering review"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-tools-v2-02/TOOL_IDENTITIES.json",
+      "bytes": 870,
+      "sha256": "e84581cbf258f03fba16623665a0f723aec806d8fbd41629aaa54ce329408dad",
+      "git_blob": "b985fab72b61803d6efbc254b6e6ebfae035c817",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/archive-tools-v2-02/TOOL_IDENTITIES.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/ARCHIVE_EQUALITY.json",
+      "bytes": 7849,
+      "sha256": "2230bd68740f461353b54aed8ea73d5a7c027560e28e3f4c590ee062b77cd530",
+      "git_blob": "16d44b93a427d64d9dddf430fbc1f9a0451efa73",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/archive-v2-02-operations/ARCHIVE_EQUALITY.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/EXPORT_COMMAND.json",
+      "bytes": 1050,
+      "sha256": "bb402d4cb3546bbe114289e7c4307f3a217a28aaed114d921675b239aba1c8a1",
+      "git_blob": "612e7820c35e009ef825557e900fbc3b0db6dafc",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/archive-v2-02-operations/EXPORT_COMMAND.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/EXPORT_PROCESS.json",
+      "bytes": 398,
+      "sha256": "4ddc89ffe169a231bd23def2c7685323bc0513d96ebe2476b121f7df19f2dd6f",
+      "git_blob": "8a583d24ac6e3ccdd23cfec8e8c05ca0ea524eb7",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/archive-v2-02-operations/EXPORT_PROCESS.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/archive-v2-02-operations/RESULT.json",
+      "bytes": 752,
+      "sha256": "dff4d24bfe68cdcdbb7c57d29e28b3327e4c66e32c7159b5f37dbb8dfd720e66",
+      "git_blob": "6115614f000146c8784417de3cdbe4043a5b7498",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/archive-v2-02-operations/RESULT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/corrected-export-job.json",
+      "bytes": 4107,
+      "sha256": "0936420afcdc265228e7cb19981ec5f9c58482cba7a79bc463c59d87d38b35bb",
+      "git_blob": "5387a52f6882925cabf55179f704bdfc885ab30a",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/corrected-export-job.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/corrected-restore-job.json",
+      "bytes": 4278,
+      "sha256": "ae9df2e195eae198ee8ce62fee007310d4a9268ad979dd38313ec3753d2ef8ec",
+      "git_blob": "abb6127598b69a67f0eb5e12a2e948c2bc427076",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/corrected-restore-job.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/diagnostic-job.json",
+      "bytes": 4195,
+      "sha256": "b1e540f6a5ef1ed8e2ba2a3c6c325b4841ae692335f464b26ff942f3d6ff49ca",
+      "git_blob": "e1d9ddd01ace48096dc6009eed03a06c3b172d68",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/diagnostic-job.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/execution-logs/RESULT.json",
+      "bytes": 493,
+      "sha256": "eea2a88a74ebc1d983efd4fb482e36b9cd65e1b47002ea285bdb5154f3fd9059",
+      "git_blob": "121d926eca9952ba79e5343fda569e3ebd1ebd69",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/execution-logs/RESULT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export-attempt-01/EXPORT.json",
+      "bytes": 63045,
+      "sha256": "1ba58c082f0ab1420671cae7fbd1b84f229616348704fc8311e3b3f257a4d797",
+      "git_blob": "47858f2e7a88e0193c9266159655e8f9b8e104bc",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/export-attempt-01/EXPORT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export-job.json",
+      "bytes": 4596,
+      "sha256": "5b49d40b0c3b0cc6e8105d3f8c8d3a568bd30941b707773990c6712d93a09e80",
+      "git_blob": "81a007f0f989cedf78c8ed930044943789fd4f44",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/export-job.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/base-metadata.part-000.zip",
+      "bytes": 491640,
+      "sha256": "5a8bd9838eab29fbd8de2d591418f250693c540421c14d65eb8652b17e4f7f5c",
+      "git_blob": "afacd5416efecbbcde213e874d65cd8763574c74",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/base-metadata.part-001.zip",
+      "bytes": 104093,
+      "sha256": "315d4c80f27eac5474a0747ceb0cd85a0ab96689cfbb85b1d08ab51583e7cefa",
+      "git_blob": "819f2aad60548cace70175bdd2bcc058c854769c",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-000.zip",
+      "bytes": 491640,
+      "sha256": "bb49eece6fd369a28278e2f84bf0ad473a07d30e023e52f0ab15be78ea5bccb2",
+      "git_blob": "02c2414cfe38693ac481ffa644997b707cc8138e",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-001.zip",
+      "bytes": 491640,
+      "sha256": "40c842694bf7aceb6f0f81e71ccd1d578706695122194cc63507ee5f987f717e",
+      "git_blob": "aaabe9b7638a98b90fd0d0155712444ddd6a80d7",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-002.zip",
+      "bytes": 491640,
+      "sha256": "e3971536b03f135e171afb57fd3b40775c1a82cb05c12b0c738cac3ae458183e",
+      "git_blob": "3cfa40838e2fd71d876f00730d963bfb60551429",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-003.zip",
+      "bytes": 491640,
+      "sha256": "d33932656f1428ac0163e512cfc529e94bb0b92e8b73369d09a8c229a00ed01c",
+      "git_blob": "6d27b4ea9a367e483c8debf80767fa52be6002b9",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-004.zip",
+      "bytes": 491640,
+      "sha256": "58f4b94dfb697a3881d5daecd2810cee5701297b73f92f39cf8843f42a2b3c04",
+      "git_blob": "00f9a7151628e0c70f731c0708df41e79ade004b",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-005.zip",
+      "bytes": 491640,
+      "sha256": "68c0984f52a6ce0bcf8dce86c18abd499b2df736f0d9e3f224eef52efecee95d",
+      "git_blob": "48010b7882a3dc9e8609c9b4943226e11dd0d175",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-006.zip",
+      "bytes": 491640,
+      "sha256": "762d2fa003897549b423087e2842bd65145fd5f9234d67a1a127654f72286887",
+      "git_blob": "0e8b1843650a7a6acdc98145defc7476b5deb002",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-007.zip",
+      "bytes": 491640,
+      "sha256": "7dbb775cdbc8c89dcde41ad315dce7cd306fa5f5e9006303ffbe468041f9ca43",
+      "git_blob": "227fd5b69abc6cb7a3eddbbb9ffe41073d62b0da",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-008.zip",
+      "bytes": 491640,
+      "sha256": "aedd7a492e36f0800e015b79799d4d3473c118d5196b6bd93cbf5bb5e929a252",
+      "git_blob": "bacbf625ea204c809d2b2c321a35991e7e365395",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-009.zip",
+      "bytes": 491640,
+      "sha256": "12cd703674f10b957b2547dc4e3ef5ad364f30f0f9954f6828d2e7c075fa68fc",
+      "git_blob": "1df642236908c3f0ee3533b848aae1763f12c31a",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-010.zip",
+      "bytes": 491640,
+      "sha256": "31b0d3f2760a0f69deab1a1d5b7d3913609434113429215dda5f6bd3b0e0597a",
+      "git_blob": "c75286f65dfd73bc89c579bf682621efffbfb009",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-011.zip",
+      "bytes": 491640,
+      "sha256": "c032f8bcb4b91e693741c460ec091a011b2d1480e84ba4595fef9bbf685e3c0a",
+      "git_blob": "4b78c33f758e36306cc98955b97c14b2b73631f2",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-012.zip",
+      "bytes": 491640,
+      "sha256": "0a001aefd799d48d52c9bc013d997b25cfe139b5172c20e7600479de38d03ecd",
+      "git_blob": "9fe90df743c7bda86a67f5b7e5c91b4824d7adb0",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-013.zip",
+      "bytes": 491640,
+      "sha256": "a568bd66cb5bd2d8b43da221e746fa526bc1754d30a6e5f4cb9962fa9862eb15",
+      "git_blob": "d84a4457c9b5d68dbca6a0ae07950c8e2b7f23f4",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-014.zip",
+      "bytes": 491640,
+      "sha256": "28cebca994d260da1e28882825e6f2661a6eb4bc1ce804d898034ee419e08fe6",
+      "git_blob": "3dc801c1c00a17c1d82009f062175ed1ca8b7c09",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-015.zip",
+      "bytes": 491640,
+      "sha256": "507750da1a72a8dc828f5dd1ec34d70757666180b016736dd1cf276ba22d393f",
+      "git_blob": "d4b69fd1d0074fd4133224a026e719f7c6334d7e",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-016.zip",
+      "bytes": 491640,
+      "sha256": "04ec00a9ed4e2e98cee72e65bf358a69df70d16973e437d80469f525077d0767",
+      "git_blob": "a55b43f403cdc0d180a5183ed9cfbeca88034875",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-017.zip",
+      "bytes": 491640,
+      "sha256": "56e6cc585412b762787134cd46faec78074b0877e91765a02aa2f76f1a6fc24d",
+      "git_blob": "6d740d375da527b4de29a0e3bceab9ec4b275a9c",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-018.zip",
+      "bytes": 491640,
+      "sha256": "e3baaae50963765aba5c7dbbc2cf7cedb5cb13fd039431130fab1be71688adbc",
+      "git_blob": "d22159ae60620974a5e16b8826ab0c5669cc2ece",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-019.zip",
+      "bytes": 491640,
+      "sha256": "a539425730eadba5ebe3eb83bbed090c212caafe9c1e995408a583e85621bf4a",
+      "git_blob": "312a1dd8c601bc09452439cd089bb0a64e72d81a",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-020.zip",
+      "bytes": 491640,
+      "sha256": "c0e5869f308a433df33a4cc16dce6d30da3d3bdc6ff8be569001b791c191760a",
+      "git_blob": "a060a5d01f98a07b53f1cea450703749cf66d123",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-021.zip",
+      "bytes": 491640,
+      "sha256": "67b9b2349a3c8dbb16b10c95c1b1c784b4e3653779f1a29cd2f16c7045a7111d",
+      "git_blob": "a8ef599ccc300d185ae7d5019827c23d85ab4d04",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-022.zip",
+      "bytes": 491640,
+      "sha256": "fafd81c4ed68463bdc6ddf047658396e365ad125b41b37462dcd1a59bcf5d69c",
+      "git_blob": "69feccc14f40cb2b7f1063d3e372e9acf11ad0dd",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-023.zip",
+      "bytes": 491640,
+      "sha256": "57c24050d18ad4f6d1f05d98e785cc225032dae75bd0ff72e2f191fee07fbd62",
+      "git_blob": "aec71cfd18a8f2242567e6f9326183be263d101c",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-024.zip",
+      "bytes": 491640,
+      "sha256": "7c43413cd9def9e07fe96f51becbf7a1adc1bff8ad47d83e97d45a08f18010bb",
+      "git_blob": "764b67ad652214726275fe1aac939993322638da",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-025.zip",
+      "bytes": 491640,
+      "sha256": "3356b9d1ff5629942daad2d3cd66b62ab8da5ff63cb2111cabe63b10b852cbc3",
+      "git_blob": "6fe795aae3abf145fd7e2791e92c073c066f13fc",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-026.zip",
+      "bytes": 491640,
+      "sha256": "a2a6135b5001687aed4aa4095fadbe5481e5497967e3ea73e3385c5d6a6939fe",
+      "git_blob": "136f9438c82b0c1d7be1785f0e14686f018e7878",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-027.zip",
+      "bytes": 491640,
+      "sha256": "00822e5effe434cbd02aaa14738e18f2154d9ec3adf179a4668b929fd5328db1",
+      "git_blob": "9d1fe574bbdff5bfa1cef76c423b47427a3e935f",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-028.zip",
+      "bytes": 491640,
+      "sha256": "2eb47deeb0e902a58a6478a70cfe1d65266a3a6eedb6bc222bdcb323bb267111",
+      "git_blob": "89de67eb9c5c1e7d3ebb834069e4309f44d7058e",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-029.zip",
+      "bytes": 491640,
+      "sha256": "a4c0c22b42abd59e51ee305699965ad0b0eff7dae01af4c727a5123c240a0992",
+      "git_blob": "87b72d8df229ff72e409bfbcdbe0f914fe8ea2ae",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-030.zip",
+      "bytes": 491640,
+      "sha256": "02160bde6cd69afb4dc62e0404735a68c01fcd193e0317b1693a952df936b984",
+      "git_blob": "8d79b0537a42fee73408de2b2452a04ba9d1c274",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-031.zip",
+      "bytes": 491640,
+      "sha256": "8399f0fad198065d541060638dd4bdfcc72dcf75c26e6c2a9c168b3141626b3c",
+      "git_blob": "27731abd12e78894711d64327216fc75351c9af3",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-032.zip",
+      "bytes": 491640,
+      "sha256": "59d215dc8ccffcbe985fdc059042e5a87015d3af8d2ae017feb62b085546e703",
+      "git_blob": "f7baeafe1329080942ca795e3fbb16264ca7bfc4",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-033.zip",
+      "bytes": 491640,
+      "sha256": "aaaf724f63bb088ac1d66c6b4c1b0e3e98e230e8ab4bd950557e36326a5d9e3e",
+      "git_blob": "062ee268ce1decded42fe429c8ce33fa444e91cf",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-034.zip",
+      "bytes": 491640,
+      "sha256": "0926cfc9642836ce1dc4cbdcb7fb428c0181dfc626c25d292260cf3f1495580c",
+      "git_blob": "89a2eb461c3284a3d4ddc7aaa0608d0b69060443",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/checkpoints.part-035.zip",
+      "bytes": 271835,
+      "sha256": "351f9296fa705688265935cf175cda18a0637905f6d16b317cfd3c064cb1ca27",
+      "git_blob": "f07702f2c91a5608c2824ff0ab5b7eb6750bd201",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/EXPORT.json",
+      "bytes": 63038,
+      "sha256": "2f554acf9e774469dfa5d078da08186954dfc93d05e1be66f9a9eb4f086f2d2f",
+      "git_blob": "ae4112c9230180a1a359907dbfac6ce86b5034b1",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/export/EXPORT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/INVENTORY.json",
+      "bytes": 219756,
+      "sha256": "45848ea1b849f4d7e5dd69d86afd0dc5875413436ba8b58d777520ea2ed04f6f",
+      "git_blob": "efa94073f7899ebceab65872669c67273aa8b48f",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/export/INVENTORY.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/receipts.part-000.zip",
+      "bytes": 491640,
+      "sha256": "78bdc54737bf614495e2c8f77bf62d47adf5660ad4aeead9d794dfb7c2f1b5cf",
+      "git_blob": "174b76c4c2efab0b5f402382455d3f3db1b449f2",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/receipts.part-001.zip",
+      "bytes": 491640,
+      "sha256": "4b4687ab5ac62c01cd64efc0a5510fe5c25d1ec9c24469e5a603e83d483f8531",
+      "git_blob": "e2148e96af0f94a4ca754e0b77d655cf345f2285",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/receipts.part-002.zip",
+      "bytes": 491640,
+      "sha256": "4a961b8fc7740864f8bb6a6007fdfbe8515193911e4d108ad429ac050f537b93",
+      "git_blob": "d1595feaa2ce9371f4da1ebfd757697604fb4998",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/export/receipts.part-003.zip",
+      "bytes": 65409,
+      "sha256": "9a6a8e94b4f1a1b828ed19925d130a0840fda6d31a802f84da9dd65a57d657e5",
+      "git_blob": "b31b0e570184c82407d1bc724cbb2b52823444c9",
+      "role": "valid ZIP container"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/PERSISTENCE.json",
+      "bytes": 10281,
+      "sha256": "e09bb302bda82ef2d0202004b2eb7ca94dddbe3d406c2d17f238cc95be6c12b0",
+      "git_blob": "d552f629d2e69186b6b14dc7014975853b274593",
+      "role": "preserved evidence directory manifest"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/posthoc/COMMAND.json",
+      "bytes": 720,
+      "sha256": "fc57f218bd2eb774e6a18b83376ac37e342146e0dce41000035daafae57613aa",
+      "git_blob": "ef4cf5824682ee3c468b82891e7e327f78bd2ff0",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/posthoc/COMMAND.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/posthoc/DIAGNOSTICS.json",
+      "bytes": 61116,
+      "sha256": "a2c990f969db7fb01464b84b68e379a6b5e834e4b59de2dc23d9d15f86535e3b",
+      "git_blob": "2da7206ad1d1876acd0e5d7e6ce03807dc605e26",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/posthoc/DIAGNOSTICS.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/RESTORE_ATTEMPTS.json",
+      "bytes": 2432,
+      "sha256": "cc4e2ff84bb5c5fc80d83dc1b8b83844a29e9090f356f4087df603fef5ad892d",
+      "git_blob": "699622b8d202fbafe36e0d26a9cc0dddec53c844",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/RESTORE_ATTEMPTS.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_FAILED.json",
+      "bytes": 126,
+      "sha256": "fb40281991419a0f3f7dd3f9fc0e54533e4664c60b4d8f0254e31d8ff7dce7ed",
+      "git_blob": "248d8c97e32a79ed5eb43200eabd8a2e9d7cce3c",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore-failed/RESTORE_FAILED.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_PROBES/final_answer/PROCESS.json",
+      "bytes": 3042,
+      "sha256": "4361d4fe5f2b54c4450392a0deb8be1be19c636cf812252e8e3f4fdb53c9018c",
+      "git_blob": "38d2ca680c65a057a2153434011176c101c8dee1",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore-failed/RESTORE_PROBES/final_answer/PROCESS.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-failed/RESTORE_STARTED.json",
+      "bytes": 153,
+      "sha256": "4d99271c142f25428abc9c0bcc2b80d91ad57799bfb631bf554d88c4fa35e7ec",
+      "git_blob": "8b6f7ec32b6d565d451a768d30c96288c55266fb",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore-failed/RESTORE_STARTED.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore-job.json",
+      "bytes": 4736,
+      "sha256": "24f5fcf94f439e6f8db0ad3854f7c0aff858755e0c0e7426abe4e27bad4801a8",
+      "git_blob": "cc406c806d77e00f684808514ce20488bcebb265",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore-job.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/final_answer/PROCESS.json",
+      "bytes": 2085,
+      "sha256": "e9df0e2ce2e05c29319e1e872146837c22f838de8f6dabf890bbcc2d0f80397d",
+      "git_blob": "c1a2f776991f265ad570a54c2bd6613da3aa2ab9",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore/RESTORE_PROBES/final_answer/PROCESS.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/final_answer/RESULT.json",
+      "bytes": 1954,
+      "sha256": "16b7ee64e836b5e09f507450b42a8b7a8dbba5dc25648c542f12c2a8f0484f38",
+      "git_blob": "96fd284094a4a3c3a4b63c6f61083f3750fe8e73",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore/RESTORE_PROBES/final_answer/RESULT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/trajectory/PROCESS.json",
+      "bytes": 1542,
+      "sha256": "6934d18f50694c4b6d0c87a802a69bbe2fe7208eacaa7f03d70da39393fb79b3",
+      "git_blob": "796b934d2cf21c721efbc78dc367a528d2224810",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore/RESTORE_PROBES/trajectory/PROCESS.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_PROBES/trajectory/RESULT.json",
+      "bytes": 1440,
+      "sha256": "16c06b2fdb554139012d646d8482702317b68220621ef2ee5c6f7f977675fc12",
+      "git_blob": "dfdf84c347cc868e2a3ab763127dda2908ec7b38",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore/RESTORE_PROBES/trajectory/RESULT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_RESULT.json",
+      "bytes": 5121,
+      "sha256": "f989b245f09ebd6419846ecaaa89b8e5c97c35dd2acf84781930db233c00c1c3",
+      "git_blob": "30a42ff2cc06972c9d5ef7ee1cae70c114a7de7b",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore/RESTORE_RESULT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/restore/RESTORE_STARTED.json",
+      "bytes": 153,
+      "sha256": "ab8d8e0d824a43de070cfcb1802c384befe2351e803bd2e82307c32efd730885",
+      "git_blob": "962244d9aeb6ed45491071bd50124b1bd553ccdd",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/restore/RESTORE_STARTED.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/run/B_SELECTION.json",
+      "bytes": 59433,
+      "sha256": "f15196cdb35042bc1607b6347c630090a0e70bcc97b1fab518d3c49547355e8b",
+      "git_blob": "c76f564b3310ae516cd6ac2488cec9d6961e501f",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/run/B_SELECTION.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/run/FREEZE.json",
+      "bytes": 12501,
+      "sha256": "6c471c36b9615360525b65e4128bbbee1610317d6f7e7c59a462de00d149d0f5",
+      "git_blob": "1f63366b2ca4e822b4d372e015d3ba0977499bad",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/run/FREEZE.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/evidence-v2-01/run/RESULT.json",
+      "bytes": 418305,
+      "sha256": "19a3a380bbd17c64c5ce348d002d6f4d47a7f2777ba2dbba915278ed23319e29",
+      "git_blob": "6c156c77ff2dc5633c5a7ad258b748a1d026b8c4",
+      "role": "byte-preserved runtime or restoration evidence",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/publication-evidence-v2-01/run/RESULT.json"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/PUBLICATION_ARCHIVE_TOOLS.json",
+      "bytes": 18447,
+      "git_blob": "cc192057e9404358fd8ea940d3e5d3961a325796",
+      "role": "historical s18-s21 publication state snapshot"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/REPORT_V2.md",
+      "git_blob": "1d7ee968afd766914a45d3e0abb002c6acfc52d2",
+      "bytes": 12685,
+      "role": "human result report"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/ROOT_READOUT.json",
+      "git_blob": "9e55f3eaf8c5117857644433a2e6812d8c4dc24c",
+      "bytes": 14100,
+      "role": "root readout or independent engineering review"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/RUN_TERMINAL.json",
+      "git_blob": "f1283fa906efb20d8b25277ff381f121531e1dd0",
+      "bytes": 1158,
+      "role": "root readout or independent engineering review"
+    },
+    {
+      "path": "qualification/cell-experiments-v2-20261116/SCORECARD.json",
+      "git_blob": "b5c61502cd421ab950f298f12f9217cdf81ba7ac",
+      "bytes": 73802,
+      "role": "root readout or independent engineering review"
+    }
+  ],
+  "integrity_scope": "Cryptographic identity and engineering reproducibility; scientific and native production qualifications remain as reported in REPORT_V2.md.",
+  "publication_index_identity": "This generated index excludes itself; its enclosing Git tree records its exact blob identity.",
+  "existing_history_policy": "Earlier source/helper commits and publication snapshots are preserved."
+}

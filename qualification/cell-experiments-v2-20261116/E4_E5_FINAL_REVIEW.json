@@ -1,0 +1,950 @@
+{
+  "B_selection_file_sha256": "f15196cdb35042bc1607b6347c630090a0e70bcc97b1fab518d3c49547355e8b",
+  "C_scope": {
+    "observed_three_candidate_first_attempt_oracle_ceiling": 0,
+    "projects": [
+      "TrillionniumFoundation/Trillionnium-Chain"
+    ],
+    "task_ids": [
+      "test-completion:C-budget-integer",
+      "test-completion:C-research-schema",
+      "test-completion:C-rss-observation"
+    ],
+    "unique_sources": 3,
+    "unique_tasks": 3
+  },
+  "E4": {
+    "ablations": [
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.1598609460229365,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 1.615798847602779
+      },
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.6193692584774945,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 2.512247598124218
+      },
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 0,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0,
+        "id": "2",
+        "inactive_cell": true,
+        "kind": "cells",
+        "max_abs_logit_change": 0
+      },
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 0,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0,
+        "id": "3",
+        "inactive_cell": true,
+        "kind": "cells",
+        "max_abs_logit_change": 0
+      },
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.049980866729327535,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 0.9928254500839353
+      },
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.1598609460229365,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 1.615798847602779
+      },
+      {
+        "arm": "fixed",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.6193692584774945,
+        "id": "2",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 2.512247598124218
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.0635975405149121,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 0.8921837391037124
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 0,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0,
+        "id": "1",
+        "inactive_cell": true,
+        "kind": "cells",
+        "max_abs_logit_change": 0
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 0,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0,
+        "id": "2",
+        "inactive_cell": true,
+        "kind": "cells",
+        "max_abs_logit_change": 0
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.21725192587368058,
+        "id": "3",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 1.5168953363581281
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.044554510901830095,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 0.7437770697861805
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.0635975405149121,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 0.8921837391037124
+      },
+      {
+        "arm": "learned_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.21725192587368058,
+        "id": "2",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 1.5168953363581281
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 0,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0,
+        "id": "0",
+        "inactive_cell": true,
+        "kind": "cells",
+        "max_abs_logit_change": 0
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.5867393467508196,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 2.24431184778218
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.10588463771652215,
+        "id": "2",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 1.1382519485476863
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 0,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0,
+        "id": "3",
+        "inactive_cell": true,
+        "kind": "cells",
+        "max_abs_logit_change": 0
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.02970657827687273,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 0.5897134439867993
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.10588463771652215,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 1.1382519485476863
+      },
+      {
+        "arm": "random_sparse",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.5867393467508196,
+        "id": "2",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 2.24431184778218
+      },
+      {
+        "arm": "single",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.1598609460229365,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 1.615798847602779
+      },
+      {
+        "arm": "single",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.6193692584774945,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "cells",
+        "max_abs_logit_change": 2.512247598124218
+      },
+      {
+        "arm": "single",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.049980866729327535,
+        "id": "0",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 0.9928254500839353
+      },
+      {
+        "arm": "single",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.1598609460229365,
+        "id": "1",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 1.615798847602779
+      },
+      {
+        "arm": "single",
+        "business_success_delta": 0,
+        "business_successes": 0,
+        "changed_logit_tasks": 3,
+        "changed_slot_tasks": 0,
+        "cross_entropy_delta": 0.6193692584774945,
+        "id": "2",
+        "inactive_cell": false,
+        "kind": "edges",
+        "max_abs_logit_change": 2.512247598124218
+      }
+    ],
+    "ablations_with_business_changes": 0,
+    "ablations_with_logit_changes": 20,
+    "ablations_with_route_changes": 0,
+    "active_kernel_receipts_equal": true,
+    "business_cached_row_uses": 90,
+    "cell_ablations": 14,
+    "diagnostic_C_panel_accesses": 34,
+    "edge_ablations": 12,
+    "inner_diagnostic_selected": "random_sparse",
+    "main": {
+      "fixed": {
+        "business_success_rate": 0,
+        "business_successes": 0,
+        "classification_accuracy": 1,
+        "cross_entropy": 0.014821901902716228,
+        "slots": [
+          2,
+          2,
+          2
+        ],
+        "tasks": 3
+      },
+      "learned_sparse": {
+        "business_success_rate": 0,
+        "business_successes": 0,
+        "classification_accuracy": 1,
+        "cross_entropy": 0.03665424510918725,
+        "slots": [
+          2,
+          2,
+          2
+        ],
+        "tasks": 3
+      },
+      "random_sparse": {
+        "business_success_rate": 0,
+        "business_successes": 0,
+        "classification_accuracy": 1,
+        "cross_entropy": 0.014339316191171146,
+        "slots": [
+          2,
+          2,
+          2
+        ],
+        "tasks": 3
+      },
+      "single": {
+        "business_success_rate": 0,
+        "business_successes": 0,
+        "classification_accuracy": 1,
+        "cross_entropy": 0.014821901902716228,
+        "slots": [
+          2,
+          2,
+          2
+        ],
+        "tasks": 3
+      }
+    },
+    "model_receipts": {
+      "fixed": {
+        "active_parameters": 691,
+        "control_overhead": {
+          "log_evaluations": 0,
+          "mean_scalar_ops": 0,
+          "path_comparisons": 0,
+          "path_score_reads": 0,
+          "score_scalar_ops": 0,
+          "sqrt_evaluations": 0
+        },
+        "kernel_totals": {
+          "bias_additions": 6048,
+          "logical_cell_message_bytes": 43008,
+          "logical_cell_messages": 672,
+          "loss_exp_evaluations": 672,
+          "loss_log_evaluations": 224,
+          "loss_max_comparisons": 672,
+          "loss_scalar_ops": 2016,
+          "matrix_dot_mac": 182784,
+          "model_mac_equivalent": 331520,
+          "network_messages": 0,
+          "outer_product_multiplications": 148736,
+          "parameter_update_scalar_ops": 309568,
+          "tanh_backward_scalar_ops": 16128,
+          "tanh_evaluations": 5376
+        },
+        "path": [
+          0,
+          1
+        ],
+        "resident_parameters": 835,
+        "trainable_parameter_union": 691,
+        "updates": 224
+      },
+      "learned_sparse": {
+        "active_parameters": 691,
+        "control_overhead": {
+          "log_evaluations": 212,
+          "mean_scalar_ops": 896,
+          "path_comparisons": 2343,
+          "path_score_reads": 2556,
+          "score_scalar_ops": 5512,
+          "sqrt_evaluations": 2544
+        },
+        "kernel_totals": {
+          "bias_additions": 6048,
+          "logical_cell_message_bytes": 43008,
+          "logical_cell_messages": 672,
+          "loss_exp_evaluations": 672,
+          "loss_log_evaluations": 224,
+          "loss_max_comparisons": 672,
+          "loss_scalar_ops": 2016,
+          "matrix_dot_mac": 182784,
+          "model_mac_equivalent": 331520,
+          "network_messages": 0,
+          "outer_product_multiplications": 148736,
+          "parameter_update_scalar_ops": 309568,
+          "tanh_backward_scalar_ops": 16128,
+          "tanh_evaluations": 5376
+        },
+        "path": [
+          0,
+          3
+        ],
+        "resident_parameters": 835,
+        "trainable_parameter_union": 835,
+        "updates": 224
+      },
+      "random_sparse": {
+        "active_parameters": 691,
+        "control_overhead": {
+          "log_evaluations": 0,
+          "mean_scalar_ops": 0,
+          "path_comparisons": 0,
+          "path_score_reads": 0,
+          "score_scalar_ops": 0,
+          "sqrt_evaluations": 0
+        },
+        "kernel_totals": {
+          "bias_additions": 6048,
+          "logical_cell_message_bytes": 43008,
+          "logical_cell_messages": 672,
+          "loss_exp_evaluations": 672,
+          "loss_log_evaluations": 224,
+          "loss_max_comparisons": 672,
+          "loss_scalar_ops": 2016,
+          "matrix_dot_mac": 182784,
+          "model_mac_equivalent": 331520,
+          "network_messages": 0,
+          "outer_product_multiplications": 148736,
+          "parameter_update_scalar_ops": 309568,
+          "tanh_backward_scalar_ops": 16128,
+          "tanh_evaluations": 5376
+        },
+        "path": [
+          2,
+          1
+        ],
+        "resident_parameters": 835,
+        "trainable_parameter_union": 691,
+        "updates": 224
+      },
+      "single": {
+        "active_parameters": 691,
+        "control_overhead": {
+          "log_evaluations": 0,
+          "mean_scalar_ops": 0,
+          "path_comparisons": 0,
+          "path_score_reads": 0,
+          "score_scalar_ops": 0,
+          "sqrt_evaluations": 0
+        },
+        "kernel_totals": {
+          "bias_additions": 6048,
+          "logical_cell_message_bytes": 43008,
+          "logical_cell_messages": 672,
+          "loss_exp_evaluations": 672,
+          "loss_log_evaluations": 224,
+          "loss_max_comparisons": 672,
+          "loss_scalar_ops": 2016,
+          "matrix_dot_mac": 182784,
+          "model_mac_equivalent": 331520,
+          "network_messages": 0,
+          "outer_product_multiplications": 148736,
+          "parameter_update_scalar_ops": 309568,
+          "tanh_backward_scalar_ops": 16128,
+          "tanh_evaluations": 5376
+        },
+        "path": [
+          0,
+          1
+        ],
+        "resident_parameters": 691,
+        "trainable_parameter_union": 691,
+        "updates": 224
+      }
+    },
+    "outer_business_selected": "single",
+    "parameter_roundtrip_only": true
+  },
+  "E5": {
+    "adoption_rate": null,
+    "blocked_settings": 10,
+    "forgetting": null,
+    "frozen_settings": 6,
+    "full_system_cost": null,
+    "plans": {
+      "project_id": {
+        "available_groups": 1,
+        "provenance_disjoint_task_clusters": 6,
+        "source_groups": [
+          [
+            "TrillionniumFoundation/hepta-private-ci"
+          ]
+        ],
+        "verified_users": 0
+      },
+      "source_id": {
+        "available_groups": 6,
+        "provenance_disjoint_task_clusters": 6,
+        "source_groups": [
+          [
+            "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/maintenance_tasks.py"
+          ],
+          [
+            "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/stem_plastic_study.py"
+          ],
+          [
+            "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/deterministic.py"
+          ],
+          [
+            "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/semantic.py"
+          ],
+          [
+            "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/readout_credit.py"
+          ],
+          [
+            "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/stem_credit_support.py"
+          ]
+        ],
+        "verified_users": 0
+      }
+    },
+    "settings": {
+      "project_id/fixed_per_source_compute-1": {
+        "C": {
+          "business_success_rate": 0,
+          "business_successes": 0,
+          "classification_accuracy": 1,
+          "cross_entropy": 0.014821901902716228,
+          "slots": [
+            2,
+            2,
+            2
+          ],
+          "tasks": 3
+        },
+        "C_business_source_macro": 0,
+        "effective_experience_count": 6,
+        "model_kernel_mac_equivalent": 331520,
+        "requested_groups": 1,
+        "selected_units": [
+          "TrillionniumFoundation/hepta-private-ci"
+        ],
+        "status": "FROZEN",
+        "updates": 224
+      },
+      "project_id/fixed_per_source_compute-16": {
+        "available_groups": 1,
+        "requested_groups": 16,
+        "status": "BLOCKED"
+      },
+      "project_id/fixed_per_source_compute-4": {
+        "available_groups": 1,
+        "requested_groups": 4,
+        "status": "BLOCKED"
+      },
+      "project_id/fixed_per_source_compute-64": {
+        "available_groups": 1,
+        "requested_groups": 64,
+        "status": "BLOCKED"
+      },
+      "project_id/fixed_total_compute-1": {
+        "C": {
+          "business_success_rate": 0,
+          "business_successes": 0,
+          "classification_accuracy": 1,
+          "cross_entropy": 0.014821901902716228,
+          "slots": [
+            2,
+            2,
+            2
+          ],
+          "tasks": 3
+        },
+        "C_business_source_macro": 0,
+        "effective_experience_count": 6,
+        "model_kernel_mac_equivalent": 331520,
+        "requested_groups": 1,
+        "selected_units": [
+          "TrillionniumFoundation/hepta-private-ci"
+        ],
+        "status": "FROZEN",
+        "updates": 224
+      },
+      "project_id/fixed_total_compute-16": {
+        "available_groups": 1,
+        "requested_groups": 16,
+        "status": "BLOCKED"
+      },
+      "project_id/fixed_total_compute-4": {
+        "available_groups": 1,
+        "requested_groups": 4,
+        "status": "BLOCKED"
+      },
+      "project_id/fixed_total_compute-64": {
+        "available_groups": 1,
+        "requested_groups": 64,
+        "status": "BLOCKED"
+      },
+      "source_id/fixed_per_source_compute-1": {
+        "C": {
+          "business_success_rate": 0,
+          "business_successes": 0,
+          "classification_accuracy": 1,
+          "cross_entropy": 0.015243391909425886,
+          "slots": [
+            2,
+            2,
+            2
+          ],
+          "tasks": 3
+        },
+        "C_business_source_macro": 0,
+        "effective_experience_count": 1,
+        "model_kernel_mac_equivalent": 331520,
+        "requested_groups": 1,
+        "selected_units": [
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/maintenance_tasks.py"
+        ],
+        "status": "FROZEN",
+        "updates": 224
+      },
+      "source_id/fixed_per_source_compute-16": {
+        "available_groups": 6,
+        "requested_groups": 16,
+        "status": "BLOCKED"
+      },
+      "source_id/fixed_per_source_compute-4": {
+        "C": {
+          "business_success_rate": 0,
+          "business_successes": 0,
+          "classification_accuracy": 1,
+          "cross_entropy": 0.0033615413863327553,
+          "slots": [
+            2,
+            2,
+            2
+          ],
+          "tasks": 3
+        },
+        "C_business_source_macro": 0,
+        "effective_experience_count": 4,
+        "model_kernel_mac_equivalent": 1326080,
+        "requested_groups": 4,
+        "selected_units": [
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/deterministic.py",
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/maintenance_tasks.py",
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/semantic.py",
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/stem_plastic_study.py"
+        ],
+        "status": "FROZEN",
+        "updates": 896
+      },
+      "source_id/fixed_per_source_compute-64": {
+        "available_groups": 6,
+        "requested_groups": 64,
+        "status": "BLOCKED"
+      },
+      "source_id/fixed_total_compute-1": {
+        "C": {
+          "business_success_rate": 0,
+          "business_successes": 0,
+          "classification_accuracy": 1,
+          "cross_entropy": 0.015243391909425886,
+          "slots": [
+            2,
+            2,
+            2
+          ],
+          "tasks": 3
+        },
+        "C_business_source_macro": 0,
+        "effective_experience_count": 1,
+        "model_kernel_mac_equivalent": 331520,
+        "requested_groups": 1,
+        "selected_units": [
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/maintenance_tasks.py"
+        ],
+        "status": "FROZEN",
+        "updates": 224
+      },
+      "source_id/fixed_total_compute-16": {
+        "available_groups": 6,
+        "requested_groups": 16,
+        "status": "BLOCKED"
+      },
+      "source_id/fixed_total_compute-4": {
+        "C": {
+          "business_success_rate": 0,
+          "business_successes": 0,
+          "classification_accuracy": 1,
+          "cross_entropy": 0.014843881030992453,
+          "slots": [
+            2,
+            2,
+            2
+          ],
+          "tasks": 3
+        },
+        "C_business_source_macro": 0,
+        "effective_experience_count": 4,
+        "model_kernel_mac_equivalent": 331520,
+        "requested_groups": 4,
+        "selected_units": [
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/deterministic.py",
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/maintenance_tasks.py",
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/semantic.py",
+          "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/stem_plastic_study.py"
+        ],
+        "status": "FROZEN",
+        "updates": 224
+      },
+      "source_id/fixed_total_compute-64": {
+        "available_groups": 6,
+        "requested_groups": 64,
+        "status": "BLOCKED"
+      }
+    }
+  },
+  "cost_deduplication": {
+    "E4_plus_E5_router_C_panels": 40,
+    "actual_unique_upstream_C_cost": {
+      "input_tokens": 7817,
+      "model_calls": 18,
+      "output_tokens": 2964
+    },
+    "additional_upstream_calls_from_readouts": 0,
+    "all_business_cached_row_uses": 108,
+    "incorrect_naive_sum_over_reused_reports": {
+      "input_tokens": 54719,
+      "model_calls": 126,
+      "output_tokens": 20748
+    },
+    "shared_E4_E5_business_reports": 7,
+    "unique_upstream_evaluation_receipts": 3,
+    "upstream": {
+      "20e1f819334bcd72f75b06885e1c91ce2450eec20f00f1a3db24ee073ead9f5e": {
+        "cost": {
+          "cap_exhaustions": 6,
+          "complete": false,
+          "cpu_scope": "evaluation parent only; verifier subprocess CPU excluded",
+          "cpu_seconds": 123.48780305100001,
+          "input_tokens": 2881,
+          "model_calls": 6,
+          "output_tokens": 1536,
+          "wall_seconds": 64.29340498498641
+        },
+        "first_attempt_executed": 0,
+        "first_attempt_hit_output_limit": 3,
+        "first_attempt_reasons": {
+          "invalid_test_patch": 3
+        },
+        "first_attempt_successes": 0,
+        "model_digest": "6d5087964eb266c002e881f4f6d072079369d074a6aaece0b1974781e1d582f7",
+        "name": "specialist_structured"
+      },
+      "554ca5ee57e0e3ac90a3925c5430bbf677b0d2f5bedc1832a9750a2faf41de77": {
+        "cost": {
+          "cap_exhaustions": 4,
+          "complete": false,
+          "cpu_scope": "evaluation parent only; verifier subprocess CPU excluded",
+          "cpu_seconds": 92.125136941,
+          "input_tokens": 2664,
+          "model_calls": 6,
+          "output_tokens": 1104,
+          "wall_seconds": 48.07484835293144
+        },
+        "first_attempt_executed": 1,
+        "first_attempt_hit_output_limit": 2,
+        "first_attempt_reasons": {
+          "business_tests_failed": 1,
+          "invalid_test_patch": 2
+        },
+        "first_attempt_successes": 0,
+        "model_digest": "dd0d27485233e953e56cdfde67940d6fa7c0148bb20fb3f239b7d46afbc85c00",
+        "name": "final_answer"
+      },
+      "69164144856c1955087e69cf47e740a3be34d45297fdea49225b4ac3ab355575": {
+        "cost": {
+          "cap_exhaustions": 0,
+          "complete": false,
+          "cpu_scope": "evaluation parent only; verifier subprocess CPU excluded",
+          "cpu_seconds": 29.391587528000002,
+          "input_tokens": 2272,
+          "model_calls": 6,
+          "output_tokens": 324,
+          "wall_seconds": 15.543901487952098
+        },
+        "first_attempt_executed": 1,
+        "first_attempt_hit_output_limit": 0,
+        "first_attempt_reasons": {
+          "business_tests_failed": 1,
+          "invalid_test_patch": 2
+        },
+        "first_attempt_successes": 0,
+        "model_digest": "974b7e13b0897c31abc2a108dab6725b19bc0732b4f4a5d64cb049c162b51d36",
+        "name": "specialist_numeric"
+      }
+    }
+  },
+  "new_training_prediction_or_verifier_calls": 0,
+  "read_file_sha256": {
+    "B_SELECTION.json": "f15196cdb35042bc1607b6347c630090a0e70bcc97b1fab518d3c49547355e8b",
+    "RESULT.json": "19a3a380bbd17c64c5ce348d002d6f4d47a7f2777ba2dbba915278ed23319e29",
+    "circuit/CONFIRMATION.json": "7f27491950dec91326163668981bbc61bf1db3bc3259fb246265db9a65648611",
+    "circuit/C_BUSINESS.json": "e81a07a220124af523c31098cd98092fafa87b7ba7d6b19bfb96205debe7fb6b",
+    "circuit/FROZEN_SELECTION.json": "d39a47be288ba69ac52d44473957d90fbf03c76e9c2e49ad26d696b815b110f6",
+    "circuit/INPUTS_C.json": "8ef9eee3062900cdc0470a8d4df8a352cb93a0a58c1e154f57815af7dcb66d09",
+    "circuit/fixed/MODEL.json": "fdfadd5778d5df97f7c5ef1d9a0f3d92947d492b7234934b5640a3ea57d11a94",
+    "circuit/fixed/TRAINING.json": "d1d87b6167bdc1490ad02781e4a50159907dfeb6246c1a104015d5e55a8abe39",
+    "circuit/learned_sparse/MODEL.json": "523bb1bf352dc40c92f25545b855cb9eb4951bde78327f0a383482b4710caecd",
+    "circuit/learned_sparse/TRAINING.json": "d539128f0aa223e4ded0476c5acffe7ecd9a0dabaceb05f252cf27b279b3e28c",
+    "circuit/random_sparse/MODEL.json": "d3d8ce6dc0f05e0256108b7091bd2c917b9ce6c92a63650efdfd5230a78bda99",
+    "circuit/random_sparse/TRAINING.json": "b6663a3541173e614d711f1e30d60d5d57618c5b2213979d2268b78a0123f72d",
+    "circuit/single/MODEL.json": "eac74639abaab21c88d3e0a0651f2dab6645436509dbe750c52deda7b6737cfc",
+    "circuit/single/TRAINING.json": "0815b5e7b547448e3fa1ae902145931ee720b18a49afa5cd9d68163957153273",
+    "evaluation/C/final_answer/EVALUATION.json": "735a47abeb3c067af202dd4a7c472274a4b9f12729bb7d6b8013055155ab5822",
+    "evaluation/C/specialist_numeric/EVALUATION.json": "437c29a53e92d030c95b0964f0d01f3d9798672addd0b832b4902542fe469dbf",
+    "evaluation/C/specialist_structured/EVALUATION.json": "6007546693c42296cb9ba35a9d61ba3eb86dd529cff4fccce75f55f07fa3aefb",
+    "growth/CONFIRMATION.json": "025e3c20a8caf00d8b2e08aab679bcbe7009f5b7a8f3305440d4739cd00b0726",
+    "growth/FROZEN.json": "d71587be7807dbbac76a7a55c33a9849f97878c09f4df9e232852c8cd2d40466",
+    "growth/project_id/fixed_per_source_compute-1/C.json": "1db0e6ddfe11000b71e515857aa08b265b502d84e497d23b16ea0657593a08dd",
+    "growth/project_id/fixed_per_source_compute-1/C_BUSINESS.json": "a063315907597979472f77880c04a093ea5294d4c7454faf6ce3f43e60fcff72",
+    "growth/project_id/fixed_per_source_compute-1/MODEL.json": "eac74639abaab21c88d3e0a0651f2dab6645436509dbe750c52deda7b6737cfc",
+    "growth/project_id/fixed_per_source_compute-1/TRAINING.json": "5232a97eaf576d2c8cef38dda1ef6bd3b1f8e9448c68233e91531df8c3b759cd",
+    "growth/project_id/fixed_total_compute-1/C.json": "6d68bc007069ba46cbfbb42d39b65635c7eecffdf5ded367f5b6570993f3ed25",
+    "growth/project_id/fixed_total_compute-1/C_BUSINESS.json": "d4be745ed9b70015225e58117d7ba40f9b39f3de2182f3984be8e22506d9c3ad",
+    "growth/project_id/fixed_total_compute-1/MODEL.json": "eac74639abaab21c88d3e0a0651f2dab6645436509dbe750c52deda7b6737cfc",
+    "growth/project_id/fixed_total_compute-1/TRAINING.json": "187ace2bde1f878a421714f864130a8e58508cf49be937d2d389e464d68b3efe",
+    "growth/source_id/fixed_per_source_compute-1/C.json": "bb518debc32da3ee228b553fd7f90952d92b540e2380ac89c26fbf06a00523cb",
+    "growth/source_id/fixed_per_source_compute-1/C_BUSINESS.json": "066ce56f76840605f9e5be97fb750299ee50f050783b160d0fc597f185f27c76",
+    "growth/source_id/fixed_per_source_compute-1/MODEL.json": "6fe0b08cc476f27a8487805358eafc700e6cabf4b47deae86b1c9c16b732ffd9",
+    "growth/source_id/fixed_per_source_compute-1/TRAINING.json": "d46533b43da581798571c87f559bfd6e27300fd433b343bf1f4e7619b1f994a4",
+    "growth/source_id/fixed_per_source_compute-4/C.json": "29d78818bf735340be381375ffaae6eb59aed2115653573dcbd4dc89b2f44369",
+    "growth/source_id/fixed_per_source_compute-4/C_BUSINESS.json": "aece3d6f599401b017b6ed103897ddbf2f897661bf90df783ab1089c1f0c1051",
+    "growth/source_id/fixed_per_source_compute-4/MODEL.json": "a2b93ab69e3828129f93518d2f450893e2b2e54964daaf04dc5126362f52f547",
+    "growth/source_id/fixed_per_source_compute-4/TRAINING.json": "15540a14cde31385bf9968b55a04b928d533c729ec2b1fe0397e96f974277bc1",
+    "growth/source_id/fixed_total_compute-1/C.json": "e790effc37a3c33e0fb9e35d05ea3a0dd90df7df19ad1548a816254cbc167ee7",
+    "growth/source_id/fixed_total_compute-1/C_BUSINESS.json": "2502a91661934aaf9c292cc7d90f9d6e82c6a42fa49aea736101d64c6c90510d",
+    "growth/source_id/fixed_total_compute-1/MODEL.json": "6fe0b08cc476f27a8487805358eafc700e6cabf4b47deae86b1c9c16b732ffd9",
+    "growth/source_id/fixed_total_compute-1/TRAINING.json": "1c0e78ef7ee6bad6c35f6a3ca6b9c1e74ac18c34db08608e9026f65ee43534ce",
+    "growth/source_id/fixed_total_compute-4/C.json": "9494d49b0ccf42d7e826dce82e77b4aaec22561bf50ec3291b49ac453c086386",
+    "growth/source_id/fixed_total_compute-4/C_BUSINESS.json": "31d0aabfc60573e936bdac065a2f7d19125d4116ab4d4862b7078206dd003137",
+    "growth/source_id/fixed_total_compute-4/MODEL.json": "e8dd31371147fe7f3e45a67fa7716c9c12137ec940d0cd3bc8bc49925223d750",
+    "growth/source_id/fixed_total_compute-4/TRAINING.json": "076e985f0a8e072eded431db46ed9dbc7b1c14aee7e48f3c5cca24b3f52d3fbe",
+    "inputs/confirmation/META.json": "cbe42cc5ec70b2ad9923ff2f5a4f6a1adc332ac3afe2bc89dee741cc385740e8",
+    "inputs/confirmation/records.jsonl": "0433d18589c69f2e198735b8b4eb9250ddc64228711d9c408276e3b4e16539e2",
+    "inputs/open/records.jsonl": "7b034859099660b4277b7370652912ebe2f563f9b88f1b9c17b17ce1e24a78d5"
+  },
+  "result_file_sha256": "19a3a380bbd17c64c5ce348d002d6f4d47a7f2777ba2dbba915278ed23319e29",
+  "result_status": "COMPLETE_ENGINEERING",
+  "review_job": {
+    "host": "ai395",
+    "id": "1a1e4e8f7e3-392-381a",
+    "idempotency_key": "hepta-e1e6-v2-final-e4e5-readonly-20261116-0c078a-01",
+    "request_digest": "84dcdf19a31d3e3c54eb92204c7fd44c25b587a9bc914911c9b21d4c58b32910",
+    "status": {
+      "at_unix_ms": 1794841836836,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1e4e8f7e3-392-381a",
+      "launch_nonce": "d9f05c3f3e31d62ec46aa6d669348b94",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 24270,
+          "stored": 24270
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "review_scope": "Independent read-only joins and arithmetic on existing artifacts; no model forward, training, or verifier execution.",
+  "reviewed_at_ns": 1794841836826635000,
+  "schema": "hepta.e4-e5-final-readonly-review.v2",
+  "science_status": "BLOCKED"
+}

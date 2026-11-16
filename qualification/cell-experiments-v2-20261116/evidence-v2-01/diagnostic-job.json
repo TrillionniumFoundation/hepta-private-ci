@@ -1,0 +1,131 @@
+{
+  "read": {
+    "audit_recorded": true,
+    "job_id": "1a1e4e56ee1-392-3812",
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "eof": true,
+      "next_offset": 292,
+      "offset": 0,
+      "size": 292,
+      "text": "{\"evaluation_arms\": {\"A\": 3, \"B\": 9, \"C\": 9}, \"new_model_calls\": 0, \"new_semantic_verifier_calls\": 0, \"path\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/posthoc-v2-01/DIAGNOSTICS.json\", \"sha256\": \"a2c990f969db7fb01464b84b68e379a6b5e834e4b59de2dc23d9d15f86535e3b\", \"status\": \"COMPLETE\"}\n"
+    }
+  },
+  "request": {
+    "args": [
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/diagnostics-tools-v2-01/diagnose_run_v2.py",
+      "--root",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01",
+      "--logs",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01-receipts",
+      "--source",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/candidate-v2-01",
+      "--output",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/posthoc-v2-01"
+    ],
+    "env": {
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "host": "ai395",
+    "idempotency_key": "hepta-e1e6-v2-posthoc-diagnostic-execute-20261116-0c078a-01",
+    "timeout_seconds": 300
+  },
+  "start": {
+    "audit_recorded": true,
+    "job": {
+      "args": [
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/diagnostics-tools-v2-01/diagnose_run_v2.py",
+        "--root",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01",
+        "--logs",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01-receipts",
+        "--source",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/candidate-v2-01",
+        "--output",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/posthoc-v2-01"
+      ],
+      "created_unix_ms": 1794841603809,
+      "cwd": null,
+      "env_keys": [
+        "HF_HUB_OFFLINE",
+        "MKL_NUM_THREADS",
+        "OMP_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS",
+        "PYTHONDONTWRITEBYTECODE",
+        "TOKENIZERS_PARALLELISM",
+        "TRANSFORMERS_OFFLINE"
+      ],
+      "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+      "execution_mode": "operator",
+      "host": "ai395",
+      "id": "1a1e4e56ee1-392-3812",
+      "idempotency_key": "hepta-e1e6-v2-posthoc-diagnostic-execute-20261116-0c078a-01",
+      "launch_error": null,
+      "launch_state": "launched",
+      "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1e4e56ee1-392-3812",
+      "request_digest": "3ba99cc9adcbd25bc551ff8e56d844dde18b490fd19099111e4dcf066e0da585",
+      "request_fingerprint": 4299139709320024600,
+      "ssh_target": "ai395-lan",
+      "system_jobctl": false,
+      "unit": "hepta-runtime-job-1a1e4e56ee1-392-3812"
+    },
+    "launch": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "ok": true,
+      "unit": "hepta-runtime-job-1a1e4e56ee1-392-3812"
+    },
+    "local_record_pending": false,
+    "reused": false
+  },
+  "status": {
+    "at_unix_ms": 1794841606954,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1e4e56ee1-392-3812",
+    "launch_nonce": "d3f23a6b7474fffc0911da61bcc532bf",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 292,
+        "stored": 292
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}
