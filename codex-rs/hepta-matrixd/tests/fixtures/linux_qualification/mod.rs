@@ -25,7 +25,10 @@ use crate::validate_mode_0600_regular_file;
 use crate::validate_private_directory;
 
 mod host;
+mod registration;
 mod types;
+
+pub(super) use registration::RegistrationSessions;
 
 use types::Manifest;
 
@@ -222,6 +225,7 @@ pub(super) fn required() -> Result<E2eEnvironment> {
         names == ["agent-a-password", "agent-b-password", "human-password"],
         "unexpected credential capability"
     );
+    let registration_sessions = RegistrationSessions::take()?;
     let agent_a_password = read_and_remove_secret_capability(
         &manifest.credentials_directory.join("agent-a-password"),
         "Agent A password",
@@ -279,6 +283,7 @@ pub(super) fn required() -> Result<E2eEnvironment> {
         agent_a_password,
         agent_b_password,
         human_password,
+        registration_sessions: Some(registration_sessions),
         completion,
     })
 }
