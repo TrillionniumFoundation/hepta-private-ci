@@ -91,7 +91,7 @@ jobs:
           import time
           import tomllib
           import xml.etree.ElementTree as ET
-          
+
           PINS = {
               "codex-rs/.config/nextest.toml": {
                   "bytes": 5268,
@@ -262,17 +262,17 @@ jobs:
           for key in list(ENV):
               if key == "GIT_CONFIG_COUNT" or key.startswith(("GIT_CONFIG_KEY_", "GIT_CONFIG_VALUE_")):
                   del ENV[key]
-          
-          
+
+
           def require(condition, message):
               if not condition:
                   raise RuntimeError(message)
-          
-          
+
+
           def write_json(path, value):
               path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-          
-          
+
+
           def git(*args, allowed=(0,)):
               empty_hooks = OUT / "empty-hooks"
               empty_hooks.mkdir(exist_ok=True)
@@ -283,8 +283,8 @@ jobs:
                       "Git source check failed: " + repr(args) + "\n" +
                       result.stderr.decode("utf-8", errors="replace"))
               return result
-          
-          
+
+
           def raw_identity(path, cap):
               target = ROOT / path
               require(not target.is_symlink(), "Source is a symlink: " + path)
@@ -303,8 +303,8 @@ jobs:
                   "oid": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
                   "sha256": hashlib.sha256(data).hexdigest(),
               }
-          
-          
+
+
           def source_snapshot():
               require(sys.platform == "win32" and os.environ.get("RUNNER_OS") == "Windows",
                       "A native Windows runner is required")
@@ -354,8 +354,8 @@ jobs:
               # normally generated lock identity are recorded and compared before/after.
               # The reviewed outer source manifest binds both at publication.
               return {"head": actual_head, "sources": identities, "index_worktree_clean": True}
-          
-          
+
+
           def command(name, argv, cwd=ROOT):
               started = time.monotonic()
               with (OUT / (name + ".stdout")).open("wb") as stdout, \
@@ -367,8 +367,8 @@ jobs:
               write_json(OUT / (name + ".command.json"), record)
               require(result.returncode == 0, "Normal command failed: " + name)
               return record
-          
-          
+
+
           def verify_acl_results():
               # Nextest 0.9.103 stores reports relative to the Cargo workspace root.
               report = ROOT / "codex-rs" / "target" / "nextest" / "local" / "junit.xml"
@@ -392,8 +392,8 @@ jobs:
               write_json(OUT / "acl-exact-ten.json",
                          {"expected": ACL_METHODS, "junit_actual": names, "log_passes": passes,
                           "passed": 10, "failed": 0, "skipped": 0, "retries": 0})
-          
-          
+
+
           def verify_probe_python_results():
               text = (OUT / "probe-six.stderr").read_text(encoding="utf-8")
               passed = re.findall(r"(?m)^(test_\w+) \([^\n]+\) \.\.\. ok$", text)
@@ -403,8 +403,8 @@ jobs:
                       re.search(r"(?m)^OK$", text) is not None,
                       "Normal unittest summary must report six tests, without skips")
               write_json(OUT / "probe-exact-six.json", {"expected": PROBE_METHODS, "actual": passed})
-          
-          
+
+
           def verify_native_refusal():
               raw = (PROBE_OUT / "OBSERVATION.json").read_bytes()
               require(len(raw) <= 1024 * 1024, "Unexpected observation report size")
@@ -437,8 +437,8 @@ jobs:
                           "completed_permission_cases": 0,
                           "original_permission_invariants_observed": False,
                           "report_sha256": hashlib.sha256(raw).hexdigest()})
-          
-          
+
+
           def main():
               phase = sys.argv[1]
               require(phase in {"preflight", "run", "postflight"}, "Invalid validation phase")
@@ -506,8 +506,8 @@ jobs:
                   write_json(OUT / "state.json", state)
               if error is not None:
                   raise error
-          
-          
+
+
           if __name__ == "__main__":
               main()
           '@ | Set-Content -Encoding utf8 -NoNewline "$env:RUNNER_TEMP/hepta-windows-acl-validation.py"

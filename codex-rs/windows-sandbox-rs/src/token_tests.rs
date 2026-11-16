@@ -119,3 +119,12 @@ fn workspace_token_refuses_empty_and_unrelated_capability_sets() -> Result<()> {
     }
     Ok(())
 }
+
+#[path = "token_probe_support.rs"]
+mod probe_support;
+
+#[path = "token_read_authority_tests.rs"]
+mod read_authority_probe;
+
+#[path = "token_mic_probe_tests.rs"]
+mod mic_probe;
