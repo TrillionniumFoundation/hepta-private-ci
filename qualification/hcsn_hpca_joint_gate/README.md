@@ -40,3 +40,26 @@ adoption is authorized by this research check. Status: HOLD_NO_GO.
 ```bash
 python -B qualification/hcsn_hpca_joint_gate/run.py --output /path/to/new-directory
 ```
+
+## Current source revision, 2026-11-16
+
+The preceding assembly description and 82-test receipt refer to the original
+2026-11-12 sources. `MANIFEST.json` and all records under
+`evidence/joint-source-20261112` remain unchanged.
+
+The default runner now uses `CURRENT_MANIFEST.json`. It pins the same 20 paths
+at the reviewed current source and records the two HPCA revisions explicitly.
+The original result, preexecution and journal anchors added in commit
+`4d3470a2747f9f691c00123760c202f3c805ff11` remain active. All original checks
+and three later HPCA regressions are retained: frozen receipt identity,
+self-consistent perfect-output forgery, and cost substitution. The HPCA
+denominator is consequently 18 normal and 18 optimized executions, alongside
+the unchanged 19 spatial/phase and 33 C2 tests, for 88 executions plus two probes.
+
+The runner checks the immutable historical manifest before execution and
+requires it, the current manifest, the runner and all 20 current source files
+to remain unchanged afterward. Every invocation creates fresh output streams;
+the original 82-test result is never reused as proof for these sources.
+The current JSON report has schema `hcsn-hpca-joint-check-result-v2` and records
+both manifest identities. This update does not change the historical model
+outputs, their original source pins, or any qualification and authority fields.

@@ -454,12 +454,28 @@ jobs:
                       parsed = tomllib.loads(data.decode("utf-8"))
                       anyhow = [p for p in parsed["package"] if p["name"] == "anyhow"]
                       require(anyhow == [ANYHOW_RECORD], "Normal resolver must select exact anyhow 1.0.104")
+                      # The reviewed Matrix union adds one existing workspace dependency.
+                      # Remove only that exact addition before comparing the original
+                      # complete dependency fingerprint; all other records stay bound.
+                      matrix_sdk = [p for p in parsed["package"] if p["name"] == "codex-hepta-matrix-sdk"]
+                      require(len(matrix_sdk) == 1, "Normal lock must contain exactly one Matrix SDK record")
+                      dependencies = matrix_sdk[0].get("dependencies")
+                      require(isinstance(dependencies, list) and
+                              dependencies.count("codex-utils-path") == 1,
+                              "Normal lock must contain the exact reviewed Matrix path-utils dependency")
+                      original_matrix_sdk = dict(matrix_sdk[0])
+                      original_matrix_sdk["dependencies"] = [
+                          dependency for dependency in dependencies if dependency != "codex-utils-path"
+                      ]
                       remainder = dict(parsed)
-                      remainder["package"] = [p for p in parsed["package"] if p["name"] != "anyhow"]
+                      remainder["package"] = [
+                          original_matrix_sdk if package is matrix_sdk[0] else package
+                          for package in parsed["package"] if package["name"] != "anyhow"
+                      ]
                       canonical = json.dumps(remainder, sort_keys=True, separators=(",", ":"),
                                              ensure_ascii=False).encode("utf-8")
                       require(hashlib.sha256(canonical).hexdigest() == OTHER_LOCK_TOML_SHA256,
-                              "Normal lock changed a record other than the reviewed anyhow record")
+                              "Normal lock differs beyond the reviewed anyhow record and exact Matrix dependency addition")
               # The workflow cannot contain its own digest. Its raw HEAD identity and the
               # normally generated lock identity are recorded and compared before/after.
               # The reviewed outer source manifest binds both at publication.

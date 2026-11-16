@@ -322,6 +322,23 @@ impl ExecutorFileSystem for LocalFileSystem {
         ))
     }
 
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    fn read_file_bounded_authorized<'a>(
+        &'a self,
+        _path: &'a PathUri,
+        _sandbox: &'a FileSystemSandboxContext,
+        _max_bytes: usize,
+    ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {
+        // The generic stream fallback cannot establish stable-handle identity.
+        // Match the advertised capability before touching the requested path.
+        Box::pin(async {
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "bounded authorized file reads are unsupported",
+            ))
+        })
+    }
+
     fn read_file_stream<'a>(
         &'a self,
         path: &'a PathUri,
@@ -1602,6 +1619,10 @@ use crate::linux_authorized_read::unique_file_identity;
 #[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "local_file_system_authorized_read_tests.rs"]
 mod authorized_read_tests;
+
+#[cfg(all(test, not(any(target_os = "linux", target_os = "macos"))))]
+#[path = "local_file_system_unsupported_authorized_read_tests.rs"]
+mod unsupported_authorized_read_tests;
 
 #[cfg(all(test, unix))]
 mod tests {

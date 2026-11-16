@@ -1,4 +1,4 @@
-"""Synthetic contract checks; NOT a model run or a new held-out cohort."""
+"""Synthetic outcomes with original historical metadata; no model run or new cohort."""
 
 import copy
 import hashlib
@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 
+from cohort_firewall import ORIGINAL_HISTORICAL_SHA256
 from confirmatory_v2 import (METHODS, COST_KEYS, ConfirmatoryError, assess,
                             episode_roster, fractional_cvar, registration_check)
 
@@ -34,11 +35,13 @@ def fixture(n=12, seeds=(3, 5, 7), case="strong"):
         "dev": {"count": 1, "sources": sources[n+2:n+3]},
         "calibration": {"count": 1, "sources": sources[n+3:n+4]},
         "test": {"count": n, "sources": sources[:n]}}}
-    old = "outside:history:999"
-    history = [{"schema": "hepta.ndu.historical-exclusions.v1", "source_sample": {"images": [{
-        "source_id": old, "image_sha256": hashlib.sha256(old.encode()).hexdigest(),
-        "decoded_rgb_sha256": hashlib.sha256((old+"rgb").encode()).hexdigest(),
-        "dhash64": hashlib.sha256((old+"dhash").encode()).hexdigest()[:16]}]}}]
+    # Reuse the original recorded identity metadata without inventing image IDs
+    # or rehashing historical evidence. Candidate outcomes remain synthetic.
+    raw_history = Path(__file__).with_name("historical_exclusions.json").read_bytes()
+    expected = ORIGINAL_HISTORICAL_SHA256["hepta.ndu.historical-exclusions.v1"]
+    if hashlib.sha256(raw_history).hexdigest() != expected:
+        raise ValueError("confirmatory fixture requires original historical bytes")
+    history = [json.loads(raw_history)]
     digest = hashlib.sha256(json.dumps(candidate).encode()).hexdigest()
     reg["cohort_manifest_sha256"] = digest
     firewall = (candidate, history, digest)
@@ -86,7 +89,8 @@ class ConfirmatoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ConfirmatoryError, "nonzero"):
             self.audit(r, f, e)
         r["selected_dev_risk_weight"] = .5
-        f[0]["splits"]["test"]["sources"][0]["source_id"] = "outside:history:999"
+        historical_id = f[1][0]["source_sample"]["images"][0]["image_id"]
+        f[0]["splits"]["test"]["sources"][0]["source_id"] = f"coco:val2017:{historical_id}"
         with self.assertRaisesRegex(ConfirmatoryError, "firewall"):
             self.audit(r, f, e)
 

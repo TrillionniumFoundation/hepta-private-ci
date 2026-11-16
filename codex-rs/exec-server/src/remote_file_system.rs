@@ -518,6 +518,14 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
             io::ErrorKind::InvalidData,
             "authorized file read exceeds bound",
         ),
+        ExecServerError::Server {
+            code: -32603,
+            message,
+        } if message == "authorized file read exceeds bound" => {
+            // Preserve the legacy server's bounded-read failure without forwarding
+            // arbitrary server messages or returning a truncated prefix.
+            invalid_authorized_read_data(READ_EXCEEDED)
+        }
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
@@ -542,6 +550,10 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
 #[cfg(all(test, any(unix, windows)))]
 #[path = "remote_file_system_path_uri_tests.rs"]
 mod path_uri_tests;
+
+#[cfg(test)]
+#[path = "remote_file_system_authorized_error_tests.rs"]
+mod authorized_error_tests;
 
 #[cfg(test)]
 mod tests {

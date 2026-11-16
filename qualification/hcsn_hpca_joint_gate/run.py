@@ -23,10 +23,15 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     root = Path(__file__).resolve().parents[2]
-    manifest_path = Path(__file__).with_name("MANIFEST.json")
+    manifest_path = Path(__file__).with_name("CURRENT_MANIFEST.json")
     original_manifest = manifest_path.read_bytes()
     runner_before = Path(__file__).read_bytes()
     manifest = json.loads(original_manifest)
+    historical_path = Path(__file__).with_name("MANIFEST.json")
+    historical_before = historical_path.read_bytes()
+    historical_sha = hashlib.sha256(historical_before).hexdigest()
+    if historical_sha != manifest["historical_manifest"]["sha256"]:
+        raise ValueError("historical joint manifest differs")
     before = {}
     for record in manifest["sources"]:
         path = root / record["path"]
@@ -115,8 +120,8 @@ def main():
     expected_tests = {
         "hcsn-spatial-phase": 19,
         "c2-terminal": 33,
-        "hpca-normal": 15,
-        "hpca-optimized": 15,
+        "hpca-normal": 18,
+        "hpca-optimized": 18,
     }
     for name, arguments in commands:
         wall = time.perf_counter()
@@ -165,12 +170,15 @@ def main():
         before == after
         and original_manifest == manifest_path.read_bytes()
         and runner_before == Path(__file__).read_bytes()
+        and historical_before == historical_path.read_bytes()
     )
     passed = unchanged and all(
         row["returncode"] == 0 and row["complete_unskipped_coverage"] for row in results
     )
     report = dict(
-        schema="hcsn-hpca-joint-check-result-v1",
+        schema="hcsn-hpca-joint-check-result-v2",
+        historical_manifest_sha256=historical_sha,
+        previous_results_reused=False,
         status="PASS" if passed else "HOLD",
         manifest_sha256=hashlib.sha256(original_manifest).hexdigest(),
         runtime=platform.python_version(),
