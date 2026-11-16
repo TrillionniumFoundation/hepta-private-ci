@@ -55,6 +55,18 @@ WORKFLOW_REFERENCE_SCRIPTS = (
 WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
+WORKFLOW_REPOSITORY_PREFIX_RE = re.compile(
+    r"""(?:^|(?<=[\s"'`(<\[{]))"""
+    r"(?:"
+    r"https://github\.com/(?P<url_repository>"
+    r"[A-Za-z0-9][A-Za-z0-9-]*/(?!\.{1,2}/)[A-Za-z0-9_.-]+)/"
+    r"(?:blob/[A-Za-z0-9_][A-Za-z0-9_.-]*/)?"
+    r"|(?P<repository>"
+    r"[A-Za-z0-9][A-Za-z0-9-]*/(?!\.{1,2}/)[A-Za-z0-9_.-]+)/"
+    r")\Z",
+    re.IGNORECASE | re.ASCII,
+)
+
 FILES = {
     "current": "docs/CURRENT.json",
     "system": "docs/governance/DOCUMENT_SYSTEM.json",
@@ -170,7 +182,9 @@ def verify_exact_workflow_references() -> None:
     Historical consolidation ledgers intentionally retain deleted paths and are
     excluded. Test fixtures also use synthetic workflow names; production
     verifier scripts listed above are scanned explicitly so their identity
-    bindings cannot silently drift.
+    bindings cannot silently drift. Bare repository-qualified identities and
+    complete GitHub URL prefixes identify foreign workflows separately; unknown
+    prefixes and this repository's references still require a local file.
     """
 
     roots = [ROOT / "docs", ROOT / "qualification"]
@@ -192,6 +206,13 @@ def verify_exact_workflow_references() -> None:
         except (OSError, UnicodeDecodeError):
             continue
         for match in WORKFLOW_REFERENCE_RE.finditer(text):
+            prefix = WORKFLOW_REPOSITORY_PREFIX_RE.search(text, 0, match.start())
+            if prefix is not None:
+                repository = prefix.group("repository") or prefix.group(
+                    "url_repository"
+                )
+                if repository.casefold().removesuffix(".git") != REPO.casefold():
+                    continue
             workflow = match.group("path")
             if not (ROOT / workflow).is_file():
                 line = text.count("\n", 0, match.start()) + 1

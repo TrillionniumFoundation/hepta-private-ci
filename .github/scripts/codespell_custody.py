@@ -21,7 +21,9 @@ MAX_SOURCE_BYTES = 8 * 1024 * 1024
 BINARY_ARCHIVE_PATHS = frozenset(
     {
         "qualification/memory-cell-mem6/run-001/raw-transfer/"
-        "complete-20261111-ed353/missing-000049879392.part"
+        "complete-20261111-ed353/missing-000049879392.part",
+        "qualification/memory-cell-mem6/run-001/raw-transfer/"
+        "complete-20261111-ed353/missing-000046379392.part",
     }
 )
 

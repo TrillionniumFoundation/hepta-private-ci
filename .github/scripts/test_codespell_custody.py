@@ -36,23 +36,24 @@ class CodespellCustodyTests(unittest.TestCase):
         self.assertEqual(codespell_custody.verified_skip(self.root), f"./{self.path}")
 
     def test_binary_archive_shard_requires_matching_unchanged_bytes(self):
-        binary_path = (
-            "qualification/memory-cell-mem6/run-001/raw-transfer/"
-            "complete-20261111-ed353/missing-000049879392.part"
-        )
-        payload = b"\x00\xffOriginal binary archive shard.\n"
-        source = self.root / binary_path
-        source.parent.mkdir(parents=True)
-        source.write_bytes(payload)
-        self.manifest["files"][binary_path] = hashlib.sha256(payload).hexdigest()
-        self.write_manifest()
-        self.assertEqual(
-            codespell_custody.verified_skip(self.root),
-            ",".join(f"./{path}" for path in sorted((self.path, binary_path))),
-        )
-        source.write_bytes(payload + b"Changed.")
-        with self.assertRaisesRegex(ValueError, "digest mismatch"):
-            codespell_custody.verified_skip(self.root)
+        for binary_path in sorted(codespell_custody.BINARY_ARCHIVE_PATHS):
+            with self.subTest(binary_path=binary_path):
+                payload = b"\x00\xffOriginal binary archive shard.\n"
+                source = self.root / binary_path
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_bytes(payload)
+                self.manifest["files"] = {
+                    self.path: hashlib.sha256(self.payload).hexdigest(),
+                    binary_path: hashlib.sha256(payload).hexdigest(),
+                }
+                self.write_manifest()
+                self.assertEqual(
+                    codespell_custody.verified_skip(self.root),
+                    ",".join(f"./{path}" for path in sorted((self.path, binary_path))),
+                )
+                source.write_bytes(payload + b"Changed.")
+                with self.assertRaisesRegex(ValueError, "digest mismatch"):
+                    codespell_custody.verified_skip(self.root)
 
     def test_binary_archive_exemption_does_not_cover_neighboring_paths(self):
         prefix = (
@@ -61,6 +62,9 @@ class CodespellCustodyTests(unittest.TestCase):
         )
         for suffix in (
             "missing-000049879393.part",
+            "missing-000046379393.part",
+            "missing-000046379392.part.py",
+            "missing-000046379392.part/../README.md",
             "missing-000049879392.part.py",
             "missing-*.part",
             "missing-000049879392.part/../README.md",

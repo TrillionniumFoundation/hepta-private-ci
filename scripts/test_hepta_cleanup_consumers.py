@@ -26,18 +26,32 @@ class CleanupConsumerTests(unittest.TestCase):
             root = Path(directory)
             (root / "docs").mkdir()
             (root / "scripts").mkdir()
-            (root / "docs/reference.md").write_text(
-                "`.github/workflows/missing.yml`\n", encoding="utf-8"
-            )
             for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text("", encoding="utf-8")
-            with patch.object(VERIFIER, "ROOT", root):
-                with self.assertRaisesRegex(
-                    SystemExit, "stale exact workflow references"
-                ):
-                    VERIFIER.verify_exact_workflow_references()
+            for reference in (
+                ".github/workflows/missing.yml",
+                "./.github/workflows/missing.yml",
+                "../.github/workflows/missing.yml",
+                f"{VERIFIER.REPO}/.github/workflows/missing.yml",
+                f"{VERIFIER.REPO.lower()}/.github/workflows/missing.yml",
+                f"https://github.com/{VERIFIER.REPO}/blob/main/.github/workflows/missing.yml",
+                "prefix/openai/fence/.github/workflows/missing.yml",
+                "unknown:openai/fence/.github/workflows/missing.yml",
+                "https://unknown.invalid/openai/fence/.github/workflows/missing.yml",
+                "https://github.com/openai/fence/blob/../.github/workflows/missing.yml",
+                f"{VERIFIER.REPO.lower()}.git/.github/workflows/missing.yml",
+            ):
+                with self.subTest(reference=reference):
+                    (root / "docs/reference.md").write_text(
+                        f"`{reference}`\n", encoding="utf-8"
+                    )
+                    with patch.object(VERIFIER, "ROOT", root):
+                        with self.assertRaisesRegex(
+                            SystemExit, "stale exact workflow references"
+                        ):
+                            VERIFIER.verify_exact_workflow_references()
 
     def test_exact_workflow_reference_accepts_existing_file(self):
         with tempfile.TemporaryDirectory(
@@ -58,6 +72,39 @@ class CleanupConsumerTests(unittest.TestCase):
                 target.write_text("", encoding="utf-8")
             with patch.object(VERIFIER, "ROOT", root):
                 VERIFIER.verify_exact_workflow_references()
+
+    def test_foreign_signer_workflow_is_not_a_local_path(self):
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-workflow-reference-"
+        ) as directory:
+            root = Path(directory)
+            target = root / "qualification/report.json"
+            target.parent.mkdir()
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                source = root / relative
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_text("", encoding="utf-8")
+            for reference in (
+                "openai/fence/.github/workflows/release.yml",
+                "https://github.com/openai/fence/.github/workflows/release.yml",
+                "https://github.com/openai/fence/blob/64acdc94f531728494efbdf2d8f05faa26e90f7a/.github/workflows/release.yml",
+            ):
+                with self.subTest(reference=reference):
+                    target.write_text(
+                        '{"signer_workflow":"' + reference + '"}\n',
+                        encoding="utf-8",
+                    )
+                    with patch.object(VERIFIER, "ROOT", root):
+                        VERIFIER.verify_exact_workflow_references()
+            (root / "docs").mkdir()
+            (root / "docs/reference.md").write_text(
+                "`.github/workflows/release.yml`\n", encoding="utf-8"
+            )
+            with patch.object(VERIFIER, "ROOT", root):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    VERIFIER.verify_exact_workflow_references()
 
     def check_history(
         self, text, name=FIXTURE_NAME, wrong_count=False, copied_name="copied.txt"
