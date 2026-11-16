@@ -1,0 +1,74 @@
+[
+  {
+    "assertions": "    assert subject({\"calls\": 0}, \"calls\") == {\"calls\": 1}\n    assert subject({\"calls\": 7}, \"calls\") == {\"calls\": 8}",
+    "domain": "numeric",
+    "family": "repo-contract:A-counter",
+    "fixture_id": "A-counter",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(state, name) must return that counter increased by one. Cover a zero and a nonzero count.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef _counter(state, name):\n    if (\n        not isinstance(state, dict)\n        or set(state) != {name}\n        or type(state[name]) is not int\n        or not 0 <= state[name] < 10**12\n    ):\n        raise CellError(\"invalid component state\")\n    return {name: state[name] + 1}\n",
+    "split": "train"
+  },
+  {
+    "assertions": "    assert subject([[2, 4]], [[0, 2]]) == {\"loss\": 4.0, \"gradient\": [[2.0, 2.0]]}\n    assert subject([[1]], [[1]]) == {\"loss\": 0.0, \"gradient\": [[0.0]]}",
+    "domain": "numeric",
+    "family": "repo-contract:A-mse",
+    "fixture_id": "A-mse",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(prediction, target) returns the MSE loss and gradient as a dict. Inputs are two-dimensional lists. Cover a nonzero error and a perfect prediction.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef mse(logits, targets):\n    error = logits - targets\n    return {\"loss\": mean(error * error), \"gradient\": 2 * error / error.size}\n# The exact LocalObjective class is executed on NumPy arrays.\n",
+    "split": "train"
+  },
+  {
+    "assertions": "    assert subject([[0.5, 0.0, 1.0]], [[1, 0, 1]]) == {\"mse\": 0.08333333333333333, \"mse_by_cell\": {\"upper\": 0.25, \"middle\": 0.0, \"lower\": 0.0}, \"accuracy_at_half\": 1.0}",
+    "domain": "numeric",
+    "family": "repo-contract:A-readout-score",
+    "fixture_id": "A-readout-score",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(predictions, targets) returns mse, mse_by_cell and accuracy_at_half. Columns are upper, middle, lower; the comparison threshold includes 0.5.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef _score(predictions, targets):\n    p, y = np.asarray(predictions), np.asarray(targets)\n    return dict(\n        mse=float(np.mean((p - y) ** 2)),\n        mse_by_cell=dict(zip(BANDS, np.mean((p - y) ** 2, axis=0).tolist())),\n        accuracy_at_half=float(np.mean((p >= 0.5) == y)),\n    )\n",
+    "split": "train"
+  },
+  {
+    "assertions": "    assert subject([[-1.0], [2.0]], [[0], [1]]) == {\"raw_mse\": 1.0, \"brier\": 0.0, \"correct\": 2, \"source_groups\": 2, \"positives\": 1}",
+    "domain": "numeric",
+    "family": "repo-contract:A-clipped-metrics",
+    "fixture_id": "A-clipped-metrics",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(prediction, targets) returns raw MSE, clipped Brier score, correct count, source count and positives. Test predictions below zero and above one so raw MSE differs from Brier.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef metrics(prediction, targets):\n    probability = np.clip(prediction, 0, 1)\n    return dict(\n        raw_mse=float(np.mean((prediction - targets) ** 2)),\n        brier=float(np.mean((probability - targets) ** 2)),\n        correct=int(np.sum((probability >= 0.5) == targets)),\n        source_groups=len(targets),\n        positives=int(targets.sum()),\n    )\n",
+    "split": "train"
+  },
+  {
+    "assertions": "    assert subject([[\"left\", 3], [\"right\", \"value\"]]) == {\"left\": 3, \"right\": \"value\"}",
+    "domain": "structured",
+    "family": "repo-contract:A-pair-map",
+    "fixture_id": "A-pair-map",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(pairs) constructs a mapping without dropping distinct entries. Test at least two pairs with different value types.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef _unique(pairs):\n    result = {}\n    for key, value in pairs:\n        if key in result:\n            raise ValueError(\"duplicate checkpoint key\")\n        result[key] = value\n    return result\n",
+    "split": "train"
+  },
+  {
+    "assertions": "    assert subject('def f(x)\\n    return x + 2\\n', 0) == 'def f(x):\\n    return x + 2\\n'\n    assert subject('def f(x):\\n    return x + 2\\n', 0) == 'def f(x):\\n    return x + 2\\n'",
+    "domain": "structured",
+    "family": "repo-contract:A-colon-repair",
+    "fixture_id": "A-colon-repair",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(source, action) applies maintenance action zero by adding a missing colon to the first line and preserves the body. Also test that repeating this action on the repaired source leaves it unchanged.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef repair(source, action):\n    lines = source.splitlines()\n    if action == 0 and not lines[0].endswith(\":\"):\n        lines[0] += \":\"\n    elif action == 1:\n        lines[-1] += \")\"\n    elif action == 2:\n        lines[-1] += '\"'\n    elif action == 3:\n        lines[-1] = \"    \" + lines[-1].lstrip()\n    return \"\\n\".join(lines) + \"\\n\"\n",
+    "split": "train"
+  },
+  {
+    "assertions": "    assert subject(\"A\") == \"0000000141\"\n    assert subject(\"abc\") == \"00000003616263\"",
+    "domain": "structured",
+    "family": "repo-contract:B-stable-frame",
+    "fixture_id": "B-stable-frame",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(identifier) returns the hex of a four-byte big-endian byte length followed by ASCII bytes. Cover identifiers of one and three bytes.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef stable_id_bytes(value):\n    if type(value) is not str or not re.fullmatch(r\"[A-Za-z0-9._:-]{1,128}\", value):\n        raise ValueError(\"invalid native StableId\")\n    raw = value.encode(\"ascii\")\n    return len(raw).to_bytes(4, \"big\") + raw\n",
+    "split": "selection"
+  },
+  {
+    "assertions": "    assert subject({\"z\": [2, 1], \"a\": True}) == '{\"a\":true,\"z\":[2,1]}'",
+    "domain": "structured",
+    "family": "repo-contract:B-json-format",
+    "fixture_id": "B-json-format",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(value) returns sorted-key JSON with compact separators. Test a nested list and booleans; exact whitespace is part of the interface.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef _json(value):\n    return json.dumps(value, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)\n",
+    "split": "selection"
+  },
+  {
+    "assertions": "    assert subject([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]) == \"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f\"",
+    "domain": "structured",
+    "family": "repo-contract:B-wire-digest",
+    "fixture_id": "B-wire-digest",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(byte_values) renders exactly 32 bytes as lowercase hexadecimal. Cover ordered bytes so every byte position is checked.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef _wire_digest(value):\n    _require(\n        type(value) is list\n        and len(value) == 32\n        and all(type(x) is int and 0 <= x <= 255 for x in value),\n        \"invalid wire digest\",\n    )\n    return bytes(value).hex()\n",
+    "split": "selection"
+  }
+]
