@@ -23,9 +23,7 @@ fn mount_evidence(root: &Path, writable: &Path) -> String {
         .replace(' ', "\\040")
         .replace('\t', "\\011")
         .replace('\n', "\\012");
-    format!(
-        "1 0 0:1 / {root} ro - none none ro\n2 1 0:2 / {writable} rw - none none rw\n"
-    )
+    format!("1 0 0:1 / {root} ro - none none ro\n2 1 0:2 / {writable} rw - none none rw\n")
 }
 
 #[test]
@@ -97,10 +95,7 @@ fn loader_path_rejects_escaped_or_unresolved_targets() -> Result<()> {
         error.to_string(),
         "nextest loader path must be absolute and must not traverse parents"
     );
-    for path in [
-        immutable.join("alias"),
-        immutable.join("alias/not-created"),
-    ] {
+    for path in [immutable.join("alias"), immutable.join("alias/not-created")] {
         let Err(error) = loader_path(&path, &roots) else {
             panic!("escaped loader path was accepted: {}", path.display());
         };
@@ -113,7 +108,9 @@ fn loader_path_rejects_escaped_or_unresolved_targets() -> Result<()> {
         panic!("dangling symlink was accepted as an absent loader directory");
     };
     assert_eq!(
-        error.downcast_ref::<std::io::Error>().map(std::io::Error::kind),
+        error
+            .downcast_ref::<std::io::Error>()
+            .map(std::io::Error::kind),
         Some(ErrorKind::NotFound)
     );
     assert!(!writable.join("not-created").exists());
