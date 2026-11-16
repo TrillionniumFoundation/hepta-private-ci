@@ -173,6 +173,15 @@ impl AgentdControlServer {
             {
                 continue;
             }
+            // The inherited Linux socket retains its supervisor policy above.
+            // A privately bound socket authenticates its actual process owner
+            // before allocating a permit or reading any control frame.
+            if self.owned_socket_path.is_some()
+                && let Err(error) = ensure_control_peer(&stream)
+            {
+                eprintln!("rejecting unauthenticated Agentd control peer: {error}");
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -203,6 +212,10 @@ impl AgentdControlServer {
         }
         Ok(())
     }
+}
+
+fn ensure_control_peer(stream: &UnixStream) -> Result<(), AgentdError> {
+    stream.ensure_current_user_peer().map_err(AgentdError::Io)
 }
 
 fn retain_connection_failure(
