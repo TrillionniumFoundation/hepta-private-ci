@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.archive-mechanical-test-observation.v2",
+  "evidence_scope": "Retained from the actual local exec tool result before formatting; no new test execution when writing this receipt.",
+  "tool_chunk_id": "a95e04",
+  "command": "python3 -m unittest test_archive_tools_v2 -v",
+  "cwd": "/workspace/scratch/0c078af77c37/cell_experiments_v2_20261116/qualification/cell-experiments-v2-20261116",
+  "exit_code": 0,
+  "tool_wall_seconds": 0.040434917,
+  "reported_test_seconds": 0.028,
+  "tests_run": 3,
+  "tests_passed": 3,
+  "observed_output": "test_changed_container_is_rejected_before_payload_use (test_archive_tools_v2.ArchiveToolTests.test_changed_container_is_rejected_before_payload_use) ... ok\ntest_only_canonical_original_roots_are_accepted (test_archive_tools_v2.ArchiveToolTests.test_only_canonical_original_roots_are_accepted) ... ok\ntest_valid_small_zip_parts_reconstruct_exact_original_stream (test_archive_tools_v2.ArchiveToolTests.test_valid_small_zip_parts_reconstruct_exact_original_stream) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.028s\n\nOK\n",
+  "pre_format_source_sha256": {
+    "export_run_v2.py": "cf547be2cc6a0176c33cdc426962d4be1bae9fedd6a817d4c92016c5e2beadf8",
+    "restore_run_v2.py": "86e2f4e4685b3e3abdf530da5e8a9b385f4c00c467d09ff53082602803ba74d1",
+    "test_archive_tools_v2.py": "c7cd277004735eb8e1662403cd16fae15ded184b112452285f05c60d3d560d5f"
+  },
+  "format_equivalence_receipt": "ARCHIVE_TOOLS_FORMAT.json",
+  "tests_rerun_after_format": false,
+  "actual_run_or_C_data_used": false,
+  "model_or_verifier_calls": 0
+}
