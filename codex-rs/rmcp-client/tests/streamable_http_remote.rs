@@ -77,6 +77,7 @@ async fn stalled_handshake_unblocks_remote_executor(
     expected_method: &str,
 ) -> anyhow::Result<()> {
     let http_server = MockServer::start().await;
+    let (request_tx, mut request_rx) = tokio::sync::mpsc::unbounded_channel::<()>();
     Mock::given(method("GET"))
         .and(path("/executor-ready"))
         .respond_with(ResponseTemplate::new(200))
@@ -85,7 +86,10 @@ async fn stalled_handshake_unblocks_remote_executor(
         .await;
     Mock::given(method("POST"))
         .and(body_partial_json(json!({ "method": expected_method })))
-        .respond_with(ResponseTemplate::new(200).set_delay(Duration::from_secs(10)))
+        .respond_with(move |_: &wiremock::Request| {
+            let _ = request_tx.send(());
+            ResponseTemplate::new(200).set_delay(Duration::from_secs(10))
+        })
         .expect(1)
         .mount(&http_server)
         .await;
@@ -127,21 +131,38 @@ async fn stalled_handshake_unblocks_remote_executor(
         Implementation::new("codex-test", "0.0.0-test"),
     )
     .with_protocol_version(ProtocolVersion::V_2025_06_18);
-    let error = client
-        .initialize(
-            params,
-            Some(Duration::from_millis(500)),
-            Box::new(|_, _| {
-                async {
-                    Ok(ElicitationResponse {
-                        action: ElicitationAction::Accept,
-                        content: None,
-                        meta: None,
-                    })
-                }
-                .boxed()
-            }),
-        )
+    // Observe the actual stalled request before accepting its timeout.
+    // Readiness, handshake and health retain their original deadlines.
+    let mut initialization = Box::pin(client.initialize(
+        params,
+        Some(Duration::from_millis(500)),
+        Box::new(|_, _| {
+            async {
+                Ok(ElicitationResponse {
+                    action: ElicitationAction::Accept,
+                    content: None,
+                    meta: None,
+                })
+            }
+            .boxed()
+        }),
+    ));
+    tokio::select! {
+        initialized = &mut initialization => {
+            match initialized {
+                Ok(_) => anyhow::bail!(
+                    "MCP handshake completed before the stalled HTTP request arrived"
+                ),
+                Err(error) => anyhow::bail!(
+                    "MCP handshake failed before the stalled HTTP request arrived: {error}"
+                ),
+            }
+        }
+        received = request_rx.recv() => {
+            anyhow::ensure!(received.is_some(), "HTTP request observation channel closed");
+        }
+    }
+    let error = initialization
         .await
         .err()
         .context("the stalled MCP handshake must time out")?;
