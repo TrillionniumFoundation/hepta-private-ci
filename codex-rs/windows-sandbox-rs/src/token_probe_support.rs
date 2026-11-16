@@ -50,7 +50,5 @@ pub(super) unsafe fn write_restricted_probe_token_from(
     base_token: HANDLE,
     capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
-    unsafe {
-        create_write_restricted_token_for_mic_probe(base_token, capabilities)
-    }
+    unsafe { create_write_restricted_token_for_mic_probe(base_token, capabilities) }
 }

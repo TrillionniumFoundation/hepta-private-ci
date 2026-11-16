@@ -609,7 +609,9 @@ mod tests {
         };
 
         assert_eq!(
-            error.downcast_ref::<crate::legacy_admission::LegacyWindowsSandboxIsolationUnavailable>(),
+            error
+                .downcast_ref::<crate::legacy_admission::LegacyWindowsSandboxIsolationUnavailable>(
+                ),
             Some(&crate::legacy_admission::LegacyWindowsSandboxIsolationUnavailable)
         );
         assert_eq!(env_map, original_env);

@@ -1,7 +1,7 @@
-use crate::token::fresh_managed_base::FreshManagedRunnerBase;
 use super::RunnerProcess;
 use super::custody::RunnerAdmission;
 use super::custody::RunnerCustody;
+use crate::token::fresh_managed_base::FreshManagedRunnerBase;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
@@ -51,8 +51,14 @@ impl RunnerProcessOwner {
 
     /// Retain the original query-only witness with the exact process cleanup owner.
     /// This does not qualify a sandbox or extend any observation deadline.
-    pub(crate) fn retain_managed_base(&mut self, managed_base: FreshManagedRunnerBase) -> Result<()> {
-        anyhow::ensure!(self.managed_base.is_none(), "managed runner witness was already retained");
+    pub(crate) fn retain_managed_base(
+        &mut self,
+        managed_base: FreshManagedRunnerBase,
+    ) -> Result<()> {
+        anyhow::ensure!(
+            self.managed_base.is_none(),
+            "managed runner witness was already retained"
+        );
         self.managed_base = Some(managed_base);
         Ok(())
     }

@@ -62,6 +62,9 @@ mod allow;
 mod audit;
 #[cfg(target_os = "windows")]
 mod cap;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "delete_permission_matrix_tests.rs"]
+mod delete_permission_matrix;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
@@ -81,15 +84,12 @@ mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
 #[cfg(target_os = "windows")]
-mod legacy_boundary;
-#[cfg(all(test, target_os = "windows"))]
-#[path = "delete_permission_matrix_tests.rs"]
-mod delete_permission_matrix;
-#[cfg(target_os = "windows")]
 mod legacy_admission;
 #[cfg(all(target_os = "windows", test))]
 #[path = "legacy_admission_tests.rs"]
 mod legacy_admission_tests;
+#[cfg(target_os = "windows")]
+mod legacy_boundary;
 #[cfg(target_os = "windows")]
 mod logging;
 #[cfg(any(target_os = "windows", test))]
@@ -176,7 +176,6 @@ pub use elevated::runner_client::RunnerCleanupReconciliation;
 pub use elevated::runner_client::reconcile_runner_cleanup;
 #[cfg(target_os = "windows")]
 pub use legacy_admission::LegacyWindowsSandboxIsolationUnavailable;
-
 
 #[cfg(target_os = "windows")]
 pub(crate) use elevated::runner_pipe;

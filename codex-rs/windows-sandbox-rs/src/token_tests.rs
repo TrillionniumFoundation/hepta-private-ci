@@ -1,25 +1,25 @@
+use super::*;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_mask_aces_with_inheritance;
 use crate::acl::ensure_allow_write_aces;
 use crate::acl::ensure_filesystem_mutation_deny;
 use crate::acl::fetch_dacl_handle;
+use crate::legacy_admission_tests::assert_unavailable;
+use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfoW;
 use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::ImpersonateLoggedOnUser;
 use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::RevertToSelf;
+use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
-use super::*;
-use crate::legacy_admission_tests::assert_unavailable;
-use pretty_assertions::assert_eq;
-use windows_sys::Win32::Security::EqualSid;
-use windows_sys::Win32::Security::TokenRestrictedSids;
 
 struct OwnedToken(HANDLE);
 
@@ -314,8 +314,6 @@ impl Drop for Impersonation {
     }
 }
 
-
-
 #[test]
 fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()> {
     let fixture = tempfile::tempdir()?;
@@ -377,7 +375,11 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     // SAFETY: the owned base token and validated capability SID are live; the
     // resulting token is immediately owned and closed after both impersonations.
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_and_read_sids_from(base.0, &[capability.as_ptr()], &[])?
+        create_workspace_write_token_with_caps_and_read_sids_from(
+            base.0,
+            &[capability.as_ptr()],
+            &[],
+        )?
     });
     {
         // SAFETY: token remains owned throughout this impersonation scope.

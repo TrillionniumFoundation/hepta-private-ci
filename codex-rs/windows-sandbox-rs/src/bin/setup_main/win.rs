@@ -659,26 +659,27 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
             convert_string_sid_to_sid(&root_cap_sid_str)
                 .ok_or_else(|| anyhow::anyhow!("convert write root capability SID failed"))?
         };
-        let need_grant =
-            match unsafe { path_write_aces_need_refresh(root, &[sandbox_group_psid, root_cap_psid]) } {
-                Ok(needs_refresh) => needs_refresh,
-                Err(e) => {
-                    refresh_errors.push(format!(
-                        "write ACE check failed on {}: {}",
+        let need_grant = match unsafe {
+            path_write_aces_need_refresh(root, &[sandbox_group_psid, root_cap_psid])
+        } {
+            Ok(needs_refresh) => needs_refresh,
+            Err(e) => {
+                refresh_errors.push(format!(
+                    "write ACE check failed on {}: {}",
+                    root.display(),
+                    e
+                ));
+                log_line(
+                    log,
+                    &format!(
+                        "write ACE check failed on {}: {}; continuing",
                         root.display(),
                         e
-                    ));
-                    log_line(
-                        log,
-                        &format!(
-                            "write ACE check failed on {}: {}; continuing",
-                            root.display(),
-                            e
-                        ),
-                    )?;
-                    true
-                }
-            };
+                    ),
+                )?;
+                true
+            }
+        };
         unsafe {
             LocalFree(root_cap_psid as HLOCAL);
         }
