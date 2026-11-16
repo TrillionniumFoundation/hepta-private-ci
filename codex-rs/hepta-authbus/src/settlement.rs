@@ -1,9 +1,9 @@
+use crate::AuthBusAlgorithm;
+use crate::AuthBusSignature;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use crate::AuthBusAlgorithm;
-use crate::AuthBusSignature;
 
 use crate::AuthBusAuthorityError;
 use crate::push_id;
@@ -104,7 +104,9 @@ impl SignedSettlementEvidence {
         issuer
             .verifying_key
             .verify(
-                &self.claims.signing_bytes_for(issuer.verifying_key.algorithm()),
+                &self
+                    .claims
+                    .signing_bytes_for(issuer.verifying_key.algorithm()),
                 &self.signature,
             )
             .map_err(|_| AuthBusAuthorityError::InvalidSettlementSignature)?;

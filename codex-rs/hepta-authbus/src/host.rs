@@ -211,7 +211,9 @@ impl AuthBusAuthorityHost {
         issuer_id: &StableId,
         key_epoch: Generation,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
-        self.store.issuer_record(purpose, issuer_id, key_epoch).await
+        self.store
+            .issuer_record(purpose, issuer_id, key_epoch)
+            .await
     }
 
     pub async fn message_issuer(
@@ -221,7 +223,6 @@ impl AuthBusAuthorityHost {
     ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
         self.store.message_issuer(issuer_id, key_epoch).await
     }
-
 
     pub async fn create_policy(
         &self,

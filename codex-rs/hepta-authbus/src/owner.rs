@@ -135,14 +135,14 @@ impl AuthBusAuthorityOwner {
         owner_id: &str,
     ) -> Result<Self, AuthBusAuthorityError> {
         let lease = AuthorityWriterLease::acquire(&checkpoint_path, database_path, owner_id)?;
-        let host = match AuthBusAuthorityHost::open_pq(database_path, checkpoint_path, owner_id).await
-        {
-            Ok(host) => host,
-            Err(error) => {
-                drop(lease);
-                return Err(error);
-            }
-        };
+        let host =
+            match AuthBusAuthorityHost::open_pq(database_path, checkpoint_path, owner_id).await {
+                Ok(host) => host,
+                Err(error) => {
+                    drop(lease);
+                    return Err(error);
+                }
+            };
         if let Err(error) = validate_database_files(database_path) {
             drop(host);
             drop(lease);
@@ -477,7 +477,10 @@ impl AuthBusReadPort<'_> {
         key_epoch: Generation,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
         self.owner.lease.assert_current()?;
-        self.owner.host.issuer_record(purpose, issuer_id, key_epoch).await
+        self.owner
+            .host
+            .issuer_record(purpose, issuer_id, key_epoch)
+            .await
     }
 
     pub async fn message_issuer(

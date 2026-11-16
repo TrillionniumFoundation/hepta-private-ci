@@ -129,7 +129,10 @@ fn evidence(
         expires_at_ms: observed_at_ms + 2_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    SignedSettlementEvidence { claims, signature: signature.into() }
+    SignedSettlementEvidence {
+        claims,
+        signature: signature.into(),
+    }
 }
 
 #[tokio::test]
@@ -446,7 +449,9 @@ async fn settlement_reloads_and_enforces_current_issuer_revocation() {
     ));
 }
 
-async fn registered(key: &SigningKey) -> (
+async fn registered(
+    key: &SigningKey,
+) -> (
     TempDir,
     AuthBusAuthorityStore,
     PolicyDecision,
@@ -478,7 +483,11 @@ async fn settlement_rereads_registration_and_revocation_inside_the_commit_transa
     ));
     enroll_settlement(&store, &key).await;
     let snapshot = store
-        .issuer_record(IssuerPurpose::Settlement, &signed.claims.issuer_id, signed.claims.key_epoch)
+        .issuer_record(
+            IssuerPurpose::Settlement,
+            &signed.claims.issuer_id,
+            signed.claims.key_epoch,
+        )
         .await
         .unwrap();
     store

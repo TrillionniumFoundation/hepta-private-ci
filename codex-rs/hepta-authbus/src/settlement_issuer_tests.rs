@@ -77,9 +77,7 @@ async fn registered_epoch_cannot_use_a_caller_substituted_key() {
         1_600,
     );
     assert!(matches!(
-        store
-            .settle(&signed, sample(6, 1_600))
-            .await,
+        store.settle(&signed, sample(6, 1_600)).await,
         Err(AuthBusAuthorityError::InvalidSettlementSignature)
     ));
     unchanged(&store, &quota, &reservation).await;
