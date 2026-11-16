@@ -1,0 +1,139 @@
+{
+  "read": {
+    "audit_recorded": true,
+    "job_id": "1a1e4e5018a-392-3810",
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "eof": true,
+      "next_offset": 302,
+      "offset": 0,
+      "size": 302,
+      "text": "{\"archive_parts\": 42, \"export_sha256\": \"1ba58c082f0ab1420671cae7fbd1b84f229616348704fc8311e3b3f257a4d797\", \"files\": 973, \"output\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/export-v2-01\", \"source_digest\": \"fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1\", \"status\": \"COMPLETE\"}\n"
+    }
+  },
+  "request": {
+    "args": [
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01/export_run_v2.py",
+      "--run-root",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01",
+      "--logs-root",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01-receipts",
+      "--source-root",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/candidate-v2-01",
+      "--output",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/export-v2-01",
+      "--restore-script",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01/restore_run_v2.py",
+      "--source-commit",
+      "507f04e20b6b9034d490b38a799eb32577ba5bbb"
+    ],
+    "env": {
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "host": "ai395",
+    "idempotency_key": "hepta-e1e6-v2-originals-export-20261116-0c078a-01",
+    "timeout_seconds": 600
+  },
+  "start": {
+    "audit_recorded": true,
+    "job": {
+      "args": [
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01/export_run_v2.py",
+        "--run-root",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01",
+        "--logs-root",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01-receipts",
+        "--source-root",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/candidate-v2-01",
+        "--output",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/export-v2-01",
+        "--restore-script",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01/restore_run_v2.py",
+        "--source-commit",
+        "507f04e20b6b9034d490b38a799eb32577ba5bbb"
+      ],
+      "created_unix_ms": 1794841575818,
+      "cwd": null,
+      "env_keys": [
+        "HF_HUB_OFFLINE",
+        "MKL_NUM_THREADS",
+        "OMP_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS",
+        "PYTHONDONTWRITEBYTECODE",
+        "TOKENIZERS_PARALLELISM",
+        "TRANSFORMERS_OFFLINE"
+      ],
+      "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+      "execution_mode": "operator",
+      "host": "ai395",
+      "id": "1a1e4e5018a-392-3810",
+      "idempotency_key": "hepta-e1e6-v2-originals-export-20261116-0c078a-01",
+      "launch_error": null,
+      "launch_state": "launched",
+      "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1e4e5018a-392-3810",
+      "request_digest": "9eceadeb81b216e7c760e0c74a321883982eab5b2de5d20ab99814b7cd3a77ad",
+      "request_fingerprint": 11443274930199861000,
+      "ssh_target": "ai395-lan",
+      "system_jobctl": false,
+      "unit": "hepta-runtime-job-1a1e4e5018a-392-3810"
+    },
+    "launch": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "ok": true,
+      "unit": "hepta-runtime-job-1a1e4e5018a-392-3810"
+    },
+    "local_record_pending": false,
+    "reused": false
+  },
+  "status": {
+    "at_unix_ms": 1794841578553,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1e4e5018a-392-3810",
+    "launch_nonce": "9f9fb0bb149984d0e39157a1c7689022",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 302,
+        "stored": 302
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

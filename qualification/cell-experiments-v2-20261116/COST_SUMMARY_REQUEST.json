@@ -1,0 +1,14 @@
+{
+  "job_id": "1a1e4e9547b-392-381b",
+  "request": {
+    "host": "ai395",
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "args": [
+      "-c",
+      "import json,pathlib,hashlib\nbase=pathlib.Path('/home/qq/hepta-cell-experiments-20261116-0c078a')\nroot=base/'run-v2-01';logs=base/'run-v2-01-receipts'\nplan=json.loads((logs/'EXECUTION_PLAN.json').read_text())\nterminal=json.loads((logs/'RESULT.json').read_text())\nresources=[json.loads(p.read_text()) for p in sorted((root/'stage_resources').glob('*.json'))]\ntop=[r for r in resources if r['ppid']==plan['supervisor_pid']]\nnested=[r for r in resources if r['ppid']!=plan['supervisor_pid']]\nout={'schema':'hepta.runtime-cost-summary.v2','observed_supervisor_pid':plan['supervisor_pid'],'main_wall_seconds':(terminal['completed_at_ns']-terminal['started_at_ns'])/1e9,'resource_receipts':len(resources),'top_level_resource_receipts':len(top),'nested_receipts_excluded_from_sum':len(nested),'top_level_self_cpu_seconds':sum(r['self_cpu_seconds'] for r in top),'top_level_waited_children_cpu_seconds':sum(r['waited_children_cpu_seconds'] for r in top),'largest_individual_process_rss_bytes':max(r['self_peak_rss_bytes'] for r in top),'scope':'Main study CLI stages including waited children; reference builders lack process CPU meters; excludes posthoc, export, restore and external host activity','full_system_cost_known':False,'energy_joules':None}\nout['metered_cpu_seconds']=out['top_level_self_cpu_seconds']+out['top_level_waited_children_cpu_seconds']\nout['reference_panels']={}\nfor panel in ['open','confirmation','warmup']:\n d=root/'inputs'/panel\n records=[json.loads(s) for s in (d/'records.jsonl').read_text().splitlines() if s]\n refs=json.loads((d/'REFERENCE_EXECUTION.json').read_text())\n out['reference_panels'][panel]={'tasks':len(records),'complete_references':len(refs['records']),'successful_references':sum(r['success'] for r in refs['records']),'wrong_output_controls':sum(r['result']['result']['control_count'] for r in refs['records']),'informative_action_counts':{r['record_id']:r['informative_action_count'] for r in records},'projects':sorted({r['project_id'] for r in records})}\nout['resource_inputs']={str(p.relative_to(base)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((root/'stage_resources').glob('*.json'))}\nprint(json.dumps(out,sort_keys=True))\n"
+    ],
+    "idempotency_key": "hepta-cell-v2-root-cost-20261116-0c078a-01",
+    "timeout_seconds": 30,
+    "nice": 19
+  }
+}

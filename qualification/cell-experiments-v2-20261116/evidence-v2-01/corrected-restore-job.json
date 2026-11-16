@@ -1,0 +1,133 @@
+{
+  "read": {
+    "audit_recorded": true,
+    "job_id": "1a1e4f087eb-392-382d",
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "eof": true,
+      "next_offset": 250,
+      "offset": 0,
+      "size": 250,
+      "text": "{\"adapter_probes\": 2, \"files\": 973, \"model_manifests\": 8, \"output\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/restored-v2-02\", \"restore_receipt_sha256\": \"f989b245f09ebd6419846ecaaa89b8e5c97c35dd2acf84781930db233c00c1c3\", \"status\": \"COMPLETE\"}\n"
+    }
+  },
+  "request": {
+    "args": [
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-02/restore_run_v2.py",
+      "--export-dir",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/export-v2-02",
+      "--output",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/restored-v2-02",
+      "--base-model",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/base/model.safetensors",
+      "--expected-export-sha256",
+      "2f554acf9e774469dfa5d078da08186954dfc93d05e1be66f9a9eb4f086f2d2f",
+      "--probe-adapters"
+    ],
+    "env": {
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "host": "ai395",
+    "idempotency_key": "hepta-e1e6-v2-corrected-full-restore-20261116-0c078a-01",
+    "timeout_seconds": 900
+  },
+  "start": {
+    "audit_recorded": true,
+    "job": {
+      "args": [
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-02/restore_run_v2.py",
+        "--export-dir",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/export-v2-02",
+        "--output",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/restored-v2-02",
+        "--base-model",
+        "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/base/model.safetensors",
+        "--expected-export-sha256",
+        "2f554acf9e774469dfa5d078da08186954dfc93d05e1be66f9a9eb4f086f2d2f",
+        "--probe-adapters"
+      ],
+      "created_unix_ms": 1794842331115,
+      "cwd": null,
+      "env_keys": [
+        "HF_HUB_OFFLINE",
+        "MKL_NUM_THREADS",
+        "OMP_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS",
+        "PYTHONDONTWRITEBYTECODE",
+        "TOKENIZERS_PARALLELISM",
+        "TRANSFORMERS_OFFLINE"
+      ],
+      "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+      "execution_mode": "operator",
+      "host": "ai395",
+      "id": "1a1e4f087eb-392-382d",
+      "idempotency_key": "hepta-e1e6-v2-corrected-full-restore-20261116-0c078a-01",
+      "launch_error": null,
+      "launch_state": "launched",
+      "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1e4f087eb-392-382d",
+      "request_digest": "f8113c58e3541d292be0fc4032f59cc560d46ff1ee3e7f3d59a3f3616b668dbb",
+      "request_fingerprint": 17875134748478940000,
+      "ssh_target": "ai395-lan",
+      "system_jobctl": false,
+      "unit": "hepta-runtime-job-1a1e4f087eb-392-382d"
+    },
+    "launch": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "ok": true,
+      "unit": "hepta-runtime-job-1a1e4f087eb-392-382d"
+    },
+    "local_record_pending": false,
+    "reused": false
+  },
+  "status": {
+    "at_unix_ms": 1794842351449,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1e4f087eb-392-382d",
+    "launch_nonce": "2b2c55f476bd4a472e76685c6b154472",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 250,
+        "stored": 250
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}
