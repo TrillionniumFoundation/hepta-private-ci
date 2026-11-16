@@ -1,0 +1,68 @@
+{
+  "schema": "mem8.owner-v11.final-companion-independent-peer.v1",
+  "reviewer": "/root/mem_remote_audit",
+  "verdict": "PASS_NO_STATIC_MUST_FIX",
+  "candidate_commit": "781f675fba693a0717e9326442547e2d86c1a7ef",
+  "candidate_tree": "ac9f9a4797ba8835590cc34b8426517ea4fbbf5b",
+  "baseline": {
+    "bytes": 134567,
+    "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+    "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2"
+  },
+  "core": {
+    "bytes": 19232,
+    "sha256": "58cacde5410ce279d188df7ce07d4e5b4c44f0808b36da676234c597a7483124",
+    "git_blob": "bb0bd787ec44f25985fc98c76618d56904de83bf"
+  },
+  "companion": {
+    "bytes": 26684,
+    "sha256": "a6c99cba8dd6fa2d0f42f977503f83f6fc7f5f94b7973684bb11b1cc15b8f5ce",
+    "git_blob": "b65538330f3200ad5b7121e5b47bbbffbf4791ab"
+  },
+  "entry": {
+    "bytes": 12588,
+    "sha256": "d97cf60ac404a80a9d2dd9f474f307259699a8ca858e7471011f2c87c696faab",
+    "git_blob": "fcf599f8fd527086002290debc00ff7aca07d950"
+  },
+  "checks": {
+    "complete_three_texts_read_and_hashed": true,
+    "candidate_parent_is_actual_staging_214c_then_original_f86": true,
+    "baseline_actual_mounted_blob_unchanged": true,
+    "ten_gate_ID_status_and_intake_gate_id_pointers_equal": true,
+    "historical_closed_entries": 18,
+    "final_only_adds_current_cead_CI_bounded_original_1908": true,
+    "removal_of_that_single_field_serializes_exact_original_core": true,
+    "three_actual_publication_receipts_full_text_and_identity_match": true,
+    "entry_relative_links_resolve_in_candidate": 12,
+    "verified_fact_projection_records": 12,
+    "historical_unavailable_proofs_explicit": 6,
+    "V11_lint_every_selected_field_equals_original_962e_audit": true,
+    "historical_1902_five_run_projection_equal": true,
+    "bounded_1908_five_run_projection_equal": true,
+    "root_191049_three_failure_projection_equal": true,
+    "appended_original_payload_objects_actual_mounted_pins": 19,
+    "GNU_log_explicitly_logical_reassembly_of_five_parts": true,
+    "GNU_reassembly_pin_equals_root_recovery_report": true,
+    "all_ten_adoption_gates_open": true,
+    "original_baseline_intake_and_thresholds_not_replaced": true,
+    "provider_and_H_unknowns_preserved": true,
+    "V12_preparation_not_execution": true,
+    "old_d0f_failure_and_current_source_result_scope_preserved": true,
+    "no_XZ_replay_or_frozen_generator_execution_invented": true
+  },
+  "limits": [
+    "Static content, immutable source/tree and receipt review. Owner ref publication has not been independently observed in this review.",
+    "The twelve-fact report and its boundaries were read; this review did not refetch and rerun every underlying historical report. The owned V11 lint projection was independently compared field by field with the recovered exact original audit.",
+    "The bounded GNU payload object pins and root recovery proof were checked; no new full raw-log parser execution or XZ extraction was performed.",
+    "No new CI observation was requested. Historical 19:02, bounded 19:08 and root 19:10:49 observations retain separate identities and do not establish all-current-CI acceptance."
+  ],
+  "actions": {
+    "local_exec": 0,
+    "host_calls": 0,
+    "model_requests": 0,
+    "new_CI_runs": 0,
+    "CI_reruns": 0,
+    "CI_cancellations": 0,
+    "ref_updates": 0
+  }
+}

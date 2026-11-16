@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.mem8.matrix-initialization-diagnostics.v1",
+  "checkpoint_utc": "2026-11-11 04:13 UTC",
+  "source_candidate": {
+    "head": "dc96a441312e239c165c1642880084dfeccc2c71",
+    "tree": "7796279284170f0f2c92449c1185eecac1f4f1b6"
+  },
+  "archive": {
+    "path": "mem8-matrix-diagnostic-v1-v2.tar.xz",
+    "git_blob": "ee6c876246b7eeca591146e2c193bb98dceaf9de",
+    "bytes": 67564,
+    "sha256": "3c936f7edc85a6df28ab32db65ebb6cc8f0d68f219880772f7c288f58af0945a"
+  },
+  "attempts": [
+    {
+      "head": "6ef3cf7a400c0099b858b314ef67751d4e1dae1e",
+      "tree": "a0ff66e92e7dd51435c0a74e9ef88a112285c991",
+      "actual_passed": 0,
+      "actual_failed": 1,
+      "filtered_unselected": 2,
+      "retries": 0,
+      "source_unchanged": true,
+      "diagnostic_only": true,
+      "prepare_seconds": 12.828216719,
+      "reopen_seconds": 5.510876159,
+      "failure_stage": "login_or_restore.build.timeout",
+      "log_bytes": 29560,
+      "log_sha256": "b9234a59a9220543dc65daa7f0080d02f4d92c30b9317005c1fd3bf7ce23d3d1"
+    },
+    {
+      "head": "cbc92000cccb00ff902f9fbfbd902a07052817fe",
+      "tree": "0c8652eac9048d8acb9a8ac182f4eae2c998c8c8",
+      "actual_passed": 1,
+      "actual_failed": 0,
+      "filtered_unselected": 2,
+      "retries": 0,
+      "source_unchanged": true,
+      "diagnostic_only": true,
+      "prepare_seconds": 2.967133423,
+      "reopen_seconds": 1.195198133,
+      "change": "Only the exact sha2:0.11.1 development-profile optimization is added after the unchanged diagnostics.",
+      "log_bytes": 26803,
+      "log_sha256": "bc07627799435dbd944c7376ad52894791b41c6cb816b56b387346522d6311ef"
+    }
+  ],
+  "original_error_type_and_control_flow_preserved": true,
+  "original_five_second_timeout_preserved": true,
+  "original_crypto_parameters_and_assertions_preserved": true,
+  "public_api_change": false,
+  "current_followup": {
+    "request_id": "mem8-matrix-production-profile-ed353817-v3",
+    "status": "LAUNCH_ACKNOWLEDGED_RESULT_PENDING",
+    "scope": "New candidate from dc96 without diagnostic source changes, Cargo SHA-256 profile and equivalent Bazel annotations; full Matrix tests, lock regeneration and scoped fix pending."
+  },
+  "cross_version_migration_qualified": false,
+  "whole_ci_qualified": false,
+  "new_model_calls": 0,
+  "production_adoption": false
+}

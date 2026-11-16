@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.mem8.g.root-independent-readback.v1",
+  "immutable_commit": "44bde0a4b5bed568032a3b0ba28022c731ffe621",
+  "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+  "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+  "native_archive_members": 67,
+  "all_66_native_member_hashes": true,
+  "phase_receipts": [
+    {
+      "phase": "format",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "v8-inputs",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "codex-cli-build",
+      "log_bytes": 25599,
+      "log_sha256": "3887025fe6f0f324a26376ab3435a0f10c9cd242426bdb1a038d8e420767e56f"
+    },
+    {
+      "phase": "agentd-tests",
+      "log_bytes": 41272,
+      "log_sha256": "3ce5210b8df628a28d1c9a4fbf0c1b7fe9f795e04e4a27c003f1215500c7f4ae"
+    },
+    {
+      "phase": "fix-codex-hepta-agentd",
+      "log_bytes": 25331,
+      "log_sha256": "044135be2fdd0b7de44fec2b34696cbb6fa7e7e7253523c2f4169f735552aaae"
+    }
+  ],
+  "actual_passed": 6,
+  "actual_failed": 0,
+  "filtered_or_ignored_unselected": 782,
+  "selected_provider_case_executions": 0,
+  "nextest_uuid": "b58361b0-49b7-47f2-a15a-43ee34823b29",
+  "drain_markers": [
+    "commit",
+    "revoke",
+    "panic"
+  ],
+  "formatter_members": 43,
+  "formatter_artifacts": 34,
+  "formatter_raw_logs": 26,
+  "four_native_source_files_equal_formatter_and_published_blobs": true,
+  "source_and_binary_before_after_unchanged": true,
+  "binary_sha256": "49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976",
+  "binary_bytes": 559365856,
+  "static_archive_members": 12,
+  "current_source_inventory_paths": 38,
+  "original_input_sha256": "207c3f7969198cb6564113aaf6fccdb1a5f028c34cdb90bd8e85866576aca9e2",
+  "new_native_execution": false,
+  "model_calls": 0,
+  "real_memory_use_claimed": false,
+  "unseen_successor_benefit_claimed": false,
+  "passed": true
+}

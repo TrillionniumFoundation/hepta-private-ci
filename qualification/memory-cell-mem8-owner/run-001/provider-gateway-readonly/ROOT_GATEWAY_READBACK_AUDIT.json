@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.mem8.provider-gateway.root-readback.v1",
+  "immutable_commit": "6d1b677ac1ffcac9b9ea15b9b07ecc83f8c6e1c9",
+  "archive_bytes": 10824,
+  "archive_sha256": "31deecb726696a4bf05b1018243757e99e4f0e63437cdd9040cfa3edd9b06ed7",
+  "archive_git_blob": "6d81a371568ca552ea4384b0b289034b150c9f86",
+  "safe_regular_members": 13,
+  "all_member_full_bytes_and_hashes_match": true,
+  "terminal_jobs": {
+    "ai395": "1a1c92b0b1b-135c4-442",
+    "desktop": "1a1c92b2dac-135c4-444"
+  },
+  "journal_matches": 0,
+  "current_get_observations": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:18083/health",
+      "http_status": 200,
+      "started_at": "2026-11-11T05:53:41.578646+00:00",
+      "finished_at": "2026-11-11T05:53:42.015641+00:00"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:18083/routing",
+      "http_status": 200,
+      "started_at": "2026-11-11T05:53:42.015682+00:00",
+      "finished_at": "2026-11-11T05:53:42.061880+00:00"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:18083/v1/models",
+      "http_status": 200,
+      "started_at": "2026-11-11T05:53:42.061914+00:00",
+      "finished_at": "2026-11-11T05:53:42.115229+00:00"
+    }
+  ],
+  "durable_process_stdout_full_readback": false,
+  "safe_result_files_complete": true,
+  "original_provider_final_status": "UNKNOWN",
+  "original_physical_provider_requests": null,
+  "new_host_diagnostics_by_root_audit": 0,
+  "new_models": 0,
+  "passed": true
+}

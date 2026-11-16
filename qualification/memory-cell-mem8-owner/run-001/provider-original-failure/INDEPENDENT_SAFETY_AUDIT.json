@@ -1,0 +1,56 @@
+{
+  "all_manifest_bytes_sha256_verified": true,
+  "all_members_plain_and_json_escaped_scan_passed": true,
+  "archive": {
+    "bytes": 56432,
+    "sha256": "5cbc5b4d293b57980d9efe02bea0c0ec0bfe0ae165e1c9881801c7bc9cd1ae3c",
+    "workspace_relative_path": "mem8-provider-smoke-observation/mem8-provider-55951-original-failure-redacted-v3.tar.xz"
+  },
+  "archive_members_equal_local_package": true,
+  "derived_projections": [
+    {
+      "bytes": 5886,
+      "path": "readonly-v1/ROLLOUT_REDACTED_OBSERVATIONS.json",
+      "sha256": "9cdf5e28d7d4c409e901d2cb669cb6cdea713bd8bbd185e9467e63c779017d03"
+    },
+    {
+      "bytes": 5886,
+      "path": "readonly-v2/ROLLOUT_REDACTED_OBSERVATIONS.json",
+      "sha256": "a1ef90bd7d25647ad33423ca2c9adfbf03de67234f46a7c7f0ff3e9104f386f6"
+    }
+  ],
+  "derived_rows_match_independent_scalar_allowlist": true,
+  "erratum": {
+    "bytes": 2578,
+    "sha256": "f2d74ef113be94dbe182717fa8c42f59eeb3ef62d278bc863528ad77be4697fd",
+    "workspace_relative_path": "mem8-provider-smoke-observation/provider-safe-v3-complete/PROJECTION_PRIVACY_ERRATUM.json"
+  },
+  "forbidden_original_context_unique_strings": 2,
+  "limits": [
+    "This finding applies to this exact 64-member archive and exact two source projections; it does not certify arbitrary future inputs to the helper.",
+    "The prior unsafe unattached v2 archive and projection objects remain excluded; this review does not erase or reclassify their original defect.",
+    "The original admitted provider request remains unsettled; successful redaction is not a provider or memory-benefit pass."
+  ],
+  "manifest_entries": 63,
+  "members": 64,
+  "nested_archives_capsules_databases_or_key_files": 0,
+  "original_local_terminal_observed": false,
+  "original_native_source_clean": true,
+  "original_projection_not_modified": true,
+  "original_test_status": "FAILED_0_PASS_1_FAIL_COMPLETION_WAIT_20_SECONDS",
+  "physical_provider_outcome": "UNKNOWN",
+  "ready_retained_only_for_event_msg_turn_recovery_candidate": true,
+  "regular_safe_paths_only": true,
+  "review_actions": {
+    "host_probes": 0,
+    "model_calls": 0,
+    "native_tests": 0,
+    "original_artifact_changes": 0,
+    "ref_changes": 0
+  },
+  "reviewed_at_utc": "2026-11-11T06:18:44.020435+00:00",
+  "schema": "hepta.mem.provider-redaction-independent-review.v1",
+  "status": "PASS_CURRENT_EXACT_64_MEMBER_PACKAGE",
+  "unsafe_original_projection_or_archive_embedded": false,
+  "world_state_values_in_projections": false
+}

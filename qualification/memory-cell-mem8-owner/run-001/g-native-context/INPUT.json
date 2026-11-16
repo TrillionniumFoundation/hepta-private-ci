@@ -1,0 +1,97 @@
+{
+  "base_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+  "base_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+  "bindgen_system_include": "/usr/lib/gcc/x86_64-linux-gnu/15/include",
+  "donor": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+  "dotslash": {
+    "asset_bytes": 777657,
+    "asset_id": 392789328,
+    "asset_name": "dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz",
+    "asset_sha256": "ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691",
+    "asset_url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz",
+    "binary_bytes": 1642752,
+    "binary_path": "/home/qq/mem8-owner-20261111-ed353817/dotslash-bootstrap-20261111/installation-v2/bin/dotslash",
+    "binary_sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+    "github_asset_digest": "sha256:ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691",
+    "release_id": 307315086,
+    "release_tag": "v0.5.9",
+    "scope": "task directory only; original repository and global tools unchanged",
+    "source_action_commit": "1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+    "source_action_sha256": "adbd82111bafe09ab5baff9fa7ec55445f05b5379b27905e1888dfdb693c44c6",
+    "status": "installed",
+    "utc": "2026-11-11T03:52:49.191618+00:00",
+    "version_output": "DotSlash 0.5.9\n"
+  },
+  "expected_source_files": [
+    {
+      "formatter_changed": false,
+      "formatter_input_git_blob": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+      "postimage_bytes": 11660,
+      "postimage_git_blob": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+      "postimage_sha256": "79e9d1632809346cca719f3c6c15f46493bf412067925bc8d14c7f346f78b128",
+      "preimage_git_blob": "ba41f5a812d08c7384a6f322401c785d8b3acd4e"
+    },
+    {
+      "formatter_changed": false,
+      "formatter_input_git_blob": "1a2f49b93b9c562b9817874652184f06297615a7",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "postimage_bytes": 14168,
+      "postimage_git_blob": "1a2f49b93b9c562b9817874652184f06297615a7",
+      "postimage_sha256": "212a5970a9996352f20fa4b065c0f97563b1195a78ca40ace20ad8743d409271",
+      "preimage_git_blob": "54026297a309ef228053ce697855f5181c3b9f2c"
+    },
+    {
+      "formatter_changed": true,
+      "formatter_input_git_blob": "b093cc62a40978da2747fe19986856a872f83af1",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "postimage_bytes": 5238,
+      "postimage_git_blob": "a9444c7ed750ff4d8d47260470d445cfd49ab118",
+      "postimage_sha256": "bd895bc3556db5a22d957dd23be6a9c8a769a57b417fdae4fb1861322663abdc",
+      "preimage_git_blob": null
+    },
+    {
+      "formatter_changed": true,
+      "formatter_input_git_blob": "1ede7a330812937290d0b4afa47e8c98864f56c1",
+      "mode": "100644",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
+      "postimage_bytes": 19820,
+      "postimage_git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
+      "postimage_sha256": "0e18d2aabe9cef603a2cad8768c6d34903c3c3162ef8b7ef1ae0dfa04e1df085",
+      "preimage_git_blob": null
+    }
+  ],
+  "notes": [
+    "Independent new G phase, not an extension of the completed F campaign.",
+    "Exactly six existing controls compile the new ignored provider case without executing it.",
+    "Required provider/context/SHA environment variables removed; no --run-ignored argument.",
+    "Original donor/qualified refs unchanged; one shared Cargo target owner only."
+  ],
+  "phase_budget_seconds": 2700,
+  "provider_requests_authorized": false,
+  "provider_test_selected": false,
+  "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+  "run_name": "native-fresh-g-9d9bdfb-20261111-v1",
+  "schema": "hepta.mem8.g-zero-model-native-input.v1",
+  "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+  "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+  "target_dir": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target",
+  "tests": [
+    {
+      "expected_cases": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "filter_expression": "test(=app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths) | test(=episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order) | test(=production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement) | test(=production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer) | test(=production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context) | test(=production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner)",
+      "label": "agentd-tests",
+      "package": "codex-hepta-agentd"
+    }
+  ]
+}

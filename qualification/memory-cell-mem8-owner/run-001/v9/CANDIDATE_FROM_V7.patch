@@ -1,0 +1,987 @@
+--- original-v7/BLOCKERS.json
++++ candidate-v9-final2/BLOCKERS.json
+@@ -38,7 +38,7 @@
+     "W source minima and the historical W allocation do not become an invented E threshold.",
+     "A healthy later GET or empty bounded gateway journal cannot settle the original admitted model turn."
+   ],
+-  "checkpoint_utc": "2026-11-11 06:42:20 UTC",
++  "checkpoint_utc": "2026-11-11T12:53:00Z",
+   "ci_fixture_followup": {
+     "actual_failed": 1,
+     "actual_passed": 0,
+@@ -178,6 +178,16 @@
+       "id": "FULL-F1FD-ORIGINAL-RMCP-CONSUMER-SUITE",
+       "status": "PASSED_FULL_RAW_ROOT_READBACK",
+       "scope": "268 original unique cases passed, zero failed/selected skipped/retried; seven unselected. Fresh UUID and all 268 timestamps verified; real same-source CLI and clean scoped fix. Exact f1fd only; integrated 2ae has its own pending CI."
++    },
++    {
++      "id": "V5-SOURCE-ONLY-FORMAT-CALLER-TREE",
++      "status": "SOURCE_GATES_PASSED_AND_FORMAT_DELTA_REVIEWED",
++      "scope": "Original 43015979473/130507034042 on c842/e9ba: 103-path overlay, 13 old names with zero hits, 6200 Rust caller files with authorityGranted=false, unchanged locks; 21 actual formatter changes reviewed and materialized as 9bd2/c777. Zero native tests/models; ten adoption gates remain open."
++    },
++    {
++      "id": "V5-EXACT-SOURCE-BAZEL-MODULE-LOCK",
++      "status": "PASS_EXACT_SOURCE_BAZEL_MODULE_LOCK",
++      "scope": "Original R2 43020939762/130523679401, 9bd2/c777: one just bazel-lock-update phase, 26.462319s within 1200s, source/tree clean and equal, Cargo/MODULE locks and tool/Bazel bytes unchanged; warnings retained. Zero native tests and zero models. The first zero-phase version-probe failure remains historical."
+     }
+   ],
+   "common_source": {
+@@ -558,6 +568,11 @@
+       "id": "COMMON-SOURCE-MECHANICAL-REPAIRS",
+       "scope": "Common hosted MEM and macOS targets passed. The original signed-credit Windows fixture now passes on cb0b with complete-byte assertions; remaining repository consumers still require their own results.",
+       "status": "PUBLISHED_PARTIALLY_VALIDATED"
++    },
++    {
++      "id": "INTEGRATED-REPAIR-V5-FORMATTED-SOURCE",
++      "status": "SOURCE_AND_MODULE_LOCK_PASSED_NEW_REQUIRED_CI_NOT_CLOSED",
++      "scope": "Exact reviewed source is published as PR 5935 head9bd2. Source-only and module-lock checks passed. The current Blob policy job failed in Fence before checkout; other original native jobs remain under audit. Static diagnostics and earlier component results do not establish repair of runtime failures."
+     }
+   ],
+   "implicit_memory_isolation": {
+@@ -1015,9 +1030,9 @@
+       "status": "NOT_QUALIFIED"
+     },
+     {
+-      "finding": "Exact common MEM, Source A, complete 66f owner CI, original Windows/Linux signed-credit cases, F2 focused groups, G six regressions, and f1fd full Matrix 30/0 have passed their recorded scopes. The original full f1fd RMCP suite now also passed 268/0 with zero retries, all original unique IDs, same-source CLI and clean scoped fix; its complete archive is root-read-back. Final combined source 2ae5215 (112 disjoint paths) is published in #5935 and its existing automatic CI is in progress. No component result is transferred to the combination or to unmet required checks.",
++      "finding": "Previously qualified common, source-admission, complete 66f, F2, G, cb0b and f1fd scopes remain tied to their original exact heads. Original 189711 integrated CI has native failures and a failed required aggregate; its Architecture lanes passed 664 source-head executions and 136 base-merge executions separately. Its MEM run passed 11 memory plus 6 Agentd cases before a qualification guard failure, with protocol and scoped fixes skipped. Windows-current ended cancelled with 137 PASS, 1 LEAK, 1 FAIL and 28 expected cases without terminals. New V5 source-only gates passed on c842/e9ba; reviewed formatter output 9bd2/c777 then passed a separately pinned single Bazel module-lock command in 26.462319 seconds with clean unchanged source and both locks unchanged. These two operations ran zero native tests and zero models. At 2026-11-11T12:36:36Z the source PR was advanced from 189711 to 9bd2 and remains draft. Its original blocking-ci Blob size policy job 130526677869 failed at Fence setup with local_control_inventory_unavailable before checkout; blob checks were skipped, so this is not evidence of an oversized file or failed native test. Other new required/native jobs are still being observed on that exact head. New MEM/Architecture case counts remain in a separate original-run audit and are not credited by this checkpoint before its complete evidence publication. Published evidence V14 is e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d. The original Bazel version-probe failure and all older failures remain recorded. No component, formatting or module-resolution result is transferred to unobserved native cases, original-owner recovery or scientific adoption.",
+       "id": "HOSTED-CI",
+-      "status": "COMPONENT_GATES_PASSED_FINAL_COMPOSITION_REQUIRED_CI_IN_PROGRESS",
++      "status": "EXACT_9BD2_SOURCE_AND_MODULE_LOCK_PASSED_NEW_HOSTED_FENCE_FAILED_OTHER_NATIVE_CI_PENDING",
+       "closure": "Adjudicate the existing CI required and Architecture required checks and their actual dependencies on the final composition, retaining exact tested source, original logs and any failed or excluded scope. No new all-platform requirement is inferred from a package-level pass."
+     }
+   ],
+@@ -1114,8 +1129,9 @@
+     "source_commit": "adef61556284cc5b58c4f23a33d7c8455e821c3f"
+   },
+   "previous_checkpoint": {
+-    "commit": "743efac8d1c89e599b427da7e37f41d18af07985",
+-    "checkpoint_utc": "2026-11-11 05:16:08 UTC"
++    "commit": "cb54f618f0408c314b1c367a5256ea185165c354",
++    "checkpoint_utc": "2026-11-11 06:42:20 UTC",
++    "blob": "af43c75a36cb33c82fef4a8ab4edc892c5cf8e76"
+   },
+   "production_adoption": false,
+   "provider_readonly_observation": {
+@@ -1244,8 +1260,11 @@
+     },
+     "prior_outage_error": "MCP -32603 Internal error",
+     "reconciliation_required_for_other_unresolved_requests": true,
+-    "status": "RESTORED_WITH_INTERMITTENT_TOOL_FAILURES",
+-    "uncertain_requests_replayed_under_new_identity": false
++    "status": "HISTORICAL_RECOVERY_RETAINED_V3_ADMISSION_AND_V4_UPLOAD_EFFECTS_UNRESOLVED",
++    "uncertain_requests_replayed_under_new_identity": false,
++    "prior_status_at_v7": "RESTORED_WITH_INTERMITTENT_TOOL_FAILURES",
++    "historical_observation_scope": "The original ai395 request and archive preflight/publication entries retain their original observations. The old phrase Current source remains 96038 describes that original request reconciliation, not the current repair source.",
++    "new_source_preparation": "V3 UNKNOWN preserved without replay. V4 had zero process-start requests and unknown file-upload effects. V5 source checks ran independently in GitHub CI with exact source/harness identities."
+   },
+   "schema": "hepta.mem8.owner-followup.v1",
+   "scientific_acceptance": "HOLD",
+@@ -1386,33 +1405,137 @@
+   },
+   "final_source_composition": {
+     "pr": 5935,
+-    "head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+-    "tree": "12159640adcf073b51f3837e75575e11f5c20233",
++    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
++    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+     "parents": [
+-      "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+-      "55951ed9094ae894f0256a3461fd9504ef060473",
+-      "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
++      "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2"
+     ],
+     "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+-    "changed_files": 112,
+-    "pairwise_path_conflicts": 0,
+-    "original_postimages_preserved": true,
+-    "root_original_tree_objects_checked": 73,
+-    "current_ci_status": "AUTOMATIC_EXISTING_CI_IN_PROGRESS_NO_TERMINAL_QUALIFICATION_YET",
++    "identity_scope": "Current published PR 5935 source after root verified compare-and-swap 189711 -> 9bd2 at 2026-11-11T12:36:36Z. PR remains draft.",
++    "current_ci_status": "EXACT_9BD2_SOURCE_AND_MODULE_LOCK_PASSED_NEW_HOSTED_FENCE_FAILED_OTHER_NATIVE_CI_PENDING",
+     "main_required_contexts_observed": [
+       "CI required",
+       "Architecture required"
+     ],
+     "review_base_branch_is_protected": false,
+     "classic_protection_details_read": "HTTP_403_NOT_INFERRED",
+-    "new_logic_in_composition": false,
+     "provider_cases_remain_ignored": true,
+     "source_component_passes_transferred_to_this_head": false,
+-    "review_bundle": "integration-review/mem8-composition-ci-blocker-review-v2.tar.xz",
+-    "root_full_review_bundle_readback": "integration-review/ROOT_FINAL_REVIEW_READBACK_AUDIT.json",
+-    "root_full_review_bundle_readback_passed": true,
+-    "review_bundle_members": 157,
+-    "final_blocker_review": "integration-review/FINAL_BLOCKER_REVIEW_V2.json"
++    "initial_2ae_composition_historical": {
++      "pr": 5935,
++      "head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++      "tree": "12159640adcf073b51f3837e75575e11f5c20233",
++      "parents": [
++        "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
++        "55951ed9094ae894f0256a3461fd9504ef060473",
++        "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
++      ],
++      "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
++      "changed_files": 112,
++      "pairwise_path_conflicts": 0,
++      "original_postimages_preserved": true,
++      "root_original_tree_objects_checked": 73,
++      "current_ci_status": "AUTOMATIC_EXISTING_CI_IN_PROGRESS_NO_TERMINAL_QUALIFICATION_YET",
++      "main_required_contexts_observed": [
++        "CI required",
++        "Architecture required"
++      ],
++      "review_base_branch_is_protected": false,
++      "classic_protection_details_read": "HTTP_403_NOT_INFERRED",
++      "new_logic_in_composition": false,
++      "provider_cases_remain_ignored": true,
++      "source_component_passes_transferred_to_this_head": false,
++      "review_bundle": "integration-review/mem8-composition-ci-blocker-review-v2.tar.xz",
++      "root_full_review_bundle_readback": "integration-review/ROOT_FINAL_REVIEW_READBACK_AUDIT.json",
++      "root_full_review_bundle_readback_passed": true,
++      "review_bundle_members": 157,
++      "final_blocker_review": "integration-review/FINAL_BLOCKER_REVIEW_V2.json"
++    },
++    "initial_2ae_pending_language_scope": "Verbatim historical v7 snapshot only; current 189 and repair-candidate results are stated separately.",
++    "previous_published_source": {
++      "head": "189711e3563ea13a5328d52e99a286f082045b98",
++      "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
++      "results": "hosted_ci_followup_189"
++    },
++    "source_ref_publication": {
++      "branch": "codex/mem8-integrated-source-20261111-ed353817",
++      "previous_head": "189711e3563ea13a5328d52e99a286f082045b98",
++      "new_head": "9bd2f589debdba4a93baa363817c3669cb103721",
++      "published_at_utc": "2026-11-11T12:36:36Z",
++      "expected_head_CAS": true,
++      "root_full_ref_readback_verified": true,
++      "draft_pr": true
++    },
++    "current_formatted_source": {
++      "head": "9bd2f589debdba4a93baa363817c3669cb103721",
++      "tree": "c77785ecb368c44ea699769001a47402c9f50591",
++      "parent": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
++      "source_gate_only_passed": true,
++      "native_qualification": "NOT_YET_ESTABLISHED",
++      "source_gate_result_transferred_to_native": false,
++      "publication_status": "PUBLISHED_CURRENT_SOURCE_PR_HEAD",
++      "module_lock_status": "PASS_EXACT_SOURCE_BAZEL_MODULE_LOCK"
++    },
++    "new_original_CI_runs": {
++      "observed_at_utc": "2026-11-11T12:37:56.830Z",
++      "MEM": {
++        "run_id": 43021840437,
++        "attempt": 1,
++        "status": "in_progress",
++        "native_job": 130526675523,
++        "native_last_observed_step": "Test staged memory owner contracts on unchanged source",
++        "new_case_counts": "NOT_YET_AUDITED"
++      },
++      "Architecture": {
++        "run_id": 43021840388,
++        "attempt": 1,
++        "status": "in_progress",
++        "base_merge_job": 130526675057,
++        "base_merge_job_conclusion": "success",
++        "source_head_job": 130526675565,
++        "source_head_last_observed_step": "Verify Cargo lock resolution and print exact resolver drift",
++        "new_case_counts": "NOT_YET_AUDITED"
++      },
++      "old_189_counts_transferred": false,
++      "snapshot_is_historical_once_newer_original_observation_exists": true,
++      "snapshot_scope": "Historical initial new-run metadata only; later state is separately appended below. No new native or Python counts are claimed here.",
++      "current_fence_observation": {
++        "scope": "Original current-source job metadata and complete decoded raw log; not a native test or blob-size finding.",
++        "observed_at_utc": "2026-11-11 12:47:28 UTC",
++        "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
++        "run_id": 43021840778,
++        "run_attempt": 1,
++        "job_id": 130526677869,
++        "name": "Blob size policy / Blob size policy",
++        "status": "completed",
++        "conclusion": "failure",
++        "started_at": "2026-11-11T12:36:48Z",
++        "completed_at": "2026-11-11T12:37:07Z",
++        "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840778/job/130526677869",
++        "raw_log": {
++          "bytes": 3859,
++          "sha256": "f50cdc9fa4044764eaa7a79468bec7e0dae90b2aa103ec231bfced4d19267f00",
++          "git_blob": "941f4e9ace35ca12ec69e99d8488160b78ca86d1"
++        },
++        "first_failed_step": "Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
++        "first_error": "Fence resident service exited before readiness",
++        "resident_error_code": "local_control_inventory_unavailable",
++        "checkout": "skipped",
++        "blob_policy_test": "skipped",
++        "changed_blob_size_check": "skipped",
++        "subsequent_errors": [
++          "The always clean-worktree local action was unavailable because checkout did not run.",
++          "Fence post-job active Action mount evidence was unavailable."
++        ],
++        "native_cases_executed_by_this_job": 0,
++        "source_after_or_clean_checkout_established_by_this_job": false,
++        "file_size_limit_violation_established": false,
++        "rerun_or_policy_bypass": false,
++        "full_new_required_CI_conclusion": "PENDING_ORIGINAL_OTHER_JOBS"
++      },
++      "other_current_native_artifacts": "PENDING_COMPLETE_SEPARATE_ORIGINAL_RUN_AUDIT_AND_PUBLICATION",
++      "current_MEM_and_Architecture_counts_transferred": false
++    }
+   },
+   "provider_readonly_followup": {
+     "status": "ORIGINAL_JOURNAL_ZERO_MATCHES_CURRENT_GETS_200_ORIGINAL_OUTCOME_UNKNOWN",
+@@ -1480,5 +1603,754 @@
+     "privacy_erratum": "provider-original-failure/PROJECTION_PRIVACY_ERRATUM.json",
+     "new_owner_starts_or_model_replays": 0,
+     "new_database_reads_for_redaction": 0
++  },
++  "checkpoint_revision": 9,
++  "publication_state": "PUBLISHED_DRAFT_CHECKPOINT",
++  "hosted_ci_followup_189": {
++    "scope": "Original runs on 189711; separate from V5 source-only and any subsequent candidate native jobs.",
++    "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
++    "source_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
++    "published_v13_evidence_commit": "c6bdeeac20a8ff1c79a70209df9e9b85f51cc6a2",
++    "v14_ref_publication": "PUBLISHED_AND_ROOT_FULL_READBACK_VERIFIED",
++    "blocking_ci": {
++      "run_id": 43002359918,
++      "jobs": 37,
++      "success": 23,
++      "failure": 10,
++      "skipped": 4,
++      "required_aggregate": "failure",
++      "counts_are_jobs_not_actor_cases": true,
++      "failed_job_retry": "Only Blob job 130483156553 and required aggregate 130483324196 were new executions; reused job IDs/timestamps and skipped jobs are not new native executions."
++    },
++    "architecture": {
++      "run_id": 43002359625,
++      "required_job": "success",
++      "source_head": {
++        "executions": 664,
++        "rust": 526,
++        "python": 138
++      },
++      "base_merge": {
++        "python_executions": 136
++      },
++      "lanes_not_pooled_as_distinct_cases": true
++    },
++    "mem": {
++      "run_id": 43002359609,
++      "memory_passed": 11,
++      "agentd_passed": 6,
++      "native_selected_passed_before_guard": 17,
++      "python_passed": 119,
++      "integrity_python_passed": 35,
++      "separate_denominators": true,
++      "qualification": "PRETEST_GUARD_FAILED_NO_QUALIFICATION_RECEIPT",
++      "protocol": "SKIPPED",
++      "scoped_fixes": "SKIPPED",
++      "guard_exact_runtime_branch_traced": false,
++      "pinned_JUnit_path_correction_in_V5_is_not_retroactive_pass": true,
++      "original_artifact_index_blob": "7bd1c3b5ab6a2a2df882ae909326c3690a76295a"
++    },
++    "windows_current": {
++      "run_id": 43002359812,
++      "job_id": 130461336393,
++      "job_conclusion": "cancelled",
++      "completed_groups": 15,
++      "declared_groups": 19,
++      "strictly_passed_groups": 13,
++      "distinct_package_case_terminals": 139,
++      "PASS": 137,
++      "LEAK": 1,
++      "FAIL": 1,
++      "expected_cases_without_terminal": 28,
++      "source_after": "NOT_OBSERVED",
++      "final_aggregate": "NOT_OBSERVED",
++      "ordinary_host_delete_matrix": "Passed expected four-cell precondition in this original run.",
++      "elevated_delete_failure": "Outside-root file and directory deletion occurred in TargetOnly, ParentOnly and Both; Neither remained. The original all-false outside-root assertion failed.",
++      "leak": "elevated_non_tty_cmd_forwards_env_output_and_exit has a passing body with LEAK; it is not a strict PASS. The leaked process or descriptor identity is not established.",
++      "peer_blob": "241b0d23e15b243c9e6a5cc12597e620f6b52ec3"
++    },
++    "native_failures_are_not_all_fixture_proven": "Source-only review and diagnostics do not establish runtime fixes. In particular, the elevated outside-root delete boundary remains unresolved; typed hardlink write protection is a different path.",
++    "current_provider_or_model_case_replayed": false,
++    "historical_v14_staging_commit": "947bf2cffedff659d543513f4a88ba432d11bd79",
++    "published_v14_evidence": {
++      "commit": "e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d",
++      "tree": "d005a359ccd2ba85d59fcb2c1b901cc855e359ed",
++      "pr": 5889,
++      "draft": true,
++      "root_reported_ref_and_PR_body_readback": true,
++      "independent_commit_identity_readback": true,
++      "path": "qualification/memory-cell-mem8-ci-followup/v14",
++      "scope": "Complete V14 source-preparation, original189 CI, source-only V5 and Bazel R2 evidence; new9bd2 MEM/Architecture native results remain separate."
++    }
++  },
++  "source_preparation_followup_v5": {
++    "original_v3": {
++      "key": "mem8-integrated-repair-source-ai395-ed353817-v3",
++      "admission": "UNKNOWN",
++      "terminal": "UNKNOWN",
++      "different_key_replay": false
++    },
++    "original_v4": {
++      "input_bytes": 328808,
++      "input_sha256": "320e3ee8ac8dc90a25f3b85ef0ceda7c1fe8af8fb27446ebc73e0afb1aae3938",
++      "cumulative_paths": 101,
++      "incremental_vs_189": 44,
++      "source_process_start_requests": 0,
++      "CI_admissions": 0,
++      "host_file_upload_effects": "UNKNOWN",
++      "FileNotFound_read_is_not_proof_of_no_late_write": true,
++      "pure_source_commit": "6ce78781977d1ca77d004845b933ec9a99f54a83"
++    },
++    "v5_input": {
++      "input_bytes": 333228,
++      "input_sha256": "948e8c9ff924317f55feaa45a0c9bac92c29196f6bf652a888ddf7c8795bb0d0",
++      "cumulative_paths": 103,
++      "incremental_vs_189": 46,
++      "new_files_vs_2ae": 11,
++      "all_101_V4_source_records_unchanged": true,
++      "two_added_holdout_postimages": [
++        "15b2ff305e659a16e2b1a0d8d562b4a0d10a401e",
++        "7f8280990e11f5e9b6e29634c8f38bb79d1b9389"
++      ]
++    },
++    "initial_harness": {
++      "head": "803e7e48b06a237a98abbf0248422040f82c06c5",
++      "run_id": 43015488785,
++      "status": "completed",
++      "conclusion": "failure",
++      "jobs": 0,
++      "static_defect": "Unsupported runner.temp context in job.env; prior static review missed expression-context validity.",
++      "literal_parser_annotation": "NOT_OBTAINED"
++    },
++    "source_gate": {
++      "schema": "hepta.mem8.source-ci-v5.root-original-audit.v1",
++      "verified_at_utc": "2026-11-11T12:11:28.029096+00:00",
++      "original_run": 43015979473,
++      "original_job": 130507034042,
++      "workflow_head": "720f7ff5042a66490e2433bf4652c2eef93e4b7d",
++      "source_head_unchanged": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
++      "source_initial_tree": "e9ba2746237562d68b1c732bee0f86df9e352cde",
++      "formatted_tree": "c77785ecb368c44ea699769001a47402c9f50591",
++      "zip": {
++        "bytes": 6299090,
++        "sha256": "6ecc9f1ab22fcaccbf52f0190c9af0e8edef759a0537dbb8f751b227d09b7c80",
++        "regular_members_crc_and_hash_verified": 337
++      },
++      "tar": {
++        "bytes": 1783500,
++        "sha256": "6718333beb6ea7b6faefc2bd026413e8ab1413f24bf4f377a773fc0264dd288a",
++        "git_blob": "eb285beb4588ab1aee652a785881c5d37d932292",
++        "regular_members_verified": 335
++      },
++      "three_complete_trees_independently_recomputed": true,
++      "overlay_paths_verified": 103,
++      "formatter_delta_reviewed_in_full": {
++        "paths": [
++          "codex-rs/app-server-client/BUILD.bazel",
++          "codex-rs/app-server/BUILD.bazel",
++          "codex-rs/app-server/tests/suite/v2/model_list.rs",
++          "codex-rs/app-server/tests/suite/v2/remote_control.rs",
++          "codex-rs/core-plugins/src/remote/catalog_cache.rs",
++          "codex-rs/exec-server/src/fs_helper.rs",
++          "codex-rs/exec-server/src/windows_restricted_write_tests.rs",
++          "codex-rs/ext/hepta-memory/BUILD.bazel",
++          "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
++          "codex-rs/hepta-agentd/BUILD.bazel",
++          "codex-rs/hepta-agentd/src/runtime_tests.rs",
++          "codex-rs/hepta-codex-adapter/BUILD.bazel",
++          "codex-rs/hepta-cognitive-store/BUILD.bazel",
++          "codex-rs/hepta-infer-worker-host/BUILD.bazel",
++          "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
++          "codex-rs/hepta-memory/BUILD.bazel",
++          "codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs",
++          "codex-rs/hepta-memory/src/lib.rs",
++          "codex-rs/hepta-neuron/src/cell_generation_control.rs",
++          "codex-rs/hepta-supervisor/BUILD.bazel",
++          "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs"
++        ],
++        "patch_bytes": 27705,
++        "patch_sha256": "2fab5b3fad7459e925260f1173a07a56fdf15ac71c3ab4a9c5a5d0c13304ae79",
++        "finding": "Rust formatting and import order; BUILD load and keyword argument order, final newline. No semantic change identified."
++      },
++      "source_after": "original HEAD unchanged; exact 21 formatter modifications staged",
++      "original_deadline_seconds": 600,
++      "started_at": "2026-11-11T11:56:16.122508+00:00",
++      "finished_at": "2026-11-11T12:02:50.118524+00:00",
++      "elapsed_seconds": 393.996016,
++      "old_case_names_scanned": 13,
++      "old_case_hits": 0,
++      "caller_rust_files_scanned": 6200,
++      "caller_authority_granted": false,
++      "locks_unchanged": true,
++      "native_tests": 0,
++      "model_requests": 0,
++      "qualification": "SOURCE_GATES_PASSED_AND_FORMAT_DELTA_REVIEWED",
++      "remaining": [
++        "New Bazel dependency graph and lock qualification",
++        "Native tests for the changed source",
++        "Original owner, provider, scientific benefit and independent trust/adoption gates"
++      ]
++    },
++    "source_gate_root_audit": {
++      "path": "qualification/memory-cell-mem8-ci-followup/v14/ROOT_SOURCE_CI_V5_AUDIT.json",
++      "commit": "e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d",
++      "bytes": 3131,
++      "sha256": "d5cb21e504018b5838e91c7d2bec49c89579f33ce7a90330672be329c1ffbff2",
++      "git_blob": "75f47d1f0e8bb3cb8d38afc1751e6da4a09195c1",
++      "root_complete_original_archive_audit": true,
++      "independent_full_published_file_readback": true
++    },
++    "formatter_output_publication": {
++      "head": "9bd2f589debdba4a93baa363817c3669cb103721",
++      "tree": "c77785ecb368c44ea699769001a47402c9f50591",
++      "parent": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
++      "actual_21_formatter_postimages_full_git_readback": true,
++      "original_CI_checkout_clean_after": false,
++      "original_CI_checkout_after": "Original HEAD/tree unchanged with exactly 21 staged formatter modifications; a separate pure commit was created after review."
++    },
++    "preparation_archive": {
++      "publication_blob": "bbecfb912ba74432493a8d851140d3b61aa9542d",
++      "member_manifest_blob": "719c8b6e758a4b9634d280945ac03d6b20eda14f",
++      "root_full_two_part_readback": true,
++      "root_audit": {
++        "schema": "hepta.mem8.preparation.root-readback-audit.v1",
++        "verified_at_utc": "2026-11-11T12:26:20.969226+00:00",
++        "staged_commit": "947bf2cffedff659d543513f4a88ba432d11bd79",
++        "full_binary_parts_verified": 2,
++        "archive_bytes": 728468,
++        "archive_sha256": "1d96a60b0d5e7bec25a80f97d3a8ed128df9e3c2f6c5a6fcd9738d8e301a2284",
++        "archive_git_blob_computed": "66aa4904ad6c24db7c54d4376bb1045c676a0081",
++        "whole_archive_blob_created": false,
++        "regular_members_verified": 28,
++        "exact_lossless_embedded_V4_input_verified": true,
++        "V4_full_rows_verified": 101,
++        "V5_full_rows_verified": 103,
++        "all_101_V4_rows_unchanged_in_V5": true,
++        "exact_drivers_verified": 3,
++        "exact_workflows_verified": 2,
++        "original_V4_source_process_requests": 0,
++        "original_lost_preparation_file_count": 15,
++        "original_artifact_recovery_complete": false,
++        "known_hash_does_not_restore_lost_original": true,
++        "new_native_or_model_requests": 0,
++        "archive_supplied_code_executed": false,
++        "status": "RETAINED_BYTES_AND_EXPLICIT_GAPS_VERIFIED",
++        "limit": "Exact recovery of source inputs, drivers and primary receipts is not complete recovery of all preparation files or a full owner/effect cold recovery."
++      },
++      "root_audit_file": {
++        "path": "qualification/memory-cell-mem8-ci-followup/v14/source-preparation/ROOT_READBACK_AUDIT.json",
++        "bytes": 1198,
++        "sha256": "0665ed66f1d27b7f63d637c4d0ac90c449133be32328b38c155a2d92030c390b",
++        "git_blob": "59214db0027bf80c470bebaf07dace2d18517452"
++      },
++      "original_preparation_notes_recovery_complete": false
++    },
++    "bazel_lock_followup": {
++      "original_run_id": 43020198388,
++      "original_job_id": 130521184483,
++      "workflow_head": "8ead9735ecd78721f306f03e49dbd57894a474d0",
++      "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
++      "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
++      "status": "ORIGINAL_VERSION_PREFLIGHT_FAILED_ZERO_LOCK_PHASES",
++      "lock_command_phases_started": 0,
++      "version_process_exit_code": 0,
++      "version_process_timed_out": false,
++      "version_combined_raw": {
++        "bytes": 115,
++        "sha256": "70b6e531ac335269d7bedf2b85c21a1328ad74eac8e7a53af047221d983ee276",
++        "git_blob": "8a0bac91c5c34b8c85d2f2b0932d9eaa2943b10a"
++      },
++      "result_receipt": {
++        "bytes": 1087,
++        "sha256": "2168ebb82806d6cea4b12af15a3bea60ee575bbcb388b7008525d99a0ef2ef11",
++        "git_blob": "6f85e4c81f20842f83360daca0d3db2576b28664"
++      },
++      "version_receipt": {
++        "bytes": 408,
++        "sha256": "ea9cc006452b26fd351731c778c25fefa656051178502abc67c27e604a22fd95",
++        "git_blob": "02f4f614035c83ea66d9def9e3e5100a9257452a"
++      },
++      "reason": "The combined stdout/stderr version stream contained a download notice plus bazel 9.3.0 and was rejected by whole-string equality; no lock command ran.",
++      "source_before": {
++        "head": "9bd2f589debdba4a93baa363817c3669cb103721",
++        "status": "",
++        "tree": "c77785ecb368c44ea699769001a47402c9f50591"
++      },
++      "source_after": "NOT_RECORDED_BY_THIS_PREFLIGHT_FAILURE",
++      "native_tests": 0,
++      "model_requests": 0,
++      "revision2_candidate": {
++        "driver_sha256": "08da7b6f91f57932359f2c6937abc24f6f5f21bfc14a321c4053d7af200ed323",
++        "change": "Separate Bazel version stderr into its own raw/hash record; stdout remains exact bazel 9.3.0. All original 30s/1200s budgets and no-retry boundaries retained.",
++        "static_peer": "NO_STATIC_MUST_FIX_FOUND",
++        "actual_new_result": "PASS_EXACT_SOURCE_BAZEL_MODULE_LOCK"
++      },
++      "original_attempt_historical": true,
++      "revision2_actual_root_audit": {
++        "schema": "hepta.mem8.bazel-v5.root-original-audit.v1",
++        "verified_at_utc": "2026-11-11T12:35:50.278339+00:00",
++        "run_id": 43020939762,
++        "job_id": 130523679401,
++        "attempt": 1,
++        "workflow_head": "d03aa4c87d4f9fe9c1f99fbe319f829d9eef6158",
++        "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
++        "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
++        "source_before_after_clean_and_equal": true,
++        "all_source_tree_entries_equal_prior_root_verified_formatter_tree": true,
++        "zip_bytes": 2278345,
++        "zip_sha256": "8bbc8c00b0c9a25aeac964d8486a065c6557e9aab9d819cbb21f1ddd213fbb95",
++        "all_zip_members_verified": 52,
++        "records_archive_bytes": 659176,
++        "records_archive_sha256": "d8b5413e20d2a316d2038a4a178e8fc79e4285b4059954eddd7159144b19a883",
++        "all_archive_members_verified": 44,
++        "actual_lock_command_phases": 1,
++        "original_budget_seconds": 1200,
++        "command_elapsed_seconds": 26.462319020000002,
++        "command_started_at": "2026-11-11T12:31:12.445078+00:00",
++        "command_finished_at": "2026-11-11T12:31:38.908320+00:00",
++        "actual_invocation": "06adadd2-2e89-495f-b534-007c92f53108",
++        "raw_command_log_sha256": "dbb76ccdc397772c18d75bb2d744ebf51d1787d386be4f71127248c5a3d50504",
++        "both_lock_files_byte_identical_before_after": [
++          {
++            "bytes": 421005,
++            "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
++            "path": "codex-rs/Cargo.lock",
++            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
++          },
++          {
++            "bytes": 1788299,
++            "git_blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
++            "path": "MODULE.bazel.lock",
++            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
++          }
++        ],
++        "tool_before_after_recorded_identities_equal": true,
++        "actual_bazel_binary_recorded_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
++        "version_stdout_and_download_stderr_retained_separately": true,
++        "warnings_retained": "Original module direct-dependency and crate-annotation warnings are preserved; no check_direct_dependencies or annotation change was made.",
++        "native_project_tests": 0,
++        "model_requests": 0,
++        "status": "PASS_EXACT_SOURCE_BAZEL_MODULE_LOCK",
++        "limits": [
++          "Module resolution and lock consistency do not compile Rust or qualify native runtime behavior.",
++          "The first run's version-probe failure with zero lock-command phases remains an original failure."
++        ]
++      },
++      "revision2_root_audit_file": {
++        "path": "qualification/memory-cell-mem8-ci-followup/v14/ROOT_BAZEL_V5_AUDIT.json",
++        "bytes": 2415,
++        "sha256": "33552af3a7277bde233aef3cfbd823b004687f39149eb1f17458e256d5f473ec",
++        "git_blob": "dd7629cde84b9d227f66b3f81a72fb14ae0e2755"
++      },
++      "both_original_attempts_evidence_publication_blob": "777c7a7861be5f6ae9a30c84d101431967480093",
++      "module_resolution_and_lock_consistency_is_native_pass": false
++    },
++    "new_native_tests_in_source_operation": 0,
++    "new_model_requests_in_source_operation": 0,
++    "source_only_result_closes_adoption_gate": false,
++    "published_evidence": {
++      "commit": "e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d",
++      "tree": "d005a359ccd2ba85d59fcb2c1b901cc855e359ed",
++      "pr": 5889,
++      "draft": true,
++      "root_reported_ref_and_PR_body_readback": true,
++      "independent_commit_identity_readback": true,
++      "path": "qualification/memory-cell-mem8-ci-followup/v14",
++      "scope": "Complete V14 source-preparation, original189 CI, source-only V5 and Bazel R2 evidence; new9bd2 MEM/Architecture native results remain separate."
++    },
++    "source_gate_snapshot_scope": {
++      "verified_at_utc": "2026-11-11T12:11:28.029096+00:00",
++      "embedded_audit_is_exact_published_document": true,
++      "remaining_field_is_historical": true,
++      "scope": "The audit remaining list reflects its original 12:11 observation. Its then-pending Bazel qualification is preserved verbatim; the later successful R2 result is recorded separately in bazel_lock_followup. Native, original-owner, provider, scientific and trust gates are not closed by either source-only or module-lock evidence."
++    }
++  },
++  "actionable_remaining_inputs": {
++    "scope": "Concrete intake and closure evidence for the existing ten gates, without adding or relaxing acceptance thresholds.",
++    "custodian_names_or_credentials_not_fabricated": true,
++    "original_four_deployment_required_inputs_preserved": true,
++    "exact_original_owner_readiness_validator": {
++      "status": "NO_EXACT_ORIGINAL_DEPLOYMENT_AUTHENTICATION_VALIDATOR_IDENTIFIED_BY_THIS_REVIEW",
++      "finding": "The generic scripts/hepta-readiness.py validates registry invariants. Existing typed bridge/production input APIs require original authority custody; neither authenticates an absent owner from hashes, labels or test_only roles. No unverified diagnose-native path or command is invented."
++    },
++    "source_contract_pins": [
++      {
++        "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++        "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++        "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++      },
++      {
++        "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++        "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++        "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++        "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++      },
++      {
++        "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
++        "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++        "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
++        "symbol": "AgentdConfig::with_episodic_snapshot_import"
++      },
++      {
++        "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
++        "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++        "git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
++        "symbol": "episodic_real_provider_fresh_context_smoke",
++        "status": "IGNORED_AND_UNEXECUTED; not an original-owner readiness validator"
++      }
++    ],
++    "gates": [
++      {
++        "gate_id": "WORKING-STATE-SCIENTIFIC-GATE",
++        "missing_inputs": [
++          "A source cohort with authenticated exposure history and justified source-group independence meeting the unchanged W protocol; the 16 residual candidates are only an upper bound, not certified unseen sources.",
++          "A frozen request/source allocation and analysis source before reference/outcome access, with the public selector, model, OCR, control schedule and information budget matched."
++        ],
++        "custodian_role": "Actual source/data custodian and prespecified evaluator; their original authority and exposure attestations are not yet authenticated.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "module": "ndu_real_runtime.run_candidate_retention_public",
++            "scope": "Existing W runner specified by ACCEPTANCE; do not reclassify it as episodic benefit or replay a historical request."
++          }
++        ],
++        "next_step": "Obtain the source/exposure inputs and freeze a new admissible W protocol before any actor launch; do not lower 20 total / 4 per role or pool historical pilots as independent.",
++        "closure_evidence": "All planned paired terminals and retained failures/UNKNOWNs, source-balanced estimand and unchanged prespecified lower-bound gate, with initial-correct/no-op outcomes separated."
++      },
++      {
++        "gate_id": "ORDINARY-OWNER-BRIDGE",
++        "missing_inputs": [
++          "The original Agentd identity (agent_id, spawn_generation, home/run layout), retained deployed writer and live ProductionAuthorityLease/ExactCurrentCut.",
++          "An original source-custody adapter supplying typed current record observations and withdrawal evidence; a request digest or Python namespace is insufficient."
++        ],
++        "custodian_role": "Original deployment/writer custodian and original source owner; no replacement authority or fixture grant is created.",
++        "existing_entrypoints": [
++          {
++            "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
++            "symbol": "AgentdConfig::with_episodic_snapshot_import"
++          },
++          {
++            "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f1f3b419775553fe8ded61487bd26bb380860606",
++            "scope": "Existing production descriptor parsing/validation; it does not by itself prove original custody."
++          }
++        ],
++        "next_step": "Validate the supplied original bindings, then configure the retained writer and verifier through the existing API; preserve the original generation, tombstones and uncertain commit identity.",
++        "closure_evidence": "Original-owner import, ordinary read, replay/reopen and withdrawal receipts tied to the current cut, plus rejection of stale/revoked/wrong-namespace inputs. Fixture results alone do not close this."
++      },
++      {
++        "gate_id": "PROVIDER-RUNTIME-BINDING",
++        "missing_inputs": [
++          "A terminal or authoritative reconciliation record for original thread 01a1c8ef-125f-75ae-aaf1-0fe5a4c079f6 / turn 01a1c8ef-1fbd-75b0-bc6e-2b22a1f1f596.",
++          "Authenticated current provider/model route configuration and actual original request/terminal identity; physical request count remains unknown."
++        ],
++        "custodian_role": "Original retained thread/runtime owner and the actual provider/gateway route custodian.",
++        "existing_entrypoints": [
++          {
++            "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
++            "symbol": "episodic_real_provider_fresh_context_smoke",
++            "status": "IGNORED_AND_UNEXECUTED; not an original-owner readiness validator"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          }
++        ],
++        "next_step": "Continue only identity-bound read-only reconciliation of the original request with supplied original records. A current GET 200 is availability, not settlement. Do not replay the unknown turn or execute the ignored G provider case yet.",
++        "closure_evidence": "Correlated original thread/turn/dispatch terminal and safe provider metadata; subsequently a separately authorized bounded native context path with actual CognitiveContext -> untrusted AdditionalContext -> final owner revalidation evidence. No effect-authority or unseen-benefit claim follows from that smoke."
++      },
++      {
++        "gate_id": "UNSEEN-EPISODIC-BENEFIT",
++        "missing_inputs": [
++          "A separately preregistered E protocol, independent source sequences and complete exposure ledger.",
++          "A settled and authenticated runtime plus fresh successor sessions with no prior transcript/KV or workspace-memory bypass."
++        ],
++        "custodian_role": "Source custodian, original runtime owner and independent evaluator under the frozen E protocol.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          },
++          {
++            "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
++            "symbol": "AgentdConfig::with_episodic_snapshot_import"
++          },
++          {
++            "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
++            "symbol": "episodic_real_provider_fresh_context_smoke",
++            "status": "IGNORED_AND_UNEXECUTED; not an original-owner readiness validator"
++          }
++        ],
++        "next_step": "After source/provider/owner admission, run a new matched memory off/on successor comparison with fixed public selector; retain exact interventions and all planned outcomes. Do not substitute the nonce mechanism fixture for an unseen cohort.",
++        "closure_evidence": "New-session actual memory-use and final task-effect evidence, causal off/retrieval/association/delivery interventions, authoritative update/revocation/old-state/source changes and preregistered source-level uncertainty. No W numeric minimum is transferred to E."
++      },
++      {
++        "gate_id": "STRONG-BASELINES-AND-ASSOCIATION",
++        "missing_inputs": [
++          "Matched exact KV, BM25/RAG, ordinary ICL and uniform replay actor runs with equal authorized history and context/cost budgets.",
++          "A real association component if its learned-head benefit is claimed; absent association remains unavailable."
++        ],
++        "custodian_role": "Protocol/evaluation custodian and the existing memory/runtime owner; no synthetic trained capability is declared.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          },
++          {
++            "path": "scripts/ndu_real_runtime/episodic_retrieval.py",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "39e8d9f3940860f74f7bb6e6638f796f56df2222",
++            "scope": "Mechanism baseline/ranking entry, not evidence of model-driven successor success."
++          }
++        ],
++        "next_step": "Freeze the four baseline contrasts and intervention paths in the E protocol, then measure them on the same admitted successor tasks and information budget.",
++        "closure_evidence": "Actual invocation/delivery and matched actor/effect receipts for each baseline and the association intervention, using the unchanged family-alpha/per-contrast requirements."
++      },
++      {
++        "gate_id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
++        "missing_inputs": [
++          "Authenticated actual source custody and complete current train/dev/eval/ever-exposed history.",
++          "An independent trust-domain authority and its current revocation/frontier bindings, rather than another host controlled by the same owner."
++        ],
++        "custodian_role": "Actual source owner and independently administered trust/issuer custodian; specific authenticated identities remain missing.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          },
++          {
++            "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
++            "symbol": "AgentdConfig::with_episodic_snapshot_import"
++          }
++        ],
++        "next_step": "Have the original custodians supply the metadata/bindings, validate against the retained 69-group exclusion ledger, and keep the remaining 16 candidate upper bound unqualified until exposure is certified.",
++        "closure_evidence": "Per-source signed or independently verifiable custody/exposure evidence, independent trust-domain verification and stale/rollback/revocation negatives with actual authority continuity."
++      },
++      {
++        "gate_id": "DELETION-AND-EXTERNAL-EFFECT",
++        "missing_inputs": [
++          "Consumer cache/materialization inventories and authoritative deletion/revocation propagation records.",
++          "Original final-use issuer and external-effect/outbox/destination owners with idempotency and final-use fencing state."
++        ],
++        "custodian_role": "Original data/version owner, every relevant consumer-cache custodian, independent final-use issuer and authorized effect owner.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          },
++          {
++            "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
++            "symbol": "AgentdConfig::with_episodic_snapshot_import"
++          }
++        ],
++        "next_step": "Keep typed write, legacy admission and final-use protections intact; resolve the observed elevated outside-root delete failure on a newly qualified exact source. Then test propagation and effects through original owners.",
++        "closure_evidence": "No revoked/deleted delivery, consumer-cache propagation, independent destination readback, lost-ACK reconciliation without duplicate effects and external final-use fence evidence. Logical exclusion or a typed hardlink write check alone does not prove erasure/delete isolation."
++      },
++      {
++        "gate_id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
++        "missing_inputs": [
++          "The original config/registration/native-profile descriptors and original preheld owner pidfd or its authenticated recovery protocol.",
++          "Original private writer/version state, runtime registry, grants/permissions, independent authority frontier, outstanding request IDs and destination/effect state."
++        ],
++        "custodian_role": "Original deployment and storage owners plus independent issuer/effect custodians; credentials remain private and are not published in evidence.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          },
++          {
++            "path": "codex-rs/hepta-agentd/src/config_root_handoff.rs",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "0071512a960b4e9b19b1d2897128c0d67fa59271",
++            "symbol": "AgentdConfig::prepare_root_handoff",
++            "scope": "Existing handoff API requires real original inputs; not an automatic original-owner recovery certificate."
++          }
++        ],
++        "next_step": "Use the existing original-owner recovery/handoff path only after authenticated inputs are supplied; reconstruct in an independent cold environment while retaining pending identities and original trust boundaries.",
++        "closure_evidence": "Authenticated recovered owner/current cut and grants, correct next-task behavior, independent final-use/effect readback and no duplicate effects. The complete MEM6 archive and recovered source evidence close only file custody."
++      },
++      {
++        "gate_id": "FULL-COST-AND-SLOW-CONSOLIDATION",
++        "missing_inputs": [
++          "Campaign/episode CPU and wall time; OCR/model, indexing/retrieval, delivered bytes/tokens, storage/I/O, failed-attempt/recovery, energy and provider charge observations.",
++          "A separately versioned semantic/skill-consolidation candidate and its attributable held-out successor evaluation if that capability is claimed."
++        ],
++        "custodian_role": "Actual runtime/provider/storage cost custodians and the preregistered evaluation owner.",
++        "existing_entrypoints": [
++          {
++            "path": "qualification/memory-cell-mem6/ACCEPTANCE.json",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55"
++          },
++          {
++            "path": "qualification/memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md",
++            "commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
++            "git_blob": "680df205a0d02a280c6f66841e132277c40a0fbe",
++            "scope": "Protocol requirements only; its historical pre-bridge availability observations are not current implementation findings."
++          }
++        ],
++        "next_step": "Collect the existing cost panel across the same matched runs, preserving unknown energy/charges as unknown; evaluate slow consolidation as a separate versioned intervention.",
++        "closure_evidence": "Complete non-overlapping applicable cost accounting and retained failure/recovery costs alongside source-correct successor benefit. Bounded successful read latency alone is insufficient."
++      },
++      {
++        "gate_id": "HOSTED-CI",
++        "missing_inputs": [
++          "Successful exact-source required CI and actual dependent scopes for published9bd2; the new Fence setup failure and original189 native failures remain recorded.",
++          "Terminal/receipt/case evidence from the already admitted original9bd2 automatic runs, retaining platform/feature scope, failed attempts and missing terminals."
++        ],
++        "custodian_role": "Repository maintainer and the existing CI runners/check infrastructure; no new production owner is required for these zero-model checks.",
++        "existing_entrypoints": [
++          {
++            "path": ".github/workflows/hepta-mem-python.yml",
++            "scope": "Existing exact-source MEM native/Python/integrity lanes; ignored real-provider cases remain unselected."
++          },
++          {
++            "contexts": [
++              "CI required",
++              "Architecture required"
++            ],
++            "scope": "Existing required contexts and their actual dependency/feature/platform scope; no newly invented all-platform threshold."
++          },
++          {
++            "recipe": "just bazel-lock-update",
++            "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
++            "scope": "Separately pinned 1200-second source-only lock workflow, not a native test."
++          }
++        ],
++        "next_step": "Monitor and adjudicate the already admitted exact9bd2 original jobs. Diagnose the observed Fence resident startup failure through supported logs without bypassing Fence or changing security controls. Preserve original native failures, inspect their specific source paths and publish only separately reviewed repairs. Source-only and module-lock checks are complete; do not rerun them without a concrete new requirement.",
++        "closure_evidence": "Exact head/tree/clean source and actual selected-case/UUID/timestamp/raw-log receipts, required aggregate terminals, explicit skipped/missing cases, and retained original failures; no cross-head transfer of old component passes."
++      }
++    ]
++  },
++  "new_model_requests_this_revision": 0,
++  "v9_update_provenance": {
++    "base_checkpoint_commit": "cb54f618f0408c314b1c367a5256ea185165c354",
++    "base_blockers": {
++      "bytes": 72718,
++      "sha256": "7c8e9c528cb80d7eb4fbfc3c22e440d5e9ad318baccbae9b55776cf41f5e5fcf",
++      "git_blob": "af43c75a36cb33c82fef4a8ab4edc892c5cf8e76"
++    },
++    "base_full_git_readback_verified": true,
++    "new_revision": 9,
++    "old_v8": {
++      "status": "LOCAL_UNPUBLISHED_DRAFT_LOST_ON_WORKSPACE_RESET",
++      "original_bytes_recovered": false,
++      "known_original_bytes": 86134,
++      "known_original_sha256": "2d6c4780884fbb8d1c430003cddda1ed4333c304e89ce0fc3d1b71c066a7cdfb",
++      "derivation": "This new v9 candidate derives from immutable v7, not from a fabricated recreation of v8."
++    },
++    "original_nine_non_CI_gate_objects_unchanged": true,
++    "original_HOSTED_CI_closure_text_unchanged": true,
++    "original_MEM_results_provider_unknown_and_component_native_results_unchanged": true,
++    "historical_pending_wording": "Verbatim v7 component and initial-composition records are historical, not the latest integration CI status.",
++    "candidate_publication": "POSTIMAGE_PREPARED_FOR_ROOT_CAS; PUBLISHED_DRAFT_CHECKPOINT_ACTIVATES_ONLY_AFTER_SUCCESS",
++    "new_host_requests": 0,
++    "new_native_runs": 0,
++    "new_provider_requests": 0,
++    "draft_history": {
++      "prior_v9_draft": {
++        "bytes": 111769,
++        "sha256": "9d9ebb7790f68bc94a2007a1ab3cb66e9bd821c91c5407dbce587ef438cf3be4",
++        "git_blob": "7505856718d29705bff11bc51b0a59fa07e0d116"
++      },
++      "reason": "Advance current source publication and exact R2 module-lock terminal; preserve initial Bazel failure and all acceptance gates."
++    },
++    "published_evidence": {
++      "commit": "e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d",
++      "tree": "d005a359ccd2ba85d59fcb2c1b901cc855e359ed",
++      "pr": 5889,
++      "draft": true,
++      "root_reported_ref_and_PR_body_readback": true,
++      "independent_commit_identity_readback": true,
++      "path": "qualification/memory-cell-mem8-ci-followup/v14",
++      "scope": "Complete V14 source-preparation, original189 CI, source-only V5 and Bazel R2 evidence; new9bd2 MEM/Architecture native results remain separate."
++    },
++    "final_draft_preimage": {
++      "bytes": 122483,
++      "sha256": "150c62961fd06940f13b047e81a41fa90e210e2935e8cf19d7460b4c6fe74b31",
++      "git_blob": "cab6d5d0e7a0083ddd167bd7c0dca4cd5508a95d"
++    },
++    "finalization_scope": "Bind the exact published V14 audit bytes, preserve its historical remaining list, and prepare owner publication metadata that activates only on root successful CAS. All ten adoption gates remain open.",
++    "candidate_preparation_refs_changed": false,
++    "source_audit_reference_correction": {
++      "superseded_unpublished_candidate_audit_identity": {
++        "path": "qualification/memory-cell-mem8-ci-followup/v14/ROOT_SOURCE_CI_V5_AUDIT.json",
++        "bytes": 3131,
++        "sha256": "d118359fac0231474cd8bb9797746db74261c0a575e6c5bd077a4f64389f36bb",
++        "git_blob": "7a0f63ae2dceaa7264fb7531046453112a3564fa",
++        "root_complete_original_archive_audit": true
++      },
++      "superseded_local_rerun_verified_at": "2026-11-11T12:18:05.185071+00:00",
++      "published_audit_identity": {
++        "bytes": 3131,
++        "sha256": "d5cb21e504018b5838e91c7d2bec49c89579f33ce7a90330672be329c1ffbff2",
++        "git_blob": "75f47d1f0e8bb3cb8d38afc1751e6da4a09195c1"
++      },
++      "reason": "The draft used the later local re-verification timestamp and hash while naming the published V14 path. This postimage now embeds and hashes the exact published document; the underlying source-run findings are unchanged.",
++      "earlier_candidate_was_not_published": true
++    }
++  },
++  "publication": {
++    "scope": "Owner PR5897 draft checkpoint after root expected-head CAS from immutable v7.",
++    "activation": "ROOT_EXPECTED_HEAD_CAS_SUCCESS_ONLY",
++    "expected_previous_head": "cb54f618f0408c314b1c367a5256ea185165c354",
++    "owner_pr": 5897,
++    "draft": true,
++    "refs_changed": true,
++    "actual_new_head": "Recorded in the separate root publication receipt after CAS; no self-referential commit ID is invented here."
+   }
+ }

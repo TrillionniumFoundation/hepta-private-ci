@@ -1,0 +1,118 @@
+{
+  "schema": "mem8.owner-v11.core-invariants.v1",
+  "baseline_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+  "whole_baseline_verified_at_support_commit": "214cde859281eb13b2d7223c22bfa3a288fcc635",
+  "baseline_bytes": 134567,
+  "entire_baseline_unchanged": true,
+  "gates": [
+    {
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/0",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/0",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/1",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/1",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/2",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/2",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/3",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/3",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/4",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/4",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/5",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/5",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/6",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/6",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/7",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/7",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/8",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/8",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    },
+    {
+      "id": "HOSTED-CI",
+      "state": "OPEN",
+      "gate_pointer": "BLOCKERS.json#/open/9",
+      "intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/9",
+      "exact_baseline_id_equal": true,
+      "exact_original_status_equal": true,
+      "exact_intake_id_equal": true
+    }
+  ],
+  "prior_closed_entry_count": 18,
+  "no_prior_entry_removed_or_changed": true,
+  "protected_results": {
+    "NoUpdate": true,
+    "HOLD": true,
+    "no_production_adoption": true,
+    "original_provider_and_H_UNKNOWN": true,
+    "physical_provider_requests_unknown": true
+  },
+  "source_actual_receipt": "f68ea685a44a17879c16f79f128de54f855543c0",
+  "evidence_actual_receipt": "3d044bfc7548945d8241916bff65a10b6f4d901b",
+  "previous_owner_actual_receipt": "02229924b5a89726517e5c45f2017d59b35f26f2",
+  "fixed_original_reports_verified": 12,
+  "unavailable_old_selected_reports": 6,
+  "validation_method": "Pure JavaScript comparison of complete retained JSON and exact Git-path/UTF-8 bytes; not execution or an equivalence claim for the frozen Python generator.",
+  "frozen_owner_generator_executed": false,
+  "source_gate_native_results_transferred": false,
+  "final_owner_ref_publication_observed": false,
+  "scope": "Prepared core invariant check; final additional observation and expected-head publication require their own readbacks."
+}

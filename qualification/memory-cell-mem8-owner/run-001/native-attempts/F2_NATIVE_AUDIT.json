@@ -1,0 +1,386 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "run_id": "mem8-native-f2-0c32926-ai395-20261111-ed353-v1",
+  "source_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+  "source_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+  "base_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+  "finished_at": "2026-11-11T04:26:35.315394+00:00",
+  "campaign_deadline_utc": "2026-11-11T04:47:03.320937+00:00",
+  "archive": {
+    "file": "F2_NATIVE_READBACK.tar.xz",
+    "bytes": 48028,
+    "sha256": "9bc850cac9f4777281f4898a7e89c7bee0f96d611043522eeca546002a2ddfca",
+    "verified_original_files": 88
+  },
+  "driver": {
+    "sha256": "c06bf521b042c7c409fae2cab14ee3aae8ba1e85ec2266872c712cb97c5f1688",
+    "input_sha256": "407f9ecdff51943dde6fdbbd450c74b71ecd29ab992e5e5a574c5b3bbc21557f"
+  },
+  "tests": [
+    {
+      "label": "config-manager-tests",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 323,
+      "case_ids": [
+        "config_manager::feature_constraints_tests::required_explicit_context_features_remove_memory_prompt_after_request_override",
+        "config_manager::feature_constraints_tests::required_token_budget_off_removes_resolved_history_notes_after_request_and_reload"
+      ],
+      "features": [],
+      "actual_drain_markers": []
+    },
+    {
+      "label": "agentd-tests",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 781,
+      "case_ids": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "features": [],
+      "actual_drain_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ]
+    },
+    {
+      "label": "qualification-profile-test",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 789,
+      "case_ids": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+      ],
+      "features": [
+        "qualification-cognitive-write"
+      ],
+      "actual_drain_markers": []
+    },
+    {
+      "label": "memory-extension-control",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 99,
+      "case_ids": [
+        "extension::tests::disabled_or_missing_host_identity_never_queries_state"
+      ],
+      "features": [],
+      "actual_drain_markers": []
+    },
+    {
+      "label": "native-empty-router",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 2446,
+      "case_ids": [
+        "tools::spec_plan::tests::hepta_native_inference_client_has_no_model_visible_or_registered_tools"
+      ],
+      "features": [],
+      "actual_drain_markers": []
+    }
+  ],
+  "receipts": [
+    {
+      "label": "format",
+      "receipt": "format.json",
+      "receipt_sha256": "b514929302d1c43fa8814a5128a339048914fb9b52ab16e0b95096762698503d",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "66f570a77c60aac8d33e6cbeac8dfd120ef1d867"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "format.json.23b5568eb289462e9b2350570e7d4a8a.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_at": "2026-11-11T04:15:06.467072+00:00",
+      "finished_at": "2026-11-11T04:15:07.124867+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "v8-inputs",
+      "receipt": "v8-inputs.json",
+      "receipt_sha256": "81c93fdc063a1e991e5aa2a54822b9eed78144328efe1d67bd7c7a3f53f80b0a",
+      "command": [
+        "python3",
+        "scripts/hepta_ci_v8.py"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "v8-inputs.json.50797e8ef26b411eb703ca545d946956.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_at": "2026-11-11T04:15:07.164148+00:00",
+      "finished_at": "2026-11-11T04:15:11.322933+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "codex-cli-build",
+      "receipt": "codex-cli-build.json",
+      "receipt_sha256": "abeda8e75bb1777fe8b9241572d377c8c3e1abfd7c9a63572602e8d28d3127da",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source/codex-rs",
+      "log_file": "codex-cli-build.json.7b0224152fa443f08f449a58e2f802cf.log",
+      "log_bytes": 25283,
+      "log_sha256": "ea19138b766fd248feff3fae4a58abde44730a0631979d6b2a407b491ef80d50",
+      "started_at": "2026-11-11T04:15:11.381713+00:00",
+      "finished_at": "2026-11-11T04:17:06.386622+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "config-manager-tests",
+      "receipt": "config-manager-tests.json",
+      "receipt_sha256": "df4c7985be2a288f578e9494a576832167ee61714900067d372640f5791532c0",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--lib",
+        "config_manager::feature_constraints_tests::",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "config-manager-tests.json.8d5fcd9e74a54f1bb32a2e9dc44b2099.log",
+      "log_bytes": 35354,
+      "log_sha256": "0dc54b18dd695e39c6907db87041a812d226e2d4e2adea210315c060743a9593",
+      "started_at": "2026-11-11T04:17:06.836357+00:00",
+      "finished_at": "2026-11-11T04:18:43.095381+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "agentd-tests",
+      "receipt": "agentd-tests.json",
+      "receipt_sha256": "e7a94cfd48cfe0596fc7c2136d60333ef007b651da3f0c6dc6264f65b9439560",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "episodic",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "agentd-tests.json.fa5dfc0f90734727bbfcfa2ad0741528.log",
+      "log_bytes": 28393,
+      "log_sha256": "a8e0298c6fd0e1e288b84165d9c6a8deb14ba03f1eccf8074d2630f81004eb0f",
+      "started_at": "2026-11-11T04:18:43.520540+00:00",
+      "finished_at": "2026-11-11T04:20:19.767048+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "qualification-profile-test",
+      "receipt": "qualification-profile-test.json",
+      "receipt_sha256": "82f9127cfff417492a740bc6bf0b610c33160ae1670e9cd616fbd8e665b159bf",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--features",
+        "qualification-cognitive-write",
+        "--lib",
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "qualification-profile-test.json.1cdc79a2c46e4d73a38f8c685a7889be.log",
+      "log_bytes": 17470,
+      "log_sha256": "55f92b2ea09e4a252fded68a9255afdedac90f199e8acc54b5375b0293d7cfab",
+      "started_at": "2026-11-11T04:20:20.193445+00:00",
+      "finished_at": "2026-11-11T04:21:00.424169+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "memory-extension-control",
+      "receipt": "memory-extension-control.json",
+      "receipt_sha256": "53f2aa58803248965cc0bc88d3d1a19d2047328a7e56d01e9f9892d7e203eae7",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory-extension",
+        "--lib",
+        "extension::tests::disabled_or_missing_host_identity_never_queries_state",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "memory-extension-control.json.53e2e9e2f47b4ca8b4e6d59ac5fb90ff.log",
+      "log_bytes": 29727,
+      "log_sha256": "9bf637fb533fdd607bc35e50d5ce1b7b65b48e667157ab29be95462a33e94568",
+      "started_at": "2026-11-11T04:21:00.850803+00:00",
+      "finished_at": "2026-11-11T04:21:54.929833+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "native-empty-router",
+      "receipt": "native-empty-router.json",
+      "receipt_sha256": "ab12d3231887f431b37ef9d590aeba798576c3e335179553f18d833c2ca78df4",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--lib",
+        "tools::spec_plan::tests::hepta_native_inference_client_has_no_model_visible_or_registered_tools",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "native-empty-router.json.8d6761bf89174521b83c33e9bed64ba6.log",
+      "log_bytes": 28721,
+      "log_sha256": "ab8c3f877ff73e84bb0ade3dfb1eb3c50d3d34182e219a8ba551225fe4f949dd",
+      "started_at": "2026-11-11T04:21:55.352525+00:00",
+      "finished_at": "2026-11-11T04:23:53.324037+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "fix-codex-app-server",
+      "receipt": "fix-codex-app-server.json",
+      "receipt_sha256": "914ac05f498652fb56e6d20d6c27a7b73c5a17b9f0eb70057481c84ba8f9a7e3",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-app-server"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "fix-codex-app-server.json.8f1a57faee364f58b1e81e41a3d25432.log",
+      "log_bytes": 21303,
+      "log_sha256": "d6ae55cb37e87214862ca94e7e763ed19f6630d4045a65920b782eae22e9fa85",
+      "started_at": "2026-11-11T04:23:53.759696+00:00",
+      "finished_at": "2026-11-11T04:25:21.928919+00:00",
+      "status": "passed"
+    },
+    {
+      "label": "fix-codex-hepta-agentd",
+      "receipt": "fix-codex-hepta-agentd.json",
+      "receipt_sha256": "0c4e1da3379b282e52a0111ed5877dd0e1159c0c7f7d41fc36996d01195500d1",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "working_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+      "log_file": "fix-codex-hepta-agentd.json.26c6dd976a7d4563b8e597103895d57b.log",
+      "log_bytes": 10621,
+      "log_sha256": "b45c3d8466e608a5eed8b67ba168e75ae396d502e22cfe8438ce9dea11317b5a",
+      "started_at": "2026-11-11T04:25:21.966300+00:00",
+      "finished_at": "2026-11-11T04:26:34.036980+00:00",
+      "status": "passed"
+    }
+  ],
+  "source_before_after": {
+    "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "status": ""
+  },
+  "source_files": [
+    {
+      "bytes": 14775,
+      "git_blob": "c4a8bf615541c48a405d08e59c643e96bdf7437a",
+      "path": "codex-rs/app-server/src/config_manager.rs",
+      "sha256": "0117c08db273f908b0ac90c29d55d1074485b7ecf5cd7a81c9eed6b219679aa6"
+    },
+    {
+      "bytes": 7549,
+      "git_blob": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824",
+      "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
+      "sha256": "16e6b1a1c477b81543e333b92d0674830feb76526d309919918ed842395d0eb1"
+    },
+    {
+      "bytes": 20693,
+      "git_blob": "1576de268c6da2b4b9a803d46a1244a0010b4949",
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "sha256": "74641c88ffa29c31e9b5d79b2f6841c5ec6c5c0c8a8899f346b0a6caed003423"
+    },
+    {
+      "bytes": 2434,
+      "git_blob": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "sha256": "5ccf716806e7eff3358efe7b5aa9be6c655eb69e8c7457c871dc06c24789ac29"
+    },
+    {
+      "bytes": 14103,
+      "git_blob": "54026297a309ef228053ce697855f5181c3b9f2c",
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "sha256": "d499936633069ffb10a3284dc36b492d34ce70b8dd7d8af4aff176cdf81d1734"
+    },
+    {
+      "bytes": 31170,
+      "git_blob": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "sha256": "e93732405ec088634cf61aad59512360ca480e71549f6e18538215aff09bc55f"
+    }
+  ],
+  "original_donor_after": {
+    "head": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "status": "",
+    "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0"
+  },
+  "codex_binary_before_after": {
+    "binding": "CARGO_BIN_EXE_codex; current run child environment only",
+    "build_receipt": "codex-cli-build.json",
+    "bytes": 559365856,
+    "ctime_ns": 1794370626282141889,
+    "device": 66306,
+    "inode": 52214939,
+    "mode": 33216,
+    "mtime_ns": 1794370626064149580,
+    "path": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target/debug/codex",
+    "sha256": "49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976",
+    "source_after_build": {
+      "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "status": "",
+      "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+    },
+    "source_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "source_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+  },
+  "rewrite_bytes": 0,
+  "independent_review": {
+    "reviewer": "mem_ci_integration",
+    "must_fix_found": false,
+    "boundary": "Read-only review does not replace native validation; second config case does not assert reload or summary sentinel bytes."
+  },
+  "boundaries": [
+    "Five test groups execute 11 cases; the profile case is repeated under qualification-cognitive-write and is not a new actor task.",
+    "Unchanged memory and protocol packages are not re-executed in this F2 run. The exact 66f GitHub and ai395 results remain separate.",
+    "Required profile applies only when host-configured episodic ingress exists. Without that ingress existing Standard/Notes/Desktop profiles retain their previous behavior.",
+    "Prompt runtime, skills, direct authorized store callers, other ordinary client tools, and external source custody are not qualified by these tests.",
+    "No original-source recovery, real provider actor benefit, source-based memory off/on result, or complete filesystem isolation is claimed."
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "case_rows": [
+    {
+      "line": 8389,
+      "text": "2026-11-11T19:00:51.3723442Z test suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled ... FAILED"
+    },
+    {
+      "line": 8452,
+      "text": "2026-11-11T19:00:51.3808357Z     suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled"
+    },
+    {
+      "line": 9776,
+      "text": "2026-11-11T19:01:38.3202605Z     suite::approvals::approval_matrix_covers_group::test_case_3_workspace_write"
+    },
+    {
+      "line": 9777,
+      "text": "2026-11-11T19:01:38.3203209Z     suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence"
+    },
+    {
+      "line": 9778,
+      "text": "2026-11-11T19:01:38.3203741Z     suite::pending_input::any_new_input_interrupts_sleep"
+    }
+  ],
+  "diagnostic_windows": [
+    {
+      "start_line": 8428,
+      "end_line": 8439,
+      "lines": [
+        {
+          "line": 8428,
+          "text": "2026-11-11T19:00:51.3747197Z "
+        },
+        {
+          "line": 8429,
+          "text": "2026-11-11T19:00:51.3747280Z failures:"
+        },
+        {
+          "line": 8430,
+          "text": "2026-11-11T19:00:51.3747386Z "
+        },
+        {
+          "line": 8431,
+          "text": "2026-11-11T19:00:51.3747717Z ---- suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled stdout ----"
+        },
+        {
+          "line": 8432,
+          "text": "2026-11-11T19:00:51.3749451Z writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"processIndeterminate\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })"
+        },
+        {
+          "line": 8433,
+          "text": "2026-11-11T19:00:51.3751874Z [mcp stderr] 2026-11-11T19:00:17.112637Z ERROR codex_app_server: Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime."
+        },
+        {
+          "line": 8434,
+          "text": "2026-11-11T19:00:51.3754017Z read message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 24.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmprVx7qO\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\"), \"processIndeterminate\": Bool(true)} })"
+        },
+        {
+          "line": 8435,
+          "text": "2026-11-11T19:00:51.3755433Z writing message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })"
+        },
+        {
+          "line": 8436,
+          "text": "2026-11-11T19:00:51.3756385Z writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"plugin/list\", params: Some(Object {\"cwds\": Null, \"marketplaceKinds\": Array [String(\"workspace-directory\")]}), trace: None })"
+        },
+        {
+          "line": 8437,
+          "text": "2026-11-11T19:00:51.3757182Z in read_stream_until_response_message(Integer(1))"
+        },
+        {
+          "line": 8438,
+          "text": "2026-11-11T19:00:51.3758665Z read message from stdout: Notification(JSONRPCNotification { method: \"configWarning\", params: Some(Object {\"summary\": String(\"Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime.\"), \"details\": Null}) })"
+        },
+        {
+          "line": 8439,
+          "text": "2026-11-11T19:00:51.3760987Z read message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"6c55eb4ea57b\"), \"installationId\": String(\"3c28ec0c-976c-448f-912a-43b748282a76\"), \"environmentId\": Null}) })"
+        }
+      ]
+    },
+    {
+      "start_line": 9640,
+      "end_line": 9651,
+      "lines": [
+        {
+          "line": 9640,
+          "text": "2026-11-11T19:01:38.1923742Z 2026-11-11T19:01:08.940235Z TRACE session_loop{thread_id=01a1cbfc-3fd2-7034-8f13-3e8fcd78d08e}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1cbfc-3ff2-73fe-ac55-ce8c5eb5e38e\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1cbfc-3fd2-7034-8f13-3e8fcd78d08e turn.id=01a1cbfc-3ff2-73fe-ac55-ce8c5eb5e38e model=gpt-5.4 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::session::turn: post sampling token usage turn_id=01a1cbfc-3ff2-73fe-ac55-ce8c5eb5e38e total_usage_tokens=0 auto_compact_scope_tokens=0 auto_compact_scope_limit=Some(244800) auto_compact_limit_scope=Total auto_compact_window_prefill_tokens=None full_context_window_limit=Some(258400) full_context_window_limit_reached=false token_limit_reached=false model_needs_follow_up=false has_pending_input=false needs_follow_up=false"
+        },
+        {
+          "line": 9641,
+          "text": "2026-11-11T19:01:38.1928463Z 2026-11-11T19:01:08.940694Z TRACE session_loop{thread_id=01a1cbfc-3fd2-7034-8f13-3e8fcd78d08e}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1cbfc-3ff2-73fe-ac55-ce8c5eb5e38e\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1cbfc-3fd2-7034-8f13-3e8fcd78d08e turn.id=01a1cbfc-3ff2-73fe-ac55-ce8c5eb5e38e model=gpt-5.4 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::post_sampling_token_estimate: post sampling token estimate turn_id=01a1cbfc-3ff2-73fe-ac55-ce8c5eb5e38e estimated_token_count=Some(5673)"
+        },
+        {
+          "line": 9642,
+          "text": "2026-11-11T19:01:38.1930410Z "
+        },
+        {
+          "line": 9643,
+          "text": "2026-11-11T19:01:38.1931146Z thread 'suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence' (2548) panicked at core/tests/suite/extension_sandbox.rs:313:5:"
+        },
+        {
+          "line": 9644,
+          "text": "2026-11-11T19:01:38.1932079Z assertion failed: `(left == right)`"
+        },
+        {
+          "line": 9645,
+          "text": "2026-11-11T19:01:38.1932367Z "
+        },
+        {
+          "line": 9646,
+          "text": "2026-11-11T19:01:38.1932715Z \u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+        },
+        {
+          "line": 9647,
+          "text": "2026-11-11T19:01:38.1933027Z \u001b[31m<Null\u001b[0m"
+        },
+        {
+          "line": 9648,
+          "text": "2026-11-11T19:01:38.1933245Z \u001b[32m>Object {\u001b[0m"
+        },
+        {
+          "line": 9649,
+          "text": "2026-11-11T19:01:38.1933505Z \u001b[32m>    \"type\": String(\"input_image\"),\u001b[0m"
+        },
+        {
+          "line": 9650,
+          "text": "2026-11-11T19:01:38.1934332Z \u001b[32m>    \"image_url\": String(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==\"),\u001b[0m"
+        },
+        {
+          "line": 9651,
+          "text": "2026-11-11T19:01:38.1935053Z \u001b[32m>}\u001b[0m"
+        }
+      ]
+    },
+    {
+      "start_line": 9768,
+      "end_line": 9779,
+      "lines": [
+        {
+          "line": 9768,
+          "text": "2026-11-11T19:01:38.3194197Z 2026-11-11T19:01:10.707362Z TRACE session_loop{thread_id=01a1cbfc-471a-7387-ba9a-264d3ecbf1c5}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1cbfc-4729-76cf-a334-4c76b0fefe70\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1cbfc-471a-7387-ba9a-264d3ecbf1c5 turn.id=01a1cbfc-4729-76cf-a334-4c76b0fefe70 model=gpt-5.4 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::session::turn: post sampling token usage turn_id=01a1cbfc-4729-76cf-a334-4c76b0fefe70 total_usage_tokens=153 auto_compact_scope_tokens=153 auto_compact_scope_limit=Some(244800) auto_compact_limit_scope=Total auto_compact_window_prefill_tokens=None full_context_window_limit=Some(258400) full_context_window_limit_reached=false token_limit_reached=false model_needs_follow_up=false has_pending_input=false needs_follow_up=false"
+        },
+        {
+          "line": 9769,
+          "text": "2026-11-11T19:01:38.3198932Z 2026-11-11T19:01:10.707753Z TRACE session_loop{thread_id=01a1cbfc-471a-7387-ba9a-264d3ecbf1c5}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1cbfc-4729-76cf-a334-4c76b0fefe70\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1cbfc-471a-7387-ba9a-264d3ecbf1c5 turn.id=01a1cbfc-4729-76cf-a334-4c76b0fefe70 model=gpt-5.4 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::post_sampling_token_estimate: post sampling token estimate turn_id=01a1cbfc-4729-76cf-a334-4c76b0fefe70 estimated_token_count=Some(5585)"
+        },
+        {
+          "line": 9770,
+          "text": "2026-11-11T19:01:38.3201102Z "
+        },
+        {
+          "line": 9771,
+          "text": "2026-11-11T19:01:38.3201458Z thread 'suite::pending_input::any_new_input_interrupts_sleep' (2874) panicked at codex-rs/core/tests/common/lib.rs:356:14:"
+        },
+        {
+          "line": 9772,
+          "text": "2026-11-11T19:01:38.3202015Z timeout waiting for event: Elapsed(())"
+        },
+        {
+          "line": 9773,
+          "text": "2026-11-11T19:01:38.3202198Z "
+        },
+        {
+          "line": 9774,
+          "text": "2026-11-11T19:01:38.3202202Z "
+        },
+        {
+          "line": 9775,
+          "text": "2026-11-11T19:01:38.3202285Z failures:"
+        },
+        {
+          "line": 9776,
+          "text": "2026-11-11T19:01:38.3202605Z     suite::approvals::approval_matrix_covers_group::test_case_3_workspace_write"
+        },
+        {
+          "line": 9777,
+          "text": "2026-11-11T19:01:38.3203209Z     suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence"
+        },
+        {
+          "line": 9778,
+          "text": "2026-11-11T19:01:38.3203741Z     suite::pending_input::any_new_input_interrupts_sleep"
+        },
+        {
+          "line": 9779,
+          "text": "2026-11-11T19:01:38.3203974Z "
+        }
+      ]
+    },
+    {
+      "start_line": 9777,
+      "end_line": 9788,
+      "lines": [
+        {
+          "line": 9777,
+          "text": "2026-11-11T19:01:38.3203209Z     suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence"
+        },
+        {
+          "line": 9778,
+          "text": "2026-11-11T19:01:38.3203741Z     suite::pending_input::any_new_input_interrupts_sleep"
+        },
+        {
+          "line": 9779,
+          "text": "2026-11-11T19:01:38.3203974Z "
+        },
+        {
+          "line": 9780,
+          "text": "2026-11-11T19:01:38.3204254Z test result: FAILED. 77 passed; 3 failed; 0 ignored; 0 measured; 1346 filtered out; finished in 15.48s"
+        },
+        {
+          "line": 9781,
+          "text": "2026-11-11T19:01:38.3204618Z "
+        },
+        {
+          "line": 9782,
+          "text": "2026-11-11T19:01:38.3204764Z Error: integration tests exited with exit status: 101"
+        },
+        {
+          "line": 9783,
+          "text": "2026-11-11T19:01:38.3205298Z ##[endgroup]"
+        },
+        {
+          "line": 9784,
+          "text": "2026-11-11T19:01:38.3211179Z ##[error]Process completed with exit code 3."
+        },
+        {
+          "line": 9785,
+          "text": "2026-11-11T19:01:38.3258311Z ##[group]Run ./.github/scripts/run-bazel-ci.sh \\"
+        },
+        {
+          "line": 9786,
+          "text": "2026-11-11T19:01:38.3258949Z \u001b[36;1m./.github/scripts/run-bazel-ci.sh \\\u001b[0m"
+        },
+        {
+          "line": 9787,
+          "text": "2026-11-11T19:01:38.3259473Z \u001b[36;1m  --print-failed-action-summary \\\u001b[0m"
+        },
+        {
+          "line": 9788,
+          "text": "2026-11-11T19:01:38.3259985Z \u001b[36;1m  --print-failed-test-logs \\\u001b[0m"
+        }
+      ]
+    }
+  ],
+  "final_core_failure_names_block": [
+    {
+      "line": 9771,
+      "text": "2026-11-11T19:01:38.3201458Z thread 'suite::pending_input::any_new_input_interrupts_sleep' (2874) panicked at codex-rs/core/tests/common/lib.rs:356:14:"
+    },
+    {
+      "line": 9772,
+      "text": "2026-11-11T19:01:38.3202015Z timeout waiting for event: Elapsed(())"
+    },
+    {
+      "line": 9773,
+      "text": "2026-11-11T19:01:38.3202198Z "
+    },
+    {
+      "line": 9774,
+      "text": "2026-11-11T19:01:38.3202202Z "
+    },
+    {
+      "line": 9775,
+      "text": "2026-11-11T19:01:38.3202285Z failures:"
+    },
+    {
+      "line": 9776,
+      "text": "2026-11-11T19:01:38.3202605Z     suite::approvals::approval_matrix_covers_group::test_case_3_workspace_write"
+    },
+    {
+      "line": 9777,
+      "text": "2026-11-11T19:01:38.3203209Z     suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence"
+    },
+    {
+      "line": 9778,
+      "text": "2026-11-11T19:01:38.3203741Z     suite::pending_input::any_new_input_interrupts_sleep"
+    },
+    {
+      "line": 9779,
+      "text": "2026-11-11T19:01:38.3203974Z "
+    },
+    {
+      "line": 9780,
+      "text": "2026-11-11T19:01:38.3204254Z test result: FAILED. 77 passed; 3 failed; 0 ignored; 0 measured; 1346 filtered out; finished in 15.48s"
+    },
+    {
+      "line": 9781,
+      "text": "2026-11-11T19:01:38.3204618Z "
+    },
+    {
+      "line": 9782,
+      "text": "2026-11-11T19:01:38.3204764Z Error: integration tests exited with exit status: 101"
+    }
+  ]
+}

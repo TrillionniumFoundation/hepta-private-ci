@@ -1,0 +1,9 @@
+{
+  "schema": "hepta.mem8.readback-decoder-note.v1",
+  "initial_local_audit_exit": 1,
+  "initial_error": "binascii.Error: Only base64 data is allowed",
+  "cause": "GitHub content response base64 includes line wrapping",
+  "correction": "Validate the base64 alphabet plus ASCII whitespace, remove whitespace, then use strict base64 decoding. Original downloaded response and archive bytes are unchanged.",
+  "new_host_jobs": 0,
+  "new_model_calls": 0
+}
