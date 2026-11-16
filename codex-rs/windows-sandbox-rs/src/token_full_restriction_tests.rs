@@ -247,6 +247,25 @@ fn open_fixture_security(path: &Path, access: u32) -> std::io::Result<OwnedHandl
     Ok(unsafe { OwnedHandle::from_raw_handle(raw as *mut c_void) })
 }
 
+fn set_fresh_fixture_owner_to_user(path: &Path, user: &[u8]) -> Result<()> {
+    let held = open_fixture_security(path, WRITE_OWNER)?;
+    // SAFETY: this is a fresh test-owned fixture and user is the live, validated
+    // base TokenUser SID. Set only the owner; preserve its DACL and integrity label.
+    let code = unsafe {
+        windows_sys::Win32::Security::Authorization::SetSecurityInfo(
+            held.as_raw_handle() as HANDLE,
+            SE_FILE_OBJECT,
+            OWNER_SECURITY_INFORMATION,
+            user.as_ptr().cast_mut().cast(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+        )
+    };
+    anyhow::ensure!(code == ERROR_SUCCESS, "fixture owner setup failed: {code}");
+    Ok(())
+}
+
 fn require_fixture_owned_by_user(path: &Path, user: &[u8]) -> Result<()> {
     let held = open_fixture_security(path, READ_CONTROL)?;
     let mut owner = std::ptr::null_mut();
@@ -329,6 +348,9 @@ fn native_full_restriction_preserves_reads_and_refuses_parent_delete() -> Result
     let queried_user = TokenBytes::query(base.0, TokenUser)?;
     let user = queried_user.sid(queried_user.value::<SID_AND_ATTRIBUTES>(/*offset*/ 0)?.Sid)?;
     for path in &security_targets {
+        // Elevated test hosts can default new objects to a group owner. Establish
+        // the original TokenUser-owned precondition before its unchanged check.
+        set_fresh_fixture_owner_to_user(path, &user)?;
         require_fixture_owned_by_user(path, &user)?;
         // Unrestricted positive controls prove each exact request is valid on this fixture.
         drop(open_fixture_security(path, WRITE_DAC)?);
