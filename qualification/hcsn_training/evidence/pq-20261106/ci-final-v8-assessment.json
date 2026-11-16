@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only log attribution for exactly four already completed failed jobs; no waiting for other jobs, no source/config edits and no reruns",
+  "source_head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "source_tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+  "run_id": 42253531172,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531172",
+  "retrieved_at_utc": "2026-11-06 18:02:35 UTC",
+  "all_four_logs_readable": true,
+  "failed_jobs": [
+    {
+      "job_id": 128016648217,
+      "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531172/job/128016648217",
+      "head_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+      "failed_step": {
+        "name": "Smoke test staged artifact with Cargo",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 9,
+        "started_at": "2026-11-06T17:53:15Z",
+        "completed_at": "2026-11-06T17:53:52Z"
+      },
+      "log_path": "job-128016648217.log",
+      "log_bytes": 529205,
+      "log_sha256": "9bdb3c40ccea2c89e38ca4a4170dab82c50819e41c5a9aeb94b6fdc746755073",
+      "conclusion": "failure",
+      "failure_class": "E0514 compiled-artifact/compiler version mismatch",
+      "producing_compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "consuming_compiler": "rustc 1.91.0 (f8297e351 2025-10-28)",
+      "affected_crates": [
+        "fslock",
+        "miniz_oxide",
+        "which",
+        "bindgen",
+        "home",
+        "gzip_header"
+      ],
+      "exit_code": 101,
+      "observed_error_source": "v8-150.4.0/build.rs",
+      "attribution_limit": "The job log proves incompatible compiled dependencies. Their exact cache provenance and why rustc 1.91.0 was selected are not established by this read-only log review.",
+      "evidence_path": "failure-excerpts.json#/jobs/128016648217",
+      "clean_worktree_check_passed": true
+    },
+    {
+      "job_id": 128016648298,
+      "name": "Build release x86_64-apple-darwin",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531172/job/128016648298",
+      "head_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+      "failed_step": {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 7,
+        "started_at": "2026-11-06T16:53:05Z",
+        "completed_at": "2026-11-06T16:57:21Z"
+      },
+      "log_path": "job-128016648298.log",
+      "log_bytes": 442689,
+      "log_sha256": "f1c7d1d3cc0e9b5ee3b3b74b3ee816dc326f325c07454c1b618937e885eb15fd",
+      "conclusion": "failure",
+      "failure_class": "BuildBuddy remote endpoint DNS and connectivity failure",
+      "remote_host": "remote.buildbuddy.io",
+      "exit_code": 34,
+      "observed_error_sources": [
+        "compiler-rt/lib/builtins/negsf2.c",
+        "rusty_v8_libcxx/src/error_category.cpp",
+        "Build Event Protocol upload"
+      ],
+      "attribution_limit": "This run reports remote.buildbuddy.io name-resolution failure during Bazel actions and later connection timeouts for BEP upload. No general GitHub outage or relationship to the earlier static.rust-lang.org failure is inferred.",
+      "evidence_path": "failure-excerpts.json#/jobs/128016648298",
+      "clean_worktree_check_passed": true
+    },
+    {
+      "job_id": 128016648409,
+      "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531172/job/128016648409",
+      "head_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+      "failed_step": {
+        "name": "Smoke test staged artifact with Cargo",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 9,
+        "started_at": "2026-11-06T16:58:54Z",
+        "completed_at": "2026-11-06T17:00:50Z"
+      },
+      "log_path": "job-128016648409.log",
+      "log_bytes": 543936,
+      "log_sha256": "af1331227d857b1dc845bdf485cc66cdd43991a235ab2700956b74c7d07bc769",
+      "conclusion": "failure",
+      "failure_class": "E0514 compiled-artifact/compiler version mismatch",
+      "producing_compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "consuming_compiler": "rustc 1.91.0 (f8297e351 2025-10-28)",
+      "affected_crates": [
+        "fslock",
+        "miniz_oxide",
+        "which",
+        "bindgen",
+        "home",
+        "gzip_header"
+      ],
+      "exit_code": 101,
+      "observed_error_source": "v8-150.4.0/build.rs",
+      "attribution_limit": "The job log proves incompatible compiled dependencies. Their exact cache provenance and why rustc 1.91.0 was selected are not established by this read-only log review.",
+      "evidence_path": "failure-excerpts.json#/jobs/128016648409",
+      "clean_worktree_check_passed": true
+    },
+    {
+      "job_id": 128016648434,
+      "name": "Build release aarch64-unknown-linux-gnu",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531172/job/128016648434",
+      "head_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+      "failed_step": {
+        "name": "Smoke test staged artifact with Cargo",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 9,
+        "started_at": "2026-11-06T17:53:33Z",
+        "completed_at": "2026-11-06T17:54:11Z"
+      },
+      "log_path": "job-128016648434.log",
+      "log_bytes": 528192,
+      "log_sha256": "9ea1795ad0c92947e7dc7ebb12b9730e67ed7a8b66ce2182c19840af6cbc60be",
+      "conclusion": "failure",
+      "failure_class": "E0514 compiled-artifact/compiler version mismatch",
+      "producing_compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "consuming_compiler": "rustc 1.91.0 (f8297e351 2025-10-28)",
+      "affected_crates": [
+        "fslock",
+        "miniz_oxide",
+        "which",
+        "bindgen",
+        "home",
+        "gzip_header"
+      ],
+      "exit_code": 101,
+      "observed_error_source": "v8-150.4.0/build.rs",
+      "attribution_limit": "The job log proves incompatible compiled dependencies. Their exact cache provenance and why rustc 1.91.0 was selected are not established by this read-only log review.",
+      "evidence_path": "failure-excerpts.json#/jobs/128016648434",
+      "clean_worktree_check_passed": true
+    }
+  ],
+  "limits": [
+    "Only the four specified failed jobs were reviewed. Other run jobs are preserved as snapshot metadata, not independently attributed.",
+    "These are actual failures from the final a20 run; no earlier-head result is relabeled.",
+    "Neither failure class establishes that the entire workflow is green or that every unreviewed failure is baseline.",
+    "The E0514 failures prove the compiler/artifact mismatch; an exact stale-cache root cause is not independently established.",
+    "No dependency rule, workflow configuration, source file, cache or test was modified; no workflow was cancelled or rerun."
+  ]
+}

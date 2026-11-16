@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "run_id": 42240138316,
+  "job_id": 127967939575,
+  "artifact_id": 13518974518,
+  "artifact_name": "hcsn-training-bridge-bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca-1",
+  "artifact_created_at": "2026-11-06T16:07:53Z",
+  "artifact_expires_at": "2027-02-04T15:07:47Z",
+  "original_zip": {
+    "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-artifact-13518974518.zip",
+    "bytes": 7284429,
+    "sha256": "5bc59442d5cde79ba32c44622e21d4af0fa18b98050596bf1e7d3f8e42a73962",
+    "regular_files": 672,
+    "uncompressed_regular_bytes": 27415257
+  },
+  "scratch_extraction": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/original-extracted",
+  "filtered_git_package": {
+    "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-raw-filtered.zip",
+    "bytes": 969135,
+    "sha256": "7146ee59cf560ab989057f6d69cfbcee74eed5b4d3e1f5030815cbe417c19ae0",
+    "regular_files": 669,
+    "uncompressed_regular_bytes": 5161449,
+    "all_included_files_byte_identical_to_original": true,
+    "complete_original_artifact": false
+  },
+  "excluded_native_executables": [
+    {
+      "path": "_temp/hcsn-training-bridge/bridge-a/native-fixture",
+      "bytes": 7417936,
+      "sha256": "2bc6719d2bf04e1e70c64e30f2a51493a26657edd1becf1ae60f97a447f0ff93",
+      "zip_crc32": "7a61a8cd",
+      "zip_unix_mode": "0o100755",
+      "elf_class_bits": 64,
+      "elf_type": 3,
+      "elf_machine": 62,
+      "confirmation": "ELF executable bytes and exact matching native-build.json executable_sha256",
+      "matching_build_receipt": "_temp/hcsn-training-bridge/bridge-a/native-build.json",
+      "reason_not_in_git_package": "compiled native executable; original bytes remain in the complete original ZIP and scratch extraction"
+    },
+    {
+      "path": "_temp/hcsn-training-bridge/bridge-b/native-fixture",
+      "bytes": 7417936,
+      "sha256": "2bc6719d2bf04e1e70c64e30f2a51493a26657edd1becf1ae60f97a447f0ff93",
+      "zip_crc32": "7a61a8cd",
+      "zip_unix_mode": "0o100755",
+      "elf_class_bits": 64,
+      "elf_type": 3,
+      "elf_machine": 62,
+      "confirmation": "ELF executable bytes and exact matching native-build.json executable_sha256",
+      "matching_build_receipt": "_temp/hcsn-training-bridge/bridge-b/native-build.json",
+      "reason_not_in_git_package": "compiled native executable; original bytes remain in the complete original ZIP and scratch extraction"
+    },
+    {
+      "path": "_temp/hcsn-training-bridge/bridge-b-age/native-fixture",
+      "bytes": 7417936,
+      "sha256": "2bc6719d2bf04e1e70c64e30f2a51493a26657edd1becf1ae60f97a447f0ff93",
+      "zip_crc32": "7a61a8cd",
+      "zip_unix_mode": "0o100755",
+      "elf_class_bits": 64,
+      "elf_type": 3,
+      "elf_machine": 62,
+      "confirmation": "ELF executable bytes and exact matching native-build.json executable_sha256",
+      "matching_build_receipt": "_temp/hcsn-training-bridge/bridge-b-age/native-build.json",
+      "reason_not_in_git_package": "compiled native executable; original bytes remain in the complete original ZIP and scratch extraction"
+    }
+  ],
+  "retained_extension_counts": {
+    "": 21,
+    ".bin": 20,
+    ".checkpoint": 30,
+    ".claims": 6,
+    ".head": 6,
+    ".json": 312,
+    ".jsonl": 9,
+    ".lock": 27,
+    ".log": 17,
+    ".pt": 45,
+    ".py": 4,
+    ".pyc": 1,
+    ".snapshot": 6,
+    ".sqlite3": 6,
+    ".stderr": 72,
+    ".stdout": 72,
+    ".toml": 6,
+    ".txt": 3,
+    ".witness": 6
+  },
+  "retention_boundary": "Only the three independently identified compiled native executables are excluded from the Git package. Every other original artifact member, including checkpoints, SQLite/WAL, handoff bytes, JSON, logs and failure records, is retained byte-for-byte. Original ZIP and full extraction remain in scratch; this filtered package is not the complete original artifact."
+}

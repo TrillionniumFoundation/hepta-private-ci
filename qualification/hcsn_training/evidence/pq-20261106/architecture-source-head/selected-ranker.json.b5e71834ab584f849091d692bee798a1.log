@@ -1,0 +1,302 @@
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+   --> hepta-contracts/src/authority_trust_unix.rs:194:14
+    |
+194 |             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |previous| {
+    |              ^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+    |
+194 -             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |previous| {
+194 +             .try_update(Ordering::AcqRel, Ordering::Acquire, |previous| {
+    |
+
+warning: `codex-hepta-contracts` (lib) generated 1 warning (run `cargo fix --lib -p codex-hepta-contracts` to apply 1 suggestion)
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+  --> diagnostics/src/lib.rs:35:14
+   |
+35 |             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+   |              ^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+   |
+35 -             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+35 +             .try_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+   |
+
+warning: `codex-diagnostics` (lib) generated 1 warning (run `cargo fix --lib -p codex-diagnostics` to apply 1 suggestion)
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+    --> hepta-memory/src/cognitive_runtime.rs:1120:10
+     |
+1120 |         .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+     |          ^^^^^^^^^^^^
+     |
+     = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+     |
+1120 -         .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+1120 +         .try_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+     |
+
+warning: `codex-hepta-memory` (lib) generated 1 warning (run `cargo fix --lib -p codex-hepta-memory` to apply 1 suggestion)
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:178:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+178 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+195 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+warning: use of deprecated method `std::sync::atomic::Atomic::<usize>::fetch_update`: renamed to `try_update` for consistency
+   --> core/tests/common/apps_test_server.rs:505:30
+    |
+505 | ...                   .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |remaining| {
+    |                        ^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+    |
+505 -                             .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |remaining| {
+505 +                             .try_update(Ordering::SeqCst, Ordering::SeqCst, |remaining| {
+    |
+
+warning: function `read_restart_journal` is never used
+   --> hepta-supervisor/src/restart_journal.rs:313:15
+    |
+313 | pub(crate) fn read_restart_journal(
+    |               ^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `restore_window` is never used
+   --> hepta-supervisor/src/restart_journal.rs:356:15
+    |
+356 | pub(crate) fn restore_window(
+    |               ^^^^^^^^^^^^^^
+
+warning: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used
+  --> hepta-supervisor/src/restart_state.rs:37:19
+   |
+19 | impl<D: ProcessDriver> Supervisor<D> {
+   | ------------------------------------ methods in this implementation
+...
+37 |     pub(crate) fn reset_restart_budget_for_release(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+47 |     pub(crate) fn reset_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn restore_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `reset_slot_restart_budget` is never used
+   --> hepta-supervisor/src/restart_state.rs:147:4
+    |
+147 | fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read
+   --> hepta-supervisor/src/runtime.rs:153:9
+    |
+145 | pub(crate) struct AgentSlot<P> {
+    |                   --------- fields in this struct
+...
+153 |     pub restart_window_started_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
+154 |     pub restart_window_started_unix_millis: Option<u64>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     pub restart_retry_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^
+156 |     pub restart_automatic: bool,
+    |         ^^^^^^^^^^^^^^^^^
+157 |     pub restart_after_exit: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+158 |     pub restart_exhausted: bool,
+    |         ^^^^^^^^^^^^^^^^^
+
+warning: `core_test_support` (lib) generated 1 warning (run `cargo fix --lib -p core_test_support` to apply 1 suggestion)
+warning: `codex-hepta-supervisor` (lib) generated 5 warnings
+warning: method `append_with_delivery` is never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:52:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- method in this implementation
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 2 warnings (1 duplicate)
+    Finished `test` profile [unoptimized] target(s) in 1.23s
+warning: the following packages contain code that will be rejected by a future version of Rust: proc-macro-error2 v2.0.1
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+     Running unittests src/lib.rs (codex-rs/target/debug/deps/codex_hepta_agentd-37eb9372a9acfc14)
+
+running 1 test
+test cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 191 filtered out; finished in 0.06s
+
+     Running tests/authbus_text_product.rs (codex-rs/target/debug/deps/authbus_text_product-cf7481c764839bca)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/cognitive_product_e2e.rs (codex-rs/target/debug/deps/cognitive_product_e2e-b3d14e152a62d8e1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/cognitive_store_product_writer.rs (codex-rs/target/debug/deps/cognitive_store_product_writer-447c03ab1a66a29a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/five_agent_rolling_upgrade.rs (codex-rs/target/debug/deps/five_agent_rolling_upgrade-8dc930fc07d323b7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/fleet_harness_diagnostics.rs (codex-rs/target/debug/deps/fleet_harness_diagnostics-d35eb35a24df100c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/intuition_policy_product.rs (codex-rs/target/debug/deps/intuition_policy_product-b2fc054a91377c6b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/kernel_evidence_product.rs (codex-rs/target/debug/deps/kernel_evidence_product-bf0605e4d3898cfd)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/optional_module_restart.rs (codex-rs/target/debug/deps/optional_module_restart-4934aac55b549199)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/plasticity_process_e2e.rs (codex-rs/target/debug/deps/plasticity_process_e2e-7ec7a7c0bee5cd2e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/queue_capacity_product.rs (codex-rs/target/debug/deps/queue_capacity_product-79c890d5ecc2df63)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/runtime_codex_product_e2e.rs (codex-rs/target/debug/deps/runtime_codex_product_e2e-94d3240d7e260331)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/runtime_shutdown_outcomes.rs (codex-rs/target/debug/deps/runtime_shutdown_outcomes-35a97f73fc5481d2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+     Running tests/supervised_two_agents.rs (codex-rs/target/debug/deps/supervised_two_agents-881ef1e26451621a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/supervisord_product_e2e.rs (codex-rs/target/debug/deps/supervisord_product_e2e-8ab90e114183fc6f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/terminal_cell_owner.rs (codex-rs/target/debug/deps/terminal_cell_owner-413d5833ef6bb6f3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/two_agent_turn_recovery.rs (codex-rs/target/debug/deps/two_agent_turn_recovery-325d9498655970b4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
