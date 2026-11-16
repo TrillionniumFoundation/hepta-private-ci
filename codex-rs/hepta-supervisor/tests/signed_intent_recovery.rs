@@ -176,7 +176,7 @@ fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence
     // must never auto-clear the genuine signed RecoveryRequired fence.
     // Production recovery is performed by resolve_production_recovery()
     // with a verified, independently signed ProductionRecoveryDecision.
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -197,5 +197,6 @@ fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence
         .expect("still fenced signed intent");
     assert_eq!(terminal.status, SignedIntentStatus::RecoveryRequired);
     assert_eq!(terminal.target_release, "target-release");
+    assert_eq!(terminal, intent);
     Ok(())
 }

@@ -294,7 +294,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
-    assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        (
+            snapshot.active,
+            snapshot.restart_attempt(),
+            snapshot.restart_pending()
+        ),
+        (true, 1, false)
+    );
     assert_eq!(
         persisted_restart_budget(&run_root)?,
         RestartBudgetProjection {
@@ -354,7 +362,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
-    assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        (
+            snapshot.active,
+            snapshot.restart_attempt(),
+            snapshot.restart_pending()
+        ),
+        (true, 2, false)
+    );
     assert_eq!(
         persisted_restart_budget(&run_root)?,
         RestartBudgetProjection {
@@ -415,7 +431,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry, control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
-    assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        (
+            snapshot.active,
+            snapshot.restart_attempt(),
+            snapshot.restart_pending()
+        ),
+        (true, 3, false)
+    );
     assert_eq!(
         persisted_restart_budget(&run_root)?,
         RestartBudgetProjection {

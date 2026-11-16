@@ -8,6 +8,8 @@ use std::path::Path;
 
 use codex_utils_path::PrivateFileAccess;
 
+#[cfg(test)]
+use super::PersistFailure;
 use super::LeaseRegistryErrorV1;
 use super::StoredRegistryV1;
 
@@ -71,7 +73,11 @@ impl RetainedRegistry {
         ))
     }
 
-    pub(super) fn persist(&self, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
+    pub(super) fn persist(
+        &self,
+        state: &StoredRegistryV1,
+        #[cfg(test)] failure: Option<PersistFailure>,
+    ) -> Result<(), LeaseRegistryErrorV1> {
         let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
         codex_utils_path::private_state_child_exists(&self.directory, &self.file_name)
             .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
@@ -87,11 +93,21 @@ impl RetainedRegistry {
             .and_then(|()| file.write_all(&bytes))
             .and_then(|()| file.sync_all())
             .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        #[cfg(test)]
+        if failure == Some(PersistFailure::BeforeRename) {
+            return Err(LeaseRegistryErrorV1::Unavailable);
+        }
+        // The native helper combines replacement and write-through. An error
+        // cannot prove that publication did not occur; retain an owner fence.
         codex_utils_path::replace_private_state_child(&self.directory, &next, &self.file_name)
-            .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+            .map_err(|_| LeaseRegistryErrorV1::IndeterminateDurability)?;
+        #[cfg(test)]
+        if failure == Some(PersistFailure::AfterRename) {
+            return Err(LeaseRegistryErrorV1::IndeterminateDurability);
+        }
         self.directory
             .sync_all()
-            .map_err(|_| LeaseRegistryErrorV1::Unavailable)
+            .map_err(|_| LeaseRegistryErrorV1::IndeterminateDurability)
     }
 }
 

@@ -27,7 +27,7 @@ fn private_owner_pins_new_ancestry_until_persist_and_drop() {
     fs::rename(&ancestor, &moved).expect("dropping the registry releases the directory pins");
     let reopened = DurableLeaseRegistryV1::open(moved.join("leases").join("lease-registry.json"))
         .expect("reopen persisted lease operations after owner release");
-    assert_eq!(reopened.operation("op:issue:1"), Some(&prepared));
+    assert_eq!(reopened.operation("op:issue:1"), Ok(Some(&prepared)));
 }
 
 #[test]
@@ -73,8 +73,8 @@ fn hardlinked_state_rejects_reopen_and_update_without_advancing_history() {
         registry.prepare_issue("op:issue:2".into(), [4; 32]),
         Err(LeaseRegistryErrorV1::Unavailable)
     );
-    assert_eq!(registry.operation("op:issue:1"), Some(&prepared));
-    assert_eq!(registry.operation("op:issue:2"), None);
+    assert_eq!(registry.operation("op:issue:1"), Ok(Some(&prepared)));
+    assert_eq!(registry.operation("op:issue:2"), Ok(None));
     assert_eq!(fs::read(&path).expect("unchanged state"), persisted);
     assert_eq!(fs::read(&alias).expect("unchanged alias"), persisted);
     assert!(!root.join("lease-registry.json.next").exists());
@@ -109,8 +109,8 @@ fn hardlinked_staging_file_is_rejected_before_truncation() {
         registry.prepare_issue("op:issue:2".into(), [4; 32]),
         Err(LeaseRegistryErrorV1::Unavailable)
     );
-    assert_eq!(registry.operation("op:issue:1"), Some(&prepared));
-    assert_eq!(registry.operation("op:issue:2"), None);
+    assert_eq!(registry.operation("op:issue:1"), Ok(Some(&prepared)));
+    assert_eq!(registry.operation("op:issue:2"), Ok(None));
     assert_eq!(fs::read(&path).expect("unchanged state"), persisted);
     assert_eq!(
         fs::read(&staging_path).expect("untruncated staging"),
