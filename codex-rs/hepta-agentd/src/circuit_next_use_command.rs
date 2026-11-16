@@ -39,6 +39,10 @@ use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 
+#[cfg(test)]
+#[path = "circuit_next_use_command_diagnostics_tests.rs"]
+mod diagnostics;
+
 #[path = "circuit_next_use_command_stage_binding.rs"]
 mod stage_binding;
 
@@ -436,20 +440,26 @@ impl OriginalCircuitNextUseCommandClientV1 {
         let queued_execute_fence = QueuedExecuteFence {
             abandoned: Arc::clone(&abandoned),
         };
-        let (channel, bytes) = tokio::task::spawn_blocking(move || {
+        let completed = tokio::task::spawn_blocking(move || {
             // The original peer remains moved into this one task. Once the
             // request has started, a cancelled waiter still has an unknown ACK.
             if action == wire::Action::Execute && abandoned.load(Ordering::Acquire) {
                 return Err(Error::Unavailable);
             }
-            let bytes = channel
-                .peer
-                .request(&encoded)
-                .map_err(|_| Error::CommitUncertain)?;
+            let bytes = channel.peer.request(&encoded);
+            #[cfg(test)]
+            if let Err(error) = &bytes {
+                diagnostics::transport_error("client.command_transport", error);
+            }
+            let bytes = bytes.map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))
         })
-        .await
-        .map_err(|_| Error::CommitUncertain)??;
+        .await;
+        #[cfg(test)]
+        if let Err(error) = &completed {
+            diagnostics::join_error("client.command_join", error);
+        }
+        let (channel, bytes) = completed.map_err(|_| Error::CommitUncertain)??;
         drop(queued_execute_fence);
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
@@ -457,6 +467,10 @@ impl OriginalCircuitNextUseCommandClientV1 {
         let current = now()?;
         require_clock(started_at, current)?;
         self.context.authenticate(current)?;
+        #[cfg(test)]
+        if matches!(&response.result, wire::CommandResult::Uncertain) {
+            diagnostics::command_error("client.wire_response", &Error::CommitUncertain);
+        }
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
                 let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;

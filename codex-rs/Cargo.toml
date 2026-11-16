@@ -650,6 +650,11 @@ opt-level = 3
 [profile.dev.package."sha2:0.11.1"]
 opt-level = 3
 
+# The original HEPTA digest path uses this separately locked SHA-256 version.
+# Keep every hash, physical read, and original deadline intact.
+[profile.dev.package."sha2:0.10.9"]
+opt-level = 3
+
 # Original Root enrollment revalidates Ed25519 signatures within a fixed frame.
 # Optimize only the locked HEPTA crypto versions in development/test builds;
 # every signature check, physical read, and original deadline remains in place.

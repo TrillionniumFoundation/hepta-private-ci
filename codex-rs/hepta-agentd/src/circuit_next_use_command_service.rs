@@ -124,7 +124,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         let permit = Arc::clone(&self.connections)
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
-        tokio::task::spawn_blocking(move || {
+        let completed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
                 stream,
@@ -136,8 +136,12 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
             )?;
             self.serve_command_channel(&mut channel)
         })
-        .await
-        .map_err(|_| Error::CommitUncertain)?
+        .await;
+        #[cfg(test)]
+        if let Err(error) = &completed {
+            super::diagnostics::join_error("server.command_join", error);
+        }
+        completed.map_err(|_| Error::CommitUncertain)?
     }
 
     /// The existing evidence purpose retains its unchanged 500 ms exchange bound.
@@ -159,7 +163,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         let permit = Arc::clone(&self.connections)
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
-        tokio::task::spawn_blocking(move || {
+        let completed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
                 stream,
@@ -171,15 +175,23 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
             )?;
             self.serve_evidence_channel(&mut channel)
         })
-        .await
-        .map_err(|_| Error::CommitUncertain)?
+        .await;
+        #[cfg(test)]
+        if let Err(error) = &completed {
+            super::diagnostics::join_error("server.evidence_join", error);
+        }
+        completed.map_err(|_| Error::CommitUncertain)?
     }
 
     fn serve_command_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
             if !channel.exchange(|bytes| {
-                self.command_response(bytes, request_id)
-                    .map_err(|_| HostIssuerTransportError::InvalidRequest)
+                let response = self.command_response(bytes, request_id);
+                #[cfg(test)]
+                if let Err(error) = &response {
+                    super::diagnostics::command_error("server.command_handler", error);
+                }
+                response.map_err(|_| HostIssuerTransportError::InvalidRequest)
             })? {
                 return Ok(request_id - 1);
             }
@@ -250,6 +262,8 @@ fn original_state(error: OriginalCircuitNextUseReceiptErrorV1) -> wire::CommandR
     use LearningOriginalOwnerErrorV1 as Owner;
     use OriginalCircuitNextUseReceiptErrorV1 as Observer;
     use ProductEvaluationExecutionStoreErrorV1 as Store;
+    #[cfg(test)]
+    super::diagnostics::owner_error("server.owner_result", &error);
     match error {
         Observer::Owner(Owner::Pending) => wire::CommandResult::Pending,
         Observer::Owner(Owner::Store(Store::Missing)) => wire::CommandResult::Missing,
