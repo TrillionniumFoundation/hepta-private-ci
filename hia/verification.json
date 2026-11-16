@@ -1,0 +1,100 @@
+{
+  "schema": "codex.hia.component-verification.v2",
+  "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "source_base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+  "source_donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+  "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "target": "x86_64-unknown-linux-gnu",
+  "build_mode": "native-selfhost",
+  "build_status": "not_executed_on_joint_tree",
+  "compiler_fixed_point": null,
+  "compiler_generations": [],
+  "build_report_sha256": null,
+  "native_module_count": 29,
+  "current_opt_in_linked_kernel_count": 26,
+  "retained_oracle_only_kernel_count": 3,
+  "borrowed_module_count": 27,
+  "scalar_module_count": 2,
+  "production_algorithm_group_count": null,
+  "module_count_scope": "Audited name union; names, links, algorithms and observed production calls are distinct counts.",
+  "whole_codex_rewritten": false,
+  "production_dispatch_migrated": false,
+  "default_release_migrated": false,
+  "workspace_qualified": false,
+  "performance_qualified": false,
+  "whole_product_performance_qualified": false,
+  "legacy_source_retired": false,
+  "legacy_retirement_ready": false,
+  "opt_in_production_callers_verified": false,
+  "scope": "Source-only composition of fixed17 and fixed19 plus reviewed template Index bridge. No compiler, Cargo, formatter, native, product, CI or benchmark command was executed for this joint tree.",
+  "module_roles": "hia/joint_module_roles.json",
+  "current_qualification": {
+    "status": "not_executed",
+    "source_composed": true,
+    "full_native29_admission": false,
+    "complete_current_workflow_passed": false,
+    "historical_exact17_job_passed_this_run": false,
+    "joint_job_runtime_cost_verified": false,
+    "per_job_budget_minutes": 60,
+    "all_static_link_receipts_require_regeneration": true,
+    "new_native_artifacts_created": false,
+    "retirement_authorized": false
+  },
+  "source_owner_histories": {
+    "17": {
+      "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "files": {
+        "migration.json": {
+          "path": "hia/history/owner17-74d1c0eb/migration.json",
+          "bytes": 167068,
+          "sha256": "8c977b4b604f75b4c8a71de98bfcfb9da0659f4761803deb5f0a5ecdfe2702d4",
+          "git_blob": "744e300723906d8c50829e8c1d6b27585f8ba5ae"
+        },
+        "verification.json": {
+          "path": "hia/history/owner17-74d1c0eb/verification.json",
+          "bytes": 458169,
+          "sha256": "d78f75b7f9d616e1abbe01585bae9c521d3988a654940d69832d17ae6a3093a1",
+          "git_blob": "d5e6e76a8832c1105111b1aedbf62dc7f412d71b"
+        },
+        "README.md": {
+          "path": "hia/history/owner17-74d1c0eb/README.md",
+          "bytes": 122550,
+          "sha256": "715126779d0fa78cf728c28adeba5d98654514cb953d2a9b7ac9530ee55abd63",
+          "git_blob": "f6c2b401d971500f0ad59d715c53756a9cc5cef5"
+        }
+      }
+    },
+    "19": {
+      "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "files": {
+        "migration.json": {
+          "path": "hia/history/owner19-d2fb9ecd/migration.json",
+          "bytes": 112258,
+          "sha256": "5b9b1108aa1b2c41a7d868d601a260297b6ebf2001ce7147b28b48fda9aed00b",
+          "git_blob": "bafd8b4bf107284112345142ae2f83453faa098f"
+        },
+        "verification.json": {
+          "path": "hia/history/owner19-d2fb9ecd/verification.json",
+          "bytes": 234966,
+          "sha256": "6e3da32de124e015a1943959a410a9c146909ac6bd3c04eaa1448e405149c5f8",
+          "git_blob": "645b5e9deb01ae762c3ee4605601a91965481ee4"
+        },
+        "README.md": {
+          "path": "hia/history/owner19-d2fb9ecd/README.md",
+          "bytes": 49908,
+          "sha256": "833c700d5fdccf35cdc70fd438490fdcd264717612c9c7f8b9e98de6c0997b29",
+          "git_blob": "fe65efde72c34243ecc4aedca7418f77262decb5"
+        }
+      }
+    }
+  },
+  "history_policy": "Each original metadata file is kept byte-exact under its immutable owner revision. None of its passes, build hashes, CI states or performance values qualifies the current joint source or the other owner's wire protocol.",
+  "pending_gates": [
+    "Actual complete29 native-selfhost build and B1/B2/B3, all source/object/library/archive/.link identities.",
+    "Both scalar profiles, all existing receipt rejection cases, current full-native29 network-host admission.",
+    "Template 13206 pairs / 21 constructors / complete payload and callback, AsRef, Drop, eight panic-fault behavior / 100 unnormalized raw private DTO calls.",
+    "All original current/default Cargo owners, source inverses, supported platforms, installed patch and full CLI cases, strict lint and unchanged-source fixes.",
+    "Exact74d1 historical original workflow, including the incompatible v8 renderer raw ABI; results separately named and not current-v9 evidence.",
+    "Complete current workspace and integrated performance, then any explicit legacy retirement proposal."
+  ]
+}
