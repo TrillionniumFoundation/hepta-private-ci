@@ -1,0 +1,11 @@
+arm,head,anchors,wall_ns_sum,cpu_ns_sum,map_bytes,projected_dimension,retained_output_scalars,retained_action_scalars_upper_bound,common_full_state_dimension,retained_state_scalars_upper_bounds
+loss2,linear,9,65712767,12934118,5184,2,2,0,108,2
+loss2,gated,9,16312684,16302613,7488,2,2,0,156,2
+history2,linear,9,52582733,99167776,5184,4,4,36,108,40
+history2,gated,9,98333225,189866414,7488,4,4,52,156,56
+history4,linear,9,72035345,143034027,5184,8,8,108,108,116
+history4,gated,9,137348549,273314483,7488,8,8,156,156,164
+moment4,linear,9,9981158,19988398,5184,4,4,0,108,4
+moment4,gated,9,12456930,27463045,7488,4,4,0,156,4
+full,linear,9,12889742,26898409,5184,108,108,0,108,108
+full,gated,9,36786720,72783353,7488,156,156,0,156,156

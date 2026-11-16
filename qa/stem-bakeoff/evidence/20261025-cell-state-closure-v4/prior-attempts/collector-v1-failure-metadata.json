@@ -1,0 +1,17 @@
+{
+  "schema": "hepta-v4-cost-collector-failed-attempt-metadata:v1",
+  "provenance": "Derived from root-reported original failed execution; not a substitute for the original stderr bytes.",
+  "attempt": "cell-v4-cost-aggregation-v1",
+  "collector_sha256": "4e696e23e955c383a9afc32c484440bcd233a5067855019266252e69da5f156e",
+  "observed_error": "ValueError: registered protocol differs",
+  "stdout_bytes": 0,
+  "result_accepted": false,
+  "new_training_model_or_final_label_access": false,
+  "owner_retained_stderr_path": "cell-v4-cost-aggregation-v1/stderr.log",
+  "stderr_sha256": "ddeb04123a638f3bbcb57075cdf14c8211e9964988e4eabb4e6e9425593a09e8",
+  "cause": "The helper pinned the earlier local protocol candidate instead of the already-published/executed source-owner-hardened protocol.",
+  "correction": "Collector r2 pins only the exact executed protocol and adds semantic/instrumentation source checks; experiment and outcomes unchanged.",
+  "raw_stderr_included": true,
+  "raw_stderr_bytes": 550,
+  "raw_stderr_file": "collector-v1-stderr.log"
+}

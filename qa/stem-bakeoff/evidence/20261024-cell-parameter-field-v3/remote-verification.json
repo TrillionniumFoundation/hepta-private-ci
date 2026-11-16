@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.cell-action-remote-verification.v3",
+  "verified_subject_commit": "b7dbbda63d3bb994e5f76fb6401196da28d2d56e",
+  "verified_subject_tree": "ad3fb4701566073561f9d3726c5f3d57875375ef",
+  "evidence_files_verified": 162,
+  "local_source_protocol_test_files_verified": 51,
+  "source_closure_unchanged_files": 39,
+  "previous_v2_base_blobs_unchanged": 9763,
+  "added_source_files": 24,
+  "existing_blob_changes": 0,
+  "raw_archive": {
+    "archive_bytes": 45289220,
+    "archive_sha256": "4adb728e85274e34894918014ef5d8dd70d3303c3273cbe36cd3e20e38ad5e88",
+    "part_count": 87,
+    "file_count": 3092
+  },
+  "raw_part_blobs_verified": 87,
+  "raw_part_zero_base64_readback_exact": true,
+  "source_prs": [
+    {
+      "number": 3814,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3814",
+      "head": "research/cell-field-v3-p2-data-20261024",
+      "head_sha": "925e063c04f14c44822d0d731e9a26e1ba92773b",
+      "base": "research/cell-field-v2-p7-evidence-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3815,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3815",
+      "head": "research/cell-field-v3-p3-input-audit-20261024",
+      "head_sha": "82566999770b85f78a44712723a2ce238e967639",
+      "base": "research/cell-field-v3-p2-data-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3816,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3816",
+      "head": "research/cell-field-v3-p4-control-20261024",
+      "head_sha": "5d8c6d3424f1eb0eb6dde5421bc4f641a7e2fa85",
+      "base": "research/cell-field-v3-p3-input-audit-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3817,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3817",
+      "head": "research/cell-field-v3-p5-inputs-replay-20261024",
+      "head_sha": "94df9d199611fbc4dc7d23b4b5b6cf609420e84d",
+      "base": "research/cell-field-v3-p4-control-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3818,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3818",
+      "head": "research/cell-field-v3-p6-runner-20261024",
+      "head_sha": "01f94a15b0bb48384c771d7304ff14daeb2f6a37",
+      "base": "research/cell-field-v3-p5-inputs-replay-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3819,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3819",
+      "head": "research/cell-field-v3-p7-evaluation-20261024",
+      "head_sha": "dee62ceefe23d2d60098b625c1204409dbc8756e",
+      "base": "research/cell-field-v3-p6-runner-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3820,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3820",
+      "head": "research/cell-field-v3-p8-math-score-audit-20261024",
+      "head_sha": "dd177ab84c73ea6c66238857db6991367f43cfe6",
+      "base": "research/cell-field-v3-p7-evaluation-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "number": 3821,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3821",
+      "head": "research/cell-field-v3-p9-state-replay-audit-20261024",
+      "head_sha": "c69e4e7ab55456e75476be4ca9a3bcaeaea1934c",
+      "base": "research/cell-field-v3-p8-math-score-audit-20261024",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    }
+  ],
+  "publication_correction": {
+    "path": "qa/stem-bakeoff/evidence/20261024-cell-parameter-field-v3/logs/cell-action-v3-features.log",
+    "reason": "text-mode read normalized carriage returns in the encoder progress log; original bytes restored using binary blob",
+    "first_evidence_commit": "c6b35136f5546267fdb0d48e62c99b875318dcc9",
+    "corrected_commit": "b7dbbda63d3bb994e5f76fb6401196da28d2d56e",
+    "original_blob": "f27c386f20cd48bf742a08163a5d995984db1944",
+    "scientific_artifacts_changed": false
+  },
+  "verification_receipt_addition_only_follows": true,
+  "remote_ci_consulted": false,
+  "verified_at_utc": "2026-10-25 00:50:36 UTC"
+}

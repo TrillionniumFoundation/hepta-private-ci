@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.cell-v2-encoder-runtime-restoration.v1",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "python_executable": "/workspace/scratch/04b4c084dad8/cell-v2-venv/bin/python",
+  "packages": {
+    "torch": "2.10.0+cpu",
+    "transformers": "5.20.2",
+    "numpy": "2.2.6",
+    "tokenizers": "0.23.3",
+    "safetensors": "0.8.0",
+    "huggingface-hub": "2.3.0"
+  },
+  "model_load_wall_ns": 5356260479,
+  "model_accounting": {
+    "loaded_parameter_count": 97441152,
+    "trainable_parameter_count": 0,
+    "resident_tensor_storage_bytes": 389764864,
+    "resident_storage_count": 78
+  },
+  "verified_inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+  "snapshot": "/tmp/hepta-granite97m-sealed-20261024-v2",
+  "model_forward_calls": 0,
+  "feature_extraction_performed": false,
+  "torch_threads": 4,
+  "cuda_available": false
+}

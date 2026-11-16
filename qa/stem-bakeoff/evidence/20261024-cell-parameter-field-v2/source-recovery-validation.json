@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.cell-field-source-recovery-validation.v1",
+  "at_utc": "2026-10-24T23:44:07.913426+00:00",
+  "files": {
+    "cell_field_retention_data.py": {
+      "sha256": "ddee094161773c30cac95eee50cfb4da884b390232ae302b404f1dad58906f68",
+      "bytes": 16284
+    },
+    "test_cell_field_retention_data.py": {
+      "sha256": "ac629b15128e4b00848831a32472e9341beb31d889397f7109ab4806f2f92050",
+      "bytes": 11726
+    },
+    "cell_field_retention_input_audit.py": {
+      "sha256": "1111b49961c27b4883b9e12fb701f4169f4fa41b793e2ecf351616a8b9a96612",
+      "bytes": 12922
+    },
+    "test_cell_field_retention_input_audit.py": {
+      "sha256": "b3d26bf3cd5497021b3b82ad835a34d073cc4d5b1df2f44a2f8b1c6b7293863b",
+      "bytes": 5319
+    },
+    "cell_field_source_recovery.py": {
+      "sha256": "69039ed175915e3eb13bc5f892a92ead7532894dff9c03ad0f61636d7b099a09",
+      "bytes": 4264
+    }
+  },
+  "tests": [
+    {
+      "command": "python -m unittest -v test_cell_field_retention_data",
+      "count": 9,
+      "passed": 9,
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest -v test_cell_field_retention_input_audit",
+      "count": 3,
+      "passed": 3,
+      "exit_code": 0
+    }
+  ],
+  "actual_recovery": {
+    "sources_sha256": "d3d8c203c2fd88966fa937d0e0b5cf2826399f558a26dc1e256e47ab479a0482",
+    "sources_bytes": 315623,
+    "components": 512,
+    "seal_sha256": "68c5b247fa399901fea32076e11ed0a4a5149cbd52ba3690ff1bdc09adf66549",
+    "original_receipt_created": false
+  },
+  "protocol_sha256": "74219a854515b10e8098e2365f325b29bc73aa09d9d0311976b0afa2f9c2ee20",
+  "model_run": false
+}

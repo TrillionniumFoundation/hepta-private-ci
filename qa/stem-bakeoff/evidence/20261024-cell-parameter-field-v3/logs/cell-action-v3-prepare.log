@@ -1,0 +1,134 @@
+{
+  "roles": {
+    "old_train": {
+      "month": "2014-04",
+      "rows": 64,
+      "labels_per_class": 16,
+      "access": "train"
+    },
+    "old_probe": {
+      "month": "2014-04",
+      "rows": 32,
+      "labels_per_class": 8,
+      "access": "train"
+    },
+    "old_validation": {
+      "month": "2014-04",
+      "rows": 64,
+      "labels_per_class": 16,
+      "access": "validation"
+    },
+    "old_test": {
+      "month": "2014-04",
+      "rows": 64,
+      "labels_per_class": 16,
+      "access": "final"
+    },
+    "current_train": {
+      "month": "2014-05",
+      "rows": 64,
+      "labels_per_class": 16,
+      "access": "train"
+    },
+    "current_probe": {
+      "month": "2014-05",
+      "rows": 32,
+      "labels_per_class": 8,
+      "access": "train"
+    },
+    "current_validation": {
+      "month": "2014-05",
+      "rows": 64,
+      "labels_per_class": 16,
+      "access": "validation"
+    },
+    "future_june": {
+      "month": "2014-06",
+      "rows": 48,
+      "labels_per_class": 12,
+      "access": "final"
+    },
+    "future_july": {
+      "month": "2014-07",
+      "rows": 128,
+      "labels_per_class": 32,
+      "access": "final"
+    },
+    "future_august": {
+      "month": "2014-08",
+      "rows": 64,
+      "labels_per_class": 16,
+      "access": "final"
+    }
+  },
+  "audit": {
+    "raw_rows": 422935,
+    "raw_components": 3172,
+    "legacy_selected_rows": 768,
+    "legacy_source_ids_sha256": "9ef796745fbf41627611a748f65ba31eea75be5b7e3c5a0f9af947124de51780",
+    "excluded_components_by_reason": {
+      "v1_experiment_component": 512,
+      "cross_month": 54,
+      "label_conflict": 43,
+      "legacy_cohort_component": 429,
+      "v2_experiment_component": 480,
+      "outside_selected_months": 108,
+      "no_non_ood_publisher": 2
+    },
+    "exclusion_reason_counts_overlap": true,
+    "exclusion_component_ids_sha256": {
+      "v1_experiment_component": "0c989b78c2ba3b74cc0c7f86b365d41d67005961ff2857250774afe2df57f730",
+      "cross_month": "66f0c21f7a49332a60bad8eb7e9fba70e664ecbf399c9569c7188c07c0940f27",
+      "label_conflict": "9ca88559af16ef9a74d48f8a6422bd735f47e3eb7816f2277e933839dcc3876a",
+      "legacy_cohort_component": "abe57ce074393356ac95c812d54c1c8fb9575135f4538482cc6ea00b4ce11128",
+      "v2_experiment_component": "bee5512c1a58407e12e9e6dddf03b3388d1fa7240a6ed0e8d3b9322296fd6e8e"
+    },
+    "eligible_components_by_month_class": {
+      "2014-04/3": 144,
+      "2014-04/1": 127,
+      "2014-04/2": 116,
+      "2014-04/0": 127,
+      "2014-05/0": 97,
+      "2014-05/3": 119,
+      "2014-05/1": 73,
+      "2014-05/2": 74,
+      "2014-06/0": 58,
+      "2014-06/3": 53,
+      "2014-06/1": 34,
+      "2014-06/2": 12,
+      "2014-07/2": 84,
+      "2014-07/0": 109,
+      "2014-07/3": 120,
+      "2014-07/1": 102,
+      "2014-08/0": 37,
+      "2014-08/3": 36,
+      "2014-08/1": 41,
+      "2014-08/2": 18
+    },
+    "selected_components": 624,
+    "selected_legacy_overlap": 0,
+    "selected_v1_overlap": 0,
+    "selected_v2_overlap": 0,
+    "graph_edges": [
+      "equal raw story_id",
+      "equal NFKC/casefold/whitespace-normalized raw title"
+    ],
+    "semantic_story_overlap_excluded": false,
+    "v1_selected_rows": 512,
+    "v1_source_ids_sha256": "c50ecbaa508825aa57c0a57bddf084216f806bfb3ca45c6f1f720767e2cba25a",
+    "v1_component_ids_sha256": "0c989b78c2ba3b74cc0c7f86b365d41d67005961ff2857250774afe2df57f730",
+    "v2_selected_rows": 480,
+    "v2_source_ids_sha256": "84291008bc4410659ab3b8e40efb0aaa189755ef6c2a2ccefbcca7c408e126f7",
+    "v2_component_ids_sha256": "bee5512c1a58407e12e9e6dddf03b3388d1fa7240a6ed0e8d3b9322296fd6e8e"
+  },
+  "execution": {
+    "schema": "hepta.cell-action-data-execution.v3",
+    "at_utc": "2026-10-25T00:16:38.972270+00:00",
+    "protocol_sha256": "b24f22c9f4bd4a106ee4311d6a47cc31781de808f01fd6fa9e4a60853cf4afb3",
+    "remote_protocol_commit": "1f982fa986b3afac83e3ee29e402b9008119ecc3",
+    "data_receipt_sha256": "5beee156d3f2203fc17b637ca2eedfdb0b081b0f3c5aac1b7aa743f37f22af52",
+    "withheld_open_guard": "Reject read or update opens of validation_labels.json and final_labels.json; allow preparation writes",
+    "attempts": [],
+    "model_outcomes_observed": false
+  }
+}

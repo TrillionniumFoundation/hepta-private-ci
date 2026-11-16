@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.cell-retention-archive-verification.v2",
+  "archive_sha256": "cb31ee4f2c129cc4c39d4e4bbd06bfe6899fb02e0bb89e84827314b8e2de5b1b",
+  "all_member_hashes_equal": true,
+  "members_verified": 961,
+  "sealed_run_files_verified": 917,
+  "sealed_run_bytes_verified": 41184091,
+  "pre_evaluation_seal_sha256": "f958695955604da2ef98cb908ac403c593f8f5f28f67a0f245403f596353bebe",
+  "method": "Read every compressed tar member and compare size/SHA256, then compare every pre-evaluation seal entry.",
+  "original_sealed_inputs_modified": false
+}

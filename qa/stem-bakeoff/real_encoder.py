@@ -29,6 +29,14 @@ class RealEncoderError(ValueError):
     pass
 
 
+def attention_implementation(candidate, profile):
+    """Gemma4 audio implements chunked local attention only through eager."""
+    if candidate == "embeddinggemma2_740m" and "audio" in PROFILES[profile]:
+        return {"": "sdpa", "text_config": "sdpa", "vision_config": "sdpa",
+                "audio_config": "eager"}
+    return "sdpa"
+
+
 def canonical_sha256(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
                                     separators=(",", ":"), allow_nan=False).encode()).hexdigest()
@@ -159,6 +167,7 @@ class FrozenRealEncoder:
         if device == "cuda" and not torch.cuda.is_available():
             raise RealEncoderError("CUDA requested but unavailable")
         self.candidate, self.profile, self.device = candidate, profile, device
+        self.attention_implementation = attention_implementation(candidate, profile)
         self.inventory_sha256 = verified["inventory_sha256"]
         self.snapshot_artifact_bytes = verified["total_bytes"]
         self.max_tokens, self.task = max_tokens, task
@@ -188,7 +197,8 @@ class FrozenRealEncoder:
                 if "audio" not in PROFILES[profile]:
                     config.audio_config = None
             self._model, loading = AutoModel.from_pretrained(
-                self.snapshot, config=config, dtype=dtype, attn_implementation="sdpa",
+                self.snapshot, config=config, dtype=dtype,
+                attn_implementation=self.attention_implementation,
                 output_loading_info=True, **kwargs)
             allowed_unused = ("head.", "decoder.") if candidate == "mmbert_small" else ()
             if candidate == "embeddinggemma2_740m":
@@ -214,6 +224,8 @@ class FrozenRealEncoder:
                       "torch": torch.__version__}
         import transformers
         preprocess["transformers"] = transformers.__version__
+        if isinstance(self.attention_implementation, dict):
+            preprocess["attention_implementation"] = self.attention_implementation
         self.identity = FeatureIdentityV1(
             encoder_sha256=canonical_sha256(model_id), checkpoint_revision=revision,
             preprocess_sha256=canonical_sha256(preprocess), generation=generation, scope_id=scope_id)
