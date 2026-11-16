@@ -576,13 +576,8 @@ async fn load_config_or_exit(cli_config_overrides: CliConfigOverrides) -> Config
     }
 }
 
-fn safe_format_key(key: &str) -> String {
-    if key.len() <= 13 || !key.is_ascii() || key.bytes().any(|byte| byte.is_ascii_control()) {
-        return "***".to_string();
-    }
-    let prefix = &key[..8];
-    let suffix = &key[key.len() - 5..];
-    format!("{prefix}***{suffix}")
+fn safe_format_key(_key: &str) -> String {
+    "***".to_string()
 }
 
 #[cfg(test)]
@@ -628,7 +623,13 @@ mod tests {
     #[test]
     fn formats_long_key() {
         let key = "sk-proj-1234567890ABCDE";
-        assert_eq!(safe_format_key(key), "sk-proj-***ABCDE");
+        assert_eq!(safe_format_key(key), "***");
+    }
+
+    #[test]
+    fn fourteen_byte_keys_are_fully_redacted() {
+        let key = "sk-12345678901";
+        assert_eq!(safe_format_key(key), "***");
     }
 
     #[test]
