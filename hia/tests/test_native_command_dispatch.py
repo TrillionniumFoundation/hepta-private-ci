@@ -121,6 +121,9 @@ def verify(args, report):
         return streams["stdout"].decode()
 
     environment = os.environ.copy()
+    # This execpolicy-only build owns its compiler capture chain; the inherited
+    # apply-patch arithmetic-policy wrapper belongs to separate owner gates.
+    environment.pop("RUSTC_WRAPPER", None)
     environment.update(RUSTC=rustc, GIT_TERMINAL_PROMPT="0", PYTHONDONTWRITEBYTECODE="1")
     report["rustc"] = run("rustc-version", [rustc, "--version", "--verbose"], environment)
     if predecessor is not None and report['predecessor']['rustc'] != report['rustc']:
