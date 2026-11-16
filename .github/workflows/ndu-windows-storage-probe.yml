@@ -1,0 +1,611 @@
+name: NDU native Windows storage observation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ndu-windows-storage-probe.yml"
+      - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
+      - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
+      - "codex-rs/windows-sandbox-rs/src/token.rs"
+      - "codex-rs/windows-sandbox-rs/src/acl.rs"
+      - "codex-rs/windows-sandbox-rs/src/winutil.rs"
+      - "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      - "codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/legacy_admission.rs"
+      - "codex-rs/windows-sandbox-rs/src/legacy_admission_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_probe_support.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/token_access_check_diagnostics_tests.rs"
+      - "codex-rs/windows-sandbox-rs/src/lib.rs"
+      - "codex-rs/windows-sandbox-rs/Cargo.toml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "justfile"
+      - "scripts/just-shell.py"
+      - "scripts/run-nextest.py"
+      - "codex-rs/.config/nextest.toml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-windows-storage-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Observe native file and directory flush results
+        shell: pwsh
+        run: |
+          python experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py --output "$env:RUNNER_TEMP/hepta-windows-storage.json"
+          exit $LASTEXITCODE
+      - name: Preserve observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-windows-storage-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-windows-storage.json
+          if-no-files-found: error
+
+  acl-observe:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Preserve committed source bytes on checkout
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python with tomllib
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Freeze reviewed source identities before tool installation
+        shell: pwsh
+        run: |
+          @'
+          import collections
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import stat
+          import subprocess
+          import sys
+          import time
+          import tomllib
+          import xml.etree.ElementTree as ET
+
+          PINS = {
+              "codex-rs/.config/nextest.toml": {
+                  "bytes": 5268,
+                  "mode": "100644",
+                  "oid": "c3587defba1efc56ae87060d0a681889dc07f45a",
+                  "sha256": "a8e5d8dbbbf1d43c9f22ff93f4a7333b72d45dd0cea9a41a1292a15312b3df59"
+              },
+              "codex-rs/Cargo.toml": {
+                  "bytes": 21574,
+                  "mode": "100644",
+                  "oid": "d2703b590935ab17316e6c258657c0ce5ab7412a",
+                  "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+              },
+              "codex-rs/rust-toolchain.toml": {
+                  "bytes": 78,
+                  "mode": "100644",
+                  "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+                  "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+              },
+              "codex-rs/windows-sandbox-rs/Cargo.toml": {
+                  "bytes": 2438,
+                  "mode": "100644",
+                  "oid": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+                  "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+              },
+              "codex-rs/windows-sandbox-rs/src/acl.rs": {
+                  "bytes": 27886,
+                  "mode": "100644",
+                  "oid": "b1b076a6fb65c903ec3a02f5f8822a20389efbed",
+                  "sha256": "583fa1e1a4cdc1db39dedd37db85301defd1bd96b8c68aa4e660cf2f58f11317"
+              },
+              "codex-rs/windows-sandbox-rs/src/acl_deny.rs": {
+                  "bytes": 11876,
+                  "mode": "100644",
+                  "oid": "ccb59b223575c843afdd9ddee7b6687ea249a3da",
+                  "sha256": "9d69c10558f7d50ff0b8641a8137565552fac7c8fe4841cd11a1e93526b79ca7"
+              },
+              "codex-rs/windows-sandbox-rs/src/acl_tests.rs": {
+                  "bytes": 22487,
+                  "mode": "100644",
+                  "oid": "838d88a55086dc94d1d39ee233eaa17fc551b1d6",
+                  "sha256": "9097e67b7f199231bd11067b73ca5a7f2e58c246f50568de28d67d6873a79e1b"
+              },
+              "codex-rs/windows-sandbox-rs/src/legacy_admission.rs": {
+                  "bytes": 1417,
+                  "mode": "100644",
+                  "oid": "f1fc37fc9ef53244773504746482a0a77027daaf",
+                  "sha256": "eb1048cf27a5a7896d44ae7e32af60a4b25d7f561c4c1b2bf49093ad078189a4"
+              },
+              "codex-rs/windows-sandbox-rs/src/legacy_admission_tests.rs": {
+                  "bytes": 16511,
+                  "mode": "100644",
+                  "oid": "44e5f40833d63b60484611374986130232a57c55",
+                  "sha256": "4ac439589637fee06b7edbbc784a991d34a721f6859178795fe9fe1b2f5d5594"
+              },
+              "codex-rs/windows-sandbox-rs/src/lib.rs": {
+                  "bytes": 30736,
+                  "mode": "100644",
+                  "oid": "26971cce4830f32a46f1cfe1cc3a7a3dbe92091f",
+                  "sha256": "2b836db6d879e0976c0b4b84acb3c475bc40465e8ddf61e455513d702adeb8dd"
+              },
+              "codex-rs/windows-sandbox-rs/src/token.rs": {
+                  "bytes": 18696,
+                  "mode": "100644",
+                  "oid": "4e0287581b7fca41cdcff601933f20caf93622c1",
+                  "sha256": "199b11b53a80038cd3f11bd268089b3ede08dfcaa6ac0a81d036092733005c32"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_access_check_diagnostics_tests.rs": {
+                  "bytes": 16568,
+                  "mode": "100644",
+                  "oid": "349bb50a38929fadbf038daf0c5c0c6913a3803b",
+                  "sha256": "348b5b7a7c633ccde80877cf4c9416af372e2613036deaf519b95277d4d21998"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs": {
+                  "bytes": 3753,
+                  "mode": "100644",
+                  "oid": "5d5fa0e12c1536477d8719c8ef62369552e067cd",
+                  "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs": {
+                  "bytes": 9879,
+                  "mode": "100644",
+                  "oid": "e8bf47c8a07ad827b322ffe689240efe42fbba95",
+                  "sha256": "d38d61c5746375b6c155843adc78140638e2a1997c767fba4f56631b24895931"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs": {
+                  "bytes": 11177,
+                  "mode": "100644",
+                  "oid": "d53e46d1775c0bae9a837e6ecf95a8bff33648db",
+                  "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs": {
+                  "bytes": 21919,
+                  "mode": "100644",
+                  "oid": "c09d20d4006342c470a229bf810291bd12d0fc60",
+                  "sha256": "62bd5cb1dac7fc761600708bfbbd8314663de6f5fe4827cb510d7831c4d987d7"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs": {
+                  "bytes": 15481,
+                  "mode": "100644",
+                  "oid": "473e4a7ae423eba1b1c31d1d88542fb6faed086c",
+                  "sha256": "13ed029a784aa0751807dd6953c59708cda6fc2108a10b9cb498e8e8d80d55c6"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_probe_support.rs": {
+                  "bytes": 1999,
+                  "mode": "100644",
+                  "oid": "31978ababba00333856c0e40275ddbab914ed6c7",
+                  "sha256": "8bbea9b387cd5642c843467db9f1d8c9300d5ddc7eabb4e529083cb1030ba4fb"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs": {
+                  "bytes": 30653,
+                  "mode": "100644",
+                  "oid": "1b43360fe10b570cfd9020fb9acb430fd711c148",
+                  "sha256": "59be12c1e607c3ee686d49cb8ff10481de4e463d6ff164c6f5d8c4f1fcf0c5bb"
+              },
+              "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
+                  "bytes": 4252,
+                  "mode": "100644",
+                  "oid": "6fa81ee3158a6bc992d16ae4c4116c974368407e",
+                  "sha256": "c97b3fd9c22d19e157c93d8d276c38b013e8a4b470d99d5557aab8d8737bca8d"
+              },
+              "codex-rs/windows-sandbox-rs/src/winutil.rs": {
+                  "bytes": 8038,
+                  "mode": "100644",
+                  "oid": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+                  "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py": {
+                  "bytes": 15543,
+                  "mode": "100644",
+                  "oid": "94fa050a87a99e91a872f1f42b59ea6d9afb3561",
+                  "sha256": "b870584ac1c5cc63dcf6a3225f88b620ecdade0f567b29e7aeed52b219ccdf78"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs": {
+                  "bytes": 9587,
+                  "mode": "100644",
+                  "oid": "f3482bc418f20516fecf822f38b3371c17d55c9e",
+                  "sha256": "cb008766ada31c99b849e9bf0fa0f1c183aeeae1c253f4b56f81d9830dfc9541"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_support.rs": {
+                  "bytes": 11654,
+                  "mode": "100644",
+                  "oid": "816ce354d22bca58da4f367ac07fafdeaa901b4e",
+                  "sha256": "7bfb9f1d113668715f2a36ad22bd0bf42e3a4f0661bd1db7bc5530571e5e9a33"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_tests.py": {
+                  "bytes": 8800,
+                  "mode": "100644",
+                  "oid": "92da2da73e27619629d0db624014de97cf23fe83",
+                  "sha256": "2597eb597fb74781f39ce68216c53b17a99aef37a29daef4e624030f53d0de40"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py": {
+                  "bytes": 5488,
+                  "mode": "100644",
+                  "oid": "1f330517ed363a6ba58e87add1810aaafb4d96f7",
+                  "sha256": "65ade860a6be4d8927c672af42c857586b791d438ad61e14e1774cf689f5af78"
+              },
+              "justfile": {
+                  "bytes": 7838,
+                  "mode": "100644",
+                  "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+                  "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+              },
+              "scripts/just-shell.py": {
+                  "bytes": 2030,
+                  "mode": "100644",
+                  "oid": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+                  "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+              },
+              "scripts/run-nextest.py": {
+                  "bytes": 10206,
+                  "mode": "100644",
+                  "oid": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+                  "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+              }
+          }
+          WINDOWS_METHODS = ['acl::tests::complete_denies_compare_mapped_masks_and_require_every_right', 'acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows', 'acl::tests::complete_file_denies_require_direct_scope', 'acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent', 'acl::tests::partial_read_deny_is_repaired_before_native_file_data_access', 'acl::tests::deny_ace_update_failure_is_an_error', 'acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes', 'acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation', 'acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope', 'acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change', 'acl::tests::acl_repair_rejects_replaced_path_with_different_object_type', 'token::tests::elevated_token_includes_network_proxy_restricting_sid', 'token::tests::workspace_token_refusal_leaves_existing_files_unchanged', 'token::tests::workspace_token_refuses_multiple_capabilities_before_native_access', 'token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets', 'token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries', 'token::tests::mic_probe::mic_labels_preserve_original_outside_and_protected_child_oracles']
+          PROBE_METHODS = ['test_actual_git_rejects_live_and_index_only_source_changes', 'test_complete_transcript_keeps_false_invariant_as_observed_failure', 'test_incomplete_or_duplicated_native_observation_cannot_complete', 'test_dependency_without_existing_checksum_cannot_enter_probe', 'test_actual_git_rejects_unbound_legacy_admission_changes', 'test_refusal_transcript_cannot_certify_permission_observations']
+          OTHER_LOCK_TOML_SHA256 = "c4244232eaae3d597b5ab7389318d12e00c6c013bb335743a5478b2e614fe4dc"
+          ANYHOW_RECORD = {
+              "name": "anyhow",
+              "version": "1.0.104",
+              "source": "registry+https://github.com/rust-lang/crates.io-index",
+              "checksum": "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470",
+          }
+          WORKFLOW = ".github/workflows/ndu-windows-storage-probe.yml"
+          ROOT = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          OUT = Path(os.environ["RUNNER_TEMP"]) / "hepta-windows-acl-tests"
+          PROBE_OUT = Path(os.environ["RUNNER_TEMP"]) / "hepta-windows-acl"
+          HEAD = os.environ["EXPECTED_HEAD"]
+          ENV = dict(os.environ)
+          ENV.update({
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "CARGO_TERM_COLOR": "never",
+              "NEXTEST_PROFILE": "local",
+              "NO_COLOR": "1",
+              "CARGO_TARGET_DIR": str(Path(os.environ["RUNNER_TEMP"]) / "hepta-windows-acl-target"),
+              "GIT_TERMINAL_PROMPT": "0",
+              "GIT_NO_LAZY_FETCH": "1",
+              "GIT_OPTIONAL_LOCKS": "0",
+              "GIT_CONFIG_NOSYSTEM": "1",
+              "GIT_CONFIG_GLOBAL": os.devnull,
+          })
+          for key in list(ENV):
+              if key == "GIT_CONFIG_COUNT" or key.startswith(("GIT_CONFIG_KEY_", "GIT_CONFIG_VALUE_")):
+                  del ENV[key]
+
+
+          def require(condition, message):
+              if not condition:
+                  raise RuntimeError(message)
+
+
+          def write_json(path, value):
+              path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+
+          def git(*args, allowed=(0,)):
+              empty_hooks = OUT / "empty-hooks"
+              empty_hooks.mkdir(exist_ok=True)
+              cmd = ["git", "--no-pager", "-c", "core.hooksPath=" + str(empty_hooks),
+                     "-c", "core.fsmonitor=false", *args]
+              result = subprocess.run(cmd, cwd=ROOT, env=ENV, capture_output=True, check=False)
+              require(result.returncode in allowed,
+                      "Git source check failed: " + repr(args) + "\n" +
+                      result.stderr.decode("utf-8", errors="replace"))
+              return result
+
+
+          def raw_identity(path, cap):
+              target = ROOT / path
+              require(not target.is_symlink(), "Source is a symlink: " + path)
+              with target.open("rb") as stream:
+                  before = os.fstat(stream.fileno())
+                  require(stat.S_ISREG(before.st_mode) and before.st_size <= cap,
+                          "Source must be a bounded regular file: " + path)
+                  data = stream.read(cap + 1)
+                  after = os.fstat(stream.fileno())
+              require(len(data) <= cap and
+                      (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+                      (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns),
+                      "Source changed during its read: " + path)
+              return data, {
+                  "bytes": len(data),
+                  "oid": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+                  "sha256": hashlib.sha256(data).hexdigest(),
+              }
+
+
+          def source_snapshot():
+              require(sys.platform == "win32" and os.environ.get("RUNNER_OS") == "Windows",
+                      "A native Windows runner is required")
+              require(re.fullmatch(r"[0-9a-f]{40}", HEAD) is not None, "Exact PR commit required")
+              actual_head = git("rev-parse", "HEAD").stdout.decode().strip()
+              require(actual_head == HEAD, "Checkout is not the exact PR head")
+              # Status may invoke repository-local clean/process filters. Reject them first.
+              filters = git("config", "--null", "--get-regexp",
+                            r"^filter\..*\.(clean|process)$", allowed=(0, 1))
+              require(filters.returncode == 1 and not filters.stdout,
+                      "Clean/process filters are not permitted in this source gate")
+              status = git("status", "--porcelain=v1", "--untracked-files=all").stdout
+              require(not status, "Checkout index/worktree is not clean: " + repr(status))
+              paths = sorted(set(PINS) | {WORKFLOW, "codex-rs/Cargo.lock"})
+              records = git("ls-tree", "-r", "-z", HEAD, "--", *paths).stdout
+              entries = {}
+              for row in records.split(b"\0"):
+                  if not row:
+                      continue
+                  header, path_bytes = row.split(b"\t", 1)
+                  mode, kind, oid = header.decode("ascii").split()
+                  name = path_bytes.decode("utf-8")
+                  require(kind == "blob" and name not in entries, "Non-blob/duplicate source: " + name)
+                  entries[name] = {"mode": mode, "oid": oid}
+              require(set(entries) == set(paths), "Required source inventory differs")
+              identities = {}
+              for name in paths:
+                  data, observed = raw_identity(name, 1024 * 1024)
+                  observed["mode"] = entries[name]["mode"]
+                  require(observed["oid"] == entries[name]["oid"], "Raw bytes differ from HEAD: " + name)
+                  if name in PINS:
+                      require(observed == PINS[name], "Reviewed mode/OID/SHA/size differs: " + name)
+                  else:
+                      require(observed["mode"] == "100644", "Unexpected dynamic file mode: " + name)
+                  identities[name] = observed
+                  if name == "codex-rs/Cargo.lock":
+                      parsed = tomllib.loads(data.decode("utf-8"))
+                      anyhow = [p for p in parsed["package"] if p["name"] == "anyhow"]
+                      require(anyhow == [ANYHOW_RECORD], "Normal resolver must select exact anyhow 1.0.104")
+                      remainder = dict(parsed)
+                      remainder["package"] = [p for p in parsed["package"] if p["name"] != "anyhow"]
+                      canonical = json.dumps(remainder, sort_keys=True, separators=(",", ":"),
+                                             ensure_ascii=False).encode("utf-8")
+                      require(hashlib.sha256(canonical).hexdigest() == OTHER_LOCK_TOML_SHA256,
+                              "Normal lock changed a record other than the reviewed anyhow record")
+              # The workflow cannot contain its own digest. Its raw HEAD identity and the
+              # normally generated lock identity are recorded and compared before/after.
+              # The reviewed outer source manifest binds both at publication.
+              return {"head": actual_head, "sources": identities, "index_worktree_clean": True}
+
+
+          def command(name, argv, cwd=ROOT, require_success=True):
+              started = time.monotonic()
+              with (OUT / (name + ".stdout")).open("wb") as stdout, \
+                      (OUT / (name + ".stderr")).open("wb") as stderr:
+                  result = subprocess.run(argv, cwd=cwd, env=ENV, stdout=stdout, stderr=stderr,
+                                          check=False)
+              record = {"name": name, "argv": argv, "cwd": str(cwd),
+                        "exit_code": result.returncode, "seconds": time.monotonic() - started}
+              write_json(OUT / (name + ".command.json"), record)
+              if require_success:
+                  require(result.returncode == 0, "Normal command failed: " + name)
+              return record
+
+
+          def verify_acl_results():
+              # Nextest 0.9.103 stores reports relative to the Cargo workspace root.
+              report = ROOT / "codex-rs" / "target" / "nextest" / "local" / "junit.xml"
+              raw = report.read_bytes()
+              (OUT / "acl.junit.xml").write_bytes(raw)
+              root = ET.fromstring(raw)
+              cases = list(root.iter("testcase"))
+              names = [case.attrib.get("name") for case in cases]
+              require(collections.Counter(names) == collections.Counter(WINDOWS_METHODS),
+                      "JUnit must contain each reviewed Windows method exactly once")
+              forbidden = {"failure", "error", "skipped", "flakyFailure", "flakyError",
+                           "rerunFailure", "rerunError"}
+              require(not any(node.tag in forbidden for node in root.iter()),
+                      "A test failed, skipped, or retried")
+              for case in cases:
+                  require(case.attrib.get("status", "run") != "notrun", "Unexecuted Windows method")
+              text = (OUT / "windows-seventeen.stderr").read_text(encoding="utf-8")
+              passes = re.findall(r"(?m)^\s*PASS\s+\[[^\]]+\].*?\s+((?:acl::tests|token::tests)::\S+)\s*$", text)
+              require(collections.Counter(passes) == collections.Counter(WINDOWS_METHODS),
+                      "Normal Nextest log must show seventeen distinct reviewed PASS results")
+              write_json(OUT / "windows-exact-seventeen.json",
+                         {"expected": WINDOWS_METHODS, "junit_actual": names, "log_passes": passes,
+                          "passed": 17, "failed": 0, "skipped": 0, "retries": 0})
+
+
+          def verify_probe_python_results():
+              text = (OUT / "probe-six.stderr").read_text(encoding="utf-8")
+              passed = re.findall(r"(?m)^(test_\w+) \([^\n]+\) \.\.\. ok$", text)
+              require(collections.Counter(passed) == collections.Counter(PROBE_METHODS),
+                      "All six original probe Python methods must pass exactly once")
+              require(re.search(r"(?m)^Ran 6 tests in .+$", text) is not None and
+                      re.search(r"(?m)^OK$", text) is not None,
+                      "Normal unittest summary must report six tests, without skips")
+              write_json(OUT / "probe-exact-six.json", {"expected": PROBE_METHODS, "actual": passed})
+
+
+          def verify_native_refusal():
+              raw = (PROBE_OUT / "OBSERVATION.json").read_bytes()
+              require(len(raw) <= 1024 * 1024, "Unexpected observation report size")
+              report = json.loads(raw)
+              require(report.get("schema") == "hepta.windows-acl-native-observation.v2" and
+                      report.get("observation_mode") == "production_legacy_admission" and
+                      report.get("expected_head") == HEAD and
+                      report.get("status") == "legacy_backend_refused" and
+                      report.get("qualification") is False and
+                      type(report.get("native_exit_code")) is int and report["native_exit_code"] == 0 and
+                      type(report.get("completed_permission_cases")) is int and
+                      report["completed_permission_cases"] == 0 and
+                      report.get("original_permission_invariants_observed") is False and
+                      report.get("all_observed_invariants_held") is None,
+                      "The native report must preserve the reviewed refusal-only meaning")
+              rows = report.get("observations")
+              expected = [
+                  {"kind": "ADMISSION", "name": "partial",
+                   "error_type": "LegacyWindowsSandboxIsolationUnavailable"},
+                  {"kind": "ADMISSION", "name": "broad",
+                   "error_type": "LegacyWindowsSandboxIsolationUnavailable"},
+              ]
+              require(isinstance(rows, list) and len(rows) == 4 and
+                      sorted(rows[:2], key=lambda row: row["name"]) == sorted(expected, key=lambda row: row["name"]) and
+                      rows[2:] == [{"kind": "FIXTURE", "unchanged": True},
+                                   {"kind": "DONE", "completed_permission_cases": 0}],
+                      "Exact two production refusals and unchanged fixture are required")
+              write_json(OUT / "native-refusal-result.json",
+                         {"status": "legacy_backend_refused", "qualification": False,
+                          "completed_permission_cases": 0,
+                          "original_permission_invariants_observed": False,
+                          "report_sha256": hashlib.sha256(raw).hexdigest()})
+
+
+          def main():
+              phase = sys.argv[1]
+              require(phase in {"preflight", "run", "postflight"}, "Invalid validation phase")
+              if phase == "preflight":
+                  OUT.mkdir(exist_ok=False)
+                  before = source_snapshot()
+                  write_json(OUT / "preflight.json", before)
+                  return
+              require(OUT.is_dir(), "Missing preflight directory")
+              before = json.loads((OUT / "preflight.json").read_text(encoding="utf-8"))
+              if phase == "postflight":
+                  after = source_snapshot()
+                  write_json(OUT / "postflight.json", after)
+                  require(after == before, "Source drift after native validation")
+                  return
+              state = {"head": HEAD, "commands": [], "status": "RUNNING",
+                       "windows_method_count": 17, "probe_python_method_count": 6,
+                       "permission_qualification": False}
+              error = None
+              try:
+                  require(source_snapshot() == before, "Source drift after tool installation")
+                  state["commands"].append(command("just-version", ["just", "--version"]))
+                  require((OUT / "just-version.stdout").read_text().strip() == "just 1.51.0",
+                          "Reviewed just version required")
+                  state["commands"].append(command("nextest-version", ["cargo", "+1.96.0", "nextest", "--version"],
+                                                   ROOT / "codex-rs"))
+                  require(re.match(r"^cargo-nextest 0\.9\.103(?:\s|$)",
+                                   (OUT / "nextest-version.stdout").read_text()) is not None,
+                          "Reviewed Nextest version required")
+                  state["commands"].append(command("format-check",
+                                                   ["cargo", "+1.96.0", "fmt", "--package",
+                                                    "codex-windows-sandbox", "--", "--check"],
+                                                   ROOT / "codex-rs"))
+                  method_failures = []
+                  state["method_failures"] = method_failures
+
+                  def observe_methods(name, argv, verify):
+                      require(source_snapshot() == before, "Source drift before " + name)
+                      record = command(name, argv, require_success=False)
+                      state["commands"].append(record)
+                      if record["exit_code"] != 0:
+                          method_failures.append("Normal command failed: " + name)
+                      try:
+                          verify()
+                      except Exception as exc:
+                          method_failures.append(name + ": " + type(exc).__name__ + ": " + str(exc))
+                      require(source_snapshot() == before, "Source drift after " + name)
+
+                  # Retain every independent observation, then fail the job if any
+                  # original command or exact result check failed. No retry, skip,
+                  # or changed permission oracle is introduced by this collection.
+                  observe_methods("windows-seventeen",
+                                  ["just", "test", "--locked", "-p", "codex-windows-sandbox",
+                                   "--lib", "-E", "test(/^acl::tests::/) | test(/^token::tests::/)", "--test-threads", "1",
+                                   "--no-tests", "fail", "--retries", "0",
+                                   "--status-level", "pass", "--final-status-level", "fail"],
+                                  verify_acl_results)
+                  observe_methods("probe-six",
+                                  [sys.executable, "-B", "-m", "unittest",
+                                   "experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests",
+                                   "-v"],
+                                  verify_probe_python_results)
+                  observe_methods("native-probe",
+                                  [sys.executable, "-B",
+                                   "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py",
+                                   "--expected-head", HEAD, "--output-dir", str(PROBE_OUT)],
+                                  verify_native_refusal)
+                  require(not method_failures, "; ".join(method_failures))
+                  state["status"] = "PASS"
+              except Exception as exc:
+                  state["status"] = "FAIL"
+                  state["error"] = type(exc).__name__ + ": " + str(exc)
+                  error = exc
+              finally:
+                  try:
+                      after = source_snapshot()
+                      write_json(OUT / "source-after.json", after)
+                      require(after == before, "Source drift during native validation")
+                      state["source_unchanged"] = True
+                  except Exception as exc:
+                      state["status"] = "FAIL"
+                      state["source_error"] = type(exc).__name__ + ": " + str(exc)
+                      error = error or exc
+                  write_json(OUT / "state.json", state)
+              if error is not None:
+                  raise error
+
+
+          if __name__ == "__main__":
+              main()
+          '@ | Set-Content -Encoding utf8 -NoNewline "$env:RUNNER_TEMP/hepta-windows-acl-validation.py"
+          python -B "$env:RUNNER_TEMP/hepta-windows-acl-validation.py" preflight
+          exit $LASTEXITCODE
+      - name: Install the committed Rust release and formatter
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt
+          exit $LASTEXITCODE
+      - name: Install the reviewed standard test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run the reviewed Windows methods and the production refusal probe
+        shell: pwsh
+        run: |
+          python -B "$env:RUNNER_TEMP/hepta-windows-acl-validation.py" run
+          exit $LASTEXITCODE
+      - name: Verify unchanged source and index after validation
+        if: always()
+        shell: pwsh
+        run: |
+          python -B "$env:RUNNER_TEMP/hepta-windows-acl-validation.py" postflight
+          exit $LASTEXITCODE
+      - name: Preserve complete native ACL method logs and identities
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-windows-acl-tests-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-windows-acl-tests
+          if-no-files-found: error
+      - name: Preserve native production refusal observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-windows-acl-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-windows-acl
+          if-no-files-found: error
