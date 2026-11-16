@@ -557,7 +557,7 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
 
     let external = tempfile::tempdir()?;
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
-        external.path(),
+        &external.path().canonicalize()?,
         "store:kernel-evidence-recovery-ok",
         snapshot,
     )?;
