@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="23" failures="0" errors="0" uuid="f0f27b63-acc0-4092-a734-4fbc7ea0827c" timestamp="2026-11-11T10:16:36.117-05:00" time="13.276">
+    <testsuite name="codex-hepta-agentd" tests="23" disabled="0" errors="0" failures="0">
+        <testcase name="circuit_cell::tests::causal_tests::causal_readback_refuses_substituted_inputs_and_absent_cell_owner_history" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:36.138-05:00" time="0.875">
+        </testcase>
+        <testcase name="circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:36.138-05:00" time="0.885">
+        </testcase>
+        <testcase name="circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:37.023-05:00" time="0.885">
+        </testcase>
+        <testcase name="circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:37.908-05:00" time="0.882">
+        </testcase>
+        <testcase name="circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:38.790-05:00" time="0.875">
+        </testcase>
+        <testcase name="circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:39.665-05:00" time="0.936">
+        </testcase>
+        <testcase name="circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:37.014-05:00" time="4.137">
+        </testcase>
+        <testcase name="circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:40.601-05:00" time="0.632">
+        </testcase>
+        <testcase name="circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:41.151-05:00" time="0.844">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:41.995-05:00" time="0.332">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:42.326-05:00" time="1.899">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:44.226-05:00" time="1.079">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.305-05:00" time="0.315">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_material_canonicalization_sorts_every_object_level" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.621-05:00" time="0.021">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.642-05:00" time="0.020">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_material_rejects_duplicate_json_keys_at_any_depth" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.661-05:00" time="0.023">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.684-05:00" time="0.021">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_material_tensors_reject_overlap_holes_trailing_and_nonfinite" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.706-05:00" time="0.022">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.728-05:00" time="0.244">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.972-05:00" time="0.021">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:45.993-05:00" time="0.042">
+        </testcase>
+        <testcase name="learning_iteration_research_external_material::tests::research_owner_publication_is_create_only_and_detects_directory_replacement" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:46.035-05:00" time="0.041">
+        </testcase>
+        <testcase name="circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference" classname="codex-hepta-agentd" timestamp="2026-11-11T10:16:41.233-05:00" time="8.159">
+        </testcase>
+    </testsuite>
+</testsuites>
