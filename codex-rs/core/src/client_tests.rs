@@ -106,6 +106,12 @@ use wiremock::matchers::path;
 #[path = "client_metadata_boundary_tests.rs"]
 mod metadata_boundary;
 
+#[path = "client_websocket_auth_snapshot_tests.rs"]
+mod websocket_auth_snapshot;
+
+#[path = "client_websocket_request_metadata_tests.rs"]
+mod websocket_request_metadata;
+
 const TEST_CHATGPT_ID_TOKEN: &str = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaHR0cHM6Ly9hcGkub3BlbmFpLmNvbS9hdXRoIjp7ImNoYXRncHRfdXNlcl9pZCI6InVzZXItMTIzNDUiLCJ1c2VyX2lkIjoidXNlci0xMjM0NSIsImNoYXRncHRfcGxhbl90eXBlIjoicHJvIiwiY2hhdGdwdF9hY2NvdW50X2lkIjoiYWNjb3VudC0xMjMifX0.c2ln";
 const TEST_INSTALLATION_ID: &str = "11111111-1111-4111-8111-111111111111";
 
@@ -334,9 +340,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     );
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
-    let identity_a =
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
-            .expect("identity a");
+    let identity_a = WebsocketConnectionIdentity::from_provider(
+        &provider,
+        Some("feature-a"),
+        &metadata_a,
+        &http::HeaderMap::new(),
+    )
+    .expect("identity a");
 
     let mut prewarm_metadata = metadata_a.clone();
     prewarm_metadata.request_kind =
@@ -347,6 +357,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             &provider,
             Some("feature-a"),
             &prewarm_metadata,
+            &http::HeaderMap::new(),
         )
         .expect("prewarm identity")
     );
@@ -361,8 +372,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     changed_lineage.root_turn_id = Some("root-next".to_string());
     assert_eq!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed_lineage)
-            .expect("per-request lineage identity")
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &changed_lineage,
+            &http::HeaderMap::new(),
+        )
+        .expect("per-request lineage identity")
     );
     assert_ne!(
         serde_json::to_value(metadata_a.turn_recovery_compatibility_projection()).unwrap(),
@@ -379,8 +395,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         }
         assert_ne!(
             identity_a,
-            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed)
-                .expect("changed thread or agent identity"),
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &changed,
+                &http::HeaderMap::new(),
+            )
+            .expect("changed thread or agent identity"),
             "{field} remains bound to the connection",
         );
     }
@@ -395,6 +416,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             &provider,
             Some("feature-a"),
             &volatile_metadata,
+            &http::HeaderMap::new(),
         )
         .expect("volatile identity")
     );
@@ -407,13 +429,19 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             &provider,
             Some("feature-a"),
             &changed_metadata,
+            &http::HeaderMap::new(),
         )
         .expect("changed compatibility identity")
     );
     assert_ne!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
-            .expect("changed beta identity")
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-b"),
+            &metadata_a,
+            &http::HeaderMap::new(),
+        )
+        .expect("changed beta identity")
     );
 
     let mut changed_query = provider.clone();
@@ -423,8 +451,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     )]));
     assert_ne!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&changed_query, Some("feature-a"), &metadata_a)
-            .expect("changed query identity")
+        WebsocketConnectionIdentity::from_provider(
+            &changed_query,
+            Some("feature-a"),
+            &metadata_a,
+            &http::HeaderMap::new(),
+        )
+        .expect("changed query identity")
     );
     let mut changed_headers = provider.clone();
     changed_headers.headers.insert(
@@ -436,7 +469,8 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         WebsocketConnectionIdentity::from_provider(
             &changed_headers,
             Some("feature-a"),
-            &metadata_a
+            &metadata_a,
+            &http::HeaderMap::new(),
         )
         .expect("changed provider header identity")
     );
@@ -446,8 +480,13 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         .insert("codex_security_surface".to_string(), "sdk".to_string());
     assert_ne!(
         identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed_extra)
-            .expect("changed extra identity")
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &changed_extra,
+            &http::HeaderMap::new(),
+        )
+        .expect("changed extra identity")
     );
 
     let mut changed_provider = provider;
@@ -458,6 +497,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             &changed_provider,
             Some("feature-a"),
             &metadata_a,
+            &http::HeaderMap::new(),
         )
         .expect("changed provider identity")
     );

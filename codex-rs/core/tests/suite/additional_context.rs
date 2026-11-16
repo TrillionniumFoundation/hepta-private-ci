@@ -11,6 +11,7 @@ use codex_protocol::user_input::UserInput;
 use core_test_support::context_snapshot;
 use core_test_support::context_snapshot::ContextSnapshotOptions;
 use core_test_support::context_snapshot::ContextSnapshotRenderMode;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
@@ -21,6 +22,101 @@ use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event_match;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn additional_context_is_model_visible_but_not_a_user_message_item_for_first_party_provider() -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let server = FirstPartyMockServer::start().await?;
+    let request = mount_sse_once(
+        &server,
+        sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
+    )
+    .await;
+    let test = server
+        .test_codex()
+        .with_config(|config| config.include_environment_context = false)
+        .build(&server)
+        .await?;
+
+    test.codex
+        .start_or_steer_turn(
+            TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "inspect the active tab".to_string(),
+                text_elements: Vec::new(),
+            }])
+            .with_additional_context(BTreeMap::from([
+                (
+                    "browser_info".to_string(),
+                    AdditionalContextEntry {
+                        value: "tab one".to_string(),
+                        kind: AdditionalContextKind::Untrusted,
+                    },
+                ),
+                (
+                    "automation_info".to_string(),
+                    AdditionalContextEntry {
+                        value: "run one".to_string(),
+                        kind: AdditionalContextKind::Application,
+                    },
+                ),
+            ])),
+        )
+        .await?;
+
+    let user_item = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::ItemCompleted(ItemCompletedEvent {
+            item: TurnItem::UserMessage(item),
+            ..
+        }) => Some(item.clone()),
+        _ => None,
+    })
+    .await;
+    assert_eq!(
+        user_item.content,
+        vec![UserInput::Text {
+            text: "inspect the active tab".to_string(),
+            text_elements: Vec::new(),
+        }]
+    );
+    wait_for_event_match(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_)).then_some(())
+    })
+    .await;
+
+    let request = request.single_request();
+    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
+    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
+    assert!(request.has_content_kinds(&["user.text"]));
+    insta::assert_snapshot!(
+        "additional_context_simple_input",
+        context_snapshot::format_labeled_requests_snapshot(
+            "additional context is inserted before the user turn input.",
+            &[("Request", &request)],
+            &ContextSnapshotOptions::default()
+                .strip_capability_instructions()
+                .render_mode(ContextSnapshotRenderMode::KindWithTextPrefix { max_chars: 160 }),
+        )
+    );
+    let developer_context_texts = request
+        .message_input_texts("developer")
+        .into_iter()
+        .filter(|text| text.starts_with("<automation_info>"))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        developer_context_texts,
+        vec!["<automation_info>run one</automation_info>"]
+    );
+    assert_eq!(
+        request.message_input_texts("user"),
+        vec![
+            "<external_browser_info>tab one</external_browser_info>",
+            "inspect the active tab",
+        ]
+    );
+
+    Ok(())
+}
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Result<()> {

@@ -1459,6 +1459,8 @@ impl Session {
                 }).await;
             }
 
+            let first_party_test_transport = thread_extension_data
+                .get::<crate::client::test_transport::FirstPartyTestTransport>();
             let executed_tool_calls = config
                 .features
                 .enabled(Feature::ExecutedToolCallMetadata)
@@ -1534,6 +1536,7 @@ impl Session {
                     attestation_provider,
                     config.http_client_factory(),
                 )
+                .with_first_party_test_transport(first_party_test_transport)?
                 .with_prompt_cache_key_override(
                     crate::guardian::prompt_cache_key_override_for_review_session(
                         &session_configuration.session_source,
