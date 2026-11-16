@@ -1,27 +1,34 @@
 use crate::Location;
 use crate::budget::BudgetBreach;
-use crate::de_snippet::{
-    fmt_snippet_window_offset_or_fallback, snippet_window_frame_prefix_offset,
-};
+use crate::de_snippet::fmt_snippet_window_offset_or_fallback;
+use crate::de_snippet::snippet_window_frame_prefix_offset;
 use crate::input_source::IncludeResolveError;
-use crate::localizer::{DEFAULT_ENGLISH_LOCALIZER, ExternalMessageSource, Localizer};
+use crate::localizer::DEFAULT_ENGLISH_LOCALIZER;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::localizer::ExternalMessage;
+use crate::localizer::ExternalMessageSource;
+use crate::localizer::Localizer;
 use crate::location::Locations;
-use crate::parse_scalars::{
-    parse_int_signed, parse_yaml11_bool, parse_yaml12_float, scalar_is_nullish,
-};
+use crate::parse_scalars::parse_int_signed;
+use crate::parse_scalars::parse_yaml11_bool;
+use crate::parse_scalars::parse_yaml12_float;
+use crate::parse_scalars::scalar_is_nullish;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::PathKey;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::PathMap;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::format_path_with_resolved_leaf;
 #[cfg(feature = "garde")]
 use crate::path_map::path_key_from_garde;
-use crate::properties_redaction::{
-    redact_custom_message, redact_dynamic_identifier, redact_dynamic_value,
-};
+use crate::properties_redaction::redact_custom_message;
+use crate::properties_redaction::redact_dynamic_identifier;
+use crate::properties_redaction::redact_dynamic_value;
 use crate::tags::SfTag;
-#[cfg(any(feature = "garde", feature = "validator"))]
-use crate::{
-    localizer::ExternalMessage,
-    path_map::{PathKey, PathMap, format_path_with_resolved_leaf},
-};
 use annotate_snippets::Level;
-use granit_parser::{ErrorKind, ScalarStyle, ScanError};
+use granit_parser::ErrorKind;
+use granit_parser::ScalarStyle;
+use granit_parser::ScanError;
 use serde_core::de::{self};
 use std::borrow::Cow;
 use std::cell::Cell;
@@ -30,10 +37,14 @@ use std::collections::HashSet;
 use std::fmt;
 
 #[cfg(all(feature = "properties", any(feature = "garde", feature = "validator")))]
-use crate::properties_redaction::{redact_with_ctxs, with_interp_redaction};
+use crate::properties_redaction::redact_with_ctxs;
+#[cfg(all(feature = "properties", any(feature = "garde", feature = "validator")))]
+use crate::properties_redaction::with_interp_redaction;
 
 #[cfg(feature = "validator")]
-use validator::{ValidationErrors, ValidationErrorsKind};
+use validator::ValidationErrors;
+#[cfg(feature = "validator")]
+use validator::ValidationErrorsKind;
 
 /// Formats error *messages* (not including locations/snippets).
 ///

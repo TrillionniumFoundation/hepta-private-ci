@@ -1,6 +1,8 @@
 // Extended cases that require typed, event, or rejection assertions.
 
-use super::yaml_suite_support::{assert_invalid_case, assert_json_case, assert_valid_events};
+use super::yaml_suite_support::assert_invalid_case;
+use super::yaml_suite_support::assert_json_case;
+use super::yaml_suite_support::assert_valid_events;
 use serde::Deserialize;
 
 #[test]

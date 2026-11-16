@@ -1,7 +1,10 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use std::fmt::Write as _;
 
-use serde_saphyr::budget::{Budget, BudgetBreach, EnforcingPolicy, check_yaml_budget};
+use serde_saphyr::budget::Budget;
+use serde_saphyr::budget::BudgetBreach;
+use serde_saphyr::budget::EnforcingPolicy;
+use serde_saphyr::budget::check_yaml_budget;
 
 fn billion_laughs_yaml(levels: usize, fan_out: usize) -> String {
     assert!(levels > 0, "need at least one level");

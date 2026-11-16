@@ -1,7 +1,9 @@
 use serde::Deserialize;
-use serde_saphyr::{
-    IncludeRequest, IncludeResolveError, InputSource, ResolvedInclude, from_str_with_options,
-};
+use serde_saphyr::IncludeRequest;
+use serde_saphyr::IncludeResolveError;
+use serde_saphyr::InputSource;
+use serde_saphyr::ResolvedInclude;
+use serde_saphyr::from_str_with_options;
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct ServerConfig {

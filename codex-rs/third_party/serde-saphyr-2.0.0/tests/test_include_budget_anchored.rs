@@ -2,9 +2,11 @@
 #![cfg(feature = "include")]
 
 use serde::Deserialize;
-use serde_saphyr::{
-    Error, IncludeResolveError, InputSource, ResolvedInclude, from_reader_with_options,
-};
+use serde_saphyr::Error;
+use serde_saphyr::IncludeResolveError;
+use serde_saphyr::InputSource;
+use serde_saphyr::ResolvedInclude;
+use serde_saphyr::from_reader_with_options;
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct Root {

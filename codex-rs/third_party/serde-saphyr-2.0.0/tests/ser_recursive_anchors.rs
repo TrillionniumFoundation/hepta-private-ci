@@ -2,13 +2,21 @@
 
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use serde::Serialize;
-use serde_saphyr::{
-    ArcAnchor, ArcRecursion, ArcRecursive, ArcWeakAnchor, RcAnchor, RcRecursion, RcRecursive,
-    RcWeakAnchor, SerializeError, to_string, to_string_with_options,
-};
+use serde_saphyr::ArcAnchor;
+use serde_saphyr::ArcRecursion;
+use serde_saphyr::ArcRecursive;
+use serde_saphyr::ArcWeakAnchor;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcRecursion;
+use serde_saphyr::RcRecursive;
+use serde_saphyr::RcWeakAnchor;
+use serde_saphyr::SerializeError;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 type AnchorGenerator = fn(usize) -> String;
 

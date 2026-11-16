@@ -1,11 +1,18 @@
 #![cfg(feature = "deserialize")]
 
 use serde::Deserialize;
-use serde::de::value::{MapDeserializer, U64Deserializer, UnitDeserializer};
-use serde_saphyr::{
-    Error, ExternalMessage, ExternalMessageSource, IncludeRequest, Location, NonFiniteFloatPolicy,
-    Span, Spanned, budget,
-};
+use serde::de::value::MapDeserializer;
+use serde::de::value::U64Deserializer;
+use serde::de::value::UnitDeserializer;
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessage;
+use serde_saphyr::ExternalMessageSource;
+use serde_saphyr::IncludeRequest;
+use serde_saphyr::Location;
+use serde_saphyr::NonFiniteFloatPolicy;
+use serde_saphyr::Span;
+use serde_saphyr::Spanned;
+use serde_saphyr::budget;
 
 #[test]
 fn standalone_budget_helper_reports_accept_reject_and_scan_error() {
@@ -277,7 +284,9 @@ fn spanned_empty_map_uses_unknown_location_fallback() {
 #[test]
 fn include_tags_reject_sequence_nodes() {
     use serde::de::IgnoredAny;
-    use serde_saphyr::{Error, IncludeResolveError, ResolvedInclude};
+    use serde_saphyr::Error;
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::ResolvedInclude;
 
     let options = serde_saphyr::options! {}.with_include_resolver(
         |_request: IncludeRequest<'_>| -> Result<ResolvedInclude, IncludeResolveError> {

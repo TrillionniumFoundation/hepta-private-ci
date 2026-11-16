@@ -2,10 +2,16 @@
 #![cfg(all(feature = "include_fs", not(miri), not(target_os = "wasi")))]
 
 use serde::Deserialize;
-use serde_saphyr::{
-    Error, IncludeRequest, IncludeResolveError, InputSource, Location, ResolveProblem,
-    SafeFileReadMode, SafeFileResolver, SymlinkPolicy, from_str_with_options,
-};
+use serde_saphyr::Error;
+use serde_saphyr::IncludeRequest;
+use serde_saphyr::IncludeResolveError;
+use serde_saphyr::InputSource;
+use serde_saphyr::Location;
+use serde_saphyr::ResolveProblem;
+use serde_saphyr::SafeFileReadMode;
+use serde_saphyr::SafeFileResolver;
+use serde_saphyr::SymlinkPolicy;
+use serde_saphyr::from_str_with_options;
 use std::fs;
 use std::path::Path;
 use tempfile::TempDir;

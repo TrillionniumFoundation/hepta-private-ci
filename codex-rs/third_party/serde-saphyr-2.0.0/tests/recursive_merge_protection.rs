@@ -4,8 +4,13 @@ use std::collections::BTreeMap;
 use std::fmt::Debug;
 
 use serde::Deserialize;
-use serde_json::{Value, json};
-use serde_saphyr::{Budget, DuplicateKeyPolicy, Error, MergeKeyPolicy, Options};
+use serde_json::Value;
+use serde_json::json;
+use serde_saphyr::Budget;
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::Error;
+use serde_saphyr::MergeKeyPolicy;
+use serde_saphyr::Options;
 
 const RECURSIVE_MERGE: &str = "a: &a\n  b:\n    <<: *a\n";
 

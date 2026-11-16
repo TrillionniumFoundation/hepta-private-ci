@@ -1,5 +1,6 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_saphyr::{self};
 
 // Dedicated tests for prefer_block_scalars behavior

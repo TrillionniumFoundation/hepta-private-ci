@@ -25,10 +25,16 @@
 //!   options (see the validation examples below).
 
 use serde::Deserialize;
-use serde_saphyr::{
-    Error, ExternalMessage, ExternalMessageSource, Localizer, Location, MessageFormatter,
-    SingleQuoted, UserMessageFormatter, granit_parser::ErrorKind, ser_error,
-};
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessage;
+use serde_saphyr::ExternalMessageSource;
+use serde_saphyr::Localizer;
+use serde_saphyr::Location;
+use serde_saphyr::MessageFormatter;
+use serde_saphyr::SingleQuoted;
+use serde_saphyr::UserMessageFormatter;
+use serde_saphyr::granit_parser::ErrorKind;
+use serde_saphyr::ser_error;
 use std::borrow::Cow;
 
 /// Pirate wording for message pieces that are formatted *outside* `MessageFormatter::format_message`.

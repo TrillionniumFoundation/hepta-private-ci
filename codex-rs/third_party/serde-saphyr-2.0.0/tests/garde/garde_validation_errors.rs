@@ -1,10 +1,14 @@
 use garde::Validate;
 use serde::Deserialize;
-use serde_saphyr::{Error, Options, ValidationSource};
+use serde_saphyr::Error;
+use serde_saphyr::Options;
+use serde_saphyr::ValidationSource;
 use std::fmt::Write as _;
 
 #[cfg(feature = "include")]
-use std::{cell::RefCell, rc::Rc};
+use std::cell::RefCell;
+#[cfg(feature = "include")]
+use std::rc::Rc;
 
 #[derive(Debug, Deserialize, Validate)]
 struct Root {

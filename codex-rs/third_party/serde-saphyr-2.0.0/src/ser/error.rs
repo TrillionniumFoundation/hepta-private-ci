@@ -1,4 +1,5 @@
-use std::{fmt, io};
+use std::fmt;
+use std::io;
 
 /// Error type used by the YAML serializer.
 ///

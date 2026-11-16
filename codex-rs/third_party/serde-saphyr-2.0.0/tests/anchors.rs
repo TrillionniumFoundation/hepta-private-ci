@@ -53,7 +53,11 @@ seq:
     // ---------------------------------------------------------------------
     use indoc::indoc;
     use serde::Serialize;
-    use serde_saphyr::{ArcAnchor, RcAnchor, RcWeakAnchor, from_str, to_string};
+    use serde_saphyr::ArcAnchor;
+    use serde_saphyr::RcAnchor;
+    use serde_saphyr::RcWeakAnchor;
+    use serde_saphyr::from_str;
+    use serde_saphyr::to_string;
     use std::rc::Rc;
     use std::sync::Arc;
 

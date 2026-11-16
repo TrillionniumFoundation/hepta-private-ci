@@ -1,7 +1,9 @@
 //! Tests for automatic line wrapping of long strings (matches Go's yaml.v3 `SetWidth` behavior)
 
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{to_fmt_writer_with_options, to_string};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::to_fmt_writer_with_options;
+use serde_saphyr::to_string;
 
 #[test]
 fn line_width_none_does_not_wrap() {

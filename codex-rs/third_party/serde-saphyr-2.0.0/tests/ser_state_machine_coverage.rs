@@ -4,16 +4,26 @@ use std::collections::BTreeMap;
 use std::fmt;
 #[cfg(feature = "comments")]
 use std::rc::Rc;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 
+use serde::Serialize;
+use serde::Serializer;
 use serde::ser::SerializeMap;
-use serde::{Serialize, Serializer};
-use serde_saphyr::{
-    ArcRecursion, ArcRecursive, FoldStr, RcAnchor, SingleQuoted, Tagged, to_fmt_writer, to_string,
-    to_string_multiple_with_options, to_string_with_options,
-};
+use serde_saphyr::ArcRecursion;
+use serde_saphyr::ArcRecursive;
 #[cfg(feature = "comments")]
-use serde_saphyr::{CommentPosition, Commented};
+use serde_saphyr::CommentPosition;
+#[cfg(feature = "comments")]
+use serde_saphyr::Commented;
+use serde_saphyr::FoldStr;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::SingleQuoted;
+use serde_saphyr::Tagged;
+use serde_saphyr::to_fmt_writer;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_multiple_with_options;
+use serde_saphyr::to_string_with_options;
 
 #[derive(Serialize)]
 #[serde(rename = "__yaml_commented")]

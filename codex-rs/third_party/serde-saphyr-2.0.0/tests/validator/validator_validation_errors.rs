@@ -1,5 +1,7 @@
 use serde::Deserialize;
-use serde_saphyr::{Error, Options, ValidationSource};
+use serde_saphyr::Error;
+use serde_saphyr::Options;
+use serde_saphyr::ValidationSource;
 use std::fmt::Write as _;
 use validator::Validate;
 

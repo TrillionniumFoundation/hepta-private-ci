@@ -3,7 +3,10 @@
 pub use crate::span::Span;
 #[cfg(feature = "deserialize")]
 use granit_parser::Span as ParserSpan;
-use serde_core::de::{self, IgnoredAny, MapAccess, Visitor};
+use serde_core::de::IgnoredAny;
+use serde_core::de::MapAccess;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 
 /// Row/column location within the source YAML document (1-indexed, character-based).
 ///
@@ -327,7 +330,8 @@ impl Locations {
 #[cfg(all(test, feature = "deserialize"))]
 mod tests {
     use super::*;
-    use granit_parser::{Event, Parser};
+    use granit_parser::Event;
+    use granit_parser::Parser;
 
     #[test]
     fn test_location_from_span() {

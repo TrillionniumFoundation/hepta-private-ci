@@ -2,8 +2,12 @@ use std::io::Read;
 
 use serde_core::de::DeserializeOwned;
 
+use super::Error;
+use super::Ev;
+use super::Events;
+use super::Options;
+use super::ring_reader;
 use super::with_deserializer::deserialize_with_scope_and_null_policy;
-use super::{Error, Ev, Events, Options, ring_reader};
 use crate::budget::EnforcingPolicy;
 use crate::live_events::LiveEvents;
 use crate::parse_scalars::scalar_is_null;

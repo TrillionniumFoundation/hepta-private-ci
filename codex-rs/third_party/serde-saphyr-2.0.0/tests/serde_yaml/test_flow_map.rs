@@ -1,5 +1,6 @@
 use serde::Serialize;
-use serde_saphyr::{FlowMap, to_string};
+use serde_saphyr::FlowMap;
+use serde_saphyr::to_string;
 use std::collections::BTreeMap;
 
 #[derive(Serialize)]

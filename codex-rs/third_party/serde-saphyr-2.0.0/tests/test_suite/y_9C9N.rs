@@ -1,6 +1,7 @@
 use granit_parser::ErrorKind;
 use serde_json::Value;
-use serde_saphyr::{Error, ExternalMessageSource};
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
 
 fn assert_strict_indentation_error(yaml: &str) {
     let error = serde_saphyr::from_str_with_options::<Value>(

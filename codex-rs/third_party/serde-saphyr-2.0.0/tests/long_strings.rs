@@ -1,8 +1,11 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use anyhow::Context;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_saphyr as yaml;
-use serde_saphyr::{FlowMap, FoldStr, LitString};
+use serde_saphyr::FlowMap;
+use serde_saphyr::FoldStr;
+use serde_saphyr::LitString;
 use std::collections::BTreeMap;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]

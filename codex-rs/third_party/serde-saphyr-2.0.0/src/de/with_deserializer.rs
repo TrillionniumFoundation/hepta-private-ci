@@ -1,8 +1,13 @@
 use crate::budget::EnforcingPolicy;
 use crate::live_events::LiveEvents;
 
-use super::api::{ReaderSnippetContext, StrSnippetContext};
-use super::{Cfg, Error, Events, Options, YamlDeserializer};
+use super::Cfg;
+use super::Error;
+use super::Events;
+use super::Options;
+use super::YamlDeserializer;
+use super::api::ReaderSnippetContext;
+use super::api::StrSnippetContext;
 
 pub(crate) fn run_with_document_scope<'de, R, F, W, P>(
     src: &mut LiveEvents<'de>,

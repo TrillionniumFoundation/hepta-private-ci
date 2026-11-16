@@ -727,7 +727,9 @@ mod tests {
     use super::*;
 
     #[cfg(feature = "include_fs")]
-    use crate::input_source::{IncludeRequest, InputSource};
+    use crate::input_source::IncludeRequest;
+    #[cfg(feature = "include_fs")]
+    use crate::input_source::InputSource;
     #[cfg(feature = "include_fs")]
     use std::path::PathBuf;
     #[cfg(feature = "include_fs")]

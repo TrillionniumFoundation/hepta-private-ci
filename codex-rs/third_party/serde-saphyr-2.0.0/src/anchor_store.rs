@@ -343,7 +343,8 @@ pub(crate) fn with_document_scope<R>(f: impl FnOnce() -> R) -> R {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::panic::{AssertUnwindSafe, catch_unwind};
+    use std::panic::AssertUnwindSafe;
+    use std::panic::catch_unwind;
     use std::sync::Mutex;
 
     struct IsolatedState;

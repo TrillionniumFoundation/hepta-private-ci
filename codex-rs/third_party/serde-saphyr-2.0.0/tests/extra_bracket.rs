@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::{Error, ExternalMessageSource};
 
 // granit-parser 0.0.6 does not emit closing event.
 #[test]

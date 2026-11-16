@@ -7,7 +7,10 @@ use std::fmt::Debug;
 
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
-use serde_saphyr::{DuplicateKeyPolicy, Error, Location, Spanned};
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::Error;
+use serde_saphyr::Location;
+use serde_saphyr::Spanned;
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]

@@ -25,8 +25,11 @@
 //! # }
 //! ```
 
-use serde_core::de::{self, Deserializer, IntoDeserializer};
-use serde_core::{Deserialize, Serialize};
+use serde_core::Deserialize;
+use serde_core::Serialize;
+use serde_core::de::Deserializer;
+use serde_core::de::IntoDeserializer;
+use serde_core::de::{self};
 
 use crate::Location;
 

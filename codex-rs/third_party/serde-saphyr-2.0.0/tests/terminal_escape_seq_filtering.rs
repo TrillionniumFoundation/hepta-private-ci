@@ -8,10 +8,14 @@ use std::borrow::Cow;
 use std::collections::BTreeMap;
 
 use serde::Deserialize;
-use serde_saphyr::{
-    CroppedRegion, Error, Localizer, Location, MessageFormatter, SnippetMode, UserMessageFormatter,
-    from_str,
-};
+use serde_saphyr::CroppedRegion;
+use serde_saphyr::Error;
+use serde_saphyr::Localizer;
+use serde_saphyr::Location;
+use serde_saphyr::MessageFormatter;
+use serde_saphyr::SnippetMode;
+use serde_saphyr::UserMessageFormatter;
+use serde_saphyr::from_str;
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]

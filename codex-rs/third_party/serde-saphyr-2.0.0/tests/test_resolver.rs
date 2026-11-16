@@ -2,7 +2,13 @@
 #[cfg(feature = "include")]
 use serde::Deserialize;
 #[cfg(feature = "include")]
-use serde_saphyr::{Error, IncludeResolveError, InputSource, ResolvedInclude};
+use serde_saphyr::Error;
+#[cfg(feature = "include")]
+use serde_saphyr::IncludeResolveError;
+#[cfg(feature = "include")]
+use serde_saphyr::InputSource;
+#[cfg(feature = "include")]
+use serde_saphyr::ResolvedInclude;
 #[cfg(feature = "include")]
 use std::cell::RefCell;
 #[cfg(feature = "include")]
@@ -163,7 +169,8 @@ fn test_nested_reader_budget() {
 #[cfg(feature = "include")]
 #[test]
 fn test_cyclic_include() {
-    use serde_saphyr::{InputSource, ResolvedInclude};
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
     let input = "
 root: !include self.yaml
 ";
@@ -188,7 +195,8 @@ root: !include self.yaml
 #[cfg(feature = "include")]
 #[test]
 fn cycle_detection_keys_off_id_not_name() {
-    use serde_saphyr::{InputSource, ResolvedInclude};
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
 
     let input = "
 root: !include aliases/first.yaml
@@ -228,7 +236,8 @@ root: !include aliases/first.yaml
 #[cfg(feature = "include")]
 #[test]
 fn test_repeated_includes_not_cyclic() {
-    use serde_saphyr::{InputSource, ResolvedInclude};
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
     let input = "
 list:
   - !include item.yaml
@@ -424,7 +433,8 @@ fn test_include_fragment_tag_and_fragment_in_spec_is_rejected() {
 #[cfg(feature = "include")]
 #[test]
 fn test_input_source_convenience_methods() {
-    use serde_saphyr::{IncludeResolveError, InputSource};
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::InputSource;
     use std::io::Read;
 
     let text_source = InputSource::from_string("hello".to_string());

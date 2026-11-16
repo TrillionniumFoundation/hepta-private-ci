@@ -3,9 +3,15 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
-use serde::de::{self, IgnoredAny, MapAccess, SeqAccess, Visitor};
-use serde::{Deserialize, Deserializer};
-use serde_saphyr::{Error, TransformReason};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::de::IgnoredAny;
+use serde::de::MapAccess;
+use serde::de::SeqAccess;
+use serde::de::Visitor;
+use serde::de::{self};
+use serde_saphyr::Error;
+use serde_saphyr::TransformReason;
 
 #[derive(Debug, PartialEq)]
 struct FirstSequenceElement(u8);

@@ -10,11 +10,16 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use indoc::indoc;
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{
-    ArcAnchor, ArcRecursion, ArcRecursive, ArcWeakAnchor, RcAnchor, RcRecursion, RcRecursive,
-    RcWeakAnchor,
-};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::ArcAnchor;
+use serde_saphyr::ArcRecursion;
+use serde_saphyr::ArcRecursive;
+use serde_saphyr::ArcWeakAnchor;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcRecursion;
+use serde_saphyr::RcRecursive;
+use serde_saphyr::RcWeakAnchor;
 
 // ── shared helper types ──────────────────────────────────────────────────────
 
@@ -709,7 +714,9 @@ fn rc_recursion_with_uninitialized_placeholder_returns_none() {
 
 #[test]
 fn rc_recursion_with_during_deserialize_returns_none_until_root_is_initialized() {
-    use serde::de::{self, MapAccess, Visitor};
+    use serde::de::MapAccess;
+    use serde::de::Visitor;
+    use serde::de::{self};
     use std::fmt;
 
     struct Node {

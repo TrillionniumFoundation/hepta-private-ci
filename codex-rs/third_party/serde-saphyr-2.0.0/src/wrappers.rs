@@ -1,4 +1,7 @@
-use serde_core::de::{self, Deserialize, Deserializer, Visitor};
+use serde_core::de::Deserialize;
+use serde_core::de::Deserializer;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 use std::fmt;
 use std::marker::PhantomData;
 
@@ -459,7 +462,13 @@ mod tests {
 
     #[cfg(feature = "comments")]
     use crate::Commented;
-    use crate::{DoubleQuoted, FlowMap, FlowSeq, NullableTilde, SingleQuoted, SpaceAfter, Tagged};
+    use crate::DoubleQuoted;
+    use crate::FlowMap;
+    use crate::FlowSeq;
+    use crate::NullableTilde;
+    use crate::SingleQuoted;
+    use crate::SpaceAfter;
+    use crate::Tagged;
 
     #[derive(Debug, Deserialize, PartialEq)]
     struct WrappersDoc {

@@ -1,7 +1,9 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 #[test]
 fn empty_top_level_map_braces_by_default() {

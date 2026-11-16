@@ -2,8 +2,10 @@
 
 use std::collections::BTreeMap;
 
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{to_string, to_string_with_options};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn tagged_enums_option_serializes_with_tag() {

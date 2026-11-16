@@ -1,8 +1,10 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 
 use serde::Serialize;
-use serde::ser::{SerializeMap, Serializer};
-use serde_saphyr::{LitStr, to_string};
+use serde::ser::SerializeMap;
+use serde::ser::Serializer;
+use serde_saphyr::LitStr;
+use serde_saphyr::to_string;
 use std::collections::BTreeMap;
 
 #[derive(Serialize)]

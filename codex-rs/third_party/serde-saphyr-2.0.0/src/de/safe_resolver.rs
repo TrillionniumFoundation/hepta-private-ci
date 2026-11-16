@@ -1,15 +1,27 @@
 #[cfg(feature = "include")]
-use crate::input_source::{
-    IncludeRequest, IncludeResolveError, InputSource, ResolveProblem, ResolvedInclude,
-};
+use crate::input_source::IncludeRequest;
+#[cfg(feature = "include")]
+use crate::input_source::IncludeResolveError;
+#[cfg(feature = "include")]
+use crate::input_source::InputSource;
+#[cfg(feature = "include")]
+use crate::input_source::ResolveProblem;
+#[cfg(feature = "include")]
+use crate::input_source::ResolvedInclude;
 #[cfg(feature = "include")]
 use encoding_rs_io::DecodeReaderBytesBuilder;
 #[cfg(feature = "include")]
 use std::fs;
 #[cfg(feature = "include")]
-use std::io::{self, Read};
+use std::io::Read;
 #[cfg(feature = "include")]
-use std::path::{Component, Path, PathBuf};
+use std::io::{self};
+#[cfg(feature = "include")]
+use std::path::Component;
+#[cfg(feature = "include")]
+use std::path::Path;
+#[cfg(feature = "include")]
+use std::path::PathBuf;
 
 /// How [`SafeFileResolver`] should hand included files to the parser.
 #[cfg(feature = "include")]

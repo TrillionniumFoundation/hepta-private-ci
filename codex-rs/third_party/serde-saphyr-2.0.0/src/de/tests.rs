@@ -2,15 +2,23 @@ use std::borrow::Cow;
 
 use granit_parser::ScalarStyle;
 
+use super::DuplicateKeyPolicy;
+use super::Error;
+use super::Location;
+use super::MergeKeyPolicy;
+use super::NonFiniteFloatPolicy;
+use super::Options;
 #[cfg(feature = "properties")]
 use super::PropertySyntax;
 use super::cfg::Cfg;
+use super::events::Ev;
+use super::events::Events;
 #[cfg(feature = "properties")]
 use super::events::PropertyInterpolation;
-use super::events::{Ev, Events, ReplayEvents, attach_alias_locations_if_missing};
+use super::events::ReplayEvents;
+use super::events::attach_alias_locations_if_missing;
 use super::key_nodes::*;
 use super::tags::SfTag;
-use super::{DuplicateKeyPolicy, Error, Location, MergeKeyPolicy, NonFiniteFloatPolicy, Options};
 
 fn loc(line: usize, column: usize) -> Location {
     Location::new(line, column)

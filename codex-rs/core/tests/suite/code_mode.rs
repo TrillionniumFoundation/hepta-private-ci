@@ -6292,7 +6292,8 @@ text(JSON.stringify({
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn code_mode_exec_surfaces_handler_errors_as_exceptions_for_first_party_provider() -> Result<()> {
+async fn code_mode_exec_surfaces_handler_errors_as_exceptions_for_first_party_provider()
+-> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = FirstPartyMockServer::start().await?;

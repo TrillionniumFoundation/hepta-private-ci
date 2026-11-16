@@ -1,8 +1,9 @@
 use serde_json::Value;
-use serde_saphyr::budget::Budget;
 use serde_saphyr::Error;
+use serde_saphyr::budget::Budget;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 use std::str;
 
 /// Convenience wrapper that returns `true` if the YAML **exceeds** any budget.

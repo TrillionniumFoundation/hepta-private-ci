@@ -1,7 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use std::collections::BTreeMap;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 // 1. A structure with int, float, boolean, string fields
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

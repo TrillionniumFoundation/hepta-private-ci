@@ -4,10 +4,12 @@ use std::borrow::Cow;
 use std::cell::RefCell;
 
 use serde::Deserialize;
-use serde_saphyr::{
-    DefaultMessageFormatter, Error, ExternalMessage, ExternalMessageSource, Localizer,
-    MessageFormatter,
-};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessage;
+use serde_saphyr::ExternalMessageSource;
+use serde_saphyr::Localizer;
+use serde_saphyr::MessageFormatter;
 
 #[derive(Debug)]
 struct ExternalEntry {

@@ -3,7 +3,8 @@
 use std::collections::BTreeMap;
 
 use serde::Serialize;
-use serde_saphyr::{to_string, to_string_with_options};
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn empty_seq_with_empty_as_braces() {

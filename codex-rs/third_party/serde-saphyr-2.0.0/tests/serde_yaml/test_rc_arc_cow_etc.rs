@@ -1,5 +1,7 @@
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{from_str, to_string};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
 use std::borrow::Cow;
 use std::rc::Rc;
 use std::sync::Arc;

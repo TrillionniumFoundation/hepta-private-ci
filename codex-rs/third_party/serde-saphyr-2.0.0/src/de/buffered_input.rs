@@ -7,11 +7,15 @@
 //! (BOM-aware), then buffering via `BufReader`.
 
 use encoding_rs_io::DecodeReaderBytesBuilder;
-use granit_parser::{
-    BorrowedInput, ErrorKind as ParserErrorKind, FallibleBufferedInput, Input, InputIoError,
-};
+use granit_parser::BorrowedInput;
+use granit_parser::ErrorKind as ParserErrorKind;
+use granit_parser::FallibleBufferedInput;
+use granit_parser::Input;
+use granit_parser::InputIoError;
 use std::cell::Cell;
-use std::io::{self, BufReader, Read};
+use std::io::BufReader;
+use std::io::Read;
+use std::io::{self};
 use std::rc::Rc;
 
 type DynReader<'a> = Box<dyn Read + 'a>;
@@ -252,9 +256,14 @@ mod tests {
     use crate::buffered_input::ChunkedChars;
     use crate::buffered_input::ReaderInput;
     use crate::buffered_input::buffered_input_from_reader_with_limit;
-    use granit_parser::{BorrowedInput, ErrorKind, Event, Input, Parser};
+    use granit_parser::BorrowedInput;
+    use granit_parser::ErrorKind;
+    use granit_parser::Event;
+    use granit_parser::Input;
+    use granit_parser::Parser;
     use std::cell::Cell;
-    use std::io::{Cursor, Read};
+    use std::io::Cursor;
+    use std::io::Read;
     use std::rc::Rc;
 
     // Ferris is a 4-byte UTF-8 emoji.

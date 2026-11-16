@@ -1,12 +1,19 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
+use serde_saphyr::Error;
 use serde_saphyr::UserMessageFormatter;
 use serde_saphyr::from_slice;
-use serde_saphyr::{Error, from_str};
+use serde_saphyr::from_str;
 
 #[cfg(any(feature = "garde", feature = "validator"))]
-use serde_saphyr::{
-    CroppedRegion, MessageFormatter, ValidationIssue, ValidationSource, path_map::PathKey,
-};
+use serde_saphyr::CroppedRegion;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use serde_saphyr::MessageFormatter;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use serde_saphyr::ValidationIssue;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use serde_saphyr::ValidationSource;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use serde_saphyr::path_map::PathKey;
 
 #[cfg(any(feature = "garde", feature = "validator"))]
 use std::borrow::Cow;

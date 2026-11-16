@@ -1,9 +1,13 @@
 #![cfg(feature = "deserialize")]
 #![cfg(feature = "comments")]
 
-use serde_saphyr::budget::{BudgetBreach, BudgetReport};
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
+use serde_saphyr::Options;
+use serde_saphyr::budget::BudgetBreach;
+use serde_saphyr::budget::BudgetReport;
+use serde_saphyr::from_str_with_options;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::{Error, ExternalMessageSource, Options, from_str_with_options};
 use std::cell::RefCell;
 use std::rc::Rc;
 

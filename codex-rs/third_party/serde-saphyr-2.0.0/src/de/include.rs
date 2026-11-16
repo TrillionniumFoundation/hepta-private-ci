@@ -1,6 +1,7 @@
 #[cfg(feature = "include")]
 use crate::de::AliasLimits;
-use granit_parser::{Options as ParserOptions, Parser};
+use granit_parser::Options as ParserOptions;
+use granit_parser::Parser;
 
 #[cfg(feature = "include")]
 use std::rc::Rc;
@@ -13,7 +14,9 @@ use crate::include_stack::ParserStack;
 use crate::input_source::IncludeResolver;
 
 #[cfg(feature = "include")]
-use crate::buffered_input::{ReaderInput, ReaderInputBytesRead};
+use crate::buffered_input::ReaderInput;
+#[cfg(feature = "include")]
+use crate::buffered_input::ReaderInputBytesRead;
 
 #[cfg(feature = "include")]
 pub(crate) type BaseParser<'a> = ParserStack<'a>;

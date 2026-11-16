@@ -1,20 +1,29 @@
-use crate::budget::{BudgetBreach, BudgetEnforcer};
-use crate::buffered_input::{
-    ReaderInput, ReaderInputBytesRead, buffered_input_from_reader_with_limit_shared,
-};
+use crate::budget::BudgetBreach;
+use crate::budget::BudgetEnforcer;
+use crate::buffered_input::ReaderInput;
+use crate::buffered_input::ReaderInputBytesRead;
+use crate::buffered_input::buffered_input_from_reader_with_limit_shared;
 use crate::de::AliasLimits;
-use crate::input_source::{IncludeResolveError, IncludeResolver, InputSource, ResolvedInclude};
-use granit_parser::{
-    Event, Options as ParserOptions, Parser, ParserStack as GranitParserStack, ReplayParser,
-    ScanError, Scanner, Span, StrInput, TokenType,
-};
-use std::{
-    borrow::Cow,
-    collections::{HashMap, HashSet},
-    io::Cursor,
-    ops::RangeInclusive,
-    rc::Rc,
-};
+use crate::input_source::IncludeResolveError;
+use crate::input_source::IncludeResolver;
+use crate::input_source::InputSource;
+use crate::input_source::ResolvedInclude;
+use granit_parser::Event;
+use granit_parser::Options as ParserOptions;
+use granit_parser::Parser;
+use granit_parser::ParserStack as GranitParserStack;
+use granit_parser::ReplayParser;
+use granit_parser::ScanError;
+use granit_parser::Scanner;
+use granit_parser::Span;
+use granit_parser::StrInput;
+use granit_parser::TokenType;
+use std::borrow::Cow;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::io::Cursor;
+use std::ops::RangeInclusive;
+use std::rc::Rc;
 
 type InnerStack<'input> = GranitParserStack<'input, core::iter::Empty<char>, ReaderInput<'input>>;
 #[derive(Clone, Debug)]

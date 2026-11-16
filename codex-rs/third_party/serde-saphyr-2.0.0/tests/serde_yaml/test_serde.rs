@@ -6,8 +6,9 @@
 )]
 
 use indoc::indoc;
+use serde::Deserialize;
+use serde::Serialize;
 use serde::ser::SerializeMap;
-use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::Debug;
 use std::iter;
@@ -447,7 +448,8 @@ fn test_btree_map() {
 
 #[test]
 fn test_enum() {
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
 
     #[derive(Serialize, Deserialize, PartialEq, Debug)]
     enum Enum {

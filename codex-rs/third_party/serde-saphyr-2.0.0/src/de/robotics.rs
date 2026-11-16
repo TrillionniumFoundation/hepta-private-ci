@@ -37,8 +37,9 @@ const DEG2RAD: f64 = PI / 180.0;
 const MAX_EXPR_DEPTH: u32 = 256; // guard against deeply nested parentheses/functions
 const MAX_NUM_DIGITS: usize = 1_000_000; // cap digits in a single numeric token (DoS mitigation)
 
+use crate::Error;
+use crate::Location;
 use crate::tags::SfTag;
-use crate::{Error, Location};
 
 /// Minimal conversion helper so callers can choose `T = f64` or `T = f32`.
 pub trait FromF64 {
@@ -641,9 +642,11 @@ fn is_ident_cont(c: u8) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use crate::robotics::{DEG2RAD, parse_yaml12_float_angle_converting};
+    use crate::Error;
+    use crate::Location;
+    use crate::robotics::DEG2RAD;
+    use crate::robotics::parse_yaml12_float_angle_converting;
     use crate::tags::SfTag;
-    use crate::{Error, Location};
     use core::f64::consts::PI;
 
     // helpers

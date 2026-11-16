@@ -6,22 +6,32 @@ use std::borrow::Cow;
 use std::fmt;
 use std::sync::Arc;
 
-use miette::{Diagnostic, LabeledSpan, NamedSource, SourceCode, SourceSpan, SpanContents};
+use miette::Diagnostic;
+use miette::LabeledSpan;
+use miette::NamedSource;
+use miette::SourceCode;
+use miette::SourceSpan;
+use miette::SpanContents;
 
 use crate::Error;
 use crate::Location;
-use crate::de_error::{
-    CroppedRegion, distinct_alias_error_location, render_line_offset, render_message_text,
-    sanitize_message_text,
-};
+use crate::MessageFormatter;
+use crate::RenderOptions;
+use crate::de_error::CroppedRegion;
+use crate::de_error::distinct_alias_error_location;
+use crate::de_error::render_line_offset;
+use crate::de_error::render_message_text;
+use crate::de_error::sanitize_message_text;
 use crate::de_snippet::sanitize_terminal_snippet_preserve_len;
 use crate::localizer::Localizer;
-use crate::{MessageFormatter, RenderOptions};
 #[cfg(any(feature = "garde", feature = "validator"))]
-use crate::{
-    location::Locations,
-    path_map::{PathKey, PathMap, format_path_with_resolved_leaf},
-};
+use crate::location::Locations;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::PathKey;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::PathMap;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::format_path_with_resolved_leaf;
 
 /// Convert a deserialization [`Error`] into a `miette::Report`.
 ///

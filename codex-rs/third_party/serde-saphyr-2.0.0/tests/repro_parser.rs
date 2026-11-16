@@ -1,7 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 #[test]
 fn test_parser_direct_borrowing() {
-    use granit_parser::{Event, Parser};
+    use granit_parser::Event;
+    use granit_parser::Parser;
     use std::borrow::Cow;
 
     let input = "hello";
@@ -28,7 +29,8 @@ fn test_parser_direct_borrowing() {
 
 #[test]
 fn test_parser_direct_borrowing_quoted() {
-    use granit_parser::{Event, Parser};
+    use granit_parser::Event;
+    use granit_parser::Parser;
     use std::borrow::Cow;
 
     let input = "\"hello world\"";

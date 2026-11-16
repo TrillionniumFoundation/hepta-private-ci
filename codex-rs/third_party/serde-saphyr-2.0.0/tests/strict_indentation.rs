@@ -1,8 +1,11 @@
 #![cfg(feature = "deserialize")]
 
-use serde_json::{Value, json};
+use serde_json::Value;
+use serde_json::json;
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
+use serde_saphyr::Options;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::{Error, ExternalMessageSource, Options};
 
 const UNDER_INDENTED: &str = "key: &selected [\n  1,\n  2\n]\n";
 const CONFORMING: &str = "key: &selected [\n  1,\n  2\n ]\n";
@@ -61,7 +64,9 @@ fn reader_and_slice_honor_strict_indentation_with_and_without_budget() {
 #[cfg(feature = "include")]
 #[test]
 fn included_sources_honor_strict_indentation_with_and_without_budget() {
-    use serde_saphyr::{IncludeResolveError, InputSource, ResolvedInclude};
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
 
     for source_kind in ["text", "reader", "anchored"] {
         for with_budget in [true, false] {

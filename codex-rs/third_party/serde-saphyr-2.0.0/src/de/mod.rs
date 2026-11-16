@@ -77,22 +77,26 @@ mod tagged_deser;
 mod tests;
 
 pub mod with_deserializer;
-pub use with_deserializer::{
-    with_deserializer_from_reader, with_deserializer_from_reader_with_options,
-    with_deserializer_from_slice, with_deserializer_from_slice_with_options,
-    with_deserializer_from_str, with_deserializer_from_str_with_options,
-};
+pub use with_deserializer::with_deserializer_from_reader;
+pub use with_deserializer::with_deserializer_from_reader_with_options;
+pub use with_deserializer::with_deserializer_from_slice;
+pub use with_deserializer::with_deserializer_from_slice_with_options;
+pub use with_deserializer::with_deserializer_from_str;
+pub use with_deserializer::with_deserializer_from_str_with_options;
 
 pub use self::budget::Budget;
 pub use self::deserializer::YamlDeserializer;
 pub use self::error::Error;
+pub use self::options::AliasLimits;
+pub use self::options::DuplicateKeyPolicy;
+pub use self::options::MergeKeyPolicy;
+pub use self::options::NonFiniteFloatPolicy;
+pub use self::options::Options;
 #[cfg(feature = "properties")]
 pub use self::options::PropertySyntax;
-pub use self::options::{
-    AliasLimits, DuplicateKeyPolicy, MergeKeyPolicy, NonFiniteFloatPolicy, Options,
-};
 pub use crate::location::Location;
 
 pub(crate) use self::cfg::Cfg;
 pub(crate) use self::deserializer::with_root_redaction;
-pub(crate) use self::events::{Ev, Events};
+pub(crate) use self::events::Ev;
+pub(crate) use self::events::Events;

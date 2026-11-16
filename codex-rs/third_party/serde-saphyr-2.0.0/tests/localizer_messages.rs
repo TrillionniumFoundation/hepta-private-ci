@@ -5,10 +5,11 @@ use std::borrow::Cow;
 mod localizer_tests {
     use super::*;
     use serde_saphyr::Location;
-    use serde_saphyr::localizer::{
-        DEFAULT_ENGLISH_LOCALIZER, DefaultEnglishLocalizer, ExternalMessage, ExternalMessageSource,
-        Localizer,
-    };
+    use serde_saphyr::localizer::DEFAULT_ENGLISH_LOCALIZER;
+    use serde_saphyr::localizer::DefaultEnglishLocalizer;
+    use serde_saphyr::localizer::ExternalMessage;
+    use serde_saphyr::localizer::ExternalMessageSource;
+    use serde_saphyr::localizer::Localizer;
 
     #[test]
     fn attach_location_unknown() {
@@ -182,8 +183,10 @@ mod localizer_tests {
 mod alias_error_tests {
     use super::*;
     use serde::Deserialize;
+    use serde_saphyr::DefaultMessageFormatter;
+    use serde_saphyr::Error;
+    use serde_saphyr::Location;
     use serde_saphyr::localizer::Localizer;
-    use serde_saphyr::{DefaultMessageFormatter, Error, Location};
 
     #[derive(Debug, Deserialize)]
     struct Config {

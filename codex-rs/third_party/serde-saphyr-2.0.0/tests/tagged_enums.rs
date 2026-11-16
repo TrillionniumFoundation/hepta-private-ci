@@ -1,7 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 #![allow(clippy::upper_case_acronyms)]
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
 enum Color {

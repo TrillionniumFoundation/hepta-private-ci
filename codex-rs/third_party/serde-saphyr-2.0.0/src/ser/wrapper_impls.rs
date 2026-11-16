@@ -1,22 +1,41 @@
-use serde_core::ser::{self, Serialize, SerializeTupleStruct, Serializer};
+use serde_core::ser::Serialize;
+use serde_core::ser::SerializeTupleStruct;
+use serde_core::ser::Serializer;
+use serde_core::ser::{self};
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 
+use crate::ArcAnchor;
+use crate::ArcRecursion;
+use crate::ArcRecursive;
+use crate::ArcWeakAnchor;
 #[cfg(feature = "comments")]
 use crate::Commented;
-use crate::{
-    ArcAnchor, ArcRecursion, ArcRecursive, ArcWeakAnchor, DoubleQuoted, FlowMap, FlowSeq,
-    NullableTilde, RcAnchor, RcRecursion, RcRecursive, RcWeakAnchor, SingleQuoted, SpaceAfter,
-    Tagged,
-};
+use crate::DoubleQuoted;
+use crate::FlowMap;
+use crate::FlowSeq;
+use crate::NullableTilde;
+use crate::RcAnchor;
+use crate::RcRecursion;
+use crate::RcRecursive;
+use crate::RcWeakAnchor;
+use crate::SingleQuoted;
+use crate::SpaceAfter;
+use crate::Tagged;
 
+use super::NAME_DOUBLE_QUOTED;
+use super::NAME_FLOW_MAP;
+use super::NAME_FLOW_SEQ;
+use super::NAME_NULLABLE_TILDE;
+use super::NAME_SINGLE_QUOTED;
+use super::NAME_SPACE_AFTER;
+use super::NAME_TUPLE_ANCHOR;
 #[cfg(feature = "comments")]
 use super::NAME_TUPLE_COMMENTED;
-use super::{
-    NAME_DOUBLE_QUOTED, NAME_FLOW_MAP, NAME_FLOW_SEQ, NAME_NULLABLE_TILDE, NAME_SINGLE_QUOTED,
-    NAME_SPACE_AFTER, NAME_TUPLE_ANCHOR, NAME_TUPLE_TAGGED, NAME_TUPLE_WEAK,
-};
+use super::NAME_TUPLE_TAGGED;
+use super::NAME_TUPLE_WEAK;
 
 // ------------------------------------------------------------
 // Internal wrappers -> shape the stream Serde produces so our

@@ -3,7 +3,11 @@
 use std::borrow::Cow;
 
 use serde::Deserialize;
-use serde_saphyr::{Error, Location, MessageFormatter, SnippetMode, UserMessageFormatter};
+use serde_saphyr::Error;
+use serde_saphyr::Location;
+use serde_saphyr::MessageFormatter;
+use serde_saphyr::SnippetMode;
+use serde_saphyr::UserMessageFormatter;
 
 #[test]
 fn serde_invalid_length_retains_the_reported_length_and_expectation() {

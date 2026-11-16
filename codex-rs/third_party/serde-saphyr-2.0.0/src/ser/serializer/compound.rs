@@ -1,14 +1,23 @@
-use serde_core::ser::{
-    Serialize, SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
-    SerializeTupleStruct, SerializeTupleVariant,
-};
+use serde_core::ser::Serialize;
+use serde_core::ser::SerializeMap;
+use serde_core::ser::SerializeSeq;
+use serde_core::ser::SerializeStruct;
+use serde_core::ser::SerializeStructVariant;
+use serde_core::ser::SerializeTuple;
+use serde_core::ser::SerializeTupleStruct;
+use serde_core::ser::SerializeTupleVariant;
 use std::fmt::Write;
 
-use super::helpers::{BoolCapture, StrCapture, UsizeCapture, scalar_key_to_string};
-use super::{AnchorId, YamlSerializer};
+use super::AnchorId;
+use super::YamlSerializer;
+use super::helpers::BoolCapture;
+use super::helpers::StrCapture;
+use super::helpers::UsizeCapture;
+use super::helpers::scalar_key_to_string;
+use crate::ser::Error;
+use crate::ser::Result;
 #[cfg(feature = "comments")]
 use crate::ser::options::CommentPosition;
-use crate::ser::{Error, Result};
 
 /// From the spec:
 ///

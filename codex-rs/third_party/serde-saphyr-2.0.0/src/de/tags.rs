@@ -311,7 +311,11 @@ fn is_yaml_value_tag(tag: &Tag) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{SfTag, TagNodeKind, core_suffix_to_sf_tag, is_yaml_merge_tag, is_yaml_value_tag};
+    use super::SfTag;
+    use super::TagNodeKind;
+    use super::core_suffix_to_sf_tag;
+    use super::is_yaml_merge_tag;
+    use super::is_yaml_value_tag;
     use granit_parser::Tag;
     use std::borrow::Cow;
 

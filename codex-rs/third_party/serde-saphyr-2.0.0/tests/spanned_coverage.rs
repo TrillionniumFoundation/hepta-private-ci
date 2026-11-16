@@ -6,7 +6,9 @@
 //! `ContentDeserializer` dispatches plain scalars directly to the visitor.
 
 use serde::Deserialize;
-use serde::de::{self, Deserializer, Visitor};
+use serde::de::Deserializer;
+use serde::de::Visitor;
+use serde::de::{self};
 use serde_saphyr::Spanned;
 
 // ── Helper: flatten wrapper ──────────────────────────────────────────────────

@@ -1,8 +1,11 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use rstest::rstest;
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{from_str, to_string};
-use std::collections::{BTreeMap, HashMap};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 enum TupleVariant {

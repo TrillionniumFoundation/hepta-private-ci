@@ -1,9 +1,13 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 
-use serde_saphyr::{
-    ArcAnchor, ArcRecursion, ArcRecursive, ArcWeakAnchor, RcAnchor, RcRecursion, RcRecursive,
-    RcWeakAnchor,
-};
+use serde_saphyr::ArcAnchor;
+use serde_saphyr::ArcRecursion;
+use serde_saphyr::ArcRecursive;
+use serde_saphyr::ArcWeakAnchor;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcRecursion;
+use serde_saphyr::RcRecursive;
+use serde_saphyr::RcWeakAnchor;
 use std::borrow::Borrow;
 use std::rc::Rc;
 use std::sync::Arc;

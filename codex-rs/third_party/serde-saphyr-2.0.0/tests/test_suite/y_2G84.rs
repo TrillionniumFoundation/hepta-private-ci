@@ -1,4 +1,5 @@
-use super::yaml_suite_support::{assert_invalid_case, assert_json_case};
+use super::yaml_suite_support::assert_invalid_case;
+use super::yaml_suite_support::assert_json_case;
 
 #[test]
 fn yaml_2g84_literal_modifiers_valid_cases_parse_to_empty_string() {

@@ -1,7 +1,8 @@
 #![cfg(feature = "deserialize")]
 
 use serde::Deserialize;
-use serde_saphyr::{Error, SnippetMode};
+use serde_saphyr::Error;
+use serde_saphyr::SnippetMode;
 
 fn render(error: &Error, source_name: Option<&str>) -> String {
     error.render_with_options(serde_saphyr::render_options! {
@@ -111,7 +112,10 @@ fn alias_use_and_distinct_failing_value_headers_use_the_override() {
 #[cfg(feature = "include")]
 #[test]
 fn included_sources_keep_their_names_while_root_and_include_site_use_the_override() {
-    use serde_saphyr::{IncludeRequest, IncludeResolveError, InputSource, ResolvedInclude};
+    use serde_saphyr::IncludeRequest;
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
     let options = || {
         serde_saphyr::options! {}.with_include_resolver(
             |_: IncludeRequest| -> Result<ResolvedInclude, IncludeResolveError> {

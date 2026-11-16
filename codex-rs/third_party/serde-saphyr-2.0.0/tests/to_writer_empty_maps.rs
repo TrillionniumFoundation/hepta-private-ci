@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use indoc::indoc;
-use {serde_saphyr::*, std::collections::*};
+use serde_saphyr::*;
+use std::collections::*;
 
 #[test]
 pub fn empty_maps() {

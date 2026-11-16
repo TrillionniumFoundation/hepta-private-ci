@@ -5,8 +5,10 @@ use serde::Deserialize;
 use serde::de::IgnoredAny;
 
 use serde_json::json;
-use serde_saphyr::options::{DuplicateKeyPolicy, MergeKeyPolicy};
-use serde_saphyr::{from_str, from_str_with_options};
+use serde_saphyr::from_str;
+use serde_saphyr::from_str_with_options;
+use serde_saphyr::options::DuplicateKeyPolicy;
+use serde_saphyr::options::MergeKeyPolicy;
 
 #[derive(Deserialize)]
 struct MergeDoc<T> {

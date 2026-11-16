@@ -1,5 +1,7 @@
 #[cfg(feature = "deserialize")]
-use crate::de::{Error, Location};
+use crate::de::Error;
+#[cfg(feature = "deserialize")]
+use crate::de::Location;
 #[cfg(feature = "deserialize")]
 use crate::tags::SfTag;
 #[cfg(feature = "deserialize")]
@@ -61,7 +63,10 @@ fn parse_compatibility_float<T>(s: &str, location: Location) -> Result<T, Error>
 where
     T: FromStr + num_traits::Float,
 {
-    let invalid = || Error::InvalidScalar { ty: "floating point", location };
+    let invalid = || Error::InvalidScalar {
+        ty: "floating point",
+        location,
+    };
     let unpositive = if let Some(value) = s.strip_prefix('+') {
         if value.starts_with(['+', '-']) {
             return Err(invalid());
@@ -657,7 +662,6 @@ mod tests {
                 assert!(parse_int_signed::<i32>(input, "i32", loc, true).is_err());
             }
         } else {
-
             let octal: i32 = parse_int_signed("0_10", "i32", loc, true).unwrap();
             let plus_octal: i32 = parse_int_signed("+0_10", "i32", loc, true).unwrap();
             let negative_octal: i32 = parse_int_signed("-0_10", "i32", loc, true).unwrap();
@@ -710,7 +714,6 @@ mod tests {
                 assert!(parse_int_unsigned::<u32>(input, "u32", loc, true).is_err());
             }
         } else {
-
             let octal: u32 = parse_int_unsigned("0_10", "u32", loc, true).unwrap();
             let plus_octal: u32 = parse_int_unsigned("+0_10", "u32", loc, true).unwrap();
             let hex: u32 = parse_int_unsigned("0x_10", "u32", loc, true).unwrap();

@@ -1,6 +1,11 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 
-use serde_saphyr::{FoldStr, FoldString, LitStr, LitString, to_string, to_string_with_options};
+use serde_saphyr::FoldStr;
+use serde_saphyr::FoldString;
+use serde_saphyr::LitStr;
+use serde_saphyr::LitString;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn lit_str_no_trailing_newline_uses_strip() {

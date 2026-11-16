@@ -12,10 +12,15 @@
 //! and `DoubleQuoted` at the leaves. This is not allocation-free serialization:
 //! `Tagged` owns its tag string, and the output and serializer may allocate.
 
-use serde::ser::{SerializeMap, SerializeSeq};
-use serde::{Serialize, Serializer};
-use serde_json::{Value, json};
-use serde_saphyr::{DoubleQuoted, LitStr, Tagged};
+use serde::Serialize;
+use serde::Serializer;
+use serde::ser::SerializeMap;
+use serde::ser::SerializeSeq;
+use serde_json::Value;
+use serde_json::json;
+use serde_saphyr::DoubleQuoted;
+use serde_saphyr::LitStr;
+use serde_saphyr::Tagged;
 
 struct FormatContext {
     // Quoting takes precedence over literal block style when both are enabled.

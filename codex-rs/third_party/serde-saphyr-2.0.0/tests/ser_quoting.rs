@@ -3,7 +3,10 @@
 use std::collections::BTreeMap;
 
 use serde::Serialize;
-use serde_saphyr::{LitStr, from_str, to_string, to_string_with_options};
+use serde_saphyr::LitStr;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn quote_all_mode_single_quotes_plain_strings() {

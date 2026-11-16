@@ -1,12 +1,15 @@
 use std::borrow::Cow;
 use std::fmt;
 
-use annotate_snippets::{
-    AnnotationKind, Level, Renderer, Snippet as AnnotateSnippet, renderer::DecorStyle,
-};
+use annotate_snippets::AnnotationKind;
+use annotate_snippets::Level;
+use annotate_snippets::Renderer;
+use annotate_snippets::Snippet as AnnotateSnippet;
+use annotate_snippets::renderer::DecorStyle;
 
 use crate::Location;
-use crate::de_error::{display_location, sanitize_message_text};
+use crate::de_error::display_location;
+use crate::de_error::sanitize_message_text;
 use crate::localizer::Localizer;
 
 /// Borrowed YAML source information used for snippet rendering.

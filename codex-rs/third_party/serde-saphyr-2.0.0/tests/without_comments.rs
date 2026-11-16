@@ -1,11 +1,16 @@
 #![cfg(all(feature = "deserialize", not(feature = "comments")))]
 
-use serde_json::{Value, json};
-use serde_saphyr::budget::{BudgetReport, EnforcingPolicy, check_yaml_budget};
-use serde_saphyr::{
-    Budget, Error, Options, from_reader_with_options, from_slice_with_options,
-    from_str_with_options,
-};
+use serde_json::Value;
+use serde_json::json;
+use serde_saphyr::Budget;
+use serde_saphyr::Error;
+use serde_saphyr::Options;
+use serde_saphyr::budget::BudgetReport;
+use serde_saphyr::budget::EnforcingPolicy;
+use serde_saphyr::budget::check_yaml_budget;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_slice_with_options;
+use serde_saphyr::from_str_with_options;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -95,7 +100,8 @@ fn standalone_budget_checks_ignore_comments() {
 #[cfg(feature = "include")]
 #[test]
 fn comments_are_ignored_in_included_sources() {
-    use serde_saphyr::{InputSource, ResolvedInclude};
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
 
     const YAML: &str = "# document\nkey: &selected # anchor\n  - 1 # one\n  # separator\n  - 2\n";
 

@@ -3,7 +3,10 @@
 use std::borrow::Cow;
 
 use serde::Deserialize;
-use serde_saphyr::{DefaultMessageFormatter, Localizer, SnippetMode, UserMessageFormatter};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Localizer;
+use serde_saphyr::SnippetMode;
+use serde_saphyr::UserMessageFormatter;
 
 #[derive(Debug, Deserialize, garde::Validate)]
 #[garde(transparent)]

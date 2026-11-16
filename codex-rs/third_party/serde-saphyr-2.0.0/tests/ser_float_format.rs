@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 mod zmij_format_tests {
     use super::*;
@@ -223,7 +224,8 @@ mod zmij_format_tests {
     fn float_map_keys() {
         use serde::Serializer;
         use std::collections::HashMap;
-        use std::hash::{Hash, Hasher};
+        use std::hash::Hash;
+        use std::hash::Hasher;
 
         struct DummyF64(pub f64);
 

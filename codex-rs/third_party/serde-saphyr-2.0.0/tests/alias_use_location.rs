@@ -4,7 +4,11 @@ use std::borrow::Cow;
 use std::collections::BTreeMap;
 
 use serde::Deserialize;
-use serde_saphyr::{DefaultMessageFormatter, Error, Localizer, Location, SnippetMode};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::Localizer;
+use serde_saphyr::Location;
+use serde_saphyr::SnippetMode;
 
 const SCALAR: &str = "name: &n eighty\nport: *n\n";
 const MAPPING: &str = "base: &b\n  port: eighty\ncopy: *b\n";

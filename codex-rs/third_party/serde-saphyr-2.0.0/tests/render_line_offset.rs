@@ -3,9 +3,12 @@
 use std::borrow::Cow;
 
 use serde::Deserialize;
-use serde_saphyr::{
-    DefaultMessageFormatter, Error, Localizer, Location, MessageFormatter, SnippetMode,
-};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::Localizer;
+use serde_saphyr::Location;
+use serde_saphyr::MessageFormatter;
+use serde_saphyr::SnippetMode;
 
 const LINE_OFFSET: u64 = 9_999;
 
@@ -171,7 +174,10 @@ fn custom_message_is_preserved_and_unknown_locations_stay_unknown() {
 #[cfg(feature = "include")]
 #[test]
 fn only_root_source_locations_and_include_sites_are_shifted() {
-    use serde_saphyr::{IncludeRequest, IncludeResolveError, InputSource, ResolvedInclude};
+    use serde_saphyr::IncludeRequest;
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
 
     let make_options = || {
         serde_saphyr::options! {}.with_include_resolver(

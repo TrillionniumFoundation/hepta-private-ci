@@ -1,7 +1,8 @@
 #![cfg(feature = "serialize")]
 
+use serde::Serialize;
+use serde::Serializer;
 use serde::ser::SerializeMap;
-use serde::{Serialize, Serializer};
 use serde_saphyr::to_string;
 
 struct MapWithFloatKeys;

@@ -2,7 +2,8 @@
 
 use rstest::rstest;
 use serde::Deserialize;
-use serde_json::{Value, json};
+use serde_json::Value;
+use serde_json::json;
 use std::collections::BTreeMap;
 
 #[rstest]

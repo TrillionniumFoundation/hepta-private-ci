@@ -2,9 +2,12 @@
 
 use serde::Deserialize;
 use serde::de::IgnoredAny;
-use serde_saphyr::{
-    Error, UserMessageFormatter, from_reader_with_options, from_str, from_str_with_options, options,
-};
+use serde_saphyr::Error;
+use serde_saphyr::UserMessageFormatter;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str;
+use serde_saphyr::from_str_with_options;
+use serde_saphyr::options;
 use std::collections::BTreeMap;
 use std::io::Cursor;
 

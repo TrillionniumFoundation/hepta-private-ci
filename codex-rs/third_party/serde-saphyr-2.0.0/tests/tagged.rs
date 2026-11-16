@@ -3,13 +3,19 @@
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 #[cfg(feature = "comments")]
 use serde_saphyr::Commented;
-use serde_saphyr::{
-    FlowMap, FlowSeq, RcAnchor, SerializeError, Tagged, from_str, ser_options, to_string,
-    to_string_with_options,
-};
+use serde_saphyr::FlowMap;
+use serde_saphyr::FlowSeq;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::SerializeError;
+use serde_saphyr::Tagged;
+use serde_saphyr::from_str;
+use serde_saphyr::ser_options;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn resolved_core_verbatim_and_directive_tags_normalize_on_output() {

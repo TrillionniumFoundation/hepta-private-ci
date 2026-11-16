@@ -6,7 +6,8 @@
 //! the string was transformed during parsing.
 
 mod tests {
-    use serde_saphyr::{Error, TransformReason};
+    use serde_saphyr::Error;
+    use serde_saphyr::TransformReason;
 
     #[test]
     fn transform_reason_display_escape_sequence() {

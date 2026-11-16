@@ -1,5 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde_saphyr::{FoldStr, FoldString, LitStr, LitString};
+use serde_saphyr::FoldStr;
+use serde_saphyr::FoldString;
+use serde_saphyr::LitStr;
+use serde_saphyr::LitString;
 
 #[test]
 fn block_string_wrappers_support_basic_conversions_and_comparisons() {

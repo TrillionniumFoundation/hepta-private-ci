@@ -1,7 +1,10 @@
 #![cfg(feature = "deserialize")]
 
-use serde_saphyr::budget::{BudgetBreach, BudgetReport};
-use serde_saphyr::{Error, from_reader_with_options, from_str_with_options};
+use serde_saphyr::Error;
+use serde_saphyr::budget::BudgetBreach;
+use serde_saphyr::budget::BudgetReport;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str_with_options;
 use std::cell::RefCell;
 use std::io::Cursor;
 use std::rc::Rc;

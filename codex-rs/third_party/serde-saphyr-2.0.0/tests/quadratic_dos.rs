@@ -1,8 +1,10 @@
 // See https://github.com/acatton/serde-yaml-ng/issues/16 -
 // DoS by parsing deeply nested YAML
+use serde_saphyr::Budget;
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
 use serde_saphyr::budget::BudgetBreach;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::{Budget, Error, ExternalMessageSource};
 
 #[test]
 fn test_deep_recursion() {

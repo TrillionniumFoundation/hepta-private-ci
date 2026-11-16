@@ -2,10 +2,12 @@
 
 use std::collections::BTreeMap;
 
-use serde_saphyr::{
-    DuplicateKeyPolicy, Error, from_reader, from_reader_with_options, from_str,
-    from_str_with_options,
-};
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::Error;
+use serde_saphyr::from_reader;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str;
+use serde_saphyr::from_str_with_options;
 
 const EQUIVALENT_INTEGERS: &[(&str, &str)] = &[
     ("0xB", "11"),

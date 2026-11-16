@@ -1,9 +1,12 @@
 #![cfg(any(feature = "garde", feature = "validator"))]
 
 use serde::Deserialize;
-use serde_saphyr::{
-    DefaultMessageFormatter, Error, MessageFormatter, Options, SnippetMode, UserMessageFormatter,
-};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::MessageFormatter;
+use serde_saphyr::Options;
+use serde_saphyr::SnippetMode;
+use serde_saphyr::UserMessageFormatter;
 
 const YAML: &str = "a: \"\"\nb: \"\"\n";
 

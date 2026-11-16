@@ -1,4 +1,5 @@
-use serde_repr::{Deserialize_repr, Serialize_repr};
+use serde_repr::Deserialize_repr;
+use serde_repr::Serialize_repr;
 use serde_saphyr as yaml;
 
 #[derive(Debug, PartialEq, Serialize_repr, Deserialize_repr)]

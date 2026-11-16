@@ -2,9 +2,15 @@
 #[cfg(feature = "include")]
 use serde::Deserialize;
 #[cfg(feature = "include")]
-use serde_saphyr::{
-    IncludeResolveError, InputSource, Options, ResolvedInclude, from_str_with_options,
-};
+use serde_saphyr::IncludeResolveError;
+#[cfg(feature = "include")]
+use serde_saphyr::InputSource;
+#[cfg(feature = "include")]
+use serde_saphyr::Options;
+#[cfg(feature = "include")]
+use serde_saphyr::ResolvedInclude;
+#[cfg(feature = "include")]
+use serde_saphyr::from_str_with_options;
 
 #[cfg(feature = "include")]
 #[derive(Debug, Deserialize, PartialEq)]

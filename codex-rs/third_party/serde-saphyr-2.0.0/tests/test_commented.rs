@@ -1,12 +1,19 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 #![cfg(feature = "comments")]
-use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
+use serde::Deserialize;
+use serde::Serialize;
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 
-use serde_saphyr::{
-    CommentPosition, Commented, FlowMap, FlowSeq, RcAnchor, Spanned, ser_options, to_string,
-    to_string_with_options,
-};
+use serde_saphyr::CommentPosition;
+use serde_saphyr::Commented;
+use serde_saphyr::FlowMap;
+use serde_saphyr::FlowSeq;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::Spanned;
+use serde_saphyr::ser_options;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn commented_scalar_block_style() {

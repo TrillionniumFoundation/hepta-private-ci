@@ -1,7 +1,8 @@
 #![cfg(feature = "deserialize")]
 
 use serde::Deserialize;
-use serde::de::{self, Visitor};
+use serde::de::Visitor;
+use serde::de::{self};
 use serde_json::Value;
 use serde_saphyr::NonFiniteFloatPolicy;
 use std::collections::BTreeMap;

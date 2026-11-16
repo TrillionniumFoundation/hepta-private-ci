@@ -1,6 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{RcAnchor, RcWeakAnchor};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcWeakAnchor;
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -212,7 +214,8 @@ struct Config {
 
 #[cfg(feature = "properties")]
 fn property_map() -> Result<Config, serde_saphyr::Error> {
-    use serde_saphyr::{from_str_with_options, options};
+    use serde_saphyr::from_str_with_options;
+    use serde_saphyr::options;
     use std::collections::HashMap;
     let mut properties = HashMap::new();
     properties.insert(

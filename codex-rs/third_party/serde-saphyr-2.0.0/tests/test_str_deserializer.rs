@@ -1,7 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use anyhow::Result;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use std::borrow::Cow;
 
 // Common serializer used by all scenarios

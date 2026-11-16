@@ -1,5 +1,7 @@
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{RcRecursion, RcRecursive};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::RcRecursion;
+use serde_saphyr::RcRecursive;
 use std::cell::Ref;
 
 #[derive(Deserialize, Serialize, PartialEq, Debug)]

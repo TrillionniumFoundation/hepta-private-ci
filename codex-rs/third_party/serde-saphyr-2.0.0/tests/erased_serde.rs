@@ -2,8 +2,10 @@
 
 use std::collections::BTreeMap;
 
+use serde::Deserialize;
+use serde::Serialize;
+use serde::Serializer;
 use serde::ser::SerializeMap;
-use serde::{Deserialize, Serialize, Serializer};
 
 trait Bike: erased_serde::Serialize {
     fn name(&self) -> &str;

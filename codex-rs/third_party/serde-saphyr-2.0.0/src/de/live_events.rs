@@ -21,26 +21,40 @@
 //! injecting previously recorded buffers; normal parsing continues after the
 //! injection is exhausted.
 
-use crate::budget::{BudgetEnforcer, EnforcingPolicy};
+use crate::budget::BudgetEnforcer;
+use crate::budget::EnforcingPolicy;
 
 #[cfg(not(feature = "include"))]
 use crate::buffered_input::ReaderInput;
 
+use super::events::NodeOrigin;
 #[cfg(feature = "properties")]
 use super::events::PropertyInterpolation;
-use super::events::{NodeOrigin, attach_alias_locations_if_missing};
+use super::events::attach_alias_locations_if_missing;
 use crate::buffered_input::buffered_input_from_reader_with_limit;
-use crate::de::{AliasLimits, Error, Ev, Events, Location, Options};
+use crate::de::AliasLimits;
+use crate::de::Error;
+use crate::de::Ev;
+use crate::de::Events;
+use crate::de::Location;
+use crate::de::Options;
 use crate::de_error::budget_error;
+use crate::include::BaseParser;
 #[cfg(feature = "include")]
 use crate::include::create_parser_from_reader_input;
-use crate::include::{BaseParser, create_parser_from_str};
+use crate::include::create_parser_from_str;
 use crate::location::location_from_span;
 use crate::options::BudgetReportCallback;
-use crate::tags::{SfTag, TagNodeKind};
+use crate::tags::SfTag;
+use crate::tags::TagNodeKind;
+use granit_parser::Event;
 #[cfg(feature = "comments")]
 use granit_parser::Placement;
-use granit_parser::{Event, ScalarStyle, ScanError, Span, StructureStyle, Tag};
+use granit_parser::ScalarStyle;
+use granit_parser::ScanError;
+use granit_parser::Span;
+use granit_parser::StructureStyle;
+use granit_parser::Tag;
 
 #[cfg(not(feature = "include"))]
 use granit_parser::StrInput;

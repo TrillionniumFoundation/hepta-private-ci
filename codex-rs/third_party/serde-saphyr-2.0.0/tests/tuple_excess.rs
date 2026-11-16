@@ -3,7 +3,8 @@
 use std::fmt;
 
 use serde::Deserialize;
-use serde::de::{SeqAccess, Visitor};
+use serde::de::SeqAccess;
+use serde::de::Visitor;
 
 #[test]
 fn top_level_tuple_excess_reports_invalid_length() {

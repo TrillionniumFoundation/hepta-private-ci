@@ -3,7 +3,9 @@
 use serde::Serialize;
 #[cfg(feature = "comments")]
 use serde_saphyr::Commented;
-use serde_saphyr::{FlowSeq, SpaceAfter, to_string};
+use serde_saphyr::FlowSeq;
+use serde_saphyr::SpaceAfter;
+use serde_saphyr::to_string;
 
 #[test]
 #[cfg(feature = "comments")]

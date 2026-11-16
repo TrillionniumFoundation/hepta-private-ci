@@ -2,33 +2,56 @@ mod compound;
 mod helpers;
 
 #[doc(hidden)]
-pub use self::compound::{MapSer, SeqSer, StructVariantSer, TupleSer};
+pub use self::compound::MapSer;
+#[doc(hidden)]
+pub use self::compound::SeqSer;
+#[doc(hidden)]
+pub use self::compound::StructVariantSer;
+#[doc(hidden)]
+pub use self::compound::TupleSer;
 
-use self::helpers::{StrCapture, scalar_key_to_string};
-use base64::{Engine as _, engine::general_purpose::STANDARD as B64};
+use self::helpers::StrCapture;
+use self::helpers::scalar_key_to_string;
+use base64::Engine as _;
+use base64::engine::general_purpose::STANDARD as B64;
 use nohash_hasher::BuildNoHashHasher;
 use serde_core::ser::Error as _;
-use serde_core::ser::{Serialize, Serializer};
+use serde_core::ser::Serialize;
+use serde_core::ser::Serializer;
 use std::collections::HashMap;
 use std::fmt::Write;
 
-use crate::long_strings::{NAME_FOLD_STR, NAME_LIT_STR};
-use crate::tag::{YAML_TAG_NAMESPACE, simple_enum_variant_name, yaml_core_type_tag_name};
+use crate::long_strings::NAME_FOLD_STR;
+use crate::long_strings::NAME_LIT_STR;
+use crate::tag::YAML_TAG_NAMESPACE;
+use crate::tag::simple_enum_variant_name;
+use crate::tag::yaml_core_type_tag_name;
 
+use super::Error;
+use super::NAME_DOUBLE_QUOTED;
+use super::NAME_FLOW_MAP;
+use super::NAME_FLOW_SEQ;
+use super::NAME_NULLABLE_TILDE;
+use super::NAME_SINGLE_QUOTED;
+use super::NAME_SPACE_AFTER;
+use super::NAME_TUPLE_ANCHOR;
 #[cfg(feature = "comments")]
 use super::NAME_TUPLE_COMMENTED;
+use super::NAME_TUPLE_TAGGED;
+use super::NAME_TUPLE_WEAK;
+use super::Result;
+use super::checked_depth_add;
+use super::checked_indentation;
 #[cfg(feature = "comments")]
 use super::options::CommentPosition;
 use super::options::SerializerOptions;
-use super::quoting::{
-    escape_double_quoted, is_auto_block_scalar_readable, is_block_scalar_content_safe,
-    is_controll_which_needs_escaping, is_plain_value_safe,
-};
-use super::{
-    Error, NAME_DOUBLE_QUOTED, NAME_FLOW_MAP, NAME_FLOW_SEQ, NAME_NULLABLE_TILDE,
-    NAME_SINGLE_QUOTED, NAME_SPACE_AFTER, NAME_TUPLE_ANCHOR, NAME_TUPLE_TAGGED, NAME_TUPLE_WEAK,
-    Result, checked_depth_add, checked_indentation, wrapping, zmij_format,
-};
+use super::quoting::escape_double_quoted;
+use super::quoting::is_auto_block_scalar_readable;
+use super::quoting::is_block_scalar_content_safe;
+use super::quoting::is_controll_which_needs_escaping;
+use super::quoting::is_plain_value_safe;
+use super::wrapping;
+use super::zmij_format;
 
 // ------------------------------------------------------------
 // Core serializer
@@ -2205,7 +2228,8 @@ impl<'a, 'b, W: Write> Serializer for &'a mut YamlSerializer<'b, W> {
 
 #[cfg(test)]
 mod tests {
-    use super::{YamlSerializer, absolute_uri_is_valid};
+    use super::YamlSerializer;
+    use super::absolute_uri_is_valid;
 
     #[test]
     fn absolute_uri_validation_covers_global_tag_syntax() {

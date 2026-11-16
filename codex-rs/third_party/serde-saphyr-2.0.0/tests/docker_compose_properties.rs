@@ -2,10 +2,13 @@
 
 use rstest::rstest;
 use serde::Deserialize;
-use serde_saphyr::{
-    Error, Location, Options, PropertySyntax, budget::BudgetBreach, from_reader_with_options,
-    from_str_with_options,
-};
+use serde_saphyr::Error;
+use serde_saphyr::Location;
+use serde_saphyr::Options;
+use serde_saphyr::PropertySyntax;
+use serde_saphyr::budget::BudgetBreach;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str_with_options;
 use std::collections::HashMap;
 
 fn compose_options(entries: &[(&str, &str)]) -> Options {

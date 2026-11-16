@@ -1,5 +1,7 @@
 use crate::serde_yaml::adapt_to_miri;
-use serde::de::{Deserialize, SeqAccess, Visitor};
+use serde::de::Deserialize;
+use serde::de::SeqAccess;
+use serde::de::Visitor;
 use serde_saphyr::Error;
 use std::collections::BTreeMap;
 use std::fmt;

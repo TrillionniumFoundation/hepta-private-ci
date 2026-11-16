@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use serde::Deserialize;
-use serde_saphyr::{from_str, from_str_with_options};
+use serde_saphyr::from_str;
+use serde_saphyr::from_str_with_options;
 
 /// Specialized regression test for snippet rendering.
 ///

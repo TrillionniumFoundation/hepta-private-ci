@@ -1,8 +1,11 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use serde::Deserialize;
-use serde_saphyr::{
-    FoldStr, FoldString, LitStr, LitString, to_fmt_writer_with_options, to_string_with_options,
-};
+use serde_saphyr::FoldStr;
+use serde_saphyr::FoldString;
+use serde_saphyr::LitStr;
+use serde_saphyr::LitString;
+use serde_saphyr::to_fmt_writer_with_options;
+use serde_saphyr::to_string_with_options;
 
 #[test]
 fn lit_wrappers_respect_min_fold_chars_option() {

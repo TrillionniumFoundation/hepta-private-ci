@@ -2,9 +2,14 @@
 
 use rstest::rstest;
 use serde::Serialize;
-use serde_saphyr::{
-    DoubleQuoted, FlowMap, FlowSeq, FoldStr, LitStr, SingleQuoted, from_str, to_string,
-};
+use serde_saphyr::DoubleQuoted;
+use serde_saphyr::FlowMap;
+use serde_saphyr::FlowSeq;
+use serde_saphyr::FoldStr;
+use serde_saphyr::LitStr;
+use serde_saphyr::SingleQuoted;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
 use std::collections::BTreeMap;
 use std::fmt;
 

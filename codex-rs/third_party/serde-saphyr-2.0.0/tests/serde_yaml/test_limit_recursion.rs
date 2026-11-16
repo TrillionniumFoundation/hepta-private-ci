@@ -1,6 +1,7 @@
 use serde_json::Value;
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::{Error, ExternalMessageSource};
 
 #[test]
 fn test_recursion_limit_exceeded() {

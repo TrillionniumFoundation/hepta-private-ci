@@ -1,10 +1,14 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 //! Tests for `SpaceAfter` wrapper.
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 #[cfg(feature = "comments")]
 use serde_saphyr::Commented;
-use serde_saphyr::{FlowSeq, SpaceAfter, from_str, to_string};
+use serde_saphyr::FlowSeq;
+use serde_saphyr::SpaceAfter;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
 
 #[test]
 fn space_after_adds_blank_line() {

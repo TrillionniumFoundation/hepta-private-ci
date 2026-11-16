@@ -149,8 +149,7 @@ impl MatrixSdkClient {
                     "login_or_restore.restore_session.timeout",
                 ))
             } else {
-                let request_deadline =
-                    startup_deadline.min(now + MATRIX_STARTUP_REQUEST_TIMEOUT);
+                let request_deadline = startup_deadline.min(now + MATRIX_STARTUP_REQUEST_TIMEOUT);
                 let restore = tokio::time::timeout_at(
                     request_deadline,
                     sidecar.client.restore_session(session.clone()),

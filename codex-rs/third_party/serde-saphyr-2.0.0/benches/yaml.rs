@@ -3,8 +3,10 @@
 //! Run locally with `cargo bench --bench yaml`, or with CodSpeed via
 //! `cargo codspeed build && cargo codspeed run`.
 
-use divan::{Bencher, black_box};
-use serde::{Deserialize, Serialize};
+use divan::Bencher;
+use divan::black_box;
+use serde::Deserialize;
+use serde::Serialize;
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 

@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use serde::Deserialize;
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::BTreeSet;
+use std::collections::VecDeque;
 
 fn unwrap_snippet(err: &serde_saphyr::Error) -> &serde_saphyr::Error {
     match err {

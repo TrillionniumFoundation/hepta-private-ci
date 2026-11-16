@@ -4,10 +4,12 @@ use std::collections::BTreeMap;
 
 use serde::de::DeserializeOwned;
 use serde_json::Value;
-use serde_saphyr::{
-    DuplicateKeyPolicy, Options, from_reader, from_reader_with_options, from_str,
-    from_str_with_options,
-};
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::Options;
+use serde_saphyr::from_reader;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str;
+use serde_saphyr::from_str_with_options;
 
 // YAML 1.2 treats these non-ASCII characters as scalar content, even though
 // Rust's str::trim considers them whitespace.

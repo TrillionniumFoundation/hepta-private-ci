@@ -1,5 +1,6 @@
 use crate::parse_scalars::parse_yaml11_bool;
-use std::fmt::{self, Write};
+use std::fmt::Write;
+use std::fmt::{self};
 
 /// Check numeric syntax without constructing a value: overflow and resolver errors
 /// must not turn a serialized string into a number or an unreadable document.
@@ -431,7 +432,10 @@ fn has_comment_start(string: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_controll_which_needs_escaping, is_numeric, is_plain_safe, is_plain_value_safe};
+    use super::is_controll_which_needs_escaping;
+    use super::is_numeric;
+    use super::is_plain_safe;
+    use super::is_plain_value_safe;
     use rstest::rstest;
 
     #[rstest]

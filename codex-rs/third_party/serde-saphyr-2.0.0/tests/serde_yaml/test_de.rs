@@ -11,7 +11,8 @@ use indoc::indoc;
 use serde::Deserialize;
 use serde_json::Value;
 use serde_saphyr::Error;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::fmt::Debug;
 
 fn test_de<T>(yaml: &str, expected: &T)

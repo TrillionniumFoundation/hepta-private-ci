@@ -44,9 +44,15 @@ mod wrapping;
 mod zmij_format;
 
 pub use self::error::Error;
-pub use self::serializer::YamlSerializer;
 #[doc(hidden)]
-pub use self::serializer::{MapSer, SeqSer, StructVariantSer, TupleSer};
+pub use self::serializer::MapSer;
+#[doc(hidden)]
+pub use self::serializer::SeqSer;
+#[doc(hidden)]
+pub use self::serializer::StructVariantSer;
+#[doc(hidden)]
+pub use self::serializer::TupleSer;
+pub use self::serializer::YamlSerializer;
 
 /// Result alias.
 pub type Result<T> = std::result::Result<T, Error>;
@@ -65,7 +71,10 @@ fn checked_depth_add(depth: usize, additional_levels: usize) -> Result<usize> {
         .ok_or_else(|| Error::custom("serializer indentation depth exceeds usize"))
 }
 
-pub use crate::long_strings::{FoldStr, FoldString, LitStr, LitString};
+pub use crate::long_strings::FoldStr;
+pub use crate::long_strings::FoldString;
+pub use crate::long_strings::LitStr;
+pub use crate::long_strings::LitString;
 
 // Flow hints and block-string hints: we use newtype-struct names.
 const NAME_TUPLE_ANCHOR: &str = "__yaml_anchor";
@@ -82,7 +91,8 @@ const NAME_NULLABLE_TILDE: &str = "__yaml_nullable_tilde";
 
 #[cfg(test)]
 mod tests {
-    use super::{checked_depth_add, checked_indentation};
+    use super::checked_depth_add;
+    use super::checked_indentation;
 
     #[test]
     fn indentation_arithmetic_is_checked() {

@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use serde::Deserialize;
-use serde_saphyr::{Error, from_str_with_options};
+use serde_saphyr::Error;
+use serde_saphyr::from_str_with_options;
 use std::collections::BTreeMap;
 
 #[derive(Debug, Deserialize, PartialEq)]

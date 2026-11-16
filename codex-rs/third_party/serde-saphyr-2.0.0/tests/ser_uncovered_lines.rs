@@ -2,7 +2,9 @@
 //! Tests targeting previously uncovered lines in src/ser.rs.
 
 use serde::Serialize;
-use serde_saphyr::{RcAnchor, RcWeakAnchor, to_string};
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcWeakAnchor;
+use serde_saphyr::to_string;
 use std::rc::Rc;
 
 // ~725: Control characters in double-quoted strings trigger \x{:02X} escape.

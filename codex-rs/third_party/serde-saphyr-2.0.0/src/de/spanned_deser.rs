@@ -3,9 +3,12 @@
 //! These are used by the YAML deserializer to implement crate-level helper types
 //! (like `Spanned<T>`) without bloating the main deserializer with large nested state machines.
 
-use serde_core::de::{self, IntoDeserializer, Visitor};
+use serde_core::de::IntoDeserializer;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 
-use super::{Error, Location};
+use super::Error;
+use super::Location;
 use crate::Deserializer;
 use crate::spanned::INTERNAL_SPANNED_MARKER;
 

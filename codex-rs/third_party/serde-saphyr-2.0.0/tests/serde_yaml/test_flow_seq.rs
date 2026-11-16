@@ -1,5 +1,8 @@
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{FlowSeq, to_string, to_string_with_options};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::FlowSeq;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 struct Data {

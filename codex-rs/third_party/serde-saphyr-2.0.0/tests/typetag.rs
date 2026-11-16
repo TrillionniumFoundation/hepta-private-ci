@@ -2,9 +2,13 @@
 
 use std::fmt;
 
-use serde::de::{MapAccess, Visitor};
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::Serializer;
+use serde::de::MapAccess;
+use serde::de::Visitor;
 use serde::ser::SerializeMap;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 #[typetag::serde(tag = "kind")]
 trait Bike {
@@ -207,7 +211,8 @@ fn internally_tagged_trait_object_rejects_unknown_and_missing_tags() {
 }
 
 mod externally_tagged {
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
 
     #[typetag::serde]
     trait Brake {
@@ -250,7 +255,8 @@ mod externally_tagged {
 }
 
 mod adjacently_tagged {
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
 
     #[typetag::serde(
         tag = "kind",

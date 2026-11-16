@@ -1,15 +1,19 @@
 use std::borrow::Cow;
 #[cfg(feature = "properties")]
-use std::cell::{Cell, RefCell};
+use std::cell::Cell;
+#[cfg(feature = "properties")]
+use std::cell::RefCell;
 #[cfg(feature = "properties")]
 use std::collections::HashMap;
 use std::mem;
-use std::ops::{Deref, DerefMut};
+use std::ops::Deref;
+use std::ops::DerefMut;
 #[cfg(feature = "properties")]
 use std::rc::Rc;
 
 use granit_parser::ScalarStyle;
-use smallvec::{SmallVec, smallvec};
+use smallvec::SmallVec;
+use smallvec::smallvec;
 
 use super::error::Error;
 #[cfg(feature = "properties")]
@@ -19,7 +23,8 @@ use super::tags::SfTag;
 use crate::Budget;
 #[cfg(feature = "properties")]
 use crate::budget::BudgetBreach;
-use crate::location::{Location, Locations};
+use crate::location::Location;
+use crate::location::Locations;
 
 /// Property interpolation configuration and aggregate work shared by live and replay sources.
 #[cfg(feature = "properties")]

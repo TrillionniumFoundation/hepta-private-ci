@@ -1,9 +1,16 @@
-use serde_core::ser::{self, Serialize, Serializer};
-use std::fmt::{self, Write};
+use serde_core::ser::Serialize;
+use serde_core::ser::Serializer;
+use serde_core::ser::{self};
+use std::fmt::Write;
+use std::fmt::{self};
 
-use super::super::quoting::{escape_double_quoted, is_plain_safe, is_plain_value_safe};
+use super::super::Error;
+use super::super::NAME_NULLABLE_TILDE;
+use super::super::Result;
+use super::super::quoting::escape_double_quoted;
+use super::super::quoting::is_plain_safe;
+use super::super::quoting::is_plain_value_safe;
 use super::super::zmij_format;
-use super::super::{Error, NAME_NULLABLE_TILDE, Result};
 
 // ------------------------------------------------------------
 // Helpers used for extracting ptr/bool inside tuple payloads

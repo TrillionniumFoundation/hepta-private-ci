@@ -1,5 +1,6 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde_saphyr::{DuplicateKeyPolicy, Error};
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::Error;
 use std::collections::HashMap;
 
 /// Unsure if this should be error. When forcing into string, empty key is currently
@@ -104,7 +105,8 @@ fn deserialize_unit_key_into_hashmap_unit() {
 /// align with the first item (two columns past `?`), at the top level and nested.
 #[test]
 fn block_collection_keys_round_trip() {
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
     use std::collections::BTreeMap;
 
     #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]

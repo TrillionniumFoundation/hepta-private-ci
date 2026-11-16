@@ -1,6 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
+use serde::Deserialize;
+use serde::Serialize;
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Hash, PartialEq, PartialOrd, Eq, Debug, Ord)]
 pub struct KeyString(String);

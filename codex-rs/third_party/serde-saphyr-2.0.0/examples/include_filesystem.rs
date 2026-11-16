@@ -1,5 +1,6 @@
 use serde::Deserialize;
-use serde_saphyr::{from_str_with_options, options};
+use serde_saphyr::from_str_with_options;
+use serde_saphyr::options;
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct Config {

@@ -5,8 +5,11 @@
 //!
 //! Run with: `cargo run --example spaced_yaml`
 
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{Commented, SpaceAfter, to_string};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::Commented;
+use serde_saphyr::SpaceAfter;
+use serde_saphyr::to_string;
 
 /// A configuration file with visually separated sections.
 #[derive(Debug, Serialize, Deserialize)]

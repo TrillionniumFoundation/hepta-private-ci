@@ -2,7 +2,8 @@
 
 use serde::Deserialize;
 use serde_saphyr::Error;
-use std::io::{self, Read};
+use std::io::Read;
+use std::io::{self};
 
 struct ErrorAfterPrefix {
     prefix: &'static [u8],

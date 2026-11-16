@@ -1,7 +1,10 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use serde_saphyr::{Spanned, from_str, to_string};
+use serde_saphyr::Spanned;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
 
 #[test]
 fn struct_containing_spanned_can_serialize_value_only() {

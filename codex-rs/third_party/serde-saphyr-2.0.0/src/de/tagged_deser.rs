@@ -1,6 +1,8 @@
 //! Internal support for deserializing `Tagged<T>`.
 
-use serde_core::de::{self, IntoDeserializer, Visitor};
+use serde_core::de::IntoDeserializer;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 
 use super::Error;
 use super::events::Ev;
@@ -101,12 +103,15 @@ impl<'de> de::SeqAccess<'de> for TaggedSeqAccess<'de, '_> {
 #[cfg(test)]
 mod tests {
     use serde_core::Deserialize;
-    use serde_core::de::{self, SeqAccess, Visitor};
+    use serde_core::de::SeqAccess;
+    use serde_core::de::Visitor;
+    use serde_core::de::{self};
     use std::fmt;
 
     #[cfg(feature = "comments")]
     use crate::Commented;
-    use crate::{Tagged, from_str};
+    use crate::Tagged;
+    use crate::from_str;
 
     #[derive(Debug, PartialEq)]
     struct InspectedTagged {

@@ -1,4 +1,5 @@
-use super::yaml_suite_support::{assert_invalid_case, assert_json_case};
+use super::yaml_suite_support::assert_invalid_case;
+use super::yaml_suite_support::assert_json_case;
 use serde::Deserialize;
 use serde_saphyr::Error;
 

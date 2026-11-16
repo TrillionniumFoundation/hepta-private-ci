@@ -24,7 +24,8 @@ use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn additional_context_is_model_visible_but_not_a_user_message_item_for_first_party_provider() -> Result<()> {
+async fn additional_context_is_model_visible_but_not_a_user_message_item_for_first_party_provider()
+-> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = FirstPartyMockServer::start().await?;

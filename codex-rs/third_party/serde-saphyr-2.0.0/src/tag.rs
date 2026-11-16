@@ -53,9 +53,11 @@ pub(crate) fn yaml_core_type_tag_name(tag: &str) -> Option<&str> {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "serialize")]
+    use super::YAML_TAG_NAMESPACE;
     use super::simple_enum_variant_name;
     #[cfg(feature = "serialize")]
-    use super::{YAML_TAG_NAMESPACE, yaml_core_type_tag_name};
+    use super::yaml_core_type_tag_name;
 
     #[test]
     fn normalizes_simple_local_core_and_verbatim_enum_tags() {

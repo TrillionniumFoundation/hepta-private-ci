@@ -2,7 +2,8 @@
 
 use std::fmt::Write;
 
-use super::{Result, checked_indentation};
+use super::Result;
+use super::checked_indentation;
 
 /// Find leading spaces on the first non-empty line of content.
 pub fn first_line_leading_spaces(s: &str) -> usize {

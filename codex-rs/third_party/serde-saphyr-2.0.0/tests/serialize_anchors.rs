@@ -4,10 +4,16 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use indoc::indoc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 // Bring helpers into scope
-use serde_saphyr::{ArcAnchor, ArcWeakAnchor, RcAnchor, RcWeakAnchor, from_str, to_string};
+use serde_saphyr::ArcAnchor;
+use serde_saphyr::ArcWeakAnchor;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcWeakAnchor;
+use serde_saphyr::from_str;
+use serde_saphyr::to_string;
 
 #[derive(Clone, Serialize)]
 struct Node {

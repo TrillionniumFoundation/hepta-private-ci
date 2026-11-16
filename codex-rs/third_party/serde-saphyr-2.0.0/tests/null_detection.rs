@@ -257,7 +257,8 @@ fn root_block_strings_preserve_content_and_chomping_before_document_markers(#[ca
 #[case::literal_empty("|\n")]
 #[case::folded_empty(">\n")]
 fn null_like_strings_are_rejected_as_merge_sources(#[case] scalar: &str) {
-    use serde_saphyr::{DuplicateKeyPolicy, Error};
+    use serde_saphyr::DuplicateKeyPolicy;
+    use serde_saphyr::Error;
 
     for policy in [
         DuplicateKeyPolicy::Error,

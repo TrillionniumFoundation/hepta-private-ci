@@ -636,10 +636,10 @@ pub(crate) fn interpolate_compose_style_with_limits<'s>(
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        PropertyError, PropertySyntax, interpolate_compose_style,
-        interpolate_compose_style_with_limits,
-    };
+    use super::PropertyError;
+    use super::PropertySyntax;
+    use super::interpolate_compose_style;
+    use super::interpolate_compose_style_with_limits;
     use crate::Budget;
     use rstest::rstest;
     use std::borrow::Cow;

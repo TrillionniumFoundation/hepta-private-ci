@@ -4,8 +4,12 @@
 
 use std::collections::BTreeMap;
 
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{CommentPosition, Commented, ser_options, to_string_with_options};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::CommentPosition;
+use serde_saphyr::Commented;
+use serde_saphyr::ser_options;
+use serde_saphyr::to_string_with_options;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 struct DeploymentConfig {

@@ -1,38 +1,56 @@
-use std::collections::{HashSet, VecDeque};
-use std::{borrow::Cow, fmt};
+use std::borrow::Cow;
+use std::collections::HashSet;
+use std::collections::VecDeque;
+use std::fmt;
 
 use granit_parser::ScalarStyle;
-use serde_core::de::{self, Deserializer as _, IntoDeserializer, Visitor};
+use serde_core::de::Deserializer as _;
+use serde_core::de::IntoDeserializer;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 
 use super::base64::decode_base64_yaml;
 use super::cfg::Cfg;
 #[cfg(feature = "comments")]
 use super::commented_deser;
-use super::error::{Error, MissingFieldLocationGuard, TransformReason};
-use super::events::{
-    Ev, Events, RecordedEvents, ReplayEvents, attach_alias_locations_if_missing, eof_with_loc,
-    with_deferred_recursive_aliases,
-};
-use super::key_nodes::{
-    KeyFingerprint, KeyNode, PendingEntry, apply_duplicate_key_policy_to_entries,
-    capture_node_with_legacy_octal, capture_simple_tagged_node_as_map_events,
-    is_empty_mapping_key_fingerprint, is_merge_key, pending_entries_from_live_events,
-    simple_tagged_enum_name, validate_no_merge_keys_in_node_events,
-};
+use super::error::Error;
+use super::error::MissingFieldLocationGuard;
+use super::error::TransformReason;
+use super::events::Ev;
+use super::events::Events;
+use super::events::RecordedEvents;
+use super::events::ReplayEvents;
+use super::events::attach_alias_locations_if_missing;
+use super::events::eof_with_loc;
+use super::events::with_deferred_recursive_aliases;
+use super::key_nodes::KeyFingerprint;
+use super::key_nodes::KeyNode;
+use super::key_nodes::PendingEntry;
+use super::key_nodes::apply_duplicate_key_policy_to_entries;
+use super::key_nodes::capture_node_with_legacy_octal;
+use super::key_nodes::capture_simple_tagged_node_as_map_events;
+use super::key_nodes::is_empty_mapping_key_fingerprint;
+use super::key_nodes::is_merge_key;
+use super::key_nodes::pending_entries_from_live_events;
+use super::key_nodes::simple_tagged_enum_name;
+use super::key_nodes::validate_no_merge_keys_in_node_events;
+use super::options::DuplicateKeyPolicy;
+use super::options::MergeKeyPolicy;
+use super::options::NonFiniteFloatPolicy;
 #[cfg(feature = "properties")]
 use super::options::PropertySyntax;
-use super::options::{DuplicateKeyPolicy, MergeKeyPolicy, NonFiniteFloatPolicy};
 #[cfg(any(feature = "garde", feature = "validator"))]
 use super::path_map::PathRecorder;
 #[cfg(feature = "properties")]
 use super::properties::interpolate_compose_style_with_limits;
-use super::properties_redaction::{
-    ScalarRedactionCtx, ScalarRedactionGuard, with_interp_redaction_scope,
-};
+use super::properties_redaction::ScalarRedactionCtx;
+use super::properties_redaction::ScalarRedactionGuard;
+use super::properties_redaction::with_interp_redaction_scope;
 use super::spanned_deser;
 use super::tagged_deser;
 use super::tags::SfTag;
-use crate::anchor_store::{self, AnchorKind};
+use crate::anchor_store::AnchorKind;
+use crate::anchor_store::{self};
 #[cfg(feature = "properties")]
 use crate::budget::BudgetBreach;
 #[cfg(feature = "properties")]
@@ -40,12 +58,18 @@ use crate::de_error::budget_error;
 use crate::location::Location;
 #[cfg(any(feature = "garde", feature = "validator"))]
 use crate::location::Locations;
-use crate::parse_scalars::{
-    compatibility_leading_zero_integer, leading_zero_decimal, maybe_not_string,
-    parse_int_signed, parse_int_unsigned, parse_strict_bool,
-    parse_yaml11_bool, parse_yaml12_float, scalar_is_null, scalar_is_nullish,
-    try_parse_float_incl_overflow, yaml_trim,
-};
+use crate::parse_scalars::compatibility_leading_zero_integer;
+use crate::parse_scalars::leading_zero_decimal;
+use crate::parse_scalars::maybe_not_string;
+use crate::parse_scalars::parse_int_signed;
+use crate::parse_scalars::parse_int_unsigned;
+use crate::parse_scalars::parse_strict_bool;
+use crate::parse_scalars::parse_yaml11_bool;
+use crate::parse_scalars::parse_yaml12_float;
+use crate::parse_scalars::scalar_is_null;
+use crate::parse_scalars::scalar_is_nullish;
+use crate::parse_scalars::try_parse_float_incl_overflow;
+use crate::parse_scalars::yaml_trim;
 
 struct TupleLenExpected {
     len: usize,
@@ -3025,7 +3049,8 @@ impl<'de> de::Deserializer<'de> for YamlDeserializer<'de, '_> {
 #[cfg(all(test, feature = "properties"))]
 mod tests {
     use super::super::events::PropertyInterpolation;
-    use super::super::options::{Options, PropertySyntax};
+    use super::super::options::Options;
+    use super::super::options::PropertySyntax;
     use super::*;
 
     #[test]

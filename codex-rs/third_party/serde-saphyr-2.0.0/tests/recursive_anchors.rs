@@ -1,9 +1,16 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{
-    ArcAnchor, ArcRecursion, ArcRecursive, DuplicateKeyPolicy, RcAnchor, RcRecursion, RcRecursive,
-};
-use std::{collections::BTreeMap, rc::Rc, sync::Arc};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::ArcAnchor;
+use serde_saphyr::ArcRecursion;
+use serde_saphyr::ArcRecursive;
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcRecursion;
+use serde_saphyr::RcRecursive;
+use std::collections::BTreeMap;
+use std::rc::Rc;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 struct Node {

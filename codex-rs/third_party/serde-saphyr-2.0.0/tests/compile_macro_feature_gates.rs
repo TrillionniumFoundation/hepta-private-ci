@@ -4,8 +4,10 @@
 #![cfg(not(miri))]
 
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::Output;
 
 fn write_fixture(
     root: &Path,

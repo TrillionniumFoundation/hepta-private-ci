@@ -2,11 +2,13 @@
 #![cfg(feature = "include")]
 
 use serde::Deserialize;
-use serde_saphyr::{
-    IncludeRequest, IncludeResolveError, ResolvedInclude, from_reader_with_options,
-    from_str_with_options, with_deserializer_from_reader_with_options,
-    with_deserializer_from_str_with_options,
-};
+use serde_saphyr::IncludeRequest;
+use serde_saphyr::IncludeResolveError;
+use serde_saphyr::ResolvedInclude;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str_with_options;
+use serde_saphyr::with_deserializer_from_reader_with_options;
+use serde_saphyr::with_deserializer_from_str_with_options;
 use std::fmt::Write as _;
 use std::io::Cursor;
 

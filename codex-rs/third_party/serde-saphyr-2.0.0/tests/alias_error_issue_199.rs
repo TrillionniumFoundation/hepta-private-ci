@@ -8,9 +8,12 @@ use std::cell::Cell;
 
 use serde::Deserialize;
 
-use serde_saphyr::{
-    DefaultMessageFormatter, Error, Localizer, Location, MessageFormatter, from_str,
-};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::Localizer;
+use serde_saphyr::Location;
+use serde_saphyr::MessageFormatter;
+use serde_saphyr::from_str;
 
 #[derive(Debug, Deserialize)]
 struct ScalarConfig {

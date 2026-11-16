@@ -1,17 +1,25 @@
 use crate::budget::BudgetBreach;
-use crate::de_error::{Error, MessageFormatter, UserMessageFormatter, render_message_text};
-use crate::localizer::{ExternalMessage, Localizer};
+use crate::de_error::Error;
+use crate::de_error::MessageFormatter;
+use crate::de_error::UserMessageFormatter;
+use crate::de_error::render_message_text;
+use crate::localizer::ExternalMessage;
+use crate::localizer::Localizer;
 
 use std::borrow::Cow;
 
 #[cfg(any(feature = "garde", feature = "validator"))]
-use crate::{
-    Location,
-    de_error::ValidationIssue,
-    localizer::ExternalMessageSource,
-    location::Locations,
-    path_map::{PathMap, format_path_with_resolved_leaf},
-};
+use crate::Location;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::de_error::ValidationIssue;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::localizer::ExternalMessageSource;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::location::Locations;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::PathMap;
+#[cfg(any(feature = "garde", feature = "validator"))]
+use crate::path_map::format_path_with_resolved_leaf;
 
 /// Default developer-oriented message formatter.
 ///
@@ -604,7 +612,9 @@ impl UserMessageFormatter {
 mod tests {
     use super::*;
     use crate::Location;
-    use crate::de_error::{Error, MessageFormatter, TransformReason};
+    use crate::de_error::Error;
+    use crate::de_error::MessageFormatter;
+    use crate::de_error::TransformReason;
     use crate::location::Locations;
 
     fn loc() -> Location {
@@ -764,7 +774,8 @@ mod tests {
 
     #[test]
     fn default_resolver_messages_preserve_include_context_and_specific_cause() {
-        use crate::input_source::{IncludeResolveError, ResolveProblem};
+        use crate::input_source::IncludeResolveError;
+        use crate::input_source::ResolveProblem;
 
         let file_problems = [
             (
@@ -1194,8 +1205,10 @@ mod tests {
     #[cfg(any(feature = "garde", feature = "validator"))]
     #[test]
     fn validation_message_prefers_reference_location() {
-        use crate::de_error::{ValidationIssue, ValidationSource};
-        use crate::path_map::{PathKey, PathMap};
+        use crate::de_error::ValidationIssue;
+        use crate::de_error::ValidationSource;
+        use crate::path_map::PathKey;
+        use crate::path_map::PathMap;
 
         let path = PathKey::new().join_key("name");
         let mut locations = PathMap::new();

@@ -5,7 +5,11 @@
 
 use super::tags::is_yaml_merge_tag;
 use crate::options::MergeKeyPolicy;
-use granit_parser::{Event, Parser, ScalarStyle, ScanError, Tag};
+use granit_parser::Event;
+use granit_parser::Parser;
+use granit_parser::ScalarStyle;
+use granit_parser::ScanError;
+use granit_parser::Tag;
 use smallvec::SmallVec;
 use std::collections::HashSet;
 

@@ -2,7 +2,11 @@
 
 use proptest::prelude::*;
 use rstest::rstest;
-use serde_saphyr::{FlowMap, from_str, ser_options, to_string, to_string_with_options};
+use serde_saphyr::FlowMap;
+use serde_saphyr::from_str;
+use serde_saphyr::ser_options;
+use serde_saphyr::to_string;
+use serde_saphyr::to_string_with_options;
 use std::collections::BTreeMap;
 
 #[rstest]

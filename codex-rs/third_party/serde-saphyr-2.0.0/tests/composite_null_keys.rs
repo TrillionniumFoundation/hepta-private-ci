@@ -1,7 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 
 use rstest::rstest;
-use serde_saphyr::{DuplicateKeyPolicy, Error};
+use serde_saphyr::DuplicateKeyPolicy;
+use serde_saphyr::Error;
 use std::collections::BTreeMap;
 
 type CompositeMap = BTreeMap<BTreeMap<String, u32>, u32>;

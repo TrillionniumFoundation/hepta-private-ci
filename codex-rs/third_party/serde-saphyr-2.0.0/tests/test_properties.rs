@@ -3,10 +3,12 @@
 
 use rstest::rstest;
 use serde::Deserialize;
-use serde_saphyr::{
-    Options, PropertySyntax, budget::BudgetBreach, from_reader_with_options,
-    from_str_multiple_with_options, from_str_with_options,
-};
+use serde_saphyr::Options;
+use serde_saphyr::PropertySyntax;
+use serde_saphyr::budget::BudgetBreach;
+use serde_saphyr::from_reader_with_options;
+use serde_saphyr::from_str_multiple_with_options;
+use serde_saphyr::from_str_with_options;
 use std::collections::HashMap;
 #[cfg(feature = "validator")]
 use validator::Validate;
@@ -1281,11 +1283,14 @@ fn enum_newtype_payload_tagged_form_does_not_leak_interpolated_value() {
 
 #[cfg(feature = "include")]
 mod include_tests {
-    use super::{ScalarConfig, property_options_with_map};
+    use super::ScalarConfig;
+    use super::property_options_with_map;
     use serde::Deserialize;
-    use serde_saphyr::{
-        IncludeRequest, IncludeResolveError, InputSource, ResolvedInclude, from_str_with_options,
-    };
+    use serde_saphyr::IncludeRequest;
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::InputSource;
+    use serde_saphyr::ResolvedInclude;
+    use serde_saphyr::from_str_with_options;
     use std::collections::HashMap;
 
     #[derive(Debug, Deserialize, PartialEq)]

@@ -1,12 +1,17 @@
 #![cfg(feature = "deserialize")]
 
 use serde::Deserialize;
-use serde::de::value::{Error as ValueError, SeqDeserializer};
+use serde::de::value::Error as ValueError;
+use serde::de::value::SeqDeserializer;
+use serde_saphyr::ArcAnchor;
+use serde_saphyr::ArcRecursion;
+use serde_saphyr::ArcWeakAnchor;
 #[cfg(feature = "comments")]
 use serde_saphyr::Commented;
-use serde_saphyr::{
-    ArcAnchor, ArcRecursion, ArcWeakAnchor, RcAnchor, RcRecursion, RcWeakAnchor, Tagged,
-};
+use serde_saphyr::RcAnchor;
+use serde_saphyr::RcRecursion;
+use serde_saphyr::RcWeakAnchor;
+use serde_saphyr::Tagged;
 
 #[track_caller]
 fn expect_error<T, E>(result: Result<T, E>) -> E {
@@ -240,10 +245,12 @@ mod safe_resolver {
     use std::fs;
     use std::path::Path;
 
-    use serde_saphyr::{
-        IncludeRequest, IncludeResolveError, InputSource, Location, ResolveProblem,
-        SafeFileResolver,
-    };
+    use serde_saphyr::IncludeRequest;
+    use serde_saphyr::IncludeResolveError;
+    use serde_saphyr::InputSource;
+    use serde_saphyr::Location;
+    use serde_saphyr::ResolveProblem;
+    use serde_saphyr::SafeFileResolver;
     use tempfile::TempDir;
 
     fn write(path: &Path, text: &str) {

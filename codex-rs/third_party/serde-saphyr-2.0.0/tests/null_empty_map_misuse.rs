@@ -1,7 +1,9 @@
 #![cfg(feature = "deserialize")]
 
 use serde::Deserialize;
-use serde::de::{IgnoredAny, MapAccess, Visitor};
+use serde::de::IgnoredAny;
+use serde::de::MapAccess;
+use serde::de::Visitor;
 use std::fmt;
 
 #[derive(Debug)]

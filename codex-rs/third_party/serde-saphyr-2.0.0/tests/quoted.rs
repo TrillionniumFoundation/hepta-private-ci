@@ -1,12 +1,15 @@
 #[cfg(feature = "serialize")]
-use serde_saphyr::{DoubleQuoted, SingleQuoted};
+use serde_saphyr::DoubleQuoted;
+#[cfg(feature = "serialize")]
+use serde_saphyr::SingleQuoted;
 
 #[cfg(feature = "serialize")]
 mod serialize_tests {
     use rstest::rstest;
     use serde::Serialize;
+    use serde_saphyr::DoubleQuoted;
+    use serde_saphyr::SingleQuoted;
     use serde_saphyr::ser_error::Error as SerError;
-    use serde_saphyr::{DoubleQuoted, SingleQuoted};
 
     #[derive(Serialize)]
     struct DoubleQuotedDoc {
@@ -84,8 +87,10 @@ mod serialize_tests {
 
 #[cfg(all(feature = "serialize", feature = "deserialize"))]
 mod round_trip_tests {
-    use serde::{Deserialize, Serialize};
-    use serde_saphyr::{DoubleQuoted, SingleQuoted};
+    use serde::Deserialize;
+    use serde::Serialize;
+    use serde_saphyr::DoubleQuoted;
+    use serde_saphyr::SingleQuoted;
 
     #[derive(Debug, Deserialize, PartialEq, Serialize)]
     struct ShoppingList {

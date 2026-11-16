@@ -1,7 +1,8 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use rstest::rstest;
 use serde_json::Value;
-use serde_saphyr::{Error, RequireIndent};
+use serde_saphyr::Error;
+use serde_saphyr::RequireIndent;
 
 fn parse(require: RequireIndent, yaml: &str) -> Result<Value, Error> {
     let options = serde_saphyr::options! { require_indent: require };

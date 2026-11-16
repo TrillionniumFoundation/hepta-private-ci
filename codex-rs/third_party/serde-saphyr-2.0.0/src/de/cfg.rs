@@ -1,5 +1,9 @@
-use super::options::{DuplicateKeyPolicy, MergeKeyPolicy, NonFiniteFloatPolicy, Options};
-use super::{Error, Location};
+use super::Error;
+use super::Location;
+use super::options::DuplicateKeyPolicy;
+use super::options::MergeKeyPolicy;
+use super::options::NonFiniteFloatPolicy;
+use super::options::Options;
 use crate::budget::BudgetBreach;
 
 /// Small immutable runtime configuration that `YamlDeserializer` needs.

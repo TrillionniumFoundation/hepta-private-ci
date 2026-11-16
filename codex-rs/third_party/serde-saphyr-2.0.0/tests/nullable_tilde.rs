@@ -3,12 +3,18 @@
 #[cfg(feature = "serialize")]
 mod serialize_tests {
     use serde::Serialize;
-    use serde::ser::{self, SerializeMap, Serializer};
+    use serde::ser::SerializeMap;
+    use serde::ser::Serializer;
+    use serde::ser::{self};
     #[cfg(feature = "comments")]
     use serde_saphyr::Commented;
-    use serde_saphyr::{
-        DoubleQuoted, FlowMap, FlowSeq, NullableTilde, RcAnchor, SpaceAfter, to_string,
-    };
+    use serde_saphyr::DoubleQuoted;
+    use serde_saphyr::FlowMap;
+    use serde_saphyr::FlowSeq;
+    use serde_saphyr::NullableTilde;
+    use serde_saphyr::RcAnchor;
+    use serde_saphyr::SpaceAfter;
+    use serde_saphyr::to_string;
     use std::collections::BTreeMap;
     use std::fmt;
     use std::rc::Rc;
@@ -380,7 +386,10 @@ mod deserialize_tests {
     use serde::Deserialize;
     #[cfg(feature = "comments")]
     use serde_saphyr::Commented;
-    use serde_saphyr::{FlowSeq, NullableTilde, RcAnchor, from_str};
+    use serde_saphyr::FlowSeq;
+    use serde_saphyr::NullableTilde;
+    use serde_saphyr::RcAnchor;
+    use serde_saphyr::from_str;
     use std::rc::Rc;
 
     #[test]

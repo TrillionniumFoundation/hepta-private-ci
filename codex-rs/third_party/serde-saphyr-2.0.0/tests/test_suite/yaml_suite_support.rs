@@ -1,4 +1,7 @@
-use granit_parser::{Event, Parser, ScalarStyle, Tag};
+use granit_parser::Event;
+use granit_parser::Parser;
+use granit_parser::ScalarStyle;
+use granit_parser::Tag;
 use serde::de::IgnoredAny;
 use serde_json::Value;
 use std::borrow::Cow;

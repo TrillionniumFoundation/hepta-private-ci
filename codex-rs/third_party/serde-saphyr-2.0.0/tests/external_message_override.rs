@@ -1,9 +1,13 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 #[cfg(any(feature = "garde", feature = "validator"))]
 use serde::Deserialize;
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::Location;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::localizer::{ExternalMessage, ExternalMessageSource, Localizer};
-use serde_saphyr::{DefaultMessageFormatter, Error, Location};
+use serde_saphyr::localizer::ExternalMessage;
+use serde_saphyr::localizer::ExternalMessageSource;
+use serde_saphyr::localizer::Localizer;
 use std::borrow::Cow;
 
 struct OverrideAllExternal;

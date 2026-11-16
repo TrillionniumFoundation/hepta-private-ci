@@ -46,11 +46,16 @@ use std::fmt;
 #[cfg(feature = "deserialize")]
 use std::marker::PhantomData;
 use std::ops::Deref;
-use std::rc::{Rc, Weak as RcWeak};
-use std::sync::{Arc, Mutex, Weak as ArcWeak};
+use std::rc::Rc;
+use std::rc::Weak as RcWeak;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::Weak as ArcWeak;
 
 #[cfg(feature = "deserialize")]
-use serde_core::de::{Error as _, Visitor};
+use serde_core::de::Error as _;
+#[cfg(feature = "deserialize")]
+use serde_core::de::Visitor;
 
 #[cfg(feature = "deserialize")]
 use crate::anchor_store;

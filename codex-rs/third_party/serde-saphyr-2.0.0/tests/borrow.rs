@@ -13,8 +13,11 @@
 
 mod tests {
     use serde::Deserialize;
-    use serde::de::{self, Deserializer, Visitor};
-    use serde_saphyr::{Error, from_str};
+    use serde::de::Deserializer;
+    use serde::de::Visitor;
+    use serde::de::{self};
+    use serde_saphyr::Error;
+    use serde_saphyr::from_str;
     use std::borrow::Cow;
     use std::fmt;
 
@@ -525,7 +528,8 @@ number: 456
         // compile time when trying to use BorrowedData with from_str.
 
         // Verify the TransformReason error provides good guidance
-        use serde_saphyr::{Error, TransformReason};
+        use serde_saphyr::Error;
+        use serde_saphyr::TransformReason;
 
         let err = Error::cannot_borrow_transformed(TransformReason::EscapeSequence);
         let msg = format!("{}", err);

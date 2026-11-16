@@ -5,7 +5,11 @@ use std::collections::BTreeMap;
 
 use miette::Diagnostic;
 use serde::Deserialize;
-use serde_saphyr::{DefaultMessageFormatter, Error, Localizer, Location, MessageFormatter};
+use serde_saphyr::DefaultMessageFormatter;
+use serde_saphyr::Error;
+use serde_saphyr::Localizer;
+use serde_saphyr::Location;
+use serde_saphyr::MessageFormatter;
 
 struct Localized;
 

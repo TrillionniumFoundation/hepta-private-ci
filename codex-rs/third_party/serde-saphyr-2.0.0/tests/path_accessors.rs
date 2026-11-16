@@ -1,8 +1,10 @@
 #![cfg(any(feature = "garde", feature = "validator"))]
 
 use serde::Deserialize;
-use serde_saphyr::path_map::{PathKey, PathKind};
-use serde_saphyr::{Error, Location};
+use serde_saphyr::Error;
+use serde_saphyr::Location;
+use serde_saphyr::path_map::PathKey;
+use serde_saphyr::path_map::PathKind;
 #[cfg(feature = "validator")]
 use validator::Validate as _;
 

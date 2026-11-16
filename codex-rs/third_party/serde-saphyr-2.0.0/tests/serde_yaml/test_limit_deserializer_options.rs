@@ -1,8 +1,9 @@
 use indoc::indoc;
 use serde_json::Value;
+use serde_saphyr::Error;
+use serde_saphyr::ExternalMessageSource;
 use serde_saphyr::budget::BudgetBreach;
 use serde_saphyr::granit_parser::ErrorKind;
-use serde_saphyr::{Error, ExternalMessageSource};
 
 #[test]
 fn custom_recursion_limit_exceeded() {

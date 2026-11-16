@@ -1,7 +1,12 @@
-use super::api::{ReaderSnippetContext, StrSnippetContext};
-use super::with_deserializer::{enforce_single_document_and_finish, run_with_document_scope};
+use super::api::ReaderSnippetContext;
+use super::api::StrSnippetContext;
+use super::with_deserializer::enforce_single_document_and_finish;
+use super::with_deserializer::run_with_document_scope;
 use crate::budget::EnforcingPolicy;
-use crate::de::{Error, Ev, Events, Options};
+use crate::de::Error;
+use crate::de::Ev;
+use crate::de::Events;
+use crate::de::Options;
 #[cfg(feature = "garde")]
 use crate::de_error::collect_garde_issues;
 #[cfg(feature = "validator")]

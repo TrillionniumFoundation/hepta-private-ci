@@ -3,7 +3,9 @@
 use std::collections::BTreeMap;
 
 use serde::Serialize;
-use serde_saphyr::{FlowMap, FlowSeq, to_string};
+use serde_saphyr::FlowMap;
+use serde_saphyr::FlowSeq;
+use serde_saphyr::to_string;
 
 #[test]
 fn flow_map_nested_in_seq() {

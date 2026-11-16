@@ -1,6 +1,7 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 // Regression coverage adapted (assuming MIT and Apache licenses) from:
 // - Pull request: https://github.com/yaml/yaml-serde/pull/9

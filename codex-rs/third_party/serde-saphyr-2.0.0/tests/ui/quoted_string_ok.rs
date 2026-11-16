@@ -1,5 +1,7 @@
-use serde::{Deserialize, Serialize};
-use serde_saphyr::{DoubleQuoted, SingleQuoted};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_saphyr::DoubleQuoted;
+use serde_saphyr::SingleQuoted;
 
 fn assert_serialize<T: Serialize>() {}
 fn assert_deserialize<'de, T: Deserialize<'de>>() {}

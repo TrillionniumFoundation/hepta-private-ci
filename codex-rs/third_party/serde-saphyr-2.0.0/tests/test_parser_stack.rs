@@ -1,6 +1,10 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 #[cfg(feature = "include")]
-use granit_parser::{ErrorKind, Parser, ParserStack};
+use granit_parser::ErrorKind;
+#[cfg(feature = "include")]
+use granit_parser::Parser;
+#[cfg(feature = "include")]
+use granit_parser::ParserStack;
 
 #[cfg(feature = "include")]
 #[test]

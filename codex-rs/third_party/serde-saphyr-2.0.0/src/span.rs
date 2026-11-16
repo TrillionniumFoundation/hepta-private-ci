@@ -1,6 +1,9 @@
 #[cfg(feature = "huge_documents")]
 use serde_core::Deserializer;
-use serde_core::de::{self, IgnoredAny, MapAccess, Visitor};
+use serde_core::de::IgnoredAny;
+use serde_core::de::MapAccess;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 #[cfg(feature = "huge_documents")]
 use std::fmt;
 

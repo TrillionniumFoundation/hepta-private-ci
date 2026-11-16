@@ -4,7 +4,8 @@
 //! Go's gopkg.in/yaml.v3, particularly around quoting of strings starting with
 //! dash `-` and strings containing commas in block style.
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]

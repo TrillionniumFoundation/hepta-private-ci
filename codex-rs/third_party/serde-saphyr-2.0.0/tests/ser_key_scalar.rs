@@ -1,12 +1,16 @@
 #![cfg(all(feature = "serialize", feature = "deserialize"))]
 use std::cmp::Ordering;
-use std::collections::{BTreeMap, HashMap};
-use std::hash::{Hash, Hasher};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::hash::Hash;
+use std::hash::Hasher;
 
 use serde::Serialize;
-use serde::ser::{SerializeSeq, Serializer};
+use serde::ser::SerializeSeq;
+use serde::ser::Serializer;
 
-use serde_saphyr::{FlowMap, to_string};
+use serde_saphyr::FlowMap;
+use serde_saphyr::to_string;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 struct Id(u64);
@@ -563,7 +567,8 @@ fn seq_as_map_key_returns_error_for_seq_methods() {
 fn complex_map_key_uses_question_mark_syntax() {
     // Block maps support complex keys via `? key\n: value` syntax.
     // Use a Vec as key (non-scalar) in a BTreeMap-like structure.
-    use serde::ser::{SerializeMap, Serializer};
+    use serde::ser::SerializeMap;
+    use serde::ser::Serializer;
 
     // Manually serialize a map with a sequence key
     struct ComplexKeyMap;

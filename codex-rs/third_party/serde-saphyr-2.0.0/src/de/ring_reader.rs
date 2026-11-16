@@ -1,5 +1,6 @@
 use std::cell::RefCell;
-use std::io::{self, Read};
+use std::io::Read;
+use std::io::{self};
 use std::rc::Rc;
 
 /// Assumed line length to estimate the size of buffers.
@@ -557,7 +558,8 @@ fn trim_incomplete_utf8_tail(bytes: &mut Vec<u8>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::{self, Read};
+    use std::io::Read;
+    use std::io::{self};
 
     /// A deterministic reader for tests:
     /// - serves bytes from an internal buffer

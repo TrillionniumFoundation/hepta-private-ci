@@ -2,7 +2,9 @@
 
 use std::borrow::Cow;
 
-use serde_core::de::{self, IntoDeserializer, Visitor};
+use serde_core::de::IntoDeserializer;
+use serde_core::de::Visitor;
+use serde_core::de::{self};
 
 use super::Error;
 use super::events::Ev;

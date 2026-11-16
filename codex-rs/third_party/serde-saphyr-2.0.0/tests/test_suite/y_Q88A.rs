@@ -1,6 +1,7 @@
 mod tests {
     use serde::Deserialize;
-    use serde_json::{self, Value as JsonValue};
+    use serde_json::Value as JsonValue;
+    use serde_json::{self};
     use std::collections::BTreeMap;
 
     use serde_saphyr as yaml;
