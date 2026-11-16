@@ -1,0 +1,324 @@
+{
+  "schema": "hepta.cell.linux-ci-evidence-handoff.v1",
+  "status": "CI_SUCCESS_AND_RETAINED_EVIDENCE_PASS",
+  "scope": "new disposable Linux CI candidate; distinct from prior Mac actual-runtime candidate",
+  "head_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+  "run": {
+    "id": 43802821002,
+    "job_id": 133086779524,
+    "conclusion": "success",
+    "completed_at": "2026-11-16T04:23:05Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43802821002"
+  },
+  "archive": {
+    "artifact_id": 14196628786,
+    "bytes": 3600870,
+    "sha256": "c549a22e56c12cdb09f9ea9708557c3f5164c803020c25aa72e47912c3d9cd7a",
+    "git_blob_sha": "3f817f4a5e47d6a6bf89af35aeda8b077b1a1a8b",
+    "members": 444,
+    "expanded_bytes": 24523090,
+    "member_index_sha256": "de7311712a64977f849d182473c5f6a327bef1189080164b4e8701bc9e76a996"
+  },
+  "candidate_sha256": "b54097ee0d2dc4af3fbdbe46e4e268adad8b381041ab5e164e15c741553e6fe6",
+  "origin_candidate_sha256": "c4346645d251510924861fba918ee75b9be0c8e0d7778859d099b3ab58fc49ad",
+  "runtime_identity": {
+    "binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+    "config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+    "source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "source_tree": "d9b16016a4df226d6471a934076390da9b978735",
+    "transport": "actual_mcp_stdio"
+  },
+  "native_image_sha256": "c475a22313d401e84d5e0b13c935aabb4615c6da15aba3e6083f842d35f54812",
+  "actual_runtime_jobs": {
+    "cell": {
+      "cold_calls": [
+        "process_status",
+        "process_read",
+        "process_status"
+      ],
+      "cold_process_starts": 0,
+      "exit_code": 0,
+      "first_calls": [
+        "process_start",
+        "process_status",
+        "process_status",
+        "process_read",
+        "process_status"
+      ],
+      "first_process_starts": 1,
+      "job_id": "1a1e297f00d-1bff-1",
+      "runtime_identity": {
+        "runtime_binary_build_provenance_verified": false,
+        "runtime_binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+        "runtime_config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+        "runtime_source_checkout_verified": true,
+        "runtime_source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+        "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+        "transport": "actual_mcp_stdio"
+      },
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1913,
+      "stdout_sha256": "47b014b19c2db05c8cdf459d995bca9319bce09da5005aada74d52da92ca1202",
+      "terminal_objects_exact": true
+    },
+    "campaign": {
+      "cold_calls": [
+        "process_status",
+        "process_read",
+        "process_status"
+      ],
+      "cold_process_starts": 0,
+      "exit_code": 0,
+      "first_calls": [
+        "process_start",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_status",
+        "process_read",
+        "process_status"
+      ],
+      "first_process_starts": 1,
+      "job_id": "1a1e297fa3f-1db4-1",
+      "runtime_identity": {
+        "runtime_binary_build_provenance_verified": false,
+        "runtime_binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+        "runtime_config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+        "runtime_source_checkout_verified": true,
+        "runtime_source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+        "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+        "transport": "actual_mcp_stdio"
+      },
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 11440,
+      "stdout_sha256": "5ff9870445cc0d2891e3c4078150dcca60ad6ebd45f63a8578cf7b151c197f4a",
+      "terminal_objects_exact": true
+    }
+  },
+  "native_counts": {
+    "memory": {
+      "completed": 265
+    },
+    "predictor": {
+      "completed": 457
+    }
+  },
+  "learning": {
+    "memory": {
+      "decision": "NoUpdate",
+      "B_successes": {
+        "candidate": 6,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "A_retention": {
+        "candidate": 6,
+        "frozen": 2
+      },
+      "C_successes": 2,
+      "C_denominator": 8,
+      "local_no_update_complete": true,
+      "cold_exact": true,
+      "validated_training_updates": 16,
+      "reason": "candidate failed one or more predeclared baseline/retention gates",
+      "component_call_p95_ms": 2.700179399999999,
+      "component_call_p99_ms": 3.3094013600000003
+    },
+    "predictor": {
+      "decision": "NoUpdate",
+      "B_successes": {
+        "candidate": 2,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "A_retention": {
+        "candidate": 2,
+        "frozen": 2
+      },
+      "C_successes": 2,
+      "C_denominator": 8,
+      "local_no_update_complete": true,
+      "cold_exact": true,
+      "validated_training_updates": 16,
+      "reason": "candidate failed one or more predeclared baseline/retention gates",
+      "component_call_p95_ms": 2.7062763999999997,
+      "component_call_p99_ms": 3.17637528
+    }
+  },
+  "cost": {
+    "runtime_outer_elapsed_seconds": 10.20682456499992,
+    "campaign_runtime_elapsed_seconds": 5.784267657999976,
+    "controlled_campaign": {
+      "compile_calls": 208,
+      "cost_scope": "outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
+      "energy_joules": null,
+      "parent_cpu_seconds": 2.2638494820000004,
+      "peak_rss_bytes": null,
+      "wall_seconds": 3.203571780000061
+    }
+  },
+  "read_only_snapshot": {
+    "omitted_empty_wals": [
+      "memory/owner.sqlite-wal",
+      "predictor/owner.sqlite-wal"
+    ],
+    "snapshot_files_verified": 61,
+    "source_files_verified": 63,
+    "source_unchanged": true
+  },
+  "raw_report_sha256": {
+    "runtime-joint/result.json": "7a5e5db17fe8513df6308d9f1ad023cfba5e1beb1d3765cc5e9e3d4a6b9990c4",
+    "runtime-joint/campaign-runtime.json": "46ee7720f4a6da291d39ad4071565bd9d79428223c12f18030cb83b7d058c4e4",
+    "runtime-joint/campaign-readonly-review.json": "0b13ecfd7da1e2b68e8a71178dee605ac3c968539a232cff589d5f2d84535bbc"
+  },
+  "secret_scan": {
+    "outer_members": 444,
+    "nested_members": 600,
+    "job_log_included": true,
+    "concrete_credential_pattern_matches": 0,
+    "unresolved": 0,
+    "broad_raw_hits": 1,
+    "broad_hit_classification": "static_initial_image_identifier; noncredential",
+    "raw_report_sha256": "6e6805ead3bdd26eb54aad5f0897dd172a05dadaffc3bae3720c873c53a2803e",
+    "classification_sha256": "08a0aef3081cf040c69b080f4962f7dc9b553543798657adb9fa63caa4ee7817"
+  },
+  "limits": {
+    "model_native_or_runtime_reexecuted_during_review": false,
+    "branch_or_source_refs_mutated": false,
+    "ordinary_daemon_qualification": false,
+    "independent_real_task_benefit": false,
+    "adopted_update_benefit": false,
+    "raw_qualifier_runtime_binary_build_provenance_verified": false,
+    "build_evidence": "The CI build step succeeded at runtime73b; original source-before/source-after files are empty and binary digest matches the bound runtime identity. The qualifier's separate provenance flag remains false.",
+    "final_use_capability_boundary_qualified": false,
+    "runtime_config_original_bytes_in_archive": false,
+    "runtime_config_scope": "The candidate and both actual runtime sessions bind the same configuration digest; the raw private runtime-config.json itself is absent from the upload.",
+    "physical_energy_and_peak_rss_measured": false
+  },
+  "postprocessing_note": "The first read-only inspector attempt expected the wrong report status spelling. It failed before writing a conclusion. v2 checks the exact frozen producer spelling READ_ONLY_SNAPSHOT_CONSISTENCY_PASS; the original attempt note is retained and no CI originals were changed.",
+  "evidence_blobs": [
+    {
+      "path": "runtime-joint/candidate.json",
+      "git_blob_sha": "6f64b267aceb10ea6981d1fda8f164b5a39ca5de",
+      "sha256": "b54097ee0d2dc4af3fbdbe46e4e268adad8b381041ab5e164e15c741553e6fe6",
+      "bytes": 38619
+    },
+    {
+      "path": "runtime-joint/campaign-worker/campaign/RESULT.json",
+      "git_blob_sha": "db0a561554bd2e4e7b82524859df75079a5fd3bc",
+      "sha256": "5b97816065b515a60a8130e97b273399d9a3995a7042fc22a23d84bc521e8e71",
+      "bytes": 13274
+    },
+    {
+      "path": "runtime-joint/campaign-worker/OBSERVATION.json",
+      "git_blob_sha": "57b372ab6a579decba25b1bacf24316398c658ee",
+      "sha256": "f01362c6b1d9684078c84aded016cb0a178f1170c39add01d28716e3468f374f",
+      "bytes": 14956
+    },
+    {
+      "path": "runtime-joint/campaign-worker/ORIGINAL_BUILD.json",
+      "git_blob_sha": "d7c84e67c2a4a580acb6375fa735d97872244321",
+      "sha256": "db1b6c08637559c38390ea27d088f4cd8e4034ebff422ae9319e3ac6f7ef9c04",
+      "bytes": 6698
+    },
+    {
+      "path": "runtime-joint/campaign-worker/RELOCATED_BUILD.json",
+      "git_blob_sha": "923a97603e22bf4d9cb101299f18195e5b740ad8",
+      "sha256": "6b4877887a20f38b863fa6f68c3405b32d2c0708d5f2d39780600e20c96368d5",
+      "bytes": 6888
+    },
+    {
+      "path": "runtime-joint/campaign-worker/RUNTIME_PINS.json",
+      "git_blob_sha": "5a85ec201c13ebf55c279ee75468e46ba3b91c83",
+      "sha256": "d5fe0cf6af55e7378431be8457077353dbac99636ec0ffbc43ff1a93df88f5ec",
+      "bytes": 433
+    },
+    {
+      "path": "ARCHIVE_RECEIPT.json",
+      "git_blob_sha": "7451cb033a78df64e990aceda1080e48f128bec6",
+      "sha256": "e2b9c71b4197a66ea9ae9e62d08f9a878351d24fd2b2975aee5ad76e9e744081",
+      "bytes": 706
+    },
+    {
+      "path": "RETAINED_REVIEW.json",
+      "git_blob_sha": "a4e81779987909896fd427e1e45a0001631640be",
+      "sha256": "152d2abeee480f6d24f2a545c03b650280e0769a7a9f76280a8fbd5ce4f180ae",
+      "bytes": 18738
+    },
+    {
+      "path": "REVIEW_V2_NOTE.json",
+      "git_blob_sha": "048936e00abb1fd19adc185ab3937f64a25e9186",
+      "sha256": "0e7a9f3a68638883807cd5632419392a316fd79fc7b756539698a41b9f7fad90",
+      "bytes": 295
+    },
+    {
+      "path": "MEMBER_INDEX.json",
+      "bytes": 112932,
+      "sha256": "de7311712a64977f849d182473c5f6a327bef1189080164b4e8701bc9e76a996",
+      "git_blob_sha": "3a98a41ac3a8e435b2db726e588b702b69dfd1a7"
+    },
+    {
+      "path": "successful-job.log",
+      "bytes": 103561,
+      "sha256": "468773ef6d686fb7df3bf9f6e332c602ee6fb9c044c0ca849ce195760d98cc34",
+      "git_blob_sha": "5d815f0c7d2f7010766c34bfbf896e857d39065e"
+    },
+    {
+      "path": "WORKFLOW_RUN.json",
+      "bytes": 16485,
+      "sha256": "3afb1a5b1c10f7eb5b04e49b471cd83ce783e652b582e0c047165075533bc6d1",
+      "git_blob_sha": "2fecbe432b01d1666eb61a77f8cfa14509846672"
+    },
+    {
+      "path": "WORKFLOW_JOBS.json",
+      "bytes": 3253,
+      "sha256": "9c17115111f384a5749ae5a5e87cf6e9ef33bfa6ac51f6c89c33abbaad647268",
+      "git_blob_sha": "909f47a81c9dda91452f29630689e2013242270f"
+    },
+    {
+      "path": "WORKFLOW_ARTIFACTS.json",
+      "bytes": 927,
+      "sha256": "5342ae97c877e0321a179b2d7127dfc60d7e0c1b110fda2be4d7cdee1c70dc8f",
+      "git_blob_sha": "582bdfb7d4381bf27a2c200932e99037771796d6"
+    },
+    {
+      "path": "SECRET_SCAN.json",
+      "git_blob_sha": "74ea88c2632f79fb55aed7a126335aba4dd73802",
+      "sha256": "6e6805ead3bdd26eb54aad5f0897dd172a05dadaffc3bae3720c873c53a2803e",
+      "bytes": 1416
+    },
+    {
+      "path": "SECRET_SCAN_CLASSIFICATION.json",
+      "git_blob_sha": "a4cd7593a100a6858708f84e115f9cd9bf31440d",
+      "sha256": "08a0aef3081cf040c69b080f4962f7dc9b553543798657adb9fa63caa4ee7817",
+      "bytes": 1229
+    },
+    {
+      "path": "original-artifact.zip",
+      "git_blob_sha": "3f817f4a5e47d6a6bf89af35aeda8b077b1a1a8b",
+      "sha256": "c549a22e56c12cdb09f9ea9708557c3f5164c803020c25aa72e47912c3d9cd7a",
+      "bytes": 3600870
+    },
+    {
+      "path": "review_ci_artifact_v2.py",
+      "git_blob_sha": "453a7a0c592c2cc721054434f2f24c43a824e684"
+    }
+  ],
+  "locations": {
+    "mac": "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/joint-ci-f8e54c6-43802821002",
+    "cloud": "/workspace/scratch/724fb6d14866/ci-f8e54c6-43802821002"
+  },
+  "old_mac_candidate_preserved": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469"
+}

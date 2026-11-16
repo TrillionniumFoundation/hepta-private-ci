@@ -1,0 +1,453 @@
+{
+  "campaign_lane": {
+    "cold_calls": [
+      "process_status",
+      "process_read",
+      "process_status"
+    ],
+    "cold_process_starts": 0,
+    "exit_code": 0,
+    "first_calls": [
+      "process_start",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_status",
+      "process_read",
+      "process_status"
+    ],
+    "first_process_starts": 1,
+    "job_id": "1a1e297fa3f-1db4-1",
+    "runtime_identity": {
+      "runtime_binary_build_provenance_verified": false,
+      "runtime_binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+      "runtime_config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+      "runtime_source_checkout_verified": true,
+      "runtime_source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+      "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+      "transport": "actual_mcp_stdio"
+    },
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 11440,
+    "stdout_sha256": "5ff9870445cc0d2891e3c4078150dcca60ad6ebd45f63a8578cf7b151c197f4a",
+    "terminal_objects_exact": true
+  },
+  "campaign_result_sha256": "5b97816065b515a60a8130e97b273399d9a3995a7042fc22a23d84bc521e8e71",
+  "candidate_sha256": "b54097ee0d2dc4af3fbdbe46e4e268adad8b381041ab5e164e15c741553e6fe6",
+  "cell_lane": {
+    "cold_calls": [
+      "process_status",
+      "process_read",
+      "process_status"
+    ],
+    "cold_process_starts": 0,
+    "exit_code": 0,
+    "first_calls": [
+      "process_start",
+      "process_status",
+      "process_status",
+      "process_read",
+      "process_status"
+    ],
+    "first_process_starts": 1,
+    "job_id": "1a1e297f00d-1bff-1",
+    "runtime_identity": {
+      "runtime_binary_build_provenance_verified": false,
+      "runtime_binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+      "runtime_config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+      "runtime_source_checkout_verified": true,
+      "runtime_source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+      "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+      "transport": "actual_mcp_stdio"
+    },
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 1913,
+    "stdout_sha256": "47b014b19c2db05c8cdf459d995bca9319bce09da5005aada74d52da92ca1202",
+    "terminal_objects_exact": true
+  },
+  "cells": {
+    "memory": {
+      "C_denominator": 8,
+      "C_successes": 2,
+      "cold": {
+        "candidate_manifest_sha256": "f82feea6da2cfef908833ec7438d55634961cd9c9729c0bb16ead8262cb0fcfe",
+        "cpu_ns": 80712699,
+        "matches_pre_restart": true,
+        "pid": 7853,
+        "receipt": {
+          "bundle_digest": "985129679010a79f038e7ab353ab9103c64e707a85c9e404175f01a1342d666d",
+          "elapsed_ns": 2112099,
+          "epoch": 16,
+          "identity_digest": "2f34fd3ab76c5ddcba01deb634766bcab5833625cc078f003be1a3fc2f9e45c6",
+          "output": {
+            "cell": {
+              "cost": {
+                "energy_joules": null,
+                "process_cpu_seconds": 0.00016783800000000348,
+                "wall_seconds": 0.00016909800001485564,
+                "work_unit_kind": "parameter_count_per_single_step"
+              },
+              "cursor": 3,
+              "logits": [
+                0.10454501875647469,
+                -0.07191440312213697,
+                -0.057452555468856414,
+                -0.022750584395647658
+              ]
+            },
+            "hia": {
+              "binding": {
+                "candidate_sha256": "f82feea6da2cfef908833ec7438d55634961cd9c9729c0bb16ead8262cb0fcfe",
+                "cell_sha256": "07e05de2183f172e0cf28d8ba2f50288502e52d7873592469d542ee940c8183a",
+                "input_sha256": "bcddad584c8f0f28a9da58740a3819f7ae1c30287d91b352a1af1d6056a63799",
+                "request_sha256": "7ddc765b61b34a498c2000dedb1ee3bbf4fd9ddec6a20da44d4d58b1df757327",
+                "result_limit": 65536,
+                "sequence": 81
+              },
+              "candidate_sha256": "f82feea6da2cfef908833ec7438d55634961cd9c9729c0bb16ead8262cb0fcfe",
+              "image_sha256": "c475a22313d401e84d5e0b13c935aabb4615c6da15aba3e6083f842d35f54812",
+              "native_state_sha256": "d882eece735349802230a00e63fef0c125c16688cdf65d57d86a34fd1f2b8b3d",
+              "native_wall_ns": 54773,
+              "terminal_action": "COMPLETE"
+            }
+          },
+          "partition_digest": "72fb53913bd63c02f1480ec0edb994a12b5c862cc3b87b212570655ed629bf7f",
+          "request_id": "cold-new-prediction",
+          "requires_recovery": false,
+          "sequence": 81,
+          "state_applied": true,
+          "state_digest": "071b8f6859dc59045bf14617887eef6bb349bed3e2355807ac7787617167df11",
+          "status": "committed",
+          "work_units": 260
+        },
+        "wall_ns": 81492069,
+        "wrapper_identity_digest": "2f34fd3ab76c5ddcba01deb634766bcab5833625cc078f003be1a3fc2f9e45c6"
+      },
+      "decision": {
+        "A_retention": {
+          "candidate": 6,
+          "frozen": 2
+        },
+        "B_successes": {
+          "candidate": 6,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "candidate_weights_sha256": "cb01ec945688c4b4f28fd1300e7de70ce79491ce7c63082ff6dcd0c4a19e5b5f",
+        "decision": "NoUpdate",
+        "denominator": 8,
+        "evaluation_digest": "5681e28faf742a9336e6cfd5ba95b0df36afb5322205802c5857c5b6b02295e0",
+        "ordinary_adopt": 0,
+        "ordinary_no_update": 0,
+        "parent_candidate_manifest_sha256": "f82feea6da2cfef908833ec7438d55634961cd9c9729c0bb16ead8262cb0fcfe",
+        "parent_weights_sha256": "c45da2c45e8991b8a71d0f276a126f9c695060c9d52e5241846d1aba5d252819",
+        "reason": "candidate failed one or more predeclared baseline/retention gates",
+        "selected_candidate_manifest_sha256": "f82feea6da2cfef908833ec7438d55634961cd9c9729c0bb16ead8262cb0fcfe",
+        "selected_identity": "2f34fd3ab76c5ddcba01deb634766bcab5833625cc078f003be1a3fc2f9e45c6",
+        "trained_candidate_manifest_sha256": "48212e79a440fa44a917b65624b68b7c90c6db322bc7520cea6947fae29d2753"
+      },
+      "local_no_update_complete": true,
+      "readonly_review": {
+        "A_retention": {
+          "candidate": 6,
+          "frozen": 2
+        },
+        "B_successes": {
+          "candidate": 6,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_successes": 2,
+        "cold_exact": true,
+        "cold_whole_child_cpu_seconds": 0.24101199999999998,
+        "cold_whole_wall_ns": 243339907,
+        "component_call_p95_ms": 2.700179399999999,
+        "component_call_p99_ms": 3.3094013600000003,
+        "decision": "NoUpdate",
+        "denominator": 8,
+        "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "logical_parameter_work": 66852,
+        "native_completed": 265,
+        "native_wall_ns": 13331238,
+        "training_cpu_seconds": 0.012652225000000017,
+        "training_updates": 16,
+        "training_wall_seconds": 0.012651231999939228,
+        "unresolved": 0
+      },
+      "training": {
+        "batch_episodes": 8,
+        "candidate_optimizer_sha256": "5ddf20721d934480fe12123ca75253baf5f14928faa790c8ad54f0e746a47011",
+        "candidate_weights_sha256": "cb01ec945688c4b4f28fd1300e7de70ce79491ce7c63082ff6dcd0c4a19e5b5f",
+        "cell_id": "memory",
+        "config_sha256": "1d4e18e726f239033ea789ca876393c347a1a16420ffb40f5102ea49b19ee815",
+        "data_sha256": "c5aa52dc1ff93e396df42207093871e7d5498d139adad4ab1f6c9b33f62be125",
+        "energy_joules": null,
+        "episode_state": "fresh for every complete batch and optimizer update",
+        "events_per_episode": 3,
+        "gradient_norm_cap": 5.0,
+        "learning_rate": 0.003,
+        "losses": [
+          1.392175114949155,
+          1.3848163287751172,
+          1.3777123610564448,
+          1.3708849817626982,
+          1.3643471575718895,
+          1.35810399658806,
+          1.3521557052850692,
+          1.3464993238191543,
+          1.341127373018445,
+          1.3360251762635658,
+          1.3311683164179884,
+          1.3265211999011732,
+          1.322037130694218,
+          1.3176601715024097,
+          1.3133288989275766,
+          1.3089815299758907
+        ],
+        "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "optimizer": "adam",
+        "parent_optimizer_sha256": "112ad33d142fef46752d8f2142c3e123614dd71bcf278a55f16cc3c12f8c3d0e",
+        "parent_weights_sha256": "c45da2c45e8991b8a71d0f276a126f9c695060c9d52e5241846d1aba5d252819",
+        "peak_ram_bytes": null,
+        "peak_vram_bytes": null,
+        "process_cpu_seconds": 0.012652225000000017,
+        "requested_updates": 16,
+        "resources": {
+          "energy_joules": null,
+          "optimizer_array_bytes": 4160,
+          "parameter_array_bytes": 2080,
+          "parameters": 260,
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "persistent_state_array_bytes": 32,
+          "serialized_state_bytes": 306
+        },
+        "schema": "hepta.cell.temporal-training.v1",
+        "status": "completed_candidate_only",
+        "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+        "validated_updates": 16,
+        "wall_seconds": 0.012651231999939228
+      }
+    },
+    "predictor": {
+      "C_denominator": 8,
+      "C_successes": 2,
+      "cold": {
+        "candidate_manifest_sha256": "d2a22d7115d12000b43c7e888ed9c33656dfd3e9568ed52ef08fbcaa8e4ced91",
+        "cpu_ns": 80445532,
+        "matches_pre_restart": true,
+        "pid": 8043,
+        "receipt": {
+          "bundle_digest": "02995a26341ae5f621f873d958f69bbae8cde4100e0180732c08e4f1bb11c5bf",
+          "elapsed_ns": 2064214,
+          "epoch": 16,
+          "identity_digest": "f8937c20e16b7fbe57eaa2afebae5b8411cd4b94f18bd195b68e12939768cb4b",
+          "output": {
+            "cell": {
+              "cost": {
+                "energy_joules": null,
+                "process_cpu_seconds": 0.00016639999999998323,
+                "wall_seconds": 0.0001681049999433526,
+                "work_unit_kind": "parameter_count_per_single_step"
+              },
+              "cursor": 3,
+              "logits": [
+                -0.4551225803944279,
+                1.1351878728632598
+              ]
+            },
+            "hia": {
+              "binding": {
+                "candidate_sha256": "d2a22d7115d12000b43c7e888ed9c33656dfd3e9568ed52ef08fbcaa8e4ced91",
+                "cell_sha256": "528171b7b7f32f47d1a2930f9f698b8968c7d1789e762d9d647127be4a37bd68",
+                "input_sha256": "973f26a8d8726beade82e13b79ba2f8ab5198057f29e1b71455d427b42b3ba66",
+                "request_sha256": "dbd3877b113ea8a9069168f42fe2c247635c7a55e15515fd3428d872ed32aeb5",
+                "result_limit": 65536,
+                "sequence": 129
+              },
+              "candidate_sha256": "d2a22d7115d12000b43c7e888ed9c33656dfd3e9568ed52ef08fbcaa8e4ced91",
+              "image_sha256": "c475a22313d401e84d5e0b13c935aabb4615c6da15aba3e6083f842d35f54812",
+              "native_state_sha256": "127794cc286edc31e0a4cdd7abfc3dd333685105c56ac0352f570c22b1857471",
+              "native_wall_ns": 53087,
+              "terminal_action": "COMPLETE"
+            }
+          },
+          "partition_digest": "7bfab3537a01f114b5dd4ada7cd78da5b2670c0c74a1e52a8a2e38449aba6f37",
+          "request_id": "cold-new-prediction",
+          "requires_recovery": false,
+          "sequence": 129,
+          "state_applied": true,
+          "state_digest": "d46e73b173aac082a0899f22af6107d5cb0c2c38e59a53980b6e32902105693c",
+          "status": "committed",
+          "work_units": 262
+        },
+        "wall_ns": 81146515,
+        "wrapper_identity_digest": "f8937c20e16b7fbe57eaa2afebae5b8411cd4b94f18bd195b68e12939768cb4b"
+      },
+      "decision": {
+        "A_retention": {
+          "candidate": 2,
+          "frozen": 2
+        },
+        "B_successes": {
+          "candidate": 2,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "candidate_weights_sha256": "d8b6f09df4c30bdcfee9b8ed1fe6ccc751164a0e99455c71f0a74fc22024abee",
+        "decision": "NoUpdate",
+        "denominator": 8,
+        "evaluation_digest": "5681e28faf742a9336e6cfd5ba95b0df36afb5322205802c5857c5b6b02295e0",
+        "ordinary_adopt": 0,
+        "ordinary_no_update": 0,
+        "parent_candidate_manifest_sha256": "d2a22d7115d12000b43c7e888ed9c33656dfd3e9568ed52ef08fbcaa8e4ced91",
+        "parent_weights_sha256": "b211775109c6257f9e8081c23cbd4ef4cda60002bb966bc9635c47fae1b08262",
+        "reason": "candidate failed one or more predeclared baseline/retention gates",
+        "selected_candidate_manifest_sha256": "d2a22d7115d12000b43c7e888ed9c33656dfd3e9568ed52ef08fbcaa8e4ced91",
+        "selected_identity": "f8937c20e16b7fbe57eaa2afebae5b8411cd4b94f18bd195b68e12939768cb4b",
+        "trained_candidate_manifest_sha256": "fbcf9589c526c6cadae258c9218258ef113864cd9fb6950078ae9654fa131340"
+      },
+      "local_no_update_complete": true,
+      "readonly_review": {
+        "A_retention": {
+          "candidate": 2,
+          "frozen": 2
+        },
+        "B_successes": {
+          "candidate": 2,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_successes": 2,
+        "cold_exact": true,
+        "cold_whole_child_cpu_seconds": 0.211673,
+        "cold_whole_wall_ns": 213358384,
+        "component_call_p95_ms": 2.7062763999999997,
+        "component_call_p99_ms": 3.17637528,
+        "decision": "NoUpdate",
+        "denominator": 8,
+        "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "logical_parameter_work": 117670,
+        "native_completed": 457,
+        "native_wall_ns": 23241308,
+        "training_cpu_seconds": 0.01273505500000005,
+        "training_updates": 16,
+        "training_wall_seconds": 0.012733164999986002,
+        "unresolved": 0
+      },
+      "training": {
+        "batch_episodes": 32,
+        "candidate_optimizer_sha256": "45b8dc5223d458f22df64cfe483ad23548090ffc0ff1172b1a016a22aa422e65",
+        "candidate_weights_sha256": "d8b6f09df4c30bdcfee9b8ed1fe6ccc751164a0e99455c71f0a74fc22024abee",
+        "cell_id": "predictor",
+        "config_sha256": "fba41eb49e160933a347ef97d4dc5ef0d587f0c39018e9bbdde75c7c9c763004",
+        "data_sha256": "7f875273d7a7d50662124847ca6cfecd21714450ebb1a56dc95aeea475c9e66a",
+        "energy_joules": null,
+        "episode_state": "fresh for every complete batch and optimizer update",
+        "events_per_episode": 3,
+        "gradient_norm_cap": 5.0,
+        "learning_rate": 0.003,
+        "losses": [
+          0.7806690146993168,
+          0.7703249313223349,
+          0.7604755348159145,
+          0.751097015532455,
+          0.7421629933751166,
+          0.7336409719019676,
+          0.7254959010521895,
+          0.7176963180488873,
+          0.7102170964655952,
+          0.7030391976394288,
+          0.6961482608434761,
+          0.689533139994601,
+          0.6831848024502292,
+          0.6770956011907402,
+          0.6712588076625154,
+          0.6656683052413613
+        ],
+        "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "optimizer": "adam",
+        "parent_optimizer_sha256": "9cbb2595ea1638b6e41dc4843bc2e0bfa046732df4e6bd0fc1be298fab0a68a7",
+        "parent_weights_sha256": "b211775109c6257f9e8081c23cbd4ef4cda60002bb966bc9635c47fae1b08262",
+        "peak_ram_bytes": null,
+        "peak_vram_bytes": null,
+        "process_cpu_seconds": 0.01273505500000005,
+        "requested_updates": 16,
+        "resources": {
+          "energy_joules": null,
+          "optimizer_array_bytes": 4192,
+          "parameter_array_bytes": 2096,
+          "parameters": 262,
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "persistent_state_array_bytes": 32,
+          "serialized_state_bytes": 309
+        },
+        "schema": "hepta.cell.temporal-training.v1",
+        "status": "completed_candidate_only",
+        "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+        "validated_updates": 16,
+        "wall_seconds": 0.012733164999986002
+      }
+    }
+  },
+  "head_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+  "model_native_runtime_reexecution": false,
+  "native_counts": {
+    "memory": {
+      "completed": 265
+    },
+    "predictor": {
+      "completed": 457
+    }
+  },
+  "native_image_sha256": "c475a22313d401e84d5e0b13c935aabb4615c6da15aba3e6083f842d35f54812",
+  "ordinary_daemon_qualification": false,
+  "origin_candidate_sha256": "c4346645d251510924861fba918ee75b9be0c8e0d7778859d099b3ab58fc49ad",
+  "original_build_sha256": "db1b6c08637559c38390ea27d088f4cd8e4034ebff422ae9319e3ac6f7ef9c04",
+  "read_only_snapshot": {
+    "omitted_empty_wals": [
+      "memory/owner.sqlite-wal",
+      "predictor/owner.sqlite-wal"
+    ],
+    "snapshot_files_verified": 61,
+    "source_files_verified": 63,
+    "source_unchanged": true
+  },
+  "relocated_build_sha256": "6b4877887a20f38b863fa6f68c3405b32d2c0708d5f2d39780600e20c96368d5",
+  "run_id": 43802821002,
+  "runtime_identity": {
+    "binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+    "config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+    "source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "source_tree": "d9b16016a4df226d6471a934076390da9b978735",
+    "transport": "actual_mcp_stdio"
+  },
+  "schema": "hepta.cell.linux-ci-retained-evidence-review.v1",
+  "separate_from_original_mac_candidate": true,
+  "status": "PASS",
+  "whole_campaign_cost": {
+    "compile_calls": 208,
+    "cost_scope": "outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
+    "energy_joules": null,
+    "parent_cpu_seconds": 2.2638494820000004,
+    "peak_rss_bytes": null,
+    "wall_seconds": 3.203571780000061
+  }
+}

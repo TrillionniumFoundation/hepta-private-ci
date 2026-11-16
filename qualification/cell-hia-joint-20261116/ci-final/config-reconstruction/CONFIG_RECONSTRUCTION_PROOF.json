@@ -1,0 +1,171 @@
+{
+  "archive_sha256": "c549a22e56c12cdb09f9ea9708557c3f5164c803020c25aa72e47912c3d9cd7a",
+  "attempts": 1,
+  "binding_derivation": {
+    "args.output": "parent of retained campaign --output; frozen campaign generator appends campaign-worker",
+    "candidate.parent": "parent of retained profile --candidate; frozen qualifier creates runtime_candidate in original candidate.parent",
+    "candidate_record.hia_root": "original candidate.hia_root",
+    "cell_root": "retained profile.process.cwd",
+    "private": "profile.runtime.config parent; cross-checked with database and both ssh-keygen output paths",
+    "runtime_root": "retained profile.runtime.source_root",
+    "ssh.target": "unique ssh:// target in successful retained ssh-setup argv",
+    "sys.executable": "retained profile.process.executable, recorded by frozen generator from Path(sys.executable).absolute()"
+  },
+  "bindings": {
+    "args.output": "/home/runner/work/_temp/cell-joint-evidence/runtime-joint",
+    "candidate.parent": "/home/runner/work/_temp/cell-joint-evidence/local-joint",
+    "candidate_record.hia_root": "/home/runner/work/hepta-private-ci/hepta-private-ci/hia",
+    "cell_root": "/home/runner/work/hepta-private-ci/hepta-private-ci/cells",
+    "private": "/home/runner/cell-runtime-private-83y9okzb",
+    "runtime_root": "/home/runner/work/hepta-private-ci/hepta-private-ci/runtime",
+    "ssh.target": "ssh://runner@127.0.0.1:41261",
+    "sys.executable": "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python"
+  },
+  "candidate_sha256": "b54097ee0d2dc4af3fbdbe46e4e268adad8b381041ab5e164e15c741553e6fe6",
+  "claim": "Digest-identical reconstruction from retained inputs and frozen generator; not proof that original config bytes were archived.",
+  "classification": "RECONSTRUCTED_FROM_FROZEN_GENERATOR_AND_RETAINED_INPUTS",
+  "costs": {
+    "campaign_cost_scope": "outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
+    "campaign_parent_cpu_seconds": 2.2638494820000004,
+    "campaign_runtime_wall_seconds": 5.784267657999976,
+    "campaign_wall_seconds": 3.203571780000061,
+    "cells": {
+      "memory": {
+        "cold_model_child_cpu_seconds": 0.24101199999999998,
+        "cold_model_child_wall_ns": 243339907,
+        "cold_model_child_wall_seconds": 0.243339907,
+        "component_call_p95_ms": 2.700179399999999,
+        "component_call_p99_ms": 3.3094013600000003,
+        "component_latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "sources": {
+          "cold_model_child": "runtime-joint/campaign-worker/campaign/memory/COLD_PROCESS.json",
+          "component_latencies": "runtime-joint/campaign-readonly-review.json#/review/cells/memory",
+          "training": "runtime-joint/campaign-worker/campaign/RESULT.json#/cells/memory/training"
+        },
+        "training_measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "training_parent_process_cpu_seconds": 0.012652225000000017,
+        "training_wall_seconds": 0.012651231999939228
+      },
+      "predictor": {
+        "cold_model_child_cpu_seconds": 0.211673,
+        "cold_model_child_wall_ns": 213358384,
+        "cold_model_child_wall_seconds": 0.213358384,
+        "component_call_p95_ms": 2.7062763999999997,
+        "component_call_p99_ms": 3.17637528,
+        "component_latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "sources": {
+          "cold_model_child": "runtime-joint/campaign-worker/campaign/predictor/COLD_PROCESS.json",
+          "component_latencies": "runtime-joint/campaign-readonly-review.json#/review/cells/predictor",
+          "training": "runtime-joint/campaign-worker/campaign/RESULT.json#/cells/predictor/training"
+        },
+        "training_measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "training_parent_process_cpu_seconds": 0.01273505500000005,
+        "training_wall_seconds": 0.012733164999986002
+      }
+    },
+    "energy_joules": null,
+    "peak_rss_bytes": null,
+    "runtime_qualifier_wall_seconds": 10.20682456499992
+  },
+  "expected_config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+  "frozen_fragments": {
+    "canonical_function": "def canonical(value):\n    return json.dumps(\n        value,\n        ensure_ascii=False,\n        sort_keys=True,\n        separators=(\",\", \":\"),\n        allow_nan=False,\n    ).encode(\"utf-8\")",
+    "config_assignment": "config = {\n            \"state_dir\": str(private / \"controller-state\"),\n            \"controller_workspace_roots\": [\n                str(args.output),\n                str(cell_root),\n                str(runtime_root),\n            ],\n            \"hosts\": {\n                \"loopback\": {\n                    \"execution_mode\": \"operator\",\n                    \"ssh_target\": ssh.target,\n                    \"platform\": \"linux\",\n                    \"remote_state_dir\": str(private / \"owner-state\"),\n                    \"allow_execute\": True,\n                    \"allow_write\": True,\n                    # Operator mode uses the existing administrator authority;\n                    # it cannot claim a network-isolated child process.\n                    \"allow_job_network\": True,\n                    \"allow_detached_fallback\": False,\n                    \"allowed_read_path_prefixes\": [\n                        str(cell_root),\n                        candidate_record[\"hia_root\"],\n                        str(candidate.parent),\n                        str(args.output),\n                        str(private),\n                        str(Path(sys.executable).parent),\n                        \"/usr/bin\",\n                    ],\n                    \"allowed_write_path_prefixes\": [str(private), str(args.output)],\n                }\n            },\n        }",
+    "write_function": "def write(path, value):\n    with path.open(\"wb\") as stream:\n        stream.write(canonical(value) + b\"\\n\")\n        stream.flush()\n        os.fsync(stream.fileno())"
+  },
+  "guessing_or_brute_force": false,
+  "head_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+  "input_records": {
+    "local-joint/candidate.json": {
+      "bytes": 47921,
+      "sha256": "c4346645d251510924861fba918ee75b9be0c8e0d7778859d099b3ab58fc49ad"
+    },
+    "local-joint/executed-source/cells/scripts/qualify_runtime_campaign.py": {
+      "bytes": 6313,
+      "sha256": "85a1834db0836990c12ac9719498dc51e21f59e2fcae4b6e0628c333e24ab953"
+    },
+    "local-joint/executed-source/cells/scripts/qualify_runtime_process_bridge.py": {
+      "bytes": 13415,
+      "sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e"
+    },
+    "local-joint/executed-source/cells/scripts/runtime_process_bridge.py": {
+      "bytes": 16868,
+      "sha256": "25ec3fcec67af03ebc19f3e6b500c9f0cd8f6feb1c260f54f40b3b8e128131f4"
+    },
+    "local-joint/executed-source/cells/scripts/runtime_stdio.py": {
+      "bytes": 8709,
+      "sha256": "cccbd3796b59ba6b89b4030dbcb16a626f378ec477520765a859e040c3ebcfda"
+    },
+    "runtime-joint/campaign-readonly-review.json": {
+      "bytes": 143668,
+      "sha256": "0b13ecfd7da1e2b68e8a71178dee605ac3c968539a232cff589d5f2d84535bbc"
+    },
+    "runtime-joint/campaign-runtime.json": {
+      "bytes": 1468753,
+      "sha256": "46ee7720f4a6da291d39ad4071565bd9d79428223c12f18030cb83b7d058c4e4"
+    },
+    "runtime-joint/campaign-worker/campaign/RESULT.json": {
+      "bytes": 13274,
+      "sha256": "5b97816065b515a60a8130e97b273399d9a3995a7042fc22a23d84bc521e8e71"
+    },
+    "runtime-joint/campaign-worker/campaign/memory/COLD_PROCESS.json": {
+      "bytes": 128,
+      "sha256": "fe0904731bc813e863990f97304702a7acf40467b7512b2d2b973203e544a0cb"
+    },
+    "runtime-joint/campaign-worker/campaign/predictor/COLD_PROCESS.json": {
+      "bytes": 117,
+      "sha256": "d6db63c6dc5f27e06d68caf4a67f7118a38d012639a598acd150275c9e071990"
+    },
+    "runtime-joint/candidate.json": {
+      "bytes": 38619,
+      "sha256": "b54097ee0d2dc4af3fbdbe46e4e268adad8b381041ab5e164e15c741553e6fe6"
+    },
+    "runtime-joint/profile.json": {
+      "bytes": 1328,
+      "sha256": "b8d8ff8484ee32937abaffd5e7480f83ed909ca63ebdcf2af5e8899ebf8dd1c1"
+    },
+    "runtime-joint/result.json": {
+      "bytes": 2823042,
+      "sha256": "7a5e5db17fe8513df6308d9f1ad023cfba5e1beb1d3765cc5e9e3d4a6b9990c4"
+    },
+    "runtime-joint/ssh-setup.json": {
+      "bytes": 2538,
+      "sha256": "b589e41358226b3584efba8360aa1654af28fe4d47e7ff5491ac761fd8c5b847"
+    }
+  },
+  "origin_candidate_sha256": "c4346645d251510924861fba918ee75b9be0c8e0d7778859d099b3ab58fc49ad",
+  "original_absence_limitation_preserved": true,
+  "original_config_archived": false,
+  "original_evidence_changed": false,
+  "reconstructed_bytes": 1082,
+  "reconstructed_config_git_blob_sha": "2677d2e4b2e89a24ea7953b8790277615a4e7f37",
+  "reconstructed_config_sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+  "run_id": 43802821002,
+  "runtime_model_native_or_sshd_execution": false,
+  "schema": "hepta.cell.runtime-config-reconstruction.v1",
+  "serialization": "Original frozen write(path,value) calls original canonical(value), appends one LF, then fsyncs; one deterministic serialization.",
+  "source_or_ref_changed": false,
+  "sources": {
+    "qualify_runtime_campaign.py": {
+      "archive_path": "local-joint/executed-source/cells/scripts/qualify_runtime_campaign.py",
+      "git_blob_sha": "e1677522452fd70148b7485c1a304827d487395b",
+      "sha256": "85a1834db0836990c12ac9719498dc51e21f59e2fcae4b6e0628c333e24ab953"
+    },
+    "qualify_runtime_process_bridge.py": {
+      "archive_path": "local-joint/executed-source/cells/scripts/qualify_runtime_process_bridge.py",
+      "git_blob_sha": "bf8588998f9ebc827822430c46ed4d2cf2a3a06a",
+      "sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e"
+    },
+    "runtime_process_bridge.py": {
+      "archive_path": "local-joint/executed-source/cells/scripts/runtime_process_bridge.py",
+      "git_blob_sha": "7456ff110cc1d0d88f1d1d6b5a22211aa41d3e42",
+      "sha256": "25ec3fcec67af03ebc19f3e6b500c9f0cd8f6feb1c260f54f40b3b8e128131f4"
+    },
+    "runtime_stdio.py": {
+      "archive_path": "local-joint/executed-source/cells/scripts/runtime_stdio.py",
+      "git_blob_sha": "30cc1a412353420a65745914c64783ff7f0a10b9",
+      "sha256": "cccbd3796b59ba6b89b4030dbcb16a626f378ec477520765a859e040c3ebcfda"
+    }
+  },
+  "status": "EXACT_DIGEST_MATCH"
+}
