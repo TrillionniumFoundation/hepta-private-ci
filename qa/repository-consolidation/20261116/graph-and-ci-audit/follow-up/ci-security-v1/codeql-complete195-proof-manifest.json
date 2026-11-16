@@ -1,0 +1,2146 @@
+{
+  "schema": "lossless-audit-archive-v1",
+  "scope": {
+    "originalAnalysis": 2176372976,
+    "originalSourceHead": "285e971b3af3a93a79169b56a42263069e473057",
+    "reviewedCurrentHead": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+    "results": 195,
+    "ruleMetadataSeverityCounts": {
+      "7.5": 57,
+      "9.8": 137,
+      "8.1": 1
+    },
+    "reportedFlowScopeCounts": {
+      "test_or_fixture": 158,
+      "production": 35,
+      "experiment": 2
+    },
+    "dismissed": 0,
+    "suppressed": 0,
+    "newHeadScanClaimedClean": false
+  },
+  "compression": "One deterministic gzip stream split into consecutive byte parts; concatenate parts in listed order before decompression.",
+  "partBytesMaximum": 480000,
+  "compressedBytes": 2644098,
+  "compressedSha256": "905ef0fe422abd8b59eaaacc38782a76c2247a7ddbb9e47df9ca017fe138bb34",
+  "uncompressedTarBytes": 15534080,
+  "uncompressedTarSha256": "92e8f3bf04e84323a7e398acaf3bef494a26379a7ff66496f068639f406fc8d1",
+  "memberCount": 415,
+  "parts": [
+    {
+      "path": "codeql-complete195-proof.tar.part-0000.gz",
+      "bytes": 480000,
+      "sha256": "a3c8d6a6d805374d55a04add891062c59e7e456a7ce8856e7102dc2d7122c0da",
+      "gitBlob": "b9bc75d53993cfbe6cd341524aaa9da65881452c"
+    },
+    {
+      "path": "codeql-complete195-proof.tar.part-0001.gz",
+      "bytes": 480000,
+      "sha256": "d5c6b40a6caf8aeb9c2d5ff2c1cfc6bf135cc338096ef531f5e81df875c4603c",
+      "gitBlob": "8387c0de62e5192e20f2350b1da33ee5a2a930b5"
+    },
+    {
+      "path": "codeql-complete195-proof.tar.part-0002.gz",
+      "bytes": 480000,
+      "sha256": "805bc944a074607d7920bf2611e8ed89a1ec1c20522753075f83b2b9d9a1112f",
+      "gitBlob": "1c5c773e0a0eec10294c6b0001012f8bf7221fd3"
+    },
+    {
+      "path": "codeql-complete195-proof.tar.part-0003.gz",
+      "bytes": 480000,
+      "sha256": "6fc6da020aac581f68f82ec15ee84e677294af251f997a0b02d9e03b96307bb0",
+      "gitBlob": "34661a2d368e247be318e3be1baf9999fe7fe709"
+    },
+    {
+      "path": "codeql-complete195-proof.tar.part-0004.gz",
+      "bytes": 480000,
+      "sha256": "3809326082648d8f932e5e84f8402f7face1d9c3787c0afa9a624652ec1f1a83",
+      "gitBlob": "0e107d9dff8e33afd3ffd5f562cb76d211964409"
+    },
+    {
+      "path": "codeql-complete195-proof.tar.part-0005.gz",
+      "bytes": 244098,
+      "sha256": "8739b81b119383910036b8ba8de72d7ffc9923dd0a847b2ba10dcb6b898f9e4e",
+      "gitBlob": "5b1f2133264a94a11df9ffadd41598110339aa1c"
+    }
+  ],
+  "members": [
+    {
+      "path": "cargo-targets-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "complete-195-source-review.json",
+      "bytes": 909574,
+      "sha256": "dcefe306f5a8e1e702638f304355132a496a9a13dff3f7e5c89b6869b117de3f"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/app-server-test-client/src/lib.rs",
+      "bytes": 90179,
+      "sha256": "7077d4648104a0b4847db3e0900a6ec3d8d94a2fd5632c0f46cc11416f8ebfd7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 85252,
+      "sha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/app-server/tests/suite/fuzzy_file_search.rs",
+      "bytes": 21539,
+      "sha256": "32eaebbbedcb4c151d64796ef272cdecadf2f075dddc7ae8a455bab82c783abc"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "bytes": 48131,
+      "sha256": "cc13127493d07e8303c158f36f6548b039c8bd053c3e1dca9697e641a5da1925"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/cli/src/login.rs",
+      "bytes": 22227,
+      "sha256": "a18109e15b321dbeeae421ae8c5e5b03f23b6145f66226599a67c8977220b6b5"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/exec-server/src/remote/noise_tests.rs",
+      "bytes": 13143,
+      "sha256": "bbea2fb4a5987ddd9ee6203d226b3eb5af52358f3d0a0512decd2d10267cdae1"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/exec-server/tests/http_request_logging.rs",
+      "bytes": 6493,
+      "sha256": "acbd3907a6b41a74b45628cd745977d7e433bdbcc168656b34b46397da061643"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/exec/src/event_processor_with_human_output.rs",
+      "bytes": 19866,
+      "sha256": "162978c3cf91e59cc1bd1ae3be4bd9ffe653a31c105fcee94b7fcae600c9a2da"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/exec/src/lib.rs",
+      "bytes": 78443,
+      "sha256": "1f9dbadb76bc891b0c382c4e694a604cb877ef3e113756ba9e372088a83898d9"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "bytes": 31150,
+      "sha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/authority.rs",
+      "bytes": 3196,
+      "sha256": "facf4ad394b0e0c8018e5ec668119f419a44c29ab13e00e660ac6f49b86628ef"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/flow.rs",
+      "bytes": 13362,
+      "sha256": "66d231db13955d300c881dccdd16d8327f2cf66113b7cd4c4abcf8a0bbf2f5bd"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "bytes": 7326,
+      "sha256": "8be5d16b95e372198836658af92134d237cd25d5808c7bcfae901a34ea7ae7e2"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 64210,
+      "sha256": "98ae3d4ebe0271abf171d98514e24459f60fa10f8bf5bebdc2453589868400b7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/automation_effect_recovery_tests.rs",
+      "bytes": 10141,
+      "sha256": "63cfc831d783f8b60801457b29052c54280a315623242074a1b327f81b644ebe"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/automation_hcsn_pq_fixture.rs",
+      "bytes": 11364,
+      "sha256": "8c13ee4ab4bcde8656c99722975e1008414010905cc790617afc21bdaf8de4d7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/automation_hcsn_pq_tests.rs",
+      "bytes": 15802,
+      "sha256": "f1049cdfd70a536d6085843d156b2efd810f6bac13f13ae291dd945df4b0e8a1"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/automation_hcsn_source_host_tests.rs",
+      "bytes": 5648,
+      "sha256": "33c88dd4d5861a7e97c61779cfb0c84c1370a5b744ad7136c540b1deec54cf01"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/cell_q24_model_command_root_support_tests.rs",
+      "bytes": 16237,
+      "sha256": "f5150b07d6a33f508bb97ab643a3479c5b7682c2bb5eac85b867118af2c0a9ff"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/cpu_policy_consumer_tests.rs",
+      "bytes": 19141,
+      "sha256": "16dd7cd3982a639c245a66ba972674378f13276eafb30c96cb9921bddea85296"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "bytes": 20745,
+      "sha256": "38d26c2744a9c2ce0ebb323253223e503022ad0aea2aaad48d97722f57a7c87b"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs",
+      "bytes": 7108,
+      "sha256": "ff5640880832ad70aa7d6a5fd8608c2719dfeb993ddc3198b7394d6ab24783e3"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/native_memory_current.rs",
+      "bytes": 11738,
+      "sha256": "28664fb29af9b838fe2999d1a7b053215d17c5f7e6df5d0ccc5687e3284fe4b5"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "bytes": 9911,
+      "sha256": "0c8326b79af5507eff2eef65634824e193e26766873d1c08511d73d8f4e66e24"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "bytes": 10443,
+      "sha256": "65d1cc71f25060209907fed9eccbf7c860780ba2eb64a696b214bcff55990ad8"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "bytes": 5583,
+      "sha256": "c49fbfb25e372e1330df82544a641b33132760addb7d2f24585b207a83b887a5"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "bytes": 15471,
+      "sha256": "fbaa825d3acba2025ff3e1e3eb81ea8dae94a713ee9c2f1a3e830a7fff82603d"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "bytes": 15416,
+      "sha256": "408cbd3b19ffbe022b3acb6a368c1ab2784d79bdb9da6316c3e47b6f9f3ddeca"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_generation_expected_context_tests.rs",
+      "bytes": 13293,
+      "sha256": "aac0f43f7afb02651e9c27602ebba3b9af7b807638cf58794bd9ca99689bda36"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "bytes": 9637,
+      "sha256": "8c4ce8d4862133493d0403a0f1557ac2eec252a956b283f00e0580e2fe1be6db"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_generation_same_model_tests.rs",
+      "bytes": 9005,
+      "sha256": "ff46a4dfb4f7329370dfa1848ae91a641f0fb06d834f60e32650ad841c9348ea"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "bytes": 21368,
+      "sha256": "eeba761266a1b733f7ad2182c5b237a95f03f1abaa88b0912045b2ffc22fcd19"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/neuron_v13_generation_initial.rs",
+      "bytes": 6821,
+      "sha256": "5b86ee9c781290e917974b485ee1cd3a6cde41ddb8b543bdc817a34b20252c50"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/pq_final_use_tests.rs",
+      "bytes": 10782,
+      "sha256": "6928c8730dcfb880264c0c9b28165c5f84ac9c624023550a352c431a714b4080"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/production_authority_tests.rs",
+      "bytes": 7777,
+      "sha256": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "bytes": 32191,
+      "sha256": "ad7d1efe4c761109a0581a8861142a278bee4fe8c61bd1e77970b20578fdc2a3"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 64970,
+      "sha256": "b281d4d1ab67676b638dad878ad470c0402111f1084f9c22092592c2f4a4d1c9"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 43040,
+      "sha256": "8d903e33f0addce7de488bb2643db3b4215341c3e66cc1d7d4f7d4179e8922b6"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "bytes": 10052,
+      "sha256": "ddf06452709ddec72e8a0b268df3705dfa8d8ebc2e248a779b7b1b378bfec702"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "bytes": 21468,
+      "sha256": "78ebb074a9a9a1fc359be8bbf760f50dbd3fa2f644863556075947c6b0009e20"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "bytes": 25198,
+      "sha256": "aebe8dbf729c7281ed7eed1390cad009b07907605d6c15a08d9b7e1564b76acb"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "bytes": 14445,
+      "sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-compact-engine/src/trust.rs",
+      "bytes": 32898,
+      "sha256": "51ed9700974f027e771050222e2207b796b61c7fd61781af7b87ab2a5343dc4e"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-compact-engine/src/trust_tests.rs",
+      "bytes": 18693,
+      "sha256": "deb20acd2b439dc9271d8d91d9387254e8524d2ff75edd8d1243df66d0d3ee36"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-context-compiler/src/provider_request_tests.rs",
+      "bytes": 18513,
+      "sha256": "6a769196e4d14f4460cc798d1d3ddafd6862053b28b497a0cb6298b3b22f03a8"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-context-compiler/src/v2.rs",
+      "bytes": 88639,
+      "sha256": "4ab259c9eeb07f4ea36446005ac7f33f31f57492129965a95865359330352faf"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/authority_host_clock_slow_tests.rs",
+      "bytes": 11009,
+      "sha256": "450eba87c24ad36362360feb4a585d00ac50176188c9f24ee39c75f5539f3648"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/authority_host_store_tests.rs",
+      "bytes": 16692,
+      "sha256": "d5eebf5bfa2ecb0b7d651d67bb69e0d4cc24f6085bc7198cb2b827f888ba6ab7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 41265,
+      "sha256": "55146bc4b6458269188bf400bcbfcf6b1cda84836cc9c519cdf5e47b41bccf6c"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_control.rs",
+      "bytes": 43849,
+      "sha256": "1ff07198512077ab135529b903593aff5f562d7e39235c4ba029dd4d7c988054"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_pq_entry_tests.rs",
+      "bytes": 4786,
+      "sha256": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_pq_frontier_tests.rs",
+      "bytes": 7687,
+      "sha256": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "bytes": 6204,
+      "sha256": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "bytes": 15901,
+      "sha256": "fe4ed8ec5be6b4167b266cdced0f99a28bfff84767733d41c7e1bfed8952b2af"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_retained_tests.rs",
+      "bytes": 11697,
+      "sha256": "2d856131f32640ff4d4e52b415cf8c0dceb60cc30516ba05c8b457838caaf1c6"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_root_observer_tests.rs",
+      "bytes": 16130,
+      "sha256": "f2d66073a6870d3015815490c05d1de0462ee4962a101b9dd2bd503379be43b2"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "bytes": 11697,
+      "sha256": "885c8d6b4ad42f002bf38449264bef09eaf9831aafff62e870d9488820ffd288"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 42024,
+      "sha256": "0ee700f257190ee5b626d3a020bcce267a3eb08155b44c7fcbe52ab1027d13d7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/src/pq_auth.rs",
+      "bytes": 5694,
+      "sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "bytes": 3063,
+      "sha256": "ca77c0eae30d530bd760e284091bcfc7ac266f815add1564e2c6b4827d184ca9"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+      "bytes": 43792,
+      "sha256": "8406a1eee302ebce0a6ff03a506bcd4ed88624e4b09774e5570f84d563f5f94a"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-evidence/src/provider_claim_tests.rs",
+      "bytes": 4858,
+      "sha256": "d533990bcd9b1105a59f29dc5d10c8653dbb4aeb0fb5cc8ced7acc92e99caad7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-evidence/src/provider_tests.rs",
+      "bytes": 37591,
+      "sha256": "e7d5c073de06bf139c94b486cc7c6dd1559444110981494b939c6def51727017"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-evidence/src/summary_tests.rs",
+      "bytes": 6241,
+      "sha256": "3084fbc198cf8edf0999b0656feb562352b4d5bf8acf938c91bed17fb6ec03b7"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 13003,
+      "sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "bytes": 8288,
+      "sha256": "e210102f9357974451e1acbf23ba5ca4a647367bd91ae1b3996be9160c611957"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "bytes": 18274,
+      "sha256": "fbf580484a96974b1a1b24d75db8628caabeedfc94d1f747747d8c1faedda399"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-matrixd/src/config/tests.rs",
+      "bytes": 4084,
+      "sha256": "c3c0a0f76e1e3c627cdcbb2447c1a3af1a54d492cb17a52361fa5c4148e382b1"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "bytes": 9732,
+      "sha256": "d60bb03142db4049473369d54f587c14bd7beb79f09cdd9525057a0e7548ef03"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_calculator_owner_tests.rs",
+      "bytes": 21825,
+      "sha256": "9536adbc9552d24c4d45509350c22e7c17e6a8df244e1f200d8dfa6e164ffb1d"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs",
+      "bytes": 20720,
+      "sha256": "146604f4dc28ab5db037dbf6cda0a932e8306c0ebf7dc1710b8c3d0f2754c5d0"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_hos2_ordering_tests.rs",
+      "bytes": 12734,
+      "sha256": "7bd50a6136ad5f92fcd7576c1e59b33f52b41f2441de20db4448621ed2f07e13"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_hos2_process_tests.rs",
+      "bytes": 11337,
+      "sha256": "e13fdff356b4f28b70fa03f31f70b8d3f4684919f5421f80ce36c3099b324c68"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_hos2_tests.rs",
+      "bytes": 32271,
+      "sha256": "506913af5f791aa5070bdc86ca689381b590dc7803711f4117a68d3a9396c356"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_notes_owner_tests.rs",
+      "bytes": 21141,
+      "sha256": "7af1fb4332cb138167aea265528d3a0b53b402e56bc6a88d3ea51057cfb85248"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 174460,
+      "sha256": "3db5bebe4f32225e7268e32ced88697593a8fb6b9b15f1903042ec2c8f2ab8b3"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-ndu/src/owner.rs",
+      "bytes": 13166,
+      "sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-ndu/src/owner_current.rs",
+      "bytes": 10639,
+      "sha256": "56acf2d420a363c59cac342b2772da8f1bd5b7f283ad100b8d5cfdde0f06ae9c"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-ndu/src/owner_current_tests.rs",
+      "bytes": 9079,
+      "sha256": "ff8d5eee0a85667d8bc76738f42e10de839e9ab7eae69006c506b9f85717f3b3"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-ndu/src/owner_tests.rs",
+      "bytes": 9987,
+      "sha256": "2d914d64b75a0ee7ba6c20e9062d4c673ef061f77966fc99f506ca15eb6df698"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-operations/src/durable_clock_tests.rs",
+      "bytes": 5611,
+      "sha256": "4811cea6fc0ffae04e6bee825a6064d6a34a1446f95c77444869612fb797c885"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-operations/src/durable_dispatch_tests.rs",
+      "bytes": 12851,
+      "sha256": "4853b4d638f2ecd2b8749a0c44e35b30d4b473c5e517669f0994c4c11849fc9f"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "bytes": 23614,
+      "sha256": "5dfd2df3776fe5576921c54596e91b9da3e394593e78591fd6891195955502f0"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-operations/src/fault_tests.rs",
+      "bytes": 13727,
+      "sha256": "1988736c0249a54fb9a21b1c87ee799c65dccb66287e54b7a7f8576a72b56451"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "bytes": 23639,
+      "sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-prompt-registry/src/admission.rs",
+      "bytes": 18596,
+      "sha256": "afb4d303a6ab2fe6b711ff0d4fc829297b44a545ca1e26c67075de6f5aea5bb8"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 109869,
+      "sha256": "2883d8f2dda7c8a1641a749f79effd9b20ed0bc29697ec877f89239457828e78"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-runtime/src/organs_tests.rs",
+      "bytes": 34903,
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs",
+      "bytes": 8652,
+      "sha256": "148f4e1bc3a115fe8c6b6bb2fe60cc2b8b7e0dae77e4b209eb96c62a8f348315"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/http-client/src/outbound_proxy_tests.rs",
+      "bytes": 21810,
+      "sha256": "cc7cb681ed730a188cbc94d66c052e29a34891494cddfe8651ba520364a947e9"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+      "bytes": 31715,
+      "sha256": "041a6520ead6483f8636bc074279fa9874553057638811d7203d628879c406b6"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/login/src/auth/auth_tests.rs",
+      "bytes": 105176,
+      "sha256": "dfa78ddf691c2c36de411bdaf9c40301edd2e46d81d8d87fe8c87b0ad172ce12"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/login/src/server.rs",
+      "bytes": 48361,
+      "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "bytes": 24899,
+      "sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/ciphers.rs",
+      "bytes": 11234,
+      "sha256": "35dd0eaf0a4428f3e4996a40082cee15669dce1e68bec8f2aca00cbbc9db3061"
+    },
+    {
+      "path": "flow-source-review/base/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/attachments.rs",
+      "bytes": 11804,
+      "sha256": "c094e404565a16b3d131a91266b57035c594c6902ac936ec36fc6436d0f545e0"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/app-server-test-client/src/lib.rs",
+      "bytes": 90536,
+      "sha256": "607c8044f8853b968408877605245adb9eca2db989e1c3bf2d27621881262a21"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 85252,
+      "sha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/app-server/tests/suite/fuzzy_file_search.rs",
+      "bytes": 21539,
+      "sha256": "32eaebbbedcb4c151d64796ef272cdecadf2f075dddc7ae8a455bab82c783abc"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "bytes": 48131,
+      "sha256": "cc13127493d07e8303c158f36f6548b039c8bd053c3e1dca9697e641a5da1925"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/cli/src/login.rs",
+      "bytes": 22152,
+      "sha256": "da68d9b94875bb852379f895c435278c07e4c594c02548247e0ee6cd9102f17c"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/exec-server/src/remote/noise_tests.rs",
+      "bytes": 13143,
+      "sha256": "bbea2fb4a5987ddd9ee6203d226b3eb5af52358f3d0a0512decd2d10267cdae1"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/exec-server/tests/http_request_logging.rs",
+      "bytes": 6493,
+      "sha256": "acbd3907a6b41a74b45628cd745977d7e433bdbcc168656b34b46397da061643"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/exec/src/event_processor_with_human_output.rs",
+      "bytes": 19866,
+      "sha256": "162978c3cf91e59cc1bd1ae3be4bd9ffe653a31c105fcee94b7fcae600c9a2da"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/exec/src/lib.rs",
+      "bytes": 78443,
+      "sha256": "1f9dbadb76bc891b0c382c4e694a604cb877ef3e113756ba9e372088a83898d9"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "bytes": 31150,
+      "sha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/authority.rs",
+      "bytes": 3196,
+      "sha256": "facf4ad394b0e0c8018e5ec668119f419a44c29ab13e00e660ac6f49b86628ef"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/flow.rs",
+      "bytes": 13362,
+      "sha256": "66d231db13955d300c881dccdd16d8327f2cf66113b7cd4c4abcf8a0bbf2f5bd"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "bytes": 7326,
+      "sha256": "8be5d16b95e372198836658af92134d237cd25d5808c7bcfae901a34ea7ae7e2"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 64210,
+      "sha256": "98ae3d4ebe0271abf171d98514e24459f60fa10f8bf5bebdc2453589868400b7"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/automation_effect_recovery_tests.rs",
+      "bytes": 10141,
+      "sha256": "63cfc831d783f8b60801457b29052c54280a315623242074a1b327f81b644ebe"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/automation_hcsn_pq_fixture.rs",
+      "bytes": 11364,
+      "sha256": "8c13ee4ab4bcde8656c99722975e1008414010905cc790617afc21bdaf8de4d7"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/automation_hcsn_pq_tests.rs",
+      "bytes": 15802,
+      "sha256": "f1049cdfd70a536d6085843d156b2efd810f6bac13f13ae291dd945df4b0e8a1"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/automation_hcsn_source_host_tests.rs",
+      "bytes": 5648,
+      "sha256": "33c88dd4d5861a7e97c61779cfb0c84c1370a5b744ad7136c540b1deec54cf01"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/cell_q24_model_command_root_support_tests.rs",
+      "bytes": 16237,
+      "sha256": "f5150b07d6a33f508bb97ab643a3479c5b7682c2bb5eac85b867118af2c0a9ff"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/cpu_policy_consumer_tests.rs",
+      "bytes": 19141,
+      "sha256": "16dd7cd3982a639c245a66ba972674378f13276eafb30c96cb9921bddea85296"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "bytes": 20745,
+      "sha256": "38d26c2744a9c2ce0ebb323253223e503022ad0aea2aaad48d97722f57a7c87b"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/deployment_issuer_tests.rs",
+      "bytes": 7108,
+      "sha256": "ff5640880832ad70aa7d6a5fd8608c2719dfeb993ddc3198b7394d6ab24783e3"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/native_memory_current.rs",
+      "bytes": 11738,
+      "sha256": "28664fb29af9b838fe2999d1a7b053215d17c5f7e6df5d0ccc5687e3284fe4b5"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "bytes": 9949,
+      "sha256": "e6ed4ef9da83e781fb9a175f30758b696392f0f30c1712068d1ccd52f4a88fba"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "bytes": 10955,
+      "sha256": "3618a782a02a270fe36bbb74ef971bf704f3121be6911d3af057a03d9160f499"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "bytes": 5776,
+      "sha256": "6ab143cc53d75b34920b46d02a03dfc908d4088638eb9bda0740293d3fa3c08a"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "bytes": 15471,
+      "sha256": "fbaa825d3acba2025ff3e1e3eb81ea8dae94a713ee9c2f1a3e830a7fff82603d"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "bytes": 15416,
+      "sha256": "408cbd3b19ffbe022b3acb6a368c1ab2784d79bdb9da6316c3e47b6f9f3ddeca"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_generation_expected_context_tests.rs",
+      "bytes": 13293,
+      "sha256": "aac0f43f7afb02651e9c27602ebba3b9af7b807638cf58794bd9ca99689bda36"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "bytes": 9637,
+      "sha256": "8c4ce8d4862133493d0403a0f1557ac2eec252a956b283f00e0580e2fe1be6db"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_generation_same_model_tests.rs",
+      "bytes": 9005,
+      "sha256": "ff46a4dfb4f7329370dfa1848ae91a641f0fb06d834f60e32650ad841c9348ea"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "bytes": 21432,
+      "sha256": "753f1a3e81893c2746ac52236d1036a8a896d4fd90773f8e7b97cc989b8f0bf2"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/neuron_v13_generation_initial.rs",
+      "bytes": 6821,
+      "sha256": "5b86ee9c781290e917974b485ee1cd3a6cde41ddb8b543bdc817a34b20252c50"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/pq_final_use_tests.rs",
+      "bytes": 10782,
+      "sha256": "6928c8730dcfb880264c0c9b28165c5f84ac9c624023550a352c431a714b4080"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/production_authority_tests.rs",
+      "bytes": 7777,
+      "sha256": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "bytes": 32191,
+      "sha256": "ad7d1efe4c761109a0581a8861142a278bee4fe8c61bd1e77970b20578fdc2a3"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 64970,
+      "sha256": "b281d4d1ab67676b638dad878ad470c0402111f1084f9c22092592c2f4a4d1c9"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 43040,
+      "sha256": "8d903e33f0addce7de488bb2643db3b4215341c3e66cc1d7d4f7d4179e8922b6"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "bytes": 10052,
+      "sha256": "ddf06452709ddec72e8a0b268df3705dfa8d8ebc2e248a779b7b1b378bfec702"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "bytes": 21468,
+      "sha256": "78ebb074a9a9a1fc359be8bbf760f50dbd3fa2f644863556075947c6b0009e20"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "bytes": 25198,
+      "sha256": "aebe8dbf729c7281ed7eed1390cad009b07907605d6c15a08d9b7e1564b76acb"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "bytes": 14445,
+      "sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-compact-engine/src/trust.rs",
+      "bytes": 32898,
+      "sha256": "51ed9700974f027e771050222e2207b796b61c7fd61781af7b87ab2a5343dc4e"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-compact-engine/src/trust_tests.rs",
+      "bytes": 18693,
+      "sha256": "deb20acd2b439dc9271d8d91d9387254e8524d2ff75edd8d1243df66d0d3ee36"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-context-compiler/src/provider_request_tests.rs",
+      "bytes": 18513,
+      "sha256": "6a769196e4d14f4460cc798d1d3ddafd6862053b28b497a0cb6298b3b22f03a8"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-context-compiler/src/v2.rs",
+      "bytes": 88639,
+      "sha256": "4ab259c9eeb07f4ea36446005ac7f33f31f57492129965a95865359330352faf"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/authority_host_clock_slow_tests.rs",
+      "bytes": 11009,
+      "sha256": "450eba87c24ad36362360feb4a585d00ac50176188c9f24ee39c75f5539f3648"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/authority_host_store_tests.rs",
+      "bytes": 16692,
+      "sha256": "d5eebf5bfa2ecb0b7d651d67bb69e0d4cc24f6085bc7198cb2b827f888ba6ab7"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 41265,
+      "sha256": "55146bc4b6458269188bf400bcbfcf6b1cda84836cc9c519cdf5e47b41bccf6c"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_control.rs",
+      "bytes": 43849,
+      "sha256": "1ff07198512077ab135529b903593aff5f562d7e39235c4ba029dd4d7c988054"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_pq_entry_tests.rs",
+      "bytes": 4786,
+      "sha256": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_pq_frontier_tests.rs",
+      "bytes": 7687,
+      "sha256": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "bytes": 6204,
+      "sha256": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "bytes": 15901,
+      "sha256": "fe4ed8ec5be6b4167b266cdced0f99a28bfff84767733d41c7e1bfed8952b2af"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_retained_tests.rs",
+      "bytes": 11697,
+      "sha256": "2d856131f32640ff4d4e52b415cf8c0dceb60cc30516ba05c8b457838caaf1c6"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_root_observer_tests.rs",
+      "bytes": 16130,
+      "sha256": "f2d66073a6870d3015815490c05d1de0462ee4962a101b9dd2bd503379be43b2"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "bytes": 11697,
+      "sha256": "885c8d6b4ad42f002bf38449264bef09eaf9831aafff62e870d9488820ffd288"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 42024,
+      "sha256": "0ee700f257190ee5b626d3a020bcce267a3eb08155b44c7fcbe52ab1027d13d7"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/src/pq_auth.rs",
+      "bytes": 5694,
+      "sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "bytes": 3063,
+      "sha256": "ca77c0eae30d530bd760e284091bcfc7ac266f815add1564e2c6b4827d184ca9"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+      "bytes": 43792,
+      "sha256": "8406a1eee302ebce0a6ff03a506bcd4ed88624e4b09774e5570f84d563f5f94a"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-evidence/src/provider_claim_tests.rs",
+      "bytes": 4858,
+      "sha256": "d533990bcd9b1105a59f29dc5d10c8653dbb4aeb0fb5cc8ced7acc92e99caad7"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-evidence/src/provider_tests.rs",
+      "bytes": 37591,
+      "sha256": "e7d5c073de06bf139c94b486cc7c6dd1559444110981494b939c6def51727017"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-evidence/src/summary_tests.rs",
+      "bytes": 6241,
+      "sha256": "3084fbc198cf8edf0999b0656feb562352b4d5bf8acf938c91bed17fb6ec03b7"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 13003,
+      "sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "bytes": 8288,
+      "sha256": "e210102f9357974451e1acbf23ba5ca4a647367bd91ae1b3996be9160c611957"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "bytes": 18274,
+      "sha256": "fbf580484a96974b1a1b24d75db8628caabeedfc94d1f747747d8c1faedda399"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-matrixd/src/config/tests.rs",
+      "bytes": 4084,
+      "sha256": "c3c0a0f76e1e3c627cdcbb2447c1a3af1a54d492cb17a52361fa5c4148e382b1"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "bytes": 9732,
+      "sha256": "d60bb03142db4049473369d54f587c14bd7beb79f09cdd9525057a0e7548ef03"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_calculator_owner_tests.rs",
+      "bytes": 21825,
+      "sha256": "9536adbc9552d24c4d45509350c22e7c17e6a8df244e1f200d8dfa6e164ffb1d"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs",
+      "bytes": 20720,
+      "sha256": "146604f4dc28ab5db037dbf6cda0a932e8306c0ebf7dc1710b8c3d0f2754c5d0"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_hos2_ordering_tests.rs",
+      "bytes": 12734,
+      "sha256": "7bd50a6136ad5f92fcd7576c1e59b33f52b41f2441de20db4448621ed2f07e13"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_hos2_process_tests.rs",
+      "bytes": 11337,
+      "sha256": "e13fdff356b4f28b70fa03f31f70b8d3f4684919f5421f80ce36c3099b324c68"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_hos2_tests.rs",
+      "bytes": 32271,
+      "sha256": "506913af5f791aa5070bdc86ca689381b590dc7803711f4117a68d3a9396c356"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_notes_owner_tests.rs",
+      "bytes": 21141,
+      "sha256": "7af1fb4332cb138167aea265528d3a0b53b402e56bc6a88d3ea51057cfb85248"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 174460,
+      "sha256": "3db5bebe4f32225e7268e32ced88697593a8fb6b9b15f1903042ec2c8f2ab8b3"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-ndu/src/owner.rs",
+      "bytes": 13166,
+      "sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-ndu/src/owner_current.rs",
+      "bytes": 10639,
+      "sha256": "56acf2d420a363c59cac342b2772da8f1bd5b7f283ad100b8d5cfdde0f06ae9c"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-ndu/src/owner_current_tests.rs",
+      "bytes": 9079,
+      "sha256": "ff8d5eee0a85667d8bc76738f42e10de839e9ab7eae69006c506b9f85717f3b3"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-ndu/src/owner_tests.rs",
+      "bytes": 9987,
+      "sha256": "2d914d64b75a0ee7ba6c20e9062d4c673ef061f77966fc99f506ca15eb6df698"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-operations/src/durable_clock_tests.rs",
+      "bytes": 5611,
+      "sha256": "4811cea6fc0ffae04e6bee825a6064d6a34a1446f95c77444869612fb797c885"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-operations/src/durable_dispatch_tests.rs",
+      "bytes": 12851,
+      "sha256": "4853b4d638f2ecd2b8749a0c44e35b30d4b473c5e517669f0994c4c11849fc9f"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "bytes": 23614,
+      "sha256": "5dfd2df3776fe5576921c54596e91b9da3e394593e78591fd6891195955502f0"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-operations/src/fault_tests.rs",
+      "bytes": 13727,
+      "sha256": "1988736c0249a54fb9a21b1c87ee799c65dccb66287e54b7a7f8576a72b56451"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "bytes": 23639,
+      "sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-prompt-registry/src/admission.rs",
+      "bytes": 18596,
+      "sha256": "afb4d303a6ab2fe6b711ff0d4fc829297b44a545ca1e26c67075de6f5aea5bb8"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 109869,
+      "sha256": "2883d8f2dda7c8a1641a749f79effd9b20ed0bc29697ec877f89239457828e78"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-runtime/src/organs_tests.rs",
+      "bytes": 34903,
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs",
+      "bytes": 8652,
+      "sha256": "148f4e1bc3a115fe8c6b6bb2fe60cc2b8b7e0dae77e4b209eb96c62a8f348315"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/http-client/src/outbound_proxy_tests.rs",
+      "bytes": 21810,
+      "sha256": "cc7cb681ed730a188cbc94d66c052e29a34891494cddfe8651ba520364a947e9"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+      "bytes": 31715,
+      "sha256": "041a6520ead6483f8636bc074279fa9874553057638811d7203d628879c406b6"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/login/src/auth/auth_tests.rs",
+      "bytes": 105176,
+      "sha256": "dfa78ddf691c2c36de411bdaf9c40301edd2e46d81d8d87fe8c87b0ad172ce12"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/login/src/server.rs",
+      "bytes": 48361,
+      "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "bytes": 24899,
+      "sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/ciphers.rs",
+      "bytes": 11234,
+      "sha256": "35dd0eaf0a4428f3e4996a40082cee15669dce1e68bec8f2aca00cbbc9db3061"
+    },
+    {
+      "path": "flow-source-review/current/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/attachments.rs",
+      "bytes": 11804,
+      "sha256": "c094e404565a16b3d131a91266b57035c594c6902ac936ec36fc6436d0f545e0"
+    },
+    {
+      "path": "full-nonpointer-source-closure.json",
+      "bytes": 46114,
+      "sha256": "4fc9368d9bcdabaca4ae696fe1c6255fd3ae9c3a8a3856df3c0d06eec6696314"
+    },
+    {
+      "path": "helper-module-inclusion-proof-v2.json",
+      "bytes": 21021,
+      "sha256": "b21524e4280c63097de52e583efd646e96339bc6dabe20e1d1aa36480399d768"
+    },
+    {
+      "path": "helper-module-inclusion-proof.json",
+      "bytes": 22285,
+      "sha256": "e91b3c2279ab385e60b22361d65190d8d4a3041722c09562348b39f06daf3073"
+    },
+    {
+      "path": "indexed-results.json",
+      "bytes": 130214,
+      "sha256": "e0fa10583590c2e876fe8da6e0e484a0a9e9726d42d3e897d50f9ebca713e735"
+    },
+    {
+      "path": "integration-test-target-proof.json",
+      "bytes": 2388,
+      "sha256": "3d5f17c043c37e4e7b882d2aeea09b5ffbe0d9f2df778845e0a81807dbc2b3b4"
+    },
+    {
+      "path": "oauth-diagnostics-repair-v1/native-results.json",
+      "bytes": 1725,
+      "sha256": "c3b4ae490d6d7f933656890a2b0d632fad23c42ea9ddc2740e059a764e353edb"
+    },
+    {
+      "path": "oauth-diagnostics-repair-v1/patch-payload.json",
+      "bytes": 9166,
+      "sha256": "38f19ad72c204c803974cdfb564f1cd910cc7135d609e3bd14ea3b85bc3e60ef"
+    },
+    {
+      "path": "oauth-diagnostics-repair-v1/source-control-flow-invariance.json",
+      "bytes": 5586,
+      "sha256": "23ecefe36bb7951dec28ece85b16669431d351d937740e24b4ed04beede575db"
+    },
+    {
+      "path": "original-analysis.sarif.json",
+      "bytes": 946187,
+      "sha256": "72e2c576fc5231498229f871e7bef98b78bb4e6606b8d1ecab1f5c5fea39774e"
+    },
+    {
+      "path": "original-rule-metadata.json",
+      "bytes": 2620,
+      "sha256": "cc242cf14190b86ab51b14b329a5b7cd1b576a3954ef7a0722ee6f5cebd0337a"
+    },
+    {
+      "path": "pointer32-review-proof.tar.gz",
+      "bytes": 130937,
+      "sha256": "c2ad9f3390cc22eec0fbfddd4a1817a50ce2ee64ce89b32d2bbd0c1605bbab1d"
+    },
+    {
+      "path": "previous23-result-index-map-v2.json",
+      "bytes": 269,
+      "sha256": "6a76c8af061954f29967a1e47a47cb1a539ce7c61b18c52d42c522485ed05e62"
+    },
+    {
+      "path": "previous23-result-index-map.json",
+      "bytes": 3208,
+      "sha256": "ef677731fc23689d06d924ac8dc67c51f46db0ac5d8f123a01135be98ad97e3d"
+    },
+    {
+      "path": "prior-client-nine-review.json",
+      "bytes": 19471,
+      "sha256": "440006c5344a9da9144fff00acc502f6142d2900b63aa48e897a8b585e89ce93"
+    },
+    {
+      "path": "prior-fixture-ten-review.json",
+      "bytes": 82469,
+      "sha256": "71eb15ab53f83e9b5e0a98c831f063aefb4368ca16b848a54684d3f5c6bf8001"
+    },
+    {
+      "path": "prior-root-four-review.json",
+      "bytes": 6278,
+      "sha256": "5cc3139342a8325ead479ba22d84120e44aed6ad322a14af941b52c9d6b446d0"
+    },
+    {
+      "path": "review-codespell.log",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "review-maintenance-receipt.json",
+      "bytes": 3486,
+      "sha256": "37d6de84f0fc8521f50e39aa55a02d718af8379bb1ad2c6d2c7d12fafafe05b1"
+    },
+    {
+      "path": "review-prettier.log",
+      "bytes": 79,
+      "sha256": "d4f8bb7e1167dbc3c463801967b57f7d3839cb4c0ac866f48fcc47f0debdbb82"
+    },
+    {
+      "path": "root-pointer32-review.json",
+      "bytes": 50536,
+      "sha256": "0e76848a68f7025daf398244f9a6891481c442501b5f35291d01f0401c1c7471"
+    },
+    {
+      "path": "security-native-proof-desktop-receipt.json",
+      "bytes": 1755,
+      "sha256": "bdefb2deba1001723c4402d2459e65ce3aa08ceeaadf8b2e0ccd325f7543724b"
+    },
+    {
+      "path": "security-native-proof-v1.tar.gz",
+      "bytes": 368568,
+      "sha256": "602ea149bd7597141a6b61682060289e23714636c5b6afffdcdda0d629d4c381"
+    },
+    {
+      "path": "source-contexts-nonpointer.json",
+      "bytes": 2219945,
+      "sha256": "5131bb324b8843a4cb5b4044bfd2a29b06404162a92ad7be3c884c61f945acc9"
+    },
+    {
+      "path": "source-pins-nonpointer.json",
+      "bytes": 31475,
+      "sha256": "1f58849092f5af8c4ba402548591729ce5fe4f8cdcf60e2e1d5cf503b17c59b1"
+    },
+    {
+      "path": "source-review/base/codex-rs/app-server-test-client/src/lib.rs",
+      "bytes": 90179,
+      "sha256": "7077d4648104a0b4847db3e0900a6ec3d8d94a2fd5632c0f46cc11416f8ebfd7"
+    },
+    {
+      "path": "source-review/base/codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 85252,
+      "sha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec"
+    },
+    {
+      "path": "source-review/base/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "bytes": 48131,
+      "sha256": "cc13127493d07e8303c158f36f6548b039c8bd053c3e1dca9697e641a5da1925"
+    },
+    {
+      "path": "source-review/base/codex-rs/cli/src/login.rs",
+      "bytes": 22227,
+      "sha256": "a18109e15b321dbeeae421ae8c5e5b03f23b6145f66226599a67c8977220b6b5"
+    },
+    {
+      "path": "source-review/base/codex-rs/exec-server/src/remote/noise_tests.rs",
+      "bytes": 13143,
+      "sha256": "bbea2fb4a5987ddd9ee6203d226b3eb5af52358f3d0a0512decd2d10267cdae1"
+    },
+    {
+      "path": "source-review/base/codex-rs/exec-server/tests/http_request_logging.rs",
+      "bytes": 6493,
+      "sha256": "acbd3907a6b41a74b45628cd745977d7e433bdbcc168656b34b46397da061643"
+    },
+    {
+      "path": "source-review/base/codex-rs/exec/src/event_processor_with_human_output.rs",
+      "bytes": 19866,
+      "sha256": "162978c3cf91e59cc1bd1ae3be4bd9ffe653a31c105fcee94b7fcae600c9a2da"
+    },
+    {
+      "path": "source-review/base/codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "bytes": 31150,
+      "sha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "bytes": 7326,
+      "sha256": "8be5d16b95e372198836658af92134d237cd25d5808c7bcfae901a34ea7ae7e2"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 64210,
+      "sha256": "98ae3d4ebe0271abf171d98514e24459f60fa10f8bf5bebdc2453589868400b7"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/automation_hcsn_pq_fixture.rs",
+      "bytes": 11364,
+      "sha256": "8c13ee4ab4bcde8656c99722975e1008414010905cc790617afc21bdaf8de4d7"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/cell_q24_model_command_root_support_tests.rs",
+      "bytes": 16237,
+      "sha256": "f5150b07d6a33f508bb97ab643a3479c5b7682c2bb5eac85b867118af2c0a9ff"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/cpu_policy_consumer_tests.rs",
+      "bytes": 19141,
+      "sha256": "16dd7cd3982a639c245a66ba972674378f13276eafb30c96cb9921bddea85296"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "bytes": 20745,
+      "sha256": "38d26c2744a9c2ce0ebb323253223e503022ad0aea2aaad48d97722f57a7c87b"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "bytes": 10443,
+      "sha256": "65d1cc71f25060209907fed9eccbf7c860780ba2eb64a696b214bcff55990ad8"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/pq_final_use_tests.rs",
+      "bytes": 10782,
+      "sha256": "6928c8730dcfb880264c0c9b28165c5f84ac9c624023550a352c431a714b4080"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/production_authority_tests.rs",
+      "bytes": 7777,
+      "sha256": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "bytes": 32191,
+      "sha256": "ad7d1efe4c761109a0581a8861142a278bee4fe8c61bd1e77970b20578fdc2a3"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 43040,
+      "sha256": "8d903e33f0addce7de488bb2643db3b4215341c3e66cc1d7d4f7d4179e8922b6"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "bytes": 25198,
+      "sha256": "aebe8dbf729c7281ed7eed1390cad009b07907605d6c15a08d9b7e1564b76acb"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "bytes": 14445,
+      "sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-context-compiler/src/provider_request_tests.rs",
+      "bytes": 18513,
+      "sha256": "6a769196e4d14f4460cc798d1d3ddafd6862053b28b497a0cb6298b3b22f03a8"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/authority_host_clock_slow_tests.rs",
+      "bytes": 11009,
+      "sha256": "450eba87c24ad36362360feb4a585d00ac50176188c9f24ee39c75f5539f3648"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/authority_host_store_tests.rs",
+      "bytes": 16692,
+      "sha256": "d5eebf5bfa2ecb0b7d651d67bb69e0d4cc24f6085bc7198cb2b827f888ba6ab7"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_control.rs",
+      "bytes": 43849,
+      "sha256": "1ff07198512077ab135529b903593aff5f562d7e39235c4ba029dd4d7c988054"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_pq_entry_tests.rs",
+      "bytes": 4786,
+      "sha256": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_pq_frontier_tests.rs",
+      "bytes": 7687,
+      "sha256": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "bytes": 6204,
+      "sha256": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "bytes": 15901,
+      "sha256": "fe4ed8ec5be6b4167b266cdced0f99a28bfff84767733d41c7e1bfed8952b2af"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_retained_tests.rs",
+      "bytes": 11697,
+      "sha256": "2d856131f32640ff4d4e52b415cf8c0dceb60cc30516ba05c8b457838caaf1c6"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_root_observer_tests.rs",
+      "bytes": 16130,
+      "sha256": "f2d66073a6870d3015815490c05d1de0462ee4962a101b9dd2bd503379be43b2"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "bytes": 11697,
+      "sha256": "885c8d6b4ad42f002bf38449264bef09eaf9831aafff62e870d9488820ffd288"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 42024,
+      "sha256": "0ee700f257190ee5b626d3a020bcce267a3eb08155b44c7fcbe52ab1027d13d7"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/src/pq_auth.rs",
+      "bytes": 5694,
+      "sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "bytes": 3063,
+      "sha256": "ca77c0eae30d530bd760e284091bcfc7ac266f815add1564e2c6b4827d184ca9"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+      "bytes": 43792,
+      "sha256": "8406a1eee302ebce0a6ff03a506bcd4ed88624e4b09774e5570f84d563f5f94a"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-evidence/src/provider_claim_tests.rs",
+      "bytes": 4858,
+      "sha256": "d533990bcd9b1105a59f29dc5d10c8653dbb4aeb0fb5cc8ced7acc92e99caad7"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-evidence/src/provider_tests.rs",
+      "bytes": 37591,
+      "sha256": "e7d5c073de06bf139c94b486cc7c6dd1559444110981494b939c6def51727017"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-evidence/src/summary_tests.rs",
+      "bytes": 6241,
+      "sha256": "3084fbc198cf8edf0999b0656feb562352b4d5bf8acf938c91bed17fb6ec03b7"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 13003,
+      "sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "bytes": 8288,
+      "sha256": "e210102f9357974451e1acbf23ba5ca4a647367bd91ae1b3996be9160c611957"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "bytes": 18274,
+      "sha256": "fbf580484a96974b1a1b24d75db8628caabeedfc94d1f747747d8c1faedda399"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-matrixd/src/config/tests.rs",
+      "bytes": 4084,
+      "sha256": "c3c0a0f76e1e3c627cdcbb2447c1a3af1a54d492cb17a52361fa5c4148e382b1"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "bytes": 9732,
+      "sha256": "d60bb03142db4049473369d54f587c14bd7beb79f09cdd9525057a0e7548ef03"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/production_calculator_owner_tests.rs",
+      "bytes": 21825,
+      "sha256": "9536adbc9552d24c4d45509350c22e7c17e6a8df244e1f200d8dfa6e164ffb1d"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs",
+      "bytes": 20720,
+      "sha256": "146604f4dc28ab5db037dbf6cda0a932e8306c0ebf7dc1710b8c3d0f2754c5d0"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/production_hos2_ordering_tests.rs",
+      "bytes": 12734,
+      "sha256": "7bd50a6136ad5f92fcd7576c1e59b33f52b41f2441de20db4448621ed2f07e13"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/production_hos2_process_tests.rs",
+      "bytes": 11337,
+      "sha256": "e13fdff356b4f28b70fa03f31f70b8d3f4684919f5421f80ce36c3099b324c68"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/production_hos2_tests.rs",
+      "bytes": 32271,
+      "sha256": "506913af5f791aa5070bdc86ca689381b590dc7803711f4117a68d3a9396c356"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-memory/src/production_notes_owner_tests.rs",
+      "bytes": 21141,
+      "sha256": "7af1fb4332cb138167aea265528d3a0b53b402e56bc6a88d3ea51057cfb85248"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-ndu/src/owner_tests.rs",
+      "bytes": 9987,
+      "sha256": "2d914d64b75a0ee7ba6c20e9062d4c673ef061f77966fc99f506ca15eb6df698"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-operations/src/durable_clock_tests.rs",
+      "bytes": 5611,
+      "sha256": "4811cea6fc0ffae04e6bee825a6064d6a34a1446f95c77444869612fb797c885"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-operations/src/durable_dispatch_tests.rs",
+      "bytes": 12851,
+      "sha256": "4853b4d638f2ecd2b8749a0c44e35b30d4b473c5e517669f0994c4c11849fc9f"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "bytes": 23614,
+      "sha256": "5dfd2df3776fe5576921c54596e91b9da3e394593e78591fd6891195955502f0"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-operations/src/fault_tests.rs",
+      "bytes": 13727,
+      "sha256": "1988736c0249a54fb9a21b1c87ee799c65dccb66287e54b7a7f8576a72b56451"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "bytes": 23639,
+      "sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 109869,
+      "sha256": "2883d8f2dda7c8a1641a749f79effd9b20ed0bc29697ec877f89239457828e78"
+    },
+    {
+      "path": "source-review/base/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "source-review/base/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs",
+      "bytes": 8652,
+      "sha256": "148f4e1bc3a115fe8c6b6bb2fe60cc2b8b7e0dae77e4b209eb96c62a8f348315"
+    },
+    {
+      "path": "source-review/base/codex-rs/http-client/src/outbound_proxy_tests.rs",
+      "bytes": 21810,
+      "sha256": "cc7cb681ed730a188cbc94d66c052e29a34891494cddfe8651ba520364a947e9"
+    },
+    {
+      "path": "source-review/base/codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+      "bytes": 31715,
+      "sha256": "041a6520ead6483f8636bc074279fa9874553057638811d7203d628879c406b6"
+    },
+    {
+      "path": "source-review/base/codex-rs/login/src/auth/auth_tests.rs",
+      "bytes": 105176,
+      "sha256": "dfa78ddf691c2c36de411bdaf9c40301edd2e46d81d8d87fe8c87b0ad172ce12"
+    },
+    {
+      "path": "source-review/base/codex-rs/login/src/server.rs",
+      "bytes": 48361,
+      "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea"
+    },
+    {
+      "path": "source-review/base/codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "bytes": 24899,
+      "sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2"
+    },
+    {
+      "path": "source-review/base/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/ciphers.rs",
+      "bytes": 11234,
+      "sha256": "35dd0eaf0a4428f3e4996a40082cee15669dce1e68bec8f2aca00cbbc9db3061"
+    },
+    {
+      "path": "source-review/base/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/attachments.rs",
+      "bytes": 11804,
+      "sha256": "c094e404565a16b3d131a91266b57035c594c6902ac936ec36fc6436d0f545e0"
+    },
+    {
+      "path": "source-review/current/codex-rs/app-server-test-client/src/lib.rs",
+      "bytes": 90536,
+      "sha256": "607c8044f8853b968408877605245adb9eca2db989e1c3bf2d27621881262a21"
+    },
+    {
+      "path": "source-review/current/codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 85252,
+      "sha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec"
+    },
+    {
+      "path": "source-review/current/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "bytes": 48131,
+      "sha256": "cc13127493d07e8303c158f36f6548b039c8bd053c3e1dca9697e641a5da1925"
+    },
+    {
+      "path": "source-review/current/codex-rs/cli/src/login.rs",
+      "bytes": 22152,
+      "sha256": "da68d9b94875bb852379f895c435278c07e4c594c02548247e0ee6cd9102f17c"
+    },
+    {
+      "path": "source-review/current/codex-rs/exec-server/src/remote/noise_tests.rs",
+      "bytes": 13143,
+      "sha256": "bbea2fb4a5987ddd9ee6203d226b3eb5af52358f3d0a0512decd2d10267cdae1"
+    },
+    {
+      "path": "source-review/current/codex-rs/exec-server/tests/http_request_logging.rs",
+      "bytes": 6493,
+      "sha256": "acbd3907a6b41a74b45628cd745977d7e433bdbcc168656b34b46397da061643"
+    },
+    {
+      "path": "source-review/current/codex-rs/exec/src/event_processor_with_human_output.rs",
+      "bytes": 19866,
+      "sha256": "162978c3cf91e59cc1bd1ae3be4bd9ffe653a31c105fcee94b7fcae600c9a2da"
+    },
+    {
+      "path": "source-review/current/codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "bytes": 31150,
+      "sha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "bytes": 7326,
+      "sha256": "8be5d16b95e372198836658af92134d237cd25d5808c7bcfae901a34ea7ae7e2"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 64210,
+      "sha256": "98ae3d4ebe0271abf171d98514e24459f60fa10f8bf5bebdc2453589868400b7"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/automation_hcsn_pq_fixture.rs",
+      "bytes": 11364,
+      "sha256": "8c13ee4ab4bcde8656c99722975e1008414010905cc790617afc21bdaf8de4d7"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/cell_q24_model_command_root_support_tests.rs",
+      "bytes": 16237,
+      "sha256": "f5150b07d6a33f508bb97ab643a3479c5b7682c2bb5eac85b867118af2c0a9ff"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/cpu_policy_consumer_tests.rs",
+      "bytes": 19141,
+      "sha256": "16dd7cd3982a639c245a66ba972674378f13276eafb30c96cb9921bddea85296"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "bytes": 20745,
+      "sha256": "38d26c2744a9c2ce0ebb323253223e503022ad0aea2aaad48d97722f57a7c87b"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "bytes": 10955,
+      "sha256": "3618a782a02a270fe36bbb74ef971bf704f3121be6911d3af057a03d9160f499"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/pq_final_use_tests.rs",
+      "bytes": 10782,
+      "sha256": "6928c8730dcfb880264c0c9b28165c5f84ac9c624023550a352c431a714b4080"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/production_authority_tests.rs",
+      "bytes": 7777,
+      "sha256": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "bytes": 32191,
+      "sha256": "ad7d1efe4c761109a0581a8861142a278bee4fe8c61bd1e77970b20578fdc2a3"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 43040,
+      "sha256": "8d903e33f0addce7de488bb2643db3b4215341c3e66cc1d7d4f7d4179e8922b6"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "bytes": 25198,
+      "sha256": "aebe8dbf729c7281ed7eed1390cad009b07907605d6c15a08d9b7e1564b76acb"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "bytes": 14445,
+      "sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-context-compiler/src/provider_request_tests.rs",
+      "bytes": 18513,
+      "sha256": "6a769196e4d14f4460cc798d1d3ddafd6862053b28b497a0cb6298b3b22f03a8"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/authority_host_clock_slow_tests.rs",
+      "bytes": 11009,
+      "sha256": "450eba87c24ad36362360feb4a585d00ac50176188c9f24ee39c75f5539f3648"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/authority_host_store_tests.rs",
+      "bytes": 16692,
+      "sha256": "d5eebf5bfa2ecb0b7d651d67bb69e0d4cc24f6085bc7198cb2b827f888ba6ab7"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_control.rs",
+      "bytes": 43849,
+      "sha256": "1ff07198512077ab135529b903593aff5f562d7e39235c4ba029dd4d7c988054"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_pq_entry_tests.rs",
+      "bytes": 4786,
+      "sha256": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_pq_frontier_tests.rs",
+      "bytes": 7687,
+      "sha256": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "bytes": 6204,
+      "sha256": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "bytes": 15901,
+      "sha256": "fe4ed8ec5be6b4167b266cdced0f99a28bfff84767733d41c7e1bfed8952b2af"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_retained_tests.rs",
+      "bytes": 11697,
+      "sha256": "2d856131f32640ff4d4e52b415cf8c0dceb60cc30516ba05c8b457838caaf1c6"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_root_observer_tests.rs",
+      "bytes": 16130,
+      "sha256": "f2d66073a6870d3015815490c05d1de0462ee4962a101b9dd2bd503379be43b2"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "bytes": 11697,
+      "sha256": "885c8d6b4ad42f002bf38449264bef09eaf9831aafff62e870d9488820ffd288"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 42024,
+      "sha256": "0ee700f257190ee5b626d3a020bcce267a3eb08155b44c7fcbe52ab1027d13d7"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/src/pq_auth.rs",
+      "bytes": 5694,
+      "sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "bytes": 3063,
+      "sha256": "ca77c0eae30d530bd760e284091bcfc7ac266f815add1564e2c6b4827d184ca9"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+      "bytes": 43792,
+      "sha256": "8406a1eee302ebce0a6ff03a506bcd4ed88624e4b09774e5570f84d563f5f94a"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-evidence/src/provider_claim_tests.rs",
+      "bytes": 4858,
+      "sha256": "d533990bcd9b1105a59f29dc5d10c8653dbb4aeb0fb5cc8ced7acc92e99caad7"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-evidence/src/provider_tests.rs",
+      "bytes": 37591,
+      "sha256": "e7d5c073de06bf139c94b486cc7c6dd1559444110981494b939c6def51727017"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-evidence/src/summary_tests.rs",
+      "bytes": 6241,
+      "sha256": "3084fbc198cf8edf0999b0656feb562352b4d5bf8acf938c91bed17fb6ec03b7"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 13003,
+      "sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "bytes": 8288,
+      "sha256": "e210102f9357974451e1acbf23ba5ca4a647367bd91ae1b3996be9160c611957"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "bytes": 18274,
+      "sha256": "fbf580484a96974b1a1b24d75db8628caabeedfc94d1f747747d8c1faedda399"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-matrixd/src/config/tests.rs",
+      "bytes": 4084,
+      "sha256": "c3c0a0f76e1e3c627cdcbb2447c1a3af1a54d492cb17a52361fa5c4148e382b1"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "bytes": 9732,
+      "sha256": "d60bb03142db4049473369d54f587c14bd7beb79f09cdd9525057a0e7548ef03"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/production_calculator_owner_tests.rs",
+      "bytes": 21825,
+      "sha256": "9536adbc9552d24c4d45509350c22e7c17e6a8df244e1f200d8dfa6e164ffb1d"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs",
+      "bytes": 20720,
+      "sha256": "146604f4dc28ab5db037dbf6cda0a932e8306c0ebf7dc1710b8c3d0f2754c5d0"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/production_hos2_ordering_tests.rs",
+      "bytes": 12734,
+      "sha256": "7bd50a6136ad5f92fcd7576c1e59b33f52b41f2441de20db4448621ed2f07e13"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/production_hos2_process_tests.rs",
+      "bytes": 11337,
+      "sha256": "e13fdff356b4f28b70fa03f31f70b8d3f4684919f5421f80ce36c3099b324c68"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/production_hos2_tests.rs",
+      "bytes": 32271,
+      "sha256": "506913af5f791aa5070bdc86ca689381b590dc7803711f4117a68d3a9396c356"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-memory/src/production_notes_owner_tests.rs",
+      "bytes": 21141,
+      "sha256": "7af1fb4332cb138167aea265528d3a0b53b402e56bc6a88d3ea51057cfb85248"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-ndu/src/owner_tests.rs",
+      "bytes": 9987,
+      "sha256": "2d914d64b75a0ee7ba6c20e9062d4c673ef061f77966fc99f506ca15eb6df698"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-operations/src/durable_clock_tests.rs",
+      "bytes": 5611,
+      "sha256": "4811cea6fc0ffae04e6bee825a6064d6a34a1446f95c77444869612fb797c885"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-operations/src/durable_dispatch_tests.rs",
+      "bytes": 12851,
+      "sha256": "4853b4d638f2ecd2b8749a0c44e35b30d4b473c5e517669f0994c4c11849fc9f"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "bytes": 23614,
+      "sha256": "5dfd2df3776fe5576921c54596e91b9da3e394593e78591fd6891195955502f0"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-operations/src/fault_tests.rs",
+      "bytes": 13727,
+      "sha256": "1988736c0249a54fb9a21b1c87ee799c65dccb66287e54b7a7f8576a72b56451"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "bytes": 23639,
+      "sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 109869,
+      "sha256": "2883d8f2dda7c8a1641a749f79effd9b20ed0bc29697ec877f89239457828e78"
+    },
+    {
+      "path": "source-review/current/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "source-review/current/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs",
+      "bytes": 8652,
+      "sha256": "148f4e1bc3a115fe8c6b6bb2fe60cc2b8b7e0dae77e4b209eb96c62a8f348315"
+    },
+    {
+      "path": "source-review/current/codex-rs/http-client/src/outbound_proxy_tests.rs",
+      "bytes": 21810,
+      "sha256": "cc7cb681ed730a188cbc94d66c052e29a34891494cddfe8651ba520364a947e9"
+    },
+    {
+      "path": "source-review/current/codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+      "bytes": 31715,
+      "sha256": "041a6520ead6483f8636bc074279fa9874553057638811d7203d628879c406b6"
+    },
+    {
+      "path": "source-review/current/codex-rs/login/src/auth/auth_tests.rs",
+      "bytes": 105176,
+      "sha256": "dfa78ddf691c2c36de411bdaf9c40301edd2e46d81d8d87fe8c87b0ad172ce12"
+    },
+    {
+      "path": "source-review/current/codex-rs/login/src/server.rs",
+      "bytes": 48361,
+      "sha256": "59ea616627e40ba9682eab03b4c3d57ecbdc66557f188d354fbf6dee0ec1d6ea"
+    },
+    {
+      "path": "source-review/current/codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "bytes": 24899,
+      "sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2"
+    },
+    {
+      "path": "source-review/current/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/ciphers.rs",
+      "bytes": 11234,
+      "sha256": "35dd0eaf0a4428f3e4996a40082cee15669dce1e68bec8f2aca00cbbc9db3061"
+    },
+    {
+      "path": "source-review/current/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/file_encryption/attachments.rs",
+      "bytes": 11804,
+      "sha256": "c094e404565a16b3d131a91266b57035c594c6902ac936ec36fc6436d0f545e0"
+    },
+    {
+      "path": "support-source-pins.json",
+      "bytes": 12686,
+      "sha256": "8b83d70234d15a824a6cf37b01841b16d39dd91710af99d4d419cc63d373622b"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/Cargo.lock",
+      "bytes": 422790,
+      "sha256": "6629440b8121f2971abe2aa8e0e4cfcabb6ecac96907dd5c37b2796c11f221ff"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/Cargo.toml",
+      "bytes": 23983,
+      "sha256": "d11a310d64b11a6b64447c0b17545c8848f8b3e787cb2036f981497fe40c67e3"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/exec/src/cli.rs",
+      "bytes": 9810,
+      "sha256": "ba4767bdf5d83376830864b60a8a5e350e5e189fbc6e97a834d4a7f36240e822"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/exec/src/event_processor_with_jsonl_output.rs",
+      "bytes": 26428,
+      "sha256": "d43476319a61c53369055fdbbd7c093100b23bc93f9b01365db0af4c96df3e2c"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-agentd/src/automation_hcsn_pq.rs",
+      "bytes": 7781,
+      "sha256": "504a89f5d905205f4515e11e2e885934c64eba450bbeff24fe0ff0e73c6c6c50"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-agentd/src/automation_hcsn_pq_tests.rs",
+      "bytes": 15802,
+      "sha256": "f1049cdfd70a536d6085843d156b2efd810f6bac13f13ae291dd945df4b0e8a1"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-agentd/src/cell_q24_model_command.rs",
+      "bytes": 7228,
+      "sha256": "86e088d62c27c86e32c383b7a0c4831f50cd2110531563bc02bfe808d64712e5"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 95627,
+      "sha256": "0093fc0405e467da7022daa24eca0dcd062c6f7b5b0a08aaf996bb1488a8add8"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-agentd/src/pq_final_use.rs",
+      "bytes": 11259,
+      "sha256": "8e3a4411ae86afbf56c51cd7fab679c1810dbd95fa82525845e7732ff5695ae4"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-agentd/src/production_authority.rs",
+      "bytes": 1502,
+      "sha256": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-automation/Cargo.toml",
+      "bytes": 1324,
+      "sha256": "e8e39e69d52921298a29ed75a12ae46790298fae8d031625c502258f0b12c78d"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-bao-adapter/Cargo.toml",
+      "bytes": 1076,
+      "sha256": "5ca154dbb3e5b0f1f21df36b2e1984e9a57b8549d5f3c5a41b8605e51ee0d191"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "bytes": 21468,
+      "sha256": "78ebb074a9a9a1fc359be8bbf760f50dbd3fa2f644863556075947c6b0009e20"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-compact-engine/src/trust.rs",
+      "bytes": 32898,
+      "sha256": "51ed9700974f027e771050222e2207b796b61c7fd61781af7b87ab2a5343dc4e"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-context-compiler/src/provider_request.rs",
+      "bytes": 53854,
+      "sha256": "b7d37104d1f1fae50e2c84d888f2f30c76a79e7638630e2f18e56c4486c55b3a"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-contracts/Cargo.toml",
+      "bytes": 1061,
+      "sha256": "9a3d8a79b967ca391917b8cb5ecfbcaddcb50efba986773759a65419fe926f8e"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "bytes": 16412,
+      "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 41265,
+      "sha256": "55146bc4b6458269188bf400bcbfcf6b1cda84836cc9c519cdf5e47b41bccf6c"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "bytes": 5686,
+      "sha256": "ced2fc3f95c8e78c9569ac8e534d430b73dc563dee78f2e7a5cdd6437143120a"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 42024,
+      "sha256": "0ee700f257190ee5b626d3a020bcce267a3eb08155b44c7fcbe52ab1027d13d7"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-contracts/src/lib.rs",
+      "bytes": 15271,
+      "sha256": "e4ac1e740f1c0c9e4df9df4c2751a3d2b450e57582df5491ed13b0b02876076f"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "bytes": 12158,
+      "sha256": "7f1035ac3c85341943a1bbdef81f1483b42e5ec64ee8ab79d7fcb0600f0f4905"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "bytes": 973,
+      "sha256": "0e49d197a557f879f4478d600cb33e067e5f31fb0b8978823402a231487d9a4d"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-memory/src/production_hos2_tests.rs",
+      "bytes": 32271,
+      "sha256": "506913af5f791aa5070bdc86ca689381b590dc7803711f4117a68d3a9396c356"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 174460,
+      "sha256": "3db5bebe4f32225e7268e32ced88697593a8fb6b9b15f1903042ec2c8f2ab8b3"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-ndu/src/owner.rs",
+      "bytes": 13166,
+      "sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "bytes": 51068,
+      "sha256": "fa6295111aaf259c8a5263a8488351eeea10f84c92837a09c1369c7dea92a4a1"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "support-source-review/base/codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.toml",
+      "bytes": 7462,
+      "sha256": "98ce2b8539759300ebc3d29dec537801bd689473d51bb29b9570bcad335d565e"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/Cargo.lock",
+      "bytes": 422790,
+      "sha256": "6629440b8121f2971abe2aa8e0e4cfcabb6ecac96907dd5c37b2796c11f221ff"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/Cargo.toml",
+      "bytes": 24176,
+      "sha256": "3be8da55d49613d0a58a0b0b91dca2fc00b4743d050a4d53673a0def10e3da65"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/exec/src/cli.rs",
+      "bytes": 9810,
+      "sha256": "ba4767bdf5d83376830864b60a8a5e350e5e189fbc6e97a834d4a7f36240e822"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/exec/src/event_processor_with_jsonl_output.rs",
+      "bytes": 26428,
+      "sha256": "d43476319a61c53369055fdbbd7c093100b23bc93f9b01365db0af4c96df3e2c"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-agentd/src/automation_hcsn_pq.rs",
+      "bytes": 7781,
+      "sha256": "504a89f5d905205f4515e11e2e885934c64eba450bbeff24fe0ff0e73c6c6c50"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-agentd/src/automation_hcsn_pq_tests.rs",
+      "bytes": 15802,
+      "sha256": "f1049cdfd70a536d6085843d156b2efd810f6bac13f13ae291dd945df4b0e8a1"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-agentd/src/cell_q24_model_command.rs",
+      "bytes": 7228,
+      "sha256": "86e088d62c27c86e32c383b7a0c4831f50cd2110531563bc02bfe808d64712e5"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 95627,
+      "sha256": "0093fc0405e467da7022daa24eca0dcd062c6f7b5b0a08aaf996bb1488a8add8"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-agentd/src/pq_final_use.rs",
+      "bytes": 11259,
+      "sha256": "8e3a4411ae86afbf56c51cd7fab679c1810dbd95fa82525845e7732ff5695ae4"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-agentd/src/production_authority.rs",
+      "bytes": 1502,
+      "sha256": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-automation/Cargo.toml",
+      "bytes": 1324,
+      "sha256": "e8e39e69d52921298a29ed75a12ae46790298fae8d031625c502258f0b12c78d"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-bao-adapter/Cargo.toml",
+      "bytes": 1076,
+      "sha256": "5ca154dbb3e5b0f1f21df36b2e1984e9a57b8549d5f3c5a41b8605e51ee0d191"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "bytes": 21468,
+      "sha256": "78ebb074a9a9a1fc359be8bbf760f50dbd3fa2f644863556075947c6b0009e20"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-compact-engine/src/trust.rs",
+      "bytes": 32898,
+      "sha256": "51ed9700974f027e771050222e2207b796b61c7fd61781af7b87ab2a5343dc4e"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-context-compiler/src/provider_request.rs",
+      "bytes": 53854,
+      "sha256": "b7d37104d1f1fae50e2c84d888f2f30c76a79e7638630e2f18e56c4486c55b3a"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-contracts/Cargo.toml",
+      "bytes": 1061,
+      "sha256": "9a3d8a79b967ca391917b8cb5ecfbcaddcb50efba986773759a65419fe926f8e"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "bytes": 16412,
+      "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 41265,
+      "sha256": "55146bc4b6458269188bf400bcbfcf6b1cda84836cc9c519cdf5e47b41bccf6c"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "bytes": 5686,
+      "sha256": "ced2fc3f95c8e78c9569ac8e534d430b73dc563dee78f2e7a5cdd6437143120a"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 42024,
+      "sha256": "0ee700f257190ee5b626d3a020bcce267a3eb08155b44c7fcbe52ab1027d13d7"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-contracts/src/lib.rs",
+      "bytes": 15271,
+      "sha256": "e4ac1e740f1c0c9e4df9df4c2751a3d2b450e57582df5491ed13b0b02876076f"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "bytes": 12158,
+      "sha256": "7f1035ac3c85341943a1bbdef81f1483b42e5ec64ee8ab79d7fcb0600f0f4905"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "bytes": 973,
+      "sha256": "0e49d197a557f879f4478d600cb33e067e5f31fb0b8978823402a231487d9a4d"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-memory/src/production_hos2_tests.rs",
+      "bytes": 32271,
+      "sha256": "506913af5f791aa5070bdc86ca689381b590dc7803711f4117a68d3a9396c356"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 174460,
+      "sha256": "3db5bebe4f32225e7268e32ced88697593a8fb6b9b15f1903042ec2c8f2ab8b3"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-ndu/src/owner.rs",
+      "bytes": 13166,
+      "sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "bytes": 51068,
+      "sha256": "fa6295111aaf259c8a5263a8488351eeea10f84c92837a09c1369c7dea92a4a1"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/hepta-types/src/digest.rs",
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "support-source-review/current/codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.toml",
+      "bytes": 7462,
+      "sha256": "98ce2b8539759300ebc3d29dec537801bd689473d51bb29b9570bcad335d565e"
+    }
+  ],
+  "rawBytesPreserved": true,
+  "verifiedAllMembersAfterReconstruction": true
+}
