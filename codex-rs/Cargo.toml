@@ -167,6 +167,7 @@ members = [
     "utils/redacted-string",
     "utils/rustls-provider",
     "utils/string",
+    "utils/yaml",
     "utils/cli",
     "utils/elapsed",
     "utils/sandbox-summary",
@@ -190,9 +191,9 @@ members = [
     "codex-experimental-api-macros",
     "plugin",
     "model-provider",
+    "third_party/i18n-config-0.4.8",
 ]
 exclude = [
-    "third_party/i18n-config-0.4.8",
     "third_party/secret-service-6.0.0",
     "third_party/zbus-secret-service-keyring-store-1.0.1",
 ]
@@ -358,6 +359,7 @@ codex-utils-sandbox-summary = { path = "utils/sandbox-summary" }
 codex-utils-sleep-inhibitor = { path = "utils/sleep-inhibitor" }
 codex-utils-stream-parser = { path = "utils/stream-parser" }
 codex-utils-string = { path = "utils/string" }
+codex-utils-yaml = { path = "utils/yaml" }
 codex-utils-template = { path = "utils/template" }
 codex-v8-poc = { path = "v8-poc" }
 codex-workload-identity = { path = "workload-identity" }
@@ -503,7 +505,8 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = { package = "noyalib-serde-yaml", version = "=0.0.58" }
+serde-saphyr = "2.0.0"
+ryu = "1.0.20"
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
@@ -581,8 +584,8 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-# Curated GitHub/plugin export ZIP archives need stored/deflate, not optional codecs.
-zip = { version = "9.0.0", default-features = false, features = ["deflate"] }
+# Preserve ZIP codecs with the reviewed optional feature forwarding.
+zip = { version = "=9.1.3", default-features = false, features = ["aes-crypto", "bzip2-rs", "deflate64", "deflate", "lzma", "ppmd", "time", "zstd", "xz"] }
 zstd = "0.14.3"
 
 wiremock = "0.6"
@@ -731,6 +734,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Reviewed YAML compatibility and ZIP optional-feature patches.
+serde-saphyr = { path = "third_party/serde-saphyr-2.0.0" }
+zip = { path = "third_party/zip-9.1.3" }
 # Preserve Starlark 0.14.2 API while accepting Matrix-compatible BLAKE3.
 starlark = { path = "third_party/starlark-0.14.2-blake3-backport" }
 # Backport Rama upstream time#783 resolution without changing its 0.3.0 API.

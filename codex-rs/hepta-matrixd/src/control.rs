@@ -1,5 +1,6 @@
 use std::future::Future;
 use std::io::ErrorKind;
+#[cfg(any(unix, test))]
 use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
@@ -43,6 +44,7 @@ use tokio_util::sync::CancellationToken;
 use crate::MatrixBridgeError;
 use crate::RemoteMatrixAppServerTransport;
 
+#[cfg(unix)]
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const MAX_ERROR_MESSAGE_CHARS: usize = 512;
@@ -339,6 +341,7 @@ pub(crate) struct MatrixdControlServer {
 }
 
 impl MatrixdControlServer {
+    #[cfg(unix)]
     pub(crate) async fn bind(
         socket_path: PathBuf,
         state: Arc<MatrixdControlState>,
@@ -354,6 +357,21 @@ impl MatrixdControlServer {
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
         })
+    }
+
+    #[cfg(not(unix))]
+    pub(crate) async fn bind(
+        _socket_path: PathBuf,
+        _state: Arc<MatrixdControlState>,
+        _cancellation: CancellationToken,
+    ) -> Result<Self, MatrixdControlError> {
+        // codex_uds cannot authenticate the accepted peer on this platform.
+        // Refuse before creating directories or touching a rendezvous path.
+        Err(std::io::Error::new(
+            ErrorKind::Unsupported,
+            "matrixd owner control requires kernel peer user identity",
+        )
+        .into())
     }
 
     pub(crate) async fn run(mut self) -> Result<(), MatrixdControlError> {
@@ -416,6 +434,7 @@ async fn serve_connection(
     Ok(())
 }
 
+#[cfg(any(unix, test))]
 async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
     let parent = socket_path.parent().ok_or_else(|| {
         MatrixdControlError::Invalid("matrixd control socket has no parent directory".to_string())
@@ -457,11 +476,6 @@ async fn set_owner_only(path: &Path) -> Result<(), MatrixdControlError> {
     use std::os::unix::fs::PermissionsExt;
 
     tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await?;
-    Ok(())
-}
-
-#[cfg(not(unix))]
-async fn set_owner_only(_path: &Path) -> Result<(), MatrixdControlError> {
     Ok(())
 }
 
@@ -556,7 +570,7 @@ mod tests {
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
     #[derive(Default)]
-    struct FakeTransport {
+    pub(super) struct FakeTransport {
         cancellations: Mutex<Vec<(String, String)>>,
         resolutions: Mutex<Vec<(RequestId, PendingApprovalKind, LocalApprovalDecision)>>,
     }
@@ -618,7 +632,7 @@ mod tests {
         }
     }
 
-    fn agent_id() -> TestResult<AgentId> {
+    pub(super) fn agent_id() -> TestResult<AgentId> {
         Ok(AgentId::parse(AGENT_ID)?)
     }
 
@@ -662,7 +676,7 @@ mod tests {
         })
     }
 
-    async fn state(
+    pub(super) async fn state(
         temp: &TempDir,
         fake: Arc<FakeTransport>,
     ) -> TestResult<(Arc<MatrixdControlState>, Arc<MatrixdConnectionState>)> {
@@ -990,3 +1004,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "control_platform_tests.rs"]
+mod platform_tests;

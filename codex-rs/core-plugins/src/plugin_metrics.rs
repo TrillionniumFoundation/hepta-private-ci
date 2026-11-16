@@ -74,12 +74,10 @@ pub(crate) fn load_plugin_metrics_operations(
     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
         return None;
     }
-    // The YAML compatibility parser can collapse duplicate mapping entries
-    // before a typed Serde visitor sees them. Its Value target rejects duplicate
-    // keys at every depth, so validate the original bytes before deserializing
-    // the schema with its existing scalar conversions.
-    serde_yaml::from_slice::<serde_yaml::Value>(&contents).ok()?;
-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
+    // Validate duplicate mapping keys in the original document before typed
+    // schema conversion, including keys nested below ignored values.
+    codex_utils_yaml::validate(std::str::from_utf8(&contents).ok()?).ok()?;
+    let manifest: AnalyticsManifest = codex_utils_yaml::from_slice(&contents).ok()?;
     validate_manifest(manifest, plugin_root)
 }
 
