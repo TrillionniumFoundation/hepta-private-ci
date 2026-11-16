@@ -58,7 +58,10 @@ fn same_status_clears_reopened_quarantine_and_preserves_provenance() {
     let directory = tempfile::tempdir().expect("journal directory");
     let path = directory.path().join("journal.json");
     journal = persist_and_reopen(&path, &journal);
-    assert_eq!(journal.state(&key), Some(ProviderEffectState::Indeterminate));
+    assert_eq!(
+        journal.state(&key),
+        Some(ProviderEffectState::Indeterminate)
+    );
 
     let observed = ProviderEffectStatusObservation::from_ack(&accepted);
     assert_eq!(
@@ -128,7 +131,10 @@ fn repeated_quarantine_records_each_reconciliation_without_rebinding_operation()
             Ok(disposition)
         );
         journal = persist_and_reopen(&path, &journal);
-        assert_eq!(journal.state(&key), Some(ProviderEffectState::Indeterminate));
+        assert_eq!(
+            journal.state(&key),
+            Some(ProviderEffectState::Indeterminate)
+        );
         let before = serde_json::to_vec(&journal).expect("encode quarantine");
 
         let mut substituted = observed.clone();
