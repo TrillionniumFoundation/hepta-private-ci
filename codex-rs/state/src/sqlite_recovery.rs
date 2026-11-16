@@ -105,6 +105,8 @@ impl SqliteConfig {
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
         if path.parent() != Some(self.home()) {
+            #[cfg(unix)]
+            report_bind_failure("config_parent");
             return Err(SqliteRecoveryError::Indeterminate);
         }
         ExistingSqliteRecoveryGuard::bind(path)
@@ -133,35 +135,53 @@ impl SqliteConfig {
     }
 }
 
+#[cfg(unix)]
+fn report_bind_failure(stage: &'static str) {
+    use std::io::Write as _;
+
+    let _ = writeln!(std::io::stderr().lock(), "[sqlite-recovery-bind] {stage}");
+}
+
 impl ExistingSqliteRecoveryGuard {
     #[cfg(unix)]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let parent_path = database_path
             .parent()
-            .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let canonical_parent = parent_path.canonicalize().map_err(indeterminate)?;
+            .ok_or(SqliteRecoveryError::Indeterminate)
+            .inspect_err(|_| report_bind_failure("parent_path"))?;
+        let canonical_parent = parent_path
+            .canonicalize()
+            .map_err(indeterminate)
+            .inspect_err(|_| report_bind_failure("parent_canonicalize"))?;
         if canonical_parent != parent_path {
+            report_bind_failure("parent_spelling");
             return Err(SqliteRecoveryError::Indeterminate);
         }
 
-        let parent = RetainedObject::bind_parent(parent_path)?;
+        let parent = RetainedObject::bind_parent(parent_path)
+            .inspect_err(|_| report_bind_failure("parent"))?;
         let database_name = database_path
             .file_name()
-            .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let database = RetainedObject::bind_file(&parent.descriptor, database_path, database_name)?;
+            .ok_or(SqliteRecoveryError::Indeterminate)
+            .inspect_err(|_| report_bind_failure("database_name"))?;
+        let database = RetainedObject::bind_file(&parent.descriptor, database_path, database_name)
+            .inspect_err(|_| report_bind_failure("database"))?;
         let sidecars = [
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-wal"),
-            )?,
+            )
+            .inspect_err(|_| report_bind_failure("wal"))?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-shm"),
-            )?,
+            )
+            .inspect_err(|_| report_bind_failure("shm"))?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-journal"),
-            )?,
+            )
+            .inspect_err(|_| report_bind_failure("journal"))?,
         ];
         let guard = Self {
             inner: Arc::new(RecoveryGuardInner {
@@ -171,7 +191,9 @@ impl ExistingSqliteRecoveryGuard {
                 sidecars,
             }),
         };
-        guard.revalidate()?;
+        guard
+            .revalidate()
+            .inspect_err(|_| report_bind_failure("revalidate"))?;
         Ok(guard)
     }
 
