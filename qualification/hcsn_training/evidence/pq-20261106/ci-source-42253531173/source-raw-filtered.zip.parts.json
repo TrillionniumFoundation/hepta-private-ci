@@ -1,0 +1,31 @@
+{
+  "collection_manifest": "qa/repository-consolidation/20261116/retained-evidence-parts/MANIFEST.json",
+  "original": {
+    "bytes": 969056,
+    "mode": "100644",
+    "oid": "54cabcfcf50547db192aff9827d77bd248d19672",
+    "original_incoming_commits": [
+      "16c301971a48e39f80dbc35652c4bba2165bf1e7"
+    ],
+    "parts": [
+      {
+        "bytes": 500000,
+        "offset": 0,
+        "oid": "54f9b77d6cb84c605d6685891cafe5e3379dcec6",
+        "path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42253531173/source-raw-filtered.zip.part-001",
+        "sha256": "cfcceaffbde47f0c71263a0090e5e463cf60fba116fbbc5556d0134c71386786"
+      },
+      {
+        "bytes": 469056,
+        "offset": 500000,
+        "oid": "ee0beef56e2d25da7c15da82260801f3ec7e8a5f",
+        "path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42253531173/source-raw-filtered.zip.part-002",
+        "sha256": "a99f48a893324b972d9b6af533602f31386b045b6fe63944ef758760fb519fda"
+      }
+    ],
+    "path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42253531173/source-raw-filtered.zip",
+    "sha256": "cd2595435359490555779f832eaf203c18dd0e71bbdd8d933050fac2de0e2ba7"
+  },
+  "restore_command": "python3 qa/repository-consolidation/20261116/retained-evidence-parts/verify.py --restore-to /tmp/hepta-retained-evidence-originals",
+  "schema": "hepta.retained-evidence-parts.v1"
+}

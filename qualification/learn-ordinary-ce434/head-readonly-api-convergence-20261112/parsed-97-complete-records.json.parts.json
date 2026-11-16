@@ -1,0 +1,31 @@
+{
+  "collection_manifest": "qa/repository-consolidation/20261116/retained-evidence-parts/MANIFEST.json",
+  "original": {
+    "bytes": 997276,
+    "mode": "100644",
+    "oid": "c688bd473b0e00c92a5d7dfa03bb94f8c6ac999a",
+    "original_incoming_commits": [
+      "9f07f7adb05ed1a12d1732f2d4779e1ae6ec8601"
+    ],
+    "parts": [
+      {
+        "bytes": 500000,
+        "offset": 0,
+        "oid": "b7805be654aea8f7cb5a7456eacb8a10e5a3117c",
+        "path": "qualification/learn-ordinary-ce434/head-readonly-api-convergence-20261112/parsed-97-complete-records.json.part-001",
+        "sha256": "eb12235f8aa5fe1a3e958ee044c1fbff7a89f25ed90accf8b0dc16fa0a99c7d4"
+      },
+      {
+        "bytes": 497276,
+        "offset": 500000,
+        "oid": "b699ea27923ef4cea92bfd76f9c8fb56ed684151",
+        "path": "qualification/learn-ordinary-ce434/head-readonly-api-convergence-20261112/parsed-97-complete-records.json.part-002",
+        "sha256": "336a261ae5a760671bd78323fef8672df97784387344cdf789f1d2c63f39c7d4"
+      }
+    ],
+    "path": "qualification/learn-ordinary-ce434/head-readonly-api-convergence-20261112/parsed-97-complete-records.json",
+    "sha256": "122fa4bec7fe29cfb3df17a27f938b5a5ef4c25d83c821243796d410bdc05f55"
+  },
+  "restore_command": "python3 qa/repository-consolidation/20261116/retained-evidence-parts/verify.py --restore-to /tmp/hepta-retained-evidence-originals",
+  "schema": "hepta.retained-evidence-parts.v1"
+}

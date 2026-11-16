@@ -63,13 +63,13 @@ Other broader failures are recorded individually. First-round Windows checkout p
 
 | Package | Retention |
 | --- | --- |
-| [Final source filtered ZIP](ci-source-42253531173/source-raw-filtered.zip) | 669 of 672 original members, byte-identical. Exactly three confirmed compiled ELF bridge executables are excluded from Git. |
+| [Final source filtered ZIP](ci-source-42253531173/source-raw-filtered.zip.parts.json) | 669 of 672 original members, byte-identical. Exactly three confirmed compiled ELF bridge executables are excluded from Git. |
 | [Source original-member inventory](ci-source-42253531173/original-artifact-files.json) and [provenance](ci-source-42253531173/source-raw-provenance.json) | Every original member's identity, all three excluded paths/sizes/SHA-256 values, matching native-build receipts and official original ZIP digest. The filtered package is not the complete original artifact. |
 | [Final Agentd original ZIP](ci-agentd-42253531173/agentd-complete.zip) | All 185 original members, with the exact official ZIP digest. No compiled native executable is present. |
 | [Final Agentd filtered ZIP](ci-agentd-42253531173/pq-host-raw-filtered.zip) | The same 185 original members, independently read back and verified; zero exclusions. |
 | [Agentd job archive](ci-agentd-42253531173/job-evidence-raw.tgz) | Full decoded job log, steps, provenance and original decoded connector response. |
 | Offline audit tools | Exact helper bytes are in per-job `offline-audit-tools.tgz` archives with member hashes, so no new loose Python source is introduced into the signed inventory. |
-| [Local development archive](local-raw.tgz) | 489 regular files, totaling 8,373,205 uncompressed bytes. One Unix socket is represented by path/mode metadata only. |
+| [Local development archive](local-raw.tgz.parts.json) | 489 regular files, totaling 8,373,205 uncompressed bytes. One Unix socket is represented by path/mode metadata only. |
 
 The final source original ZIP SHA-256 is `9fa1a9212ca2a2a5d395b2b020d8f48445bfbe13d950ce12fc6fe953da6e5d51`; its filtered package SHA-256 is `cd2595435359490555779f832eaf203c18dd0e71bbdd8d933050fac2de0e2ba7`.
 

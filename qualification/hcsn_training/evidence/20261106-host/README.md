@@ -16,7 +16,7 @@ This evidence layer refers to implementation commit `fcffa43043ec7f36fa680c449c5
 
 ## Raw retained evidence
 
-[raw-evidence.tar.gz](raw-evidence.tar.gz) contains 896 regular files: locally retained test/build attempts, six A/B bridge attempts, 22 real lifecycle case stores, baseline/source/runtime receipts, source patch, process/candidate bytes, independent review and read-only campaign observations. [raw-manifest.json](raw-manifest.json) identifies every member by bytes and SHA256. Two nonregular fault-injection nodes were recorded rather than read or archived.
+[raw-evidence.tar.gz](raw-evidence.tar.gz.parts.json) contains 896 regular files: locally retained test/build attempts, six A/B bridge attempts, 22 real lifecycle case stores, baseline/source/runtime receipts, source patch, process/candidate bytes, independent review and read-only campaign observations. [raw-manifest.json](raw-manifest.json) identifies every member by bytes and SHA256. Two nonregular fault-injection nodes were recorded rather than read or archived.
 
 Archive SHA256: `5414d5320c37ff9348e71ddebca1543c21f4fa0c056ae1537eb6a03207a1db2d`. Large reproducible native executables were removed after retaining their hashes and build identities; their inventories remain inside. Failed outputs and earlier observations remain intact; no failed output directory was reused.
 
