@@ -213,6 +213,22 @@ async fn source_dataset_requires_live_experience_witness_before_claiming() -> an
     assert!(dataset_owner.attest_dataset(&mut experience).is_err());
     assert_eq!(fs::read(d_root.path().join("source"))?, before);
     unavailable.store(/*val*/ false, Ordering::SeqCst);
+    // Restoring the witness does not revive a handle fenced by a failed read.
+    assert!(matches!(
+        dataset_owner.attest_dataset(&mut experience),
+        Err(Error::Owner(LearningOriginalOwnerErrorV1::CommitUncertain))
+    ));
+    assert_eq!(fs::read(d_root.path().join("source"))?, before);
+    let experience_bytes = fs::read(e_root.path().join("source"))?;
+    drop(experience);
+    let mut experience = Owner::recover(
+        file(e_root.path(), "source")?,
+        witness(e_root.path(), prepared.initial())?,
+        Arc::clone(&prepared),
+        signing(&dataset, Stage::Experience),
+        SigningKey::from_bytes(&[2; 32]),
+    )?;
+    assert_eq!(fs::read(e_root.path().join("source"))?, experience_bytes);
     dataset_owner.attest_dataset(&mut experience)?;
     session.stop().await?;
     Ok(())

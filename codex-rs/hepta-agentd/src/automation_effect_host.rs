@@ -859,34 +859,34 @@ mod tests {
 
     impl Fixture {
         pub(super) async fn new() -> Self {
-            let temp = tempfile::tempdir().unwrap_or_else(|_| panic!("temp root"));
+            let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temp root: {error:?}"));
             let root = temp
                 .path()
                 .canonicalize()
-                .unwrap_or_else(|_| panic!("canonical temp root"));
+                .unwrap_or_else(|error| panic!("canonical temp root: {error:?}"));
             let fleet_path = root.join("fleet");
-            let fleet_root =
-                HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|_| panic!("fleet root"));
+            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+                .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
             let registry = FleetRegistry::initialize(fleet_root.clone())
-                .unwrap_or_else(|_| panic!("fleet registry"));
+                .unwrap_or_else(|error| panic!("fleet registry: {error:?}"));
             let workspace = root.join("workspace");
-            fs::create_dir(&workspace).unwrap_or_else(|_| panic!("workspace"));
+            fs::create_dir(&workspace).unwrap_or_else(|error| panic!("workspace: {error:?}"));
             let workspace = workspace
                 .canonicalize()
-                .unwrap_or_else(|_| panic!("canonical workspace"));
+                .unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
             let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
-                .unwrap_or_else(|_| panic!("agent id"));
+                .unwrap_or_else(|error| panic!("agent id: {error:?}"));
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
                 WorkspaceBinding::new(workspace.clone(), &fleet_root)
-                    .unwrap_or_else(|_| panic!("workspace binding")),
+                    .unwrap_or_else(|error| panic!("workspace binding: {error:?}")),
                 resources.clone(),
             )
-            .unwrap_or_else(|_| panic!("manifest"));
+            .unwrap_or_else(|error| panic!("manifest: {error:?}"));
             let layout = registry
                 .register(manifest)
-                .unwrap_or_else(|_| panic!("register agent"))
+                .unwrap_or_else(|error| panic!("register agent: {error:?}"))
                 .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
@@ -902,7 +902,7 @@ mod tests {
             };
             let store = AutomationStore::open(&layout)
                 .await
-                .unwrap_or_else(|_| panic!("automation store"));
+                .unwrap_or_else(|error| panic!("automation store: {error:?}"));
             Self {
                 _temp: temp,
                 identity,
@@ -1006,7 +1006,7 @@ mod tests {
             vec!["provider.deliver".to_string()],
             Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
         )
-        .unwrap_or_else(|_| panic!("definition"))
+        .unwrap_or_else(|error| panic!("definition: {error:?}"))
     }
 
     pub(super) fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -1039,12 +1039,12 @@ mod tests {
             1,
             "agentd-product-effect-fence",
         )
-        .unwrap_or_else(|_| panic!("fence"));
+        .unwrap_or_else(|error| panic!("fence: {error:?}"));
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
             .await
-            .unwrap_or_else(|_| panic!("register definition"));
+            .unwrap_or_else(|error| panic!("register definition: {error:?}"));
         fixture
             .store
             .create_taskflow_run(
@@ -1056,12 +1056,12 @@ mod tests {
                 now_ms,
             )
             .await
-            .unwrap_or_else(|_| panic!("create run"));
+            .unwrap_or_else(|error| panic!("create run: {error:?}"));
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
             .await
-            .unwrap_or_else(|_| panic!("claim run"));
+            .unwrap_or_else(|error| panic!("claim run: {error:?}"));
         fixture
             .store
             .apply_taskflow_command(
@@ -1073,11 +1073,13 @@ mod tests {
                     TaskFlowTransition::Start,
                     now_ms + 2,
                 )
-                .unwrap_or_else(|_| panic!("start command")),
+                .unwrap_or_else(|error| panic!("start command: {error:?}")),
             )
             .await
-            .unwrap_or_else(|_| panic!("start run"));
-        let digest = intent.digest().unwrap_or_else(|_| panic!("intent digest"));
+            .unwrap_or_else(|error| panic!("start run: {error:?}"));
+        let digest = intent
+            .digest()
+            .unwrap_or_else(|error| panic!("intent digest: {error:?}"));
         fixture
             .store
             .prepare_taskflow_step(
@@ -1091,7 +1093,7 @@ mod tests {
                 now_ms + 3,
             )
             .await
-            .unwrap_or_else(|_| panic!("prepare step"));
+            .unwrap_or_else(|error| panic!("prepare step: {error:?}"));
         fixture
             .store
             .claim_taskflow_step(
@@ -1105,7 +1107,7 @@ mod tests {
                 now_ms + 4,
             )
             .await
-            .unwrap_or_else(|_| panic!("claim step"));
+            .unwrap_or_else(|error| panic!("claim step: {error:?}"));
         fence
     }
 
@@ -1116,7 +1118,7 @@ mod tests {
     ) -> SignedFinalUseGrant {
         let binding = intent
             .final_use_binding()
-            .unwrap_or_else(|_| panic!("final-use binding"));
+            .unwrap_or_else(|error| panic!("final-use binding: {error:?}"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
@@ -1131,7 +1133,7 @@ mod tests {
             .sign(
                 &grant
                     .signing_bytes()
-                    .unwrap_or_else(|_| panic!("signing bytes")),
+                    .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
             )
             .to_bytes()
             .to_vec();
@@ -1139,7 +1141,8 @@ mod tests {
     }
 
     fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").unwrap_or_else(|_| panic!("digest bytes"))
+        decode_hex_array::<32>(digest.as_str(), "digest")
+            .unwrap_or_else(|error| panic!("digest bytes: {error:?}"))
     }
 
     pub(super) fn hex(bytes: &[u8]) -> String {

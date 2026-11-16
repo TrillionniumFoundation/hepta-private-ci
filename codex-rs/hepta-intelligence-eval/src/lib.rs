@@ -14,9 +14,13 @@ mod closure;
 mod durable_holdout;
 mod fenced_holdout;
 mod fenced_holdout_file;
+mod holdout_envelope;
 mod holdout_journal;
 mod ndu_convergence;
 mod ndu_well_posedness;
+mod paired_data;
+mod paired_plan;
+mod paired_runner;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorAuthorityV1;
@@ -422,3 +426,36 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 #[cfg(test)]
 #[path = "signed_qualification_e2e_tests.rs"]
 mod signed_qualification_e2e_tests;
+
+pub use holdout_envelope::HoldoutJournalRecordV2;
+pub use holdout_envelope::HoldoutJournalSnapshotV2;
+pub use holdout_envelope::HoldoutPlanEnvelopeV2;
+pub use holdout_envelope::HoldoutUseEnvelopeV2;
+pub use holdout_envelope::PairedHoldoutJournalReceiptV1;
+pub use paired_data::PairedArmV1;
+pub use paired_data::PairedBoundedIntervalV1;
+pub use paired_data::PairedDataV1;
+pub use paired_data::PairedManifestV1;
+pub use paired_data::PairedObservationV1;
+pub use paired_data::PairedSourceCaseV1;
+pub use paired_data::PairedStatisticsV1;
+pub use paired_data::PairedVersionV1;
+pub use paired_plan::FrozenPairedPlanV1;
+pub use paired_plan::PairedPlanSpecV1;
+pub use paired_plan::PairedProfileError;
+pub use paired_plan::freeze_paired_plan_v1;
+pub use paired_runner::OriginalPairedFinalHoldoutConsumptionV1;
+pub use paired_runner::PairedEvaluationError;
+pub use paired_runner::PairedEvaluationEvidenceSinkV1;
+pub use paired_runner::PairedEvaluationReceiptV1;
+pub use paired_runner::PairedFinalHoldoutProviderV1;
+pub use paired_runner::PublishedPairedEvaluationV1;
+pub use paired_runner::SignedPairedEvaluationV1;
+pub use paired_runner::evaluate_paired_full_information_v1;
+pub use paired_runner::paired_evaluation_signing_payload_v1;
+pub use paired_runner::paired_observation_signing_payload_v1;
+pub use paired_runner::paired_plan_signing_payload_v1;
+
+#[cfg(test)]
+#[path = "paired_owner_tests.rs"]
+mod paired_owner_tests;

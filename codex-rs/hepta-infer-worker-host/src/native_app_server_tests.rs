@@ -495,6 +495,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
@@ -509,12 +511,17 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     // core_test_support registers the production arg0 helper dispatch before
     // this test executable enters the harness.
     let codex_self_exe = std::env::current_exe()?;
-    let host = CognitiveTestHost::start(
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    let host = CognitiveTestHost::start_with_sandbox(
         root,
         codex_self_exe,
         agent_id,
         MODEL,
         &format!("{}/v1", server.uri()),
+        codex_linux_sandbox_exe,
     )
     .await?;
     let _accepted_memory = host

@@ -359,10 +359,9 @@ pub async fn run_with_shutdown(
             .await?
         }
     };
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // Both profiles require the real critical cognitive owner for readiness.
+    // Reject an unavailable owner before binding sockets or starting App Server
+    // instead of leaving a read-only host waiting for readiness it cannot obtain.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
@@ -674,7 +673,13 @@ fn require_cognitive_runtime_for_profile(
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
-    Ok(runtime)
+    if runtime.available_store().is_some() {
+        Ok(runtime)
+    } else {
+        Err(AgentdError::Protocol(
+            "critical cognitive owner unavailable".to_string(),
+        ))
+    }
 }
 
 async fn open_automation_store_after_generation_fence<Open, OpenFuture>(
@@ -937,10 +942,14 @@ pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     tokio::signal::ctrl_c().await.map_err(Into::into)
 }
 
-#[cfg(test)]
+#[cfg(all(test, any(unix, windows)))]
 #[path = "runtime_tests.rs"]
 mod tests;
 
 #[cfg(all(test, unix))]
 #[path = "production_hos2_host_tests.rs"]
 mod hos2_recovery_tests;
+
+#[cfg(test)]
+#[path = "runtime_config_tests.rs"]
+mod config_tests;

@@ -15,8 +15,10 @@ use codex_hepta_types::StableId;
 use crate::CrossFoldPlanReceiptV1;
 use crate::FinalHoldoutJournalError;
 use crate::FinalHoldoutJournalReceiptV1;
-use crate::FinalHoldoutJournalSnapshotV1;
-use crate::FinalHoldoutJournalV1;
+use crate::HoldoutJournalSnapshotV2;
+use crate::HoldoutPlanEnvelopeV2;
+use crate::HoldoutUseEnvelopeV2;
+use crate::holdout_envelope::HoldoutJournalV2;
 
 const MAX_RECORDS: usize = 1_000_000;
 
@@ -40,7 +42,7 @@ impl HoldoutWriterFenceV1 {
 pub struct FinalHoldoutCasRecordV1 {
     pub binding: Digest32,
     pub fence: HoldoutWriterFenceV1,
-    pub journal: FinalHoldoutJournalSnapshotV1,
+    pub journal: HoldoutJournalSnapshotV2,
     pub state_digest: Digest32,
 }
 
@@ -48,7 +50,7 @@ impl FinalHoldoutCasRecordV1 {
     pub(crate) fn new(
         binding: Digest32,
         fence: HoldoutWriterFenceV1,
-        journal: FinalHoldoutJournalSnapshotV1,
+        journal: HoldoutJournalSnapshotV2,
     ) -> Result<Self, FencedHoldoutError> {
         if binding.is_zero() {
             return Err(FencedHoldoutError::Binding);
@@ -171,7 +173,7 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     store: S,
     binding: Digest32,
     fence: HoldoutWriterFenceV1,
-    journal: FinalHoldoutJournalV1,
+    journal: HoldoutJournalV2,
     state_digest: Digest32,
     poisoned: bool,
     read_error: Option<FinalHoldoutCasStoreError>,
@@ -220,7 +222,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         if store.load(binding)?.is_some() {
             return Err(FencedHoldoutError::Conflict);
         }
-        let journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+        let journal = HoldoutJournalV2::with_record_limit(MAX_RECORDS)
             .map_err(FencedHoldoutError::Journal)?;
         let record = FinalHoldoutCasRecordV1::new(binding, fence.clone(), journal.snapshot())?;
         apply_cas(&mut store, binding, None, &record)?;
@@ -248,11 +250,9 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         fence.validate()?;
         let current = store.load(binding)?.ok_or(FencedHoldoutError::Missing)?;
         current.validate(binding)?;
-        let journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
-            current.journal.clone(),
-            MAX_RECORDS,
-        )
-        .map_err(|_| FencedHoldoutError::Corrupt)?;
+        let journal =
+            HoldoutJournalV2::from_snapshot_with_record_limit(current.journal.clone(), MAX_RECORDS)
+                .map_err(|_| FencedHoldoutError::Corrupt)?;
 
         let record = if fence == current.fence {
             current
@@ -356,19 +356,25 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
             return Err(FencedHoldoutError::Conflict);
         }
         let journal =
-            FinalHoldoutJournalV1::from_snapshot_with_record_limit(current.journal, MAX_RECORDS)
+            HoldoutJournalV2::from_snapshot_with_record_limit(current.journal, MAX_RECORDS)
                 .map_err(|_| FencedHoldoutError::Corrupt)?;
         if journal.snapshot() != self.journal.snapshot() {
             return Err(FencedHoldoutError::Corrupt);
         }
-        let Some(record) = journal
-            .records()
-            .iter()
-            .find(|record| record.plan.plan_id == plan.plan_id)
-        else {
+        let Some(record) = journal.records().iter().find(|record| match &record.plan {
+            HoldoutPlanEnvelopeV2::CrossFold(stored) => stored.plan_id == plan.plan_id,
+            HoldoutPlanEnvelopeV2::Paired(stored) => stored.spec().plan_id == plan.plan_id,
+        }) else {
             return Ok((self.binding, None));
         };
-        if &record.plan != plan {
+        let (
+            HoldoutPlanEnvelopeV2::CrossFold(stored_plan),
+            HoldoutUseEnvelopeV2::CrossFold(stored_use),
+        ) = (&record.plan, &record.use_receipt)
+        else {
+            return Err(FencedHoldoutError::Binding);
+        };
+        if stored_plan.as_ref() != plan {
             return Err(FencedHoldoutError::Binding);
         }
         Ok((
@@ -378,7 +384,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
                 sequence: record.sequence,
                 record_digest: record.record_digest,
                 head_digest: record.record_digest,
-                use_receipt: record.use_receipt.clone(),
+                use_receipt: stored_use.as_ref().clone(),
                 authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
             }),
         ))
@@ -447,7 +453,7 @@ fn apply_cas<S: FinalHoldoutCasStoreV1>(
 fn digest_state(
     binding: Digest32,
     fence: &HoldoutWriterFenceV1,
-    journal: &FinalHoldoutJournalSnapshotV1,
+    journal: &HoldoutJournalSnapshotV2,
 ) -> Result<Digest32, FencedHoldoutError> {
     if journal.records.len() > MAX_RECORDS {
         return Err(FencedHoldoutError::Corrupt);
@@ -497,3 +503,6 @@ impl From<FinalHoldoutCasStoreError> for FencedHoldoutError {
 #[cfg(test)]
 #[path = "fenced_holdout_tests.rs"]
 mod tests;
+
+#[path = "fenced_paired_holdout.rs"]
+mod paired;

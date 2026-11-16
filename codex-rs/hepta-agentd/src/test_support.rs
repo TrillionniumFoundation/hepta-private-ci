@@ -84,6 +84,7 @@ impl CognitiveTestHost {
         Self::start_with_profile(
             root,
             codex_self_exe,
+            None,
             agent_id,
             model,
             provider_base_url,
@@ -104,6 +105,7 @@ impl CognitiveTestHost {
         Self::start_with_profile(
             root,
             codex_self_exe,
+            None,
             agent_id,
             model,
             provider_base_url,
@@ -112,9 +114,32 @@ impl CognitiveTestHost {
         .await
     }
 
+    /// Use the same real owner and standard model tools with an explicit
+    /// Linux sandbox helper executable supplied by the native test harness.
+    pub async fn start_with_sandbox(
+        root: PathBuf,
+        codex_self_exe: PathBuf,
+        agent_id: AgentId,
+        model: &str,
+        provider_base_url: &str,
+        codex_linux_sandbox_exe: Option<PathBuf>,
+    ) -> TestResult<Self> {
+        Self::start_with_profile(
+            root,
+            codex_self_exe,
+            codex_linux_sandbox_exe,
+            agent_id,
+            model,
+            provider_base_url,
+            crate::app_runtime::AppServerModelToolProfile::Standard,
+        )
+        .await
+    }
+
     async fn start_with_profile(
         root: PathBuf,
         codex_self_exe: PathBuf,
+        codex_linux_sandbox_exe: Option<PathBuf>,
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
@@ -181,6 +206,7 @@ impl CognitiveTestHost {
             identity.clone(),
             Arg0DispatchPaths {
                 codex_self_exe: Some(codex_self_exe),
+                codex_linux_sandbox_exe,
                 ..Default::default()
             },
             CognitiveRuntime::Available(Arc::clone(&store)),

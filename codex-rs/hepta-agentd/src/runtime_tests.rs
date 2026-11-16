@@ -56,11 +56,8 @@ use super::drain_runtime;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
-use super::require_cognitive_retrieval_context_for_mode;
-use super::require_cognitive_runtime_for_profile;
 use crate::AgentdMethod;
 use crate::AgentdPayload;
-use crate::CognitiveRetrievalMode;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
 use crate::automation::DispatchRetryBudget;
@@ -81,25 +78,33 @@ struct RuntimeFixture {
 }
 
 fn runtime_fixture() -> RuntimeFixture {
-    let temp = tempfile::tempdir().expect("temporary root");
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temporary root: {error:?}"));
     let root = temp
         .path()
         .canonicalize()
-        .expect("canonical temporary root");
+        .unwrap_or_else(|error| panic!("canonical temporary root: {error:?}"));
     let fleet_path = root.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("valid fleet root");
-    let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+        .unwrap_or_else(|error| panic!("valid fleet root: {error:?}"));
+    let registry = FleetRegistry::initialize(fleet_root.clone())
+        .unwrap_or_else(|error| panic!("initialize registry: {error:?}"));
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).expect("create workspace");
-    let workspace = workspace.canonicalize().expect("canonical workspace");
-    let agent_id = AgentId::parse(AGENT_ID).expect("valid agent id");
-    let binding = WorkspaceBinding::new(&workspace, &fleet_root).expect("workspace binding");
+    std::fs::create_dir(&workspace).unwrap_or_else(|error| panic!("create workspace: {error:?}"));
+    let workspace = workspace
+        .canonicalize()
+        .unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
+    let agent_id =
+        AgentId::parse(AGENT_ID).unwrap_or_else(|error| panic!("valid agent id: {error:?}"));
+    let binding = WorkspaceBinding::new(&workspace, &fleet_root)
+        .unwrap_or_else(|error| panic!("workspace binding: {error:?}"));
     let manifest = AgentManifest::new(agent_id.clone(), binding, ResourceBudget::local_default())
-        .expect("agent manifest");
-    let record = registry.register(manifest).expect("register agent");
+        .unwrap_or_else(|error| panic!("agent manifest: {error:?}"));
+    let record = registry
+        .register(manifest)
+        .unwrap_or_else(|error| panic!("register agent: {error:?}"));
     registry
         .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
-        .expect("start generation");
+        .unwrap_or_else(|error| panic!("start generation: {error:?}"));
     let identity = AgentdIdentity {
         agent_id,
         layout: record.layout.clone(),
@@ -113,7 +118,8 @@ fn runtime_fixture() -> RuntimeFixture {
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
     let state = Arc::new(
-        AgentdState::new(identity.clone(), registry.clone(), EVENT_CAPACITY).expect("agent state"),
+        AgentdState::new(identity.clone(), registry.clone(), EVENT_CAPACITY)
+            .unwrap_or_else(|error| panic!("agent state: {error:?}")),
     );
     RuntimeFixture {
         _temp: temp,
@@ -126,15 +132,15 @@ fn runtime_fixture() -> RuntimeFixture {
 async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
     let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
         .await
-        .expect("real cognitive owner");
+        .unwrap_or_else(|error| panic!("real cognitive owner: {error:?}"));
     fixture
         .state
         .attach_cognitive_store(Arc::new(store))
-        .expect("owner attachment");
+        .unwrap_or_else(|error| panic!("owner attachment: {error:?}"));
     fixture
         .state
         .mark_runtime_prerequisites_ready()
-        .expect("owner prerequisites");
+        .unwrap_or_else(|error| panic!("owner prerequisites: {error:?}"));
 }
 
 #[tokio::test]
@@ -334,48 +340,6 @@ async fn unavailable_cognitive_store_degrades_without_leaking_open_error() {
     };
     assert_eq!(reason.code(), "storage_unavailable");
     assert!(!format!("{reason:?}").contains("/private/raw"));
-}
-
-#[test]
-fn compatibility_retrieval_mode_does_not_require_hnmf_context() {
-    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, false)
-        .expect("compatibility mode may run without an HNMF context");
-}
-
-#[test]
-fn compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile() {
-    let result =
-        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, true);
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::Invalid(message))
-            if message.contains("select HnmfRequired explicitly")
-    ));
-}
-
-#[test]
-fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
-    let result =
-        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, false);
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::Invalid(message))
-            if message.contains("HNMF-required retrieval profile")
-    ));
-    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, true)
-        .expect("HNMF-required mode accepts an explicitly configured current context");
-}
-
-#[cfg(feature = "production-cognitive-write")]
-#[test]
-fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
-    let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ));
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::CognitiveWriteRuntimeUnavailable)
-    ));
 }
 
 #[cfg(feature = "qualification-cognitive-write")]
@@ -803,21 +767,6 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
     );
-}
-
-#[cfg(not(feature = "production-cognitive-write"))]
-#[test]
-fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
-    let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ))
-    .expect("read-only profile remains availability tolerant");
-    assert!(matches!(
-        result,
-        CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
-        )
-    ));
 }
 
 #[tokio::test]

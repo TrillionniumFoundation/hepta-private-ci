@@ -617,8 +617,8 @@ async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
         evidence_current.as_ref().map(|_| ()),
     );
     drop(evidence);
-    let evidence_terminal = evidence_server
-        .join()
+    let evidence_terminal = tokio::task::spawn_blocking(move || evidence_server.join())
+        .await?
         .map_err(|_| anyhow::anyhow!("diagnostic original evidence peer panicked"))?;
     eprintln!(
         "LEARN_FDE_C_TIMING evidence_peer_terminal={:?}",
