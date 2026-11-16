@@ -101,12 +101,11 @@ async fn canonical_five_upgrade_preserves_data_checksums_and_issuer_tombstones()
                 None
             )
         );
-        let error = sqlx::query(
-            "DELETE FROM authbus_issuer_registry WHERE issuer_id = 'issuer:legacy'",
-        )
-        .execute(&store.pool)
-        .await
-        .unwrap_err();
+        let error =
+            sqlx::query("DELETE FROM authbus_issuer_registry WHERE issuer_id = 'issuer:legacy'")
+                .execute(&store.pool)
+                .await
+                .unwrap_err();
         assert_eq!(
             error.as_database_error().unwrap().message(),
             "AuthBus issuer tombstones cannot be deleted"
@@ -115,7 +114,10 @@ async fn canonical_five_upgrade_preserves_data_checksums_and_issuer_tombstones()
 
         let rows = migration_rows(&store.pool).await;
         assert_eq!(
-            rows.iter().filter(|row| row.0 <= 5).cloned().collect::<Vec<_>>(),
+            rows.iter()
+                .filter(|row| row.0 <= 5)
+                .cloned()
+                .collect::<Vec<_>>(),
             old_rows
         );
         let versions: Vec<_> = rows.iter().map(|row| row.0).collect();
