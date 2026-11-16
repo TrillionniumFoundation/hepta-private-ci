@@ -13,7 +13,8 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 
-PARENT = "294d6f3ffb67ed0f9d46c9121f669f2f2ab27053"
+PRODUCT_SOURCE = "294d6f3ffb67ed0f9d46c9121f669f2f2ab27053"
+PARENT = "3ccff213fd9b46f9a1c59cd256bc423d5fed3f60"
 WINDOWS_METHODS = ["acl::tests::complete_denies_compare_mapped_masks_and_require_every_right", "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows", "acl::tests::complete_file_denies_require_direct_scope", "acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent", "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access", "acl::tests::deny_ace_update_failure_is_an_error", "acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes", "acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation", "acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope", "acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change", "acl::tests::acl_repair_rejects_replaced_path_with_different_object_type", "token::tests::elevated_token_includes_network_proxy_restricting_sid", "token::tests::workspace_token_refusal_leaves_existing_files_unchanged", "token::tests::workspace_token_refuses_multiple_capabilities_before_native_access", "token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets", "token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries", "token::tests::mic_probe::mic_labels_preserve_original_outside_and_protected_child_oracles"]
 PRIVATE_METHODS = ["actual_private_root_allows_compatible_second_owner_open_before_lock", "actual_directory_context_poison_never_recovers_into_success", "actual_writable_directory_syncs_new_entry_without_noop_or_fallback", "actual_parent_write_sharing_conflict_is_not_retried_or_repaired", "actual_parent_flush_uses_held_id_after_former_path_is_replaced", "actual_new_directory_has_exact_protected_owner_dacl_on_original_handle", "create_only_collision_never_adopts_or_overwrites_existing_state", "changed_child_descriptor_cannot_be_repaired_into_same_fresh_role", "actual_cold_candidate_preserves_existing_bytes_and_shared_identity", "actual_cold_candidate_never_creates_missing_or_adopts_changed_dacl", "ancestor_parser_distinguishes_new_sibling_creation_from_existing_mutation", "inherited_effective_mutator_is_not_treated_as_inherit_only", "unknown_owner_and_ace_forms_do_not_grant_namespace_admission", "missing_truncated_and_unbounded_acl_are_refused", "exact_trustedinstaller_owner_and_maintenance_ace_are_namespace_only", "nearby_service_sids_never_gain_namespace_owner_or_mutator_trust", "trustedinstaller_owned_namespace_keeps_foreign_mutation_and_shape_refusals", "actual_original_io_keeps_marker_and_payload_bytes_across_cold_open", "actual_private_journal_reopens_original_bytes_and_appends_under_same_lock", "actual_private_file_extent_error_refuses_later_writes_without_growth", "actual_read_only_private_file_cannot_write_truncate_or_create_missing", "actual_locked_read_keeps_ancestry_alive_and_missing_is_only_observation", "actual_locked_read_size_error_fences_later_larger_read_without_reset", "actual_locked_read_descriptor_change_is_not_absence_or_repairable", "actual_locked_read_rejects_real_hardlink_without_adopting_it", "actual_locked_stage_replaces_synced_original_without_path_reopen", "actual_locked_stage_share_conflict_never_replaces_or_repairs_state", "actual_ancestor_chain_revalidates_and_reopens_without_touching_state", "actual_parent_delete_child_rights_reject_live_and_cold_anchor", "actual_canonical_drive_prefix_preserves_held_ancestry_and_store_creation", "actual_elevated_primary_owner_remains_live", "same_user_impersonation_cannot_mint_primary_owner", "primary_owner_stays_refused_after_impersonation_is_restored", "real_restricted_primary_token_is_refused", "actual_marker_sharing_error_is_rejection_not_state_locked_and_stays_refused", "actual_owner_lock_refuses_shared_context_poison_without_recovery", "native_owner_only_readback_is_valid_for_file_and_directory", "native_rejects_existing_unsafe_dacls_without_repair", "native_rejects_wrong_expected_sid_and_unsafe_object_shapes", "native_readback_parser_rejects_altered_forms_and_every_truncation", "native_unqueryable_thread_token_never_falls_back_to_process_user", "native_owner_lock_child", "actual_second_process_reports_state_locked_then_owner_drop_releases", "actual_natural_process_exit_releases_original_os_lock_without_destructor", "actual_cold_missing_marker_and_nonempty_marker_never_reset", "native_same_effective_token_revalidates", "native_same_sid_replacement_is_refused_and_cannot_revive", "native_held_token_modification_is_refused", "native_degraded_and_unqueryable_thread_tokens_never_fall_back", "native_local_ntfs_file_and_directory_report_same_volume", "native_nondisk_handle_is_rejected", "native_volume_observation_stays_bound_to_renamed_held_object", "native_directory_volume_observation_stays_bound_after_rename"]
 WORKFLOW = ".github/workflows/hepta-windows-merged-audit.yml"
@@ -54,7 +55,7 @@ def git(*args, allowed=(0,)):
     hooks.mkdir(exist_ok=True)
     result = subprocess.run(
         ["git", "--no-pager", "-c", "core.hooksPath=" + str(hooks),
-         "-c", "core.fsmonitor=false", *args],
+         "-c", "core.fsmonitor=false", "-c", "core.longpaths=true", *args],
         cwd=ROOT, env=ENV, capture_output=True, check=False,
     )
     require(result.returncode in allowed,
@@ -78,7 +79,7 @@ def source_snapshot():
     require(git("rev-parse", "HEAD").stdout.decode().strip() == HEAD, "Wrong checkout")
     require(git("rev-parse", "HEAD^").stdout.decode().strip() == PARENT, "Wrong source parent")
     changes = set(filter(None, git("diff-tree", "--no-commit-id", "--name-only",
-                                  "-r", "-z", PARENT, HEAD).stdout.decode().split("\0")))
+                                  "-r", "-z", PRODUCT_SOURCE, HEAD).stdout.decode().split("\0")))
     require(changes == {SCRIPT, WORKFLOW}, "Audit commit changes the frozen product source")
     filters = git("config", "--null", "--get-regexp",
                   r"^filter\..*\.(clean|process)$", allowed=(0, 1))
@@ -123,7 +124,7 @@ def source_snapshot():
     for package in ("windows-sandbox-rs", "utils/windows-private-state"):
         require("codex-rs/" + package + "/Cargo.toml" in records, "Missing package " + package)
     require("codex-rs/Cargo.lock" in records, "Missing normal resolver lock")
-    return {"head": HEAD, "source_parent": PARENT, "sources": records, "index_worktree_clean": True}
+    return {"head": HEAD, "source_parent": PRODUCT_SOURCE, "harness_parent": PARENT, "sources": records, "index_worktree_clean": True}
 
 
 def command(name, argv, cwd=ROOT):
@@ -186,7 +187,7 @@ def main():
         write_json(OUT / "postflight.json", after)
         require(after == before, "Source changed during native validation")
         return
-    state = {"status": "RUNNING", "head": HEAD, "source_parent": PARENT, "commands": [],
+    state = {"status": "RUNNING", "head": HEAD, "source_parent": PRODUCT_SOURCE, "harness_parent": PARENT, "commands": [],
              "permission_qualification": False}
     errors = []
     try:

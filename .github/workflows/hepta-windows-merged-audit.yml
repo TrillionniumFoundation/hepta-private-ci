@@ -21,14 +21,18 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_BUILD_JOBS: "2"
     steps:
-      - name: Preserve committed source bytes
+      - name: Preserve committed source bytes and long paths
         shell: pwsh
-        run: git config --global core.autocrlf false
+        run: |
+          git config --global core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
       - name: Check out the exact candidate and source parent
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
