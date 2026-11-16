@@ -917,6 +917,15 @@ impl ProviderEffectJournal {
             .ack_sources
             .get(key.as_str())
             .map_or(&[][..], Vec::as_slice);
+        // A status lookup is the only authoritative observation after the
+        // provider boundary becomes uncertain.  Do not let a delayed raw
+        // dispatch response advance an Accepted status to Completed after
+        // that lookup has already been recorded.
+        if source == ProviderEffectAckSource::DispatchResponse
+            && sources.last() == Some(&ProviderEffectAckSource::StatusLookup)
+        {
+            return Err(ProviderEffectBindingError::AckConflict);
+        }
         if let Some(index) = observations.iter().position(|existing| existing == &ack) {
             let Some(existing_source) = sources.get(index).copied() else {
                 // A journal serialized before provenance was introduced has
@@ -931,21 +940,15 @@ impl ProviderEffectJournal {
                 // the first status provenance and reject the late path.
                 return Err(ProviderEffectBindingError::AckConflict);
             }
-            // A duplicate observation is idempotent even when a later status
-            // lookup confirms an ACK first seen in a dispatch response.  The
-            // first stored source remains authoritative; quarantine rules
-            // above still reject a late raw dispatch ACK.
-            let _ = (existing_source, source);
-            return Ok(ProviderEffectAppendDisposition::AlreadyPresent);
-        }
-        // A status lookup is the only authoritative observation after the
-        // provider boundary becomes uncertain.  Do not let a delayed raw
-        // dispatch response advance an Accepted status to Completed after
-        // that lookup has already been recorded.
-        if source == ProviderEffectAckSource::DispatchResponse
-            && sources.last() == Some(&ProviderEffectAckSource::StatusLookup)
-        {
-            return Err(ProviderEffectBindingError::AckConflict);
+            // Without a new quarantine, confirming the same ACK remains
+            // idempotent and does not rewrite its original provenance.
+            if !was_quarantined {
+                return Ok(ProviderEffectAppendDisposition::AlreadyPresent);
+            }
+            // After quarantine, even an identical status ACK is a new
+            // reconciliation observation. Validate and append it below so
+            // the earlier source is preserved and reopening can verify why
+            // the quarantine was cleared.
         }
         validate_ack_transition(observations, &ack, was_quarantined, source)?;
         self.acknowledgements
@@ -1609,6 +1612,10 @@ mod operation_binding_tests;
 #[cfg(test)]
 #[path = "provider_effect_reconciliation_tests.rs"]
 mod reconciliation_tests;
+
+#[cfg(test)]
+#[path = "provider_effect_quarantine_replay_tests.rs"]
+mod quarantine_replay_tests;
 
 #[cfg(test)]
 mod tests {
