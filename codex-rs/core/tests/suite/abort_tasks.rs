@@ -145,6 +145,9 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .await
         .expect("remove the stopped descendant from the live thread inventory");
 
+    // Preserve the exact selection admitted by the original runtime.
+    let original_environments = codex.config_snapshot().await.environments.environments;
+
     // A previously admitted descendant no longer blocks handoff once it is stopped
     // and removed; suspension only consults the current live subtree.
     assert_eq!(
@@ -197,7 +200,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let original_config = test.config.clone();
     let mut replacement = test_codex()
         .with_config(move |config| *config = original_config)
-        .with_resume_environments(vec![test.executor_environment().selection().clone()]);
+        .with_resume_environments(original_environments.clone());
     if let Some(url) = test.executor_environment().exec_server_url() {
         replacement = replacement.with_exec_server_url(url);
     }
@@ -205,6 +208,10 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
+    assert_eq!(
+        resumed.codex.config_snapshot().await.environments.environments,
+        original_environments,
+    );
     assert_eq!(
         resumed
             .codex
