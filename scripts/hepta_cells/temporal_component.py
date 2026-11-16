@@ -9,7 +9,7 @@ this is a logical admission proxy, not FLOPs or measured energy.
 import copy
 import time
 
-from .bundle import Bundle
+from .bundle import Bundle, validate_local_update
 from .lifecycle import CellError, ComponentIdentity, StepResult
 from .temporal import TemporalKernel
 
@@ -46,6 +46,33 @@ class TemporalComponent:
 
     def initial_state(self):
         return self.kernel.initial_state(self.episode_id)
+
+    def migrate_state_from(self, source, state):
+        """Preserve hidden state only when the recurrent dynamics are identical.
+
+        A readout-only successor can retain its cursor and hidden values. Whole
+        recurrent updates still require reset; equal tensor shapes alone do not
+        establish equivalent hidden-state meaning.
+        """
+        if type(source) is not TemporalComponent or type(self) is not TemporalComponent:
+            raise CellError("state migration requires canonical temporal components")
+        source.identity
+        self.identity
+        if (
+            self.kernel.cell_id != source.kernel.cell_id
+            or self.episode_id != source.episode_id
+            or self.kernel.config != source.kernel.config
+            or self.kernel.kernel_sha256 != source.kernel.kernel_sha256
+        ):
+            raise CellError("changed recurrent dynamics require reset")
+        validate_local_update(
+            "stateful_temporal", source.bundle, self.bundle, "kernel_and_heads"
+        )
+        source.kernel._state_arrays(state, source.episode_id)
+        migrated = copy.deepcopy(state)
+        migrated["weights_sha256"] = self.kernel.weights_sha256
+        self.kernel._state_arrays(migrated, self.episode_id)
+        return migrated
 
     @property
     def bundle(self):
