@@ -39,8 +39,8 @@ pub(crate) fn admitted_registry(
     SigningKey,
     u64,
 ) {
-    let mut registry =
-        DurablePromptRegistry::open_state_dir(root, 64).expect("open durable registry");
+    let mut registry = DurablePromptRegistry::open_state_dir(root, 64)
+        .unwrap_or_else(|error| panic!("open durable registry: {error:?}"));
     let factor = PromptFactor {
         factor_id: id("factor:verify"),
         proposer_id: id("proposer:1"),
@@ -54,12 +54,12 @@ pub(crate) fn admitted_registry(
     };
     registry
         .register_factor(factor.clone())
-        .expect("register factor");
+        .unwrap_or_else(|error| panic!("register factor: {error:?}"));
 
     let signing_key = SigningKey::from_bytes(&[23; 32]);
     let authority_root = root
         .parent()
-        .expect("registry root parent")
+        .unwrap_or_else(|| panic!("registry root parent"))
         .join("prompt-admission-authority");
     let authority = FinalUseAuthority::open_state_dir(
         &authority_root,
@@ -71,15 +71,15 @@ pub(crate) fn admitted_registry(
             revoked_grant_ids: BTreeSet::new(),
         },
     )
-    .expect("final-use authority");
+    .unwrap_or_else(|error| panic!("final-use authority: {error:?}"));
     let reviewer = id("reviewer:1");
     let scope = digest("scope:prompt");
     let evidence = digest("evidence:prompt");
     let binding = final_use_admission_binding(&factor, &reviewer, scope, evidence)
-        .expect("final-use admission binding");
+        .unwrap_or_else(|error| panic!("final-use admission binding: {error:?}"));
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .expect("clock")
+        .unwrap_or_else(|error| panic!("clock: {error:?}"))
         .as_millis() as u64;
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -93,20 +93,24 @@ pub(crate) fn admitted_registry(
     };
     let signed = SignedFinalUseGrant {
         signature: signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("signing bytes: {error:?}")),
+            )
             .to_bytes()
             .to_vec(),
         grant,
     };
     registry
         .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
-        .expect("admit factor through final-use authority");
+        .unwrap_or_else(|error| panic!("admit factor through final-use authority: {error:?}"));
     let admitted_factor = registry
         .registry()
-        .expect("registry remains readable after admission")
+        .unwrap_or_else(|error| panic!("registry remains readable after admission: {error:?}"))
         .factor(&factor.factor_id)
         .cloned()
-        .expect("admitted factor remains present");
+        .unwrap_or_else(|| panic!("admitted factor remains present"));
 
     let tuple = PromptModelTupleV2 {
         model_id: id("model:hepta-test"),
@@ -143,7 +147,7 @@ pub(crate) fn admitted_registry(
         &realization,
         None,
     )
-    .expect("realization authority binding");
+    .unwrap_or_else(|error| panic!("realization authority binding: {error:?}"));
     let realization_grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
@@ -159,7 +163,7 @@ pub(crate) fn admitted_registry(
             .sign(
                 &realization_grant
                     .signing_bytes()
-                    .expect("realization signing bytes"),
+                    .unwrap_or_else(|error| panic!("realization signing bytes: {error:?}")),
             )
             .to_bytes()
             .to_vec(),
@@ -175,7 +179,9 @@ pub(crate) fn admitted_registry(
             payload.to_vec(),
             None,
         )
-        .expect("register actual payload through final-use authority");
+        .unwrap_or_else(|error| {
+            panic!("register actual payload through final-use authority: {error:?}")
+        });
     (registry, tuple, authority, signing_key, now)
 }
 
@@ -190,7 +196,9 @@ pub(crate) fn canonical_selection(
     now: u64,
 ) -> CanonicalSelection {
     let candidates = enumerate_factors_v1(
-        registry.registry().expect("registry"),
+        registry
+            .registry()
+            .unwrap_or_else(|error| panic!("registry: {error:?}")),
         PromptEnumerationRequestV1 {
             set_id: id("set:canonical"),
             objective_digest: digest("objective"),
@@ -203,7 +211,7 @@ pub(crate) fn canonical_selection(
             selection_grammar_digest: digest("grammar"),
         },
     )
-    .expect("enumerate current registry");
+    .unwrap_or_else(|error| panic!("enumerate current registry: {error:?}"));
     let portfolio = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
@@ -463,16 +471,16 @@ pub(crate) fn revoke_registry(
 ) {
     let factor = registry
         .registry()
-        .expect("registry")
+        .unwrap_or_else(|error| panic!("registry: {error:?}"))
         .factor(&id("factor:verify"))
         .cloned()
-        .expect("admitted factor");
+        .unwrap_or_else(|| panic!("admitted factor"));
     let actor = id("revoker:test");
     let revoke_scope = digest("scope:revoke:test");
     let reason = digest("reason:revoke");
     let cutoff = grant_now + 5_000;
     let revoke_binding = final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
-        .expect("revoke binding");
+        .unwrap_or_else(|error| panic!("revoke binding: {error:?}"));
     let revoke_grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
@@ -485,7 +493,11 @@ pub(crate) fn revoke_registry(
     };
     let revoke_signed = SignedFinalUseGrant {
         signature: signing_key
-            .sign(&revoke_grant.signing_bytes().expect("revoke signing bytes"))
+            .sign(
+                &revoke_grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("revoke signing bytes: {error:?}")),
+            )
             .to_bytes()
             .to_vec(),
         grant: revoke_grant,
@@ -500,5 +512,5 @@ pub(crate) fn revoke_registry(
             reason,
             cutoff,
         )
-        .expect("final-use revocation");
+        .unwrap_or_else(|error| panic!("final-use revocation: {error:?}"));
 }

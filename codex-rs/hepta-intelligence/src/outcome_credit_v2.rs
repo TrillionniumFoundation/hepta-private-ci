@@ -383,24 +383,7 @@ pub(crate) mod tests {
         }
 
         fn directory(&self) -> File {
-            #[cfg(windows)]
-            {
-                use std::os::windows::fs::OpenOptionsExt;
-
-                const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
-                const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
-                // The real LedgerWriter directory flush remains mandatory.
-                OpenOptions::new()
-                    .read(true)
-                    .write(true)
-                    .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-                    .open(self._temp.path())
-                    .expect("directory")
-            }
-            #[cfg(not(windows))]
-            {
-                File::open(self._temp.path()).expect("directory")
-            }
+            crate::directory_test_support::directory(self._temp.path()).expect("directory")
         }
 
         pub(crate) fn writer(&self) -> LedgerWriter {
