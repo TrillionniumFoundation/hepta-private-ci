@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.joint-ci-failure.v1",
+  "source_head": "c2774c6d1118dfd2745ac52b4069c8f254624c29",
+  "runtime_source": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+  "run_id": 43800566412,
+  "job_id": 133079561941,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43800566412",
+  "status": "failure",
+  "passed_steps": [
+    "Native continuation and sealed image controls",
+    "Build exact runtime and retain source and binary identities",
+    "Lifecycle and process bridge controls",
+    "Freeze and run actual HIA and GRU cold processes"
+  ],
+  "controls": 48,
+  "local_checks": 16,
+  "local_candidate_sha256": "a59ec5258d462223e701cf049e3002c89502af774c738d22c0e1a29cb63f6e02",
+  "failed_step": "Actual runtime entry and cold original-job observation",
+  "failure_before_actual_runtime_submission": true,
+  "error": "disposable SSH setup failed: runner@127.0.0.1: Permission denied (publickey)",
+  "diagnosis_status": "confirmed_by_original_sshd_log",
+  "subsequent_campaign_review": "skipped",
+  "artifact": {
+    "id": 14195394653,
+    "bytes": 1204204,
+    "sha256": "8d36e0cff0ef3147245deeb322aea0b363af2d328d520e1c6c570e168ef2a505",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43800566412/artifacts/14195394653"
+  },
+  "log_git_blob": "21ae8cf3004e883ca3a063e417bb5fbd539fee01",
+  "actual_mac_candidate_unchanged": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+  "qualification_credit_for_actual_runtime": false,
+  "confirmed_cause": "Authentication refused: bad ownership or modes for directory /tmp",
+  "corrective_scope": "Allocate the disposable SSH private directory directly beneath pwd.getpwuid(os.getuid()).pw_dir; retain mode 0700 and the existing helper.",
+  "validation_status": "PATCH_READY_AWAIT_LINUX_CI"
+}

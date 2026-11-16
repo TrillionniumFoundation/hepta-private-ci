@@ -1,0 +1,79 @@
+{
+  "actual_runtime_transport_verified": false,
+  "cells": {
+    "memory": {
+      "A_retention": {
+        "candidate": 6,
+        "frozen": 2
+      },
+      "B_successes": {
+        "candidate": 6,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "C_successes": 2,
+      "cold_exact": true,
+      "cold_whole_child_cpu_seconds": 0.13050299999999998,
+      "cold_whole_wall_ns": 135445277,
+      "component_call_p95_ms": 2.08005,
+      "component_call_p99_ms": 2.4374727600000012,
+      "decision": "NoUpdate",
+      "denominator": 8,
+      "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+      "logical_parameter_work": 66852,
+      "native_completed": 265,
+      "native_wall_ns": 5007518,
+      "training_cpu_seconds": 0.00463540300000001,
+      "training_updates": 16,
+      "training_wall_seconds": 0.00463505694642663,
+      "unresolved": 0
+    },
+    "predictor": {
+      "A_retention": {
+        "candidate": 2,
+        "frozen": 2
+      },
+      "B_successes": {
+        "candidate": 2,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "C_successes": 2,
+      "cold_exact": true,
+      "cold_whole_child_cpu_seconds": 0.11091399999999998,
+      "cold_whole_wall_ns": 114144259,
+      "component_call_p95_ms": 2.08564,
+      "component_call_p99_ms": 2.4509328399999997,
+      "decision": "NoUpdate",
+      "denominator": 8,
+      "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+      "logical_parameter_work": 117670,
+      "native_completed": 457,
+      "native_wall_ns": 8383868,
+      "training_cpu_seconds": 0.004767874000000005,
+      "training_updates": 16,
+      "training_wall_seconds": 0.004767721053212881,
+      "unresolved": 0
+    }
+  },
+  "compile_calls": 208,
+  "energy_joules": null,
+  "native_image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
+  "native_transport_sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b",
+  "parent_cpu_seconds": 0.8922138770000001,
+  "peak_rss_bytes": null,
+  "plan_sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282",
+  "result_sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0",
+  "root": "/home/qq/hepta-cell-joint-runtime-724fb6-v1/review-v4-image/campaign",
+  "schema": "hepta.controlled-maintenance-readonly-review.v1",
+  "scope": "retained originals consistency only; no model/native reexecution, producer authentication or real-task benefit claim",
+  "source_modules": 17,
+  "status": "READ_ONLY_CONSISTENCY_PASS",
+  "verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+  "version_manifests": 6,
+  "wall_seconds": 2.3223239798098803
+}

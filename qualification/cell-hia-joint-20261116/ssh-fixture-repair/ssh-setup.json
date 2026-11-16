@@ -1,0 +1,122 @@
+[
+  {
+    "argv": [
+      "ssh-keygen",
+      "-q",
+      "-t",
+      "ed25519",
+      "-N",
+      "",
+      "-f",
+      "/tmp/cell-runtime-private-etbxg3qc/client_key"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "ssh-keygen",
+      "-q",
+      "-t",
+      "ed25519",
+      "-N",
+      "",
+      "-f",
+      "/tmp/cell-runtime-private-etbxg3qc/host_key"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "ssh-add",
+      "/tmp/cell-runtime-private-etbxg3qc/client_key"
+    ],
+    "returncode": 0,
+    "stderr": "Identity added: /tmp/cell-runtime-private-etbxg3qc/client_key (runner@runnervm8axu0)\n",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "loginctl",
+      "show-user",
+      "runner",
+      "-p",
+      "Linger",
+      "--value"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "yes\n"
+  },
+  {
+    "argv": [
+      "sudo",
+      "-n",
+      "systemctl",
+      "start",
+      "user@1001.service"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "sudo",
+      "-n",
+      "mkdir",
+      "-p",
+      "/run/sshd"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "sudo",
+      "-n",
+      "/usr/sbin/sshd",
+      "-t",
+      "-f",
+      "/tmp/cell-runtime-private-etbxg3qc/sshd_config"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "ssh",
+      "-T",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ForwardAgent=no",
+      "ssh://runner@127.0.0.1:42899",
+      "/usr/bin/true"
+    ],
+    "returncode": 255,
+    "stderr": "runner@127.0.0.1: Permission denied (publickey).\r\n",
+    "stdout": ""
+  },
+  {
+    "argv": [
+      "sudo",
+      "-n",
+      "/bin/kill",
+      "-TERM",
+      "6856"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  }
+]

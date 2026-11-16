@@ -1,0 +1,26 @@
+--- a/scripts/qualify_runtime_process_bridge.py
++++ b/scripts/qualify_runtime_process_bridge.py
+@@ -10,6 +10,7 @@
+ import importlib.util
+ import os
+ from pathlib import Path
++import pwd
+ import subprocess
+ import sys
+ import tempfile
+@@ -81,7 +82,14 @@
+     spec = importlib.util.spec_from_file_location("frozen_runtime_ssh_fixture", source)
+     helper = importlib.util.module_from_spec(spec)
+     spec.loader.exec_module(helper)
+-    private = Path(tempfile.mkdtemp(prefix="cell-runtime-private-"))
++    # StrictModes checks authorized_keys parent directories; /tmp is writable.
++    # Keep private SSH state outside the workflow's RUNNER_TEMP evidence upload.
++    private = Path(
++        tempfile.mkdtemp(
++            prefix="cell-runtime-private-",
++            dir=pwd.getpwuid(os.getuid()).pw_dir,
++        )
++    )
+     os.chmod(private, 0o700)
+     report = {
+         "schema": "hepta.cell.runtime-bridge.qualification.v1",

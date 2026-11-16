@@ -1,0 +1,103 @@
+name: Cell HIA joint candidate
+on:
+  pull_request:
+    paths:
+      - 'scripts/hepta_cells/**'
+      - 'scripts/hepta_pred1/**'
+      - 'scripts/hepta_cell_joint_worker.py'
+      - 'scripts/hepta_cell_campaign_worker.py'
+      - 'scripts/qualify_runtime_campaign.py'
+      - 'scripts/package_hia_cell_candidate.py'
+      - 'scripts/verify_hepta_maintenance_cycle.py'
+      - 'scripts/review_hepta_maintenance_snapshot.py'
+      - 'scripts/qualify_hia_cell_joint.py'
+      - 'scripts/runtime_process_bridge.py'
+      - 'scripts/runtime_stdio.py'
+      - 'scripts/runtime_process_contract.py'
+      - 'scripts/refreeze_joint_worker.py'
+      - 'scripts/qualify_runtime_process_bridge.py'
+      - 'scripts/test*cell*'
+      - 'scripts/test_runtime_process_bridge.py'
+      - '.github/workflows/cell-hia-joint.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  same-candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: cells
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: 8ba46fc7a112fc220cdcbbd48dc5d24fda76a738
+          fetch-depth: 3
+          path: hia
+      - uses: actions/checkout@v4
+        with:
+          repository: TrillionniumFoundation/hepta-runtime
+          ref: 73b5c33d5762eefc0554a86750094350f18ae6a0
+          path: runtime
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare numerical dependency and disposable SSH fixture
+        run: |
+          python -m pip install numpy==2.3.5
+          sudo apt-get update
+          sudo apt-get install -y openssh-server
+          rustup toolchain install 1.95.0 --profile minimal
+      - name: Native continuation and sealed image controls
+        working-directory: hia
+        env:
+          PYTHONPATH: .
+        run: |
+          mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
+          python -B tools/qualify_cell_bridge_continuation.py --output "$RUNNER_TEMP/cell-joint-evidence/native-controls"
+      - name: Build exact runtime and retain source and binary identities
+        working-directory: runtime
+        run: |
+          mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/cell-joint-evidence/runtime-source.txt"
+          git status --porcelain=v1 > "$RUNNER_TEMP/cell-joint-evidence/runtime-source-before.txt"
+          cargo +1.95.0 build --locked --all-features --release --bin hepta-runtime 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/runtime-build.log"
+          sha256sum target/release/hepta-runtime > "$RUNNER_TEMP/cell-joint-evidence/runtime-binary.sha256"
+          git status --porcelain=v1 > "$RUNNER_TEMP/cell-joint-evidence/runtime-source-after.txt"
+          test ! -s "$RUNNER_TEMP/cell-joint-evidence/runtime-source-before.txt"
+          test ! -s "$RUNNER_TEMP/cell-joint-evidence/runtime-source-after.txt"
+      - name: Lifecycle and process bridge controls
+        working-directory: cells
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+      - name: Freeze and run actual HIA and GRU cold processes
+        working-directory: cells
+        run: |
+          python -B scripts/qualify_hia_cell_joint.py --hia-root "$GITHUB_WORKSPACE/hia" --output "$RUNNER_TEMP/cell-joint-evidence/local-joint"
+          python -B -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"cell-joint-evidence/request.json"; p.write_text(json.dumps({"request_id":"runtime-MEM-observe","cell_id":"MEM","operation":"step","payload":{"operation":"observe","cursor":0,"observation":[0.25,-0.5,0.75]}}))'
+      - name: Actual runtime entry and cold original-job observation
+        working-directory: cells
+        run: |
+          python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 73b5c33d5762eefc0554a86750094350f18ae6a0 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance
+      - name: Independently check retained maintenance records
+        working-directory: cells
+        run: |
+          python -B scripts/review_hepta_maintenance_snapshot.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-worker/campaign" --snapshot-dir "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/review-snapshot" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-readonly-review.json"
+      - name: Retain original evidence including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cell-hia-joint-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/cell-joint-evidence
+          if-no-files-found: error
+          retention-days: 30

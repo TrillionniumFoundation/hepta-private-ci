@@ -1,0 +1,4394 @@
+{
+  "actual_runtime_transport_verified": false,
+  "copied_files": 61,
+  "created_utc": "2026-11-16T03:36:51.346417+00:00",
+  "fixture_compile_executed": false,
+  "metadata_scope": "file/directory identity, mode, size, links, mtime/ctime; access time excluded",
+  "omitted_files": [
+    {
+      "bytes": 0,
+      "ctime_ns": 1794799804271804384,
+      "device": 27,
+      "inode": 2887774,
+      "links": 1,
+      "mode": 420,
+      "mtime_ns": 1794799804271804384,
+      "path": "memory/owner.sqlite-wal",
+      "reason": "explicitly permitted zero-byte WAL; no database frame discarded",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "ctime_ns": 1794799804292820146,
+      "device": 27,
+      "inode": 2887801,
+      "links": 1,
+      "mode": 420,
+      "mtime_ns": 1794799804292820146,
+      "path": "predictor/owner.sqlite-wal",
+      "reason": "explicitly permitted zero-byte WAL; no database frame discarded",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "omitted_files_count": 2,
+  "original_verifier_expected_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+  "original_verifier_path": "/workspace/scratch/724fb6d14866/cell-learning/scripts/verify_hepta_maintenance_cycle.py",
+  "original_verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+  "postprocessor_sha256": "c1ee0250d546d8926f9837fefd68a815ee18b1d434658e967c17ea97bc66bb96",
+  "preserved_shm_files": [
+    "memory/owner.sqlite-shm",
+    "predictor/owner.sqlite-shm"
+  ],
+  "review": {
+    "actual_runtime_transport_verified": false,
+    "cells": {
+      "memory": {
+        "A_retention": {
+          "candidate": 6,
+          "frozen": 2
+        },
+        "B_successes": {
+          "candidate": 6,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_successes": 2,
+        "cold_exact": true,
+        "cold_whole_child_cpu_seconds": 0.13050299999999998,
+        "cold_whole_wall_ns": 135445277,
+        "component_call_p95_ms": 2.08005,
+        "component_call_p99_ms": 2.4374727600000012,
+        "decision": "NoUpdate",
+        "denominator": 8,
+        "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "logical_parameter_work": 66852,
+        "native_completed": 265,
+        "native_wall_ns": 5007518,
+        "training_cpu_seconds": 0.00463540300000001,
+        "training_updates": 16,
+        "training_wall_seconds": 0.00463505694642663,
+        "unresolved": 0
+      },
+      "predictor": {
+        "A_retention": {
+          "candidate": 2,
+          "frozen": 2
+        },
+        "B_successes": {
+          "candidate": 2,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_successes": 2,
+        "cold_exact": true,
+        "cold_whole_child_cpu_seconds": 0.11091399999999998,
+        "cold_whole_wall_ns": 114144259,
+        "component_call_p95_ms": 2.08564,
+        "component_call_p99_ms": 2.4509328399999997,
+        "decision": "NoUpdate",
+        "denominator": 8,
+        "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "logical_parameter_work": 117670,
+        "native_completed": 457,
+        "native_wall_ns": 8383868,
+        "training_cpu_seconds": 0.004767874000000005,
+        "training_updates": 16,
+        "training_wall_seconds": 0.004767721053212881,
+        "unresolved": 0
+      }
+    },
+    "compile_calls": 208,
+    "energy_joules": null,
+    "native_image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
+    "native_transport_sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b",
+    "parent_cpu_seconds": 0.8922138770000001,
+    "peak_rss_bytes": null,
+    "plan_sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282",
+    "result_sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0",
+    "root": "/workspace/scratch/724fb6d14866/evidence/actual-campaign-readonly-snapshot",
+    "schema": "hepta.controlled-maintenance-readonly-review.v1",
+    "scope": "retained originals consistency only; no model/native reexecution, producer authentication or real-task benefit claim",
+    "source_modules": 17,
+    "status": "READ_ONLY_CONSISTENCY_PASS",
+    "verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+    "version_manifests": 6,
+    "wall_seconds": 2.3223239798098803
+  },
+  "schema": "hepta.maintenance-readonly-snapshot-review.v1",
+  "scope": "copied retained-original consistency only; no producer authenticity, transport or task-benefit claim",
+  "snapshot_after_review": {
+    "directories": {
+      ".": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926416,
+        "links": 7,
+        "mode": 365,
+        "mtime_ns": 1794800211429089257
+      },
+      "executed-source": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926422,
+        "links": 4,
+        "mode": 365,
+        "mtime_ns": 1794800211373087825
+      },
+      "executed-source/hepta_cells": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926423,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211373087825
+      },
+      "executed-source/hepta_pred1": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926439,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211373087825
+      },
+      "memory": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926442,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211397088439
+      },
+      "native": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926457,
+        "links": 3,
+        "mode": 365,
+        "mtime_ns": 1794800211401088541
+      },
+      "native/__pycache__": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926458,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211397088439
+      },
+      "predictor": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926464,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211429089257
+      },
+      "versions": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926479,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211433089359
+      }
+    },
+    "files": {
+      "A_DATA.json": {
+        "bytes": 8604,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926417,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "0ce8cc8862028cb951bb2eab8df650562594f176188af4cdeddaa22146dfe5a0"
+      },
+      "PLAN.json": {
+        "bytes": 8761,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926418,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282"
+      },
+      "RESULT.json": {
+        "bytes": 13280,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926419,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "RUNTIME_PINS.json": {
+        "bytes": 785,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926420,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "ef583c6414a689ec8ae1a6906d85d413b3096acdb57046ff6cd8ff9a7e1eb354"
+      },
+      "compile.jsonl": {
+        "bytes": 65946,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926421,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "4d4d2ad8e3f44d946872fc345c23b444fd6ccbcb2432b78065b1b5408bc269de"
+      },
+      "executed-source/hepta_cells/__init__.py": {
+        "bytes": 79,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926424,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+      },
+      "executed-source/hepta_cells/bundle.py": {
+        "bytes": 6940,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926425,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+      },
+      "executed-source/hepta_cells/cfc.py": {
+        "bytes": 5406,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926426,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+      },
+      "executed-source/hepta_cells/component_types.py": {
+        "bytes": 5369,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926427,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+      },
+      "executed-source/hepta_cells/hia_component.py": {
+        "bytes": 11212,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926428,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+      },
+      "executed-source/hepta_cells/lifecycle.py": {
+        "bytes": 29975,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926429,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+      },
+      "executed-source/hepta_cells/maintenance_cycle.py": {
+        "bytes": 19706,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926430,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+      },
+      "executed-source/hepta_cells/maintenance_execution.py": {
+        "bytes": 11892,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926431,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+      },
+      "executed-source/hepta_cells/maintenance_serving.py": {
+        "bytes": 5676,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926432,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+      },
+      "executed-source/hepta_cells/maintenance_tasks.py": {
+        "bytes": 4925,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926433,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+      },
+      "executed-source/hepta_cells/owner_control.py": {
+        "bytes": 9009,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926434,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+      },
+      "executed-source/hepta_cells/population.py": {
+        "bytes": 8721,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926435,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+      },
+      "executed-source/hepta_cells/population_owner.py": {
+        "bytes": 11740,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926436,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+      },
+      "executed-source/hepta_cells/temporal.py": {
+        "bytes": 16540,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926437,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+      },
+      "executed-source/hepta_cells/temporal_component.py": {
+        "bytes": 5060,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926438,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+      },
+      "executed-source/hepta_pred1/__init__.py": {
+        "bytes": 75,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926440,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "executed-source/hepta_pred1/models.py": {
+        "bytes": 13062,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926441,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+      },
+      "memory/A_SERVED.json": {
+        "bytes": 69126,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926443,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e136ad3e2ee82d82967466776d802a4b468336605aa47002d27f7ccd9a0a05ab"
+      },
+      "memory/A_TRAINING.npz": {
+        "bytes": 3354,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926444,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "memory/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926445,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "7b38066454fc5cb29578d7b5279ea3a010df9687400ee622d6ea6dabd113469c"
+      },
+      "memory/COLD_REQUEST.json": {
+        "bytes": 10296,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926446,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "d83bb8a81c87623ed7fa6f167962cdfa0561a8f8924a5a250d5e6644e8c5e679"
+      },
+      "memory/COLD_RESULT.json": {
+        "bytes": 2196,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926447,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e17154be86e564e670f2ab7d20921e6b14b9a0bee02483d0f195a25c63a4197c"
+      },
+      "memory/C_SERVED.json": {
+        "bytes": 69200,
+        "ctime_ns": 1794800211381088030,
+        "device": 27,
+        "inode": 2926448,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e6d6277552616021504126686a2c24b223e8bb1ce2601dacf98e6a43ac023464"
+      },
+      "memory/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794800211381088030,
+        "device": 27,
+        "inode": 2926449,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211381088030,
+        "sha256": "ca2025f3260c8739261d159b2b7132380cd8bed9c6be94499f86d40171ddd21c"
+      },
+      "memory/EVALUATION.json": {
+        "bytes": 473645,
+        "ctime_ns": 1794800211381088030,
+        "device": 27,
+        "inode": 2926450,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211381088030,
+        "sha256": "3b4b7e067c9b1d009495896ff50f594908616f9a41939afa5ff5ac5aba1dda99"
+      },
+      "memory/TRAINING.json": {
+        "bytes": 1941,
+        "ctime_ns": 1794800211385088132,
+        "device": 27,
+        "inode": 2926451,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211385088132,
+        "sha256": "5d56e6b110712c62e91a69d16a3ad984fbd9a22232844ed8d22aa9a128710ace"
+      },
+      "memory/candidate.npz": {
+        "bytes": 14082,
+        "ctime_ns": 1794800211385088132,
+        "device": 27,
+        "inode": 2926452,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211385088132,
+        "sha256": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279"
+      },
+      "memory/live.npz": {
+        "bytes": 10310,
+        "ctime_ns": 1794800211385088132,
+        "device": 27,
+        "inode": 2926453,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211385088132,
+        "sha256": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59"
+      },
+      "memory/owner.sqlite": {
+        "bytes": 2199552,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926454,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211393088336,
+        "sha256": "1b03546a87b4626f008aff3e81d65b70ed57dbbb51b4df3030fc6c3514b73e41"
+      },
+      "memory/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926455,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211397088439,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "memory/parent.npz": {
+        "bytes": 10240,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926456,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211397088439,
+        "sha256": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+      },
+      "native/__pycache__/transport.cpython-314.pyc": {
+        "bytes": 31749,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926459,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211397088439,
+        "sha256": "2e8c0ffef5a0d265483a3d48a3bf25f281c60bb6882703d2ef43cb0294935194"
+      },
+      "native/build.json": {
+        "bytes": 6909,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926460,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+      },
+      "native/cell_bridge.so": {
+        "bytes": 56520,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926461,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+      },
+      "native/continuation.hepta": {
+        "bytes": 27874,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926462,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+      },
+      "native/transport.py": {
+        "bytes": 20815,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926463,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+      },
+      "predictor/A_SERVED.json": {
+        "bytes": 116383,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926465,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "14647f3b78443446a03e9cf1087ae83b4f607ea0c32d21d366e593d3b559b388"
+      },
+      "predictor/A_TRAINING.npz": {
+        "bytes": 11834,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926466,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      },
+      "predictor/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926467,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "549c741328cea08d09600e82abbcc24636cf519457cf3a66c45849428fff335f"
+      },
+      "predictor/COLD_REQUEST.json": {
+        "bytes": 10283,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926468,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "e95b85b5b22049b58a1e050cdfc6d365f2924c3e9b960e44494aa4e4b31040f3"
+      },
+      "predictor/COLD_RESULT.json": {
+        "bytes": 2129,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926469,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "3f2c053ddb0ff53aaa609a763573f4f20bfed58e0768d45cf0f19b2405d41fa3"
+      },
+      "predictor/C_SERVED.json": {
+        "bytes": 116574,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926470,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "568fcb2f2dbe6834163f385af6e797799177bb117d62a99db335e55bc15f1f3d"
+      },
+      "predictor/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794800211409088745,
+        "device": 27,
+        "inode": 2926471,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211409088745,
+        "sha256": "4517c6eb4afbac41193c9d0d0f100f68538e89101e2da8b940dc322c47a77ca8"
+      },
+      "predictor/EVALUATION.json": {
+        "bytes": 782338,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926472,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211409088745,
+        "sha256": "9d8763764342fda70d4921b026aa71ddeb8f6e2c06ce9dfa4ce1858b518da3d1"
+      },
+      "predictor/TRAINING.json": {
+        "bytes": 1950,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926473,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211413088847,
+        "sha256": "cd48e8a76306489e0862619c46eef891a895b213f74b3d7062e9309d7e721c22"
+      },
+      "predictor/candidate.npz": {
+        "bytes": 14131,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926474,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211413088847,
+        "sha256": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492"
+      },
+      "predictor/live.npz": {
+        "bytes": 10346,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926475,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211413088847,
+        "sha256": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa"
+      },
+      "predictor/owner.sqlite": {
+        "bytes": 3276800,
+        "ctime_ns": 1794800211425089155,
+        "device": 27,
+        "inode": 2926476,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211425089155,
+        "sha256": "8ab582da2157aeb326186ac5a84bed1749ee72e4a3f9a801ef12543c565f1800"
+      },
+      "predictor/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794800211429089257,
+        "device": 27,
+        "inode": 2926477,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211429089257,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "predictor/parent.npz": {
+        "bytes": 10274,
+        "ctime_ns": 1794800211429089257,
+        "device": 27,
+        "inode": 2926478,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211429089257,
+        "sha256": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+      },
+      "versions/31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354.json": {
+        "bytes": 7179,
+        "ctime_ns": 1794800211429089257,
+        "device": 27,
+        "inode": 2926480,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211429089257,
+        "sha256": "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354"
+      },
+      "versions/6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02.json": {
+        "bytes": 7173,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926481,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02"
+      },
+      "versions/7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13.json": {
+        "bytes": 7617,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926482,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13"
+      },
+      "versions/817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5.json": {
+        "bytes": 7611,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926483,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5"
+      },
+      "versions/d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926484,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5"
+      },
+      "versions/d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926485,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      }
+    }
+  },
+  "snapshot_before_review": {
+    "directories": {
+      ".": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926416,
+        "links": 7,
+        "mode": 365,
+        "mtime_ns": 1794800211429089257
+      },
+      "executed-source": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926422,
+        "links": 4,
+        "mode": 365,
+        "mtime_ns": 1794800211373087825
+      },
+      "executed-source/hepta_cells": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926423,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211373087825
+      },
+      "executed-source/hepta_pred1": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926439,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211373087825
+      },
+      "memory": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926442,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211397088439
+      },
+      "native": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926457,
+        "links": 3,
+        "mode": 365,
+        "mtime_ns": 1794800211401088541
+      },
+      "native/__pycache__": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926458,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211397088439
+      },
+      "predictor": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926464,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211429089257
+      },
+      "versions": {
+        "bytes": 4096,
+        "ctime_ns": 1794800211441089564,
+        "device": 27,
+        "inode": 2926479,
+        "links": 2,
+        "mode": 365,
+        "mtime_ns": 1794800211433089359
+      }
+    },
+    "files": {
+      "A_DATA.json": {
+        "bytes": 8604,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926417,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "0ce8cc8862028cb951bb2eab8df650562594f176188af4cdeddaa22146dfe5a0"
+      },
+      "PLAN.json": {
+        "bytes": 8761,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926418,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282"
+      },
+      "RESULT.json": {
+        "bytes": 13280,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926419,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "RUNTIME_PINS.json": {
+        "bytes": 785,
+        "ctime_ns": 1794800211361087517,
+        "device": 27,
+        "inode": 2926420,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211361087517,
+        "sha256": "ef583c6414a689ec8ae1a6906d85d413b3096acdb57046ff6cd8ff9a7e1eb354"
+      },
+      "compile.jsonl": {
+        "bytes": 65946,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926421,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "4d4d2ad8e3f44d946872fc345c23b444fd6ccbcb2432b78065b1b5408bc269de"
+      },
+      "executed-source/hepta_cells/__init__.py": {
+        "bytes": 79,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926424,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+      },
+      "executed-source/hepta_cells/bundle.py": {
+        "bytes": 6940,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926425,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+      },
+      "executed-source/hepta_cells/cfc.py": {
+        "bytes": 5406,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926426,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+      },
+      "executed-source/hepta_cells/component_types.py": {
+        "bytes": 5369,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926427,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+      },
+      "executed-source/hepta_cells/hia_component.py": {
+        "bytes": 11212,
+        "ctime_ns": 1794800211365087620,
+        "device": 27,
+        "inode": 2926428,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211365087620,
+        "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+      },
+      "executed-source/hepta_cells/lifecycle.py": {
+        "bytes": 29975,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926429,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+      },
+      "executed-source/hepta_cells/maintenance_cycle.py": {
+        "bytes": 19706,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926430,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+      },
+      "executed-source/hepta_cells/maintenance_execution.py": {
+        "bytes": 11892,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926431,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+      },
+      "executed-source/hepta_cells/maintenance_serving.py": {
+        "bytes": 5676,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926432,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+      },
+      "executed-source/hepta_cells/maintenance_tasks.py": {
+        "bytes": 4925,
+        "ctime_ns": 1794800211369087723,
+        "device": 27,
+        "inode": 2926433,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+      },
+      "executed-source/hepta_cells/owner_control.py": {
+        "bytes": 9009,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926434,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211369087723,
+        "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+      },
+      "executed-source/hepta_cells/population.py": {
+        "bytes": 8721,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926435,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+      },
+      "executed-source/hepta_cells/population_owner.py": {
+        "bytes": 11740,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926436,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+      },
+      "executed-source/hepta_cells/temporal.py": {
+        "bytes": 16540,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926437,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+      },
+      "executed-source/hepta_cells/temporal_component.py": {
+        "bytes": 5060,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926438,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+      },
+      "executed-source/hepta_pred1/__init__.py": {
+        "bytes": 75,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926440,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "executed-source/hepta_pred1/models.py": {
+        "bytes": 13062,
+        "ctime_ns": 1794800211373087825,
+        "device": 27,
+        "inode": 2926441,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211373087825,
+        "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+      },
+      "memory/A_SERVED.json": {
+        "bytes": 69126,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926443,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e136ad3e2ee82d82967466776d802a4b468336605aa47002d27f7ccd9a0a05ab"
+      },
+      "memory/A_TRAINING.npz": {
+        "bytes": 3354,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926444,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "memory/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926445,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "7b38066454fc5cb29578d7b5279ea3a010df9687400ee622d6ea6dabd113469c"
+      },
+      "memory/COLD_REQUEST.json": {
+        "bytes": 10296,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926446,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "d83bb8a81c87623ed7fa6f167962cdfa0561a8f8924a5a250d5e6644e8c5e679"
+      },
+      "memory/COLD_RESULT.json": {
+        "bytes": 2196,
+        "ctime_ns": 1794800211377087927,
+        "device": 27,
+        "inode": 2926447,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e17154be86e564e670f2ab7d20921e6b14b9a0bee02483d0f195a25c63a4197c"
+      },
+      "memory/C_SERVED.json": {
+        "bytes": 69200,
+        "ctime_ns": 1794800211381088030,
+        "device": 27,
+        "inode": 2926448,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211377087927,
+        "sha256": "e6d6277552616021504126686a2c24b223e8bb1ce2601dacf98e6a43ac023464"
+      },
+      "memory/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794800211381088030,
+        "device": 27,
+        "inode": 2926449,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211381088030,
+        "sha256": "ca2025f3260c8739261d159b2b7132380cd8bed9c6be94499f86d40171ddd21c"
+      },
+      "memory/EVALUATION.json": {
+        "bytes": 473645,
+        "ctime_ns": 1794800211381088030,
+        "device": 27,
+        "inode": 2926450,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211381088030,
+        "sha256": "3b4b7e067c9b1d009495896ff50f594908616f9a41939afa5ff5ac5aba1dda99"
+      },
+      "memory/TRAINING.json": {
+        "bytes": 1941,
+        "ctime_ns": 1794800211385088132,
+        "device": 27,
+        "inode": 2926451,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211385088132,
+        "sha256": "5d56e6b110712c62e91a69d16a3ad984fbd9a22232844ed8d22aa9a128710ace"
+      },
+      "memory/candidate.npz": {
+        "bytes": 14082,
+        "ctime_ns": 1794800211385088132,
+        "device": 27,
+        "inode": 2926452,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211385088132,
+        "sha256": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279"
+      },
+      "memory/live.npz": {
+        "bytes": 10310,
+        "ctime_ns": 1794800211385088132,
+        "device": 27,
+        "inode": 2926453,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211385088132,
+        "sha256": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59"
+      },
+      "memory/owner.sqlite": {
+        "bytes": 2199552,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926454,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211393088336,
+        "sha256": "1b03546a87b4626f008aff3e81d65b70ed57dbbb51b4df3030fc6c3514b73e41"
+      },
+      "memory/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926455,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211397088439,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "memory/parent.npz": {
+        "bytes": 10240,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926456,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211397088439,
+        "sha256": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+      },
+      "native/__pycache__/transport.cpython-314.pyc": {
+        "bytes": 31749,
+        "ctime_ns": 1794800211397088439,
+        "device": 27,
+        "inode": 2926459,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211397088439,
+        "sha256": "2e8c0ffef5a0d265483a3d48a3bf25f281c60bb6882703d2ef43cb0294935194"
+      },
+      "native/build.json": {
+        "bytes": 6909,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926460,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+      },
+      "native/cell_bridge.so": {
+        "bytes": 56520,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926461,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+      },
+      "native/continuation.hepta": {
+        "bytes": 27874,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926462,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+      },
+      "native/transport.py": {
+        "bytes": 20815,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926463,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+      },
+      "predictor/A_SERVED.json": {
+        "bytes": 116383,
+        "ctime_ns": 1794800211401088541,
+        "device": 27,
+        "inode": 2926465,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211401088541,
+        "sha256": "14647f3b78443446a03e9cf1087ae83b4f607ea0c32d21d366e593d3b559b388"
+      },
+      "predictor/A_TRAINING.npz": {
+        "bytes": 11834,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926466,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      },
+      "predictor/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926467,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "549c741328cea08d09600e82abbcc24636cf519457cf3a66c45849428fff335f"
+      },
+      "predictor/COLD_REQUEST.json": {
+        "bytes": 10283,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926468,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "e95b85b5b22049b58a1e050cdfc6d365f2924c3e9b960e44494aa4e4b31040f3"
+      },
+      "predictor/COLD_RESULT.json": {
+        "bytes": 2129,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926469,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "3f2c053ddb0ff53aaa609a763573f4f20bfed58e0768d45cf0f19b2405d41fa3"
+      },
+      "predictor/C_SERVED.json": {
+        "bytes": 116574,
+        "ctime_ns": 1794800211405088643,
+        "device": 27,
+        "inode": 2926470,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211405088643,
+        "sha256": "568fcb2f2dbe6834163f385af6e797799177bb117d62a99db335e55bc15f1f3d"
+      },
+      "predictor/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794800211409088745,
+        "device": 27,
+        "inode": 2926471,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211409088745,
+        "sha256": "4517c6eb4afbac41193c9d0d0f100f68538e89101e2da8b940dc322c47a77ca8"
+      },
+      "predictor/EVALUATION.json": {
+        "bytes": 782338,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926472,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211409088745,
+        "sha256": "9d8763764342fda70d4921b026aa71ddeb8f6e2c06ce9dfa4ce1858b518da3d1"
+      },
+      "predictor/TRAINING.json": {
+        "bytes": 1950,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926473,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211413088847,
+        "sha256": "cd48e8a76306489e0862619c46eef891a895b213f74b3d7062e9309d7e721c22"
+      },
+      "predictor/candidate.npz": {
+        "bytes": 14131,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926474,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211413088847,
+        "sha256": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492"
+      },
+      "predictor/live.npz": {
+        "bytes": 10346,
+        "ctime_ns": 1794800211413088847,
+        "device": 27,
+        "inode": 2926475,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211413088847,
+        "sha256": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa"
+      },
+      "predictor/owner.sqlite": {
+        "bytes": 3276800,
+        "ctime_ns": 1794800211425089155,
+        "device": 27,
+        "inode": 2926476,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211425089155,
+        "sha256": "8ab582da2157aeb326186ac5a84bed1749ee72e4a3f9a801ef12543c565f1800"
+      },
+      "predictor/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794800211429089257,
+        "device": 27,
+        "inode": 2926477,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211429089257,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "predictor/parent.npz": {
+        "bytes": 10274,
+        "ctime_ns": 1794800211429089257,
+        "device": 27,
+        "inode": 2926478,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211429089257,
+        "sha256": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+      },
+      "versions/31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354.json": {
+        "bytes": 7179,
+        "ctime_ns": 1794800211429089257,
+        "device": 27,
+        "inode": 2926480,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211429089257,
+        "sha256": "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354"
+      },
+      "versions/6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02.json": {
+        "bytes": 7173,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926481,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02"
+      },
+      "versions/7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13.json": {
+        "bytes": 7617,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926482,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13"
+      },
+      "versions/817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5.json": {
+        "bytes": 7611,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926483,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5"
+      },
+      "versions/d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926484,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5"
+      },
+      "versions/d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794800211433089359,
+        "device": 27,
+        "inode": 2926485,
+        "links": 1,
+        "mode": 292,
+        "mtime_ns": 1794800211433089359,
+        "sha256": "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      }
+    }
+  },
+  "snapshot_directory": "/workspace/scratch/724fb6d14866/evidence/actual-campaign-readonly-snapshot",
+  "snapshot_mode_policy": "retain read/execute bits, add owner read/traverse, remove all write bits",
+  "snapshot_unchanged_during_review": true,
+  "source_access": "read-only descriptors; no source writes, chmod, SQLite open or checkpoint",
+  "source_after_copy": {
+    "directories": {
+      ".": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887726,
+        "links": 7,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "executed-source": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887735,
+        "links": 4,
+        "mode": 493,
+        "mtime_ns": 1794799804256219474
+      },
+      "executed-source/hepta_cells": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887736,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256110890
+      },
+      "executed-source/hepta_pred1": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887755,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256316991
+      },
+      "memory": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887758,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "native": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887776,
+        "links": 3,
+        "mode": 493,
+        "mtime_ns": 1794799804273489412
+      },
+      "native/__pycache__": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887778,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "predictor": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887784,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "versions": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887803,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293682911
+      }
+    },
+    "files": {
+      "A_DATA.json": {
+        "bytes": 8604,
+        "ctime_ns": 1794799804252576394,
+        "device": 27,
+        "inode": 2887727,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252576394,
+        "sha256": "0ce8cc8862028cb951bb2eab8df650562594f176188af4cdeddaa22146dfe5a0"
+      },
+      "PLAN.json": {
+        "bytes": 8761,
+        "ctime_ns": 1794799804252785090,
+        "device": 27,
+        "inode": 2887728,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252785090,
+        "sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282"
+      },
+      "RESULT.json": {
+        "bytes": 13280,
+        "ctime_ns": 1794799804252925532,
+        "device": 27,
+        "inode": 2887732,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252925532,
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "RUNTIME_PINS.json": {
+        "bytes": 785,
+        "ctime_ns": 1794799804253060286,
+        "device": 27,
+        "inode": 2887733,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253060286,
+        "sha256": "ef583c6414a689ec8ae1a6906d85d413b3096acdb57046ff6cd8ff9a7e1eb354"
+      },
+      "compile.jsonl": {
+        "bytes": 65946,
+        "ctime_ns": 1794799804253358347,
+        "device": 27,
+        "inode": 2887734,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253358347,
+        "sha256": "4d4d2ad8e3f44d946872fc345c23b444fd6ccbcb2432b78065b1b5408bc269de"
+      },
+      "executed-source/hepta_cells/__init__.py": {
+        "bytes": 79,
+        "ctime_ns": 1794799804253629898,
+        "device": 27,
+        "inode": 2887737,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253629898,
+        "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+      },
+      "executed-source/hepta_cells/bundle.py": {
+        "bytes": 6940,
+        "ctime_ns": 1794799804253724010,
+        "device": 27,
+        "inode": 2887738,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253724010,
+        "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+      },
+      "executed-source/hepta_cells/cfc.py": {
+        "bytes": 5406,
+        "ctime_ns": 1794799804253918284,
+        "device": 27,
+        "inode": 2887739,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253918284,
+        "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+      },
+      "executed-source/hepta_cells/component_types.py": {
+        "bytes": 5369,
+        "ctime_ns": 1794799804254012667,
+        "device": 27,
+        "inode": 2887740,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254012667,
+        "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+      },
+      "executed-source/hepta_cells/hia_component.py": {
+        "bytes": 11212,
+        "ctime_ns": 1794799804254272690,
+        "device": 27,
+        "inode": 2887741,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254272690,
+        "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+      },
+      "executed-source/hepta_cells/lifecycle.py": {
+        "bytes": 29975,
+        "ctime_ns": 1794799804254475837,
+        "device": 27,
+        "inode": 2887742,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254475837,
+        "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+      },
+      "executed-source/hepta_cells/maintenance_cycle.py": {
+        "bytes": 19706,
+        "ctime_ns": 1794799804254651983,
+        "device": 27,
+        "inode": 2887743,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254651983,
+        "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+      },
+      "executed-source/hepta_cells/maintenance_execution.py": {
+        "bytes": 11892,
+        "ctime_ns": 1794799804254977175,
+        "device": 27,
+        "inode": 2887744,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254977175,
+        "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+      },
+      "executed-source/hepta_cells/maintenance_serving.py": {
+        "bytes": 5676,
+        "ctime_ns": 1794799804255088784,
+        "device": 27,
+        "inode": 2887748,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255088784,
+        "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+      },
+      "executed-source/hepta_cells/maintenance_tasks.py": {
+        "bytes": 4925,
+        "ctime_ns": 1794799804255163397,
+        "device": 27,
+        "inode": 2887749,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255163397,
+        "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+      },
+      "executed-source/hepta_cells/owner_control.py": {
+        "bytes": 9009,
+        "ctime_ns": 1794799804255416229,
+        "device": 27,
+        "inode": 2887750,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255416229,
+        "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+      },
+      "executed-source/hepta_cells/population.py": {
+        "bytes": 8721,
+        "ctime_ns": 1794799804255746479,
+        "device": 27,
+        "inode": 2887751,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255746479,
+        "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+      },
+      "executed-source/hepta_cells/population_owner.py": {
+        "bytes": 11740,
+        "ctime_ns": 1794799804255901774,
+        "device": 27,
+        "inode": 2887752,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255901774,
+        "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+      },
+      "executed-source/hepta_cells/temporal.py": {
+        "bytes": 16540,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887753,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256110890,
+        "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+      },
+      "executed-source/hepta_cells/temporal_component.py": {
+        "bytes": 5060,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887754,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256219474,
+        "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+      },
+      "executed-source/hepta_pred1/__init__.py": {
+        "bytes": 75,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887756,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256316991,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "executed-source/hepta_pred1/models.py": {
+        "bytes": 13062,
+        "ctime_ns": 1794799804256418745,
+        "device": 27,
+        "inode": 2887757,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256418745,
+        "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+      },
+      "memory/A_SERVED.json": {
+        "bytes": 69126,
+        "ctime_ns": 1794799804256778239,
+        "device": 27,
+        "inode": 2887759,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256778239,
+        "sha256": "e136ad3e2ee82d82967466776d802a4b468336605aa47002d27f7ccd9a0a05ab"
+      },
+      "memory/A_TRAINING.npz": {
+        "bytes": 3354,
+        "ctime_ns": 1794799804256951090,
+        "device": 27,
+        "inode": 2887760,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256951090,
+        "sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "memory/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804257167938,
+        "device": 27,
+        "inode": 2887763,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804257167938,
+        "sha256": "7b38066454fc5cb29578d7b5279ea3a010df9687400ee622d6ea6dabd113469c"
+      },
+      "memory/COLD_REQUEST.json": {
+        "bytes": 10296,
+        "ctime_ns": 1794799804259044176,
+        "device": 27,
+        "inode": 2887764,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259044176,
+        "sha256": "d83bb8a81c87623ed7fa6f167962cdfa0561a8f8924a5a250d5e6644e8c5e679"
+      },
+      "memory/COLD_RESULT.json": {
+        "bytes": 2196,
+        "ctime_ns": 1794799804259122895,
+        "device": 27,
+        "inode": 2887765,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259122895,
+        "sha256": "e17154be86e564e670f2ab7d20921e6b14b9a0bee02483d0f195a25c63a4197c"
+      },
+      "memory/C_SERVED.json": {
+        "bytes": 69200,
+        "ctime_ns": 1794799804259403469,
+        "device": 27,
+        "inode": 2887766,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259403469,
+        "sha256": "e6d6277552616021504126686a2c24b223e8bb1ce2601dacf98e6a43ac023464"
+      },
+      "memory/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804259598184,
+        "device": 27,
+        "inode": 2887767,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259598184,
+        "sha256": "ca2025f3260c8739261d159b2b7132380cd8bed9c6be94499f86d40171ddd21c"
+      },
+      "memory/EVALUATION.json": {
+        "bytes": 473645,
+        "ctime_ns": 1794799804260936398,
+        "device": 27,
+        "inode": 2887768,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804260936398,
+        "sha256": "3b4b7e067c9b1d009495896ff50f594908616f9a41939afa5ff5ac5aba1dda99"
+      },
+      "memory/TRAINING.json": {
+        "bytes": 1941,
+        "ctime_ns": 1794799804262156623,
+        "device": 27,
+        "inode": 2887769,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262156623,
+        "sha256": "5d56e6b110712c62e91a69d16a3ad984fbd9a22232844ed8d22aa9a128710ace"
+      },
+      "memory/candidate.npz": {
+        "bytes": 14082,
+        "ctime_ns": 1794799804262351578,
+        "device": 27,
+        "inode": 2887770,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262351578,
+        "sha256": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279"
+      },
+      "memory/live.npz": {
+        "bytes": 10310,
+        "ctime_ns": 1794799804262450037,
+        "device": 27,
+        "inode": 2887771,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262450037,
+        "sha256": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59"
+      },
+      "memory/owner.sqlite": {
+        "bytes": 2199552,
+        "ctime_ns": 1794799804270880416,
+        "device": 27,
+        "inode": 2887772,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804270880416,
+        "sha256": "1b03546a87b4626f008aff3e81d65b70ed57dbbb51b4df3030fc6c3514b73e41"
+      },
+      "memory/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887773,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "memory/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887774,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "memory/parent.npz": {
+        "bytes": 10240,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887775,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272092019,
+        "sha256": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+      },
+      "native/__pycache__/transport.cpython-314.pyc": {
+        "bytes": 31749,
+        "ctime_ns": 1794799804272567318,
+        "device": 27,
+        "inode": 2887779,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272567318,
+        "sha256": "2e8c0ffef5a0d265483a3d48a3bf25f281c60bb6882703d2ef43cb0294935194"
+      },
+      "native/build.json": {
+        "bytes": 6909,
+        "ctime_ns": 1794799804272843285,
+        "device": 27,
+        "inode": 2887780,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272843285,
+        "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+      },
+      "native/cell_bridge.so": {
+        "bytes": 56520,
+        "ctime_ns": 1794799804273090379,
+        "device": 27,
+        "inode": 2887781,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273090379,
+        "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+      },
+      "native/continuation.hepta": {
+        "bytes": 27874,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887782,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273489412,
+        "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+      },
+      "native/transport.py": {
+        "bytes": 20815,
+        "ctime_ns": 1794799804273990099,
+        "device": 27,
+        "inode": 2887783,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273990099,
+        "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+      },
+      "predictor/A_SERVED.json": {
+        "bytes": 116383,
+        "ctime_ns": 1794799804274582185,
+        "device": 27,
+        "inode": 2887785,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804274582185,
+        "sha256": "14647f3b78443446a03e9cf1087ae83b4f607ea0c32d21d366e593d3b559b388"
+      },
+      "predictor/A_TRAINING.npz": {
+        "bytes": 11834,
+        "ctime_ns": 1794799804275133899,
+        "device": 27,
+        "inode": 2887786,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275133899,
+        "sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      },
+      "predictor/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804275476007,
+        "device": 27,
+        "inode": 2887787,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275476007,
+        "sha256": "549c741328cea08d09600e82abbcc24636cf519457cf3a66c45849428fff335f"
+      },
+      "predictor/COLD_REQUEST.json": {
+        "bytes": 10283,
+        "ctime_ns": 1794799804275588847,
+        "device": 27,
+        "inode": 2887788,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275588847,
+        "sha256": "e95b85b5b22049b58a1e050cdfc6d365f2924c3e9b960e44494aa4e4b31040f3"
+      },
+      "predictor/COLD_RESULT.json": {
+        "bytes": 2129,
+        "ctime_ns": 1794799804275808990,
+        "device": 27,
+        "inode": 2887789,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275808990,
+        "sha256": "3f2c053ddb0ff53aaa609a763573f4f20bfed58e0768d45cf0f19b2405d41fa3"
+      },
+      "predictor/C_SERVED.json": {
+        "bytes": 116574,
+        "ctime_ns": 1794799804276137507,
+        "device": 27,
+        "inode": 2887790,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276137507,
+        "sha256": "568fcb2f2dbe6834163f385af6e797799177bb117d62a99db335e55bc15f1f3d"
+      },
+      "predictor/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804276401927,
+        "device": 27,
+        "inode": 2887791,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276401927,
+        "sha256": "4517c6eb4afbac41193c9d0d0f100f68538e89101e2da8b940dc322c47a77ca8"
+      },
+      "predictor/EVALUATION.json": {
+        "bytes": 782338,
+        "ctime_ns": 1794799804278088968,
+        "device": 27,
+        "inode": 2887792,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804278088968,
+        "sha256": "9d8763764342fda70d4921b026aa71ddeb8f6e2c06ce9dfa4ce1858b518da3d1"
+      },
+      "predictor/TRAINING.json": {
+        "bytes": 1950,
+        "ctime_ns": 1794799804280183886,
+        "device": 27,
+        "inode": 2887796,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280183886,
+        "sha256": "cd48e8a76306489e0862619c46eef891a895b213f74b3d7062e9309d7e721c22"
+      },
+      "predictor/candidate.npz": {
+        "bytes": 14131,
+        "ctime_ns": 1794799804280287302,
+        "device": 27,
+        "inode": 2887797,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280287302,
+        "sha256": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492"
+      },
+      "predictor/live.npz": {
+        "bytes": 10346,
+        "ctime_ns": 1794799804280521897,
+        "device": 27,
+        "inode": 2887798,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280521897,
+        "sha256": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa"
+      },
+      "predictor/owner.sqlite": {
+        "bytes": 3276800,
+        "ctime_ns": 1794799804289061612,
+        "device": 27,
+        "inode": 2887799,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804289061612,
+        "sha256": "8ab582da2157aeb326186ac5a84bed1749ee72e4a3f9a801ef12543c565f1800"
+      },
+      "predictor/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887800,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "predictor/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887801,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "predictor/parent.npz": {
+        "bytes": 10274,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887802,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293025427,
+        "sha256": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+      },
+      "versions/31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354.json": {
+        "bytes": 7179,
+        "ctime_ns": 1794799804293345501,
+        "device": 27,
+        "inode": 2887804,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293345501,
+        "sha256": "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354"
+      },
+      "versions/6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02.json": {
+        "bytes": 7173,
+        "ctime_ns": 1794799804293428576,
+        "device": 27,
+        "inode": 2887805,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293428576,
+        "sha256": "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02"
+      },
+      "versions/7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13.json": {
+        "bytes": 7617,
+        "ctime_ns": 1794799804293530541,
+        "device": 27,
+        "inode": 2887806,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293530541,
+        "sha256": "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13"
+      },
+      "versions/817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5.json": {
+        "bytes": 7611,
+        "ctime_ns": 1794799804293599725,
+        "device": 27,
+        "inode": 2887807,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293599725,
+        "sha256": "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5"
+      },
+      "versions/d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887808,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293682911,
+        "sha256": "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5"
+      },
+      "versions/d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804294115085,
+        "device": 27,
+        "inode": 2887811,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804294115085,
+        "sha256": "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      }
+    }
+  },
+  "source_after_review": {
+    "directories": {
+      ".": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887726,
+        "links": 7,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "executed-source": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887735,
+        "links": 4,
+        "mode": 493,
+        "mtime_ns": 1794799804256219474
+      },
+      "executed-source/hepta_cells": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887736,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256110890
+      },
+      "executed-source/hepta_pred1": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887755,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256316991
+      },
+      "memory": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887758,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "native": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887776,
+        "links": 3,
+        "mode": 493,
+        "mtime_ns": 1794799804273489412
+      },
+      "native/__pycache__": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887778,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "predictor": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887784,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "versions": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887803,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293682911
+      }
+    },
+    "files": {
+      "A_DATA.json": {
+        "bytes": 8604,
+        "ctime_ns": 1794799804252576394,
+        "device": 27,
+        "inode": 2887727,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252576394,
+        "sha256": "0ce8cc8862028cb951bb2eab8df650562594f176188af4cdeddaa22146dfe5a0"
+      },
+      "PLAN.json": {
+        "bytes": 8761,
+        "ctime_ns": 1794799804252785090,
+        "device": 27,
+        "inode": 2887728,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252785090,
+        "sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282"
+      },
+      "RESULT.json": {
+        "bytes": 13280,
+        "ctime_ns": 1794799804252925532,
+        "device": 27,
+        "inode": 2887732,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252925532,
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "RUNTIME_PINS.json": {
+        "bytes": 785,
+        "ctime_ns": 1794799804253060286,
+        "device": 27,
+        "inode": 2887733,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253060286,
+        "sha256": "ef583c6414a689ec8ae1a6906d85d413b3096acdb57046ff6cd8ff9a7e1eb354"
+      },
+      "compile.jsonl": {
+        "bytes": 65946,
+        "ctime_ns": 1794799804253358347,
+        "device": 27,
+        "inode": 2887734,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253358347,
+        "sha256": "4d4d2ad8e3f44d946872fc345c23b444fd6ccbcb2432b78065b1b5408bc269de"
+      },
+      "executed-source/hepta_cells/__init__.py": {
+        "bytes": 79,
+        "ctime_ns": 1794799804253629898,
+        "device": 27,
+        "inode": 2887737,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253629898,
+        "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+      },
+      "executed-source/hepta_cells/bundle.py": {
+        "bytes": 6940,
+        "ctime_ns": 1794799804253724010,
+        "device": 27,
+        "inode": 2887738,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253724010,
+        "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+      },
+      "executed-source/hepta_cells/cfc.py": {
+        "bytes": 5406,
+        "ctime_ns": 1794799804253918284,
+        "device": 27,
+        "inode": 2887739,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253918284,
+        "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+      },
+      "executed-source/hepta_cells/component_types.py": {
+        "bytes": 5369,
+        "ctime_ns": 1794799804254012667,
+        "device": 27,
+        "inode": 2887740,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254012667,
+        "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+      },
+      "executed-source/hepta_cells/hia_component.py": {
+        "bytes": 11212,
+        "ctime_ns": 1794799804254272690,
+        "device": 27,
+        "inode": 2887741,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254272690,
+        "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+      },
+      "executed-source/hepta_cells/lifecycle.py": {
+        "bytes": 29975,
+        "ctime_ns": 1794799804254475837,
+        "device": 27,
+        "inode": 2887742,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254475837,
+        "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+      },
+      "executed-source/hepta_cells/maintenance_cycle.py": {
+        "bytes": 19706,
+        "ctime_ns": 1794799804254651983,
+        "device": 27,
+        "inode": 2887743,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254651983,
+        "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+      },
+      "executed-source/hepta_cells/maintenance_execution.py": {
+        "bytes": 11892,
+        "ctime_ns": 1794799804254977175,
+        "device": 27,
+        "inode": 2887744,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254977175,
+        "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+      },
+      "executed-source/hepta_cells/maintenance_serving.py": {
+        "bytes": 5676,
+        "ctime_ns": 1794799804255088784,
+        "device": 27,
+        "inode": 2887748,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255088784,
+        "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+      },
+      "executed-source/hepta_cells/maintenance_tasks.py": {
+        "bytes": 4925,
+        "ctime_ns": 1794799804255163397,
+        "device": 27,
+        "inode": 2887749,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255163397,
+        "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+      },
+      "executed-source/hepta_cells/owner_control.py": {
+        "bytes": 9009,
+        "ctime_ns": 1794799804255416229,
+        "device": 27,
+        "inode": 2887750,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255416229,
+        "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+      },
+      "executed-source/hepta_cells/population.py": {
+        "bytes": 8721,
+        "ctime_ns": 1794799804255746479,
+        "device": 27,
+        "inode": 2887751,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255746479,
+        "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+      },
+      "executed-source/hepta_cells/population_owner.py": {
+        "bytes": 11740,
+        "ctime_ns": 1794799804255901774,
+        "device": 27,
+        "inode": 2887752,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255901774,
+        "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+      },
+      "executed-source/hepta_cells/temporal.py": {
+        "bytes": 16540,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887753,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256110890,
+        "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+      },
+      "executed-source/hepta_cells/temporal_component.py": {
+        "bytes": 5060,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887754,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256219474,
+        "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+      },
+      "executed-source/hepta_pred1/__init__.py": {
+        "bytes": 75,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887756,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256316991,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "executed-source/hepta_pred1/models.py": {
+        "bytes": 13062,
+        "ctime_ns": 1794799804256418745,
+        "device": 27,
+        "inode": 2887757,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256418745,
+        "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+      },
+      "memory/A_SERVED.json": {
+        "bytes": 69126,
+        "ctime_ns": 1794799804256778239,
+        "device": 27,
+        "inode": 2887759,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256778239,
+        "sha256": "e136ad3e2ee82d82967466776d802a4b468336605aa47002d27f7ccd9a0a05ab"
+      },
+      "memory/A_TRAINING.npz": {
+        "bytes": 3354,
+        "ctime_ns": 1794799804256951090,
+        "device": 27,
+        "inode": 2887760,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256951090,
+        "sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "memory/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804257167938,
+        "device": 27,
+        "inode": 2887763,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804257167938,
+        "sha256": "7b38066454fc5cb29578d7b5279ea3a010df9687400ee622d6ea6dabd113469c"
+      },
+      "memory/COLD_REQUEST.json": {
+        "bytes": 10296,
+        "ctime_ns": 1794799804259044176,
+        "device": 27,
+        "inode": 2887764,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259044176,
+        "sha256": "d83bb8a81c87623ed7fa6f167962cdfa0561a8f8924a5a250d5e6644e8c5e679"
+      },
+      "memory/COLD_RESULT.json": {
+        "bytes": 2196,
+        "ctime_ns": 1794799804259122895,
+        "device": 27,
+        "inode": 2887765,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259122895,
+        "sha256": "e17154be86e564e670f2ab7d20921e6b14b9a0bee02483d0f195a25c63a4197c"
+      },
+      "memory/C_SERVED.json": {
+        "bytes": 69200,
+        "ctime_ns": 1794799804259403469,
+        "device": 27,
+        "inode": 2887766,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259403469,
+        "sha256": "e6d6277552616021504126686a2c24b223e8bb1ce2601dacf98e6a43ac023464"
+      },
+      "memory/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804259598184,
+        "device": 27,
+        "inode": 2887767,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259598184,
+        "sha256": "ca2025f3260c8739261d159b2b7132380cd8bed9c6be94499f86d40171ddd21c"
+      },
+      "memory/EVALUATION.json": {
+        "bytes": 473645,
+        "ctime_ns": 1794799804260936398,
+        "device": 27,
+        "inode": 2887768,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804260936398,
+        "sha256": "3b4b7e067c9b1d009495896ff50f594908616f9a41939afa5ff5ac5aba1dda99"
+      },
+      "memory/TRAINING.json": {
+        "bytes": 1941,
+        "ctime_ns": 1794799804262156623,
+        "device": 27,
+        "inode": 2887769,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262156623,
+        "sha256": "5d56e6b110712c62e91a69d16a3ad984fbd9a22232844ed8d22aa9a128710ace"
+      },
+      "memory/candidate.npz": {
+        "bytes": 14082,
+        "ctime_ns": 1794799804262351578,
+        "device": 27,
+        "inode": 2887770,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262351578,
+        "sha256": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279"
+      },
+      "memory/live.npz": {
+        "bytes": 10310,
+        "ctime_ns": 1794799804262450037,
+        "device": 27,
+        "inode": 2887771,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262450037,
+        "sha256": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59"
+      },
+      "memory/owner.sqlite": {
+        "bytes": 2199552,
+        "ctime_ns": 1794799804270880416,
+        "device": 27,
+        "inode": 2887772,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804270880416,
+        "sha256": "1b03546a87b4626f008aff3e81d65b70ed57dbbb51b4df3030fc6c3514b73e41"
+      },
+      "memory/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887773,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "memory/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887774,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "memory/parent.npz": {
+        "bytes": 10240,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887775,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272092019,
+        "sha256": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+      },
+      "native/__pycache__/transport.cpython-314.pyc": {
+        "bytes": 31749,
+        "ctime_ns": 1794799804272567318,
+        "device": 27,
+        "inode": 2887779,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272567318,
+        "sha256": "2e8c0ffef5a0d265483a3d48a3bf25f281c60bb6882703d2ef43cb0294935194"
+      },
+      "native/build.json": {
+        "bytes": 6909,
+        "ctime_ns": 1794799804272843285,
+        "device": 27,
+        "inode": 2887780,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272843285,
+        "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+      },
+      "native/cell_bridge.so": {
+        "bytes": 56520,
+        "ctime_ns": 1794799804273090379,
+        "device": 27,
+        "inode": 2887781,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273090379,
+        "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+      },
+      "native/continuation.hepta": {
+        "bytes": 27874,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887782,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273489412,
+        "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+      },
+      "native/transport.py": {
+        "bytes": 20815,
+        "ctime_ns": 1794799804273990099,
+        "device": 27,
+        "inode": 2887783,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273990099,
+        "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+      },
+      "predictor/A_SERVED.json": {
+        "bytes": 116383,
+        "ctime_ns": 1794799804274582185,
+        "device": 27,
+        "inode": 2887785,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804274582185,
+        "sha256": "14647f3b78443446a03e9cf1087ae83b4f607ea0c32d21d366e593d3b559b388"
+      },
+      "predictor/A_TRAINING.npz": {
+        "bytes": 11834,
+        "ctime_ns": 1794799804275133899,
+        "device": 27,
+        "inode": 2887786,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275133899,
+        "sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      },
+      "predictor/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804275476007,
+        "device": 27,
+        "inode": 2887787,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275476007,
+        "sha256": "549c741328cea08d09600e82abbcc24636cf519457cf3a66c45849428fff335f"
+      },
+      "predictor/COLD_REQUEST.json": {
+        "bytes": 10283,
+        "ctime_ns": 1794799804275588847,
+        "device": 27,
+        "inode": 2887788,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275588847,
+        "sha256": "e95b85b5b22049b58a1e050cdfc6d365f2924c3e9b960e44494aa4e4b31040f3"
+      },
+      "predictor/COLD_RESULT.json": {
+        "bytes": 2129,
+        "ctime_ns": 1794799804275808990,
+        "device": 27,
+        "inode": 2887789,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275808990,
+        "sha256": "3f2c053ddb0ff53aaa609a763573f4f20bfed58e0768d45cf0f19b2405d41fa3"
+      },
+      "predictor/C_SERVED.json": {
+        "bytes": 116574,
+        "ctime_ns": 1794799804276137507,
+        "device": 27,
+        "inode": 2887790,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276137507,
+        "sha256": "568fcb2f2dbe6834163f385af6e797799177bb117d62a99db335e55bc15f1f3d"
+      },
+      "predictor/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804276401927,
+        "device": 27,
+        "inode": 2887791,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276401927,
+        "sha256": "4517c6eb4afbac41193c9d0d0f100f68538e89101e2da8b940dc322c47a77ca8"
+      },
+      "predictor/EVALUATION.json": {
+        "bytes": 782338,
+        "ctime_ns": 1794799804278088968,
+        "device": 27,
+        "inode": 2887792,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804278088968,
+        "sha256": "9d8763764342fda70d4921b026aa71ddeb8f6e2c06ce9dfa4ce1858b518da3d1"
+      },
+      "predictor/TRAINING.json": {
+        "bytes": 1950,
+        "ctime_ns": 1794799804280183886,
+        "device": 27,
+        "inode": 2887796,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280183886,
+        "sha256": "cd48e8a76306489e0862619c46eef891a895b213f74b3d7062e9309d7e721c22"
+      },
+      "predictor/candidate.npz": {
+        "bytes": 14131,
+        "ctime_ns": 1794799804280287302,
+        "device": 27,
+        "inode": 2887797,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280287302,
+        "sha256": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492"
+      },
+      "predictor/live.npz": {
+        "bytes": 10346,
+        "ctime_ns": 1794799804280521897,
+        "device": 27,
+        "inode": 2887798,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280521897,
+        "sha256": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa"
+      },
+      "predictor/owner.sqlite": {
+        "bytes": 3276800,
+        "ctime_ns": 1794799804289061612,
+        "device": 27,
+        "inode": 2887799,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804289061612,
+        "sha256": "8ab582da2157aeb326186ac5a84bed1749ee72e4a3f9a801ef12543c565f1800"
+      },
+      "predictor/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887800,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "predictor/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887801,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "predictor/parent.npz": {
+        "bytes": 10274,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887802,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293025427,
+        "sha256": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+      },
+      "versions/31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354.json": {
+        "bytes": 7179,
+        "ctime_ns": 1794799804293345501,
+        "device": 27,
+        "inode": 2887804,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293345501,
+        "sha256": "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354"
+      },
+      "versions/6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02.json": {
+        "bytes": 7173,
+        "ctime_ns": 1794799804293428576,
+        "device": 27,
+        "inode": 2887805,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293428576,
+        "sha256": "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02"
+      },
+      "versions/7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13.json": {
+        "bytes": 7617,
+        "ctime_ns": 1794799804293530541,
+        "device": 27,
+        "inode": 2887806,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293530541,
+        "sha256": "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13"
+      },
+      "versions/817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5.json": {
+        "bytes": 7611,
+        "ctime_ns": 1794799804293599725,
+        "device": 27,
+        "inode": 2887807,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293599725,
+        "sha256": "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5"
+      },
+      "versions/d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887808,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293682911,
+        "sha256": "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5"
+      },
+      "versions/d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804294115085,
+        "device": 27,
+        "inode": 2887811,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804294115085,
+        "sha256": "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      }
+    }
+  },
+  "source_before": {
+    "directories": {
+      ".": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887726,
+        "links": 7,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "executed-source": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887735,
+        "links": 4,
+        "mode": 493,
+        "mtime_ns": 1794799804256219474
+      },
+      "executed-source/hepta_cells": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887736,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256110890
+      },
+      "executed-source/hepta_pred1": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887755,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256316991
+      },
+      "memory": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887758,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "native": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887776,
+        "links": 3,
+        "mode": 493,
+        "mtime_ns": 1794799804273489412
+      },
+      "native/__pycache__": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887778,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "predictor": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887784,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "versions": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887803,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293682911
+      }
+    },
+    "files": {
+      "A_DATA.json": {
+        "bytes": 8604,
+        "ctime_ns": 1794799804252576394,
+        "device": 27,
+        "inode": 2887727,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252576394,
+        "sha256": "0ce8cc8862028cb951bb2eab8df650562594f176188af4cdeddaa22146dfe5a0"
+      },
+      "PLAN.json": {
+        "bytes": 8761,
+        "ctime_ns": 1794799804252785090,
+        "device": 27,
+        "inode": 2887728,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252785090,
+        "sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282"
+      },
+      "RESULT.json": {
+        "bytes": 13280,
+        "ctime_ns": 1794799804252925532,
+        "device": 27,
+        "inode": 2887732,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252925532,
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "RUNTIME_PINS.json": {
+        "bytes": 785,
+        "ctime_ns": 1794799804253060286,
+        "device": 27,
+        "inode": 2887733,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253060286,
+        "sha256": "ef583c6414a689ec8ae1a6906d85d413b3096acdb57046ff6cd8ff9a7e1eb354"
+      },
+      "compile.jsonl": {
+        "bytes": 65946,
+        "ctime_ns": 1794799804253358347,
+        "device": 27,
+        "inode": 2887734,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253358347,
+        "sha256": "4d4d2ad8e3f44d946872fc345c23b444fd6ccbcb2432b78065b1b5408bc269de"
+      },
+      "executed-source/hepta_cells/__init__.py": {
+        "bytes": 79,
+        "ctime_ns": 1794799804253629898,
+        "device": 27,
+        "inode": 2887737,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253629898,
+        "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+      },
+      "executed-source/hepta_cells/bundle.py": {
+        "bytes": 6940,
+        "ctime_ns": 1794799804253724010,
+        "device": 27,
+        "inode": 2887738,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253724010,
+        "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+      },
+      "executed-source/hepta_cells/cfc.py": {
+        "bytes": 5406,
+        "ctime_ns": 1794799804253918284,
+        "device": 27,
+        "inode": 2887739,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253918284,
+        "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+      },
+      "executed-source/hepta_cells/component_types.py": {
+        "bytes": 5369,
+        "ctime_ns": 1794799804254012667,
+        "device": 27,
+        "inode": 2887740,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254012667,
+        "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+      },
+      "executed-source/hepta_cells/hia_component.py": {
+        "bytes": 11212,
+        "ctime_ns": 1794799804254272690,
+        "device": 27,
+        "inode": 2887741,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254272690,
+        "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+      },
+      "executed-source/hepta_cells/lifecycle.py": {
+        "bytes": 29975,
+        "ctime_ns": 1794799804254475837,
+        "device": 27,
+        "inode": 2887742,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254475837,
+        "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+      },
+      "executed-source/hepta_cells/maintenance_cycle.py": {
+        "bytes": 19706,
+        "ctime_ns": 1794799804254651983,
+        "device": 27,
+        "inode": 2887743,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254651983,
+        "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+      },
+      "executed-source/hepta_cells/maintenance_execution.py": {
+        "bytes": 11892,
+        "ctime_ns": 1794799804254977175,
+        "device": 27,
+        "inode": 2887744,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254977175,
+        "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+      },
+      "executed-source/hepta_cells/maintenance_serving.py": {
+        "bytes": 5676,
+        "ctime_ns": 1794799804255088784,
+        "device": 27,
+        "inode": 2887748,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255088784,
+        "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+      },
+      "executed-source/hepta_cells/maintenance_tasks.py": {
+        "bytes": 4925,
+        "ctime_ns": 1794799804255163397,
+        "device": 27,
+        "inode": 2887749,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255163397,
+        "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+      },
+      "executed-source/hepta_cells/owner_control.py": {
+        "bytes": 9009,
+        "ctime_ns": 1794799804255416229,
+        "device": 27,
+        "inode": 2887750,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255416229,
+        "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+      },
+      "executed-source/hepta_cells/population.py": {
+        "bytes": 8721,
+        "ctime_ns": 1794799804255746479,
+        "device": 27,
+        "inode": 2887751,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255746479,
+        "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+      },
+      "executed-source/hepta_cells/population_owner.py": {
+        "bytes": 11740,
+        "ctime_ns": 1794799804255901774,
+        "device": 27,
+        "inode": 2887752,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255901774,
+        "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+      },
+      "executed-source/hepta_cells/temporal.py": {
+        "bytes": 16540,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887753,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256110890,
+        "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+      },
+      "executed-source/hepta_cells/temporal_component.py": {
+        "bytes": 5060,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887754,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256219474,
+        "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+      },
+      "executed-source/hepta_pred1/__init__.py": {
+        "bytes": 75,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887756,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256316991,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "executed-source/hepta_pred1/models.py": {
+        "bytes": 13062,
+        "ctime_ns": 1794799804256418745,
+        "device": 27,
+        "inode": 2887757,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256418745,
+        "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+      },
+      "memory/A_SERVED.json": {
+        "bytes": 69126,
+        "ctime_ns": 1794799804256778239,
+        "device": 27,
+        "inode": 2887759,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256778239,
+        "sha256": "e136ad3e2ee82d82967466776d802a4b468336605aa47002d27f7ccd9a0a05ab"
+      },
+      "memory/A_TRAINING.npz": {
+        "bytes": 3354,
+        "ctime_ns": 1794799804256951090,
+        "device": 27,
+        "inode": 2887760,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256951090,
+        "sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "memory/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804257167938,
+        "device": 27,
+        "inode": 2887763,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804257167938,
+        "sha256": "7b38066454fc5cb29578d7b5279ea3a010df9687400ee622d6ea6dabd113469c"
+      },
+      "memory/COLD_REQUEST.json": {
+        "bytes": 10296,
+        "ctime_ns": 1794799804259044176,
+        "device": 27,
+        "inode": 2887764,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259044176,
+        "sha256": "d83bb8a81c87623ed7fa6f167962cdfa0561a8f8924a5a250d5e6644e8c5e679"
+      },
+      "memory/COLD_RESULT.json": {
+        "bytes": 2196,
+        "ctime_ns": 1794799804259122895,
+        "device": 27,
+        "inode": 2887765,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259122895,
+        "sha256": "e17154be86e564e670f2ab7d20921e6b14b9a0bee02483d0f195a25c63a4197c"
+      },
+      "memory/C_SERVED.json": {
+        "bytes": 69200,
+        "ctime_ns": 1794799804259403469,
+        "device": 27,
+        "inode": 2887766,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259403469,
+        "sha256": "e6d6277552616021504126686a2c24b223e8bb1ce2601dacf98e6a43ac023464"
+      },
+      "memory/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804259598184,
+        "device": 27,
+        "inode": 2887767,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259598184,
+        "sha256": "ca2025f3260c8739261d159b2b7132380cd8bed9c6be94499f86d40171ddd21c"
+      },
+      "memory/EVALUATION.json": {
+        "bytes": 473645,
+        "ctime_ns": 1794799804260936398,
+        "device": 27,
+        "inode": 2887768,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804260936398,
+        "sha256": "3b4b7e067c9b1d009495896ff50f594908616f9a41939afa5ff5ac5aba1dda99"
+      },
+      "memory/TRAINING.json": {
+        "bytes": 1941,
+        "ctime_ns": 1794799804262156623,
+        "device": 27,
+        "inode": 2887769,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262156623,
+        "sha256": "5d56e6b110712c62e91a69d16a3ad984fbd9a22232844ed8d22aa9a128710ace"
+      },
+      "memory/candidate.npz": {
+        "bytes": 14082,
+        "ctime_ns": 1794799804262351578,
+        "device": 27,
+        "inode": 2887770,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262351578,
+        "sha256": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279"
+      },
+      "memory/live.npz": {
+        "bytes": 10310,
+        "ctime_ns": 1794799804262450037,
+        "device": 27,
+        "inode": 2887771,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262450037,
+        "sha256": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59"
+      },
+      "memory/owner.sqlite": {
+        "bytes": 2199552,
+        "ctime_ns": 1794799804270880416,
+        "device": 27,
+        "inode": 2887772,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804270880416,
+        "sha256": "1b03546a87b4626f008aff3e81d65b70ed57dbbb51b4df3030fc6c3514b73e41"
+      },
+      "memory/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887773,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "memory/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887774,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "memory/parent.npz": {
+        "bytes": 10240,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887775,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272092019,
+        "sha256": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+      },
+      "native/__pycache__/transport.cpython-314.pyc": {
+        "bytes": 31749,
+        "ctime_ns": 1794799804272567318,
+        "device": 27,
+        "inode": 2887779,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272567318,
+        "sha256": "2e8c0ffef5a0d265483a3d48a3bf25f281c60bb6882703d2ef43cb0294935194"
+      },
+      "native/build.json": {
+        "bytes": 6909,
+        "ctime_ns": 1794799804272843285,
+        "device": 27,
+        "inode": 2887780,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272843285,
+        "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+      },
+      "native/cell_bridge.so": {
+        "bytes": 56520,
+        "ctime_ns": 1794799804273090379,
+        "device": 27,
+        "inode": 2887781,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273090379,
+        "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+      },
+      "native/continuation.hepta": {
+        "bytes": 27874,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887782,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273489412,
+        "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+      },
+      "native/transport.py": {
+        "bytes": 20815,
+        "ctime_ns": 1794799804273990099,
+        "device": 27,
+        "inode": 2887783,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273990099,
+        "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+      },
+      "predictor/A_SERVED.json": {
+        "bytes": 116383,
+        "ctime_ns": 1794799804274582185,
+        "device": 27,
+        "inode": 2887785,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804274582185,
+        "sha256": "14647f3b78443446a03e9cf1087ae83b4f607ea0c32d21d366e593d3b559b388"
+      },
+      "predictor/A_TRAINING.npz": {
+        "bytes": 11834,
+        "ctime_ns": 1794799804275133899,
+        "device": 27,
+        "inode": 2887786,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275133899,
+        "sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      },
+      "predictor/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804275476007,
+        "device": 27,
+        "inode": 2887787,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275476007,
+        "sha256": "549c741328cea08d09600e82abbcc24636cf519457cf3a66c45849428fff335f"
+      },
+      "predictor/COLD_REQUEST.json": {
+        "bytes": 10283,
+        "ctime_ns": 1794799804275588847,
+        "device": 27,
+        "inode": 2887788,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275588847,
+        "sha256": "e95b85b5b22049b58a1e050cdfc6d365f2924c3e9b960e44494aa4e4b31040f3"
+      },
+      "predictor/COLD_RESULT.json": {
+        "bytes": 2129,
+        "ctime_ns": 1794799804275808990,
+        "device": 27,
+        "inode": 2887789,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275808990,
+        "sha256": "3f2c053ddb0ff53aaa609a763573f4f20bfed58e0768d45cf0f19b2405d41fa3"
+      },
+      "predictor/C_SERVED.json": {
+        "bytes": 116574,
+        "ctime_ns": 1794799804276137507,
+        "device": 27,
+        "inode": 2887790,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276137507,
+        "sha256": "568fcb2f2dbe6834163f385af6e797799177bb117d62a99db335e55bc15f1f3d"
+      },
+      "predictor/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804276401927,
+        "device": 27,
+        "inode": 2887791,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276401927,
+        "sha256": "4517c6eb4afbac41193c9d0d0f100f68538e89101e2da8b940dc322c47a77ca8"
+      },
+      "predictor/EVALUATION.json": {
+        "bytes": 782338,
+        "ctime_ns": 1794799804278088968,
+        "device": 27,
+        "inode": 2887792,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804278088968,
+        "sha256": "9d8763764342fda70d4921b026aa71ddeb8f6e2c06ce9dfa4ce1858b518da3d1"
+      },
+      "predictor/TRAINING.json": {
+        "bytes": 1950,
+        "ctime_ns": 1794799804280183886,
+        "device": 27,
+        "inode": 2887796,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280183886,
+        "sha256": "cd48e8a76306489e0862619c46eef891a895b213f74b3d7062e9309d7e721c22"
+      },
+      "predictor/candidate.npz": {
+        "bytes": 14131,
+        "ctime_ns": 1794799804280287302,
+        "device": 27,
+        "inode": 2887797,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280287302,
+        "sha256": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492"
+      },
+      "predictor/live.npz": {
+        "bytes": 10346,
+        "ctime_ns": 1794799804280521897,
+        "device": 27,
+        "inode": 2887798,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280521897,
+        "sha256": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa"
+      },
+      "predictor/owner.sqlite": {
+        "bytes": 3276800,
+        "ctime_ns": 1794799804289061612,
+        "device": 27,
+        "inode": 2887799,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804289061612,
+        "sha256": "8ab582da2157aeb326186ac5a84bed1749ee72e4a3f9a801ef12543c565f1800"
+      },
+      "predictor/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887800,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "predictor/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887801,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "predictor/parent.npz": {
+        "bytes": 10274,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887802,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293025427,
+        "sha256": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+      },
+      "versions/31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354.json": {
+        "bytes": 7179,
+        "ctime_ns": 1794799804293345501,
+        "device": 27,
+        "inode": 2887804,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293345501,
+        "sha256": "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354"
+      },
+      "versions/6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02.json": {
+        "bytes": 7173,
+        "ctime_ns": 1794799804293428576,
+        "device": 27,
+        "inode": 2887805,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293428576,
+        "sha256": "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02"
+      },
+      "versions/7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13.json": {
+        "bytes": 7617,
+        "ctime_ns": 1794799804293530541,
+        "device": 27,
+        "inode": 2887806,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293530541,
+        "sha256": "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13"
+      },
+      "versions/817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5.json": {
+        "bytes": 7611,
+        "ctime_ns": 1794799804293599725,
+        "device": 27,
+        "inode": 2887807,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293599725,
+        "sha256": "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5"
+      },
+      "versions/d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887808,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293682911,
+        "sha256": "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5"
+      },
+      "versions/d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804294115085,
+        "device": 27,
+        "inode": 2887811,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804294115085,
+        "sha256": "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      }
+    }
+  },
+  "source_directory": "/workspace/scratch/724fb6d14866/runtime-bridge/evidence/actual-runtime-v4/worker/lane-v4-state/maintenance/campaign",
+  "source_during_copy": {
+    "directories": {
+      ".": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887726,
+        "links": 7,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "executed-source": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887735,
+        "links": 4,
+        "mode": 493,
+        "mtime_ns": 1794799804256219474
+      },
+      "executed-source/hepta_cells": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887736,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256110890
+      },
+      "executed-source/hepta_pred1": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887755,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804256316991
+      },
+      "memory": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887758,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "native": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887776,
+        "links": 3,
+        "mode": 493,
+        "mtime_ns": 1794799804273489412
+      },
+      "native/__pycache__": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887778,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804272092019
+      },
+      "predictor": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887784,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293025427
+      },
+      "versions": {
+        "bytes": 4096,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887803,
+        "links": 2,
+        "mode": 493,
+        "mtime_ns": 1794799804293682911
+      }
+    },
+    "files": {
+      "A_DATA.json": {
+        "bytes": 8604,
+        "ctime_ns": 1794799804252576394,
+        "device": 27,
+        "inode": 2887727,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252576394,
+        "sha256": "0ce8cc8862028cb951bb2eab8df650562594f176188af4cdeddaa22146dfe5a0"
+      },
+      "PLAN.json": {
+        "bytes": 8761,
+        "ctime_ns": 1794799804252785090,
+        "device": 27,
+        "inode": 2887728,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252785090,
+        "sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282"
+      },
+      "RESULT.json": {
+        "bytes": 13280,
+        "ctime_ns": 1794799804252925532,
+        "device": 27,
+        "inode": 2887732,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804252925532,
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "RUNTIME_PINS.json": {
+        "bytes": 785,
+        "ctime_ns": 1794799804253060286,
+        "device": 27,
+        "inode": 2887733,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253060286,
+        "sha256": "ef583c6414a689ec8ae1a6906d85d413b3096acdb57046ff6cd8ff9a7e1eb354"
+      },
+      "compile.jsonl": {
+        "bytes": 65946,
+        "ctime_ns": 1794799804253358347,
+        "device": 27,
+        "inode": 2887734,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253358347,
+        "sha256": "4d4d2ad8e3f44d946872fc345c23b444fd6ccbcb2432b78065b1b5408bc269de"
+      },
+      "executed-source/hepta_cells/__init__.py": {
+        "bytes": 79,
+        "ctime_ns": 1794799804253629898,
+        "device": 27,
+        "inode": 2887737,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253629898,
+        "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+      },
+      "executed-source/hepta_cells/bundle.py": {
+        "bytes": 6940,
+        "ctime_ns": 1794799804253724010,
+        "device": 27,
+        "inode": 2887738,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253724010,
+        "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+      },
+      "executed-source/hepta_cells/cfc.py": {
+        "bytes": 5406,
+        "ctime_ns": 1794799804253918284,
+        "device": 27,
+        "inode": 2887739,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804253918284,
+        "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+      },
+      "executed-source/hepta_cells/component_types.py": {
+        "bytes": 5369,
+        "ctime_ns": 1794799804254012667,
+        "device": 27,
+        "inode": 2887740,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254012667,
+        "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+      },
+      "executed-source/hepta_cells/hia_component.py": {
+        "bytes": 11212,
+        "ctime_ns": 1794799804254272690,
+        "device": 27,
+        "inode": 2887741,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254272690,
+        "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+      },
+      "executed-source/hepta_cells/lifecycle.py": {
+        "bytes": 29975,
+        "ctime_ns": 1794799804254475837,
+        "device": 27,
+        "inode": 2887742,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254475837,
+        "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+      },
+      "executed-source/hepta_cells/maintenance_cycle.py": {
+        "bytes": 19706,
+        "ctime_ns": 1794799804254651983,
+        "device": 27,
+        "inode": 2887743,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254651983,
+        "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+      },
+      "executed-source/hepta_cells/maintenance_execution.py": {
+        "bytes": 11892,
+        "ctime_ns": 1794799804254977175,
+        "device": 27,
+        "inode": 2887744,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804254977175,
+        "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+      },
+      "executed-source/hepta_cells/maintenance_serving.py": {
+        "bytes": 5676,
+        "ctime_ns": 1794799804255088784,
+        "device": 27,
+        "inode": 2887748,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255088784,
+        "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+      },
+      "executed-source/hepta_cells/maintenance_tasks.py": {
+        "bytes": 4925,
+        "ctime_ns": 1794799804255163397,
+        "device": 27,
+        "inode": 2887749,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255163397,
+        "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+      },
+      "executed-source/hepta_cells/owner_control.py": {
+        "bytes": 9009,
+        "ctime_ns": 1794799804255416229,
+        "device": 27,
+        "inode": 2887750,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255416229,
+        "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+      },
+      "executed-source/hepta_cells/population.py": {
+        "bytes": 8721,
+        "ctime_ns": 1794799804255746479,
+        "device": 27,
+        "inode": 2887751,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255746479,
+        "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+      },
+      "executed-source/hepta_cells/population_owner.py": {
+        "bytes": 11740,
+        "ctime_ns": 1794799804255901774,
+        "device": 27,
+        "inode": 2887752,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804255901774,
+        "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+      },
+      "executed-source/hepta_cells/temporal.py": {
+        "bytes": 16540,
+        "ctime_ns": 1794799804256110890,
+        "device": 27,
+        "inode": 2887753,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256110890,
+        "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+      },
+      "executed-source/hepta_cells/temporal_component.py": {
+        "bytes": 5060,
+        "ctime_ns": 1794799804256219474,
+        "device": 27,
+        "inode": 2887754,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256219474,
+        "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+      },
+      "executed-source/hepta_pred1/__init__.py": {
+        "bytes": 75,
+        "ctime_ns": 1794799804256316991,
+        "device": 27,
+        "inode": 2887756,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256316991,
+        "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+      },
+      "executed-source/hepta_pred1/models.py": {
+        "bytes": 13062,
+        "ctime_ns": 1794799804256418745,
+        "device": 27,
+        "inode": 2887757,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256418745,
+        "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+      },
+      "memory/A_SERVED.json": {
+        "bytes": 69126,
+        "ctime_ns": 1794799804256778239,
+        "device": 27,
+        "inode": 2887759,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256778239,
+        "sha256": "e136ad3e2ee82d82967466776d802a4b468336605aa47002d27f7ccd9a0a05ab"
+      },
+      "memory/A_TRAINING.npz": {
+        "bytes": 3354,
+        "ctime_ns": 1794799804256951090,
+        "device": 27,
+        "inode": 2887760,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804256951090,
+        "sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "memory/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804257167938,
+        "device": 27,
+        "inode": 2887763,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804257167938,
+        "sha256": "7b38066454fc5cb29578d7b5279ea3a010df9687400ee622d6ea6dabd113469c"
+      },
+      "memory/COLD_REQUEST.json": {
+        "bytes": 10296,
+        "ctime_ns": 1794799804259044176,
+        "device": 27,
+        "inode": 2887764,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259044176,
+        "sha256": "d83bb8a81c87623ed7fa6f167962cdfa0561a8f8924a5a250d5e6644e8c5e679"
+      },
+      "memory/COLD_RESULT.json": {
+        "bytes": 2196,
+        "ctime_ns": 1794799804259122895,
+        "device": 27,
+        "inode": 2887765,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259122895,
+        "sha256": "e17154be86e564e670f2ab7d20921e6b14b9a0bee02483d0f195a25c63a4197c"
+      },
+      "memory/C_SERVED.json": {
+        "bytes": 69200,
+        "ctime_ns": 1794799804259403469,
+        "device": 27,
+        "inode": 2887766,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259403469,
+        "sha256": "e6d6277552616021504126686a2c24b223e8bb1ce2601dacf98e6a43ac023464"
+      },
+      "memory/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804259598184,
+        "device": 27,
+        "inode": 2887767,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804259598184,
+        "sha256": "ca2025f3260c8739261d159b2b7132380cd8bed9c6be94499f86d40171ddd21c"
+      },
+      "memory/EVALUATION.json": {
+        "bytes": 473645,
+        "ctime_ns": 1794799804260936398,
+        "device": 27,
+        "inode": 2887768,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804260936398,
+        "sha256": "3b4b7e067c9b1d009495896ff50f594908616f9a41939afa5ff5ac5aba1dda99"
+      },
+      "memory/TRAINING.json": {
+        "bytes": 1941,
+        "ctime_ns": 1794799804262156623,
+        "device": 27,
+        "inode": 2887769,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262156623,
+        "sha256": "5d56e6b110712c62e91a69d16a3ad984fbd9a22232844ed8d22aa9a128710ace"
+      },
+      "memory/candidate.npz": {
+        "bytes": 14082,
+        "ctime_ns": 1794799804262351578,
+        "device": 27,
+        "inode": 2887770,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262351578,
+        "sha256": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279"
+      },
+      "memory/live.npz": {
+        "bytes": 10310,
+        "ctime_ns": 1794799804262450037,
+        "device": 27,
+        "inode": 2887771,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804262450037,
+        "sha256": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59"
+      },
+      "memory/owner.sqlite": {
+        "bytes": 2199552,
+        "ctime_ns": 1794799804270880416,
+        "device": 27,
+        "inode": 2887772,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804270880416,
+        "sha256": "1b03546a87b4626f008aff3e81d65b70ed57dbbb51b4df3030fc6c3514b73e41"
+      },
+      "memory/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887773,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "memory/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804271804384,
+        "device": 27,
+        "inode": 2887774,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804271804384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "memory/parent.npz": {
+        "bytes": 10240,
+        "ctime_ns": 1794799804272092019,
+        "device": 27,
+        "inode": 2887775,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272092019,
+        "sha256": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+      },
+      "native/__pycache__/transport.cpython-314.pyc": {
+        "bytes": 31749,
+        "ctime_ns": 1794799804272567318,
+        "device": 27,
+        "inode": 2887779,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272567318,
+        "sha256": "2e8c0ffef5a0d265483a3d48a3bf25f281c60bb6882703d2ef43cb0294935194"
+      },
+      "native/build.json": {
+        "bytes": 6909,
+        "ctime_ns": 1794799804272843285,
+        "device": 27,
+        "inode": 2887780,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804272843285,
+        "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+      },
+      "native/cell_bridge.so": {
+        "bytes": 56520,
+        "ctime_ns": 1794799804273090379,
+        "device": 27,
+        "inode": 2887781,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273090379,
+        "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+      },
+      "native/continuation.hepta": {
+        "bytes": 27874,
+        "ctime_ns": 1794799804273489412,
+        "device": 27,
+        "inode": 2887782,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273489412,
+        "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+      },
+      "native/transport.py": {
+        "bytes": 20815,
+        "ctime_ns": 1794799804273990099,
+        "device": 27,
+        "inode": 2887783,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804273990099,
+        "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+      },
+      "predictor/A_SERVED.json": {
+        "bytes": 116383,
+        "ctime_ns": 1794799804274582185,
+        "device": 27,
+        "inode": 2887785,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804274582185,
+        "sha256": "14647f3b78443446a03e9cf1087ae83b4f607ea0c32d21d366e593d3b559b388"
+      },
+      "predictor/A_TRAINING.npz": {
+        "bytes": 11834,
+        "ctime_ns": 1794799804275133899,
+        "device": 27,
+        "inode": 2887786,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275133899,
+        "sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      },
+      "predictor/COLD_PROCESS.json": {
+        "bytes": 128,
+        "ctime_ns": 1794799804275476007,
+        "device": 27,
+        "inode": 2887787,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275476007,
+        "sha256": "549c741328cea08d09600e82abbcc24636cf519457cf3a66c45849428fff335f"
+      },
+      "predictor/COLD_REQUEST.json": {
+        "bytes": 10283,
+        "ctime_ns": 1794799804275588847,
+        "device": 27,
+        "inode": 2887788,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275588847,
+        "sha256": "e95b85b5b22049b58a1e050cdfc6d365f2924c3e9b960e44494aa4e4b31040f3"
+      },
+      "predictor/COLD_RESULT.json": {
+        "bytes": 2129,
+        "ctime_ns": 1794799804275808990,
+        "device": 27,
+        "inode": 2887789,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804275808990,
+        "sha256": "3f2c053ddb0ff53aaa609a763573f4f20bfed58e0768d45cf0f19b2405d41fa3"
+      },
+      "predictor/C_SERVED.json": {
+        "bytes": 116574,
+        "ctime_ns": 1794799804276137507,
+        "device": 27,
+        "inode": 2887790,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276137507,
+        "sha256": "568fcb2f2dbe6834163f385af6e797799177bb117d62a99db335e55bc15f1f3d"
+      },
+      "predictor/DECISION.json": {
+        "bytes": 1062,
+        "ctime_ns": 1794799804276401927,
+        "device": 27,
+        "inode": 2887791,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804276401927,
+        "sha256": "4517c6eb4afbac41193c9d0d0f100f68538e89101e2da8b940dc322c47a77ca8"
+      },
+      "predictor/EVALUATION.json": {
+        "bytes": 782338,
+        "ctime_ns": 1794799804278088968,
+        "device": 27,
+        "inode": 2887792,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804278088968,
+        "sha256": "9d8763764342fda70d4921b026aa71ddeb8f6e2c06ce9dfa4ce1858b518da3d1"
+      },
+      "predictor/TRAINING.json": {
+        "bytes": 1950,
+        "ctime_ns": 1794799804280183886,
+        "device": 27,
+        "inode": 2887796,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280183886,
+        "sha256": "cd48e8a76306489e0862619c46eef891a895b213f74b3d7062e9309d7e721c22"
+      },
+      "predictor/candidate.npz": {
+        "bytes": 14131,
+        "ctime_ns": 1794799804280287302,
+        "device": 27,
+        "inode": 2887797,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280287302,
+        "sha256": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492"
+      },
+      "predictor/live.npz": {
+        "bytes": 10346,
+        "ctime_ns": 1794799804280521897,
+        "device": 27,
+        "inode": 2887798,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804280521897,
+        "sha256": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa"
+      },
+      "predictor/owner.sqlite": {
+        "bytes": 3276800,
+        "ctime_ns": 1794799804289061612,
+        "device": 27,
+        "inode": 2887799,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804289061612,
+        "sha256": "8ab582da2157aeb326186ac5a84bed1749ee72e4a3f9a801ef12543c565f1800"
+      },
+      "predictor/owner.sqlite-shm": {
+        "bytes": 32768,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887800,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+      },
+      "predictor/owner.sqlite-wal": {
+        "bytes": 0,
+        "ctime_ns": 1794799804292820146,
+        "device": 27,
+        "inode": 2887801,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804292820146,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "predictor/parent.npz": {
+        "bytes": 10274,
+        "ctime_ns": 1794799804293025427,
+        "device": 27,
+        "inode": 2887802,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293025427,
+        "sha256": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+      },
+      "versions/31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354.json": {
+        "bytes": 7179,
+        "ctime_ns": 1794799804293345501,
+        "device": 27,
+        "inode": 2887804,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293345501,
+        "sha256": "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354"
+      },
+      "versions/6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02.json": {
+        "bytes": 7173,
+        "ctime_ns": 1794799804293428576,
+        "device": 27,
+        "inode": 2887805,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293428576,
+        "sha256": "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02"
+      },
+      "versions/7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13.json": {
+        "bytes": 7617,
+        "ctime_ns": 1794799804293530541,
+        "device": 27,
+        "inode": 2887806,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293530541,
+        "sha256": "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13"
+      },
+      "versions/817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5.json": {
+        "bytes": 7611,
+        "ctime_ns": 1794799804293599725,
+        "device": 27,
+        "inode": 2887807,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293599725,
+        "sha256": "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5"
+      },
+      "versions/d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804293682911,
+        "device": 27,
+        "inode": 2887808,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804293682911,
+        "sha256": "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5"
+      },
+      "versions/d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842.json": {
+        "bytes": 5463,
+        "ctime_ns": 1794799804294115085,
+        "device": 27,
+        "inode": 2887811,
+        "links": 1,
+        "mode": 420,
+        "mtime_ns": 1794799804294115085,
+        "sha256": "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      }
+    }
+  },
+  "source_unchanged_verified": true,
+  "status": "READ_ONLY_SNAPSHOT_CONSISTENCY_PASS",
+  "training_or_inference_executed": false,
+  "wall_seconds": 0.3936648060043808
+}

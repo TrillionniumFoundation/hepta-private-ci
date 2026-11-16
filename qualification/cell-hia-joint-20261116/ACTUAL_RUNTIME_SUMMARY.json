@@ -1,0 +1,262 @@
+{
+  "actual_runtime_result_sha256": "d004bee0ba3e1201e71f270c6737bc6452f85fbb7228b28414225e0b9b88ac87",
+  "archive_transport_notes": {
+    "controller_archive_outer_mcp_start_ack": "timed_out_without_job_id",
+    "original_archive_completion_later_observed": true,
+    "proof_scope": "archive hashes and complete member hashes checked locally; archive transport failure is not counted as a Cell failure",
+    "same_operation_restarted": false
+  },
+  "archives": [
+    {
+      "index_sha256": "faadd47eaee57962b5b5273b861697ad3400221b5c73f914fc5fd139d4da0088",
+      "members": 136,
+      "path": "actual-runtime-v4-controller-evidence.tar.gz",
+      "sha256": "1fbe62e63c22efd220fee2b62e5a8306e578f706bff201350f185eee89d52252",
+      "size": 1012192
+    },
+    {
+      "index_sha256": "ff3d207dc0f334e34c5247e2ff86440ec3af8e3faefe18d43952f51c23026c74",
+      "members": 185,
+      "path": "actual-runtime-v4-worker-evidence.tar.gz",
+      "sha256": "a1dec072ac89676af62b6e37b676b3ff5958a806793e0c239a59d264292c374a",
+      "size": 983404
+    }
+  ],
+  "build_receipt_sha256": "90f73f4c611f177e2fc94227f8845b5308df9370502ffc1896b65c939207389d",
+  "campaign_costs": {
+    "compile_calls": 208,
+    "energy_joules": null,
+    "parent_cpu_seconds": 0.8922138770000001,
+    "peak_rss_bytes": null,
+    "wall_seconds": 2.3223239798098803
+  },
+  "candidate_sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+  "harness_sha256": "9b1e122e8b1e5487f891db904093954176d654afe50bba6c2c1480f36ec39e0e",
+  "independent_review_image_manifest_sha256": "2b48a7d5938721c4a10ffb7204b5e153501a9f3fafb747b9dcf0a37a66bea8ef",
+  "independent_review_sha256": "5d621b4b0c57a67a73896889e7ca811901f4d4600b2c0a85fdec19bb84b2da82",
+  "learning_cells": {
+    "memory": {
+      "A_retention": {
+        "candidate": 6,
+        "frozen": 2
+      },
+      "B_successes": {
+        "candidate": 6,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "C_successes": 2,
+      "cold_exact": true,
+      "cold_whole_child_cpu_seconds": 0.13050299999999998,
+      "cold_whole_wall_ns": 135445277,
+      "component_call_p95_ms": 2.08005,
+      "component_call_p99_ms": 2.4374727600000012,
+      "decision": "NoUpdate",
+      "denominator": 8,
+      "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+      "logical_parameter_work": 66852,
+      "native_completed": 265,
+      "native_wall_ns": 5007518,
+      "training_cpu_seconds": 0.00463540300000001,
+      "training_updates": 16,
+      "training_wall_seconds": 0.00463505694642663,
+      "unresolved": 0
+    },
+    "predictor": {
+      "A_retention": {
+        "candidate": 2,
+        "frozen": 2
+      },
+      "B_successes": {
+        "candidate": 2,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "C_successes": 2,
+      "cold_exact": true,
+      "cold_whole_child_cpu_seconds": 0.11091399999999998,
+      "cold_whole_wall_ns": 114144259,
+      "component_call_p95_ms": 2.08564,
+      "component_call_p99_ms": 2.4509328399999997,
+      "decision": "NoUpdate",
+      "denominator": 8,
+      "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+      "logical_parameter_work": 117670,
+      "native_completed": 457,
+      "native_wall_ns": 8383868,
+      "training_cpu_seconds": 0.004767874000000005,
+      "training_updates": 16,
+      "training_wall_seconds": 0.004767721053212881,
+      "unresolved": 0
+    }
+  },
+  "limits": {
+    "adopted_learning_improvement": false,
+    "deployed_runtime_unchanged": true,
+    "existing_operator_authority": true,
+    "final_use_capability_boundary_qualified": false,
+    "fixture_only": true,
+    "independent_real_task_benefit": false,
+    "long_term_multiround_retention": false,
+    "ordinary_daemon_qualification": false,
+    "os_process_sandbox_claim": false,
+    "peak_memory_measured": false,
+    "physical_energy_measured": false,
+    "producer_cryptographic_attestation": false,
+    "recovery_scope": "fresh controller/MCP processes reobserve completed original jobs; retained Cell cold child outputs exact; no mid-flight crash recovery claim"
+  },
+  "native_image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
+  "native_transport_sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b",
+  "origin_local_candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b",
+  "original_failure_retained": {
+    "darwin_main_d3d75": "controller/build-receipt-v3.json",
+    "operator_config_v1": "controller/stdio-preflight-v1.json",
+    "wrong_old_bundle_layout": "worker/refreeze-v4-receipt.json",
+    "zero_length_wal_verifier_rejection": "worker/campaign-readonly-v4-receipt.json"
+  },
+  "outer_lane_wall_seconds": 9.056936291,
+  "requests": [
+    {
+      "cold_same_original_job_and_bytes": true,
+      "cold_tool_calls": {
+        "process_read": 1,
+        "process_status": 2
+      },
+      "first_tool_calls": {
+        "process_read": 1,
+        "process_start": 1,
+        "process_status": 2
+      },
+      "job_id": "1a1e25ced5b-509a-1",
+      "label": "observe",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1908,
+          "sha256": "c7c09aad6a932f8f2bc65633b6b7d4fe0d223ff66bfe936c14fff64e65b1cda8"
+        }
+      },
+      "terminal_proof": {
+        "at_unix_ms": 1794799104373,
+        "counts": {
+          "stderr": 0,
+          "stdout": 1908
+        },
+        "exit_code": 0,
+        "launch_nonce": "200b458033da0edba64438a991c1c338",
+        "state": "succeeded"
+      }
+    },
+    {
+      "cold_same_original_job_and_bytes": true,
+      "cold_tool_calls": {
+        "process_read": 1,
+        "process_status": 2
+      },
+      "first_tool_calls": {
+        "process_read": 1,
+        "process_start": 1,
+        "process_status": 2
+      },
+      "job_id": "1a1e25cf66a-510d-1",
+      "label": "predict",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1958,
+          "sha256": "edfb0d8bbcab6aefcfe898a71b2f38994aca3725acdb97e8740eb8100b047979"
+        }
+      },
+      "terminal_proof": {
+        "at_unix_ms": 1794799106697,
+        "counts": {
+          "stderr": 0,
+          "stdout": 1958
+        },
+        "exit_code": 0,
+        "launch_nonce": "e3d3e578c89b38666186fd762054d6b6",
+        "state": "succeeded"
+      }
+    },
+    {
+      "cold_same_original_job_and_bytes": true,
+      "cold_tool_calls": {
+        "process_read": 1,
+        "process_status": 2
+      },
+      "first_tool_calls": {
+        "process_read": 1,
+        "process_start": 1,
+        "process_status": 6
+      },
+      "job_id": "1a1e25cff37-5147-1",
+      "label": "campaign",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 11756,
+          "sha256": "c896971124e830b7679e49a4adac08c7147f982a35621115b9805684fcc132d7"
+        }
+      },
+      "terminal_proof": {
+        "at_unix_ms": 1794799111287,
+        "counts": {
+          "stderr": 0,
+          "stdout": 11756
+        },
+        "exit_code": 0,
+        "launch_nonce": "0f386b0db5d3b28e8a0d88eb77f8c824",
+        "state": "succeeded"
+      }
+    }
+  ],
+  "review_image_semantics": {
+    "all_other_files_byte_identical_before_and_after_review": true,
+    "model_or_native_reexecuted_by_verifier": false,
+    "nonempty_wal_ignored": false,
+    "omitted_zero_length_wal": [
+      "memory/owner.sqlite-wal",
+      "predictor/owner.sqlite-wal"
+    ],
+    "original_wal_and_shm_archived": true,
+    "originals_unchanged": true
+  },
+  "runtime": {
+    "binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+    "config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
+    "controller_device": {
+      "hostname_sha256": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+      "machine": "arm64",
+      "python": "3.9.6",
+      "python_sha256": "c5a13e37785524fbc0384539d3c99aa4f888cb7c89e13e0bf0018436378b13bc",
+      "release": "25.6.0",
+      "system": "Darwin"
+    },
+    "execution_boundary": "existing operator account; no OS process sandbox claim",
+    "source_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+    "source_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a"
+  },
+  "runtime_source_fix": {
+    "actual_darwin_locked_offline_release_build": "PASS",
+    "actual_fmt_check": "PASS",
+    "change": "remove Linux-only cfg from platform-independent array_index helper imported on macOS",
+    "github_ci_snapshot": "IN_PROGRESS",
+    "github_ci_url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971",
+    "pull_request": "https://github.com/TrillionniumFoundation/hepta-runtime/pull/132"
+  },
+  "schema": "hepta.actual-configured-runtime-evidence-summary.v1",
+  "status": "SCOPED_RUNTIME_AND_RETAINED_EVIDENCE_PASS"
+}

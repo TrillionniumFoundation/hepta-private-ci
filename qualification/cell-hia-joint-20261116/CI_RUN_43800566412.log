@@ -1,0 +1,1283 @@
+﻿2026-11-16T03:51:02.5608435Z Current runner version: '2.338.2'
+2026-11-16T03:51:02.5623924Z ##[group]Runner Image Provisioner
+2026-11-16T03:51:02.5624445Z Hosted Compute Agent
+2026-11-16T03:51:02.5624793Z Version: 20261103.629
+2026-11-16T03:51:02.5625244Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-16T03:51:02.5625662Z Build Date: 2026-11-03T17:26:59Z
+2026-11-16T03:51:02.5626046Z Worker ID: {d5b18068-edf6-4e82-8fe5-aef32af66d8b}
+2026-11-16T03:51:02.5626628Z Region: westus2
+2026-11-16T03:51:02.5626959Z Cloud: Azure
+2026-11-16T03:51:02.5627373Z ##[endgroup]
+2026-11-16T03:51:02.5628094Z ##[group]Operating System
+2026-11-16T03:51:02.5628438Z Ubuntu
+2026-11-16T03:51:02.5628798Z 24.04.5
+2026-11-16T03:51:02.5629107Z LTS
+2026-11-16T03:51:02.5629463Z ##[endgroup]
+2026-11-16T03:51:02.5629803Z ##[group]Runner Image
+2026-11-16T03:51:02.5630157Z Image: ubuntu-24.04
+2026-11-16T03:51:02.5630526Z Version: 20261111.370.1
+2026-11-16T03:51:02.5631292Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.370/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-16T03:51:02.5632175Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.370
+2026-11-16T03:51:02.5632715Z ##[endgroup]
+2026-11-16T03:51:02.5633388Z ##[group]GITHUB_TOKEN Permissions
+2026-11-16T03:51:02.5634482Z Contents: read
+2026-11-16T03:51:02.5634867Z Metadata: read
+2026-11-16T03:51:02.5635223Z ##[endgroup]
+2026-11-16T03:51:02.5636542Z Secret source: Actions
+2026-11-16T03:51:02.5637075Z Cache mode: write
+2026-11-16T03:51:02.5637486Z Prepare workflow directory
+2026-11-16T03:51:02.5857797Z Prepare all required actions
+2026-11-16T03:51:02.5886897Z Getting action download info
+2026-11-16T03:51:02.9612126Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-16T03:51:03.0556083Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-16T03:51:03.1504321Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-16T03:51:03.3304719Z Complete job name: same-candidate
+2026-11-16T03:51:03.3815757Z ##[group]Run actions/checkout@v4
+2026-11-16T03:51:03.3816155Z with:
+2026-11-16T03:51:03.3816500Z   path: cells
+2026-11-16T03:51:03.3816759Z   ref: c2774c6d1118dfd2745ac52b4069c8f254624c29
+2026-11-16T03:51:03.3817116Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-16T03:51:03.3819336Z   token: ***
+2026-11-16T03:51:03.3819560Z   ssh-strict: true
+2026-11-16T03:51:03.3819786Z   ssh-user: git
+2026-11-16T03:51:03.3820020Z   persist-credentials: true
+2026-11-16T03:51:03.3820274Z   clean: true
+2026-11-16T03:51:03.3820507Z   sparse-checkout-cone-mode: true
+2026-11-16T03:51:03.3820778Z   fetch-depth: 1
+2026-11-16T03:51:03.3821000Z   fetch-tags: false
+2026-11-16T03:51:03.3821235Z   show-progress: true
+2026-11-16T03:51:03.3821466Z   lfs: false
+2026-11-16T03:51:03.3821680Z   submodules: false
+2026-11-16T03:51:03.3821916Z   set-safe-directory: true
+2026-11-16T03:51:03.3822182Z   allow-unsafe-pr-checkout: false
+2026-11-16T03:51:03.3822537Z env:
+2026-11-16T03:51:03.3822779Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:03.3823042Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:03.3823286Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:03.3823519Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:03.3823751Z ##[endgroup]
+2026-11-16T03:51:03.6042982Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-16T03:51:03.6044070Z ##[group]Getting Git version info
+2026-11-16T03:51:03.6044491Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci/cells'
+2026-11-16T03:51:03.6045052Z [command]/usr/bin/git version
+2026-11-16T03:51:03.6127500Z git version 2.56.1
+2026-11-16T03:51:03.6140030Z ##[endgroup]
+2026-11-16T03:51:03.6151086Z Temporarily overriding HOME='/home/runner/work/_temp/2e0260dd-19a8-403e-9acc-79d821f40ee8' before making global git config changes
+2026-11-16T03:51:03.6152270Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-16T03:51:03.6155354Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/cells
+2026-11-16T03:51:03.6199169Z ##[group]Initializing the repository
+2026-11-16T03:51:03.6215517Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci/cells
+2026-11-16T03:51:03.6314737Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-16T03:51:03.6315640Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-16T03:51:03.6316491Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-16T03:51:03.6317149Z hint: call:
+2026-11-16T03:51:03.6317493Z hint:
+2026-11-16T03:51:03.6318249Z hint: 	git config --global init.defaultBranch <name>
+2026-11-16T03:51:03.6318748Z hint:
+2026-11-16T03:51:03.6319215Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-16T03:51:03.6319978Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-16T03:51:03.6320633Z hint:
+2026-11-16T03:51:03.6320979Z hint: 	git branch -m <name>
+2026-11-16T03:51:03.6321366Z hint:
+2026-11-16T03:51:03.6321885Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-16T03:51:03.6322888Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/cells/.git/
+2026-11-16T03:51:03.6338391Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-16T03:51:03.6380436Z ##[endgroup]
+2026-11-16T03:51:03.6381148Z ##[group]Disabling automatic garbage collection
+2026-11-16T03:51:03.6383700Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-16T03:51:03.6412140Z ##[endgroup]
+2026-11-16T03:51:03.6412825Z ##[group]Setting up auth
+2026-11-16T03:51:03.6417349Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-16T03:51:03.6450507Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-16T03:51:03.6795009Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-16T03:51:03.6832197Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-16T03:51:03.7015267Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-16T03:51:03.7050799Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-16T03:51:03.7232140Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-16T03:51:03.7449092Z ##[endgroup]
+2026-11-16T03:51:03.7449785Z ##[group]Fetching the repository
+2026-11-16T03:51:03.7459083Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin c2774c6d1118dfd2745ac52b4069c8f254624c29
+2026-11-16T03:51:10.2771502Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-16T03:51:10.2772848Z  * branch            c2774c6d1118dfd2745ac52b4069c8f254624c29 -> FETCH_HEAD
+2026-11-16T03:51:10.2775145Z ##[endgroup]
+2026-11-16T03:51:10.2775923Z ##[group]Determining the checkout info
+2026-11-16T03:51:10.2777008Z ##[endgroup]
+2026-11-16T03:51:10.2777512Z [command]/usr/bin/git sparse-checkout disable
+2026-11-16T03:51:10.2824630Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-16T03:51:10.2857631Z ##[group]Checking out the ref
+2026-11-16T03:51:10.2859744Z [command]/usr/bin/git checkout --progress --force c2774c6d1118dfd2745ac52b4069c8f254624c29
+2026-11-16T03:51:11.0627759Z Note: switching to 'c2774c6d1118dfd2745ac52b4069c8f254624c29'.
+2026-11-16T03:51:11.0628081Z 
+2026-11-16T03:51:11.0628251Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-16T03:51:11.0628825Z changes and commit them, and you can discard any commits you make in this
+2026-11-16T03:51:11.0629139Z state without impacting any branches by switching back to a branch.
+2026-11-16T03:51:11.0629332Z 
+2026-11-16T03:51:11.0629489Z If you want to create a new branch to retain commits you create, you may
+2026-11-16T03:51:11.0629785Z do so (now or later) by using -c with the switch command. Example:
+2026-11-16T03:51:11.0629937Z 
+2026-11-16T03:51:11.0630024Z   git switch -c <new-branch-name>
+2026-11-16T03:51:11.0630139Z 
+2026-11-16T03:51:11.0630266Z Or undo this operation with:
+2026-11-16T03:51:11.0630396Z 
+2026-11-16T03:51:11.0630466Z   git switch -
+2026-11-16T03:51:11.0630573Z 
+2026-11-16T03:51:11.0630770Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-16T03:51:11.0630961Z 
+2026-11-16T03:51:11.0631127Z HEAD is now at c2774c6 Document scoped actual-runtime result and remaining research gates
+2026-11-16T03:51:11.0668065Z ##[endgroup]
+2026-11-16T03:51:11.0717685Z [command]/usr/bin/git log -1 --format=%H
+2026-11-16T03:51:11.0749042Z c2774c6d1118dfd2745ac52b4069c8f254624c29
+2026-11-16T03:51:11.0952555Z ##[group]Run actions/checkout@v4
+2026-11-16T03:51:11.0952741Z with:
+2026-11-16T03:51:11.0952899Z   repository: TrillionniumFoundation/Hepta
+2026-11-16T03:51:11.0953103Z   ref: 8ba46fc7a112fc220cdcbbd48dc5d24fda76a738
+2026-11-16T03:51:11.0953292Z   fetch-depth: 3
+2026-11-16T03:51:11.0953433Z   path: hia
+2026-11-16T03:51:11.0954866Z   token: ***
+2026-11-16T03:51:11.0955016Z   ssh-strict: true
+2026-11-16T03:51:11.0955157Z   ssh-user: git
+2026-11-16T03:51:11.0955303Z   persist-credentials: true
+2026-11-16T03:51:11.0955457Z   clean: true
+2026-11-16T03:51:11.0955606Z   sparse-checkout-cone-mode: true
+2026-11-16T03:51:11.0955774Z   fetch-tags: false
+2026-11-16T03:51:11.0955917Z   show-progress: true
+2026-11-16T03:51:11.0956057Z   lfs: false
+2026-11-16T03:51:11.0956190Z   submodules: false
+2026-11-16T03:51:11.0956336Z   set-safe-directory: true
+2026-11-16T03:51:11.0956736Z   allow-unsafe-pr-checkout: false
+2026-11-16T03:51:11.0956903Z env:
+2026-11-16T03:51:11.0957065Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:11.0957235Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:11.0957387Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:11.0957529Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:11.0957672Z ##[endgroup]
+2026-11-16T03:51:11.1492802Z Syncing repository: TrillionniumFoundation/Hepta
+2026-11-16T03:51:11.1496785Z ##[group]Getting Git version info
+2026-11-16T03:51:11.1497400Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci/hia'
+2026-11-16T03:51:11.1519411Z [command]/usr/bin/git version
+2026-11-16T03:51:11.1553225Z git version 2.56.1
+2026-11-16T03:51:11.1565537Z ##[endgroup]
+2026-11-16T03:51:11.1575119Z Temporarily overriding HOME='/home/runner/work/_temp/b7a7241c-7017-415d-9762-0691411dc69b' before making global git config changes
+2026-11-16T03:51:11.1575664Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-16T03:51:11.1579123Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/hia
+2026-11-16T03:51:11.1607469Z ##[group]Initializing the repository
+2026-11-16T03:51:11.1610495Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci/hia
+2026-11-16T03:51:11.1651351Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-16T03:51:11.1657142Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-16T03:51:11.1657946Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-16T03:51:11.1658460Z hint: call:
+2026-11-16T03:51:11.1658752Z hint:
+2026-11-16T03:51:11.1659169Z hint: 	git config --global init.defaultBranch <name>
+2026-11-16T03:51:11.1659541Z hint:
+2026-11-16T03:51:11.1659984Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-16T03:51:11.1660564Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-16T03:51:11.1661454Z hint:
+2026-11-16T03:51:11.1661792Z hint: 	git branch -m <name>
+2026-11-16T03:51:11.1662188Z hint:
+2026-11-16T03:51:11.1662615Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-16T03:51:11.1663316Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/hia/.git/
+2026-11-16T03:51:11.1665137Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/Hepta
+2026-11-16T03:51:11.1697798Z ##[endgroup]
+2026-11-16T03:51:11.1698238Z ##[group]Disabling automatic garbage collection
+2026-11-16T03:51:11.1699892Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-16T03:51:11.1727139Z ##[endgroup]
+2026-11-16T03:51:11.1727569Z ##[group]Setting up auth
+2026-11-16T03:51:11.1732287Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-16T03:51:11.1762053Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-16T03:51:11.1982857Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-16T03:51:11.2018135Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-16T03:51:11.2220642Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-16T03:51:11.2258238Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-16T03:51:11.2448129Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-16T03:51:11.2490262Z ##[endgroup]
+2026-11-16T03:51:11.2490821Z ##[group]Fetching the repository
+2026-11-16T03:51:11.2496858Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=3 origin 8ba46fc7a112fc220cdcbbd48dc5d24fda76a738
+2026-11-16T03:51:13.0134833Z From https://github.com/TrillionniumFoundation/Hepta
+2026-11-16T03:51:13.0135227Z  * branch            8ba46fc7a112fc220cdcbbd48dc5d24fda76a738 -> FETCH_HEAD
+2026-11-16T03:51:13.0145702Z ##[endgroup]
+2026-11-16T03:51:13.0146042Z ##[group]Determining the checkout info
+2026-11-16T03:51:13.0146557Z ##[endgroup]
+2026-11-16T03:51:13.0156922Z [command]/usr/bin/git sparse-checkout disable
+2026-11-16T03:51:13.0196319Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-16T03:51:13.0228550Z ##[group]Checking out the ref
+2026-11-16T03:51:13.0234515Z [command]/usr/bin/git checkout --progress --force 8ba46fc7a112fc220cdcbbd48dc5d24fda76a738
+2026-11-16T03:51:13.2541563Z Note: switching to '8ba46fc7a112fc220cdcbbd48dc5d24fda76a738'.
+2026-11-16T03:51:13.2541925Z 
+2026-11-16T03:51:13.2542101Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-16T03:51:13.2542591Z changes and commit them, and you can discard any commits you make in this
+2026-11-16T03:51:13.2543019Z state without impacting any branches by switching back to a branch.
+2026-11-16T03:51:13.2543246Z 
+2026-11-16T03:51:13.2543437Z If you want to create a new branch to retain commits you create, you may
+2026-11-16T03:51:13.2543844Z do so (now or later) by using -c with the switch command. Example:
+2026-11-16T03:51:13.2544054Z 
+2026-11-16T03:51:13.2544152Z   git switch -c <new-branch-name>
+2026-11-16T03:51:13.2544294Z 
+2026-11-16T03:51:13.2544388Z Or undo this operation with:
+2026-11-16T03:51:13.2544528Z 
+2026-11-16T03:51:13.2544614Z   git switch -
+2026-11-16T03:51:13.2544791Z 
+2026-11-16T03:51:13.2544965Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-16T03:51:13.2545220Z 
+2026-11-16T03:51:13.2545395Z HEAD is now at 8ba46fc Retain sealed native images across Cell bridge versions
+2026-11-16T03:51:13.2566030Z ##[endgroup]
+2026-11-16T03:51:13.2612630Z [command]/usr/bin/git log -1 --format=%H
+2026-11-16T03:51:13.2642319Z 8ba46fc7a112fc220cdcbbd48dc5d24fda76a738
+2026-11-16T03:51:13.2803204Z ##[group]Run actions/checkout@v4
+2026-11-16T03:51:13.2803358Z with:
+2026-11-16T03:51:13.2803508Z   repository: TrillionniumFoundation/hepta-runtime
+2026-11-16T03:51:13.2803697Z   ref: 5f7f03a1f22905789371ce0e181a1a0f013beca9
+2026-11-16T03:51:13.2803858Z   path: runtime
+2026-11-16T03:51:13.2805271Z   token: ***
+2026-11-16T03:51:13.2805388Z   ssh-strict: true
+2026-11-16T03:51:13.2805533Z   ssh-user: git
+2026-11-16T03:51:13.2805659Z   persist-credentials: true
+2026-11-16T03:51:13.2805797Z   clean: true
+2026-11-16T03:51:13.2805924Z   sparse-checkout-cone-mode: true
+2026-11-16T03:51:13.2806072Z   fetch-depth: 1
+2026-11-16T03:51:13.2806190Z   fetch-tags: false
+2026-11-16T03:51:13.2806310Z   show-progress: true
+2026-11-16T03:51:13.2806646Z   lfs: false
+2026-11-16T03:51:13.2806773Z   submodules: false
+2026-11-16T03:51:13.2806898Z   set-safe-directory: true
+2026-11-16T03:51:13.2807052Z   allow-unsafe-pr-checkout: false
+2026-11-16T03:51:13.2807194Z env:
+2026-11-16T03:51:13.2807340Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:13.2807481Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:13.2807610Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:13.2807730Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:13.2807853Z ##[endgroup]
+2026-11-16T03:51:13.3354970Z Syncing repository: TrillionniumFoundation/hepta-runtime
+2026-11-16T03:51:13.3355765Z ##[group]Getting Git version info
+2026-11-16T03:51:13.3356245Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci/runtime'
+2026-11-16T03:51:13.3375449Z [command]/usr/bin/git version
+2026-11-16T03:51:13.3411140Z git version 2.56.1
+2026-11-16T03:51:13.3424271Z ##[endgroup]
+2026-11-16T03:51:13.3433448Z Temporarily overriding HOME='/home/runner/work/_temp/fa9b0f51-22d3-4737-9725-5532bd80b9bc' before making global git config changes
+2026-11-16T03:51:13.3434071Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-16T03:51:13.3438014Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/runtime
+2026-11-16T03:51:13.3467955Z ##[group]Initializing the repository
+2026-11-16T03:51:13.3470291Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci/runtime
+2026-11-16T03:51:13.3515268Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-16T03:51:13.3538205Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-16T03:51:13.3538672Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-16T03:51:13.3539007Z hint: call:
+2026-11-16T03:51:13.3539186Z hint:
+2026-11-16T03:51:13.3539442Z hint: 	git config --global init.defaultBranch <name>
+2026-11-16T03:51:13.3539788Z hint:
+2026-11-16T03:51:13.3540148Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-16T03:51:13.3540584Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-16T03:51:13.3540957Z hint:
+2026-11-16T03:51:13.3541154Z hint: 	git branch -m <name>
+2026-11-16T03:51:13.3541360Z hint:
+2026-11-16T03:51:13.3541636Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-16T03:51:13.3542161Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/runtime/.git/
+2026-11-16T03:51:13.3543209Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-runtime
+2026-11-16T03:51:13.3609002Z ##[endgroup]
+2026-11-16T03:51:13.3609475Z ##[group]Disabling automatic garbage collection
+2026-11-16T03:51:13.3611725Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-16T03:51:13.3641168Z ##[endgroup]
+2026-11-16T03:51:13.3641562Z ##[group]Setting up auth
+2026-11-16T03:51:13.3646132Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-16T03:51:13.3675586Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-16T03:51:13.3904217Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-16T03:51:13.3938929Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-16T03:51:13.4151513Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-16T03:51:13.4190337Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-16T03:51:13.4387701Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-16T03:51:13.4431906Z ##[endgroup]
+2026-11-16T03:51:13.4438165Z ##[group]Fetching the repository
+2026-11-16T03:51:13.4438702Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 5f7f03a1f22905789371ce0e181a1a0f013beca9
+2026-11-16T03:51:16.5338172Z From https://github.com/TrillionniumFoundation/hepta-runtime
+2026-11-16T03:51:16.5338616Z  * branch            5f7f03a1f22905789371ce0e181a1a0f013beca9 -> FETCH_HEAD
+2026-11-16T03:51:16.5342089Z ##[endgroup]
+2026-11-16T03:51:16.5342432Z ##[group]Determining the checkout info
+2026-11-16T03:51:16.5344207Z ##[endgroup]
+2026-11-16T03:51:16.5349529Z [command]/usr/bin/git sparse-checkout disable
+2026-11-16T03:51:16.5393568Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-16T03:51:16.5425934Z ##[group]Checking out the ref
+2026-11-16T03:51:16.5429032Z [command]/usr/bin/git checkout --progress --force 5f7f03a1f22905789371ce0e181a1a0f013beca9
+2026-11-16T03:51:16.9581037Z Note: switching to '5f7f03a1f22905789371ce0e181a1a0f013beca9'.
+2026-11-16T03:51:16.9581304Z 
+2026-11-16T03:51:16.9581512Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-16T03:51:16.9581814Z changes and commit them, and you can discard any commits you make in this
+2026-11-16T03:51:16.9582066Z state without impacting any branches by switching back to a branch.
+2026-11-16T03:51:16.9582213Z 
+2026-11-16T03:51:16.9582314Z If you want to create a new branch to retain commits you create, you may
+2026-11-16T03:51:16.9582547Z do so (now or later) by using -c with the switch command. Example:
+2026-11-16T03:51:16.9582682Z 
+2026-11-16T03:51:16.9582748Z   git switch -c <new-branch-name>
+2026-11-16T03:51:16.9582840Z 
+2026-11-16T03:51:16.9582900Z Or undo this operation with:
+2026-11-16T03:51:16.9582982Z 
+2026-11-16T03:51:16.9583034Z   git switch -
+2026-11-16T03:51:16.9583104Z 
+2026-11-16T03:51:16.9583215Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-16T03:51:16.9583377Z 
+2026-11-16T03:51:16.9583492Z HEAD is now at 5f7f03a fix(runtime): retain checkpoint array-index helper on macOS
+2026-11-16T03:51:16.9616832Z ##[endgroup]
+2026-11-16T03:51:16.9661202Z [command]/usr/bin/git log -1 --format=%H
+2026-11-16T03:51:16.9690542Z 5f7f03a1f22905789371ce0e181a1a0f013beca9
+2026-11-16T03:51:16.9821730Z ##[group]Run actions/setup-python@v5
+2026-11-16T03:51:16.9821884Z with:
+2026-11-16T03:51:16.9821995Z   python-version: 3.12
+2026-11-16T03:51:16.9822115Z   check-latest: false
+2026-11-16T03:51:16.9823590Z   token: ***
+2026-11-16T03:51:16.9823707Z   update-environment: true
+2026-11-16T03:51:16.9823841Z   allow-prereleases: false
+2026-11-16T03:51:16.9823968Z   freethreaded: false
+2026-11-16T03:51:16.9824081Z env:
+2026-11-16T03:51:16.9824192Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:16.9824327Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:16.9824450Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:16.9824564Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:16.9824680Z ##[endgroup]
+2026-11-16T03:51:17.0665128Z ##[group]Installed versions
+2026-11-16T03:51:17.0729496Z (node:2358) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-16T03:51:17.0730369Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-16T03:51:17.0730764Z Successfully set up CPython (3.12.16)
+2026-11-16T03:51:17.0731143Z ##[endgroup]
+2026-11-16T03:51:17.0891502Z ##[group]Run python -m pip install numpy==2.3.5
+2026-11-16T03:51:17.0891803Z [36;1mpython -m pip install numpy==2.3.5[0m
+2026-11-16T03:51:17.0891989Z [36;1msudo apt-get update[0m
+2026-11-16T03:51:17.0892211Z [36;1msudo apt-get install -y openssh-server[0m
+2026-11-16T03:51:17.0892412Z [36;1mrustup toolchain install 1.95.0 --profile minimal[0m
+2026-11-16T03:51:17.0990170Z shell: /usr/bin/bash -e {0}
+2026-11-16T03:51:17.0990362Z env:
+2026-11-16T03:51:17.0990518Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:17.0990662Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:17.0990789Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:17.0990910Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:17.0991070Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:17.0991330Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:51:17.0991561Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:17.0991817Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:17.0992023Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:17.0992230Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:51:17.0992405Z ##[endgroup]
+2026-11-16T03:51:17.9778653Z Collecting numpy==2.3.5
+2026-11-16T03:51:18.0313393Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-16T03:51:18.0573556Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-11-16T03:51:18.2583225Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 86.0 MB/s  0:00:00
+2026-11-16T03:51:18.3225605Z Installing collected packages: numpy
+2026-11-16T03:51:19.5187424Z Successfully installed numpy-2.3.5
+2026-11-16T03:51:19.6215451Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-16T03:51:19.6603012Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-16T03:51:19.6699325Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-16T03:51:19.6713688Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-16T03:51:19.6759637Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-16T03:51:19.6774909Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-16T03:51:19.7136269Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [702 kB]
+2026-11-16T03:51:19.7264940Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [772 kB]
+2026-11-16T03:51:19.7998377Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1450 kB]
+2026-11-16T03:51:19.8055741Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [315 kB]
+2026-11-16T03:51:19.8097342Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1713 kB]
+2026-11-16T03:51:19.8157624Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [345 kB]
+2026-11-16T03:51:19.8179880Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1883 kB]
+2026-11-16T03:51:19.8243034Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [430 kB]
+2026-11-16T03:51:19.8266738Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.6 kB]
+2026-11-16T03:51:19.8814141Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1195 kB]
+2026-11-16T03:51:19.8860178Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [238 kB]
+2026-11-16T03:51:19.8883625Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1228 kB]
+2026-11-16T03:51:19.9385215Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [248 kB]
+2026-11-16T03:51:19.9411017Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1788 kB]
+2026-11-16T03:51:19.9472085Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [411 kB]
+2026-11-16T03:51:24.4530524Z Fetched 13.1 MB in 1s (13.4 MB/s)
+2026-11-16T03:51:25.1522750Z Reading package lists...
+2026-11-16T03:51:25.1843237Z Reading package lists...
+2026-11-16T03:51:25.3750921Z Building dependency tree...
+2026-11-16T03:51:25.3756037Z Reading state information...
+2026-11-16T03:51:25.5160345Z openssh-server is already the newest version (1:9.6p1-3ubuntu13.20).
+2026-11-16T03:51:25.5160767Z 0 upgraded, 0 newly installed, 0 to remove and 20 not upgraded.
+2026-11-16T03:51:25.5259850Z info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+2026-11-16T03:51:25.6779631Z info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+2026-11-16T03:51:25.6779905Z info: downloading 3 components
+2026-11-16T03:51:31.6225681Z 
+2026-11-16T03:51:31.6286026Z   1.95.0-x86_64-unknown-linux-gnu installed - rustc 1.95.0 (59807616e 2026-04-14)
+2026-11-16T03:51:31.6286259Z 
+2026-11-16T03:51:31.6536190Z ##[group]Run mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
+2026-11-16T03:51:31.6536647Z [36;1mmkdir -p "$RUNNER_TEMP/cell-joint-evidence"[0m
+2026-11-16T03:51:31.6536956Z [36;1mpython -B tools/qualify_cell_bridge_continuation.py --output "$RUNNER_TEMP/cell-joint-evidence/native-controls"[0m
+2026-11-16T03:51:31.6553525Z shell: /usr/bin/bash -e {0}
+2026-11-16T03:51:31.6553657Z env:
+2026-11-16T03:51:31.6553797Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:31.6553931Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:31.6554052Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:31.6554166Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:31.6554317Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:31.6554556Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:51:31.6554776Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:31.6554978Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:31.6555197Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:31.6555402Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:51:31.6555574Z   PYTHONPATH: .
+2026-11-16T03:51:31.6555684Z ##[endgroup]
+2026-11-16T03:51:32.6013370Z test_actual_native_roundtrip_complete_state_and_full_payload_bound (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_actual_native_roundtrip_complete_state_and_full_payload_bound) ... ok
+2026-11-16T03:51:32.6014056Z test_cancellation_is_one_request_and_success_can_win_the_race (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_cancellation_is_one_request_and_success_can_win_the_race) ... ok
+2026-11-16T03:51:32.6014718Z test_complete_failure_and_cancellation_are_actual_result_observations (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_complete_failure_and_cancellation_are_actual_result_observations) ... ok
+2026-11-16T03:51:32.6015372Z test_corrupted_pending_state_and_invalid_results_refuse_atomically (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_corrupted_pending_state_and_invalid_results_refuse_atomically) ... ok
+2026-11-16T03:51:32.6016002Z test_every_identity_digest_byte_is_bound_and_mismatches_are_atomic (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_every_identity_digest_byte_is_bound_and_mismatches_are_atomic) ... ok
+2026-11-16T03:51:32.6016727Z test_generated_source_is_exact_and_original_compiler_is_pinned (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_generated_source_is_exact_and_original_compiler_is_pinned) ... ok
+2026-11-16T03:51:32.6017354Z test_loader_actual_multi_image_close_reopen_and_simultaneous_handles (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_actual_multi_image_close_reopen_and_simultaneous_handles) ... ok
+2026-11-16T03:51:32.6018207Z test_loader_close_waits_for_admitted_native_call_then_revokes_instance (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_close_waits_for_admitted_native_call_then_revokes_instance) ... ok
+2026-11-16T03:51:32.6018848Z test_loader_concurrent_loads_share_one_retained_image_per_digest (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_concurrent_loads_share_one_retained_image_per_digest) ... ok
+2026-11-16T03:51:32.6019467Z test_loader_load_failure_and_missing_entry_keep_bounded_custody (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_load_failure_and_missing_entry_keep_bounded_custody) ... ok
+2026-11-16T03:51:32.6020000Z test_loader_rechecks_pinned_hia_source (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_rechecks_pinned_hia_source) ... ok
+2026-11-16T03:51:32.6020523Z test_loader_registry_survives_independent_wrapper_imports (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_registry_survives_independent_wrapper_imports) ... ok
+2026-11-16T03:51:32.6021089Z test_loader_retained_byte_and_individual_image_bounds (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_retained_byte_and_individual_image_bounds) ... ok
+2026-11-16T03:51:32.6021817Z test_loader_retained_image_count_is_bounded_and_duplicates_still_work (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_retained_image_count_is_bounded_and_duplicates_still_work) ... ok
+2026-11-16T03:51:32.6022470Z test_loader_seals_bytes_and_rechecks_changed_source_even_on_cache_hit (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_loader_seals_bytes_and_rechecks_changed_source_even_on_cache_hit) ... ok
+2026-11-16T03:51:32.6023090Z test_malformed_requests_refuse_without_state_or_output_writes (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_malformed_requests_refuse_without_state_or_output_writes) ... ok
+2026-11-16T03:51:32.6023702Z test_new_process_loads_original_state_and_accepts_retained_result (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_new_process_loads_original_state_and_accepts_retained_result) ... ok
+2026-11-16T03:51:32.6024286Z test_original_native_abi_rejects_aliases_before_core (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_original_native_abi_rejects_aliases_before_core) ... ok
+2026-11-16T03:51:32.6024848Z test_pending_and_terminal_continuations_cannot_begin_again (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_pending_and_terminal_continuations_cannot_begin_again) ... ok
+2026-11-16T03:51:32.6025427Z test_unknown_and_cold_recovery_never_reissue_an_invocation (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_unknown_and_cold_recovery_never_reissue_an_invocation) ... ok
+2026-11-16T03:51:32.6026045Z test_wrapper_checks_actual_payload_preimages_and_native_image_hash (test_hia_cell_bridge.HiaCellBridgeNativeTests.test_wrapper_checks_actual_payload_preimages_and_native_image_hash) ... ok
+2026-11-16T03:51:32.6026563Z 
+2026-11-16T03:51:32.6026671Z ----------------------------------------------------------------------
+2026-11-16T03:51:32.6026867Z Ran 21 tests in 0.857s
+2026-11-16T03:51:32.6026946Z 
+2026-11-16T03:51:32.6026996Z OK
+2026-11-16T03:51:32.6027303Z {"status": "PASS", "tests_run": 21, "subtests_observed": 175, "result": "/home/runner/work/_temp/cell-joint-evidence/native-controls/RESULT.json"}
+2026-11-16T03:51:32.6209212Z ##[group]Run mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
+2026-11-16T03:51:32.6209476Z [36;1mmkdir -p "$RUNNER_TEMP/cell-joint-evidence"[0m
+2026-11-16T03:51:32.6209718Z [36;1mgit rev-parse HEAD > "$RUNNER_TEMP/cell-joint-evidence/runtime-source.txt"[0m
+2026-11-16T03:51:32.6210032Z [36;1mgit status --porcelain=v1 > "$RUNNER_TEMP/cell-joint-evidence/runtime-source-before.txt"[0m
+2026-11-16T03:51:32.6210454Z [36;1mcargo +1.95.0 build --locked --all-features --release --bin hepta-runtime 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/runtime-build.log"[0m
+2026-11-16T03:51:32.6210885Z [36;1msha256sum target/release/hepta-runtime > "$RUNNER_TEMP/cell-joint-evidence/runtime-binary.sha256"[0m
+2026-11-16T03:51:32.6211373Z [36;1mgit status --porcelain=v1 > "$RUNNER_TEMP/cell-joint-evidence/runtime-source-after.txt"[0m
+2026-11-16T03:51:32.6211677Z [36;1mtest ! -s "$RUNNER_TEMP/cell-joint-evidence/runtime-source-before.txt"[0m
+2026-11-16T03:51:32.6211968Z [36;1mtest ! -s "$RUNNER_TEMP/cell-joint-evidence/runtime-source-after.txt"[0m
+2026-11-16T03:51:32.6228671Z shell: /usr/bin/bash -e {0}
+2026-11-16T03:51:32.6228808Z env:
+2026-11-16T03:51:32.6228925Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:51:32.6229061Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:51:32.6229185Z   OMP_NUM_THREADS: 1
+2026-11-16T03:51:32.6229304Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:51:32.6229462Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:32.6229713Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:51:32.6229939Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:32.6230142Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:32.6230351Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:51:32.6230555Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:51:32.6230728Z ##[endgroup]
+2026-11-16T03:51:32.9536260Z     Updating crates.io index
+2026-11-16T03:51:33.6032220Z  Downloading crates ...
+2026-11-16T03:51:33.6787277Z   Downloaded asn1-rs-impl v0.2.0
+2026-11-16T03:51:33.6801397Z   Downloaded anstyle-query v1.1.5
+2026-11-16T03:51:33.6855932Z   Downloaded dyn-clone v1.0.20
+2026-11-16T03:51:33.6874438Z   Downloaded cipher v0.5.2
+2026-11-16T03:51:33.6901672Z   Downloaded cow-utils v0.1.3
+2026-11-16T03:51:33.6915731Z   Downloaded futures-core v0.3.34
+2026-11-16T03:51:33.6932155Z   Downloaded crossbeam-epoch v0.9.21
+2026-11-16T03:51:33.6959171Z   Downloaded generic-array v1.4.5
+2026-11-16T03:51:33.6989331Z   Downloaded flate2 v1.1.10
+2026-11-16T03:51:33.7031743Z   Downloaded group v0.14.0
+2026-11-16T03:51:33.7050468Z   Downloaded getrandom v0.4.3
+2026-11-16T03:51:33.7086260Z   Downloaded rand v0.10.3
+2026-11-16T03:51:33.7121441Z   Downloaded ghash v0.6.0
+2026-11-16T03:51:33.7134230Z   Downloaded oxc_diagnostics v0.144.0
+2026-11-16T03:51:33.7146295Z   Downloaded heck v0.5.0
+2026-11-16T03:51:33.7161004Z   Downloaded pem-rfc7468 v1.0.0
+2026-11-16T03:51:33.7181574Z   Downloaded rmcp-macros v3.9.0
+2026-11-16T03:51:33.7199330Z   Downloaded pkcs8 v0.11.0
+2026-11-16T03:51:33.7232415Z   Downloaded rayon v1.12.0
+2026-11-16T03:51:33.7310748Z   Downloaded russh v0.65.0
+2026-11-16T03:51:33.7381714Z   Downloaded futures-executor v0.3.34
+2026-11-16T03:51:33.7394449Z   Downloaded ff v0.14.0
+2026-11-16T03:51:33.7409244Z   Downloaded ecdsa v0.17.0
+2026-11-16T03:51:33.7429015Z   Downloaded digest v0.11.3
+2026-11-16T03:51:33.7452360Z   Downloaded russh-sftp v3.0.0
+2026-11-16T03:51:33.7504925Z   Downloaded sha3 v0.12.0
+2026-11-16T03:51:33.7529563Z   Downloaded futures-macro v0.3.34
+2026-11-16T03:51:33.7542511Z   Downloaded rustc-hash v2.1.3
+2026-11-16T03:51:33.7559822Z   Downloaded spki v0.8.0
+2026-11-16T03:51:33.7579667Z   Downloaded errno v0.3.14
+2026-11-16T03:51:33.7601177Z   Downloaded displaydoc v0.2.7
+2026-11-16T03:51:33.7621382Z   Downloaded memchr v2.8.3
+2026-11-16T03:51:33.7672756Z   Downloaded ml-kem v0.3.2
+2026-11-16T03:51:33.7697672Z   Downloaded percent-encoding v2.3.2
+2026-11-16T03:51:33.7730986Z   Downloaded tokio-macros v2.7.2
+2026-11-16T03:51:33.7743425Z   Downloaded rayon-core v1.13.0
+2026-11-16T03:51:33.7780460Z   Downloaded thiserror v2.0.21
+2026-11-16T03:51:33.7836838Z   Downloaded regex-automata v0.4.18
+2026-11-16T03:51:33.7966281Z   Downloaded zmij v1.0.23
+2026-11-16T03:51:33.7981460Z   Downloaded unicode-ident v1.0.26
+2026-11-16T03:51:33.8001759Z   Downloaded aead v0.6.1
+2026-11-16T03:51:33.8013273Z   Downloaded sec1 v0.8.1
+2026-11-16T03:51:33.8029436Z   Downloaded scopeguard v1.2.0
+2026-11-16T03:51:33.8040921Z   Downloaded schemars_derive v1.2.2
+2026-11-16T03:51:33.8063438Z   Downloaded tower v0.5.3
+2026-11-16T03:51:33.8158051Z   Downloaded zerovec v0.11.9
+2026-11-16T03:51:33.8219862Z   Downloaded utf8_iter v1.1.0
+2026-11-16T03:51:33.8238801Z   Downloaded tower-service v0.3.3
+2026-11-16T03:51:33.8250541Z   Downloaded zerovec-derive v0.11.7
+2026-11-16T03:51:33.8266767Z   Downloaded synstructure v0.13.2
+2026-11-16T03:51:33.8280039Z   Downloaded utf8parse v0.2.2
+2026-11-16T03:51:33.8296274Z   Downloaded universal-hash v0.6.1
+2026-11-16T03:51:33.8308843Z   Downloaded ssh-encoding v0.3.0
+2026-11-16T03:51:33.8334140Z   Downloaded yoke-derive v0.8.4
+2026-11-16T03:51:33.8346748Z   Downloaded zlib-rs v0.6.8
+2026-11-16T03:51:33.8392242Z   Downloaded unicode-segmentation v1.13.3
+2026-11-16T03:51:33.8419542Z   Downloaded tower-layer v0.3.3
+2026-11-16T03:51:33.8429243Z   Downloaded writeable v0.6.4
+2026-11-16T03:51:33.8445072Z   Downloaded ssh-cipher v0.3.0
+2026-11-16T03:51:33.8466762Z   Downloaded zeroize v1.9.0
+2026-11-16T03:51:33.8480838Z   Downloaded x509-parser v0.18.1
+2026-11-16T03:51:33.8528422Z   Downloaded wnaf v0.14.1
+2026-11-16T03:51:33.8541874Z   Downloaded sha2 v0.11.0
+2026-11-16T03:51:33.8571389Z   Downloaded zerofrom-derive v0.1.8
+2026-11-16T03:51:33.8580845Z   Downloaded p521 v0.14.0
+2026-11-16T03:51:33.8607146Z   Downloaded zerotrie v0.2.5
+2026-11-16T03:51:33.8635679Z   Downloaded walkdir v2.5.0
+2026-11-16T03:51:33.8650507Z   Downloaded serde_json v1.0.151
+2026-11-16T03:51:33.8701142Z   Downloaded oxc_parser v0.144.0
+2026-11-16T03:51:33.8741688Z   Downloaded stable_deref_trait v1.2.1
+2026-11-16T03:51:33.8748776Z   Downloaded oxc_ast v0.144.0
+2026-11-16T03:51:33.8800753Z   Downloaded oxc_allocator v0.144.0
+2026-11-16T03:51:33.8833817Z   Downloaded num-bigint v0.5.1
+2026-11-16T03:51:33.8877093Z   Downloaded nom v7.1.3
+2026-11-16T03:51:33.8905140Z   Downloaded hyper v1.11.1
+2026-11-16T03:51:33.8952970Z   Downloaded itertools v0.15.0
+2026-11-16T03:51:33.9003007Z   Downloaded tokio v1.53.3
+2026-11-16T03:51:33.9311214Z   Downloaded oxc_ast_visit v0.144.0
+2026-11-16T03:51:33.9328813Z   Downloaded hmac v0.13.0
+2026-11-16T03:51:33.9343972Z   Downloaded colorchoice v1.0.5
+2026-11-16T03:51:33.9351214Z   Downloaded minimal-lexical v0.2.1
+2026-11-16T03:51:33.9382808Z   Downloaded indexmap v2.14.2
+2026-11-16T03:51:33.9412591Z   Downloaded icu_collections v2.4.0
+2026-11-16T03:51:33.9457719Z   Downloaded uuid v1.26.1
+2026-11-16T03:51:33.9478469Z   Downloaded serde_derive v1.0.229
+2026-11-16T03:51:33.9499675Z   Downloaded serde_core v1.0.229
+2026-11-16T03:51:33.9518425Z   Downloaded ignore v0.4.33
+2026-11-16T03:51:33.9535259Z   Downloaded httparse v1.10.1
+2026-11-16T03:51:33.9552416Z   Downloaded utf_types v1.0.0
+2026-11-16T03:51:33.9560825Z   Downloaded polyval v0.7.3
+2026-11-16T03:51:33.9578160Z   Downloaded p256 v0.14.0
+2026-11-16T03:51:33.9604504Z   Downloaded oxc_regular_expression v0.144.0
+2026-11-16T03:51:33.9632786Z   Downloaded once_cell v1.21.4
+2026-11-16T03:51:33.9651127Z   Downloaded deranged v0.5.9
+2026-11-16T03:51:33.9661271Z   Downloaded module-lattice v0.2.3
+2026-11-16T03:51:33.9672101Z   Downloaded lock_api v0.4.14
+2026-11-16T03:51:33.9681411Z   Downloaded nix v0.31.3
+2026-11-16T03:51:33.9761406Z   Downloaded sse-stream v0.2.6
+2026-11-16T03:51:33.9775718Z   Downloaded signature v3.0.0
+2026-11-16T03:51:33.9784965Z   Downloaded serde_bytes v0.11.19
+2026-11-16T03:51:33.9796020Z   Downloaded self_cell v1.3.0
+2026-11-16T03:51:33.9803701Z   Downloaded rustversion v1.0.23
+2026-11-16T03:51:33.9823407Z   Downloaded primeorder v0.14.0
+2026-11-16T03:51:33.9835316Z   Downloaded phf_macros v0.14.0
+2026-11-16T03:51:33.9843197Z   Downloaded oxc_syntax v0.144.0
+2026-11-16T03:51:33.9859659Z   Downloaded oxc_str v0.144.0
+2026-11-16T03:51:33.9868056Z   Downloaded oxc_span v0.144.0
+2026-11-16T03:51:33.9880779Z   Downloaded log v0.4.34
+2026-11-16T03:51:33.9898909Z   Downloaded pastey v0.2.3
+2026-11-16T03:51:33.9907707Z   Downloaded matchit v0.8.4
+2026-11-16T03:51:33.9922807Z   Downloaded icu_locale_fallback v2.4.0
+2026-11-16T03:51:33.9931100Z   Downloaded tracing v0.1.44
+2026-11-16T03:51:34.0042032Z   Downloaded tinystr v0.8.5
+2026-11-16T03:51:34.0057104Z   Downloaded subtle v2.6.1
+2026-11-16T03:51:34.0065485Z   Downloaded pin-project-lite v0.2.17
+2026-11-16T03:51:34.0104856Z   Downloaded p384 v0.14.0
+2026-11-16T03:51:34.0123796Z   Downloaded oxc_ast_macros v0.144.0
+2026-11-16T03:51:34.0133416Z   Downloaded http v1.5.0
+2026-11-16T03:51:34.0159500Z   Downloaded simd-adler32 v0.3.10
+2026-11-16T03:51:34.0176496Z   Downloaded same-file v1.0.6
+2026-11-16T03:51:34.0187143Z   Downloaded potential_utf v0.1.6
+2026-11-16T03:51:34.0195951Z   Downloaded poly1305 v0.9.1
+2026-11-16T03:51:34.0216328Z   Downloaded oxc_ecmascript v0.144.0
+2026-11-16T03:51:34.0251204Z   Downloaded litemap v0.8.3
+2026-11-16T03:51:34.0267477Z   Downloaded hyper-util v0.1.21
+2026-11-16T03:51:34.0311700Z   Downloaded syn v2.0.119
+2026-11-16T03:51:34.0385142Z   Downloaded ssh-key v0.7.0-rc.11
+2026-11-16T03:51:34.0445044Z   Downloaded version_check v0.9.5
+2026-11-16T03:51:34.0454411Z   Downloaded time v0.3.55
+2026-11-16T03:51:34.0554633Z   Downloaded smawk v0.3.3
+2026-11-16T03:51:34.0567622Z   Downloaded mio v1.2.3
+2026-11-16T03:51:34.0609813Z   Downloaded miniz_oxide v0.9.1
+2026-11-16T03:51:34.0627759Z   Downloaded icu_provider v2.4.0
+2026-11-16T03:51:34.0647799Z   Downloaded httpdate v1.0.3
+2026-11-16T03:51:34.0659048Z   Downloaded unicode-id-start v1.5.0
+2026-11-16T03:51:34.0684144Z   Downloaded typenum v1.20.1
+2026-11-16T03:51:34.0708508Z   Downloaded tokio-util v0.7.19
+2026-11-16T03:51:34.0762952Z   Downloaded textwrap v0.16.4
+2026-11-16T03:51:34.0781777Z   Downloaded serdect v0.4.3
+2026-11-16T03:51:34.0793080Z   Downloaded ring v0.17.14
+2026-11-16T03:51:34.1085635Z   Downloaded pkcs5 v0.8.1
+2026-11-16T03:51:34.1118694Z   Downloaded autocfg v1.5.1
+2026-11-16T03:51:34.1132086Z   Downloaded libc v0.2.189
+2026-11-16T03:51:34.1429847Z   Downloaded num-traits v0.2.19
+2026-11-16T03:51:34.1448387Z   Downloaded untrusted v0.9.0
+2026-11-16T03:51:34.1460271Z   Downloaded tracing-core v0.1.36
+2026-11-16T03:51:34.1479021Z   Downloaded tokio-stream v0.1.19
+2026-11-16T03:51:34.1514313Z   Downloaded thiserror-impl v2.0.21
+2026-11-16T03:51:34.1524500Z   Downloaded sponge-cursor v0.1.0
+2026-11-16T03:51:34.1532932Z   Downloaded socket2 v0.6.5
+2026-11-16T03:51:34.1548187Z   Downloaded sha3 v0.11.0
+2026-11-16T03:51:34.1574397Z   Downloaded regex-syntax v0.8.11
+2026-11-16T03:51:34.1622510Z   Downloaded bstr v1.13.1
+2026-11-16T03:51:34.1689968Z   Downloaded signal-hook-registry v1.4.8
+2026-11-16T03:51:34.1699979Z   Downloaded serde v1.0.229
+2026-11-16T03:51:34.1725631Z   Downloaded darling_macro v0.24.1
+2026-11-16T03:51:34.1730842Z   Downloaded semver v1.0.28
+2026-11-16T03:51:34.1751939Z   Downloaded phf_shared v0.14.0
+2026-11-16T03:51:34.1759354Z   Downloaded icu_segmenter_data v2.4.0
+2026-11-16T03:51:34.2030112Z   Downloaded tracing-attributes v0.1.31
+2026-11-16T03:51:34.2048364Z   Downloaded synstructure v0.14.0
+2026-11-16T03:51:34.2056202Z   Downloaded sync_wrapper v1.0.2
+2026-11-16T03:51:34.2062243Z   Downloaded syn v3.0.6
+2026-11-16T03:51:34.2135796Z   Downloaded static_assertions v1.1.0
+2026-11-16T03:51:34.2145836Z   Downloaded smallvec v1.16.2
+2026-11-16T03:51:34.2155283Z   Downloaded shlex v2.0.1
+2026-11-16T03:51:34.2164517Z   Downloaded salsa20 v0.11.0
+2026-11-16T03:51:34.2176098Z   Downloaded rustc_version v0.4.1
+2026-11-16T03:51:34.2184809Z   Downloaded rmcp v3.9.0
+2026-11-16T03:51:34.2328462Z   Downloaded ref-cast-impl v1.0.27
+2026-11-16T03:51:34.2335723Z   Downloaded phf_generator v0.14.0
+2026-11-16T03:51:34.2345488Z   Downloaded http-body-util v0.1.5
+2026-11-16T03:51:34.2360696Z   Downloaded der v0.8.2
+2026-11-16T03:51:34.2402579Z   Downloaded zerofrom v0.1.8
+2026-11-16T03:51:34.2409693Z   Downloaded unicode-width v0.2.3
+2026-11-16T03:51:34.2442182Z   Downloaded time-macros v0.2.32
+2026-11-16T03:51:34.2458950Z   Downloaded siphasher v1.0.4
+2026-11-16T03:51:34.2469627Z   Downloaded sha1 v0.11.0
+2026-11-16T03:51:34.2482123Z   Downloaded serde_derive_internals v0.30.0
+2026-11-16T03:51:34.2492876Z   Downloaded seq-macro v0.3.6
+2026-11-16T03:51:34.2507055Z   Downloaded owo-colors v4.4.0
+2026-11-16T03:51:34.2520575Z   Downloaded slab v0.4.12
+2026-11-16T03:51:34.2530634Z   Downloaded num-integer v0.1.47
+2026-11-16T03:51:34.2543204Z   Downloaded nonmax v0.5.5
+2026-11-16T03:51:34.2552246Z   Downloaded data-encoding v2.11.1
+2026-11-16T03:51:34.2560591Z   Downloaded crossbeam-deque v0.8.8
+2026-11-16T03:51:34.2573087Z   Downloaded cc v1.5.1
+2026-11-16T03:51:34.2594094Z   Downloaded anyhow v1.0.104
+2026-11-16T03:51:34.2621511Z   Downloaded schemars v1.2.2
+2026-11-16T03:51:34.2740920Z   Downloaded powerfmt v0.2.1
+2026-11-16T03:51:34.2750989Z   Downloaded num-conv v0.2.2
+2026-11-16T03:51:34.2756837Z   Downloaded iana-time-zone v0.1.65
+2026-11-16T03:51:34.2776596Z   Downloaded russh-util v0.52.0
+2026-11-16T03:51:34.2781605Z   Downloaded rfc6979 v0.6.0
+2026-11-16T03:51:34.2790180Z   Downloaded oid-registry v0.8.1
+2026-11-16T03:51:34.2798987Z   Downloaded http-body v1.1.0
+2026-11-16T03:51:34.2806070Z   Downloaded equivalent v1.0.2
+2026-11-16T03:51:34.2812987Z   Downloaded compact_str v0.10.0
+2026-11-16T03:51:34.2841345Z   Downloaded clap_builder v4.6.7
+2026-11-16T03:51:34.2885278Z   Downloaded yoke v0.8.4
+2026-11-16T03:51:34.2898053Z   Downloaded twox-hash v2.1.5
+2026-11-16T03:51:34.2914300Z   Downloaded time-core v0.1.9
+2026-11-16T03:51:34.2921990Z   Downloaded rand_core v0.10.1
+2026-11-16T03:51:34.2934557Z   Downloaded password-hash v0.6.1
+2026-11-16T03:51:34.2943966Z   Downloaded oxc_estree v0.144.0
+2026-11-16T03:51:34.2955164Z   Downloaded md5 v0.8.1
+2026-11-16T03:51:34.2963011Z   Downloaded inout v0.2.2
+2026-11-16T03:51:34.2971590Z   Downloaded futures-sink v0.3.34
+2026-11-16T03:51:34.2977556Z   Downloaded curve25519-dalek-derive v0.1.1
+2026-11-16T03:51:34.2984542Z   Downloaded cpufeatures v0.3.1
+2026-11-16T03:51:34.2994587Z   Downloaded clap_lex v1.1.1
+2026-11-16T03:51:34.3002111Z   Downloaded quote v1.0.47
+2026-11-16T03:51:34.3020809Z   Downloaded phc v0.6.1
+2026-11-16T03:51:34.3033259Z   Downloaded pbkdf2 v0.13.0
+2026-11-16T03:51:34.3044452Z   Downloaded oxc_data_structures v0.144.0
+2026-11-16T03:51:34.3060749Z   Downloaded lazy_static v1.5.1
+2026-11-16T03:51:34.3072401Z   Downloaded chrono v0.4.45
+2026-11-16T03:51:34.3118034Z   Downloaded russh-cryptovec v0.62.0
+2026-11-16T03:51:34.3125865Z   Downloaded redb v4.4.0
+2026-11-16T03:51:34.3199052Z   Downloaded primefield v0.14.0
+2026-11-16T03:51:34.3209189Z   Downloaded icu_locale_core v2.4.0
+2026-11-16T03:51:34.3255328Z   Downloaded parking_lot_core v0.9.12
+2026-11-16T03:51:34.3269659Z   Downloaded futures-util v0.3.34
+2026-11-16T03:51:34.3823010Z   Downloaded darling_core v0.24.1
+2026-11-16T03:51:34.4265093Z   Downloaded curve25519-dalek v5.0.0
+2026-11-16T03:51:34.4329850Z   Downloaded bitflags v2.13.2
+2026-11-16T03:51:34.4360052Z   Downloaded base64ct v1.8.3
+2026-11-16T03:51:34.4377742Z   Downloaded base64 v0.23.1
+2026-11-16T03:51:34.4404245Z   Downloaded axum v0.8.9
+2026-11-16T03:51:34.4463487Z   Downloaded async-trait v0.1.92
+2026-11-16T03:51:34.4488728Z   Downloaded strsim v0.11.1
+2026-11-16T03:51:34.4497671Z   Downloaded scrypt v0.12.0
+2026-11-16T03:51:34.4510539Z   Downloaded itoa v1.0.18
+2026-11-16T03:51:34.4520373Z   Downloaded futures v0.3.34
+2026-11-16T03:51:34.4553335Z   Downloaded either v1.18.0
+2026-11-16T03:51:34.4563400Z   Downloaded der-parser v10.0.0
+2026-11-16T03:51:34.4586287Z   Downloaded chacha20 v0.10.2
+2026-11-16T03:51:34.4602321Z   Downloaded kem v0.3.0
+2026-11-16T03:51:34.4608916Z   Downloaded hkdf v0.13.0
+2026-11-16T03:51:34.4628128Z   Downloaded hashbrown v0.14.5
+2026-11-16T03:51:34.4663523Z   Downloaded dragonbox_ecma v0.1.12
+2026-11-16T03:51:34.4680256Z   Downloaded crossbeam-utils v0.8.23
+2026-11-16T03:51:34.4699254Z   Downloaded bytecount v0.6.9
+2026-11-16T03:51:34.4712910Z   Downloaded mime v0.3.17
+2026-11-16T03:51:34.4722400Z   Downloaded is_terminal_polyfill v1.70.2
+2026-11-16T03:51:34.4729770Z   Downloaded ident_case v1.0.1
+2026-11-16T03:51:34.4736729Z   Downloaded icu_locale_fallback_data v2.4.0
+2026-11-16T03:51:34.4743898Z   Downloaded darling v0.24.1
+2026-11-16T03:51:34.4790100Z   Downloaded find-msvc-tools v0.1.14
+2026-11-16T03:51:34.4801563Z   Downloaded elliptic-curve v0.14.1
+2026-11-16T03:51:34.4823808Z   Downloaded crypto-common v0.2.2
+2026-11-16T03:51:34.4832768Z   Downloaded cfg-if v1.0.5
+2026-11-16T03:51:34.4842772Z   Downloaded des v0.9.0
+2026-11-16T03:51:34.4855841Z   Downloaded argon2 v0.6.0
+2026-11-16T03:51:34.4868673Z   Downloaded bytes v1.12.1
+2026-11-16T03:51:34.4893912Z   Downloaded byteorder v1.5.0
+2026-11-16T03:51:34.4905672Z   Downloaded axum-core v0.5.6
+2026-11-16T03:51:34.4921055Z   Downloaded ed25519 v3.0.0
+2026-11-16T03:51:34.4933192Z   Downloaded atomic-waker v1.1.2
+2026-11-16T03:51:34.4941792Z   Downloaded futures-channel v0.3.34
+2026-11-16T03:51:34.4954969Z   Downloaded cmov v0.5.4
+2026-11-16T03:51:34.4967677Z   Downloaded clap v4.6.7
+2026-11-16T03:51:34.5035379Z   Downloaded regex v1.13.1
+2026-11-16T03:51:34.5074503Z   Downloaded phf v0.14.0
+2026-11-16T03:51:34.5083906Z   Downloaded getrandom v0.2.17
+2026-11-16T03:51:34.5104145Z   Downloaded generic-array v0.14.9
+2026-11-16T03:51:34.5114051Z   Downloaded blowfish v0.10.0
+2026-11-16T03:51:34.5123603Z   Downloaded asn1-rs-derive v0.6.0
+2026-11-16T03:51:34.5131418Z   Downloaded ctr v0.10.1
+2026-11-16T03:51:34.5145406Z   Downloaded cpubits v0.1.1
+2026-11-16T03:51:34.5151864Z   Downloaded blake2 v0.11.0
+2026-11-16T03:51:34.5165683Z   Downloaded anstyle v1.0.14
+2026-11-16T03:51:34.5175107Z   Downloaded allocator-api2 v0.2.21
+2026-11-16T03:51:34.5192470Z   Downloaded ref-cast v1.0.27
+2026-11-16T03:51:34.5213959Z   Downloaded oxc_semantic v0.144.0
+2026-11-16T03:51:34.5237053Z   Downloaded hashbrown v0.17.1
+2026-11-16T03:51:34.5272411Z   Downloaded dashmap v6.2.1
+2026-11-16T03:51:34.5288858Z   Downloaded const-oid v0.10.2
+2026-11-16T03:51:34.5304839Z   Downloaded castaway v0.2.4
+2026-11-16T03:51:34.5314029Z   Downloaded block-padding v0.4.2
+2026-11-16T03:51:34.5319949Z   Downloaded oxc-miette v4.0.0
+2026-11-16T03:51:34.5344426Z   Downloaded num-bigint v0.4.8
+2026-11-16T03:51:34.5376004Z   Downloaded globset v0.4.20
+2026-11-16T03:51:34.5386009Z   Downloaded block-buffer v0.12.1
+2026-11-16T03:51:34.5394061Z   Downloaded asn1-rs v0.7.2
+2026-11-16T03:51:34.5442986Z   Downloaded anstyle-parse v1.0.0
+2026-11-16T03:51:34.5454181Z   Downloaded hybrid-array v0.4.15
+2026-11-16T03:51:34.5468712Z   Downloaded oxc_index v5.0.0
+2026-11-16T03:51:34.5476578Z   Downloaded keccak v0.2.2
+2026-11-16T03:51:34.5487665Z   Downloaded aes-gcm v0.11.1
+2026-11-16T03:51:34.5508486Z   Downloaded fastrand v2.5.0
+2026-11-16T03:51:34.5519235Z   Downloaded proc-macro2 v1.0.107
+2026-11-16T03:51:34.5538982Z   Downloaded hex-literal v1.1.0
+2026-11-16T03:51:34.5545595Z   Downloaded hex v0.4.3
+2026-11-16T03:51:34.5556661Z   Downloaded futures-task v0.3.34
+2026-11-16T03:51:34.5564726Z   Downloaded futures-io v0.3.34
+2026-11-16T03:51:34.5570794Z   Downloaded aho-corasick v1.1.5
+2026-11-16T03:51:34.5606721Z   Downloaded crypto-bigint v0.7.11
+2026-11-16T03:51:34.5722278Z   Downloaded base16ct v1.0.0
+2026-11-16T03:51:34.5732328Z   Downloaded adler2 v2.0.1
+2026-11-16T03:51:34.5740663Z   Downloaded ed25519-dalek v3.0.0
+2026-11-16T03:51:34.5762882Z   Downloaded bcrypt-pbkdf v0.11.0
+2026-11-16T03:51:34.5771251Z   Downloaded anstream v1.0.0
+2026-11-16T03:51:34.5784618Z   Downloaded enum_dispatch v0.3.13
+2026-11-16T03:51:34.5805179Z   Downloaded delegate v0.13.5
+2026-11-16T03:51:34.5811914Z   Downloaded ctutils v0.4.8
+2026-11-16T03:51:34.5843516Z   Downloaded crc32fast v1.5.2
+2026-11-16T03:51:34.5858218Z   Downloaded cfg_aliases v0.2.2
+2026-11-16T03:51:34.5864907Z   Downloaded cbc v0.2.1
+2026-11-16T03:51:34.5875950Z   Downloaded aes v0.9.3
+2026-11-16T03:51:34.5902187Z   Downloaded clap_derive v4.6.7
+2026-11-16T03:51:34.5922664Z   Downloaded icu_segmenter v2.4.0
+2026-11-16T03:51:34.6720104Z   Downloaded rusticata-macros v4.1.0
+2026-11-16T03:51:34.7724253Z    Compiling proc-macro2 v1.0.107
+2026-11-16T03:51:34.7724653Z    Compiling unicode-ident v1.0.26
+2026-11-16T03:51:34.8089100Z    Compiling quote v1.0.47
+2026-11-16T03:51:34.8952196Z    Compiling libc v0.2.189
+2026-11-16T03:51:35.2947363Z    Compiling cfg-if v1.0.5
+2026-11-16T03:51:35.3167913Z    Compiling syn v3.0.6
+2026-11-16T03:51:35.7403136Z    Compiling subtle v2.6.1
+2026-11-16T03:51:35.7965363Z    Compiling zeroize v1.9.0
+2026-11-16T03:51:35.8567406Z    Compiling typenum v1.20.1
+2026-11-16T03:51:36.2377343Z    Compiling cmov v0.5.4
+2026-11-16T03:51:36.3206861Z    Compiling ctutils v0.4.8
+2026-11-16T03:51:36.4234373Z    Compiling hybrid-array v0.4.15
+2026-11-16T03:51:36.8044427Z    Compiling rand_core v0.10.1
+2026-11-16T03:51:36.8565229Z    Compiling getrandom v0.4.3
+2026-11-16T03:51:37.0067301Z    Compiling crypto-common v0.2.2
+2026-11-16T03:51:37.4897004Z    Compiling block-buffer v0.12.1
+2026-11-16T03:51:37.5761137Z    Compiling const-oid v0.10.2
+2026-11-16T03:51:37.6199282Z    Compiling memchr v2.8.3
+2026-11-16T03:51:37.6867530Z    Compiling serde_core v1.0.229
+2026-11-16T03:51:38.0093626Z    Compiling digest v0.11.3
+2026-11-16T03:51:38.0868039Z    Compiling block-padding v0.4.2
+2026-11-16T03:51:38.1333029Z    Compiling autocfg v1.5.1
+2026-11-16T03:51:38.2735976Z    Compiling cpufeatures v0.3.1
+2026-11-16T03:51:38.2965812Z    Compiling num-traits v0.2.19
+2026-11-16T03:51:38.3442494Z    Compiling inout v0.2.2
+2026-11-16T03:51:38.7584378Z    Compiling cipher v0.5.2
+2026-11-16T03:51:38.8123092Z    Compiling syn v2.0.119
+2026-11-16T03:51:38.8825196Z    Compiling serde v1.0.229
+2026-11-16T03:51:38.9769803Z    Compiling serde_derive v1.0.229
+2026-11-16T03:51:40.1687751Z    Compiling synstructure v0.14.0
+2026-11-16T03:51:40.6619577Z    Compiling zerofrom-derive v0.1.8
+2026-11-16T03:51:40.9146080Z    Compiling displaydoc v0.2.7
+2026-11-16T03:51:41.0942493Z    Compiling zerofrom v0.1.8
+2026-11-16T03:51:41.1345753Z    Compiling yoke-derive v0.8.4
+2026-11-16T03:51:41.1696531Z    Compiling cpubits v0.1.1
+2026-11-16T03:51:41.1902260Z    Compiling itoa v1.0.18
+2026-11-16T03:51:41.2653768Z    Compiling stable_deref_trait v1.2.1
+2026-11-16T03:51:41.2869766Z    Compiling base64ct v1.8.3
+2026-11-16T03:51:41.4163095Z    Compiling bytes v1.12.1
+2026-11-16T03:51:41.5475056Z    Compiling yoke v0.8.4
+2026-11-16T03:51:41.6339489Z    Compiling zerovec-derive v0.11.7
+2026-11-16T03:51:41.7691267Z    Compiling zmij v1.0.23
+2026-11-16T03:51:41.8390480Z    Compiling pem-rfc7468 v1.0.0
+2026-11-16T03:51:42.0109191Z    Compiling smallvec v1.16.2
+2026-11-16T03:51:42.0402817Z    Compiling zerovec v0.11.9
+2026-11-16T03:51:42.1211904Z    Compiling pin-project-lite v0.2.17
+2026-11-16T03:51:42.1470273Z    Compiling hmac v0.13.0
+2026-11-16T03:51:42.2076145Z    Compiling universal-hash v0.6.1
+2026-11-16T03:51:42.2517983Z    Compiling writeable v0.6.4
+2026-11-16T03:51:42.4127136Z    Compiling futures-core v0.3.34
+2026-11-16T03:51:42.4591549Z    Compiling polyval v0.7.3
+2026-11-16T03:51:42.5514305Z    Compiling tinystr v0.8.5
+2026-11-16T03:51:42.5700499Z    Compiling sha2 v0.11.0
+2026-11-16T03:51:42.6371429Z    Compiling litemap v0.8.3
+2026-11-16T03:51:42.7334770Z    Compiling icu_locale_fallback_data v2.4.0
+2026-11-16T03:51:42.7806056Z    Compiling rustversion v1.0.23
+2026-11-16T03:51:42.8997745Z    Compiling icu_locale_core v2.4.0
+2026-11-16T03:51:43.2103034Z    Compiling potential_utf v0.1.6
+2026-11-16T03:51:43.2675190Z    Compiling ghash v0.6.0
+2026-11-16T03:51:43.3064428Z    Compiling pbkdf2 v0.13.0
+2026-11-16T03:51:43.3457468Z    Compiling der v0.8.2
+2026-11-16T03:51:44.3653478Z    Compiling zerotrie v0.2.5
+2026-11-16T03:51:44.7143596Z    Compiling aes v0.9.3
+2026-11-16T03:51:44.8924531Z    Compiling ctr v0.10.1
+2026-11-16T03:51:44.9469955Z    Compiling aead v0.6.1
+2026-11-16T03:51:44.9677501Z    Compiling icu_segmenter_data v2.4.0
+2026-11-16T03:51:44.9943561Z    Compiling utf_types v1.0.0
+2026-11-16T03:51:45.0168234Z    Compiling siphasher v1.0.4
+2026-11-16T03:51:45.0778018Z    Compiling phf_shared v0.14.0
+2026-11-16T03:51:45.0896730Z    Compiling utf8_iter v1.1.0
+2026-11-16T03:51:45.1572088Z    Compiling aes-gcm v0.11.1
+2026-11-16T03:51:45.1764786Z    Compiling icu_provider v2.4.0
+2026-11-16T03:51:45.5562203Z    Compiling salsa20 v0.11.0
+2026-11-16T03:51:45.6056040Z    Compiling futures-sink v0.3.34
+2026-11-16T03:51:45.6155010Z    Compiling allocator-api2 v0.2.21
+2026-11-16T03:51:45.6364570Z    Compiling futures-channel v0.3.34
+2026-11-16T03:51:45.7281236Z    Compiling scrypt v0.12.0
+2026-11-16T03:51:45.8026590Z    Compiling hashbrown v0.17.1
+2026-11-16T03:51:45.8786152Z    Compiling icu_locale_fallback v2.4.0
+2026-11-16T03:51:46.1063890Z    Compiling icu_collections v2.4.0
+2026-11-16T03:51:46.1378518Z    Compiling spki v0.8.0
+2026-11-16T03:51:46.2329041Z    Compiling cbc v0.2.1
+2026-11-16T03:51:46.2803856Z    Compiling errno v0.3.14
+2026-11-16T03:51:46.3317387Z    Compiling signal-hook-registry v1.4.8
+2026-11-16T03:51:46.3930540Z    Compiling icu_segmenter v2.4.0
+2026-11-16T03:51:46.4652120Z    Compiling pkcs5 v0.8.1
+2026-11-16T03:51:46.9977019Z    Compiling crypto-bigint v0.7.11
+2026-11-16T03:51:47.0445146Z    Compiling bitflags v2.13.2
+2026-11-16T03:51:47.1658833Z    Compiling tokio-macros v2.7.2
+2026-11-16T03:51:47.3937760Z    Compiling ff v0.14.0
+2026-11-16T03:51:47.4471123Z    Compiling socket2 v0.6.5
+2026-11-16T03:51:47.7056627Z    Compiling mio v1.2.3
+2026-11-16T03:51:47.9039334Z    Compiling smawk v0.3.3
+2026-11-16T03:51:47.9484496Z    Compiling unicode-width v0.2.3
+2026-11-16T03:51:48.0147137Z    Compiling textwrap v0.16.4
+2026-11-16T03:51:48.5927799Z    Compiling tokio v1.53.3
+2026-11-16T03:51:49.4817992Z    Compiling pkcs8 v0.11.0
+2026-11-16T03:51:50.3213139Z    Compiling castaway v0.2.4
+2026-11-16T03:51:50.3542718Z    Compiling futures-macro v0.3.34
+2026-11-16T03:51:50.6131776Z    Compiling bytecount v0.6.9
+2026-11-16T03:51:50.6562174Z    Compiling owo-colors v4.4.0
+2026-11-16T03:51:51.0370796Z    Compiling fastrand v2.5.0
+2026-11-16T03:51:51.0879905Z    Compiling rustc-hash v2.1.3
+2026-11-16T03:51:51.1241895Z    Compiling futures-io v0.3.34
+2026-11-16T03:51:51.1780267Z    Compiling oxc_data_structures v0.144.0
+2026-11-16T03:51:51.2521774Z    Compiling static_assertions v1.1.0
+2026-11-16T03:51:51.2777440Z    Compiling slab v0.4.12
+2026-11-16T03:51:51.3485283Z    Compiling unicode-segmentation v1.13.3
+2026-11-16T03:51:51.5682770Z    Compiling futures-task v0.3.34
+2026-11-16T03:51:51.6215602Z    Compiling futures-util v0.3.34
+2026-11-16T03:51:52.7963977Z    Compiling oxc-miette v4.0.0
+2026-11-16T03:51:52.9802776Z    Compiling compact_str v0.10.0
+2026-11-16T03:51:53.1638313Z    Compiling oxc_allocator v0.144.0
+2026-11-16T03:51:53.3272792Z    Compiling phf_generator v0.14.0
+2026-11-16T03:51:53.3880756Z    Compiling group v0.14.0
+2026-11-16T03:51:53.4446885Z    Compiling phf v0.14.0
+2026-11-16T03:51:53.4537355Z    Compiling chacha20 v0.10.2
+2026-11-16T03:51:53.4989283Z    Compiling thiserror v2.0.21
+2026-11-16T03:51:53.5885830Z    Compiling oxc_estree v0.144.0
+2026-11-16T03:51:53.6100762Z    Compiling crossbeam-utils v0.8.23
+2026-11-16T03:51:53.6589894Z    Compiling base16ct v1.0.0
+2026-11-16T03:51:53.7222521Z    Compiling sec1 v0.8.1
+2026-11-16T03:51:53.8357626Z    Compiling oxc_str v0.144.0
+2026-11-16T03:51:53.9412070Z    Compiling oxc_ast_macros v0.144.0
+2026-11-16T03:51:54.1366831Z    Compiling phf_macros v0.14.0
+2026-11-16T03:51:54.1406250Z    Compiling hkdf v0.13.0
+2026-11-16T03:51:54.1887052Z    Compiling http v1.5.0
+2026-11-16T03:51:54.3807026Z    Compiling num-integer v0.1.47
+2026-11-16T03:51:54.5535982Z    Compiling signature v3.0.0
+2026-11-16T03:51:54.6051728Z    Compiling thiserror-impl v2.0.21
+2026-11-16T03:51:54.8433724Z    Compiling percent-encoding v2.3.2
+2026-11-16T03:51:54.9223242Z    Compiling dragonbox_ecma v0.1.12
+2026-11-16T03:51:54.9930773Z    Compiling cow-utils v0.1.3
+2026-11-16T03:51:55.1120829Z    Compiling http-body v1.1.0
+2026-11-16T03:51:55.1585735Z    Compiling elliptic-curve v0.14.1
+2026-11-16T03:51:55.1802577Z    Compiling oxc_span v0.144.0
+2026-11-16T03:51:55.4091010Z    Compiling primefield v0.14.0
+2026-11-16T03:51:55.5330028Z    Compiling semver v1.0.28
+2026-11-16T03:51:55.5920503Z    Compiling unicode-id-start v1.5.0
+2026-11-16T03:51:55.6265929Z    Compiling nonmax v0.5.5
+2026-11-16T03:51:55.6488094Z    Compiling rustc_version v0.4.1
+2026-11-16T03:51:55.7474740Z    Compiling oxc_index v5.0.0
+2026-11-16T03:51:55.7631514Z    Compiling wnaf v0.14.1
+2026-11-16T03:51:55.9025325Z    Compiling oxc_diagnostics v0.144.0
+2026-11-16T03:51:55.9271603Z    Compiling rand v0.10.3
+2026-11-16T03:51:56.2488594Z    Compiling rfc6979 v0.6.0
+2026-11-16T03:51:56.3039949Z    Compiling crossbeam-epoch v0.9.21
+2026-11-16T03:51:56.3666616Z    Compiling minimal-lexical v0.2.1
+2026-11-16T03:51:56.4174095Z    Compiling num-conv v0.2.2
+2026-11-16T03:51:56.4631284Z    Compiling time-core v0.1.9
+2026-11-16T03:51:56.4773754Z    Compiling nom v7.1.3
+2026-11-16T03:51:56.5337624Z    Compiling time-macros v0.2.32
+2026-11-16T03:51:57.0475916Z    Compiling ecdsa v0.17.0
+2026-11-16T03:51:57.2941983Z    Compiling oxc_regular_expression v0.144.0
+2026-11-16T03:51:57.3432903Z    Compiling oxc_syntax v0.144.0
+2026-11-16T03:51:57.7988482Z    Compiling primeorder v0.14.0
+2026-11-16T03:51:58.0212208Z    Compiling curve25519-dalek v5.0.0
+2026-11-16T03:51:58.0895033Z    Compiling synstructure v0.13.2
+2026-11-16T03:51:58.3147810Z    Compiling log v0.4.34
+2026-11-16T03:51:58.3680687Z    Compiling tower-service v0.3.3
+2026-11-16T03:51:58.3796735Z    Compiling once_cell v1.21.4
+2026-11-16T03:51:58.4599906Z    Compiling powerfmt v0.2.1
+2026-11-16T03:51:58.4650374Z    Compiling deranged v0.5.9
+2026-11-16T03:51:58.5245006Z    Compiling crossbeam-deque v0.8.8
+2026-11-16T03:51:58.5892750Z    Compiling strsim v0.11.1
+2026-11-16T03:51:58.7021016Z    Compiling version_check v0.9.5
+2026-11-16T03:51:58.8493960Z    Compiling find-msvc-tools v0.1.14
+2026-11-16T03:51:58.9369815Z    Compiling shlex v2.0.1
+2026-11-16T03:51:59.0043581Z    Compiling cfg_aliases v0.2.2
+2026-11-16T03:51:59.0194693Z    Compiling httparse v1.10.1
+2026-11-16T03:51:59.1067215Z    Compiling ident_case v1.0.1
+2026-11-16T03:51:59.1391190Z    Compiling darling_core v0.24.1
+2026-11-16T03:51:59.1437112Z    Compiling nix v0.31.3
+2026-11-16T03:51:59.2521178Z    Compiling time v0.3.55
+2026-11-16T03:52:00.4168761Z    Compiling cc v1.5.1
+2026-11-16T03:52:00.5311821Z    Compiling generic-array v0.14.9
+2026-11-16T03:52:00.5857969Z    Compiling asn1-rs-derive v0.6.0
+2026-11-16T03:52:00.8537501Z    Compiling oxc_ast v0.144.0
+2026-11-16T03:52:01.0605880Z    Compiling rusticata-macros v4.1.0
+2026-11-16T03:52:01.2916335Z    Compiling num-bigint v0.5.1
+2026-11-16T03:52:02.4619803Z    Compiling http-body-util v0.1.5
+2026-11-16T03:52:02.5884911Z    Compiling ssh-encoding v0.3.0
+2026-11-16T03:52:02.8144094Z    Compiling asn1-rs-impl v0.2.0
+2026-11-16T03:52:02.9186190Z    Compiling curve25519-dalek-derive v0.1.1
+2026-11-16T03:52:03.1057293Z    Compiling aho-corasick v1.1.5
+2026-11-16T03:52:04.0784911Z    Compiling keccak v0.2.2
+2026-11-16T03:52:04.1217521Z    Compiling utf8parse v0.2.2
+2026-11-16T03:52:04.1474001Z    Compiling crc32fast v1.5.2
+2026-11-16T03:52:04.2128784Z    Compiling serde_json v1.0.151
+2026-11-16T03:52:04.2621451Z    Compiling regex-syntax v0.8.11
+2026-11-16T03:52:04.6237980Z    Compiling byteorder v1.5.0
+2026-11-16T03:52:04.7151826Z    Compiling iana-time-zone v0.1.65
+2026-11-16T03:52:05.0121994Z    Compiling parking_lot_core v0.9.12
+2026-11-16T03:52:05.0737895Z    Compiling ref-cast v1.0.27
+2026-11-16T03:52:05.2244844Z    Compiling regex-automata v0.4.18
+2026-11-16T03:52:06.4344645Z    Compiling chrono v0.4.45
+2026-11-16T03:52:07.7354870Z    Compiling blowfish v0.10.0
+2026-11-16T03:52:07.8239846Z    Compiling anstyle-parse v1.0.0
+2026-11-16T03:52:08.6246650Z    Compiling asn1-rs v0.7.2
+2026-11-16T03:52:08.9957992Z    Compiling ring v0.17.14
+2026-11-16T03:52:09.1789286Z    Compiling darling_macro v0.24.1
+2026-11-16T03:52:09.7995418Z    Compiling ed25519 v3.0.0
+2026-11-16T03:52:10.2252172Z    Compiling futures-executor v0.3.34
+2026-11-16T03:52:10.2422302Z    Compiling poly1305 v0.9.1
+2026-11-16T03:52:10.3557103Z    Compiling blake2 v0.11.0
+2026-11-16T03:52:10.4311765Z    Compiling ref-cast-impl v1.0.27
+2026-11-16T03:52:10.5063210Z    Compiling serde_derive_internals v0.30.0
+2026-11-16T03:52:10.8510364Z    Compiling adler2 v2.0.1
+2026-11-16T03:52:10.8794908Z    Compiling atomic-waker v1.1.2
+2026-11-16T03:52:10.9127670Z    Compiling tower-layer v0.3.3
+2026-11-16T03:52:10.9503221Z    Compiling simd-adler32 v0.3.10
+2026-11-16T03:52:10.9900647Z    Compiling colorchoice v1.0.5
+2026-11-16T03:52:11.0190072Z    Compiling oid-registry v0.8.1
+2026-11-16T03:52:11.1222357Z    Compiling anstyle-query v1.1.5
+2026-11-16T03:52:11.1266807Z    Compiling scopeguard v1.2.0
+2026-11-16T03:52:11.1526198Z    Compiling sync_wrapper v1.0.2
+2026-11-16T03:52:11.1526712Z    Compiling httpdate v1.0.3
+2026-11-16T03:52:11.1798253Z    Compiling anstyle v1.0.14
+2026-11-16T03:52:11.2695120Z    Compiling is_terminal_polyfill v1.70.2
+2026-11-16T03:52:11.2743558Z    Compiling either v1.18.0
+2026-11-16T03:52:11.2967697Z    Compiling rayon-core v1.13.0
+2026-11-16T03:52:11.3502198Z    Compiling anstream v1.0.0
+2026-11-16T03:52:11.3645547Z    Compiling hyper v1.11.1
+2026-11-16T03:52:11.4982976Z    Compiling lock_api v0.4.14
+2026-11-16T03:52:11.5994377Z    Compiling miniz_oxide v0.9.1
+2026-11-16T03:52:12.2558681Z    Compiling schemars_derive v1.2.2
+2026-11-16T03:52:12.5502214Z    Compiling argon2 v0.6.0
+2026-11-16T03:52:12.8494123Z    Compiling ssh-cipher v0.3.0
+2026-11-16T03:52:12.9052532Z    Compiling futures v0.3.34
+2026-11-16T03:52:12.9290368Z    Compiling ed25519-dalek v3.0.0
+2026-11-16T03:52:13.3897272Z    Compiling darling v0.24.1
+2026-11-16T03:52:13.6597696Z    Compiling bcrypt-pbkdf v0.11.0
+2026-11-16T03:52:15.0539839Z    Compiling sha3 v0.11.0
+2026-11-16T03:52:15.2323192Z    Compiling oxc_ecmascript v0.144.0
+2026-11-16T03:52:15.6189939Z    Compiling tracing-core v0.1.36
+2026-11-16T03:52:15.9365537Z    Compiling p256 v0.14.0
+2026-11-16T03:52:16.9746123Z    Compiling p521 v0.14.0
+2026-11-16T03:52:17.6883786Z    Compiling p384 v0.14.0
+2026-11-16T03:52:19.0304226Z    Compiling num-bigint v0.4.8
+2026-11-16T03:52:19.3089725Z    Compiling tokio-util v0.7.19
+2026-11-16T03:52:19.9981217Z    Compiling tracing-attributes v0.1.31
+2026-11-16T03:52:20.2052082Z    Compiling module-lattice v0.2.3
+2026-11-16T03:52:20.3120449Z    Compiling sha1 v0.11.0
+2026-11-16T03:52:20.4526029Z    Compiling bstr v1.13.1
+2026-11-16T03:52:20.4776315Z    Compiling kem v0.3.0
+2026-11-16T03:52:20.5137908Z    Compiling getrandom v0.2.17
+2026-11-16T03:52:20.5828625Z    Compiling heck v0.5.0
+2026-11-16T03:52:20.6537783Z    Compiling data-encoding v2.11.1
+2026-11-16T03:52:20.7365780Z    Compiling equivalent v1.0.2
+2026-11-16T03:52:20.7610276Z    Compiling sponge-cursor v0.1.0
+2026-11-16T03:52:21.0677160Z    Compiling hashbrown v0.14.5
+2026-11-16T03:52:21.4318496Z    Compiling dyn-clone v1.0.20
+2026-11-16T03:52:21.4735601Z    Compiling clap_lex v1.1.1
+2026-11-16T03:52:21.5098262Z    Compiling same-file v1.0.6
+2026-11-16T03:52:21.5574833Z    Compiling anyhow v1.0.104
+2026-11-16T03:52:21.5841127Z    Compiling untrusted v0.9.0
+2026-11-16T03:52:21.6221961Z    Compiling hex v0.4.3
+2026-11-16T03:52:21.6447125Z    Compiling mime v0.3.17
+2026-11-16T03:52:21.7201512Z    Compiling rmcp v3.9.0
+2026-11-16T03:52:21.7897131Z    Compiling redb v4.4.0
+2026-11-16T03:52:21.8576199Z    Compiling axum-core v0.5.6
+2026-11-16T03:52:21.8632233Z    Compiling enum_dispatch v0.3.13
+2026-11-16T03:52:22.1656487Z    Compiling ssh-key v0.7.0-rc.11
+2026-11-16T03:52:24.0163648Z    Compiling walkdir v2.5.0
+2026-11-16T03:52:24.2109398Z    Compiling clap_builder v4.6.7
+2026-11-16T03:52:25.6418113Z    Compiling schemars v1.2.2
+2026-11-16T03:52:27.0913882Z    Compiling dashmap v6.2.1
+2026-11-16T03:52:27.2994614Z    Compiling sha3 v0.12.0
+2026-11-16T03:52:27.4274314Z    Compiling indexmap v2.14.2
+2026-11-16T03:52:27.6463045Z    Compiling globset v0.4.20
+2026-11-16T03:52:27.8386970Z    Compiling clap_derive v4.6.7
+2026-11-16T03:52:28.4113211Z    Compiling ml-kem v0.3.2
+2026-11-16T03:52:28.5379562Z    Compiling tracing v0.1.44
+2026-11-16T03:52:28.6550490Z    Compiling der-parser v10.0.0
+2026-11-16T03:52:28.9665002Z    Compiling flate2 v1.1.10
+2026-11-16T03:52:29.0649546Z    Compiling generic-array v1.4.5
+2026-11-16T03:52:29.1823553Z    Compiling rmcp-macros v3.9.0
+2026-11-16T03:52:29.2704670Z    Compiling russh-cryptovec v0.62.0
+2026-11-16T03:52:29.3399805Z    Compiling hyper-util v0.1.21
+2026-11-16T03:52:29.5294410Z    Compiling itertools v0.15.0
+2026-11-16T03:52:30.1382240Z    Compiling tower v0.5.3
+2026-11-16T03:52:30.3201036Z    Compiling oxc_ast_visit v0.144.0
+2026-11-16T03:52:30.4203970Z    Compiling sse-stream v0.2.6
+2026-11-16T03:52:30.5316501Z    Compiling russh-util v0.52.0
+2026-11-16T03:52:30.5678650Z    Compiling tokio-stream v0.1.19
+2026-11-16T03:52:30.7808920Z    Compiling delegate v0.13.5
+2026-11-16T03:52:30.9006714Z    Compiling serde_bytes v0.11.19
+2026-11-16T03:52:30.9942488Z    Compiling async-trait v0.1.92
+2026-11-16T03:52:31.1008475Z    Compiling uuid v1.26.1
+2026-11-16T03:52:31.2907584Z    Compiling pastey v0.2.3
+2026-11-16T03:52:31.3230546Z    Compiling seq-macro v0.3.6
+2026-11-16T03:52:31.4721414Z    Compiling self_cell v1.3.0
+2026-11-16T03:52:31.4794777Z    Compiling lazy_static v1.5.1
+2026-11-16T03:52:31.5079353Z    Compiling base64 v0.23.1
+2026-11-16T03:52:31.5119455Z    Compiling md5 v0.8.1
+2026-11-16T03:52:31.5996318Z    Compiling matchit v0.8.4
+2026-11-16T03:52:31.7360224Z    Compiling hex-literal v1.1.0
+2026-11-16T03:52:31.7676999Z    Compiling twox-hash v2.1.5
+2026-11-16T03:52:31.8083879Z    Compiling ruzstd v0.9.1 (/home/runner/work/hepta-private-ci/hepta-private-ci/runtime/vendor/ruzstd)
+2026-11-16T03:52:31.8161545Z    Compiling russh v0.65.0
+2026-11-16T03:52:32.8602391Z    Compiling axum v0.8.9
+2026-11-16T03:52:40.3102955Z    Compiling oxc_semantic v0.144.0
+2026-11-16T03:52:42.4262067Z    Compiling x509-parser v0.18.1
+2026-11-16T03:52:44.9683886Z    Compiling oxc_parser v0.144.0
+2026-11-16T03:52:49.7001737Z    Compiling russh-sftp v3.0.0
+2026-11-16T03:52:51.0846683Z    Compiling rayon v1.12.0
+2026-11-16T03:52:51.4071984Z    Compiling clap v4.6.7
+2026-11-16T03:52:51.4305375Z    Compiling ignore v0.4.33
+2026-11-16T03:52:53.1646650Z    Compiling regex v1.13.1
+2026-11-16T03:52:53.5043286Z    Compiling zlib-rs v0.6.8
+2026-11-16T03:52:55.4954179Z    Compiling hepta-runtime v0.1.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/runtime)
+2026-11-16T03:57:21.4331726Z     Finished `release` profile [optimized] target(s) in 5m 48s
+2026-11-16T03:57:21.5484664Z ##[group]Run python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+2026-11-16T03:57:21.5486047Z [36;1mpython -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"[0m
+2026-11-16T03:57:21.5509012Z shell: /usr/bin/bash -e {0}
+2026-11-16T03:57:21.5509236Z env:
+2026-11-16T03:57:21.5509417Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:57:21.5509634Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:57:21.5509827Z   OMP_NUM_THREADS: 1
+2026-11-16T03:57:21.5510007Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:57:21.5510239Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:21.5510631Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:57:21.5510999Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:21.5511319Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:21.5511643Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:21.5511967Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:57:21.5512253Z   PYTHONPATH: scripts
+2026-11-16T03:57:21.5512440Z ##[endgroup]
+2026-11-16T03:57:21.8925170Z test_cancel_after_actual_gru_exit_stays_unknown_until_exact_readback (test_hepta_cells_owner_control.OwnerControlTests.test_cancel_after_actual_gru_exit_stays_unknown_until_exact_readback) ... ok
+2026-11-16T03:57:21.9040495Z test_failed_migration_journal_write_rolls_back_the_entire_cutover (test_hepta_cells_owner_control.OwnerControlTests.test_failed_migration_journal_write_rolls_back_the_entire_cutover) ... ok
+2026-11-16T03:57:22.0341825Z test_readout_migration_retains_actual_state_and_cold_inference (test_hepta_cells_owner_control.OwnerControlTests.test_readout_migration_retains_actual_state_and_cold_inference) ... ok
+2026-11-16T03:57:22.0454603Z test_stale_checkpoint_or_changed_dynamics_cannot_publish_partial_migration (test_hepta_cells_owner_control.OwnerControlTests.test_stale_checkpoint_or_changed_dynamics_cannot_publish_partial_migration) ... ok
+2026-11-16T03:57:22.0532429Z test_configuration_substitution_is_bound_even_with_same_declared_bundle (test_hepta_cells_lifecycle.DeterministicTests.test_configuration_substitution_is_bound_even_with_same_declared_bundle) ... ok
+2026-11-16T03:57:22.0533409Z test_exact_retriever_enforces_independent_views (test_hepta_cells_lifecycle.DeterministicTests.test_exact_retriever_enforces_independent_views) ... ok
+2026-11-16T03:57:22.0535532Z test_rule_grammar_and_numeric_algorithms (test_hepta_cells_lifecycle.DeterministicTests.test_rule_grammar_and_numeric_algorithms) ... ok
+2026-11-16T03:57:22.0615381Z test_checkpoint_write_failure_cannot_commit_create_or_transition (test_hepta_cells_lifecycle.OwnerCapacityTests.test_checkpoint_write_failure_cannot_commit_create_or_transition) ... ok
+2026-11-16T03:57:22.0822349Z test_each_global_creation_limit_rejects_before_initializer_and_retains_evidence (test_hepta_cells_lifecycle.OwnerCapacityTests.test_each_global_creation_limit_rejects_before_initializer_and_retains_evidence) ... ok
+2026-11-16T03:57:22.0936824Z test_full_global_quotas_survive_reopen_without_blocking_replay_or_readback (test_hepta_cells_lifecycle.OwnerCapacityTests.test_full_global_quotas_survive_reopen_without_blocking_replay_or_readback) ... ok
+2026-11-16T03:57:22.1086999Z test_global_epoch_and_checkpoint_limits_reject_transition_without_partial_publish (test_hepta_cells_lifecycle.OwnerCapacityTests.test_global_epoch_and_checkpoint_limits_reject_transition_without_partial_publish) ... ok
+2026-11-16T03:57:22.1800445Z test_actual_process_exit_leaves_durable_pending_without_replay (test_hepta_cells_lifecycle.OwnerTests.test_actual_process_exit_leaves_durable_pending_without_replay) ... ok
+2026-11-16T03:57:22.1964292Z test_adopt_reset_rollback_retain_replay_and_refuse_old_hidden (test_hepta_cells_lifecycle.OwnerTests.test_adopt_reset_rollback_retain_replay_and_refuse_old_hidden) ... ok
+2026-11-16T03:57:22.2060817Z test_bad_inputs_are_rejected_before_reservation (test_hepta_cells_lifecycle.OwnerTests.test_bad_inputs_are_rejected_before_reservation) ... ok
+2026-11-16T03:57:22.2161535Z test_budget_failure_is_durable_and_preserves_old_state (test_hepta_cells_lifecycle.OwnerTests.test_budget_failure_is_durable_and_preserves_old_state) ... ok
+2026-11-16T03:57:22.2279227Z test_confirmed_effect_overrun_preserves_state_and_requires_explicit_recovery (test_hepta_cells_lifecycle.OwnerTests.test_confirmed_effect_overrun_preserves_state_and_requires_explicit_recovery) ... ok
+2026-11-16T03:57:22.2404937Z test_effect_readback_requires_original_cost_and_never_reinvokes (test_hepta_cells_lifecycle.OwnerTests.test_effect_readback_requires_original_cost_and_never_reinvokes) ... ok
+2026-11-16T03:57:22.2468827Z test_initialization_cannot_change_the_qualified_identity (test_hepta_cells_lifecycle.OwnerTests.test_initialization_cannot_change_the_qualified_identity) ... ok
+2026-11-16T03:57:22.2546768Z test_invalid_result_retains_pending_reservation_and_attempt (test_hepta_cells_lifecycle.OwnerTests.test_invalid_result_retains_pending_reservation_and_attempt) ... ok
+2026-11-16T03:57:22.2624653Z test_observed_timeout_is_not_replaced_with_zero_cost (test_hepta_cells_lifecycle.OwnerTests.test_observed_timeout_is_not_replaced_with_zero_cost) ... ok
+2026-11-16T03:57:22.2725103Z test_partition_state_view_and_payload_are_detached (test_hepta_cells_lifecycle.OwnerTests.test_partition_state_view_and_payload_are_detached) ... ok
+2026-11-16T03:57:22.2807566Z test_readback_cannot_publish_state_under_a_changed_identity (test_hepta_cells_lifecycle.OwnerTests.test_readback_cannot_publish_state_under_a_changed_identity) ... ok
+2026-11-16T03:57:22.2895752Z test_restart_replays_exact_receipt_without_callback (test_hepta_cells_lifecycle.OwnerTests.test_restart_replays_exact_receipt_without_callback) ... ok
+2026-11-16T03:57:22.2984849Z test_restore_compatible_state_never_refunds_budget (test_hepta_cells_lifecycle.OwnerTests.test_restore_compatible_state_never_refunds_budget) ... ok
+2026-11-16T03:57:22.2998565Z test_budget_scope_and_bundle_rejections_happen_before_kernel_work (test_hepta_cells_temporal_component.TemporalComponentTests.test_budget_scope_and_bundle_rejections_happen_before_kernel_work) ... ok
+2026-11-16T03:57:22.3143289Z test_durable_retry_and_trained_candidate_adoption_reset (test_hepta_cells_temporal_component.TemporalComponentTests.test_durable_retry_and_trained_candidate_adoption_reset) ... ok
+2026-11-16T03:57:22.3437410Z test_aba_fences_stale_run_and_excludes_its_observations_from_new_epoch (test_hepta_cells_population_owner.PopulationOwnerTests.test_aba_fences_stale_run_and_excludes_its_observations_from_new_epoch) ... ok
+2026-11-16T03:57:22.3680602Z test_all_seven_lineages_execute_and_semantic_successor_keeps_shared_base (test_hepta_cells_population_owner.PopulationOwnerTests.test_all_seven_lineages_execute_and_semantic_successor_keeps_shared_base) ... ok
+2026-11-16T03:57:22.4228982Z test_capacity_and_stale_run_cannot_change_current_version (test_hepta_cells_population_owner.PopulationOwnerTests.test_capacity_and_stale_run_cannot_change_current_version) ... ok
+2026-11-16T03:57:22.4527728Z test_failed_cutover_rolls_back_current_version_and_consumption (test_hepta_cells_population_owner.PopulationOwnerTests.test_failed_cutover_rolls_back_current_version_and_consumption) ... ok
+2026-11-16T03:57:22.6040540Z test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state (test_hepta_cells_population_owner.PopulationOwnerTests.test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state) ... ok
+2026-11-16T03:57:22.6278973Z test_only_fresh_committed_observations_enable_reset_adoption_and_new_run (test_hepta_cells_population_owner.PopulationOwnerTests.test_only_fresh_committed_observations_enable_reset_adoption_and_new_run) ... ok
+2026-11-16T03:57:22.6477204Z test_real_candidate_cannot_change_frozen_training_or_evaluation_rule (test_hepta_cells_population_owner.PopulationOwnerTests.test_real_candidate_cannot_change_frozen_training_or_evaluation_rule) ... ok
+2026-11-16T03:57:22.6619432Z test_reopen_checks_later_population_checkpoint_when_first_marker_is_lost (test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_checks_later_population_checkpoint_when_first_marker_is_lost) ... ok
+2026-11-16T03:57:22.6802139Z test_reopen_refuses_erased_population_tables_with_retained_checkpoints (test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_refuses_erased_population_tables_with_retained_checkpoints) ... ok
+2026-11-16T03:57:22.7027457Z test_reopen_refuses_missing_policy_or_corrupt_population_admission (test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_refuses_missing_policy_or_corrupt_population_admission) ... ok
+2026-11-16T03:57:22.7253400Z test_reopen_without_plan_cannot_bypass_frozen_cadence_or_family (test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_without_plan_cannot_bypass_frozen_cadence_or_family) ... ok
+2026-11-16T03:57:22.7505199Z test_rollback_does_not_refund_consumed_observations_or_work (test_hepta_cells_population_owner.PopulationOwnerTests.test_rollback_does_not_refund_consumed_observations_or_work) ... ok
+2026-11-16T03:57:22.7616159Z test_cancel_observes_only_original_identity (test_runtime_process_bridge.BridgeControls.test_cancel_observes_only_original_identity) ... ok
+2026-11-16T03:57:22.7683976Z test_changed_publication_never_becomes_complete_output (test_runtime_process_bridge.BridgeControls.test_changed_publication_never_becomes_complete_output) ... ok
+2026-11-16T03:57:22.7779909Z test_cold_restart_observes_known_job_without_launch (test_runtime_process_bridge.BridgeControls.test_cold_restart_observes_known_job_without_launch) ... ok
+2026-11-16T03:57:22.7848241Z test_cursor_corruption_never_becomes_complete_output (test_runtime_process_bridge.BridgeControls.test_cursor_corruption_never_becomes_complete_output) ... ok
+2026-11-16T03:57:22.7874212Z test_duplicate_json_members_refused (test_runtime_process_bridge.BridgeControls.test_duplicate_json_members_refused) ... ok
+2026-11-16T03:57:22.7941057Z test_lossless_binary_pages_roundtrip_and_no_domain_success (test_runtime_process_bridge.BridgeControls.test_lossless_binary_pages_roundtrip_and_no_domain_success) ... ok
+2026-11-16T03:57:22.7984297Z test_lost_ack_is_permanent_no_submit_tombstone (test_runtime_process_bridge.BridgeControls.test_lost_ack_is_permanent_no_submit_tombstone) ... ok
+2026-11-16T03:57:22.8053634Z test_same_identity_changed_candidate_refused_after_restart (test_runtime_process_bridge.BridgeControls.test_same_identity_changed_candidate_refused_after_restart) ... ok
+2026-11-16T03:57:22.8119235Z test_same_identity_changed_payload_refused_before_effect (test_runtime_process_bridge.BridgeControls.test_same_identity_changed_payload_refused_before_effect) ... ok
+2026-11-16T03:57:22.8222617Z test_wrong_owner_binding_never_adopts_job (test_runtime_process_bridge.BridgeControls.test_wrong_owner_binding_never_adopts_job) ... ok
+2026-11-16T03:57:22.8223043Z 
+2026-11-16T03:57:22.8223159Z ----------------------------------------------------------------------
+2026-11-16T03:57:22.8223355Z Ran 48 tests in 1.045s
+2026-11-16T03:57:22.8223435Z 
+2026-11-16T03:57:22.8223487Z OK
+2026-11-16T03:57:22.8488178Z ##[group]Run python -B scripts/qualify_hia_cell_joint.py --hia-root "$GITHUB_WORKSPACE/hia" --output "$RUNNER_TEMP/cell-joint-evidence/local-joint"
+2026-11-16T03:57:22.8488711Z [36;1mpython -B scripts/qualify_hia_cell_joint.py --hia-root "$GITHUB_WORKSPACE/hia" --output "$RUNNER_TEMP/cell-joint-evidence/local-joint"[0m
+2026-11-16T03:57:22.8489444Z [36;1mpython -B -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"cell-joint-evidence/request.json"; p.write_text(json.dumps({"request_id":"runtime-MEM-observe","cell_id":"MEM","operation":"step","payload":{"operation":"observe","cursor":0,"observation":[0.25,-0.5,0.75]}}))'[0m
+2026-11-16T03:57:22.8506768Z shell: /usr/bin/bash -e {0}
+2026-11-16T03:57:22.8506909Z env:
+2026-11-16T03:57:22.8507033Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:57:22.8507170Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:57:22.8507295Z   OMP_NUM_THREADS: 1
+2026-11-16T03:57:22.8507414Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:57:22.8507605Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:22.8507837Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:57:22.8508087Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:22.8508293Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:22.8508500Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:22.8508705Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:57:22.8508882Z ##[endgroup]
+2026-11-16T03:57:26.5807479Z {"candidate_sha256": "a59ec5258d462223e701cf049e3002c89502af774c738d22c0e1a29cb63f6e02", "candidate_sources_unchanged": true, "checks_passed": ["MEM:native-to-real-gru", "MEM:exact-cold-replay", "MEM:new-cold-inference", "MEM:changed-request-refused", "PRED:native-to-real-gru", "PRED:exact-cold-replay", "PRED:new-cold-inference", "PRED:changed-request-refused", "retained-result-before-caught-reply-error", "cold-hia-resume-original-result", "concurrent-readback-one-terminal", "late-result-preserved-after-cancel-request", "hard-process-death-retains-result-and-unknown-cost-reservation", "unknown-no-auto-replay", "cancellation-not-completion", "changed-native-image-binding-refused"], "claims": {"full_cost_qualified": false, "independent_learning_benefit": false, "native_hia_real_cell_local_bridge": true, "native_runtime_qualified": false, "ordinary_daemon_adoption": false, "production_ready": false}, "cost": {"child_cpu_seconds": 3.2346939999999997, "child_peak_rss_kib": 56780, "cold_process_p95_ns": 185829680, "cold_process_p99_ns": 185829680, "cold_process_samples": 10, "compile_wall_ns": 193392567, "energy_joules": null, "max_inflight": 1, "parent_cpu_ns": 491769345, "quantile_scope": "empirical nearest-rank of this small fixture only", "wall_ns": 3632284982}, "remaining_unknown": ["hard process death before original elapsed cost publication retains reservation"], "schema": "hepta.native-hia-real-cell-joint-observation.v1", "scope": "one frozen local-subprocess integration fixture; actual native HIA and real MEM/PRED GRUs"}
+2026-11-16T03:57:26.6253820Z ##[group]Run python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 5f7f03a1f22905789371ce0e181a1a0f013beca9 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance
+2026-11-16T03:57:26.6255769Z [36;1mpython -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 5f7f03a1f22905789371ce0e181a1a0f013beca9 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance[0m
+2026-11-16T03:57:26.6274378Z shell: /usr/bin/bash -e {0}
+2026-11-16T03:57:26.6274524Z env:
+2026-11-16T03:57:26.6274649Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:57:26.6274791Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:57:26.6274924Z   OMP_NUM_THREADS: 1
+2026-11-16T03:57:26.6275044Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:57:26.6275210Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:26.6275454Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:57:26.6275705Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:26.6275922Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:26.6276136Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:26.6276509Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:57:26.6276697Z ##[endgroup]
+2026-11-16T03:57:26.9884740Z Traceback (most recent call last):
+2026-11-16T03:57:26.9889745Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/cells/scripts/qualify_runtime_process_bridge.py", line 337, in <module>
+2026-11-16T03:57:26.9890119Z     raise SystemExit(main())
+2026-11-16T03:57:26.9890267Z                      ^^^^^^
+2026-11-16T03:57:26.9890591Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/cells/scripts/qualify_runtime_process_bridge.py", line 121, in main
+2026-11-16T03:57:26.9906793Z     ssh.start()
+2026-11-16T03:57:26.9917518Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/runtime/tests/hia_native_helper_mcp_integration.py", line 461, in start
+2026-11-16T03:57:26.9918072Z     self.run(["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8",
+2026-11-16T03:57:26.9918450Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/runtime/tests/hia_native_helper_mcp_integration.py", line 375, in run
+2026-11-16T03:57:26.9918850Z     require(result.returncode == 0, "disposable SSH setup failed: " + json.dumps(event))
+2026-11-16T03:57:26.9919292Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/runtime/tests/hia_native_helper_mcp_integration.py", line 39, in require
+2026-11-16T03:57:26.9919628Z     raise RuntimeError(message)
+2026-11-16T03:57:26.9920249Z RuntimeError: disposable SSH setup failed: {"argv": ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", "-o", "StrictHostKeyChecking=yes", "-o", "ForwardAgent=no", "ssh://runner@127.0.0.1:42899", "/usr/bin/true"], "returncode": 255, "stdout": "", "stderr": "runner@127.0.0.1: Permission denied (publickey).\r\n"}
+2026-11-16T03:57:26.9972111Z ##[error]Process completed with exit code 1.
+2026-11-16T03:57:27.0049536Z ##[group]Run actions/upload-artifact@v4
+2026-11-16T03:57:27.0049702Z with:
+2026-11-16T03:57:27.0049867Z   name: cell-hia-joint-c2774c6d1118dfd2745ac52b4069c8f254624c29
+2026-11-16T03:57:27.0050096Z   path: /home/runner/work/_temp/cell-joint-evidence
+2026-11-16T03:57:27.0050280Z   if-no-files-found: error
+2026-11-16T03:57:27.0050413Z   retention-days: 30
+2026-11-16T03:57:27.0050539Z   compression-level: 6
+2026-11-16T03:57:27.0050663Z   overwrite: false
+2026-11-16T03:57:27.0050791Z   include-hidden-files: false
+2026-11-16T03:57:27.0050924Z env:
+2026-11-16T03:57:27.0051042Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-16T03:57:27.0051184Z   OPENBLAS_NUM_THREADS: 1
+2026-11-16T03:57:27.0051314Z   OMP_NUM_THREADS: 1
+2026-11-16T03:57:27.0051434Z   CARGO_BUILD_JOBS: 2
+2026-11-16T03:57:27.0051592Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:27.0051845Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-16T03:57:27.0052104Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:27.0052320Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:27.0052531Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-16T03:57:27.0052748Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-16T03:57:27.0052928Z ##[endgroup]
+2026-11-16T03:57:27.1237648Z (node:6864) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-16T03:57:27.1238060Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-16T03:57:27.1596490Z With the provided path, there will be 309 files uploaded
+2026-11-16T03:57:27.1606984Z Artifact name is valid!
+2026-11-16T03:57:27.1607294Z Root directory input is valid!
+2026-11-16T03:57:27.5456802Z Beginning upload of artifact content to blob storage
+2026-11-16T03:57:27.7619373Z (node:6864) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-16T03:57:28.4059498Z Uploaded bytes 1204204
+2026-11-16T03:57:28.4806973Z Finished uploading artifact content to blob storage!
+2026-11-16T03:57:28.4807552Z SHA256 digest of uploaded artifact zip is 8d36e0cff0ef3147245deeb322aea0b363af2d328d520e1c6c570e168ef2a505
+2026-11-16T03:57:28.4809272Z Finalizing artifact upload
+2026-11-16T03:57:28.8330465Z Artifact cell-hia-joint-c2774c6d1118dfd2745ac52b4069c8f254624c29.zip successfully finalized. Artifact ID 14195394653
+2026-11-16T03:57:28.8331176Z Artifact cell-hia-joint-c2774c6d1118dfd2745ac52b4069c8f254624c29 has been successfully uploaded! Final size is 1204204 bytes. Artifact ID is 14195394653
+2026-11-16T03:57:28.8335618Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43800566412/artifacts/14195394653
+2026-11-16T03:57:28.8537893Z Post job cleanup.
+2026-11-16T03:57:28.9149804Z [command]/usr/bin/git version
+2026-11-16T03:57:28.9187026Z git version 2.56.1
+2026-11-16T03:57:28.9214136Z Temporarily overriding HOME='/home/runner/work/_temp/3e25c3a8-7861-4a7e-b70e-62679e3e65e8' before making global git config changes
+2026-11-16T03:57:28.9214892Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-16T03:57:28.9218863Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/runtime
+2026-11-16T03:57:28.9257991Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-16T03:57:28.9291526Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-16T03:57:28.9532701Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-16T03:57:28.9564064Z http.https://github.com/.extraheader
+2026-11-16T03:57:28.9577071Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-16T03:57:28.9614061Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-16T03:57:28.9855630Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-16T03:57:28.9895546Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-16T03:57:29.0258342Z Post job cleanup.
+2026-11-16T03:57:29.0843873Z [command]/usr/bin/git version
+2026-11-16T03:57:29.0880186Z git version 2.56.1
+2026-11-16T03:57:29.0906837Z Temporarily overriding HOME='/home/runner/work/_temp/37668ced-f1db-46f9-a270-68935605439b' before making global git config changes
+2026-11-16T03:57:29.0907576Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-16T03:57:29.0911391Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/hia
+2026-11-16T03:57:29.0955261Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-16T03:57:29.0998501Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-16T03:57:29.1236298Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-16T03:57:29.1257704Z http.https://github.com/.extraheader
+2026-11-16T03:57:29.1269659Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-16T03:57:29.1313568Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-16T03:57:29.1560928Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-16T03:57:29.1611840Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-16T03:57:29.2018859Z Post job cleanup.
+2026-11-16T03:57:29.2648402Z [command]/usr/bin/git version
+2026-11-16T03:57:29.2684562Z git version 2.56.1
+2026-11-16T03:57:29.2708556Z Temporarily overriding HOME='/home/runner/work/_temp/0f4faac2-66d1-4edf-bd09-75eaa937fa5b' before making global git config changes
+2026-11-16T03:57:29.2709377Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-16T03:57:29.2712247Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci/cells
+2026-11-16T03:57:29.2750765Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-16T03:57:29.2794848Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-16T03:57:29.3059057Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-16T03:57:29.3098434Z http.https://github.com/.extraheader
+2026-11-16T03:57:29.3113780Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-16T03:57:29.3155864Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-16T03:57:29.3423960Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-16T03:57:29.3472522Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-16T03:57:29.3835163Z Cleaning up orphan processes
+2026-11-16T03:57:29.4086757Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

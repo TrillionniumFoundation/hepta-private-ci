@@ -1,0 +1,48 @@
+{
+  "candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b",
+  "candidate_sources_unchanged": true,
+  "checks_passed": [
+    "MEM:native-to-real-gru",
+    "MEM:exact-cold-replay",
+    "MEM:new-cold-inference",
+    "MEM:changed-request-refused",
+    "PRED:native-to-real-gru",
+    "PRED:exact-cold-replay",
+    "PRED:new-cold-inference",
+    "PRED:changed-request-refused",
+    "retained-result-before-caught-reply-error",
+    "cold-hia-resume-original-result",
+    "concurrent-readback-one-terminal",
+    "late-result-preserved-after-cancel-request",
+    "hard-process-death-retains-result-and-unknown-cost-reservation",
+    "unknown-no-auto-replay",
+    "cancellation-not-completion",
+    "changed-native-image-binding-refused"
+  ],
+  "claims": {
+    "full_cost_qualified": false,
+    "independent_learning_benefit": false,
+    "native_hia_real_cell_local_bridge": true,
+    "native_runtime_qualified": false,
+    "ordinary_daemon_adoption": false,
+    "production_ready": false
+  },
+  "cost": {
+    "child_cpu_seconds": 3.770918,
+    "child_peak_rss_kib": 34792,
+    "cold_process_p95_ns": 256089617,
+    "cold_process_p99_ns": 256089617,
+    "cold_process_samples": 10,
+    "compile_wall_ns": 210931281,
+    "energy_joules": null,
+    "max_inflight": 1,
+    "parent_cpu_ns": 563164592,
+    "quantile_scope": "empirical nearest-rank of this small fixture only",
+    "wall_ns": 4236000388
+  },
+  "remaining_unknown": [
+    "hard process death before original elapsed cost publication retains reservation"
+  ],
+  "schema": "hepta.native-hia-real-cell-joint-observation.v1",
+  "scope": "one frozen local-subprocess integration fixture; actual native HIA and real MEM/PRED GRUs"
+}

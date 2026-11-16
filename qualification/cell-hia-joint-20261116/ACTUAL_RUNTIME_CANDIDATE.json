@@ -1,0 +1,1359 @@
+{
+  "budget": {
+    "max_elapsed_ms": 5000,
+    "max_input_bytes": 65536,
+    "max_output_bytes": 65536,
+    "max_state_bytes": 65536,
+    "max_work_units": 10000
+  },
+  "claims": {
+    "learning_benefit": false,
+    "native_runtime_qualified": false,
+    "production_ready": false,
+    "whole_stack_qualified": false
+  },
+  "device": {
+    "byteorder": "little",
+    "host_identity_sha256": "ba3b2c3b06de45112c8b5c8411ec5349e70237fc6b4705ddee7ce106a43802ab",
+    "machine": "x86_64",
+    "numeric_profile": "float64",
+    "numpy": "2.3.5",
+    "numpy_binaries": {
+      "_multiarray_umath.cpython-314-x86_64-linux-gnu.so": "61052ef771d926665ca135b1840662516f058d5c98843aa429ef2abdd7f46a04",
+      "libgfortran-040039e1-0352e75f.so.5.0.0": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980",
+      "libquadmath-96973f99-934c22de.so.0.0.0": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6",
+      "libscipy_openblas64_-fdde5778.so": "ee2039cf13a45e1e89f04d0cea9585657d93ffaa425594e1935161013fdf4e12"
+    },
+    "python": "3.14.4",
+    "python_sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+    "system": "Linux",
+    "thread_settings": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    }
+  },
+  "files": [
+    {
+      "path": "MEM.npz",
+      "root": "artifacts",
+      "sha256": "d13f2fca31b64822ba2c1a632e2169b2bbcb5decf1030a87635828bc3ade6ed8"
+    },
+    {
+      "path": "PRED.npz",
+      "root": "artifacts",
+      "sha256": "41e63b7631e4cc5757f83a66c46cb59536eb03e705a4f66bca2c90c0da2688c1"
+    },
+    {
+      "path": "inputs.json",
+      "root": "artifacts",
+      "sha256": "9ea419754b477f3996b5529481730c2c4c68c8969fb2a21bd284cebd65931057"
+    },
+    {
+      "path": "native/build.json",
+      "root": "artifacts",
+      "sha256": "609794911213bdf455c6fffbc44f2b3400709eddd3189c690842607ede0c71d4"
+    },
+    {
+      "path": "native/cell_bridge.so",
+      "root": "artifacts",
+      "sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb"
+    },
+    {
+      "path": "scripts/hepta_cell_campaign_worker.py",
+      "root": "cells",
+      "sha256": "80cff9bed9df05e11905e149dce4f2b78e001750664e7ed82154c67acebfe3cf"
+    },
+    {
+      "path": "scripts/hepta_cell_joint_worker.py",
+      "root": "cells",
+      "sha256": "a433ba5f3b88f642183de7087bf782554224a1c0ad6c32855cf2e542f8547b24"
+    },
+    {
+      "path": "scripts/hepta_cells/__init__.py",
+      "root": "cells",
+      "sha256": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1"
+    },
+    {
+      "path": "scripts/hepta_cells/bundle.py",
+      "root": "cells",
+      "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0"
+    },
+    {
+      "path": "scripts/hepta_cells/cfc.py",
+      "root": "cells",
+      "sha256": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e"
+    },
+    {
+      "path": "scripts/hepta_cells/cfc_reference_probe.py",
+      "root": "cells",
+      "sha256": "90753c9b1e942cc6cadff4a1aa110e7b90a8dca6d4176e0e7a83bf0090fd3132"
+    },
+    {
+      "path": "scripts/hepta_cells/component_types.py",
+      "root": "cells",
+      "sha256": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8"
+    },
+    {
+      "path": "scripts/hepta_cells/cord_evidence.py",
+      "root": "cells",
+      "sha256": "26748a799145be9d123b509d1bad39ae1ad6e5150590f645d0524a4d4f485798"
+    },
+    {
+      "path": "scripts/hepta_cells/cord_replay.py",
+      "root": "cells",
+      "sha256": "57ea7170fe677f696f65b5d3f2b8ce998f058d598ce4447da1113cac2989fe4a"
+    },
+    {
+      "path": "scripts/hepta_cells/deterministic.py",
+      "root": "cells",
+      "sha256": "73a4a199c8bf290c52b54bbb79d915a5123b2813d3fbefa3bca70920dafac1d4"
+    },
+    {
+      "path": "scripts/hepta_cells/differentiation_reference.py",
+      "root": "cells",
+      "sha256": "3bb42784626177518231736fec3f50b672e15f1e243ccd88760a54dfaa95e5fe"
+    },
+    {
+      "path": "scripts/hepta_cells/hia_component.py",
+      "root": "cells",
+      "sha256": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf"
+    },
+    {
+      "path": "scripts/hepta_cells/lifecycle.py",
+      "root": "cells",
+      "sha256": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49"
+    },
+    {
+      "path": "scripts/hepta_cells/maintenance_cycle.py",
+      "root": "cells",
+      "sha256": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5"
+    },
+    {
+      "path": "scripts/hepta_cells/maintenance_execution.py",
+      "root": "cells",
+      "sha256": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c"
+    },
+    {
+      "path": "scripts/hepta_cells/maintenance_serving.py",
+      "root": "cells",
+      "sha256": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf"
+    },
+    {
+      "path": "scripts/hepta_cells/maintenance_tasks.py",
+      "root": "cells",
+      "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f"
+    },
+    {
+      "path": "scripts/hepta_cells/mlx_provider.py",
+      "root": "cells",
+      "sha256": "a37c19a528d6b589e7efd6cff7538bf6f72ef3403b373c3c70d13bafafeb501a"
+    },
+    {
+      "path": "scripts/hepta_cells/owner_control.py",
+      "root": "cells",
+      "sha256": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130"
+    },
+    {
+      "path": "scripts/hepta_cells/plastic_bank.py",
+      "root": "cells",
+      "sha256": "ddeddeb310d0d5e2e9ce219c2d02f68f356e75879f0c99c33be4f8d963d83cad"
+    },
+    {
+      "path": "scripts/hepta_cells/population.py",
+      "root": "cells",
+      "sha256": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260"
+    },
+    {
+      "path": "scripts/hepta_cells/population_owner.py",
+      "root": "cells",
+      "sha256": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580"
+    },
+    {
+      "path": "scripts/hepta_cells/readout_credit.py",
+      "root": "cells",
+      "sha256": "febfee8e1f7d9aaf50912cddb279eea0e1e8512bf2421a85efbc1fc56b589c26"
+    },
+    {
+      "path": "scripts/hepta_cells/semantic.py",
+      "root": "cells",
+      "sha256": "134dcbd903cea0d1bbeae28e13209d7d65a047dd6614f7c6136fd9adf617ca5c"
+    },
+    {
+      "path": "scripts/hepta_cells/semantic_component.py",
+      "root": "cells",
+      "sha256": "9e010008135899c6d63a7f86c69354c7be22cee3fd2017bf0048e48ef7f6ac0b"
+    },
+    {
+      "path": "scripts/hepta_cells/stem_contract.py",
+      "root": "cells",
+      "sha256": "4aab27e5c91c75f796fe76b925929b401e7438af6239e6495bf9945bee68a53c"
+    },
+    {
+      "path": "scripts/hepta_cells/stem_credit_study.py",
+      "root": "cells",
+      "sha256": "8a8dfdbad200da5d641654bcdd937d26f9a3cd4ccad865ec751d064006420137"
+    },
+    {
+      "path": "scripts/hepta_cells/stem_credit_support.py",
+      "root": "cells",
+      "sha256": "4a596d3bcb0e1d4de2dbbe9df0737df7dd32933be84e001540b8414cad9d5bc3"
+    },
+    {
+      "path": "scripts/hepta_cells/stem_plastic_study.py",
+      "root": "cells",
+      "sha256": "af92a300b9881da421c985b4a5c05ed6edf68cd7f08e64576589413af60f3144"
+    },
+    {
+      "path": "scripts/hepta_cells/stem_study_support.py",
+      "root": "cells",
+      "sha256": "2c0f767157dbbd6a945cc628f6c43cf21081bba3eca56dd27aa6d14979316b90"
+    },
+    {
+      "path": "scripts/hepta_cells/stem_temporal_study.py",
+      "root": "cells",
+      "sha256": "65575619fd9eddc3ba691010597d85eb7c0c8d16da7760ba336e453309b74c5d"
+    },
+    {
+      "path": "scripts/hepta_cells/temporal.py",
+      "root": "cells",
+      "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9"
+    },
+    {
+      "path": "scripts/hepta_cells/temporal_component.py",
+      "root": "cells",
+      "sha256": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc"
+    },
+    {
+      "path": "scripts/hepta_cells/temporal_qualification.py",
+      "root": "cells",
+      "sha256": "115ba149da918731bc16f43e2c09c5392334af0964b62ae742531f62854ea7df"
+    },
+    {
+      "path": "scripts/hepta_pred1/__init__.py",
+      "root": "cells",
+      "sha256": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0"
+    },
+    {
+      "path": "scripts/hepta_pred1/models.py",
+      "root": "cells",
+      "sha256": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+    },
+    {
+      "path": "scripts/package_hia_cell_candidate.py",
+      "root": "cells",
+      "sha256": "5fce97a2a9bdb18ca670dca4287ba0cf05f771c4c3c738ebc145c9ad433bd635"
+    },
+    {
+      "path": "scripts/qualify_hia_cell_joint.py",
+      "root": "cells",
+      "sha256": "23ab2bfd1159f96dadc09c17b65ad00e6f5c446e4a1a54347b11c888b02a1fd1"
+    },
+    {
+      "path": "scripts/qualify_runtime_campaign.py",
+      "root": "cells",
+      "sha256": "85a1834db0836990c12ac9719498dc51e21f59e2fcae4b6e0628c333e24ab953"
+    },
+    {
+      "path": "scripts/qualify_runtime_process_bridge.py",
+      "root": "cells",
+      "sha256": "2836b98ef349ae119bc4a2543ceb5f272c4d8d787e1afb75d82fb4af6f81bae3"
+    },
+    {
+      "path": "scripts/refreeze_joint_worker.py",
+      "root": "cells",
+      "sha256": "be9704ff8915a3d572c14ee90b550c5ffb789ad17654243ea35ab77725a54b6b"
+    },
+    {
+      "path": "scripts/runtime_process_bridge.py",
+      "root": "cells",
+      "sha256": "25ec3fcec67af03ebc19f3e6b500c9f0cd8f6feb1c260f54f40b3b8e128131f4"
+    },
+    {
+      "path": "scripts/runtime_process_contract.py",
+      "root": "cells",
+      "sha256": "05a8d5fae86d20810df4dda5dd64ffa63645a30e723fe16b96fc469e1714a542"
+    },
+    {
+      "path": "scripts/runtime_stdio.py",
+      "root": "cells",
+      "sha256": "cccbd3796b59ba6b89b4030dbcb16a626f378ec477520765a859e040c3ebcfda"
+    },
+    {
+      "path": "scripts/verify_hepta_maintenance_cycle.py",
+      "root": "cells",
+      "sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5"
+    },
+    {
+      "path": "docs/HIA_BYTE_WRAPPER_ABI.json",
+      "root": "hia",
+      "sha256": "2c190f967a740b7c72b0ebf854a06361886e407fb1c8cbcb83ea7a5ddfe89d51"
+    },
+    {
+      "path": "docs/HIA_CORE_EMITTER_ABI.json",
+      "root": "hia",
+      "sha256": "431aa7a5f6566f912bcc33302853e4f5952c1e54f19c3a601ee54122954fb1d6"
+    },
+    {
+      "path": "docs/HIA_CORE_LOWERING_ABI.json",
+      "root": "hia",
+      "sha256": "bd8a8d512b6dc323cad6d9bfe6384a315f62b5a055df6e62acc468dc94b7c57f"
+    },
+    {
+      "path": "docs/HIA_MACHINE_OBJECT_ABI.json",
+      "root": "hia",
+      "sha256": "1cf2884ca1b5da7fd43d0e29ca8a575e4240e0a55548e0ca6d1fa430d75714c3"
+    },
+    {
+      "path": "examples/hia_cell_bridge/continuation.hepta",
+      "root": "hia",
+      "sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+    },
+    {
+      "path": "hepta/__init__.py",
+      "root": "hia",
+      "sha256": "43cd8172431b605cf0dde08fded7f88fce808aab7018b2b0158334c114ff7fec"
+    },
+    {
+      "path": "hepta/__main__.py",
+      "root": "hia",
+      "sha256": "70d01cf96e5cc66c9f53b4191216a91085eb50a38c266219f9fbd3ee0ff61353"
+    },
+    {
+      "path": "hepta/artifact_publication.py",
+      "root": "hia",
+      "sha256": "09e17b2982a990706e8ee2ee23d3c009b1d2753261c5da2cf76927529122360d"
+    },
+    {
+      "path": "hepta/artifact_publication_native.py",
+      "root": "hia",
+      "sha256": "68f7f0641f1a5ab9f1152823d8e42faffd0d64436a3470016d311e31fc81b5d6"
+    },
+    {
+      "path": "hepta/clang_capture.py",
+      "root": "hia",
+      "sha256": "6934e8a2f2dc0c53c135f590dce48811d14482d4c1b9c30cd5083505bd93ea6a"
+    },
+    {
+      "path": "hepta/cli.py",
+      "root": "hia",
+      "sha256": "c1a587485d3b7188f44b28dc1b2dbb18a6784139afd14941a417496fa1a85fa0"
+    },
+    {
+      "path": "hepta/darwin_capture.py",
+      "root": "hia",
+      "sha256": "e7d081c40a9f85c7b77e7d46ed16177e82a05c424f15507f968238b0e250699c"
+    },
+    {
+      "path": "hepta/elf_shared_abi.py",
+      "root": "hia",
+      "sha256": "f9afbaa95a3aa5a9163546da42b601d3ac98648d8da68e6122008e381177ed02"
+    },
+    {
+      "path": "hepta/hia_aarch64_elf.py",
+      "root": "hia",
+      "sha256": "8d71f69231533eeaafcafa31beb2d89f9455ec095554a630a10b95a3bc25f097"
+    },
+    {
+      "path": "hepta/hia_adaptive.py",
+      "root": "hia",
+      "sha256": "e1c37cab4f525f4cbd974f0419c8abffa52de6709c37eb0c2f20e9ccb2672c52"
+    },
+    {
+      "path": "hepta/hia_agent_assembly.py",
+      "root": "hia",
+      "sha256": "e37095496bf159ad573a31214d4d73e916648b4f0664edb541014f54681fbc03"
+    },
+    {
+      "path": "hepta/hia_agent_binary64_format_native.py",
+      "root": "hia",
+      "sha256": "6188d2a863ed4b8032e3e5692b7d2c711cf22c2d8cf8ad24a718290bfd173795"
+    },
+    {
+      "path": "hepta/hia_agent_binary64_native.py",
+      "root": "hia",
+      "sha256": "a753fcd6ecc58cf9517715a41c350d3ef0d1361b56aaf7d74007f914d58adcb1"
+    },
+    {
+      "path": "hepta/hia_agent_buffers.py",
+      "root": "hia",
+      "sha256": "e71239529e0900c2efed0cbeecfacb308690de2b46bdcef4f7b122d3bf5695b3"
+    },
+    {
+      "path": "hepta/hia_agent_candidate_native.py",
+      "root": "hia",
+      "sha256": "a61452a75d55b9b155d6fbe91b78b8060b2fd1c44187af2fbb384f6f0daa43e1"
+    },
+    {
+      "path": "hepta/hia_agent_contract.py",
+      "root": "hia",
+      "sha256": "e3b6c98a6abaaf92889fb1f5c8e5a9c15eeeabf8d37b09ec4b98430637b68eba"
+    },
+    {
+      "path": "hepta/hia_agent_data_json_native.py",
+      "root": "hia",
+      "sha256": "1a1539bd66536aa118ce36ae817d17a716a6a2cde60a05d1524c5b42271bf505"
+    },
+    {
+      "path": "hepta/hia_agent_exec.py",
+      "root": "hia",
+      "sha256": "05ff21ed82659d6830450e1d000dbbd7f72f5baf65b5d3b0725638fcb864b93b"
+    },
+    {
+      "path": "hepta/hia_agent_identity_native.py",
+      "root": "hia",
+      "sha256": "3756a7d6e524ac7455746431c22d380921d373981eebf18e3f3657f9794fa1fc"
+    },
+    {
+      "path": "hepta/hia_agent_journal_native.py",
+      "root": "hia",
+      "sha256": "72ab04487a0ccc288d8ed5b7dff02c6f75099453cce764cf4fda756648dffddd"
+    },
+    {
+      "path": "hepta/hia_agent_macro_discovery.py",
+      "root": "hia",
+      "sha256": "3ee3f31f21719d0eee7414d8bee8ccb046d213ea44310764c21b727eac3c9951"
+    },
+    {
+      "path": "hepta/hia_agent_macro_policy.py",
+      "root": "hia",
+      "sha256": "acf1a58d2a8048656774dcebb3f5c785a9dcf82b4c8db5aa455058207ea2ba83"
+    },
+    {
+      "path": "hepta/hia_agent_runner.py",
+      "root": "hia",
+      "sha256": "85fd5cf6dd02e32a403ebf266d22fccf686717514280e5d05bd2e08e431a26fd"
+    },
+    {
+      "path": "hepta/hia_agent_service.py",
+      "root": "hia",
+      "sha256": "40533792712128cef9f455acdcc3086c99eab3483e0a9b1afe099164b6c1109f"
+    },
+    {
+      "path": "hepta/hia_agent_slice_native.py",
+      "root": "hia",
+      "sha256": "0668422e78cff3a58963ac1fd1836abc8c720c90b7661f03e133a640e2c69460"
+    },
+    {
+      "path": "hepta/hia_agent_snapshot_json_native.py",
+      "root": "hia",
+      "sha256": "182279489d58fcfbfbc639e368dede9d08fcac1ef11267a81752f672353373f0"
+    },
+    {
+      "path": "hepta/hia_agent_snapshot_native.py",
+      "root": "hia",
+      "sha256": "1d3b0df887c064c281af3bb690a68a97a4d2c1c7c63e94bc6939a2b304dcfb73"
+    },
+    {
+      "path": "hepta/hia_agent_store.py",
+      "root": "hia",
+      "sha256": "d51503beefbf043075deb7e626f1810b42d8842a51da21f4f71abddf1a3f0f9e"
+    },
+    {
+      "path": "hepta/hia_agent_worker.py",
+      "root": "hia",
+      "sha256": "83bafb7e27cbae68ef106ec18a5bcddc3b2d6db0f709773db2ad4a9399f7830b"
+    },
+    {
+      "path": "hepta/hia_artifact_session.py",
+      "root": "hia",
+      "sha256": "6e7fa1c20b25da6f085b1c43603e66df758609399a580da8afa32583b5a67453"
+    },
+    {
+      "path": "hepta/hia_background_optimizer.py",
+      "root": "hia",
+      "sha256": "d5a3c81eb0d7907fe872565b6ca6605708f8a6f13fd5a8d55788a9a13a095f7b"
+    },
+    {
+      "path": "hepta/hia_bounded_memory.py",
+      "root": "hia",
+      "sha256": "3413e3f7dfb77b7672eba6b99b1a2320cb6bd61c3842f37976ee4507ed1a4a3d"
+    },
+    {
+      "path": "hepta/hia_bounded_unroll.py",
+      "root": "hia",
+      "sha256": "06268254148d1deea4966b4383ddcfe5ffdcb1855e7158be2120dd8922244032"
+    },
+    {
+      "path": "hepta/hia_bounded_wire.py",
+      "root": "hia",
+      "sha256": "653c896e3536a0c1be035144344e6d572ce25d8ea223105eecb3be0c21e82286"
+    },
+    {
+      "path": "hepta/hia_byte_sum.py",
+      "root": "hia",
+      "sha256": "a808103de7a3af495cd3fe14a271595a7e4f4ef2d1bb20cbebbd55c820161d7c"
+    },
+    {
+      "path": "hepta/hia_byte_wrapper_native.py",
+      "root": "hia",
+      "sha256": "a090a59b49296aa5ab94cc90a2e61f01e91d452350c3cb6a08c66480d1dc3368"
+    },
+    {
+      "path": "hepta/hia_byte_wrapper_selection.py",
+      "root": "hia",
+      "sha256": "b126f85c0d8ffd05fd10754c502efdf341a2f4235754fdc6f1536bd98bdcd29f"
+    },
+    {
+      "path": "hepta/hia_call_expansion.py",
+      "root": "hia",
+      "sha256": "7afea7ec08b47468ef7409a50c32e11d0baebc9302c04a51f4b7010d1202ca42"
+    },
+    {
+      "path": "hepta/hia_candidate_budget_native.py",
+      "root": "hia",
+      "sha256": "d0fe66ff4605644807d387f28e03dcf6d1a2e39769740ef74e3cd70510551948"
+    },
+    {
+      "path": "hepta/hia_capability_flow.py",
+      "root": "hia",
+      "sha256": "305b5f747761f72c57dd5ff726ef6ef1350242cbdd5524931b7548eb5d7a5587"
+    },
+    {
+      "path": "hepta/hia_capability_renaming_native.py",
+      "root": "hia",
+      "sha256": "ada73917685e0076a65e0015d21508677f529bdbac1a0e2375ef110ef70a51cb"
+    },
+    {
+      "path": "hepta/hia_cli_native.py",
+      "root": "hia",
+      "sha256": "e66a22a39c6a49aad859bed01f21380cc867b6319e61cdaad3b6482307626706"
+    },
+    {
+      "path": "hepta/hia_composite_constructor_errors.py",
+      "root": "hia",
+      "sha256": "d19bd1da6a08a4e78994fb97005061279569c2bb865486f8707927b281a583db"
+    },
+    {
+      "path": "hepta/hia_composite_constructor_native.py",
+      "root": "hia",
+      "sha256": "30dfbd3d89466b102512e8d9ef547eddb5982dff3f8a1da6f0b2f56b26db889d"
+    },
+    {
+      "path": "hepta/hia_composite_function_tokens.py",
+      "root": "hia",
+      "sha256": "d60f6e87242d85adbf752d7a3fdebc84bfb3949b0c0d11fb338ddfae679b6906"
+    },
+    {
+      "path": "hepta/hia_composite_functions_errors.py",
+      "root": "hia",
+      "sha256": "64324171706dc1f8646b124653327bd2d84b6d1ba5f110e7f4d356993a05f604"
+    },
+    {
+      "path": "hepta/hia_composite_functions_native.py",
+      "root": "hia",
+      "sha256": "5937cfc67acb33e74775bb5bb96ed4d735cc282a0dbd8afdcb178fdd83de8d1d"
+    },
+    {
+      "path": "hepta/hia_composite_outer_native.py",
+      "root": "hia",
+      "sha256": "acd0e3907035abf0df884746a06c0998a361182a54edc100de2f743b55f0fe37"
+    },
+    {
+      "path": "hepta/hia_composite_types_native.py",
+      "root": "hia",
+      "sha256": "18a7ad425674355559db78186a7bf4d993e0aff6a6e3fc45e4988ee4847905fb"
+    },
+    {
+      "path": "hepta/hia_continuation.py",
+      "root": "hia",
+      "sha256": "6168a1cd0f828245c01a58a1fa507c24d608d7c2da3f81b17bce102a80ccd7c4"
+    },
+    {
+      "path": "hepta/hia_core_admission_native.py",
+      "root": "hia",
+      "sha256": "6e1d39ce90531645f7e5db1324b7de9e909fdd2f595188d734b2799333dade7c"
+    },
+    {
+      "path": "hepta/hia_core_api.py",
+      "root": "hia",
+      "sha256": "7bf50d5b404bd5ec5624219187847c58857019260297dc55bdd2005676ebd00c"
+    },
+    {
+      "path": "hepta/hia_core_emitter_native.py",
+      "root": "hia",
+      "sha256": "7823b44924666a31ddc60fc8fa67da10ac98bc5ea575863dc9b8c53f63bd0a1a"
+    },
+    {
+      "path": "hepta/hia_core_emitter_selection.py",
+      "root": "hia",
+      "sha256": "de87f0103c4d8f462cb1053e3f2fddfca0c65b787b918549f2e692ab46081644"
+    },
+    {
+      "path": "hepta/hia_core_json_frontend_native.py",
+      "root": "hia",
+      "sha256": "155d8750731cff5a2a622df42c8e55344bb256217c497468adc853ed762af769"
+    },
+    {
+      "path": "hepta/hia_core_lowering_native.py",
+      "root": "hia",
+      "sha256": "1318348b9c435dd8481281f7616ca5f33b498ddcd59f864e8beea1c07d9712d6"
+    },
+    {
+      "path": "hepta/hia_core_lowering_selection.py",
+      "root": "hia",
+      "sha256": "8684ba2008a44efadf20ec0736b98a0f8848a509bfe5854c7a072de645834c8d"
+    },
+    {
+      "path": "hepta/hia_core_module_graph_native.py",
+      "root": "hia",
+      "sha256": "44a15cb87db3ec1b287682693ab40f11a87cdc982f6eb767028b7ec062e4dc90"
+    },
+    {
+      "path": "hepta/hia_core_patch_native.py",
+      "root": "hia",
+      "sha256": "624b97556b80df11a12de85edd513625ecccdde9dad4925617437a12da165100"
+    },
+    {
+      "path": "hepta/hia_core_upgrade.py",
+      "root": "hia",
+      "sha256": "550608c7b654c0af45cda8f122230188c1989069fda2dac4e05c285f7ce77570"
+    },
+    {
+      "path": "hepta/hia_core_workspace_facts_native.py",
+      "root": "hia",
+      "sha256": "ef75b80424f570cc73cc176cffa1c54a896e139468c6ab04f994e199c3cb4820"
+    },
+    {
+      "path": "hepta/hia_core_workspace_json_native.py",
+      "root": "hia",
+      "sha256": "21404338dbbbd9946d6d806010698d33eb34970a19f313a1c046fb5ef4c1caa1"
+    },
+    {
+      "path": "hepta/hia_core_workspace_materialize_native.py",
+      "root": "hia",
+      "sha256": "b63e98af3f170ceddc6823cf266013e33f1a1d0dbb8fed236bcd57c86d448360"
+    },
+    {
+      "path": "hepta/hia_crc_kernel.py",
+      "root": "hia",
+      "sha256": "5ee0c37280bf4bee6c8b6c3254220ba89c36d14ad8ca9e8c83b296d230a8468c"
+    },
+    {
+      "path": "hepta/hia_crc_linear.py",
+      "root": "hia",
+      "sha256": "33a838d0aa89cc845c4256f8b2183243c1de3dacda85fbaa918b54b0c648cccc"
+    },
+    {
+      "path": "hepta/hia_durable_queue.py",
+      "root": "hia",
+      "sha256": "6c7212b891242da141f573e5e93964047ca1774bf554e78cf3354dd2e9d3b9e6"
+    },
+    {
+      "path": "hepta/hia_economic_search.py",
+      "root": "hia",
+      "sha256": "39bf5582cb348103c7d1b75ae7a24bd1688c27848a0a2d394e73f7c6adbd0be4"
+    },
+    {
+      "path": "hepta/hia_edit_batch.py",
+      "root": "hia",
+      "sha256": "7aedff21b35289f3bed175db833fb13a5947a0c1491a54ab318af1f89732b949"
+    },
+    {
+      "path": "hepta/hia_edit_query.py",
+      "root": "hia",
+      "sha256": "5838602587529e4900d2454e4e5a1280fecb554f54f79e7dc408a189ce007bce"
+    },
+    {
+      "path": "hepta/hia_entry_layout.py",
+      "root": "hia",
+      "sha256": "cb7db6d76119d1dd3285caaaa14530b340ab3a23ab55d987153ba4caac0b6f88"
+    },
+    {
+      "path": "hepta/hia_execution_budget.py",
+      "root": "hia",
+      "sha256": "c80e104b6b45dff989ba13c1ac523c0c780de7d23ce32e28c199cf627adf8ae4"
+    },
+    {
+      "path": "hepta/hia_execution_budget_native.py",
+      "root": "hia",
+      "sha256": "60476815528305252fe9d2d76559d851b60fb7472840910f118b3cbecb73c69e"
+    },
+    {
+      "path": "hepta/hia_execution_observation_native.py",
+      "root": "hia",
+      "sha256": "3e0256ce0a4cc80ce8d1331db531894f7b1ab2744a1d7f2b9e831a82f6732858"
+    },
+    {
+      "path": "hepta/hia_execution_observation_selection.py",
+      "root": "hia",
+      "sha256": "6c1d40e0d821b2a7c1205f3b8ef878033b4f398d785c773960920962904f679d"
+    },
+    {
+      "path": "hepta/hia_finite_actions.py",
+      "root": "hia",
+      "sha256": "1a43781b3f5a24780f17867ec42b350b22266b26c2c3074ac0cc88789e9f1079"
+    },
+    {
+      "path": "hepta/hia_finite_context.py",
+      "root": "hia",
+      "sha256": "ef4c98b53c67be1d1a0b5b897517099bc88fdcd88c32d4fee2c0f6c087eec18c"
+    },
+    {
+      "path": "hepta/hia_full_cost_gate.py",
+      "root": "hia",
+      "sha256": "a6d8e5f7355089dc1071d9ce72a5c59973fe9610e31002a3d212176092fa3e49"
+    },
+    {
+      "path": "hepta/hia_function_shape_native.py",
+      "root": "hia",
+      "sha256": "c13520b9aa18f0fb52167e0d35f4cf67e5c57cf5b3156c881847141eb32b3bed"
+    },
+    {
+      "path": "hepta/hia_guarded_batch.py",
+      "root": "hia",
+      "sha256": "03ddf6d99fab1decf12307d32ae10432874e9fc8460acbacca0db308e93ad90d"
+    },
+    {
+      "path": "hepta/hia_guarded_optimization.py",
+      "root": "hia",
+      "sha256": "22c975b02844137070d8682486f94cc36438c03567e6c83d4edb870632966b40"
+    },
+    {
+      "path": "hepta/hia_heap_bound.py",
+      "root": "hia",
+      "sha256": "62dbb3e9335350b415a2da8808b2b87048407343001ba6668ab2023f4ea0cce1"
+    },
+    {
+      "path": "hepta/hia_host_import.py",
+      "root": "hia",
+      "sha256": "f58b477c044929b8228fc7dc30f66ba33c377654c521098c2f2bdbfe9a93af93"
+    },
+    {
+      "path": "hepta/hia_host_region.py",
+      "root": "hia",
+      "sha256": "3c7abd2d020b8f72cbc905bf9de52af4b18e333d0f773b369bd4ce31b84b9945"
+    },
+    {
+      "path": "hepta/hia_incremental.py",
+      "root": "hia",
+      "sha256": "85429a716da029cc09ed4fc40cff0fc48ff5f1a0b943e5520d1507bb24aac230"
+    },
+    {
+      "path": "hepta/hia_inductive.py",
+      "root": "hia",
+      "sha256": "66eb6077d727b15b7f206c9f87bb30b5fa50b7befa7757caca7f79ab1334f6ce"
+    },
+    {
+      "path": "hepta/hia_initialization.py",
+      "root": "hia",
+      "sha256": "bba535d6f5d9439bf6a3968c08a1c582a629ab2eac0cacd548783b5b40e9db16"
+    },
+    {
+      "path": "hepta/hia_instruction_policy_native.py",
+      "root": "hia",
+      "sha256": "73e771f4819199849f2d6148ec9d6e6c1ad9e90c847e6f95c7f32214e5e30e23"
+    },
+    {
+      "path": "hepta/hia_invocation_bank.py",
+      "root": "hia",
+      "sha256": "8e65009da3e41bc1429504a530478416e366a53ed95ea96e54d5f6b5fc3849ff"
+    },
+    {
+      "path": "hepta/hia_json_canonical_native.py",
+      "root": "hia",
+      "sha256": "78c595b1cc59f6bb4c9afb371b116264a7afe623debb2d1f8172ee9da16b165d"
+    },
+    {
+      "path": "hepta/hia_json_decode.py",
+      "root": "hia",
+      "sha256": "7abc295b7a64502f71e410dce8903a917d431527b3fb627958cd08e3b23f43d4"
+    },
+    {
+      "path": "hepta/hia_json_decode_native.py",
+      "root": "hia",
+      "sha256": "5ed167e86808547e48e0d4cf75b97d678e421dda7f388adb2bdf82b7e7e4dbca"
+    },
+    {
+      "path": "hepta/hia_json_preflight.py",
+      "root": "hia",
+      "sha256": "a416fd10b755bbc0ae106e57076a940ee9c4732bd6a156ccf6bd50872d7b6f30"
+    },
+    {
+      "path": "hepta/hia_json_preflight_native.py",
+      "root": "hia",
+      "sha256": "22c2223521276c9654207177c88315d81232e16813bb73a7d9fdfbccdf63c676"
+    },
+    {
+      "path": "hepta/hia_json_wire_native.py",
+      "root": "hia",
+      "sha256": "f3bc7821501c43757384d0567359e31faa19afcd6ce0f257c29981ce1e020127"
+    },
+    {
+      "path": "hepta/hia_linux_kernel.py",
+      "root": "hia",
+      "sha256": "3598b2cd68409e051283870b85f7c0528f9d293193da45f103cbf443e091f507"
+    },
+    {
+      "path": "hepta/hia_machine_elf.py",
+      "root": "hia",
+      "sha256": "c577ec1ef6cb1fb1e0bf58db2df66ae1b29c0685d40477c7d6d1a0ff37b09e31"
+    },
+    {
+      "path": "hepta/hia_machine_encoding_native.py",
+      "root": "hia",
+      "sha256": "b001c9d90904c69bceddfde035b924735f6ca92f227b88233713f66ebfc5f8de"
+    },
+    {
+      "path": "hepta/hia_machine_instructions_native.py",
+      "root": "hia",
+      "sha256": "de132b5e62707ab39e3d29b1124fbe685b49277a9d5500b33271cf5e97a75bc0"
+    },
+    {
+      "path": "hepta/hia_machine_object_native.py",
+      "root": "hia",
+      "sha256": "3dbde86e89e1fd3202d209cca9cb0e3c07b9fd0e55c43cf0bfc2178e5d742d59"
+    },
+    {
+      "path": "hepta/hia_machine_object_selection.py",
+      "root": "hia",
+      "sha256": "25672cb6ea4ca6ecb5615888abf89ee2eb75c729e9e2a0139d6c53cade9497fe"
+    },
+    {
+      "path": "hepta/hia_machine_plan.py",
+      "root": "hia",
+      "sha256": "663c05402e25e5e2f114b32001240f31d12dd0893f8e3f8e901b2f4adc9cf794"
+    },
+    {
+      "path": "hepta/hia_machine_plan_native.py",
+      "root": "hia",
+      "sha256": "3f448ece9bb417437280b861eb3eae143568fd4a64c3ef18c35e98f04de7eb21"
+    },
+    {
+      "path": "hepta/hia_machine_state_native.py",
+      "root": "hia",
+      "sha256": "f6bbe9de37c6a70b841fe236bf4e4a3f28b6dde77aef661d33690f82cb9155a1"
+    },
+    {
+      "path": "hepta/hia_machine_x64.py",
+      "root": "hia",
+      "sha256": "545b1f8a1a302cb70d30e6432af2b565c9a787454f5286c467fe1a7f0bbaa121"
+    },
+    {
+      "path": "hepta/hia_multiversion.py",
+      "root": "hia",
+      "sha256": "140df5b3882a48b50053f9d28a67f5797d454a515c04d59a61826d92c8b74435"
+    },
+    {
+      "path": "hepta/hia_narrowing.py",
+      "root": "hia",
+      "sha256": "7f30ae46f04008913b349f7ca0c51453622e79882e2d01eb2add3c229ca501c6"
+    },
+    {
+      "path": "hepta/hia_native_byte_abi.py",
+      "root": "hia",
+      "sha256": "65393efd9d0fee950b45e06976f07c917e77843ad6ba151e39f20c763e54be39"
+    },
+    {
+      "path": "hepta/hia_native_byte_runner.py",
+      "root": "hia",
+      "sha256": "f0f5f8752e19d15b31b0c56141169fcc7cc30c072ad696108c8dd3571702f71f"
+    },
+    {
+      "path": "hepta/hia_native_continuation.py",
+      "root": "hia",
+      "sha256": "a465e03b091a22f4a8221bf5aeb9798c5efd650a99ee88acd97d48f990c1ee77"
+    },
+    {
+      "path": "hepta/hia_native_continuation_inprocess.py",
+      "root": "hia",
+      "sha256": "34081d23cab3733dcdc26fa233cde63056b3d149f89de72c3f20059191718eaa"
+    },
+    {
+      "path": "hepta/hia_native_continuation_selection.py",
+      "root": "hia",
+      "sha256": "0b21aec25122b2b03918fc26cf0bd9dfeb2432b7d897bd4cd40cabdeb6ff379d"
+    },
+    {
+      "path": "hepta/hia_native_differential.py",
+      "root": "hia",
+      "sha256": "023edd809b1460484084c8c65251622119efc712c0502e8575d49c9424eab02a"
+    },
+    {
+      "path": "hepta/hia_native_helpers.py",
+      "root": "hia",
+      "sha256": "04f00ded86b3106a4a4843ef16497e2e150c7b0440baeaf6817dd85c08315c2a"
+    },
+    {
+      "path": "hepta/hia_native_paired_replay.py",
+      "root": "hia",
+      "sha256": "0b3fcb3020715ec3c522d3659aa35768c1d050146b9ac592b189e53aba0f5abc"
+    },
+    {
+      "path": "hepta/hia_native_retirement.py",
+      "root": "hia",
+      "sha256": "934fcf26a56295afb828867430526e02234d7b5f409f1f272e838730953978ed"
+    },
+    {
+      "path": "hepta/hia_ndu.py",
+      "root": "hia",
+      "sha256": "affa916479adc7d9c232a24b247f10d6c52fe03363fbba4e13711726eb5b961d"
+    },
+    {
+      "path": "hepta/hia_ndu_cache.py",
+      "root": "hia",
+      "sha256": "2d6865a449b6e448d8cc2731517bb0be94061aa4b8b9adb2874834703d60cc36"
+    },
+    {
+      "path": "hepta/hia_ndu_cost.py",
+      "root": "hia",
+      "sha256": "f29ce1dd1355b461d8c58a70ae85cf1a93435090baeed2c0ea1b990dc8006882"
+    },
+    {
+      "path": "hepta/hia_ndu_dynamic.py",
+      "root": "hia",
+      "sha256": "67d8384e886f8aae0b3253e6983143cb648be50d9df2fd7ec67b9e8f00c2c4be"
+    },
+    {
+      "path": "hepta/hia_ndu_module_costs.py",
+      "root": "hia",
+      "sha256": "dc8a7bff063d5464ba7afc73b5f36e099f0165078dab9d75a38264e39801022e"
+    },
+    {
+      "path": "hepta/hia_ndu_optimizer.py",
+      "root": "hia",
+      "sha256": "f38d24cfa959d54acc0a220334de263ad840b72ffdae95050cbb9c1c2cbf38b7"
+    },
+    {
+      "path": "hepta/hia_ndu_persistent_ranker.py",
+      "root": "hia",
+      "sha256": "e7b5085df25af2c746a93748dfe794b739d76dcc738d3ff69a7bd1c12ea5504c"
+    },
+    {
+      "path": "hepta/hia_ndu_policy.py",
+      "root": "hia",
+      "sha256": "3169839978df292b8972ec0d8b911b927b235599ba79610a6ca544ca0ed5a111"
+    },
+    {
+      "path": "hepta/hia_ndu_prepared_ranker.py",
+      "root": "hia",
+      "sha256": "e62f45d582013d23a78d60d441dad1f059330addf9412b7ed1439f33f9323b03"
+    },
+    {
+      "path": "hepta/hia_ndu_raw_model.py",
+      "root": "hia",
+      "sha256": "8702aa1489345b23780e0ace0d815b542a93aeb058216f6d1c6ff983e1993491"
+    },
+    {
+      "path": "hepta/hia_ndu_raw_session.py",
+      "root": "hia",
+      "sha256": "b83099b55ddf0e8fc158e3a5d92e6dc33b643a6f77656afb39075b523ff735a2"
+    },
+    {
+      "path": "hepta/hia_ndu_response.py",
+      "root": "hia",
+      "sha256": "3c1951bbedc53940727660c683ddd2bba4fe1c6b5ea164f5ee5eca17a8d8a948"
+    },
+    {
+      "path": "hepta/hia_ndu_scalar_selection.py",
+      "root": "hia",
+      "sha256": "280e287cde21fec7e49f38c07ada2f9f15a9b3c7fd8038432951abbf4b95f101"
+    },
+    {
+      "path": "hepta/hia_ndu_session.py",
+      "root": "hia",
+      "sha256": "78bb0ce6d745a75dd8c6c14d671f21217cae0c6ecaaddeb43bf49189b5d7fba0"
+    },
+    {
+      "path": "hepta/hia_ndu_stateful.py",
+      "root": "hia",
+      "sha256": "830b7dd13988d734f388d711ac25571693d073c2ec549d8f8ddea41b6949e107"
+    },
+    {
+      "path": "hepta/hia_nominal_json_native.py",
+      "root": "hia",
+      "sha256": "0eb702f4278126a5c8ee0bfe2939378a92b87867a0dac4f8d0db1c8ce2b3808f"
+    },
+    {
+      "path": "hepta/hia_opcodes.py",
+      "root": "hia",
+      "sha256": "05d09dad1057b9a929389ac80de1fddf533652e63160434ace41818c22f0289b"
+    },
+    {
+      "path": "hepta/hia_optimization.py",
+      "root": "hia",
+      "sha256": "ddda1bc33a4d99f07216b00f2d9f666314e41aa757cd88273b3b295e2d842267"
+    },
+    {
+      "path": "hepta/hia_optimization_contract.py",
+      "root": "hia",
+      "sha256": "e1dba71f07784fbeeb1539189046d2320e23eeee4f21ce4212524adf1ed82cdc"
+    },
+    {
+      "path": "hepta/hia_oracle.py",
+      "root": "hia",
+      "sha256": "b0e75d3f80eafef54c98431e04ed449816368d9e1902267b26bfde3c0da900e3"
+    },
+    {
+      "path": "hepta/hia_paired_holdout.py",
+      "root": "hia",
+      "sha256": "ab330d1c80fb7b9828f68831e492fd9c113ec5e71b534d5a7e2a2d1587137f80"
+    },
+    {
+      "path": "hepta/hia_patch_impact.py",
+      "root": "hia",
+      "sha256": "b61710dc320c4b65206a2e6efed67ac525e900a782886be6c289e8acc681e3a1"
+    },
+    {
+      "path": "hepta/hia_planning.py",
+      "root": "hia",
+      "sha256": "4eec407232fc664fe36612ea95ad42af74ef23f42205f6b02a0c81e1fbe80a0f"
+    },
+    {
+      "path": "hepta/hia_prepared.py",
+      "root": "hia",
+      "sha256": "bf0285705531f3950aaec6c2f31ac60fe13a354079a2218239676d7b619afe87"
+    },
+    {
+      "path": "hepta/hia_program.py",
+      "root": "hia",
+      "sha256": "76a222745e13fe29825a661be206243f137ada7b57292b07ab7513a40146fb92"
+    },
+    {
+      "path": "hepta/hia_program_aarch64.py",
+      "root": "hia",
+      "sha256": "acf68a7164514dddc559830d15b27ced165ffc82820dcfa75599ebd0a2094192"
+    },
+    {
+      "path": "hepta/hia_program_composite.py",
+      "root": "hia",
+      "sha256": "cc5ab4c8dc68214e8868aab30405820c3662572de63952dec5f1fd1aaf180951"
+    },
+    {
+      "path": "hepta/hia_program_llvm.py",
+      "root": "hia",
+      "sha256": "334776f8bf9623ffbb172393cda8a59d6950e66c9794f7c9d41d7f9bbd57667b"
+    },
+    {
+      "path": "hepta/hia_program_native.py",
+      "root": "hia",
+      "sha256": "84f0ac31384218c0e9f3f0adb41f5551ce3aa6cf84ebec3a5eb70416a021d81a"
+    },
+    {
+      "path": "hepta/hia_program_runtime.py",
+      "root": "hia",
+      "sha256": "ce39be78627f253447f1d4e4b3272ba6689c594c31b22e3be204b1fcfea2ca56"
+    },
+    {
+      "path": "hepta/hia_program_selfhost.py",
+      "root": "hia",
+      "sha256": "18e881fdd56e1d8a8f391b2e16060cd29420805cab33970873d018a65e26dddf"
+    },
+    {
+      "path": "hepta/hia_program_shape_native.py",
+      "root": "hia",
+      "sha256": "e69825796cea37b008f585d589f597cd40efa74e42ba4d8ea6dfecb8a1cffb0a"
+    },
+    {
+      "path": "hepta/hia_program_tools.py",
+      "root": "hia",
+      "sha256": "273106e522628b1218b928a641d86400936c8a11bf98317f5ffc9577671e8b5d"
+    },
+    {
+      "path": "hepta/hia_proof_contract.py",
+      "root": "hia",
+      "sha256": "f3f52f2b1e1195c26b442f33f17562cca1c2d49ed78ef981e78050fe336bc9ce"
+    },
+    {
+      "path": "hepta/hia_queue_commit.py",
+      "root": "hia",
+      "sha256": "fa27649b45d9175b7176c3566d6b59f3bf10472795825f6cdd0d8c70e391f08d"
+    },
+    {
+      "path": "hepta/hia_reduction.py",
+      "root": "hia",
+      "sha256": "f91c44c6d810d344b23b9207436bc987fdd94dfae072eb409357d4df7e8318aa"
+    },
+    {
+      "path": "hepta/hia_result_cache.py",
+      "root": "hia",
+      "sha256": "2023525c1474f7c8f7f4c6b1fe95b13148ea63771c17a8e35fa40670d2bba65f"
+    },
+    {
+      "path": "hepta/hia_retirement_effects.py",
+      "root": "hia",
+      "sha256": "d4de0f5f98949a510ee4550a7d28f8c6bdf9f15d5959eea6f161b951233ab9b9"
+    },
+    {
+      "path": "hepta/hia_retirement_state_native.py",
+      "root": "hia",
+      "sha256": "312b6e5771218e276d7add681d2e8412ee1dfff200bf939cc7e49aefa43eb564"
+    },
+    {
+      "path": "hepta/hia_routes.py",
+      "root": "hia",
+      "sha256": "9174954faf702c0f34526d090abde539236ef0a27144e77062130f0c640238d0"
+    },
+    {
+      "path": "hepta/hia_rust_byte_cleanup.py",
+      "root": "hia",
+      "sha256": "8475962d02380e040c383105b77021bc420181d2ac599818a58a76c05b797e98"
+    },
+    {
+      "path": "hepta/hia_rust_byte_dag.py",
+      "root": "hia",
+      "sha256": "738164528fb198e2c7c03b6029ebd610d4f38fd759f7b48588bead8b8bc559da"
+    },
+    {
+      "path": "hepta/hia_rust_crosscheck.py",
+      "root": "hia",
+      "sha256": "9125fe4136d9e4c3120f364e13e6a158661d8799a5107773e3a256f123c93884"
+    },
+    {
+      "path": "hepta/hia_safe_core.py",
+      "root": "hia",
+      "sha256": "9d7f95fe06ec70ab984b24c750339b288e421ceb6849c4d2547501b213f8c79b"
+    },
+    {
+      "path": "hepta/hia_safe_core_elf.py",
+      "root": "hia",
+      "sha256": "2f6ef7c6ade26d54d3d02ba1f35e450086a4c1ea81b60dbeb3f1f0b30a07cb6f"
+    },
+    {
+      "path": "hepta/hia_safe_core_x64.py",
+      "root": "hia",
+      "sha256": "8a6e2248ecf57df25718b59e918cd6c0db1090ec1898a8d902e42efb75e762a7"
+    },
+    {
+      "path": "hepta/hia_scalar_call_validation.py",
+      "root": "hia",
+      "sha256": "76265b09c7819e29b8e6e5ff3df3e26abdb2d04cf2fd06d27b64d88cc59d9f04"
+    },
+    {
+      "path": "hepta/hia_scalar_lowering_check.py",
+      "root": "hia",
+      "sha256": "ce622a85751a8108babf2eda2286eb7ca5fb9ac3b3ebee06cd5552fea59e181b"
+    },
+    {
+      "path": "hepta/hia_scalar_proof_contract.py",
+      "root": "hia",
+      "sha256": "67e11ffbe394a2cd6b2f5a30a7f3af5c5c694033fd0624d3f5e8be6d829781c7"
+    },
+    {
+      "path": "hepta/hia_scalar_state.py",
+      "root": "hia",
+      "sha256": "f8951828b9d12b1e9fa658dd06bd7dac61d7b20d5bc5e44c4f66f3a8ca484beb"
+    },
+    {
+      "path": "hepta/hia_scalar_totality.py",
+      "root": "hia",
+      "sha256": "9a7d3523031d31101385c69d374ee3c533e730049047b2b9e09d2ccd8faa500f"
+    },
+    {
+      "path": "hepta/hia_schema.py",
+      "root": "hia",
+      "sha256": "b6bd0864fbe2a90e8f2f705da1d81c8b1afae001d8608f54f8f1fca477cdf253"
+    },
+    {
+      "path": "hepta/hia_sha256_native.py",
+      "root": "hia",
+      "sha256": "0f7fd574dfcc886e559c594eccb8f2aec163154a3c61080aabe9a93332a02013"
+    },
+    {
+      "path": "hepta/hia_sha256_stream_native.py",
+      "root": "hia",
+      "sha256": "95557ec0f9fb9d027290213d9b7e269a4feef7c2f5c8e90348e83db5b060b2ab"
+    },
+    {
+      "path": "hepta/hia_slot_ledger_native.py",
+      "root": "hia",
+      "sha256": "9595b61a527521ed4b8577cb8b2f681655715b09bd6fd053f98e893de9b27922"
+    },
+    {
+      "path": "hepta/hia_specialization.py",
+      "root": "hia",
+      "sha256": "3d87cd790dd41a8011c725de3cd0bb5e06be2492ba9aaa2a81c0d045ab704fbf"
+    },
+    {
+      "path": "hepta/hia_stateful.py",
+      "root": "hia",
+      "sha256": "e85ac7270b2edf9c3b998e62b01033aac7aab6d610b1395cdb2e25891e5f6b49"
+    },
+    {
+      "path": "hepta/hia_static_budget.py",
+      "root": "hia",
+      "sha256": "c26ec6ba5badc4c8c4863dbbfab9cfbe99e8167c8b674f216763694f1995b1d5"
+    },
+    {
+      "path": "hepta/hia_swap_opt.py",
+      "root": "hia",
+      "sha256": "136c3c5f79921c65256da5ae74e48177ca7579268cb7bbd02648b3bae806dce1"
+    },
+    {
+      "path": "hepta/hia_task_helpers_native.py",
+      "root": "hia",
+      "sha256": "9dc0223190e45f08f93eb01c914eed3e73d2c4d2fb2a79f4efde1b19b72f9da7"
+    },
+    {
+      "path": "hepta/hia_translation_validation.py",
+      "root": "hia",
+      "sha256": "1b3bc18ad72609cf8f89ae9efe657e1e5f532d438120f8c5535e7cbb85619eeb"
+    },
+    {
+      "path": "hepta/hia_worker_bundle.py",
+      "root": "hia",
+      "sha256": "a32cee8164ac6b3cd9062fa6e637a37dcb3a34e11b0047015c3d6af3098384dc"
+    },
+    {
+      "path": "hepta/hia_worker_report_native.py",
+      "root": "hia",
+      "sha256": "c8539747922892195722f72f9b763eb1d9503b4fe80318eee33ee88a812ed597"
+    },
+    {
+      "path": "hepta/hia_worker_request_native.py",
+      "root": "hia",
+      "sha256": "38d65bea0fe1ea7d5694bbecb06276183afe987405dbfa40f43224e20e43e9b0"
+    },
+    {
+      "path": "hepta/hia_worker_scheduling_bundle.py",
+      "root": "hia",
+      "sha256": "112e10ed38deb987743103e5e6d2807df6a4db6b84009b0406fe9cd97890db3c"
+    },
+    {
+      "path": "hepta/hia_x86_search.py",
+      "root": "hia",
+      "sha256": "32faf9913b91e54b41979f5a6eda8d9da7069f353d528e8d454602c2115e9ff6"
+    },
+    {
+      "path": "hepta/native_mapping_identity.py",
+      "root": "hia",
+      "sha256": "e85114ea20081dc97ccca299e80a954c3c2165de63d22b776948a1c4001ff010"
+    },
+    {
+      "path": "hepta/native_tool_identity.py",
+      "root": "hia",
+      "sha256": "0a67117d44d32154c0743a7111fd96170891386d0bd0164ae2955cc793846810"
+    },
+    {
+      "path": "hepta/object_structure.py",
+      "root": "hia",
+      "sha256": "4fb0b3d962e4b7f6ba508257bf605f4403d402e4f3d7e05cffa084b91651f5a8"
+    },
+    {
+      "path": "hepta/object_symbols.py",
+      "root": "hia",
+      "sha256": "aff81d724d08ed4a8c3189e3370f75e234daa010ec9e9855aedc1019d55a693f"
+    },
+    {
+      "path": "hepta/windows_capture.py",
+      "root": "hia",
+      "sha256": "0daadfd048cdf08d31344cd2485e78ef3efaac4055850f0ea13501e813414baa"
+    },
+    {
+      "path": "pyproject.toml",
+      "root": "hia",
+      "sha256": "97b48ef4d10f96bab48f1149d8f4093e4080c4bfb9cb361a9e4951bbbf54eb0e"
+    },
+    {
+      "path": "tools/cell_bridge_native.py",
+      "root": "hia",
+      "sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b"
+    }
+  ],
+  "hia_root": "/home/qq/hepta-cell-joint-runtime-724fb6-v1/worker-v4/portable-v4/hia",
+  "models": {
+    "MEM": {
+      "bundle": {
+        "artifact_id": "MEM-baseline",
+        "components": {
+          "base": "a38ecbc14e567404d4c1bd38cc184ffe1c1b26ef4548666e82ae6e460845ef29",
+          "calibration": "74989e023887631d78f2bd38ac5dd1ba8b4bd4d60eed293c8fd9390be74470ec",
+          "cell_adapter": null,
+          "composition": "47322bf86d60bdbe91e0b4664dee0d369afd369b3954159054a01badaada3eba",
+          "encoder": "4e1e4a8c68388c95ec1dcf08bd27db539277e84347e602496ba84c86462e6c5d",
+          "heads": "5274ec18eaae7ed2feef6a0d0f09d48924f840af0a7ad83a8296fc511305592b",
+          "normalizer": "86fdd862da201a33ba8073220397a1dbed2183b1d447b4229fa3f0faae4f0bff",
+          "numeric_profile": "9a048a8071b5d557e0f134e048eed9d0bb3c5d91a6c0cbb9ea2f0b587cd36f56",
+          "organ_adapter": null,
+          "output_schema": "63ad3f2ede01cde2a8268f91deb286a034d0acbf5826a1c3729b00039e0a4253",
+          "state_schema": "6536d82d3311831eff306247028adcad6b672a20e99b6fa47824c09ef1ee983c",
+          "state_semantics": "eb8f9d59db1fc32f6c4c9acc6702d5d16349fb85430c7585f2a4c291cf5ef576",
+          "tokenizer": "d506a8b95c6b6d76ea3217c77e0087f00fe278ba41140b7ae03d80b19b92f91c"
+        },
+        "generation": 1,
+        "rollback_predecessor": null,
+        "training_lineage": null
+      },
+      "config": {
+        "action_dim": 1,
+        "hidden_dim": 4,
+        "input_dim": 3,
+        "kind": "gru",
+        "output_dim": 2,
+        "seed": 41
+      },
+      "path": "MEM.npz",
+      "sha256": "d13f2fca31b64822ba2c1a632e2169b2bbcb5decf1030a87635828bc3ade6ed8"
+    },
+    "PRED": {
+      "bundle": {
+        "artifact_id": "PRED-baseline",
+        "components": {
+          "base": "a38ecbc14e567404d4c1bd38cc184ffe1c1b26ef4548666e82ae6e460845ef29",
+          "calibration": "74989e023887631d78f2bd38ac5dd1ba8b4bd4d60eed293c8fd9390be74470ec",
+          "cell_adapter": null,
+          "composition": "47322bf86d60bdbe91e0b4664dee0d369afd369b3954159054a01badaada3eba",
+          "encoder": "4e1e4a8c68388c95ec1dcf08bd27db539277e84347e602496ba84c86462e6c5d",
+          "heads": "5274ec18eaae7ed2feef6a0d0f09d48924f840af0a7ad83a8296fc511305592b",
+          "normalizer": "86fdd862da201a33ba8073220397a1dbed2183b1d447b4229fa3f0faae4f0bff",
+          "numeric_profile": "9a048a8071b5d557e0f134e048eed9d0bb3c5d91a6c0cbb9ea2f0b587cd36f56",
+          "organ_adapter": null,
+          "output_schema": "63ad3f2ede01cde2a8268f91deb286a034d0acbf5826a1c3729b00039e0a4253",
+          "state_schema": "6536d82d3311831eff306247028adcad6b672a20e99b6fa47824c09ef1ee983c",
+          "state_semantics": "eb8f9d59db1fc32f6c4c9acc6702d5d16349fb85430c7585f2a4c291cf5ef576",
+          "tokenizer": "d506a8b95c6b6d76ea3217c77e0087f00fe278ba41140b7ae03d80b19b92f91c"
+        },
+        "generation": 1,
+        "rollback_predecessor": null,
+        "training_lineage": null
+      },
+      "config": {
+        "action_dim": 1,
+        "hidden_dim": 4,
+        "input_dim": 3,
+        "kind": "gru",
+        "output_dim": 2,
+        "seed": 41
+      },
+      "path": "PRED.npz",
+      "sha256": "41e63b7631e4cc5757f83a66c46cb59536eb03e705a4f66bca2c90c0da2688c1"
+    }
+  },
+  "native": {
+    "image": "native/cell_bridge.so",
+    "image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
+    "source_sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+  },
+  "origin_candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b",
+  "partition": {
+    "agent_id": "joint-owner",
+    "principal_id": "qualification",
+    "run_id": "joint-run"
+  },
+  "runtime_execution": "new exact-source runtime/device candidate; actual execution still required",
+  "runtime_identity": {
+    "binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+    "config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
+    "controller_device": {
+      "hostname_sha256": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+      "machine": "arm64",
+      "python": "3.9.6",
+      "python_sha256": "c5a13e37785524fbc0384539d3c99aa4f888cb7c89e13e0bf0018436378b13bc",
+      "release": "25.6.0",
+      "system": "Darwin"
+    },
+    "execution_boundary": "existing operator account; no OS process sandbox claim",
+    "source_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+    "source_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a"
+  },
+  "schema": "hepta.joint-cell-candidate.v1",
+  "source_bases": {
+    "cells": "bb34e07389ad75d3b4629b63b0af0ee46f9b9594",
+    "hia_compiler": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "runtime": "5f7f03a1f22905789371ce0e181a1a0f013beca9"
+  },
+  "source_binding": "complete listed execution sources and artifacts; new files by SHA256",
+  "total_work_units": 1000000
+}

@@ -1,0 +1,197 @@
+{
+  "schema": "hepta.readonly-ci-followup.v1",
+  "observed_at_utc": "2026-11-16T03:44:45Z",
+  "scope": "Read-only current GitHub run/jobs snapshot; no rerun, source/branch mutation or external message.",
+  "overall": "PENDING_BOTH_RUNS",
+  "concrete_failure_observed": false,
+  "action_required_from_observed_failure": false,
+  "source_endpoints": [
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971/jobs?per_page=100",
+    "https://api.github.com/repos/TrillionniumFoundation/Hepta/actions/runs/43794923319",
+    "https://api.github.com/repos/TrillionniumFoundation/Hepta/actions/runs/43794923319/jobs?per_page=100"
+  ],
+  "runs": [
+    {
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "pull_request": 132,
+      "run_id": 43795217971,
+      "run_attempt": 1,
+      "run_name": "Hepta Runtime CI",
+      "event": "pull_request",
+      "url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971",
+      "head_sha": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-16T02:57:17Z",
+      "updated_at": "2026-11-16T02:57:21Z",
+      "jobs_total": 2,
+      "jobs_returned": 2,
+      "job_inventory_complete": true,
+      "jobs": [
+        {
+          "id": 133062385322,
+          "name": "Rust prospective-merge validation",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971/job/133062385322",
+          "started_at": "2026-11-16T02:57:21Z",
+          "completed_at": null,
+          "successful_step_count": 13,
+          "skipped_step_count": 0,
+          "pending_step_count": 9,
+          "latest_successful_steps": [
+            {
+              "number": 11,
+              "name": "Install pinned nextest",
+              "completed_at": "2026-11-16T03:11:48Z"
+            },
+            {
+              "number": 12,
+              "name": "Install integration test tools",
+              "completed_at": "2026-11-16T03:12:04Z"
+            },
+            {
+              "number": 13,
+              "name": "Test in isolated processes",
+              "completed_at": "2026-11-16T03:41:25Z"
+            }
+          ],
+          "active_steps": [
+            {
+              "number": 14,
+              "name": "Test without remote filesystem in isolated processes",
+              "started_at": "2026-11-16T03:41:25Z"
+            }
+          ],
+          "failed_steps": []
+        },
+        {
+          "id": 133062385558,
+          "name": "Rust exact-head validation",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971/job/133062385558",
+          "started_at": "2026-11-16T02:57:21Z",
+          "completed_at": null,
+          "successful_step_count": 12,
+          "skipped_step_count": 0,
+          "pending_step_count": 14,
+          "latest_successful_steps": [
+            {
+              "number": 10,
+              "name": "Clippy without remote filesystem",
+              "completed_at": "2026-11-16T03:04:54Z"
+            },
+            {
+              "number": 11,
+              "name": "Install pinned nextest",
+              "completed_at": "2026-11-16T03:14:49Z"
+            },
+            {
+              "number": 12,
+              "name": "Install integration test tools",
+              "completed_at": "2026-11-16T03:14:59Z"
+            }
+          ],
+          "active_steps": [
+            {
+              "number": 13,
+              "name": "Test in isolated processes",
+              "started_at": "2026-11-16T03:14:59Z"
+            }
+          ],
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "repository": "TrillionniumFoundation/Hepta",
+      "pull_request": 902,
+      "run_id": 43794923319,
+      "run_attempt": 1,
+      "run_name": "HIA Core-only",
+      "event": "pull_request",
+      "url": "https://github.com/TrillionniumFoundation/Hepta/actions/runs/43794923319",
+      "head_sha": "8ba46fc7a112fc220cdcbbd48dc5d24fda76a738",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-16T02:54:10Z",
+      "updated_at": "2026-11-16T02:54:14Z",
+      "jobs_total": 2,
+      "jobs_returned": 2,
+      "job_inventory_complete": true,
+      "jobs": [
+        {
+          "id": 133061440760,
+          "name": "source",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/Hepta/actions/runs/43794923319/job/133061440760",
+          "started_at": "2026-11-16T02:54:14Z",
+          "completed_at": "2026-11-16T03:04:12Z",
+          "successful_step_count": 12,
+          "skipped_step_count": 0,
+          "pending_step_count": 0,
+          "latest_successful_steps": [
+            {
+              "number": 17,
+              "name": "Post Run actions/setup-python@v5",
+              "completed_at": "2026-11-16T03:04:09Z"
+            },
+            {
+              "number": 18,
+              "name": "Post Run actions/checkout@v4",
+              "completed_at": "2026-11-16T03:04:09Z"
+            },
+            {
+              "number": 19,
+              "name": "Complete job",
+              "completed_at": "2026-11-16T03:04:09Z"
+            }
+          ],
+          "active_steps": [],
+          "failed_steps": []
+        },
+        {
+          "id": 133061441063,
+          "name": "native",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/Hepta/actions/runs/43794923319/job/133061441063",
+          "started_at": "2026-11-16T02:54:13Z",
+          "completed_at": null,
+          "successful_step_count": 64,
+          "skipped_step_count": 0,
+          "pending_step_count": 3,
+          "latest_successful_steps": [
+            {
+              "number": 62,
+              "name": "Native assembly source build and self-repacking",
+              "completed_at": "2026-11-16T03:41:15Z"
+            },
+            {
+              "number": 63,
+              "name": "Native raw JSON nominal packets and actual constructor ingress",
+              "completed_at": "2026-11-16T03:41:41Z"
+            },
+            {
+              "number": 64,
+              "name": "Native JSON wire entry, exact graph budgets, key cache and installed resources",
+              "completed_at": "2026-11-16T03:42:09Z"
+            }
+          ],
+          "active_steps": [
+            {
+              "number": 65,
+              "name": "Original ordinary callers through HIA JSON wire",
+              "started_at": "2026-11-16T03:42:09Z"
+            }
+          ],
+          "failed_steps": []
+        }
+      ]
+    }
+  ],
+  "qualification_note": "A running job with successful earlier steps is not a completed CI pass. HIA source success qualifies that job only. No job/step failure is visible in this snapshot."
+}
