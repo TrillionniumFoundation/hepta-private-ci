@@ -140,22 +140,44 @@ pub fn pending_restart(
     run_root: &Path,
     maximum_attempts: u32,
 ) -> Result<Option<RestartClaim>, RestartBudgetError> {
+    Ok(recover_restart_budget(run_root, maximum_attempts)?.pending)
+}
+
+pub(crate) struct RecoveredRestartBudget {
+    pub attempts: u32,
+    pub pending: Option<RestartClaim>,
+}
+
+pub(crate) fn recover_restart_budget(
+    run_root: &Path,
+    maximum_attempts: u32,
+) -> Result<RecoveredRestartBudget, RestartBudgetError> {
     let Some(state) = read_restart_budget(run_root)? else {
-        return Ok(None);
+        return Ok(RecoveredRestartBudget {
+            attempts: 0,
+            pending: None,
+        });
     };
     if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION || state.attempts > maximum_attempts {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside configured bounds".to_string(),
         ));
     }
-    if !state.pending {
-        return Ok(None);
-    }
-    let now_ms = unix_ms()?;
-    Ok(Some(RestartClaim {
-        attempt: state.attempts,
-        backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
-    }))
+    let pending = if state.pending {
+        let now_ms = unix_ms()?;
+        Some(RestartClaim {
+            attempt: state.attempts,
+            backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
+        })
+    } else {
+        None
+    };
+    // Completed restarts still consume the durable budget. Recover their count
+    // and any pending claim from the same canonical journal read.
+    Ok(RecoveredRestartBudget {
+        attempts: state.attempts,
+        pending,
+    })
 }
 
 fn backoff_for(attempt: u32, base: Duration) -> Result<Duration, RestartBudgetError> {
