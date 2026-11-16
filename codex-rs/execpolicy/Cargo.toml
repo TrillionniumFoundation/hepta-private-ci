@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 description = "Codex exec policy: prefix-based Starlark rules for command decisions."
 
+[features]
+hia-native = []
+
 [lib]
 name = "codex_execpolicy"
 path = "src/lib.rs"

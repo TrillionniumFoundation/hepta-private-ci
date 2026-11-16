@@ -20,6 +20,24 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
+# Cargo-less inputs compiled with --edition=2024 by
+# the command-dispatch and network-host runners, including their shared modules.
+# Other standalone inputs keep their own fallback (the seek oracle uses 2021).
+STANDALONE_RUST_EDITIONS = {
+    "hia/tests/command_dispatch_fixtures.rs": "2024",
+    "hia/tests/native_command_dispatch.rs": "2024",
+    "hia/tests/native_command_dispatch_allocations.rs": "2024",
+    "hia/tests/native_command_dispatch_effects.rs": "2024",
+    "hia/tests/native_command_dispatch_failures.rs": "2024",
+    "hia/tests/native_command_dispatch_performance.rs": "2024",
+    "hia/tests/native_network_host.rs": "2024",
+    "hia/tests/native_network_host_allocations.rs": "2024",
+    "hia/tests/native_network_host_failures.rs": "2024",
+    "hia/tests/native_network_host_performance.rs": "2024",
+    "hia/tests/network_host_fixtures.rs": "2024",
+}
+
+
 @dataclass(frozen=True)
 class Command:
     args: tuple[str, ...]
@@ -242,7 +260,7 @@ def rust_file_command(path: str, *, check: bool) -> Command:
         ),
         None,
     )
-    edition = "2021"
+    edition = STANDALONE_RUST_EDITIONS.get(Path(path).as_posix(), "2021")
     if manifest is not None and tomllib is None:
         metadata = json.loads(
             subprocess.check_output(

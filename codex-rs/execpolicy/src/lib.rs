@@ -3,6 +3,16 @@ pub(crate) mod decision;
 pub(crate) mod error;
 pub(crate) mod execpolicycheck;
 mod executable_name;
+#[cfg(feature = "hia-native")]
+mod hia_native_allowed_prefixes;
+#[cfg(feature = "hia-native")]
+mod hia_native_network_domains;
+#[cfg(feature = "hia-native")]
+mod hia_native_network_host;
+#[cfg(feature = "hia-native")]
+mod hia_native_policy_summary;
+#[cfg(feature = "hia-native")]
+mod hia_native_prefix;
 pub(crate) mod parser;
 pub(crate) mod policy;
 pub mod rule;
@@ -31,3 +41,6 @@ pub use rule::Rule;
 pub use rule::RuleMatch;
 pub use rule::RuleRef;
 pub use sandbox_migration::prefix_rule_migration;
+
+#[cfg(feature = "hia-native")]
+mod hia_native_command_dispatch;
