@@ -101,7 +101,7 @@ pub(super) async fn recover(
                 )
                 .await?
             {
-                AgentdAutomationEffectReconcileOutcome::Observed(receipt) => break receipt,
+                AgentdAutomationEffectReconcileOutcome::Observed(receipt) => break *receipt,
                 AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                     anyhow::ensure!(
                         Instant::now() < deadline,

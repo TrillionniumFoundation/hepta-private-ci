@@ -49,7 +49,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     env:
-      # Apply the target ABI to the broad and both required native test calls.
+      # Apply the target ABI to the broad and all required native test calls.
       CODEX_BAZEL_LINUX_TARGET_PLATFORM: ${{ matrix.bazel_platform || '' }}
 
     # Configure a human readable name for each job
@@ -115,6 +115,7 @@ jobs:
               -//codex-rs/linux-sandbox:linux-sandbox-all-test
               -//codex-rs/cli:cli-sandbox_network_proxy-test
               -//codex-rs/core:core-all-test
+              -//codex-rs/core:core-all-wine-exec-test
             )
           fi
 
@@ -175,8 +176,30 @@ jobs:
             --build_metadata=TAG_job=native-linux-sandbox-tests \
             -- \
             //codex-rs/linux-sandbox:linux-sandbox-all-test \
-            //codex-rs/cli:cli-sandbox_network_proxy-test \
-            //codex-rs/core:core-all-test
+            //codex-rs/cli:cli-sandbox_network_proxy-test
+
+      - name: Run native Core integration with host namespace support
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          # Core integration targets already declare no-sandbox because their
+          # subprocess tests create host namespaces. Keep both variants required.
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=local \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-core-integration-tests \
+            -- \
+            //codex-rs/core:core-all-test \
+            //codex-rs/core:core-all-wine-exec-test
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -221,6 +244,11 @@ jobs:
       deployment: false
 
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
@@ -343,6 +371,11 @@ jobs:
       deployment: false
 
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
@@ -432,6 +465,11 @@ jobs:
       deployment: false
 
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
@@ -519,6 +557,11 @@ jobs:
       deployment: false
 
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false

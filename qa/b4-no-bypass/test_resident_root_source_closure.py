@@ -307,7 +307,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn prepare_enrollment(", "AgentdRootResidentLearningClientV3::readback(&root).await?"),
             ("fn prepare_enrollment(", "root.require_fresh_admission_channel()?"),
             ("fn prepare_enrollment(", "state\n            .require_resident_learning_source_candidate(request)\n            .await"),
-            ("fn prepare_enrollment(", "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await"),
+            ("fn prepare_enrollment(", "host.reconcile_learning_outbox(store, Some(&request.source_run_id), state)\n            .await"),
             ("fn deliver(", "self.admission = DeliveryAdmissionV3::Readback"),
             ("fn deliver(", "store\n                .claim_circuit_learning(&row.intent, &digest)\n                .await"),
             ("fn deliver(", "coordinator.next_stage().is_some()"),

@@ -187,16 +187,15 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         if context.binding(fresh)? != binding {
             return Err(Error::Binding("same original positive Selector context"));
         }
-        if let Some(original) = &expected {
-            if wire::authenticate_completed(
+        if let Some(original) = &expected
+            && wire::authenticate_completed(
                 &context,
                 original.snapshot.clone(),
                 original.attestation.clone(),
                 fresh,
             )? != *original
-            {
-                return Err(Error::Binding("same original positive Selector recovery"));
-            }
+        {
+            return Err(Error::Binding("same original positive Selector recovery"));
         }
         Ok(Self {
             channel: Mutex::new(Some(Channel {
@@ -241,16 +240,15 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         let current = now()?;
         require_clock(started_at, current)?;
         context.authenticate(current)?;
-        if let Some(expected) = &retained {
-            if wire::authenticate_completed(
+        if let Some(expected) = &retained
+            && wire::authenticate_completed(
                 &context,
                 expected.snapshot.clone(),
                 expected.attestation.clone(),
                 current,
             )? != *expected
-            {
-                return Err(Error::Binding("exact cold original Selection"));
-            }
+        {
+            return Err(Error::Binding("exact cold original Selection"));
         }
         Ok(Self {
             channel: Mutex::new(Some(Channel {

@@ -272,7 +272,7 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
         let digest = Digest32::of_bytes(&bytes);
         let material = OriginalCellEvaluationModelMaterialV1 {
             context: self.context.clone(),
-            evaluation: evaluation.clone(),
+            evaluation: evaluation,
             bytes,
             binding: digest,
             observed_at: current,

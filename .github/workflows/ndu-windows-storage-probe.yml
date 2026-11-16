@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - ".github/workflows/ndu-windows-storage-probe.yml"
+      - ".github/scripts/windows_mic_observation.py"
+      - ".github/scripts/test_windows_mic_observation.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
@@ -50,6 +52,11 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -78,6 +85,11 @@ jobs:
       - name: Preserve committed source bytes on checkout
         shell: pwsh
         run: git config --global core.autocrlf false
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -105,6 +117,18 @@ jobs:
           import xml.etree.ElementTree as ET
 
           PINS = {
+              ".github/scripts/test_windows_mic_observation.py": {
+                  "bytes": 5557,
+                  "mode": "100644",
+                  "oid": "f76e1d540a451561669d0e4f699fd4e5fd1670ec",
+                  "sha256": "2100344052f38360a0900d76d7bfc6ddb3e4bbf20e25a68b5c5e301e21053dbd"
+              },
+              ".github/scripts/windows_mic_observation.py": {
+                  "bytes": 4184,
+                  "mode": "100644",
+                  "oid": "f0683503e512799a599cb1376b850e629030e083",
+                  "sha256": "116e88b528a07662ac230aa023613c1fcce5cb0dbe8ad7489670d6dfd3c8ba10"
+              },
               "codex-rs/.config/nextest.toml": {
                   "bytes": 9622,
                   "mode": "100644",
@@ -220,10 +244,10 @@ jobs:
                   "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705"
               },
               "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs": {
-                  "bytes": 21919,
+                  "bytes": 27824,
                   "mode": "100644",
-                  "oid": "c09d20d4006342c470a229bf810291bd12d0fc60",
-                  "sha256": "62bd5cb1dac7fc761600708bfbbd8314663de6f5fe4827cb510d7831c4d987d7"
+                  "oid": "48ad6216b73344931b22fdc482eefa4e7615a308",
+                  "sha256": "61d625ab60b6e44f70b1b92e171f540237cb638351a181beedf814d9b0f15db6"
               },
               "codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs": {
                   "bytes": 15481,
@@ -316,8 +340,9 @@ jobs:
                   "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
               }
           }
-          WINDOWS_METHODS = ['acl::tests::complete_denies_compare_mapped_masks_and_require_every_right', 'acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows', 'acl::tests::complete_file_denies_require_direct_scope', 'acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent', 'acl::tests::partial_read_deny_is_repaired_before_native_file_data_access', 'acl::tests::deny_ace_update_failure_is_an_error', 'acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes', 'acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation', 'acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope', 'acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change', 'acl::tests::acl_repair_rejects_replaced_path_with_different_object_type', 'token::tests::elevated_token_includes_network_proxy_restricting_sid', 'token::tests::workspace_token_refusal_leaves_existing_files_unchanged', 'token::tests::workspace_token_refuses_multiple_capabilities_before_native_access', 'token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets', 'token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries', 'token::tests::mic_probe::mic_labels_preserve_original_outside_and_protected_child_oracles']
+          WINDOWS_METHODS = ['acl::tests::complete_denies_compare_mapped_masks_and_require_every_right', 'acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows', 'acl::tests::complete_file_denies_require_direct_scope', 'acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent', 'acl::tests::partial_read_deny_is_repaired_before_native_file_data_access', 'acl::tests::deny_ace_update_failure_is_an_error', 'acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes', 'acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation', 'acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope', 'acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change', 'acl::tests::acl_repair_rejects_replaced_path_with_different_object_type', 'token::tests::elevated_token_includes_network_proxy_restricting_sid', 'token::tests::workspace_token_refusal_leaves_existing_files_unchanged', 'token::tests::workspace_token_refuses_multiple_capabilities_before_native_access', 'token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets', 'token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries', 'token::tests::mic_probe::mic_counterexamples_require_public_admission_refusal']
           ELEVATED_REFUSAL_METHODS = ['elevated_admission_tests::elevated_raw_token_factories_refuse_live_base_and_capabilities', 'elevated_admission_tests::elevated_capture_refuses_before_provisioning_or_child_launch', 'elevated_admission_tests::elevated_sessions_refuse_before_provisioning_or_child_launch']
+          MIC_COLLECTOR_METHODS = ['test_negative_hypothesis_and_refusal_regression_remain_distinct', 'test_missing_duplicate_and_extra_cases_are_rejected', 'test_isolation_success_or_qualification_cannot_replace_the_negative', 'test_broken_controls_and_wrong_errors_cannot_count_as_counterexamples', 'test_missing_or_inexact_production_refusal_is_rejected', 'test_truncated_ambiguous_or_mistyped_json_is_rejected', 'test_historical_raw_negative_without_admission_proof_cannot_qualify']
           PROBE_METHODS = ['test_actual_git_rejects_live_and_index_only_source_changes', 'test_complete_transcript_keeps_false_invariant_as_observed_failure', 'test_incomplete_or_duplicated_native_observation_cannot_complete', 'test_dependency_without_existing_checksum_cannot_enter_probe', 'test_actual_git_rejects_unbound_legacy_admission_changes', 'test_refusal_transcript_cannot_certify_permission_observations']
           OTHER_LOCK_TOML_SHA256 = "2aa9733f0f760902b34ff63baac2361f0925c102c31feeffb593af80fb22c391"
           ANYHOW_RECORD = {
@@ -460,6 +485,14 @@ jobs:
               report = ROOT / "codex-rs" / "target" / "nextest" / "local" / "junit.xml"
               raw = report.read_bytes()
               (OUT / "acl.junit.xml").write_bytes(raw)
+              # A regression PASS must retain the original hypothesis FAIL and
+              # ten real public refusals. It cannot certify sandbox permissions.
+              command("mic-observation-verify",
+                      [sys.executable, "-B", ".github/scripts/windows_mic_observation.py",
+                       "--stdout", str(OUT / "windows-seventeen.stdout"),
+                       "--stderr", str(OUT / "windows-seventeen.stderr"),
+                       "--expected-head", HEAD,
+                       "--output", str(OUT / "mic-counterexample-observation.json")])
               root = ET.fromstring(raw)
               cases = list(root.iter("testcase"))
               names = [case.attrib.get("name") for case in cases]
@@ -477,7 +510,21 @@ jobs:
                       "Normal Nextest log must show seventeen distinct reviewed PASS results")
               write_json(OUT / "windows-exact-seventeen.json",
                          {"expected": WINDOWS_METHODS, "junit_actual": names, "log_passes": passes,
-                          "passed": 17, "failed": 0, "skipped": 0, "retries": 0})
+                          "passed": 17, "failed": 0, "skipped": 0, "retries": 0,
+                          "original_mic_isolation_hypothesis": "FAIL",
+                          "permission_qualification": False})
+
+
+          def verify_mic_collector_results():
+              text = (OUT / "mic-collector-seven.stderr").read_text(encoding="utf-8")
+              passed = re.findall(r"(?m)^(test_\w+) \([^\n]+\) \.\.\. ok$", text)
+              require(collections.Counter(passed) == collections.Counter(MIC_COLLECTOR_METHODS),
+                      "All seven MIC collector methods must pass exactly once")
+              require(re.search(r"(?m)^Ran 7 tests in .+$", text) is not None and
+                      re.search(r"(?m)^OK$", text) is not None,
+                      "MIC collector tests must report seven passes without skips")
+              write_json(OUT / "mic-collector-exact-seven.json",
+                         {"expected": MIC_COLLECTOR_METHODS, "actual": passed})
 
 
           def verify_elevated_refusal_results():
@@ -566,6 +613,7 @@ jobs:
                   return
               state = {"head": HEAD, "commands": [], "status": "RUNNING",
                        "windows_method_count": 17, "probe_python_method_count": 6,
+                       "mic_collector_method_count": 7,
                        "elevated_refusal_method_count": 3,
                        "permission_qualification": False}
               error = None
@@ -599,13 +647,18 @@ jobs:
                       require(source_snapshot() == before, "Source drift after " + name)
 
                   # Retain every independent observation, then fail the job if any
-                  # original command or exact result check failed. No retry, skip,
-                  # or changed permission oracle is introduced by this collection.
+                  # command or exact result check failed. MIC is explicitly a
+                  # counterexample/admission regression, with its original failed
+                  # isolation observation retained separately. No test is skipped.
+                  observe_methods("mic-collector-seven",
+                                  [sys.executable, "-B", ".github/scripts/test_windows_mic_observation.py", "-v"],
+                                  verify_mic_collector_results)
                   observe_methods("windows-seventeen",
                                   ["just", "test", "--locked", "-p", "codex-windows-sandbox",
                                    "--lib", "-E", " | ".join("test(=" + name + ")" for name in WINDOWS_METHODS), "--test-threads", "1",
                                    "--no-tests", "fail", "--retries", "0",
-                                   "--status-level", "pass", "--final-status-level", "fail"],
+                                   "--status-level", "pass", "--final-status-level", "fail",
+                                   "--success-output", "immediate"],
                                   verify_acl_results)
                   observe_methods("elevated-refusal-three",
                                   ["just", "test", "--locked", "-p", "codex-windows-sandbox",

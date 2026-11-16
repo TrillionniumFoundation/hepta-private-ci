@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.caller-source-targeted-validation.v1",
+  "scope": "v4 exact 21 Rust postimages plus holdout v2 four postimages; excludes later Clippy drift",
+  "native_job": "1a1e3979e6d-392-344b",
+  "native_job_state": "succeeded",
+  "manifest_sha256": "175a7a1557e7faed14fd48f1b33a9de281f223e60c08b614c225d0d1ad8d76bf",
+  "targeted_tests": 90,
+  "targeted_skips": 0,
+  "all_targeted_passed": true,
+  "full_current_caller_gate": "PENDING",
+  "full_current_source_closure_gate": "PENDING",
+  "prior_all_boundaries": {
+    "checked": 1644,
+    "passed": 1643,
+    "missing_exact_caller": "q24_task_explicit_source_attach -> codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+    "note": "Original negative observation retained, subsequent exact registration is covered by new mutations; this is not a full final pass."
+  },
+  "results": [
+    {
+      "pattern": "*holdout*source_closure.py",
+      "tests": 36,
+      "exit_code": 0,
+      "seconds": 11.134,
+      "stderr_sha256": "f4d218979064c0a6b1675e0b1ea14c410e94e619e074c0279781d76f353cbd74",
+      "raw_log": "caller-source-targeted-v4-0.stderr"
+    },
+    {
+      "pattern": "test_learning_evaluation_recovery_source_closure.py",
+      "tests": 8,
+      "exit_code": 0,
+      "seconds": 0.403,
+      "stderr_sha256": "c8efd247f1816024c4522f22e8110ef8247e411de9d28bdd9ce3731e9ead0703",
+      "raw_log": "caller-source-targeted-v4-1.stderr"
+    },
+    {
+      "pattern": "test_current_owner_api_source_closure.py",
+      "tests": 8,
+      "exit_code": 0,
+      "seconds": 0.328,
+      "stderr_sha256": "8a51490afeed9bd43bb79aa9e6fe3af9913a506b183abb748f6ba646e74cfccc",
+      "raw_log": "caller-source-targeted-v4-2.stderr"
+    },
+    {
+      "pattern": "test_positive_model_version_source_closure.py",
+      "tests": 8,
+      "exit_code": 0,
+      "seconds": 2.155,
+      "stderr_sha256": "4f46f2141e108d3c1506a564b0bf088a95c0926f577d428373861d9821595685",
+      "raw_log": "caller-source-targeted-v4-3.stderr"
+    },
+    {
+      "pattern": "test_resident_root_source_closure.py",
+      "tests": 10,
+      "exit_code": 0,
+      "seconds": 0.92,
+      "stderr_sha256": "a88f83ff8dd981d01e8952c8f4df7fca653166794c4b78071537a9053b7d1f08",
+      "raw_log": "caller-source-targeted-v4-4.stderr"
+    },
+    {
+      "pattern": "test_retained_version_issuer_source_closure.py",
+      "tests": 9,
+      "exit_code": 0,
+      "seconds": 0.615,
+      "stderr_sha256": "cf4506ec9b01bc86ad82fcd9bf795fd7b09ddc70311e10ae1123c0af97e4a975",
+      "raw_log": "caller-source-targeted-v4-5.stderr"
+    },
+    {
+      "pattern": "test_root_admin_source_closure.py",
+      "tests": 11,
+      "exit_code": 0,
+      "seconds": 20.678,
+      "stderr_sha256": "9a99e652c888547f7afa4979859812302e437a65e5ad622ec4abe821ad9f6f96",
+      "raw_log": "caller-source-targeted-v4-6.stderr"
+    }
+  ]
+}

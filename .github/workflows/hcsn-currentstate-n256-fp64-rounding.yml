@@ -19,9 +19,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Assertions-enabled fixtures
-        run: python -m unittest qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round
+        run: python -m unittest qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze
       - name: Optimized-mode fixtures
-        run: python -O -m unittest qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze
       - name: Bytecode compilation
         run: python -m py_compile qualification/hcsn_currentstate_n256_fp64_rounding/*.py
       - name: Exact source freeze and zero-execution ledger

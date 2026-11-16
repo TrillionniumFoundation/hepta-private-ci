@@ -1,0 +1,157 @@
+{
+  "approved_workflow_delta": "Retain formatted v1 workflow and append new tamper regression module to both existing unittest commands; keep all five original numeric tests, bytecode compilation and source verification",
+  "cause": "44f38ff7a30fa848ea50e24404048efc7d81870b removed exactly one trailing blank line from the rounding workflow; formatted predecessor bytes plus one newline retain the original frozen SHA256",
+  "changes": "Explicit v2 current binding preserves immutable original SOURCE_FREEZE and exact historical verifier; original verifier checks execute against current binding only after strict predecessor, inventory, source pin and exact workflow transition validation",
+  "hosted_negative": {
+    "job": 133149169827,
+    "result": "original five numeric tests passed in normal and optimized modes; exact source verification failed on workflow hash",
+    "run": 43822685363
+  },
+  "limitations": [
+    "ROG Python 3.14.4 passed; hosted workflow Python 3.12 validation remains pending",
+    "Source-only rounding primitive; no N256 provider, optimizer, model or training execution",
+    "No remote refs changed by this review"
+  ],
+  "observed_base_commit": "ca1ae598efb77b552df3897b8debc0441bc7bd90",
+  "original_freeze_commit": "709da8b4a6c9793347e4a3dbcf2982d3370b9b3e",
+  "original_workflow_commit": "e5594d1b3c90222fac3316328660b4fc225feb75",
+  "predecessor_freeze_sha256": "840f3b4bedd74d2dc8bbff08e2b7004a6a04ae3e67e4260ad7e6a3813f63ef69",
+  "related_scope_audit": {
+    "active_n256_source_freezes": 41,
+    "limitation": "Original 41-row report remains in the unavailable local executor at /tmp/a25-n256-freeze-fix/related-n256-workflow-pins.json; no other source freeze was changed",
+    "mismatch": ".github/workflows/hcsn-currentstate-n256-fp64-rounding.yml",
+    "mismatched_workflow_pins": 1,
+    "observed_before_local_environment_disconnect": true
+  },
+  "schema": "hepta.n256-rounding-freeze-migration-review.v1",
+  "source_files": [
+    {
+      "before_git_blob": "563b8a04473d337764007533159aa6ee36a9181b",
+      "bytes": 1209,
+      "git_blob": "2d5c16150acb98605c9679153865ca71d5daecf5",
+      "mode": "100644",
+      "path": ".github/workflows/hcsn-currentstate-n256-fp64-rounding.yml",
+      "sha256": "523d9632fb560dd8b2f58aa2b500636b1d214b0c274a66787ef1ba26741adf3c"
+    },
+    {
+      "before_git_blob": "924e56b21718ac2fc008077c3f93fe3530f6205b",
+      "bytes": 4427,
+      "git_blob": "ca4b52391681719d0e12f28dbe6870422006ba97",
+      "mode": "100644",
+      "path": "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py",
+      "sha256": "22c848e491c8ab048e13eeb89e88be2b27c403fdde3fd96868964c38745da556"
+    },
+    {
+      "before_git_blob": null,
+      "bytes": 2240,
+      "git_blob": "0eaf690d59d0347d3364c21932cc6c474dd34e1e",
+      "mode": "100644",
+      "path": "qualification/hcsn_currentstate_n256_fp64_rounding/CURRENT_SOURCE_FREEZE.json",
+      "sha256": "5054fe91ae0ee2a66209d78e7d55428aa33303c2970f7cb4e41a01aa74c79026"
+    },
+    {
+      "before_git_blob": null,
+      "bytes": 4825,
+      "git_blob": "453e2b217690aa4e12ff38b0cc6f12d3e4a8ec39",
+      "mode": "100644",
+      "path": "qualification/hcsn_currentstate_n256_fp64_rounding/test_source_freeze.py",
+      "sha256": "15b7d1e2146d80b26a10460299a14c641c5e8d92a5e75f279d366a76ab8ea5f3"
+    },
+    {
+      "before_git_blob": null,
+      "bytes": 2072,
+      "git_blob": "924e56b21718ac2fc008077c3f93fe3530f6205b",
+      "mode": "100644",
+      "path": "qualification/hcsn_currentstate_n256_fp64_rounding/history/verify_source_v1.py",
+      "sha256": "752ff737be144459a22ef770667d64625f411d1391bc2677f33946d9f892dfbf"
+    },
+    {
+      "before_git_blob": null,
+      "bytes": 1069,
+      "git_blob": "563b8a04473d337764007533159aa6ee36a9181b",
+      "mode": "100644",
+      "path": "qualification/hcsn_currentstate_n256_fp64_rounding/history/rounding_workflow_formatted_v1.yml",
+      "sha256": "028eee8f7b295f214336da04b1fe7f6353889b8adbaf512006d5c12df70b1ecc"
+    }
+  ],
+  "tests": {
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "results": [
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round",
+          "qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze",
+          "-v"
+        ],
+        "elapsed_seconds": 0.061,
+        "exit_code": 0,
+        "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/tests-normal.log",
+        "name": "tests-normal",
+        "sha256": "9cb028196d2bc7e638574e8018ce4efc4c6bb91f20a6ce9b9d8012c0f3923a92"
+      },
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-O",
+          "-m",
+          "unittest",
+          "qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round",
+          "qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze",
+          "-v"
+        ],
+        "elapsed_seconds": 0.205,
+        "exit_code": 0,
+        "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/tests-optimized.log",
+        "name": "tests-optimized",
+        "sha256": "6ed28d08f2b1c7f753d569f9a8b23e51714a605c3ad60f742a24aa42d702f21f"
+      },
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py"
+        ],
+        "elapsed_seconds": 0.023,
+        "exit_code": 0,
+        "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/verify-normal.log",
+        "name": "verify-normal",
+        "sha256": "a19d00841931bbed41eaffb4e31eec381ff65b71bea91a4f4abc830248507bfd"
+      },
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-O",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py"
+        ],
+        "elapsed_seconds": 0.071,
+        "exit_code": 0,
+        "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/verify-optimized.log",
+        "name": "verify-optimized",
+        "sha256": "a19d00841931bbed41eaffb4e31eec381ff65b71bea91a4f4abc830248507bfd"
+      },
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "py_compile",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/test_source_freeze.py",
+          "qualification/hcsn_currentstate_n256_fp64_rounding/test_fp64_round.py"
+        ],
+        "elapsed_seconds": 0.037,
+        "exit_code": 0,
+        "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/bytecode.log",
+        "name": "bytecode",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  }
+}

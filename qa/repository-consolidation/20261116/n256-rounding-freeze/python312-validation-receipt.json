@@ -1,0 +1,91 @@
+{
+  "base": "ca1ae598efb77b552df3897b8debc0441bc7bd90",
+  "boundary": "No source changes after the original six-file binding. All five original numeric tests and six new tamper tests passed under normal and optimized Python 3.12. This addendum records actual execution and preserves the failed formatter attempt separately.",
+  "formatter_attempt": {
+    "command": ["/usr/bin/npx", "--yes", "prettier@3.5.3", "--check"],
+    "outcome": "Python subprocess.TimeoutExpired after 90 seconds; no formatter result from this attempt",
+    "raw_stderr": "python312-validation-job.stderr.log"
+  },
+  "host": "rog",
+  "interpreter": "/usr/bin/python3.12",
+  "job_id": "1a1e34fbebd-392-338b",
+  "observed_results": [
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-m",
+        "unittest",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze",
+        "-v"
+      ],
+      "elapsed_seconds": 0.099,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/python312-tests-normal.log",
+      "name": "python312-tests-normal",
+      "sha256": "c91913051fdcb9f06dda16039f3c37d499693eebee3bb8b7610b5f71c3c00ed6"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze",
+        "-v"
+      ],
+      "elapsed_seconds": 0.227,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/python312-tests-optimized.log",
+      "name": "python312-tests-optimized",
+      "sha256": "8bf60b6382f586f14aef52a28b72de471da941c8131db18ca857c38fd04a1d8c"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py"
+      ],
+      "elapsed_seconds": 0.028,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/python312-verify-normal.log",
+      "name": "python312-verify-normal",
+      "sha256": "a19d00841931bbed41eaffb4e31eec381ff65b71bea91a4f4abc830248507bfd"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-B",
+        "-O",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py"
+      ],
+      "elapsed_seconds": 0.084,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/python312-verify-optimized.log",
+      "name": "python312-verify-optimized",
+      "sha256": "a19d00841931bbed41eaffb4e31eec381ff65b71bea91a4f4abc830248507bfd"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-m",
+        "py_compile",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/test_source_freeze.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/test_fp64_round.py"
+      ],
+      "elapsed_seconds": 0.033,
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/python312-bytecode.log",
+      "name": "python312-bytecode",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "schema": "hepta.n256-rounding-validation-addendum.v1",
+  "source_binding_sha256": "5054fe91ae0ee2a66209d78e7d55428aa33303c2970f7cb4e41a01aa74c79026"
+}

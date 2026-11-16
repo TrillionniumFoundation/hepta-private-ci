@@ -4,11 +4,18 @@
 use super::*;
 
 pub(super) fn read_stable_image(file: &mut HeldFile) -> Result<Vec<u8>, LockedFileCasErrorV1> {
-    let first = read_image(file)?;
-    if read_image(file)? != first {
-        return Err(LockedFileCasErrorV1::Indeterminate);
-    }
-    Ok(first)
+    let position = file.stream_position().map_err(io_error)?;
+    let observed = (|| {
+        let first = read_image(file)?;
+        if read_image(file)? != first {
+            return Err(LockedFileCasErrorV1::Indeterminate);
+        }
+        Ok(first)
+    })();
+    // Keep the original descriptor's cursor on either read outcome. A failed
+    // restoration is uncertainty and cannot be hidden by successful bytes.
+    file.seek(SeekFrom::Start(position)).map_err(io_error)?;
+    observed
 }
 
 fn read_image(file: &mut HeldFile) -> Result<Vec<u8>, LockedFileCasErrorV1> {

@@ -159,6 +159,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                 self.assertEqual(
                     [arg for arg in args if arg.startswith("--jobs=")][-1], "--jobs=30"
                 )
+                self.assertIn("--local_test_jobs=1", args)
                 self.assertTrue(
                     all(
                         index < args.index("--jobs=30")
@@ -186,6 +187,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertIn("--jobs=30", calls[0])
+        self.assertIn("--local_test_jobs=1", calls[0])
         self.assertIn("actual failing test diagnostic", result.stdout)
         self.assertIn("undefined symbol: __stack_chk_fail", result.stdout)
 
@@ -197,6 +199,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("--jobs=800", calls[0])
         self.assertNotIn("--jobs=30", calls[0])
+        self.assertNotIn("--local_test_jobs=1", calls[0])
 
     def test_linux_musl_platform_follows_configs_and_preserves_test_routes(
         self,
@@ -214,6 +217,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                     "-//codex-rs/linux-sandbox:linux-sandbox-all-test",
                     "-//codex-rs/cli:cli-sandbox_network_proxy-test",
                     "-//codex-rs/core:core-all-test",
+                    "-//codex-rs/core:core-all-wine-exec-test",
                 ],
             ),
             (
@@ -236,7 +240,18 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                 [
                     "//codex-rs/linux-sandbox:linux-sandbox-all-test",
                     "//codex-rs/cli:cli-sandbox_network_proxy-test",
+                ],
+            ),
+            (
+                [
+                    "--strategy=TestRunner=local",
+                    "--test_verbose_timeout_warnings",
+                    "--nocache_test_results",
+                    "--build_metadata=TAG_job=native-core-integration-tests",
+                ],
+                [
                     "//codex-rs/core:core-all-test",
+                    "//codex-rs/core:core-all-wine-exec-test",
                 ],
             ),
         ]

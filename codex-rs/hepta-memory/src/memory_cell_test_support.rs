@@ -41,7 +41,7 @@ pub(super) struct Fixture {
 
 pub(super) async fn fixture() -> Fixture {
     let temp = TempDir::new().unwrap();
-    let fleet = HeptaFleetRoot::parse(temp.path().to_path_buf()).unwrap();
+    let fleet = HeptaFleetRoot::parse(temp.path().canonicalize().unwrap()).unwrap();
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cde").unwrap();
     let store = CognitiveStore::open(&fleet.layout().agent(&owner))
         .await

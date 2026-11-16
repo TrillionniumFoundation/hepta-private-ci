@@ -206,10 +206,10 @@ impl OriginalCellQ24ModelCommandHostV1 {
             inputs.training.clone(),
             material.original_evaluation().clone(),
         )?;
-        if let Some(retained) = &state.context {
-            if retained.binding()? != context.binding()? {
-                return Err(Error::Binding("unchanged original Model predecessors"));
-            }
+        if let Some(retained) = &state.context
+            && retained.binding()? != context.binding()?
+        {
+            return Err(Error::Binding("unchanged original Model predecessors"));
         }
         let fresh = context.authenticate(inputs.started)?;
         material.authenticate_current(fresh)?;

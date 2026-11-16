@@ -70,7 +70,7 @@ pub(super) fn verify_pre_b_policy(
         .map_err(|_| {
             Error::Binding("complete fixed comparison policy with actual Cell structures")
         })?;
-    if record.as_object().map(|object| object.len()) != Some(6)
+    if record.as_object().map(serde_json::Map::len) != Some(6)
         || record["comparison"] != serde_json::to_value(&comparison)?
         || record["original_estimand"]
             != serde_json::to_value(product.input().base_estimand_digest.into_array())?

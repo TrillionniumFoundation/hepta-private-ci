@@ -48,13 +48,15 @@ pub(super) async fn recover(
             .execute_authorized_taskflow_effect(
                 &fixture.authority,
                 &mut replay,
-                &record.intent,
-                payload,
-                &fixture.owner,
-                &record.signed,
-                &binding,
-                "signed-worker-dispatch",
-                now_ms(),
+                AuthorizedEffectDispatchRequest {
+                    intent: &record.intent,
+                    wire_payload: payload,
+                    fence: &fixture.owner,
+                    signed_grant: &record.signed,
+                    expected_binding: &binding,
+                    command_id: "signed-worker-dispatch",
+                    now_ms: now_ms(),
+                },
             )
             .await
             .is_err()
@@ -143,6 +145,7 @@ pub(super) async fn recover(
     let AuthorizedEffectRecoveryResult::Observed(receipt) = recovered else {
         panic!("must recover observation");
     };
+    let receipt = *receipt;
     // Reconciliation preserves the first uncertain observation in the immutable
     // step history. Its terminal result is carried separately by final_outcome.
     assert_eq!(

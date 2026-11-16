@@ -174,6 +174,7 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     journal: FinalHoldoutJournalV1,
     state_digest: Digest32,
     poisoned: bool,
+    read_error: Option<FinalHoldoutCasStoreError>,
 }
 
 #[cfg(feature = "qualification-owned-file-read")]
@@ -230,6 +231,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
             journal,
             state_digest: record.state_digest,
             poisoned: false,
+            read_error: None,
         })
     }
 
@@ -270,6 +272,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
             journal,
             state_digest: record.state_digest,
             poisoned: false,
+            read_error: None,
         })
     }
 
@@ -281,6 +284,10 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     ) -> Result<FinalHoldoutJournalReceiptV1, FencedHoldoutError> {
         if self.poisoned {
             return Err(FencedHoldoutError::Poisoned);
+        }
+        if self.read_error.is_some() {
+            self.poisoned = true;
+            return Err(FencedHoldoutError::Indeterminate);
         }
         let mut candidate = self.journal.clone();
         let receipt = candidate
@@ -326,11 +333,16 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         if self.poisoned {
             return Err(FencedHoldoutError::Poisoned);
         }
+        if let Some(error) = self.read_error {
+            return Err(FencedHoldoutError::Store(error));
+        }
         let current = match self.store.load(self.binding) {
             Ok(current) => current.ok_or(FencedHoldoutError::Missing)?,
             Err(FinalHoldoutCasStoreError::Indeterminate) => {
-                self.poisoned = true;
-                return Err(FencedHoldoutError::Indeterminate);
+                self.read_error = Some(FinalHoldoutCasStoreError::Indeterminate);
+                return Err(FencedHoldoutError::Store(
+                    FinalHoldoutCasStoreError::Indeterminate,
+                ));
             }
             Err(error) => return Err(FencedHoldoutError::Store(error)),
         };
@@ -372,6 +384,22 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         ))
     }
 
+    /// Execution reconciliation reports uncertainty at the owner boundary.
+    /// Retain the original store error for release observations, while fencing
+    /// every later execution read after the first indeterminate observation.
+    pub(crate) fn read_consumption_for_execution(
+        &mut self,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<(Digest32, Option<FinalHoldoutJournalReceiptV1>), FencedHoldoutError> {
+        match self.read_consumption(plan) {
+            Err(FencedHoldoutError::Store(FinalHoldoutCasStoreError::Indeterminate)) => {
+                self.poisoned = true;
+                Err(FencedHoldoutError::Indeterminate)
+            }
+            observed => observed,
+        }
+    }
+
     #[must_use]
     pub fn state_digest(&self) -> Digest32 {
         self.state_digest
@@ -393,7 +421,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
 
     #[must_use]
     pub fn is_poisoned(&self) -> bool {
-        self.poisoned
+        self.poisoned || self.read_error.is_some()
     }
 
     #[must_use]

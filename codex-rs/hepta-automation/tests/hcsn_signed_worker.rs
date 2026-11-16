@@ -20,6 +20,7 @@ use std::process::Command;
 use std::time::Duration;
 use std::time::Instant;
 
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;
@@ -192,13 +193,15 @@ async fn dispatch(
             .execute_authorized_taskflow_effect(
                 &fixture.authority,
                 &mut driver,
-                &intent,
-                payload,
-                &fixture.owner,
-                &invalid,
-                &binding,
-                "signed-worker-dispatch",
-                now_ms(),
+                AuthorizedEffectDispatchRequest {
+                    intent: &intent,
+                    wire_payload: payload,
+                    fence: &fixture.owner,
+                    signed_grant: &invalid,
+                    expected_binding: &binding,
+                    command_id: "signed-worker-dispatch",
+                    now_ms: now_ms(),
+                },
             )
             .await,
         Err(AuthorizedEffectError::FinalUse(
@@ -234,13 +237,15 @@ async fn dispatch(
         .execute_authorized_taskflow_effect(
             &fixture.authority,
             &mut driver,
-            &intent,
-            payload,
-            &fixture.owner,
-            &signed,
-            &binding,
-            "signed-worker-dispatch",
-            now_ms(),
+            AuthorizedEffectDispatchRequest {
+                intent: &intent,
+                wire_payload: payload,
+                fence: &fixture.owner,
+                signed_grant: &signed,
+                expected_binding: &binding,
+                command_id: "signed-worker-dispatch",
+                now_ms: now_ms(),
+            },
         )
         .await
         .expect("signed real supervisor dispatch");

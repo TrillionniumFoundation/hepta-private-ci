@@ -1,9 +1,16 @@
-//! Isolated mechanism experiment; no production token or original test changes.
+//! MIC counterexample regression coupled to public production admission refusal.
+//! The original isolation oracle still fails; this does not qualify a sandbox.
 
 use super::probe_support::*;
 use super::*;
 use anyhow::Context;
+use codex_protocol::models::PermissionProfile;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use serde::Serialize;
+use std::collections::HashMap;
 use std::path::Path;
+use std::path::PathBuf;
+use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
 use windows_sys::Win32::Security::ACE_HEADER;
 use windows_sys::Win32::Security::Authorization::ConvertStringSecurityDescriptorToSecurityDescriptorW;
@@ -335,7 +342,7 @@ fn audit_dacl(case: u8, object: usize, path: &Path, known: &[&LocalSid]) -> Resu
     Ok((everyone_allow, everyone_deny))
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 struct Operation {
     success: bool,
     denied: bool,
@@ -357,7 +364,7 @@ fn operation(result: std::io::Result<()>) -> Operation {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 struct Observation {
     outside_read: bool,
     outside: [Operation; 4],
@@ -378,6 +385,100 @@ impl Observation {
             && self.inside_postconditions
             && self.protected_git_retained
     }
+}
+
+fn require_public_capture_refusals(
+    case: u8,
+    root: &Path,
+    allowed: &[PathBuf; 2],
+    outside: &Path,
+    git: &Path,
+    objects: &[(PathBuf, u32)],
+) -> Result<()> {
+    let profile = PermissionProfile::workspace_write();
+    let roots = allowed
+        .iter()
+        .map(AbsolutePathBuf::from_absolute_path)
+        .collect::<Result<Vec<_>, _>>()?;
+    let denies = [
+        AbsolutePathBuf::from_absolute_path(git)?,
+        AbsolutePathBuf::from_absolute_path(outside)?,
+    ];
+    let home = root.join("home-must-not-be-created");
+    let marker = allowed[0].join("process-started.txt");
+    let command = vec![
+        "C:\\Windows\\System32\\cmd.exe".to_owned(),
+        "/d".to_owned(),
+        "/c".to_owned(),
+        format!("echo started>\"{}\"", marker.display()),
+    ];
+    let env = HashMap::from([
+        ("TEMP".to_owned(), allowed[1].display().to_string()),
+        ("TMP".to_owned(), allowed[1].display().to_string()),
+    ]);
+    let before = snapshot(root)?;
+    let unchanged = || -> Result<()> {
+        assert_eq!((home.try_exists()?, marker.try_exists()?), (false, false));
+        assert_eq!(snapshot(root)?, before);
+        // The shared snapshot covers entries, contents and DACLs. Also check
+        // every explicit mandatory label before the raw mechanism runs.
+        for (index, (path, level)) in objects.iter().enumerate() {
+            audit_label(case, index, path, *level)?;
+        }
+        Ok(())
+    };
+    let Err(error) = crate::run_windows_sandbox_capture_with_filesystem_overrides(
+        &profile,
+        &roots,
+        &home,
+        command.clone(),
+        &allowed[0],
+        env.clone(),
+        /*timeout_ms*/ Some(5_000),
+        /*cancellation*/ None,
+        &[],
+        &denies,
+        /*use_private_desktop*/ true,
+    ) else {
+        anyhow::bail!("MIC_ADMISSION legacy admitted unsafe fixture case={case}");
+    };
+    anyhow::ensure!(
+        error
+            .downcast_ref::<crate::LegacyWindowsSandboxIsolationUnavailable>()
+            .is_some(),
+        "MIC_ADMISSION unexpected legacy error case={case}: {error:#}"
+    );
+    unchanged()?;
+    let Err(error) = crate::run_windows_sandbox_capture_for_permission_profile_elevated(
+        crate::ElevatedSandboxProfileCaptureRequest {
+            permission_profile: &profile,
+            workspace_roots: &roots,
+            codex_home: &home,
+            command,
+            cwd: &allowed[0],
+            env_map: env,
+            timeout_ms: Some(5_000),
+            cancellation: None,
+            use_private_desktop: true,
+            proxy_enforced: false,
+            network_proxy_restricting_sid: None,
+            read_roots_override: None,
+            read_roots_include_platform_defaults: true,
+            write_roots_override: Some(allowed),
+            deny_read_paths_override: &[],
+            deny_write_paths_override: &denies,
+        },
+    ) else {
+        anyhow::bail!("MIC_ADMISSION elevated admitted unsafe fixture case={case}");
+    };
+    anyhow::ensure!(
+        error
+            .downcast_ref::<crate::ElevatedWindowsSandboxIsolationUnavailable>()
+            .is_some(),
+        "MIC_ADMISSION unexpected elevated error case={case}: {error:#}"
+    );
+    unchanged()?;
+    Ok(())
 }
 
 fn observe(case: u8, root: &Path) -> Result<Observation> {
@@ -456,6 +557,10 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
             );
         }
     }
+    // Exercise real public capture entry points on this exact prepared fixture.
+    // These refusals must precede provisioning, child launch, or ACL/label edits.
+    // The private diagnostic token below remains confined to owned fixtures.
+    require_public_capture_refusals(case, root, &allowed, &outside, &git, &objects)?;
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     let base_state = token_state(base.0)?;
     anyhow::ensure!(base_state.0 >= MEDIUM, "MIC_SETUP base_below_medium");
@@ -524,11 +629,29 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
         result.protected_git_retained,
         result.original_oracle()
     );
+    println!(
+        "MIC_CASE_JSON {}",
+        serde_json::json!({
+            "schema": "hepta.windows-mic-counterexample.v1",
+            "case": case,
+            "observation": result,
+            "original_oracle": result.original_oracle(),
+            "original_isolation_hypothesis": if result.original_oracle() { "PASS" } else { "FAIL" },
+            "production_admission": {
+                "legacy_error": "LegacyWindowsSandboxIsolationUnavailable",
+                "elevated_error": "ElevatedWindowsSandboxIsolationUnavailable",
+                "fixture_unchanged": true,
+                "child_marker_absent": true,
+                "provisioning_absent": true,
+            },
+            "permission_qualification": false,
+        })
+    );
     Ok(result)
 }
 
 #[test]
-fn mic_labels_preserve_original_outside_and_protected_child_oracles() -> Result<()> {
+fn mic_counterexamples_require_public_admission_refusal() -> Result<()> {
     let mut observations = Vec::new();
     for case in 0..=4 {
         let fixture = tempfile::tempdir()?;
@@ -558,11 +681,41 @@ fn mic_labels_preserve_original_outside_and_protected_child_oracles() -> Result<
         observations[1].outside_read && observations[1].inside.iter().all(|row| row[0].denied),
         "MIC_CONTROL low_without_prepared_roots"
     );
-    for (case, observation) in observations.iter().enumerate().skip(2) {
-        anyhow::ensure!(
-            observation.original_oracle(),
-            "MIC_HYPOTHESIS original_oracle_failed case={case}"
-        );
+    // Native 577c03b proved the preservation hypothesis false. Preserve every
+    // original operation and original_oracle evaluation, including the failed
+    // cases, instead of presenting a negative observation as isolation success.
+    // Compare the complete counterexample, not merely !original_oracle(): a
+    // missing read grant, wrong error, broken writable root, or absent admission
+    // refusal cannot make this regression pass.
+    let success = Operation {
+        success: true,
+        denied: false,
+        os: None,
+    };
+    let denied = Operation {
+        success: false,
+        denied: true,
+        os: Some(ERROR_ACCESS_DENIED as i32),
+    };
+    for (case, observation) in observations.iter().enumerate() {
+        let expected = Observation {
+            outside_read: true,
+            outside: if matches!(case, 0 | 3) {
+                [denied, denied, success, success]
+            } else {
+                [denied; 4]
+            },
+            inside: if case == 1 {
+                [[denied; 3]; 2]
+            } else {
+                [[success; 3]; 2]
+            },
+            protected_git: if case == 1 { denied } else { success },
+            outside_postconditions: !matches!(case, 0 | 3),
+            inside_postconditions: case != 1,
+            protected_git_retained: case == 1,
+        };
+        assert_eq!(observation, &expected, "MIC_COUNTEREXAMPLE case={case}");
     }
     Ok(())
 }

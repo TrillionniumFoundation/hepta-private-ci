@@ -55,31 +55,27 @@ impl SessionSlot {
         let session = slot.take().ok_or("current session is busy")?;
         Ok(SessionLease {
             owner: self,
-            session: Some(session),
+            session,
         })
     }
 }
 
 pub(super) struct SessionLease<'a> {
     owner: &'a SessionSlot,
-    session: Option<Session>,
+    session: Session,
 }
 
 impl Deref for SessionLease<'_> {
     type Target = Session;
 
     fn deref(&self) -> &Self::Target {
-        self.session
-            .as_ref()
-            .expect("a live lease owns its session")
+        &self.session
     }
 }
 
 impl DerefMut for SessionLease<'_> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.session
-            .as_mut()
-            .expect("a live lease owns its session")
+        &mut self.session
     }
 }
 
@@ -99,11 +95,7 @@ impl Drop for SessionLease<'_> {
             self.owner.cancellation.cancel();
             return;
         }
-        let Some(session) = self.session.take() else {
-            self.owner.cancellation.cancel();
-            return;
-        };
-        *slot = Some(session);
+        *slot = Some(std::mem::take(&mut self.session));
     }
 }
 

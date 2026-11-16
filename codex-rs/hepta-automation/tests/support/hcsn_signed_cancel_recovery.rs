@@ -136,6 +136,7 @@ pub(super) async fn recover(
         let AuthorizedEffectRecoveryResult::Observed(receipt) = recovered else {
             panic!("observed recovery required");
         };
+        let receipt = *receipt;
         assert_eq!(
             (
                 receipt.state,

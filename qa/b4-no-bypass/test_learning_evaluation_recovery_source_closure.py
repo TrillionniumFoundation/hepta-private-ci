@@ -136,7 +136,7 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
     def test_execution_context_keeps_canonical_original_owner_key_before_claim(self):
         source = (ROOT / PRODUCT).read_text()
         for function, marker in (
-            ("fn execution_context(", ".read_consumption(&request.plan.frozen_plan)"),
+            ("fn execution_context(", ".read_consumption_for_execution(&request.plan.frozen_plan)"),
             ("fn execution_context(", "product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?"),
             ("fn product_evaluation_execution_key_v1(", "if namespace.is_zero()"),
             ("fn product_evaluation_execution_key_v1(", "evaluator\n        .validate(evaluator.authenticated_at)"),

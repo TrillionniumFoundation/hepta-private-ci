@@ -8,6 +8,8 @@ on:
       - qualification/hcsn_qvi/run_continuum.py
       - qualification/hcsn_qvi/tests/test_continuum.py
       - .github/workflows/hcsn-boundary-mechanism.yml
+      - scripts/hepta_ci_history.py
+      - scripts/test_hepta_ci_history.py
   workflow_dispatch:
 
 permissions:
@@ -47,6 +49,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 8
           persist-credentials: false
+      - name: Fetch exact formatting baseline
+        id: history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/hepta_ci_history.py --commit "$BASE_HEAD"
 
       - name: Record source and execution identity
         id: identity
@@ -159,7 +166,7 @@ jobs:
           steps = json.loads(os.environ["STUDY_STEPS"])
           experiment = os.environ["LANE"] + "_experiment"
           tests = os.environ["LANE"] + "_tests"
-          required = ["checkout", "identity", "runtime", tests, experiment, "clean"]
+          required = ["checkout", "history", "identity", "runtime", tests, experiment, "clean"]
           outcomes = {key: steps.get(key, {}).get("outcome", "missing") for key in required}
           record = {"schema": "hcsn-boundary-study-terminal-v1", "steps": outcomes,
                     "completed": all(value == "success" for value in outcomes.values()),

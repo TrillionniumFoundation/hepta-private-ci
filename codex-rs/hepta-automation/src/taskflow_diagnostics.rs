@@ -35,7 +35,7 @@ pub(crate) fn storage_unavailable(stage: &'static str, error: sqlx::Error) -> Ta
     };
     let sqlite_extended_code = error
         .as_database_error()
-        .and_then(|error| error.code())
+        .and_then(sqlx::error::DatabaseError::code)
         .and_then(|code| code.parse::<i32>().ok());
     // Write directly to inherited stderr so the process test log captures this
     // without a tracing subscriber. Logging failure must preserve Unavailable.

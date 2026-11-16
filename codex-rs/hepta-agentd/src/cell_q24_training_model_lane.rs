@@ -234,6 +234,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         #[cfg(target_os = "linux")]
         let source = training.original_source_for_operation()?;
         #[cfg(target_os = "linux")]
+        #[expect(
+            clippy::redundant_closure,
+            reason = "source admission requires an explicit typed authority call"
+        )]
         let mut operation = source
             .as_ref()
             .map(|source| crate::OriginalCellQ24TrainingSourceV1::begin_source_operation(source))
@@ -252,13 +256,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         #[cfg(target_os = "linux")]
         let source_bound = source.is_some();
         #[cfg(target_os = "linux")]
-        if let (Some(source), Some(operation)) = (source.as_ref(), operation.as_mut()) {
-            if OriginalCellQ24TrainingSourceOperationV1::read_after_native(operation, source)
+        if let (Some(source), Some(operation)) = (source.as_ref(), operation.as_mut())
+            && OriginalCellQ24TrainingSourceOperationV1::read_after_native(operation, source)
                 .is_err()
-            {
-                owners.source_fenced = true;
-                return Err(Error::CommitUncertain);
-            }
+        {
+            owners.source_fenced = true;
+            return Err(Error::CommitUncertain);
         }
         let current = owners.read_original_completion().map_err(|_| {
             #[cfg(target_os = "linux")]
@@ -268,14 +271,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             Error::CommitUncertain
         })?;
         #[cfg(target_os = "linux")]
-        if source_bound {
-            if owners
+        if source_bound
+            && owners
                 .require_retained_attestation_current(&current)
                 .is_err()
-            {
-                owners.source_fenced = true;
-                return Err(Error::CommitUncertain);
-            }
+        {
+            owners.source_fenced = true;
+            return Err(Error::CommitUncertain);
         }
         if current.receipt != original.receipt || current.attestation != original.attestation {
             #[cfg(target_os = "linux")]

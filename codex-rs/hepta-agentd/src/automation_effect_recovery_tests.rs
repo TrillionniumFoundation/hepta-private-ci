@@ -226,6 +226,7 @@ async fn local_terminal_recovery_preserves_uncertain_history_without_provider_lo
     let AgentdAutomationEffectReconcileOutcome::Observed(receipt) = outcome else {
         panic!("durable terminal evidence must not fall back to unavailable provider lookup");
     };
+    let receipt = *receipt;
     assert_eq!(
         (
             receipt.state,

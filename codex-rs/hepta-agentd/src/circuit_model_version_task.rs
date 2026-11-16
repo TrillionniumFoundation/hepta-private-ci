@@ -119,7 +119,7 @@ impl OriginalCircuitModelTaskInputsV1 {
                 fence: self.fence,
                 circuit: self.circuit,
                 routes: self.routes,
-                bundle: candidate.clone(),
+                bundle: candidate,
                 model: self.model,
                 worker_generation: self.worker_generation,
                 maximum_cell_records: self.maximum_cell_records,
@@ -208,7 +208,7 @@ impl ModelVersionInstalledTaskV1 {
             &self.identity,
             task.source(),
         )?;
-        task.require_bundle(&candidate)?;
+        task.require_bundle(candidate)?;
         let after = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
         if after
             != (LearningIterationObservationV1::Selection {

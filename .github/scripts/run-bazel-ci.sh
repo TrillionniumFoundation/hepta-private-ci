@@ -302,8 +302,11 @@ if [[ "${RUNNER_OS:-}" == "macOS" ]]; then
   # Remote --jobs=800 also selects the local Skyframe executor parallelism.
   # Hosted macOS runners exhausted native threads before completing the test
   # roster. Keep this host at the repository's ordinary 30-job bound after the
-  # remote config, with the same targets, sandbox strategy and test deadlines.
-  post_config_bazel_args+=(--jobs=30)
+  # remote config. Each Rust test action already runs its own parallel suite;
+  # serialize those actions so subprocess startup and PTY deadlines measure
+  # the test itself instead of competition with unrelated suites. Preserve the
+  # full roster, Rust test parallelism, sandbox strategy and original deadlines.
+  post_config_bazel_args+=(--jobs=30 --local_test_jobs=1)
 fi
 
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then

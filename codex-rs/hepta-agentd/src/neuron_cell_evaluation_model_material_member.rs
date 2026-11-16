@@ -1,7 +1,6 @@
 //! Verify complete original Product commitment chains, without old seal decode.
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 use codex_hepta_types::Digest32;

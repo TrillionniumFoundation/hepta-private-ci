@@ -247,7 +247,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         }
         let (namespace, previous) = self
             .holdout
-            .read_consumption(&request.plan.frozen_plan)
+            .read_consumption_for_execution(&request.plan.frozen_plan)
             .map_err(ProductEvaluationError::from)?;
         let key = product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?;
         Ok((key, previous))
@@ -264,7 +264,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         authenticate(request, &signed, &signing_payload(&key, body))?;
         let (_, consumed) = self
             .holdout
-            .read_consumption(&request.plan.frozen_plan)
+            .read_consumption_for_execution(&request.plan.frozen_plan)
             .map_err(ProductEvaluationError::from)?;
         let consumed = consumed.ok_or(ProductEvaluationExecutionErrorV1::MissingExecution)?;
         let mut restored = execution_codec::decode_execution(body, request.plan, &consumed)?;
@@ -277,7 +277,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         }
         let (_, current) = self
             .holdout
-            .read_consumption(&request.plan.frozen_plan)
+            .read_consumption_for_execution(&request.plan.frozen_plan)
             .map_err(ProductEvaluationError::from)?;
         if current.as_ref() != Some(&consumed) {
             return Err(ProductEvaluationError::Binding("current holdout consumption").into());

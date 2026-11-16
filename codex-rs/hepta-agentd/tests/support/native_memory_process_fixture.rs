@@ -42,8 +42,8 @@ pub struct Fixture {
     pub model: NativeMemoryModelConfigV1,
 }
 
-pub fn now_ms() -> u64 {
-    SystemAuthorityClock.now_unix_ms().unwrap()
+pub fn now_ms() -> Result<u64> {
+    Ok(SystemAuthorityClock.now_unix_ms()?)
 }
 fn d(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -123,7 +123,7 @@ pub async fn prepare(
     let identity = config.identity().clone();
     let home = &identity.home_root;
     std::fs::set_permissions(home, std::fs::Permissions::from_mode(0o700))?;
-    let now = now_ms();
+    let now = now_ms()?;
     let payload = SourceLeasePayload {
         schema: "hepta.memory-cell.source-lease.v1".into(),
         signer_id: "process.source.issuer".into(),
@@ -169,8 +169,9 @@ pub async fn prepare(
         /*lease_generation*/ 1,
     )
     .await?;
-    let (mut model, document_bytes) = trained.unwrap_or_else(|| {
-        (
+    let (mut model, document_bytes) = match trained {
+        Some(trained) => trained,
+        None => (
             stub_model(home),
             serde_json::to_vec(&MemoryCellDocumentV1 {
                 schema_version: 1,
@@ -180,10 +181,9 @@ pub async fn prepare(
                     relation: "repair".into(),
                 },
                 value: "order".into(),
-            })
-            .unwrap(),
-        )
-    });
+            })?,
+        ),
+    };
     let document: MemoryCellDocumentV1 = serde_json::from_slice(&document_bytes)?;
     let source = SourceDraft {
         scope: CognitiveScope::AgentPrivate,

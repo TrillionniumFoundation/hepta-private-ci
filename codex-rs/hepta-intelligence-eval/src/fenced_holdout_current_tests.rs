@@ -155,6 +155,7 @@ fn holdout_current_preserves_cursor_lock_and_fences_read_errors() {
 
     let state = store.state.clone();
     let length = store.length;
+    let image_digest = store.image_digest;
     let history_digest = store.history_digest;
     drop(store);
     // Test-only descriptor fault: retain the genuine original state and file,
@@ -169,6 +170,7 @@ fn holdout_current_preserves_cursor_lock_and_fences_read_errors() {
         binding: digest("binding"),
         state,
         length,
+        image_digest,
         history_digest,
         poisoned: false,
     };

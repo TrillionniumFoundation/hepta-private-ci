@@ -49,7 +49,8 @@ fn root(label: &str) -> Result<PathBuf> {
 }
 
 fn command(f: &Fixture, digest: Digest32, tag: &str) -> Result<Command> {
-    let mut command = Command::new(env!("CARGO_BIN_EXE_codex-hepta-agentd"));
+    let binary = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
+    let mut command = Command::new(&binary);
     command
         .current_dir(&f.identity.workspace)
         .env(
@@ -88,9 +89,9 @@ fn command(f: &Fixture, digest: Digest32, tag: &str) -> Result<Command> {
         );
     retain(
         &f.root.join(format!("{tag}.command.json")),
-        &json!({"program":env!("CARGO_BIN_EXE_codex-hepta-agentd"),
+        &json!({"program":binary,
         "arguments":command.get_args().map(|a|a.to_string_lossy().into_owned()).collect::<Vec<_>>(),
-        "binary_sha256":file_sha(std::path::Path::new(env!("CARGO_BIN_EXE_codex-hepta-agentd")))?,
+        "binary_sha256":file_sha(&binary)?,
         "cwd":f.identity.workspace,"spawn_generation":f.identity.spawn_generation,"default_build":true,"production_qualified":false}),
     )?;
     Ok(command)
@@ -302,7 +303,7 @@ async fn exercise(f: &Fixture, child: &mut Child, positive: bool) -> Result<Valu
         ready(f,child,&client).await?;
         let status=control(f,/*sequence*/ 1,json!({"method":"status"})).await?;
         ensure!(status["ok"]==true && status["payload"]["daemon_pid"]==child.id(),"not the actual owned default daemon");
-        let query=MemoryCellQueryV1 {request_id:StableId::new("process.current.query")?,key:f.document.key.clone(),deadline_unix_ms:now_ms()+180_000};
+        let query=MemoryCellQueryV1 {request_id:StableId::new("process.current.query")?,key:f.document.key.clone(),deadline_unix_ms:now_ms()?+180_000};
         let mut wrong=query.clone();wrong.key.role=MemoryCellRoleV1::Semantic;
         ensure!(control(f,/*sequence*/ 2,json!({"method":"prepare","run_id":"process.current.run","query":wrong})).await?["ok"]==false,"typed key substitution admitted");
         ensure!(control(f,/*sequence*/ 3,json!({"method":"prepare","run_id":"missing.run","query":query})).await?["ok"]==false,"unknown objective admitted");
@@ -310,10 +311,10 @@ async fn exercise(f: &Fixture, child: &mut Child, positive: bool) -> Result<Valu
         ensure!(prepared["ok"]==true,"actual current prepare rejected: {prepared}");
         let binding:FinalUseBinding=serde_json::from_value(prepared["payload"]["binding"].clone())?;
         ensure!(binding.subject_id==f.identity.agent_id.as_str() && binding.destination_id=="process.ndu","binding identity differs");
-        let grant=sign(binding,"process.current.read",now_ms())?;
+        let grant=sign(binding,"process.current.read",now_ms()?)?;
         let prepared_id=prepared["payload"]["prepared_id"].clone();
         ensure!(control(f,/*sequence*/ 5,json!({"method":"execute","prepared_id":"not-the-prepared-read","grant":grant})).await?["ok"]==false,"prepared identity substitution admitted");
-        let revoked=feed(/*revision*/ 3,std::slice::from_ref(&grant.grant.grant_id),now_ms())?;
+        let revoked=feed(/*revision*/ 3,std::slice::from_ref(&grant.grant.grant_id),now_ms()?)?;
         if !positive {ensure!(control(f,/*sequence*/ 6,json!({"method":"revoke","update":revoked})).await?["ok"]==true,"revocation failed");}
         let executed=control(f,/*sequence*/ 7,json!({"method":"execute","prepared_id":prepared_id,"grant":grant})).await?;
         if positive {

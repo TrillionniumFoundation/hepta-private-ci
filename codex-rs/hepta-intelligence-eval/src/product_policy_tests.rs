@@ -386,14 +386,14 @@ fn policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata
     let mut count_overflow = bytes.clone();
     count_overflow[offsets[0] - 6..offsets[0] - 2].fill(255);
     assert!(ProductEvaluationPolicyV2::from_canonical_commitment_bytes(&count_overflow).is_err());
-    let mut invalid_id = bytes.clone();
+    let mut invalid_id = bytes;
     invalid_id[offsets[0] - 2..offsets[0]].fill(0);
     assert!(ProductEvaluationPolicyV2::from_canonical_commitment_bytes(&invalid_id).is_err());
     let mut oversized = original.input.clone();
     oversized.folds[0].training_episodes = (0..20_000)
         .map(|index| id(&format!("large-episode-{index}")))
         .collect();
-    assert!(ProductEvaluationPolicyV2::freeze(original.context.clone(), oversized).is_err());
+    assert!(ProductEvaluationPolicyV2::freeze(original.context, oversized).is_err());
     assert!(ProductEvaluationPolicyV2::from_canonical_commitment_bytes(&vec![0; 131_073]).is_err());
 }
 
@@ -470,7 +470,7 @@ fn policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes() {
         assert!(original.instantiate(&invalid, &pair).is_err());
         assert!(original.expected_commitment_bytes(&invalid, &pair).is_err());
     }
-    let mut changed_pair = pair.clone();
+    let mut changed_pair = pair;
     changed_pair.pairs[0].input_digest = digest("different-input");
     assert_ne!(
         original

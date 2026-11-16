@@ -21,7 +21,7 @@ STORE = DIRECTORY + "fenced_holdout_file.rs"
 CURRENT = DIRECTORY + "fenced_holdout_current.rs"
 OWNER = DIRECTORY + "fenced_holdout.rs"
 FUNCTIONS = {
-    OWNER: {"fn read_consumption("},
+    OWNER: {"fn consume(", "fn read_consumption(", "fn read_consumption_for_execution(", "fn is_poisoned("},
     STORE: {"fn create(", "fn recover(", "fn require_current(", "fn require_physical_current(", "fn acquire(", "fn load(", "fn compare_and_swap("},
     CURRENT: {"fn read_physical(", "fn replay("},
 }

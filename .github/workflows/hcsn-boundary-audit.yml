@@ -6,6 +6,8 @@ on:
       - qualification/hcsn_boundary_audit/**
       - qualification/hcsn_budget_baselines/**
       - .github/workflows/hcsn-boundary-audit.yml
+      - scripts/hepta_ci_history.py
+      - scripts/test_hepta_ci_history.py
   workflow_dispatch:
 
 permissions:
@@ -34,6 +36,10 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 32
           persist-credentials: false
+      - name: Fetch exact formatting baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/hepta_ci_history.py --commit a83b2ecda37b0e18b05e7fedcaee0a63037c464f
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12.3"

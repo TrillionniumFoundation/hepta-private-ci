@@ -17,6 +17,7 @@ use crate::OriginalCircuitModelPublicationInputsV1;
 use crate::OriginalCircuitModelPublicationPredecessorsV1 as Predecessors;
 use crate::OriginalRootModelVersionIssuerV1;
 use crate::PublishedCircuitCellOwnerV1;
+use crate::neuron_generation_update_live::artifacts::GenerationArtifactOwnerV1;
 use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
 use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
@@ -118,7 +119,9 @@ impl OriginalCircuitModelVersionHostV1 {
             )?;
         task.require_completed_a(&inputs.completed)?;
         let artifacts = ModelVersionArtifactOwner::new(
-            Arc::clone(inputs.authorities.artifacts.writer()?),
+            Arc::clone(GenerationArtifactOwnerV1::writer(
+                &inputs.authorities.artifacts,
+            )?),
             checkpoint,
             inputs.selection.signed.clone(),
             inputs.selection.verifier.clone(),

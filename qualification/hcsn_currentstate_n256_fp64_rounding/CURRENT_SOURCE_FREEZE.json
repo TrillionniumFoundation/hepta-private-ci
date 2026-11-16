@@ -1,0 +1,28 @@
+{
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-fp64-rounding.yml": "523d9632fb560dd8b2f58aa2b500636b1d214b0c274a66787ef1ba26741adf3c",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/README.md": "2438a50b162d677ef06e4166d337e5aaa4e2467878c126450f72b7284ff53578",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/REQUEST.json": "b4e7b1406c209355d92c7325b1dd511e89b61b10f0645d2c54620bd65c542ff1",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/SOURCE_FREEZE.json": "840f3b4bedd74d2dc8bbff08e2b7004a6a04ae3e67e4260ad7e6a3813f63ef69",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py": "f97853b0bfcd16adc84bee9d70a6e80898cd4716c0687bba6d8184c8ed895394",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": "4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/history/rounding_workflow_formatted_v1.yml": "028eee8f7b295f214336da04b1fe7f6353889b8adbaf512006d5c12df70b1ecc",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/history/verify_source_v1.py": "752ff737be144459a22ef770667d64625f411d1391bc2677f33946d9f892dfbf",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/test_fp64_round.py": "258690f3a382cd4221e3aa254074d84014b5ab4df83a71ebea9a1c44f5097a4c",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/test_source_freeze.py": "15b7d1e2146d80b26a10460299a14c641c5e8d92a5e75f279d366a76ab8ea5f3",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py": "22c848e491c8ab048e13eeb89e88be2b27c403fdde3fd96868964c38745da556"
+  },
+  "forbidden_source_tokens": [
+    "hcsn_currentstate_n256_sparse_dynamic_intent",
+    "hcsn_currentstate_n256_independent_oracle_intent",
+    "expm_multiply"
+  ],
+  "identity": "hcsn-n256-fp64-rounding-current-source-20261116-v2",
+  "predecessor": {
+    "identity": "hcsn-n256-exact-rational-binary64-rounding-source-20261114-c06d-v1",
+    "path": "qualification/hcsn_currentstate_n256_fp64_rounding/SOURCE_FREEZE.json",
+    "sha256": "840f3b4bedd74d2dc8bbff08e2b7004a6a04ae3e67e4260ad7e6a3813f63ef69"
+  },
+  "schema": "hepta.source-freeze-successor.v2",
+  "scope": "source-only rational-to-binary64 roundTiesToEven primitive"
+}

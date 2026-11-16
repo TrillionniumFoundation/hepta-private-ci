@@ -2509,12 +2509,10 @@ async fn read_kg_sqlite_evidence(
           AND storage.storage_mode = 'revision_facts_v1'
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
-         JOIN kg_projection_generation_storage AS storage
-           ON storage.projection_scope = r.projection_scope
-          AND storage.generation = r.generation
-          AND storage.storage_mode = 'revision_facts_v1'
          WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
     )
+    .bind(expected_source_id)
+    .bind(expected_source_id)
     .bind(memory_id)
     .bind(memory_revision)
     .fetch_one(&pool)

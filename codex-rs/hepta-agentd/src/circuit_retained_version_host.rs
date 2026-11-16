@@ -39,6 +39,7 @@ use crate::OriginalCellQ24TrainingCommandConnectionV1;
 use crate::OriginalCircuitLearningReadOwnerV1;
 use crate::OriginalRootRetainedVersionIssuerV1;
 use crate::PublishedCircuitCellOwnerV1;
+use crate::neuron_generation_update_live::artifacts::GenerationArtifactOwnerV1;
 
 #[path = "circuit_retained_version_artifact.rs"]
 mod artifact;
@@ -170,7 +171,9 @@ impl OriginalCircuitRetainedVersionHostV1 {
         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;
         task.require_completed_a(&inputs.completed)?;
         let artifacts = RetainedVersionArtifactOwnerV1::new(
-            Arc::clone(inputs.authorities.artifacts.writer()?),
+            Arc::clone(GenerationArtifactOwnerV1::writer(
+                &inputs.authorities.artifacts,
+            )?),
             artifact_checkpoint,
             inputs.selection.signed.clone(),
             inputs.selection.verifier.clone(),

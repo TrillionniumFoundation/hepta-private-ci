@@ -45,6 +45,11 @@ jobs:
             authority = "Actions job timeout starts before this first-step observation; no timer is reset"
           }
           $anchor | ConvertTo-Json | Set-Content -Encoding utf8NoBOM "$records/JOB_ANCHOR.json"
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Checkout the immutable harness separately
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

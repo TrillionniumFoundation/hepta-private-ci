@@ -65,6 +65,24 @@ class OriginalPreBPolicyClosureTests(unittest.TestCase):
         cls.rows = cls.contract["added_protected_records"] + [
             edit["after"] for edit in cls.contract["protected_record_replacements"]
         ]
+        # Keep the archived contract immutable. The reviewed lint repair uses
+        # Map::len on the same object, with the same exact six-field rejection.
+        policy_path = AGENT + "neuron_cell_evaluation_on_policy_policy.rs"
+        previous = "record.as_object().map(|object| object.len()) != Some(6)"
+        current = "record.as_object().map(serde_json::Map::len) != Some(6)"
+        policy_rows = [row for row in cls.rows if row["path"] == policy_path]
+        assert len(policy_rows) == 1
+        rules = policy_rows[0]["required_function_order"]
+        assert len(rules) == 1 and rules[0]["function"] == "fn verify_pre_b_policy("
+        sequence = rules[0]["sequence"]
+        assert sequence.count(previous) == 1
+        sequence[sequence.index(previous)] = "if " + current
+        mutations = [check for check in cls.contract["semantic_mutations"]
+                     if check["path"] == policy_path
+                     and check["function"] == "fn verify_pre_b_policy("
+                     and check["marker"] == previous]
+        assert len(mutations) == 1 and mutations[0]["replacement"] == "false"
+        mutations[0]["marker"] = current
         cls.rows = [align_protected_record(row, cls.manifest["protected_file"]) for row in cls.rows]
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
 

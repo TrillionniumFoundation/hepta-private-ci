@@ -36,6 +36,7 @@ use crate::OriginalCellQ24ModelReadV1;
 use crate::PreparedAgentdGenerationUpdateV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::PublishedCircuitFeatureTaskV1;
+use crate::neuron_generation_update_live::artifacts::GenerationArtifactOwnerV1;
 
 #[path = "circuit_model_version.rs"]
 pub(crate) mod version;
@@ -304,9 +305,7 @@ fn load_original_selection(
     authorities: &AgentdGenerationUpdateAuthoritiesV1,
     selection: OriginalCircuitModelPublicationSelectionV1,
 ) -> Result<AgentdSelectedGenerationV1, Error> {
-    let artifacts = authorities
-        .artifacts
-        .writer()?
+    let artifacts = GenerationArtifactOwnerV1::writer(&authorities.artifacts)?
         .lock()
         .map_err(|_| Error::Binding("original Artifact owner lock"))?;
     Ok(AgentdSelectedGenerationV1::load(

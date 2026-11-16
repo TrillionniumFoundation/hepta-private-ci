@@ -48,6 +48,11 @@ jobs:
     env:
       CARGO_BUILD_TARGET: "x86_64-pc-windows-msvc"
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
       - name: Checkout immutable PR head without saved credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

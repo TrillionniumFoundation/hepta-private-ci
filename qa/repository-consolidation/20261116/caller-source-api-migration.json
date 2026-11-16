@@ -1,0 +1,546 @@
+{
+  "schema": "hepta.caller-source-api-migration.v1",
+  "before_manifest_sha256": "d922e5114a8043d8885bfc3a0be66a1d1834ad79e66d429044349664518287e1",
+  "after_manifest_sha256": "4f354b6844d64bb7ffbfd4c378b7e5cde62350b87e500e8e7cae2311ea377921",
+  "protected_record_count_before": 818,
+  "protected_record_count_after": 818,
+  "unchanged_all_other_manifest_fields": true,
+  "closed_caller_registration": {
+    "original": {
+      "id": "q24_task_explicit_source_attach",
+      "symbol": "AgentdState::attach_circuit_learning_delivery",
+      "receiver_type": "AgentdState",
+      "definition_path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "definition_markers": ["fn attach_circuit_learning_delivery("],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+      ],
+      "caller_markers": []
+    },
+    "current": {
+      "id": "q24_task_explicit_source_attach",
+      "symbol": "AgentdState::attach_circuit_learning_delivery",
+      "receiver_type": "AgentdState",
+      "definition_path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "definition_markers": ["fn attach_circuit_learning_delivery("],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+        "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
+      ],
+      "caller_markers": []
+    },
+    "reason": "The existing resident enrollment now calls the typed attachment API with the same AgentdState and an explicit OriginalObjective source kind, after original Root admission and candidate validation. Only that exact caller is registered; the existing caller, typed receiver, definition, and all source guards remain required."
+  },
+  "changed_markers": {
+    "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs": {
+      "authorities\n        .artifacts\n        .lock()": "GenerationArtifactOwnerV1::writer(&authorities.artifacts)?\n        .lock()",
+      "let artifacts = authorities\n        .artifacts\n        .lock()": "let artifacts = GenerationArtifactOwnerV1::writer(&authorities.artifacts)?\n        .lock()"
+    },
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs": {
+      "Arc::clone(&inputs.authorities.artifacts)": "Arc::clone(GenerationArtifactOwnerV1::writer(\n                &inputs.authorities.artifacts,\n            )?)"
+    },
+    "codex-rs/hepta-agentd/src/circuit_model_version_host.rs": {
+      "Arc::clone(&inputs.authorities.artifacts)": "Arc::clone(GenerationArtifactOwnerV1::writer(\n                &inputs.authorities.artifacts,\n            )?)"
+    },
+    "codex-rs/hepta-agentd/src/resident_learning_delivery.rs": {
+      "state\n            .attach_circuit_learning_sources(vec![request.source_run_id.clone()])": "\n        state\n            .attach_circuit_learning_delivery(\n                vec![request.source_run_id.clone()],\n                crate::learning_iteration::CircuitLearningSourceV1::OriginalObjective,\n            )",
+      "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await": "\n        host.reconcile_learning_outbox(store, Some(&request.source_run_id), state)\n            .await"
+    }
+  },
+  "original_protected_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+      "required": [
+        "pub struct AgentdRootResidentEnrollmentV3",
+        "pub(crate) struct AgentdRootResidentDeliveryV3",
+        "enum DeliveryAdmissionV3"
+      ],
+      "forbidden": [
+        "AllowVerifier",
+        "permit_all",
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "reservation.submit(",
+        "LearningIterationRuntimeBootstrapV1",
+        "SignedLearningEvidenceV1::sign",
+        "RootResidentLearningEffectGateV3"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn enroll_original_root(",
+          "sequence": [
+            "root: AgentdRootResidentLearningClientV3",
+            "self.sender.try_reserve()",
+            "oneshot::channel()",
+            "permit.send(EnrollmentV3 { root, reply })",
+            "receive.await"
+          ]
+        },
+        {
+          "function": "fn run_original_resident_delivery(",
+          "sequence": [
+            "self.receiver.recv()",
+            "self.receiver.close()",
+            "enrollment.reply.is_closed()",
+            "prepare_enrollment(&store, &state, enrollment.root)",
+            "enrollment.reply.send(Ok(())).is_err()",
+            "cancellation.cancelled().await",
+            "tokio::time::interval(Duration::from_secs(3))",
+            "state.plasticity_admission_ready()?",
+            "original.deliver(&store, &state)",
+            "Err(Error::CommitUncertain | Error::Unavailable | Error::QueueFull)"
+          ]
+        },
+        {
+          "function": "fn prepare_enrollment(",
+          "sequence": [
+            "root.profile.initial().clone()",
+            "LearningIterationCoordinatorV1::from_snapshot(initial.clone())?",
+            "request.agent_id.as_str() != store.owner_agent_id().as_str()",
+            "request.agent_id.as_str() != state.identity().agent_id.as_str()",
+            "AgentdRootResidentLearningClientV3::readback(&root).await?",
+            "if root.original_readback_only()",
+            "delivery_row(store, request.source_run_id.as_str()).await?",
+            "request_digest(store, request, &initial.owners, &row.intent)?",
+            "row.request_digest.as_ref() != Some(&digest)",
+            "DeliveryAdmissionV3::Readback",
+            "root.require_fresh_admission_channel()?",
+            "observed.snapshot().is_some() || observed.dispatch_pending()",
+            "state\n            .require_resident_learning_source_candidate(request)\n            .await",
+            "state\n            .attach_circuit_learning_sources(vec![request.source_run_id.clone()])",
+            "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await",
+            "state\n            .require_circuit_learning_source(request)\n            .await",
+            "state\n            .automation_admission_ready()",
+            "root.require_fresh_admission_channel()?",
+            "DeliveryAdmissionV3::FirstClaim",
+            "Ok(EnrolledOriginalV3"
+          ]
+        },
+        {
+          "function": "fn deliver(",
+          "sequence": [
+            "delivery_row(store, request.source_run_id.as_str()).await?",
+            "request_digest(store, request, owners, &row.intent)?",
+            "row.acknowledged_head.is_some()",
+            "retire_acknowledged_delivery(store, request, owners, &row).await",
+            "DeliveryAdmissionV3::FirstClaim",
+            "first && row.request_digest.is_none()",
+            "self.root.require_fresh_admission_channel()?",
+            "state\n                .automation_admission_ready()",
+            "state\n                .require_circuit_learning_source(request)\n                .await",
+            "self.root.require_fresh_admission_channel()?",
+            "self.admission = DeliveryAdmissionV3::Readback",
+            "store\n                .claim_circuit_learning(&row.intent, &digest)\n                .await",
+            "self.admission = DeliveryAdmissionV3::Readback",
+            "row.request_digest.as_ref() != Some(&digest)",
+            "let observed = if new_claim",
+            "state\n                .require_circuit_learning_source(request)\n                .await",
+            "state\n                .automation_admission_ready()",
+            "AgentdRootResidentLearningClientV3::admit_after_original_claim(&self.root).await?",
+            "AgentdRootResidentLearningClientV3::readback(&self.root).await?",
+            "observed.dispatch_pending()",
+            "observed.snapshot().ok_or(Error::CommitUncertain)?",
+            "snapshot.request != *request || snapshot.owners != *owners",
+            "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+            "coordinator.next_stage().is_some()",
+            "return Err(Error::CommitUncertain)",
+            "state\n            .plasticity_admission_ready()",
+            "self.root.revalidate_original_observation(&observed)?",
+            "Sha256Digest::parse(snapshot.head_digest.to_string())",
+            "store\n            .acknowledge_circuit_learning(&row.intent, &digest, &head)\n            .await",
+            "store\n            .retire_acknowledged_circuit_learning(&row.intent, &digest, &head)\n            .await",
+            "Ok(())"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "required": [
+        "pub struct OriginalCircuitRetainedVersionHostV1",
+        "state: Mutex<RetainedVersionHostStateV1>",
+        "preparation_requested: AtomicBool",
+        "publication_requested: AtomicBool",
+        "runtime_started: AtomicBool",
+        "phase: Option<RetainedVersionHostPhaseV1>",
+        "issuer_worker_started: AtomicBool,",
+        "final_use_outcome: AtomicU8,",
+        "final_use_issuer: Option<OriginalRootRetainedVersionIssuerV1>,"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "try_clone(",
+        "permit_all",
+        "forward_recovery",
+        "LearningEvidenceVerifierV1::new",
+        "RootResidentLearningProfileV3::new",
+        "initialize_host_authority(",
+        "DeploymentFinalUseIssuer::issue(",
+        "ROOT_RESIDENT_LEARNING_EXECUTE",
+        "AgentdUnixFinalUseGrantProvider::from_stream("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn from_original_owners(",
+          "sequence": [
+            "require_original_command_initial(&material)",
+            "require_initial_context(&dataset, &material)?",
+            "task.require_completed_a(&inputs.completed)?",
+            "RetainedVersionArtifactOwnerV1::new(",
+            "Arc::clone(&inputs.authorities.artifacts)",
+            "inputs.selection.signed.clone()",
+            "inputs.selection.verifier.clone()",
+            "Arc::clone(&inputs.current)",
+            "RetainedVersionHostPhaseV1::Awaiting",
+            "RetainedVersionOriginV1::Fresh"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn recover_from_original_owners(",
+          "sequence": [
+            "require_original_command_initial(&material)",
+            "require_initial_context(&dataset, &material)?",
+            "original.intent_digest.is_zero()",
+            "original.training.receipts.len() != 3",
+            "original.attestations.len() != 3",
+            "RetainedVersionHostPhaseV1::Recovered",
+            "RetainedVersionOriginV1::Recovered",
+            "expected: Some(RetainedVersionColdCutV1"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn new(",
+          "sequence": [
+            "lifetime.is_zero() || lifetime > Duration::from_secs(300)",
+            "Instant::now().checked_add(lifetime)",
+            "preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
+            "publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
+            "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
+            "Handle::try_current()"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn from_original_owners(",
+          "sequence": [
+            "final_use_issuer: AgentdUnixFinalUseGrantProvider",
+            "task.require_completed_a(&inputs.completed)?",
+            "RetainedVersionArtifactOwnerV1::new(",
+            "AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(",
+            "RetainedVersionHostPhaseV1::Awaiting",
+            "final_use_issuer: Some(final_use_issuer)"
+          ]
+        },
+        {
+          "function": "fn recover_from_original_owners(",
+          "sequence": [
+            "RetainedVersionHostPhaseV1::Recovered",
+            "RetainedVersionOriginV1::Recovered",
+            "final_use_issuer: None"
+          ]
+        },
+        {
+          "function": "fn new(",
+          "sequence": [
+            "issuer_worker_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
+            "final_use_outcome: AtomicU8::new(match origin",
+            "RetainedVersionOriginV1::Fresh => RetainedVersionFinalUseOutcomeV1::Awaiting as u8",
+            "RetainedVersionOriginV1::Recovered => {\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\n                }",
+            "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "required": [
+        "pub struct PreparedOriginalCircuitModelPublicationV1<\n    'a,",
+        "observation: OriginalCellQ24ModelReadV1<'a>,",
+        "prepared: PreparedAgentdGenerationUpdateV1<Old, New>,",
+        "started_at: u64,",
+        "pub struct OriginalCircuitModelPublicationV1 {",
+        "context: OriginalCircuitModelPublicationContextV1,",
+        "task: PublishedCircuitFeatureTaskV1,",
+        "pub async fn prepare_original_circuit_model_publication_v1<",
+        "async fn prepare_in_original_model_operation<"
+      ],
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "LearningEvidenceVerifierV1::new",
+        "LearningEvidenceTrustV1",
+        "UnixStream::connect",
+        "File::open",
+        "with_root_learning_stage_owners(",
+        "LearningIterationStageOwnerPortsV1 for",
+        "permit_all",
+        "if false",
+        "Clone",
+        "Deserialize",
+        "SigningKey",
+        "pub observation:",
+        "pub prepared:",
+        "pub context:",
+        "pub task:",
+        "AgentdUnixFinalUseGrantProvider",
+        "RunStart",
+        "with_root_learning_ordinary"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn into_original_task(",
+          "sequence": ["fn into_original_task(", "(self.task, self.context)"],
+          "top_level": []
+        },
+        {
+          "function": "fn publish_original_model_task(",
+          "sequence": [
+            "let Self",
+            "observation.require_current(started_at)?",
+            "context.authenticate_material(",
+            "observation.material(),\n            started_at,\n                         true",
+            "QueuedPublicationFence::new()",
+            "Arc::clone(&queued.cancelled)",
+            "tokio::task::spawn_blocking(move ||",
+            "context.authenticate(started_at,              true)?",
+            "require_predecessor_window(started_at, original_expiry)?",
+            "require_not_cancelled(&cancelled)?",
+            "PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)",
+            ".map_err(uncertain)?",
+            "ready\n                .into_circuit_feature_task(definition, source, completed)",
+            ".map_err(uncertain)?",
+            "binding::require_published(&context, &task,              true).map_err(uncertain)?",
+            "drop(queued)",
+            "observation.finish().await.map_err(uncertain)?",
+            "completed.model() != context.model()",
+            "return Err(uncertain(",
+            "tokio::task::spawn_blocking(move ||",
+            "binding::require_published(&context, &task,              true).map_err(uncertain)?",
+            "context\n            .authenticate_material(completed.material(), started_at,              true)\n            .map_err(uncertain)?",
+            "Ok(OriginalCircuitModelPublicationV1 { context, task })"
+          ],
+          "top_level": [
+            "observation.require_current(started_at)?",
+            "let completed: OriginalCellQ24ModelReadCompletionV1 =\n            observation.finish().await.map_err(uncertain)?",
+            "context\n            .authenticate_material(completed.material(), started_at,              true)\n            .map_err(uncertain)?"
+          ]
+        },
+        {
+          "function": "fn load_original_selection(",
+          "sequence": [
+            "authorities\n        .artifacts\n        .lock()",
+            "AgentdSelectedGenerationV1::load(",
+            "&artifacts",
+            "selection.verifier",
+            "selection.signed",
+            "selection.files",
+            "authorities.now()?"
+          ],
+          "top_level": [
+            "let artifacts = authorities\n        .artifacts\n        .lock()"
+          ]
+        },
+        {
+          "function": "fn drop(",
+          "sequence": [
+            "fn drop(",
+            "self.cancelled.store(        true, Ordering::Release)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_not_cancelled(",
+          "sequence": [
+            "cancelled.load(Ordering::Acquire)",
+            "return Err(Error::Cancelled)",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_predecessor_window(",
+          "sequence": [
+            "let current = now()?",
+            "current < started",
+            "Err(Error::Clock)",
+            "current >= expiry",
+            "Err(Error::DeadlineExceeded)",
+            "Ok(())"
+          ],
+          "top_level": []
+        }
+      ],
+      "required_order": [
+        [
+          "fn prepare_original_circuit_model_publication_v1<",
+          "let started = now()?",
+          "model.begin_original_model_read().await?",
+          "predecessors.with_original_model(observation.model().clone())?",
+          "prepare_in_original_model_operation(context, observation, inputs, started).await",
+          "fn prepare_in_original_model_operation<"
+        ],
+        [
+          "fn prepare_in_original_model_operation<",
+          "observation.model() != context.model()",
+          "observation.require_current(started)?",
+          "context.authenticate_material(observation.material(), started,              true)?",
+          "binding::require_inputs(&context, &inputs)?",
+          "QueuedPublicationFence::new()",
+          "Arc::clone(&queued.cancelled)",
+          "tokio::task::spawn_blocking(move ||",
+          "context.authenticate(started,              true)?",
+          "require_not_cancelled(&cancelled)?",
+          "binding::require_inputs(&context, &inputs)?",
+          "context.authenticate(now()?,              true)?",
+          "learning_updated_task_operation_id_v1(&coordinator)?",
+          "load_original_selection(&inputs.authorities, inputs.selection)?",
+          "selected.manifest() != &inputs.target.config.manifest",
+          "context.authenticate(started,              true)?",
+          "require_predecessor_window(started, original_expiry)?",
+          "require_not_cancelled(&cancelled)?",
+          "prepare_agentd_generation_cold_drained_update_v1(",
+          "inputs.current",
+          "inputs.authorities",
+          "inputs.predecessor",
+          "selected",
+          "inputs.target",
+          "AgentdGenerationUpdateRequestV1 {\n                    operation_id: operation.to_string(),\n                }",
+          ".map_err(uncertain)?",
+          "context\n                .authenticate(started,              true)\n                .map_err(uncertain)?",
+          "drop(queued)",
+          "observation.require_current(started).map_err(uncertain)?",
+          "context\n        .authenticate_material(observation.material(), started,              true)\n        .map_err(uncertain)?",
+          "Ok(PreparedOriginalCircuitModelPublicationV1",
+          "context,\n        observation,\n        prepared,\n        definition,\n        source,\n        completed,\n        started_at: started"
+        ]
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "required": [
+        "pub struct OriginalCircuitModelVersionHostV1 {",
+        "predecessors: Predecessors,",
+        "model: OriginalCellQ24ModelCommandClientV1,",
+        "control: Arc<NeuronGenerationCurrentOwnerV1>,",
+        "artifacts: ModelVersionArtifactOwner,",
+        "origin: Origin,",
+        "state: Mutex<OriginalModelVersionState>,",
+        "requested: AtomicBool,",
+        "runtime_started: AtomicBool,",
+        "end: Instant,",
+        "issuer: OriginalRootModelVersionIssuerV1,",
+        "awaiting: Option<Awaiting>,",
+        "context: Option<Arc<OriginalModelPublicationContext>>,",
+        "installed: Option<ModelVersionInstalledTaskV1>,",
+        "config: Option<AgentdConfig>,"
+      ],
+      "forbidden": [
+        "SigningKey::generate",
+        "SigningKey::from_bytes",
+        "LearningEvidenceVerifierV1::new",
+        "LearningEvidenceTrustV1",
+        "UnixStream::connect",
+        "File::open",
+        "with_root_learning_stage_owners(",
+        "LearningIterationStageOwnerPortsV1 for",
+        "permit_all",
+        "if false",
+        "Clone",
+        "Deserialize",
+        "SigningKey",
+        "RunStart",
+        "pub state:",
+        "pub requested:",
+        "pub model:",
+        "pub issuer:",
+        "pub end:",
+        "pub connections:",
+        "bool, origin",
+        "new_issuer"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn from_original_owners(",
+          "sequence": [
+            "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &predecessors.material,\n            )?",
+            "task.require_completed_a(&inputs.completed)?",
+            "ModelVersionArtifactOwner::new(",
+            "Arc::clone(&inputs.authorities.artifacts)",
+            "inputs.selection.signed.clone(),\n            inputs.selection.verifier.clone()",
+            "Arc::clone(&inputs.current)",
+            "AgentdUnixFinalUseGrantProvider::into_original_model_version_issuer(issuer)?",
+            "Self::new(",
+            "Origin::Fresh",
+            "awaiting: Some(Awaiting",
+            "context: None,\n                intent: None,\n                installed: None,\n                config: None"
+          ],
+          "top_level": [
+            "let (initial_binding, _) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &predecessors.material,\n            )?",
+            "task.require_completed_a(&inputs.completed)?"
+          ]
+        },
+        {
+          "function": "fn recover_from_original_owners(",
+          "sequence": [
+            "original.intent_digest.is_zero()",
+            "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &predecessors.material,\n            )?",
+            "ModelVersionArtifactOwner::new(",
+            "original.artifacts,\n            original.artifact_checkpoint",
+            "original.artifact_selection,\n            original.artifact_verifier",
+            "ModelVersionInstalledTaskV1",
+            "cell: original.cell,\n            source: original.source,\n            identity: original.identity",
+            "intent: original.intent_digest",
+            "installed.observe(&original.context)?",
+            "Self::new(",
+            "Origin::Recovered",
+            "awaiting: None",
+            "context: Some(Arc::new(original.context))",
+            "intent: Some(original.intent_digest),\n                installed: Some(installed),\n                config: None"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn new(",
+          "sequence": [
+            "lifetime.is_zero() || lifetime > Duration::from_secs(300)",
+            "return Err(Error::Binding(",
+            "state: Mutex::new(state)",
+            "requested: AtomicBool::new(origin == Origin::Recovered)",
+            "runtime_started: AtomicBool::new(origin == Origin::Recovered)",
+            "AtomicU8::new(if origin == Origin::Recovered { 4 } else { 0 })",
+            "Instant::now().checked_add(lifetime)",
+            "Handle::try_current()",
+            "Arc::new(Semaphore::new(4))"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn require_lifetime(",
+          "sequence": [
+            "Instant::now() >= self.end",
+            "Err(Error::Unavailable)",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn original_predecessors(",
+          "sequence": [
+            "fn original_predecessors(",
+            "material: self.predecessors.material.clone()",
+            "registration: self.predecessors.registration.clone()",
+            "dataset: self.predecessors.dataset.clone()",
+            "training: self.predecessors.training.clone()",
+            "evaluation: self.predecessors.evaluation.clone()"
+          ],
+          "top_level": []
+        }
+      ]
+    }
+  ]
+}

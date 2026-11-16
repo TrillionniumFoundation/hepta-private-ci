@@ -543,7 +543,9 @@ pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandErrorV1;
 pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandHostV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandReceiptV1;
+#[cfg(target_os = "linux")]
 pub(crate) use learning_iteration_evidence_client::OriginalCellQ24ModelReadCompletionV1;
+#[cfg(target_os = "linux")]
 pub(crate) use learning_iteration_evidence_client::OriginalCellQ24ModelReadV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdatePeerStreamV1;
@@ -1940,8 +1942,6 @@ pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationComman
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandReceiptV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1;
-#[cfg(target_os = "linux")]
-pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialClientV1;
 #[cfg(target_os = "linux")]

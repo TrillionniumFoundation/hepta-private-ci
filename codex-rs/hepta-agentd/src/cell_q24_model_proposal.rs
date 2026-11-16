@@ -168,7 +168,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
 
     fn create_bound(
         file: File,
-        mut witness: W,
+        witness: W,
         dataset_cut: LearningIterationSnapshotV1,
         scope: Digest32,
         binding: Digest32,
@@ -216,7 +216,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
 
     fn recover_bound(
         file: File,
-        mut witness: W,
+        witness: W,
         dataset_cut: LearningIterationSnapshotV1,
         scope: Digest32,
         binding: Digest32,

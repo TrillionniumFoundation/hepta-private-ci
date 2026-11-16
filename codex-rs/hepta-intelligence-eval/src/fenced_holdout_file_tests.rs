@@ -47,7 +47,7 @@ fn physical_observation_keeps_the_cursor_and_excludes_contenders() {
         .err(),
         Some(LockedFileCasErrorV1::Busy)
     );
-    let mut changed = original.clone();
+    let mut changed = original;
     changed[0] ^= 1;
     store
         .file

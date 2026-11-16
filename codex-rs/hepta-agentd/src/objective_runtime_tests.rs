@@ -111,6 +111,8 @@ pub(crate) fn current_host_with(
         profile,
         profile_digest,
         state: Mutex::new(state),
+        #[cfg(target_os = "linux")]
+        original_run_start_retention: None,
     };
     (temp, std::sync::Arc::new(host), record)
 }
