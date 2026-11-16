@@ -1,0 +1,650 @@
+{
+  "observed_utc": "2026-11-16T12:43:03.959335+00:00",
+  "protected_branch_count": 63,
+  "markers": [
+    "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+    "3aa1f85ba90c79d220a5cadf2261def176892867"
+  ],
+  "original_snapshot_retained": true,
+  "observed_drift": [
+    {
+      "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+      "old": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+      "new": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+      "protected_hia": true
+    },
+    {
+      "name": "codex/hia-union29-20261116-a90d",
+      "old": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+      "new": "13cbc3f8bfa551a17229be6194a2550560fcb07c",
+      "protected_hia": true
+    }
+  ],
+  "changed_heads_ancestry": [
+    {
+      "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+      "original_head": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+      "observed_head": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+      "original_head_is_ancestor": true,
+      "protected_markers_in_history": [
+        "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+      ]
+    },
+    {
+      "name": "codex/hia-union29-20261116-a90d",
+      "original_head": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+      "observed_head": "13cbc3f8bfa551a17229be6194a2550560fcb07c",
+      "original_head_is_ancestor": true,
+      "protected_markers_in_history": [
+        "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+      ]
+    }
+  ],
+  "heads": [
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+      "sha": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6416:codex/cell-experiments-20261116-0c078a-s12"
+      ],
+      "initial_snapshot_sha": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s01",
+      "sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6404:codex/cell-hia-joint-20261115-724f"
+      ],
+      "initial_snapshot_sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s02",
+      "sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6405:codex/cell-experiments-20261116-0c078a-s01"
+      ],
+      "initial_snapshot_sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s03",
+      "sha": "f5f9e7f64e23173c3c99448c82202629e822add3",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6406:codex/cell-experiments-20261116-0c078a-s02"
+      ],
+      "initial_snapshot_sha": "f5f9e7f64e23173c3c99448c82202629e822add3"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s04",
+      "sha": "9bcc42c7120f449cf256439b1699874219eaa57b",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6407:codex/cell-experiments-20261116-0c078a-s03"
+      ],
+      "initial_snapshot_sha": "9bcc42c7120f449cf256439b1699874219eaa57b"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s05",
+      "sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6408:codex/cell-experiments-20261116-0c078a-s04"
+      ],
+      "initial_snapshot_sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s06",
+      "sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6409:codex/cell-experiments-20261116-0c078a-s05"
+      ],
+      "initial_snapshot_sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s07",
+      "sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6410:codex/cell-experiments-20261116-0c078a-s06"
+      ],
+      "initial_snapshot_sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s08",
+      "sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6411:codex/cell-experiments-20261116-0c078a-s07"
+      ],
+      "initial_snapshot_sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s09",
+      "sha": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6412:codex/cell-experiments-20261116-0c078a-s08"
+      ],
+      "initial_snapshot_sha": "173de531bb5bf2cc8ab8c9605225d1876a265992"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s10",
+      "sha": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6413:codex/cell-experiments-20261116-0c078a-s09"
+      ],
+      "initial_snapshot_sha": "6c5b7a788f877077d17c98138a800e3ef465bc60"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s11",
+      "sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6414:codex/cell-experiments-20261116-0c078a-s10"
+      ],
+      "initial_snapshot_sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe"
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s12",
+      "sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6415:codex/cell-experiments-20261116-0c078a-s11"
+      ],
+      "initial_snapshot_sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82"
+    },
+    {
+      "name": "codex/cell-hia-ci-evidence-20261116-724f",
+      "sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2"
+    },
+    {
+      "name": "codex/cell-hia-joint-20261115-724f",
+      "sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6400"
+      ],
+      "initial_snapshot_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+    },
+    {
+      "name": "codex/hepta-doc-map-real-source-20261115-r11",
+      "sha": "97fc55515538d0f661a330da6399c5785eb8eecb",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6379:codex/hia-patch-application-20261115-9f38"
+      ],
+      "initial_snapshot_sha": "97fc55515538d0f661a330da6399c5785eb8eecb"
+    },
+    {
+      "name": "codex/hia-allowed-prefixes-20261115-9f0b",
+      "sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6372"
+      ],
+      "initial_snapshot_sha": "ae39735ac801c33c2166f043ea1471c3c445460a"
+    },
+    {
+      "name": "codex/hia-ci-core-test-binaries-20261115-a90d",
+      "sha": "4895cd93113b662d590f140d38736a30392081fc",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6363"
+      ],
+      "initial_snapshot_sha": "4895cd93113b662d590f140d38736a30392081fc"
+    },
+    {
+      "name": "codex/hia-command-dispatch-20261115-9f0b",
+      "sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6378"
+      ],
+      "initial_snapshot_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff"
+    },
+    {
+      "name": "codex/hia-cross-owner-premerge-guard-20261116-v1",
+      "sha": "5aa8417222b537dea2bf57515383ff95401b1983",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6397"
+      ],
+      "initial_snapshot_sha": "5aa8417222b537dea2bf57515383ff95401b1983"
+    },
+    {
+      "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+      "sha": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6401"
+      ],
+      "initial_snapshot_sha": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8"
+    },
+    {
+      "name": "codex/hia-execpolicy-prefix-20261115-9f0b",
+      "sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6352"
+      ],
+      "initial_snapshot_sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f"
+    },
+    {
+      "name": "codex/hia-file-update-20261115-9f38",
+      "sha": "8b138f979a77baeb78b28b8273febcef960dcb88",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6354"
+      ],
+      "initial_snapshot_sha": "8b138f979a77baeb78b28b8273febcef960dcb88"
+    },
+    {
+      "name": "codex/hia-foundation-contract-20261114-9f38",
+      "sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a"
+    },
+    {
+      "name": "codex/hia-list-agents-completion-20261115-run11",
+      "sha": "355118ec887d22affe13b33ce3907c697e4360f4",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "355118ec887d22affe13b33ce3907c697e4360f4"
+    },
+    {
+      "name": "codex/hia-macos-code-mode-startup-20261115-a90d",
+      "sha": "bb321262064982217002ae608f484a235c160e85",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "bb321262064982217002ae608f484a235c160e85"
+    },
+    {
+      "name": "codex/hia-macos-matrix-cipher-20261115-a90d",
+      "sha": "842a49e96d7e6960267913825e01d53d96aab971",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "842a49e96d7e6960267913825e01d53d96aab971"
+    },
+    {
+      "name": "codex/hia-macos-matrix-phase-20261115-a90d",
+      "sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f"
+    },
+    {
+      "name": "codex/hia-macos-owner-20261114-a90d",
+      "sha": "57e489472a03515438df8ed7a0fabec882404f02",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "57e489472a03515438df8ed7a0fabec882404f02"
+    },
+    {
+      "name": "codex/hia-native-apparmor-profile-20261114",
+      "sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4"
+    },
+    {
+      "name": "codex/hia-native-bwrap-ci-20261114-p9",
+      "sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc"
+    },
+    {
+      "name": "codex/hia-native-codex-20261114-a90d",
+      "sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6314"
+      ],
+      "initial_snapshot_sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc"
+    },
+    {
+      "name": "codex/hia-native-ubuntu2204-sandbox-20261114",
+      "sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b"
+    },
+    {
+      "name": "codex/hia-network-domains-20261115-9f0b",
+      "sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6365"
+      ],
+      "initial_snapshot_sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b"
+    },
+    {
+      "name": "codex/hia-network-host-20261115-9f0b",
+      "sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6382"
+      ],
+      "initial_snapshot_sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01"
+    },
+    {
+      "name": "codex/hia-patch-application-20261115-9f38",
+      "sha": "cae5db67213f2621910bf39ff048ee60c887317b",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6377"
+      ],
+      "initial_snapshot_sha": "cae5db67213f2621910bf39ff048ee60c887317b"
+    },
+    {
+      "name": "codex/hia-patch-effects-20261115-9f38",
+      "sha": "aeb88f596b83186456caac577080bcb2f253ad32",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6364"
+      ],
+      "initial_snapshot_sha": "aeb88f596b83186456caac577080bcb2f253ad32"
+    },
+    {
+      "name": "codex/hia-patch-integration-20261115-9f38",
+      "sha": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6356"
+      ],
+      "initial_snapshot_sha": "2ff44b608a202c25e7551edca67a7a5362f34d36"
+    },
+    {
+      "name": "codex/hia-patch-output-20261115-9f38",
+      "sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6369"
+      ],
+      "initial_snapshot_sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049"
+    },
+    {
+      "name": "codex/hia-patch-output-agentd-bridge-20261115-gpt6",
+      "sha": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6373"
+      ],
+      "initial_snapshot_sha": "627de3c55ba106b0533b2281a08090aefd50e5d9"
+    },
+    {
+      "name": "codex/hia-patch-parser-20261115-9f38",
+      "sha": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6353"
+      ],
+      "initial_snapshot_sha": "168080b72c4be242d14eadd47168f2a9326590f2"
+    },
+    {
+      "name": "codex/hia-patch-standalone-20261115-9f38",
+      "sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6390"
+      ],
+      "initial_snapshot_sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231"
+    },
+    {
+      "name": "codex/hia-patch-standalone-abi-producer-20261115-a11",
+      "sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a"
+    },
+    {
+      "name": "codex/hia-plasticity-status-sync-20261115-r11x",
+      "sha": "b34a4670c130111c06e24e070635391fa8694a60",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "b34a4670c130111c06e24e070635391fa8694a60"
+    },
+    {
+      "name": "codex/hia-policy-summary-20261115-9f0b",
+      "sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6361"
+      ],
+      "initial_snapshot_sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1"
+    },
+    {
+      "name": "codex/hia-render19-rama-sdk-bridge-20261116-a11",
+      "sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6398"
+      ],
+      "initial_snapshot_sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5"
+    },
+    {
+      "name": "codex/hia-retirement-consistency-20261115-turn11",
+      "sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6348"
+      ],
+      "initial_snapshot_sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3"
+    },
+    {
+      "name": "codex/hia-retirement-precheck-20261115-automation11",
+      "sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6392"
+      ],
+      "initial_snapshot_sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5"
+    },
+    {
+      "name": "codex/hia-source-file-20261114-9f38",
+      "sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6347"
+      ],
+      "initial_snapshot_sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6"
+    },
+    {
+      "name": "codex/hia-source-file-fastpath-20261115-9f38",
+      "sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e"
+    },
+    {
+      "name": "codex/hia-string-truncate-20261114-9f38",
+      "sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6342"
+      ],
+      "initial_snapshot_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c"
+    },
+    {
+      "name": "codex/hia-template-parse-20261115-9f38",
+      "sha": "605832630c0c31742f26eee6c38f10cfa2490d90",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6394"
+      ],
+      "initial_snapshot_sha": "605832630c0c31742f26eee6c38f10cfa2490d90"
+    },
+    {
+      "name": "codex/hia-template-render-20261115-9f38",
+      "sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6395"
+      ],
+      "initial_snapshot_sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf"
+    },
+    {
+      "name": "codex/hia-token-budget-abi-20261114-9f38",
+      "sha": "7fe65ae990187e6ff1130c791f902728b4e50197",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6344"
+      ],
+      "initial_snapshot_sha": "7fe65ae990187e6ff1130c791f902728b4e50197"
+    },
+    {
+      "name": "codex/hia-twelve-integration-20261115-a90d",
+      "sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6360"
+      ],
+      "initial_snapshot_sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a"
+    },
+    {
+      "name": "codex/hia-union29-20261116-a90d",
+      "sha": "13cbc3f8bfa551a17229be6194a2550560fcb07c",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6402"
+      ],
+      "initial_snapshot_sha": "827ec2d5b00e9da12d4014314f1e24b08a42f825"
+    },
+    {
+      "name": "codex/hia-union29-rama-sdk-20261116-gpt6",
+      "sha": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6403"
+      ],
+      "initial_snapshot_sha": "2536943576e90550bf2d69a8baff37a0cd397eaa"
+    },
+    {
+      "name": "codex/hia-uuid-20261115-9f38",
+      "sha": "c468f632201c39957d3fecb92f05b37aa650b45e",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6391"
+      ],
+      "initial_snapshot_sha": "c468f632201c39957d3fecb92f05b37aa650b45e"
+    },
+    {
+      "name": "codex/hia-windowed-native-20261114",
+      "sha": "7e920e23b11e8f57891325a2e7805e8969c63551",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia",
+        "PR_title_HIA#6319"
+      ],
+      "initial_snapshot_sha": "7e920e23b11e8f57891325a2e7805e8969c63551"
+    },
+    {
+      "name": "codex/hia-windows-owner-20261114-a90d",
+      "sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+      "protected": false,
+      "reasons": [
+        "name_contains_hia"
+      ],
+      "initial_snapshot_sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f"
+    },
+    {
+      "name": "codex/sdk-resolver-abi-20261115-9f0b",
+      "sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6374:codex/hia-allowed-prefixes-20261115-9f0b"
+      ],
+      "initial_snapshot_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b"
+    },
+    {
+      "name": "codex/v8-canary-feature-parity-20261114-p9",
+      "sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6336:codex/hia-native-codex-20261114-a90d"
+      ],
+      "initial_snapshot_sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d"
+    },
+    {
+      "name": "codex/windows-private-fs-diagnostics-20261115-9f0b",
+      "sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+      "protected": false,
+      "reasons": [
+        "PR_base_dependency#6355:codex/hia-native-codex-20261114-a90d"
+      ],
+      "initial_snapshot_sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816"
+    }
+  ],
+  "candidate_head": "dd98bb8660b434bf279918211c1ad095ca3b2661",
+  "candidate_ancestor_collisions": [],
+  "incoming_ancestor_collisions": [],
+  "no_new_or_deleted_remote_heads": true,
+  "all_non_hia_remote_heads_match_initial_snapshot": true,
+  "child_remote_ref_mutations": 0
+}

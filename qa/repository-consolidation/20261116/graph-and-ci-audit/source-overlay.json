@@ -1,0 +1,339 @@
+{
+  "schema": "hepta.consolidation-source-overlay.v1",
+  "base_source_commit": "285e971b3af3a93a79169b56a42263069e473057",
+  "parent_commit": "2a883b3a31be7e612a463d94b40450087e69ed1f",
+  "parent_tree": "c80d6dc35c56a34c112c3579cae325d0b98b4c85",
+  "paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "base": "3ad8fb9146f44514d22bf99fcaa621083b51dba3",
+      "sha": "e422720f507c914a3b4aae65dcc0e9b1d6d09086",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "base": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "sha": "e7041ff554d062f1a0894f3d7677e2914ec6baec",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "base": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "sha": "830c044c079478e1f61751446dd63be0f851586c",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "base": "f46ca31538e114546c64aa283ac5b9c430020a15",
+      "sha": "83cff9cd158233cd771ce93281d773c173dbf87e",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "base": "19e4348d9fdced6716077947811f07af7c085231",
+      "sha": "aa9c4b583cebdf26c627223128a65d344a6e0043",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "base": "8aa41d3f63b3679d9bac293eb52403fe3cc4c1a5",
+      "sha": "363a5148708b31da68130cf77f719770f5d7ebef",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "base": "25aafda5ec1d6ee578d8dcc9d8d96b89806182aa",
+      "sha": "d2d6dafc002c5ca8a94b1416e0dfdeb3677c674d",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "base": "a4155815b349bb97740d0d632fe538c6e0b68ea4",
+      "sha": "bd487a036f6af580731b8b3c41d91a887e4b2cd0",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "base": "1ef489243cf92c91519d7cab90ad0d031c65d5de",
+      "sha": "85cca820dad1cd7a5d844c912df7ae243badffe9",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "base": "09ace13d5fd6a11eb87c43dfc0b3eb3e4226b377",
+      "sha": "a2baa11ab65870dfa5fb37c4b72ce2389c8f3c5b",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "base": "b6912a6cb316da304f376d0606135b53273caec7",
+      "sha": "df2bf3c19f1a82e3df64a2d2537a081d3476705b",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_original_state_slot.rs",
+      "base": null,
+      "sha": "900e4f12fbc2b0e796694875bd420274e0240600",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_original_state_slot_tests.rs",
+      "base": null,
+      "sha": "1ab7fac1add742b9faf49248b6246f05f9ebbb6f",
+      "group": "slot_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_context_binding_tests.rs",
+      "base": "6972f2783fb4d06ffda4535623049a394377c694",
+      "sha": "baa849e596a5a8d1b4bf3c356189cf4cbf59f873",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "base": "98923f9c8814028b5950edd72231048fbafdc2e7",
+      "sha": "f26aa5f34d6273aea761bf4ddb6a8a138210b951",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_process_tests.rs",
+      "base": "0886fd70105abcd6da62424c929516107eb2a13d",
+      "sha": "5da1f69992b077691f6670ff9e140fdb8faeb3d0",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_current_tests.rs",
+      "base": "f2dcd46cc9a488fefa6aa6dd8fd216620218f46d",
+      "sha": "62ab59c8fc34aff196c80b1ea93fda7f00c1e5aa",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "base": "1fceadc3ca6c089adcb11a05d1af164d09004c1a",
+      "sha": "6125430050e2b982e3da826586d8e52cd3ef49d5",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "base": "a2a307420f0cd0c0d792331878c7da6320e3d955",
+      "sha": "6c1f670060ca16c36a3199ffaec3fbd6dde4e40b",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "base": "80dc2084ecfaa12789f7a6d13eed6873946a1ef5",
+      "sha": "79a5f221bfde562edc150b88790f504f2ed1bcb7",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "base": "bd30c76c296f4a04547d98df80ad467fc0cd2d30",
+      "sha": "5405008109ffeedc2256863af2a368df16665aec",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_host_session_tests.rs",
+      "base": "33f764e716c68d347ae143166ee9c338756ed2b5",
+      "sha": "ed4a0aaefca989636b75a38459c31116fbcbbfcf",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_pretrained_tests.rs",
+      "base": "4742058af4d85831f81be15a44de796f0af466e9",
+      "sha": "eabdde958f09df1198d68622b82a629584f2ecf9",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_startup_tests.rs",
+      "base": "7675bb38b065ac5e07d5a9b1b5fec745d016fb4a",
+      "sha": "d889d5d456c6f6003907c898b9d3d1fe9893ea39",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "base": "1cd1df2ab313ab9866851a362e1ef22625cfa0fb",
+      "sha": "1ed950ae141db70728f6a9bf31ace24677d73b44",
+      "group": "helper_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "base": "f271f81408ebdc6e6a2b86bb8b88fb668737f08d",
+      "sha": "32fbdb5e06f8c08d051676a48de8251bb5d8e909",
+      "group": "platform_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "base": "24b7907d7bbd635352da19503e78aa71de710c64",
+      "sha": "2ff51712f5bc973519c4bf3a9abcfb91c21f64c4",
+      "group": "platform_patch_payload"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "base": "cd27aa5fdec37e32cb7aa8efeaf67a3a7e4f2037",
+      "sha": "30b1a37edec209465863948144c017348e09b5ee",
+      "group": "platform_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_bootstrap_crash_tests.rs",
+      "base": "0d5a1e68eae7241cf0187a1f6bb29bc0a36b0bb1",
+      "sha": "d717bf472fd8c20853edf4549ef932c479e16353",
+      "group": "canonical_fixture_patch_payload"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "base": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "sha": "18d2a93864ece9e9ab77fde0674e4d542fef5592",
+      "group": "windows_lock_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/gated_journal_v3_tests.rs",
+      "base": "557c447ef58d22661c9a800f82128c92d876680b",
+      "sha": "2aaf1596bbb3e05f3fac88ea081a473b96b2f21a",
+      "group": "windows_lock_formatted_payload"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "base": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+      "sha": "2fb6fdcba6aa69ea2ac5d945ab60c0787b9ed1b2",
+      "group": "provider_candidate_and_route_order"
+    },
+    {
+      "path": "CALLERS.toml",
+      "base": "f0ca333514735562db56b30165817881c3408384",
+      "sha": "4c887ea8eec42566207eaa8bbc6e606618c90fbd",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+      "base": "195d8a7a38c402f402a6484d8b3a30f15b3898b4",
+      "sha": "0069cb84d58ee799d0cef3ee3d236f5d3c78092f",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_native_memory_authority_source_closure.py",
+      "base": null,
+      "sha": "aea32591092ad5965ab96d61a3d524c3ca763dc0",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_operation_source_closure.py",
+      "base": "aa42c1bd4678b3bf96352cf08c1c3ed1de8608c3",
+      "sha": "e6c46f23c966c85878ebb307133bbbecb7c755d2",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "base": "beb4533bfa73fbd104273533dd0b128b03decdff",
+      "sha": "480b43358d52e54c30a4a6a4f90c7ca2bd556be6",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "base": "2a566076c9148a47a5d3f4506c347e862a4bc9c7",
+      "sha": "ec56ee91bb97bac76cf01b5e886087ded94855be",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_state_slot_source_closure.py",
+      "base": null,
+      "sha": "0e110c464ea97a851fd2bd09ea99be88ff1ee87d",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "base": "38fe0551c767176808870f57cb6f6de0668f1318",
+      "sha": "ce8af4ba28e3b6b485d37a43dd1ea2885df48ae4",
+      "group": "source_guards"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base": "9b77b6a29ec57a13fa8d53a81f2734de799b6a5a",
+      "sha": "cc2dbce9e4f6d46a5e62c74fd0f8932d9af13527",
+      "group": "source_guards"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs",
+      "base": "48ad6216b73344931b22fdc482eefa4e7615a308",
+      "sha": "433b86d4df845b9152b3f30c4de6017c49b5beae",
+      "group": "ci_fixes"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "base": "1b43360fe10b570cfd9020fb9acb430fd711c148",
+      "sha": "f9549826fb61fa8d54a930c6bced045b54f6a4f5",
+      "group": "ci_fixes"
+    },
+    {
+      "path": ".github/scripts/codespell_custody.py",
+      "base": "bb1d103eb432905094eca776cd0de072a1fddedc",
+      "sha": "2b7f5645672fd350864c9d7e7d90d83cc46f855b",
+      "group": "ci_fixes"
+    },
+    {
+      "path": ".github/scripts/test_codespell_custody.py",
+      "base": "a7bcf3fe7715fb20086057ce08b7fb04a27c69e3",
+      "sha": "f0275fd0e02c605dfffd87901e2be34bbb81743a",
+      "group": "ci_fixes"
+    },
+    {
+      "path": ".github/codespell-custody.json",
+      "base": "18a8c6bbae4bcdd613a372ce0679ecf790f6e43f",
+      "sha": "c020d5f6dd690b03e87b26ffc670ff77a29ebae2",
+      "group": "ci_fixes"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "base": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+      "sha": "e1ddda3aea6d7b65d2c87ecfe256d589a4ba8f32",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "base": "b4adc743f8d2ae0529fcec0522ca00da729ae638",
+      "sha": "73799bd671c89cd410171d924ee66f80bb154549",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "base": "2d501a452a258ee000bc5631c2de124311e7a9e6",
+      "sha": "a6df4d43d09af3d4732f194a2d92ae3357f0a405",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "base": "4ca274451d2b6b778c186f4402576ec256d590af",
+      "sha": "5470b8abe4430136126864f569690ea7a5e75dad",
+      "group": "fixture_stack"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "base": "d7c2d18ee65f6e36c0d70c922a744c2dfae8844d",
+      "sha": "b9711cba2f2732c0165113dcb1b57a46738ab7dc",
+      "group": "pty-ready-reviewed-285e971.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+      "base": "8d083db1da3d9473e67012b2f661e3ea4b3d0ee6",
+      "sha": "f3d944dac723233082c0a890d88b2a22375860e6",
+      "group": "drain-diagnostic-reviewed-285e971.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+      "base": "cc68361bde8e44d7251ab7c77338e12b19fce7dd",
+      "sha": "4bfe8a890bcb277429af68de2f8cacd3f571a7b8",
+      "group": "qualification_writer_test_types"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_frames.rs",
+      "base": "2c1a96f36453516baad01eba194e59df87fce04a",
+      "sha": "af697bb636964a35323b2008298904acf35563b6",
+      "group": "post_write_control_shutdown"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+      "base": "85f08e867c5010a15f9cbf8aab3344189db06d67",
+      "sha": "97cd9944b2f15a3880889a6d5dbbca4c2843cd9d",
+      "group": "post_write_control_shutdown"
+    }
+  ],
+  "expected_tree": "751e50a0172e467176be68a1331519c8ea171307"
+}

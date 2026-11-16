@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.repository-consolidation.ci-v6-artifacts/v1",
+  "repository_prefix": "qa/repository-consolidation/20261116/graph-and-ci-audit",
+  "source_commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+  "source_tree": "751e50a0172e467176be68a1331519c8ea171307",
+  "primary_manifest_sha256": "394aa3683a7011b015b334bba52d440fde722510fae34b51d22337b871858516",
+  "entry_count": 11,
+  "maximum_blob_bytes": 500000,
+  "gzip_parameters": {
+    "mtime": 0,
+    "filename": "",
+    "compression_level": 9
+  },
+  "self_integrity": "The delivery index records this manifest's own hashes; its entries exclude itself.",
+  "artifacts": [
+    {
+      "path": "ci-v6-addendum.json",
+      "encoding": "utf-8",
+      "bytes": 36547,
+      "sha256": "38594b0d8ed3aab516011b9cbb00bac36a2e8b8c504ee698cab6c13f75cb1296",
+      "git_blob_sha": "17bbf63379d83a03f092369f4007af9705ace934",
+      "source": "Generated v6 addendum; the primary historical pack is unchanged."
+    },
+    {
+      "path": "ci-v6-addendum.md",
+      "encoding": "utf-8",
+      "bytes": 7275,
+      "sha256": "d02e4b7d87f1a5b27103ac7739d65fa3ea8203f5a1f6ac5bc91d955140e057c7",
+      "git_blob_sha": "dab449c382ef28cf53851293204a9058d62643bb",
+      "source": "Generated v6 addendum; the primary historical pack is unchanged."
+    },
+    {
+      "path": "ci-v6-evidence/combined-native-v6-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 500,
+      "sha256": "7fdd52716f6279fed6710c8a486544b7c07c81872e4cee4d91dbfbf975063975",
+      "git_blob_sha": "d086ad53fb2d3027a07513cd982b27efc709dae1",
+      "source": "audit/combined-native-v6-result.json",
+      "uncompressed_bytes": 864,
+      "uncompressed_sha256": "8d0a5bb44acf3052ea71ab866e97f8342b450e94845d79ed67127af86f2662bb",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/combined-native-v6-tests.log.gz",
+      "encoding": "gzip",
+      "bytes": 25891,
+      "sha256": "15eff5ace991afa944d832ee0df9d443ca2ab439bf35b7a86af1d2794b2367bf",
+      "git_blob_sha": "85947dd17ec6ff8271e6ec569cba48392fa7724c",
+      "source": "audit/combined-native-v6-tests.log",
+      "uncompressed_bytes": 184611,
+      "uncompressed_sha256": "bde487fe8413f5b7fd963cdc542a5b788c0c9df225c9571f9978ce5beb4d22ba",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-applied-source.json.gz",
+      "encoding": "gzip",
+      "bytes": 398,
+      "sha256": "eff98a97f6003545a8dabcc11ddc2395f99883781555ccb09cb7f62075b12d84",
+      "git_blob_sha": "e9d94e2590c3d3f05db33a826530f755a4481841",
+      "source": "audit/native-v6-applied-source.json",
+      "uncompressed_bytes": 787,
+      "uncompressed_sha256": "e1e2d8cc50dec8d75c54f559166600c46b772f28ee88d96191da7b8debc8b080",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-candidate-source-bridge.json.gz",
+      "encoding": "gzip",
+      "bytes": 1052,
+      "sha256": "3d597a478a11634b59f9fafa4ab3fe9fd0ef3f036ac654df89dc38186a2a278a",
+      "git_blob_sha": "98e24e51b1c41135ee99600e43a73deb9fc3c53c",
+      "source": "audit/ci_audit/native-v6-candidate-source-bridge.json",
+      "uncompressed_bytes": 2195,
+      "uncompressed_sha256": "8c071a6bbba5ac9ca75a97585ce9af2332bd5fc2ecf03a245390a69d4892e95e",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-exact-test-results.json.gz",
+      "encoding": "gzip",
+      "bytes": 2599,
+      "sha256": "3fbed9352edba28d133415f1425bea3de8644d83a20aaed04357ec99ac967dcb",
+      "git_blob_sha": "18c5ce3ea85f322d4fd807c590c26829267ba728",
+      "source": "audit/ci_audit/native-v6-exact-test-results.json",
+      "uncompressed_bytes": 25527,
+      "uncompressed_sha256": "857619c74de46f372d55bddf34c3f3bc7355cbd6ddde2c1d6c9ef13ab17ef49e",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-input-sources.json.gz",
+      "encoding": "gzip",
+      "bytes": 363725,
+      "sha256": "44d3757371fb044cf1b5fe7271ca0c596f822a6d5859b2434db272bd8fc972c5",
+      "git_blob_sha": "f8219709887cb5af102d9bc7d1c246ccd8faacba",
+      "source": "audit/native-v6-input-sources.json",
+      "uncompressed_bytes": 986541,
+      "uncompressed_sha256": "dad507ff42decaa40f9c82533242932875805901df4a701343a44544b874a26e",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 427,
+      "sha256": "139f805cf5adc2ffe7159d002f0f0b9607f8af700e6a1ef0ca5dccd2602aa15b",
+      "git_blob_sha": "aa58b0d90d38c01918ab568de280e08c63fccebb",
+      "source": "audit/native-v6-invocation.json",
+      "uncompressed_bytes": 678,
+      "uncompressed_sha256": "324d4cf497361e177822b0cdbc563beba8ec924c5c9a0af8c9bed37e9c86b6bb",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 639,
+      "sha256": "7f70deddee5fd282f849d9a641cfbbd81c11e1431e74c616aa622ee13825e0af",
+      "git_blob_sha": "8dbb82521699b028feccde1530b9e2b83f9beb7e",
+      "source": "audit/native-v6-result.json",
+      "uncompressed_bytes": 1472,
+      "uncompressed_sha256": "56bf93f8889c4dcf4dd737f1c5b282f3af0dc7a4195d511a09c29f9baa0ef869",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-v6-evidence/native-v6-timeout-source-map-reviewed.json.gz",
+      "encoding": "gzip",
+      "bytes": 6866,
+      "sha256": "f05e730b3edc5765355d4aaf2b36812f5a7f4b30a41e729249eae5a61c97d42b",
+      "git_blob_sha": "f30d9ebdbd09773f1c5ffb532f2fd29b65732428",
+      "source": "audit/ci_audit/native-v6-timeout-source-map-reviewed.json",
+      "uncompressed_bytes": 42564,
+      "uncompressed_sha256": "b3d2aee17a03fa4cf8f623ac59f952ae62deaf2804b0d485910bfde5e6775789",
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    }
+  ]
+}
