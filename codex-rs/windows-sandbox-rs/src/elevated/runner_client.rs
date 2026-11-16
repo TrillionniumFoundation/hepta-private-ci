@@ -1,3 +1,4 @@
+use crate::identity::ManagedAccountSource;
 use crate::identity::SandboxCreds;
 use crate::ipc_framed::ErrorPayload;
 use crate::ipc_framed::ErrorStage;
@@ -7,19 +8,25 @@ use crate::ipc_framed::Message;
 use crate::ipc_framed::SpawnRequest;
 use crate::ipc_framed::read_frame;
 use crate::ipc_framed::write_frame;
+use crate::managed_token_policy::ManagedTokenSnapshot;
+use crate::prepared_filesystem::PreparedFilesystemAclContext;
 use crate::runner_pipe::PIPE_ACCESS_INBOUND;
 use crate::runner_pipe::PIPE_ACCESS_OUTBOUND;
 use crate::runner_pipe::connect_pipe;
 use crate::runner_pipe::create_named_pipe;
 use crate::runner_pipe::find_runner_exe;
 use crate::runner_pipe::pipe_pair;
+use crate::token::fresh_managed_base::FreshManagedRunnerBase;
+use crate::token::fresh_managed_base::read_snapshot;
 use crate::winutil::quote_windows_arg;
 use crate::winutil::to_wide;
 use anyhow::Context;
 use anyhow::Result;
 use std::ffi::c_void;
 use std::fs::File;
+use std::os::windows::io::AsHandle;
 use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::BorrowedHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
 use std::path::Path;
@@ -36,13 +43,18 @@ use windows_sys::Win32::Foundation::ERROR_NO_SUCH_LOGON_SESSION;
 use windows_sys::Win32::Foundation::ERROR_NOT_FOUND;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::Security::TOKEN_DUPLICATE;
+use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::System::Diagnostics::Debug::SetErrorMode;
 use windows_sys::Win32::System::IO::CancelSynchronousIo;
 use windows_sys::Win32::System::Pipes::PeekNamedPipe;
 use windows_sys::Win32::System::Threading::CreateProcessWithLogonW;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
+use windows_sys::Win32::System::Threading::OpenProcessToken;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
+use windows_sys::Win32::System::Threading::PROCESS_QUERY_LIMITED_INFORMATION;
+use windows_sys::Win32::System::Threading::PROCESS_SYNCHRONIZE;
 use windows_sys::Win32::System::Threading::STARTUPINFOW;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
@@ -101,7 +113,58 @@ impl std::error::Error for RunnerStartupError {}
 pub(crate) struct RunnerTransport {
     pipe_write: File,
     pipe_read: File,
+    managed_base: FreshManagedRunnerBase,
     process: RunnerProcessOwner,
+}
+
+/// Born only in this original CreateProcessWithLogonW owner. No raw adoption,
+/// Clone, serialization or handle export; readback confers no launch authority.
+pub(crate) struct OriginalManagedRunnerProcess {
+    process: OwnedHandle,
+    token: OwnedHandle,
+    filesystem: PreparedFilesystemAclContext,
+}
+
+impl OriginalManagedRunnerProcess {
+    pub(crate) fn readback(&mut self) -> Result<[ManagedTokenSnapshot; 2]> {
+        self.filesystem.validate_for_token(self.token.as_handle())?;
+        anyhow::ensure!(
+            unsafe {
+                WaitForSingleObject(
+                    self.process.as_raw_handle() as HANDLE,
+                    /*dwmilliseconds*/ 0,
+                )
+            } == 258,
+            "original managed process is not live"
+        );
+        let mut raw = 0;
+        anyhow::ensure!(
+            unsafe {
+                OpenProcessToken(
+                    self.process.as_raw_handle() as HANDLE,
+                    TOKEN_QUERY,
+                    &mut raw,
+                )
+            } != 0,
+            "original managed process token is unqueryable"
+        );
+        let current = unsafe { OwnedHandle::from_raw_handle(raw as _) };
+        let result = [
+            read_snapshot(self.token.as_raw_handle() as HANDLE)?,
+            read_snapshot(current.as_raw_handle() as HANDLE)?,
+        ];
+        anyhow::ensure!(
+            unsafe {
+                WaitForSingleObject(
+                    self.process.as_raw_handle() as HANDLE,
+                    /*dwmilliseconds*/ 0,
+                )
+            } == 258,
+            "original managed process exited during readback"
+        );
+        self.filesystem.validate_for_token(self.token.as_handle())?;
+        Ok(result)
+    }
 }
 
 fn is_refreshable_windows_error(code: u32) -> bool {
@@ -154,6 +217,7 @@ pub(crate) fn retry_runner_spawn_once<T>(
 
 impl RunnerTransport {
     pub(crate) fn send_spawn_request(&mut self, request: SpawnRequest) -> Result<()> {
+        self.managed_base.revalidate()?;
         self.process.arm_timeout(request.timeout_ms)?;
         let spawn_request = FramedMessage {
             version: IPC_PROTOCOL_VERSION,
@@ -161,15 +225,17 @@ impl RunnerTransport {
                 payload: Box::new(request),
             },
         };
-        write_frame(&mut self.pipe_write, &spawn_request)
+        write_frame(&mut self.pipe_write, &spawn_request)?;
+        self.managed_base.revalidate()
     }
 
     pub(crate) fn read_spawn_ready(&mut self) -> Result<()> {
+        self.managed_base.revalidate()?;
         wait_for_complete_frame(&self.pipe_read, RUNNER_SPAWN_READY_TIMEOUT)?;
         let msg = read_frame(&mut self.pipe_read)?
             .ok_or_else(|| anyhow::anyhow!("runner pipe closed before spawn_ready"))?;
         match msg.message {
-            Message::SpawnReady { .. } => Ok(()),
+            Message::SpawnReady { .. } => self.managed_base.revalidate(),
             Message::Error { payload } => Err(RunnerStartupError::new(payload).into()),
             other => Err(anyhow::anyhow!(
                 "expected spawn_ready from runner, got {other:?}"
@@ -177,18 +243,24 @@ impl RunnerTransport {
         }
     }
 
-    pub(crate) fn into_parts(self) -> (File, File, RunnerProcessOwner) {
-        (self.pipe_write, self.pipe_read, self.process)
+    pub(crate) fn into_parts(mut self) -> Result<(File, File, RunnerProcessOwner)> {
+        self.process.retain_managed_base(self.managed_base)?;
+        Ok((self.pipe_write, self.pipe_read, self.process))
     }
 }
 
 fn try_take_completed_connect_result(
     connect_thread: &mut Option<thread::JoinHandle<()>>,
     connect_result_rx: &mpsc::Receiver<Result<()>>,
-    thread_handle: HANDLE,
+    thread_handle: BorrowedHandle<'_>,
     pipe_label: &str,
 ) -> Result<Option<Result<()>>> {
-    let thread_wait = unsafe { WaitForSingleObject(thread_handle, 0) };
+    let thread_wait = unsafe {
+        WaitForSingleObject(
+            thread_handle.as_raw_handle() as HANDLE,
+            /*dwmilliseconds*/ 0,
+        )
+    };
     if thread_wait != WAIT_OBJECT_0 {
         return Ok(None);
     }
@@ -237,8 +309,10 @@ fn connect_pipe_with_timeout(
                     return;
                 }
 
-                // Publish the helper thread HANDLE before the blocking pipe connect so the
-                // parent can cancel this specific operation if it times out.
+                let thread_handle = unsafe { OwnedHandle::from_raw_handle(thread_handle as _) };
+                // Transfer the helper thread owner before the blocking pipe connect so the
+                // parent can cancel this specific operation if it times out. A failed send
+                // drops the same owner instead of leaking the duplicated HANDLE.
                 let _ = thread_handle_tx.send(Ok(thread_handle));
 
                 let result = connect_pipe(h_pipe, expected_runner_pid)
@@ -251,7 +325,7 @@ fn connect_pipe_with_timeout(
         anyhow::anyhow!("runner {pipe_label} connect thread exited before publishing its handle")
     })??;
 
-    let result = match connect_result_rx.recv_timeout(RUNNER_PIPE_CONNECT_TIMEOUT) {
+    match connect_result_rx.recv_timeout(RUNNER_PIPE_CONNECT_TIMEOUT) {
         Ok(result) => {
             if let Some(connect_thread) = connect_thread.take() {
                 let _ = connect_thread.join();
@@ -262,12 +336,13 @@ fn connect_pipe_with_timeout(
             if let Some(result) = try_take_completed_connect_result(
                 &mut connect_thread,
                 &connect_result_rx,
-                thread_handle,
+                thread_handle.as_handle(),
                 &pipe_label,
             )? {
                 result
             } else {
-                let cancel_ok = unsafe { CancelSynchronousIo(thread_handle) };
+                let cancel_ok =
+                    unsafe { CancelSynchronousIo(thread_handle.as_raw_handle() as HANDLE) };
                 if cancel_ok == 0 {
                     let err = unsafe { GetLastError() };
                     if err != ERROR_NOT_FOUND {
@@ -277,7 +352,7 @@ fn connect_pipe_with_timeout(
                     } else if let Some(result) = try_take_completed_connect_result(
                         &mut connect_thread,
                         &connect_result_rx,
-                        thread_handle,
+                        thread_handle.as_handle(),
                         &pipe_label,
                     )? {
                         result
@@ -306,13 +381,7 @@ fn connect_pipe_with_timeout(
                 "runner {pipe_label} connect thread exited before reporting its result"
             ))
         }
-    };
-
-    unsafe {
-        CloseHandle(thread_handle);
     }
-
-    result
 }
 
 pub(crate) fn spawn_runner_transport(
@@ -323,11 +392,42 @@ pub(crate) fn spawn_runner_transport(
     spawn_request: SpawnRequest,
 ) -> Result<RunnerTransport> {
     let admission = process::admit_runner()?;
+    anyhow::ensure!(
+        dunce::canonicalize(codex_home)? == dunce::canonicalize(&spawn_request.real_codex_home)?,
+        "managed source and spawn request scopes differ"
+    );
+    let filesystem_roles = spawn_request
+        .filesystem_roles
+        .as_ref()
+        .context("runner: missing versioned filesystem role plan")?;
+    let root_resolution = spawn_request
+        .root_resolution
+        .as_ref()
+        .context("runner: missing original root-resolution context")?;
+    let permissions =
+        crate::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+            &spawn_request.permission_profile,
+            &spawn_request.workspace_roots,
+        )?;
+    crate::validate_filesystem_plan_for_request(
+        crate::SandboxSetupRequest {
+            permissions: &permissions,
+            command_cwd: &spawn_request.cwd,
+            env_map: &spawn_request.env,
+            codex_home: &spawn_request.real_codex_home,
+            proxy_enforced: spawn_request.network_proxy_restricting_sid.is_some(),
+        },
+        root_resolution,
+        filesystem_roles,
+    )?;
+    let managed_source = ManagedAccountSource::select(codex_home, sandbox_creds)?;
     let (pipe_in_name, pipe_out_name) = pipe_pair();
     let h_pipe_in =
         create_named_pipe(&pipe_in_name, PIPE_ACCESS_OUTBOUND, &sandbox_creds.username)?;
+    let h_pipe_in = unsafe { OwnedHandle::from_raw_handle(h_pipe_in as _) };
     let h_pipe_out =
         create_named_pipe(&pipe_out_name, PIPE_ACCESS_INBOUND, &sandbox_creds.username)?;
+    let h_pipe_out = unsafe { OwnedHandle::from_raw_handle(h_pipe_out as _) };
 
     let runner_exe = find_runner_exe(codex_home, log_dir);
     let runner_cmdline = runner_exe
@@ -377,24 +477,69 @@ pub(crate) fn spawn_runner_transport(
     }
     if spawn_res == 0 {
         let err = unsafe { GetLastError() };
-        unsafe {
-            CloseHandle(h_pipe_in);
-            CloseHandle(h_pipe_out);
-        }
+        drop(h_pipe_in);
+        drop(h_pipe_out);
         return Err(RunnerLogonError { code: err }.into());
     }
     let expected_runner_pid = pi.dwProcessId;
-    // Custody begins at the successful native launch, including pipe-connect
-    // failures. No later worker or error value is its sole owner.
     let mut runner_process = RunnerProcessOwner::from_admission(
         unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) },
         admission,
     );
 
-    let connect_result = (|| -> Result<()> {
-        connect_pipe_with_timeout(h_pipe_in, expected_runner_pid, "pipe-in")?;
-        connect_pipe_with_timeout(h_pipe_out, expected_runner_pid, "pipe-out")?;
-        Ok(())
+    let connect_result = (|| -> Result<FreshManagedRunnerBase> {
+        // This is the sole constructor: actual returned PI, never caller PID/token/handle.
+        let mut process = 0;
+        anyhow::ensure!(
+            unsafe {
+                DuplicateHandle(
+                    GetCurrentProcess(),
+                    pi.hProcess,
+                    GetCurrentProcess(),
+                    &mut process,
+                    PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SYNCHRONIZE,
+                    /*binherithandle*/ 0,
+                    /*dwoptions*/ 0,
+                )
+            } != 0
+        );
+        let process = unsafe { OwnedHandle::from_raw_handle(process as _) };
+        let mut token = 0;
+        anyhow::ensure!(
+            unsafe {
+                OpenProcessToken(
+                    process.as_raw_handle() as HANDLE,
+                    TOKEN_QUERY | TOKEN_DUPLICATE,
+                    &mut token,
+                )
+            } != 0,
+            "original managed token is unqueryable"
+        );
+        let token = unsafe { OwnedHandle::from_raw_handle(token as _) };
+        // Observe setup's actual grants with this original PI's held token.
+        // These parent-local query owners never cross the runner IPC boundary.
+        let filesystem = PreparedFilesystemAclContext::observe_existing(
+            &spawn_request.real_codex_home,
+            filesystem_roles,
+            token.as_handle(),
+        )?;
+        let birth = OriginalManagedRunnerProcess {
+            process,
+            token,
+            filesystem,
+        };
+        let managed_base = FreshManagedRunnerBase::capture(managed_source, birth)?;
+        connect_pipe_with_timeout(
+            h_pipe_in.as_raw_handle() as HANDLE,
+            expected_runner_pid,
+            "pipe-in",
+        )?;
+        connect_pipe_with_timeout(
+            h_pipe_out.as_raw_handle() as HANDLE,
+            expected_runner_pid,
+            "pipe-out",
+        )?;
+        Ok(managed_base)
     })();
 
     unsafe {
@@ -403,21 +548,21 @@ pub(crate) fn spawn_runner_transport(
         }
     }
 
-    if let Err(err) = connect_result {
-        unsafe {
-            CloseHandle(h_pipe_in);
-            CloseHandle(h_pipe_out);
+    let managed_base = match connect_result {
+        Ok(managed_base) => managed_base,
+        Err(error) => {
+            drop(h_pipe_in);
+            drop(h_pipe_out);
+            return Err(runner_process.reconcile_failure(error));
         }
-        return Err(runner_process.reconcile_failure(err));
-    }
+    };
 
     let mut transport = RunnerTransport {
-        // Once the pipe connect phase succeeds we can transfer the raw HANDLEs into `File`s.
+        // Transfer the same pipe owners into `File`s without adopting either HANDLE again.
         // From here on, the `RunnerTransport` owns closing the pipes on every success/error path.
-        pipe_write: unsafe { File::from_raw_handle(h_pipe_in as _) },
-        pipe_read: unsafe { File::from_raw_handle(h_pipe_out as _) },
-        // Retain the exact process returned by CreateProcessWithLogonW through
-        // terminal observation; an IPC Exit frame is sent before process exit.
+        pipe_write: File::from(h_pipe_in),
+        pipe_read: File::from(h_pipe_out),
+        managed_base,
         process: runner_process,
     };
     let startup_result = (|| -> Result<()> {
@@ -428,12 +573,10 @@ pub(crate) fn spawn_runner_transport(
         transport.read_spawn_ready()?;
         Ok(())
     })();
-    if let Err(err) = startup_result {
-        let err = transport.process.reconcile_failure(err);
-        // The transport owns both pipes and the exact native process. A failed
-        // reconciliation remains unknown; Drop does not retry the abort.
+    if let Err(error) = startup_result {
+        let error = transport.process.reconcile_failure(error);
         drop(transport);
-        return Err(err);
+        return Err(error);
     }
 
     Ok(transport)

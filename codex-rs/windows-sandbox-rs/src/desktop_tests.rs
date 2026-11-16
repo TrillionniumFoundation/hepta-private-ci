@@ -1,3 +1,17 @@
+use crate::winutil::to_wide;
+use anyhow::bail;
+use pretty_assertions::assert_eq;
+use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
+use windows_sys::Win32::Foundation::ERROR_SUCCESS;
+use windows_sys::Win32::Foundation::GetLastError;
+use windows_sys::Win32::Security::ImpersonateLoggedOnUser;
+use windows_sys::Win32::Security::RevertToSelf;
+use windows_sys::Win32::System::StationsAndDesktops::CloseDesktop;
+use windows_sys::Win32::System::StationsAndDesktops::DESKTOP_CREATEWINDOW;
+use windows_sys::Win32::System::StationsAndDesktops::DESKTOP_WRITEOBJECTS;
+use windows_sys::Win32::System::StationsAndDesktops::OpenDesktopW;
+use crate::token::create_workspace_token_for_desktop_probe;
+use super::DesktopCapability;
 use super::LaunchDesktop;
 use crate::legacy_admission_tests::assert_unavailable;
 use crate::token::LocalSid;
@@ -15,6 +29,50 @@ impl Drop for TokenHandle {
     fn drop(&mut self) {
         unsafe { CloseHandle(self.0) };
     }
+}
+
+struct DesktopHandle(isize);
+
+impl Drop for DesktopHandle {
+    fn drop(&mut self) {
+        if self.0 != 0 {
+            unsafe { CloseDesktop(self.0) };
+        }
+    }
+}
+
+struct ImpersonationGuard;
+
+impl Drop for ImpersonationGuard {
+    fn drop(&mut self) {
+        if unsafe { RevertToSelf() } == 0 {
+            // Never return a still-impersonating thread to the test harness.
+            std::process::abort();
+        }
+    }
+}
+
+fn desktop_write_access(token: HANDLE, name: &str) -> Result<u32> {
+    let name = to_wide(name);
+    if unsafe { ImpersonateLoggedOnUser(token) } == 0 {
+        bail!("ImpersonateLoggedOnUser failed: {}", unsafe {
+            GetLastError()
+        });
+    }
+    let _impersonation = ImpersonationGuard;
+    let desktop = DesktopHandle(unsafe {
+        OpenDesktopW(
+            name.as_ptr(),
+            /*dwflags*/ 0,
+            /*finherit*/ 0,
+            DESKTOP_CREATEWINDOW | DESKTOP_WRITEOBJECTS,
+        )
+    });
+    Ok(if desktop.0 == 0 {
+        unsafe { GetLastError() }
+    } else {
+        ERROR_SUCCESS
+    })
 }
 
 #[test]
@@ -53,5 +111,63 @@ fn desktop_rejects_unrestricted_and_invalid_tokens() -> Result<()> {
             );
         }
     }
+    Ok(())
+}
+
+#[test]
+fn separate_desktop_roles_refuse_sessions_with_the_same_read_roots() -> Result<()> {
+    let base = TokenHandle(unsafe { get_current_token_for_restriction()? });
+    let shared_read = LocalSid::from_string("S-1-5-21-101-202-303-407")?;
+    let first = DesktopCapability::create()?;
+    let second = DesktopCapability::create()?;
+    // These original raw tokens are used only to observe the desktop mechanism;
+    // they neither qualify full filesystem restriction nor production launch.
+    let first_token = TokenHandle(unsafe {
+        create_workspace_token_for_desktop_probe(
+            base.0,
+            &[shared_read.as_ptr(), first.as_sid().as_ptr()],
+        )?
+    });
+    let second_token = TokenHandle(unsafe {
+        create_workspace_token_for_desktop_probe(
+            base.0,
+            &[shared_read.as_ptr(), second.as_sid().as_ptr()],
+        )?
+    });
+    let first_desktop =
+        LaunchDesktop::prepare_for_capability(first_token.0, &first, /*logs_base_dir*/ None)?;
+    let second_desktop = LaunchDesktop::prepare_for_capability(
+        second_token.0,
+        &second,
+        /*logs_base_dir*/ None,
+    )?;
+    let first_name = &first_desktop
+        ._private_desktop
+        .as_ref()
+        .expect("private")
+        .name;
+    let second_name = &second_desktop
+        ._private_desktop
+        .as_ref()
+        .expect("private")
+        .name;
+    assert_eq!(
+        (
+            desktop_write_access(first_token.0, first_name)?,
+            desktop_write_access(second_token.0, second_name)?,
+            desktop_write_access(first_token.0, second_name)?,
+            desktop_write_access(second_token.0, first_name)?,
+        ),
+        (
+            ERROR_SUCCESS,
+            ERROR_SUCCESS,
+            ERROR_ACCESS_DENIED,
+            ERROR_ACCESS_DENIED,
+        )
+    );
+    assert!(
+        LaunchDesktop::prepare_for_capability(first_token.0, &second, /*logs_base_dir*/ None)
+            .is_err()
+    );
     Ok(())
 }

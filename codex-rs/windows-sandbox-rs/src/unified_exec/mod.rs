@@ -111,7 +111,9 @@ pub async fn spawn_windows_sandbox_session_for_level(
         }
         // Explicit Elevated is a separate entry with its own identity and native
         // qualification requirements. It is not a fallback for a legacy request.
-        WindowsSandboxLevel::Elevated => {}
+        WindowsSandboxLevel::Elevated => {
+            crate::legacy_boundary::require_qualified_windows_filesystem()?;
+        }
         WindowsSandboxLevel::Disabled => {
             bail!("disabled Windows sandbox level cannot launch a sandbox session");
         }

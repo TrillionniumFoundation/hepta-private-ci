@@ -50,6 +50,7 @@ mod windows_impl {
     use anyhow::Result;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use std::path::Path;
+    use std::path::PathBuf;
 
     pub use crate::windows_impl::CaptureResult;
 
@@ -58,6 +59,7 @@ mod windows_impl {
     pub fn run_windows_sandbox_capture_for_permission_profile(
         request: ElevatedSandboxProfileCaptureRequest<'_>,
     ) -> Result<CaptureResult> {
+        crate::legacy_boundary::require_qualified_windows_filesystem()?;
         let ElevatedSandboxProfileCaptureRequest {
             permission_profile,
             workspace_roots,
@@ -141,6 +143,25 @@ mod windows_impl {
         }
 
         (|| -> Result<CaptureResult> {
+            let filesystem_root_overrides = crate::setup::SetupRootOverrides {
+                read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+                read_roots_include_platform_defaults,
+                write_roots: write_roots_override.map(<[PathBuf]>::to_vec),
+                deny_read_paths: Some(deny_read_paths_override.clone()),
+                deny_write_paths: Some(deny_write_paths_override.clone()),
+            };
+            let filesystem_roles = crate::setup::capability_plan_for_setup(
+                crate::setup::SandboxSetupRequest {
+                    permissions: &permissions,
+                    command_cwd: cwd,
+                    env_map: &env_map,
+                    codex_home,
+                    proxy_enforced,
+                },
+                filesystem_root_overrides,
+            )?
+            .with_network_route(network_proxy_restricting_sid.clone())?;
+            let root_resolution = filesystem_roles.root_resolution_context().cloned();
             let spawn_request = SpawnRequest {
                 command: command.clone(),
                 cwd: cwd.to_path_buf(),
@@ -150,6 +171,8 @@ mod windows_impl {
                 codex_home: sandbox_base.clone(),
                 real_codex_home: codex_home.to_path_buf(),
                 cap_sids,
+                filesystem_roles: Some(filesystem_roles),
+                root_resolution,
                 network_proxy_restricting_sid,
                 timeout_ms,
                 tty: false,
@@ -184,7 +207,7 @@ mod windows_impl {
                     )
                 },
             )?;
-            let (pipe_write, mut pipe_read, mut runner_process) = transport.into_parts();
+            let (pipe_write, mut pipe_read, mut runner_process) = transport.into_parts()?;
             // The sole reader observes cancellation without a separate blocking
             // control writer. Failure cleanup retains the exact broker handle;
             // its private job keeps the original kill-on-close/preserve policy.
