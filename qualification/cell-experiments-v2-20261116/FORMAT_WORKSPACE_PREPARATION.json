@@ -1,0 +1,211 @@
+{
+  "job_id": "1a1e4a259f8-392-3795",
+  "preparation": {
+    "commands": [
+      {
+        "argv": [
+          "/usr/bin/git",
+          "init",
+          "--quiet",
+          "--initial-branch=formatter-v2"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.01200941699789837
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "cat-file",
+          "-t",
+          "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.008199041010811925
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "ls-tree",
+          "-r",
+          "-z",
+          "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+          "--",
+          "justfile",
+          "scripts/format.py",
+          "scripts/pyproject.toml",
+          "scripts/uv.lock",
+          "scripts/just-shell.py"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.006470042048022151
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "read-tree",
+          "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.028300666017457843
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "ls-files",
+          "-z"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.00815604196395725
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "update-index",
+          "--skip-worktree",
+          "-z",
+          "--stdin"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.017166957957670093
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "update-ref",
+          "refs/heads/formatter-v2",
+          "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.006998499971814454
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.005474833014886826
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "ls-files",
+          "-v",
+          "-z"
+        ],
+        "exit_code": 0,
+        "stderr": "",
+        "wall_seconds": 0.007264790998306125
+      }
+    ],
+    "completed_at_ns": 1794837207836649000,
+    "formatted": false,
+    "formatter_base": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+    "head": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+    "idempotency_key": "hepta-e1e6-v2-mac-format-workspace-20261116-0c078a-01",
+    "no_checkout_performed": true,
+    "no_fetch_performed": true,
+    "objects_alternate": "/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a/.git/objects",
+    "publication_base_is_formatter_base": false,
+    "published": false,
+    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "schema": "hepta.format-workspace-preparation.v2",
+    "source_files": {
+      "justfile": {
+        "bytes": 7838,
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "mode": "100644",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "scripts/format.py": {
+        "bytes": 16599,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "mode": "100644",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      "scripts/just-shell.py": {
+        "bytes": 2030,
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "mode": "100644",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "scripts/pyproject.toml": {
+        "bytes": 177,
+        "git_blob": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+        "mode": "100644",
+        "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+      },
+      "scripts/uv.lock": {
+        "bytes": 6220,
+        "git_blob": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+        "mode": "100644",
+        "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+      }
+    },
+    "source_workspace": "/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a",
+    "started_at_ns": 1794837207733525000,
+    "status": "READY_FOR_FINAL_SOURCE_TRANSFER",
+    "tracked_paths": 14227,
+    "wall_seconds": 0.10312629101099446,
+    "workspace": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a"
+  },
+  "request": {
+    "args": [
+      "-"
+    ],
+    "executable": "/opt/homebrew/bin/python3",
+    "host": "mac",
+    "idempotency_key": "hepta-e1e6-v2-mac-format-workspace-20261116-0c078a-01",
+    "timeout_seconds": 240
+  },
+  "request_digest": "aa2cbb8803eaebfc655fb0377e456125cc8816dae169386234582d2744adacc1",
+  "setup_script_sha256": "c382413fd31b97a3d9ab9be80900717daaeae2974257b7d2f6ec5d915a6bebec",
+  "status": {
+    "at_unix_ms": 1794837207886,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1e4a259f8-392-3795",
+    "launch_nonce": "bd186398c01fabbc3c9dfa516c5b298c",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3296,
+        "stored": 3296
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stderr": "",
+  "stdout": "{\"commands\": [{\"argv\": [\"/usr/bin/git\", \"init\", \"--quiet\", \"--initial-branch=formatter-v2\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.01200941699789837}, {\"argv\": [\"/usr/bin/git\", \"cat-file\", \"-t\", \"f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.008199041010811925}, {\"argv\": [\"/usr/bin/git\", \"ls-tree\", \"-r\", \"-z\", \"f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb\", \"--\", \"justfile\", \"scripts/format.py\", \"scripts/pyproject.toml\", \"scripts/uv.lock\", \"scripts/just-shell.py\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.006470042048022151}, {\"argv\": [\"/usr/bin/git\", \"read-tree\", \"f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.028300666017457843}, {\"argv\": [\"/usr/bin/git\", \"ls-files\", \"-z\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.00815604196395725}, {\"argv\": [\"/usr/bin/git\", \"update-index\", \"--skip-worktree\", \"-z\", \"--stdin\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.017166957957670093}, {\"argv\": [\"/usr/bin/git\", \"update-ref\", \"refs/heads/formatter-v2\", \"f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.006998499971814454}, {\"argv\": [\"/usr/bin/git\", \"rev-parse\", \"HEAD\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.005474833014886826}, {\"argv\": [\"/usr/bin/git\", \"ls-files\", \"-v\", \"-z\"], \"exit_code\": 0, \"stderr\": \"\", \"wall_seconds\": 0.007264790998306125}], \"completed_at_ns\": 1794837207836649000, \"formatted\": false, \"formatter_base\": \"f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb\", \"head\": \"f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb\", \"idempotency_key\": \"hepta-e1e6-v2-mac-format-workspace-20261116-0c078a-01\", \"no_checkout_performed\": true, \"no_fetch_performed\": true, \"objects_alternate\": \"/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a/.git/objects\", \"publication_base_is_formatter_base\": false, \"published\": false, \"python\": \"3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]\", \"schema\": \"hepta.format-workspace-preparation.v2\", \"source_files\": {\"justfile\": {\"bytes\": 7838, \"git_blob\": \"a215a76cf407ace9715bca39c20497014e7dd4dc\", \"mode\": \"100644\", \"sha256\": \"74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124\"}, \"scripts/format.py\": {\"bytes\": 16599, \"git_blob\": \"d4eabe70b68605933240e9129245f7f4cccbde5d\", \"mode\": \"100644\", \"sha256\": \"8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3\"}, \"scripts/just-shell.py\": {\"bytes\": 2030, \"git_blob\": \"bb2db6ebc4312a301ee39d2793fde16289d046d8\", \"mode\": \"100644\", \"sha256\": \"444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9\"}, \"scripts/pyproject.toml\": {\"bytes\": 177, \"git_blob\": \"4340b6b78e83971e0032a7c90852f02791d3acbf\", \"mode\": \"100644\", \"sha256\": \"0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0\"}, \"scripts/uv.lock\": {\"bytes\": 6220, \"git_blob\": \"6c0c3bd0810badf5f901317b61d642d1dc84e026\", \"mode\": \"100644\", \"sha256\": \"6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c\"}}, \"source_workspace\": \"/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a\", \"started_at_ns\": 1794837207733525000, \"status\": \"READY_FOR_FINAL_SOURCE_TRANSFER\", \"tracked_paths\": 14227, \"wall_seconds\": 0.10312629101099446, \"workspace\": \"/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a\"}\n"
+}
