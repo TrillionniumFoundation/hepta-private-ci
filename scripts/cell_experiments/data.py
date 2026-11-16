@@ -172,7 +172,12 @@ def validate_record(record, *, require_outcome=True):
             event.get("kind") in ("observation", "action", "correction"),
             "bad event kind",
         )
-        _text(event.get("content"), "trajectory content", 32768)
+        if not (
+            event["actor"] == "student"
+            and event["kind"] == "action"
+            and event.get("content") == ""
+        ):
+            _text(event.get("content"), "trajectory content", 32768)
         _require(
             type(event.get("executed")) is bool, "explicit execution flag required"
         )

@@ -19,6 +19,7 @@ except ImportError:
     resource = None
 
 from .data import build_sft_examples, canonical, digest, load_records
+from . import chat_protocol
 
 FAMILY = "hepta-smollm2-coding-sft-v1"
 MODEL_SCHEMA = "hepta.experimental-model.v1"
@@ -69,6 +70,7 @@ def verify_model(manifest, root):
         if path.stat().st_size != item["bytes"] or file_hash(path) != item["sha256"]:
             raise ValueError("model artifact identity mismatch")
     base_dir = manifest["runtime"]["base_directory"]
+    protocol = chat_protocol.protocol_name(manifest["runtime"])
     for required in (
         "model.safetensors",
         "config.json",
@@ -77,6 +79,14 @@ def verify_model(manifest, root):
     ):
         if str(Path(base_dir) / required) not in paths:
             raise ValueError("required base artifact is not bound: " + required)
+    if protocol == chat_protocol.NATIVE:
+        config = json.loads(
+            (Path(root) / base_dir / "tokenizer_config.json").read_text()
+        )
+        if chat_protocol.template_digest(config.get("chat_template")) != manifest[
+            "runtime"
+        ].get("chat_template_sha256"):
+            raise ValueError("chat template differs from frozen runtime")
     adapter = manifest["runtime"].get("adapter_directory")
     if adapter:
         for required in ("adapter_model.safetensors", "adapter_config.json"):
@@ -109,12 +119,20 @@ def verify_model(manifest, root):
     return digest(manifest)
 
 
-def prompt_text(value):
+def prompt_text(value, tokenizer=None, protocol=chat_protocol.LEGACY, messages=None):
+    if protocol == chat_protocol.NATIVE:
+        return chat_protocol.render_prompt(tokenizer, value, messages)
+    if protocol != chat_protocol.LEGACY or messages is not None:
+        raise ValueError("unsupported legacy chat history")
     return "### User\n" + value + "\n### Assistant\n"
 
 
-def encode_example(tokenizer, example, limit):
+def encode_example(tokenizer, example, limit, protocol=chat_protocol.LEGACY):
     """Preserve all visible observations, mask their loss, reject overflow."""
+    if protocol == chat_protocol.NATIVE:
+        return chat_protocol.encode_native_example(tokenizer, example, limit)
+    if protocol != chat_protocol.LEGACY:
+        raise ValueError("unsupported training protocol")
     ids = tokenizer.encode(prompt_text(example["input"]), add_special_tokens=False)
     labels = [-100] * len(ids)
     for number, segment in enumerate(example["segments"]):
@@ -176,6 +194,12 @@ def prepare_base(materials, output, settings):
             ("tokenizer", "special_tokens", "vocab", "merges")
         ):
             item["role"] = "tokenizer"
+    settings = dict(settings)
+    if chat_protocol.protocol_name(settings) == chat_protocol.NATIVE:
+        config = json.loads((base / "tokenizer_config.json").read_text())
+        settings["chat_template_sha256"] = chat_protocol.template_digest(
+            config.get("chat_template")
+        )
     manifest = {
         "schema": MODEL_SCHEMA,
         "family": FAMILY,
@@ -210,6 +234,12 @@ def _load(manifest, root, trainable=False):
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         base, local_files_only=True, trust_remote_code=False
     )
+    if (
+        chat_protocol.protocol_name(runtime) == chat_protocol.NATIVE
+        and chat_protocol.template_digest(tokenizer.get_chat_template())
+        != runtime["chat_template_sha256"]
+    ):
+        raise ValueError("loaded tokenizer chat template differs from frozen runtime")
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
     model = transformers.AutoModelForCausalLM.from_pretrained(
@@ -240,8 +270,12 @@ class Predictor:
     def predict(self, record):
         torch, _, _ = _libraries()
         prompt = record["task"]["input"]
+        protocol = chat_protocol.protocol_name(self.manifest["runtime"])
+        rendered = prompt_text(
+            prompt, self.tokenizer, protocol, record["task"].get("messages")
+        )
         encoded = self.tokenizer(
-            prompt_text(prompt), return_tensors="pt", add_special_tokens=False
+            rendered, return_tensors="pt", add_special_tokens=False
         )
         limit = self.manifest["runtime"]["max_input_tokens"]
         if encoded.input_ids.shape[1] > limit:
@@ -260,18 +294,30 @@ class Predictor:
             "answer": self.tokenizer.decode(produced, skip_special_tokens=True),
             "loaded_model_digest": self.model_digest,
             "input_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+            "rendered_input_sha256": hashlib.sha256(rendered.encode()).hexdigest(),
+            "message_protocol": protocol,
             "input_tokens": encoded.input_ids.shape[1],
             "output_tokens": len(produced),
             "elapsed_seconds": time.perf_counter() - started,
             "time_scope": "generate and decode; excludes load and input tokenization",
             "pid": os.getpid(),
             "external_effect_executed": False,
+            **chat_protocol.generation_termination(
+                produced,
+                self.tokenizer.eos_token_id,
+                self.manifest["runtime"]["max_new_tokens"],
+            ),
         }
 
     def encode_features(self, record, dimensions=64):
         torch, _, _ = _libraries()
         encoded = self.tokenizer(
-            prompt_text(record["task"]["input"]),
+            prompt_text(
+                record["task"]["input"],
+                self.tokenizer,
+                chat_protocol.protocol_name(self.manifest["runtime"]),
+                record["task"].get("messages"),
+            ),
             return_tensors="pt",
             add_special_tokens=False,
         )
@@ -342,7 +388,12 @@ def _train(records, parent, artifact_root, plan, mode, output):
     steps, length = settings["steps"], settings["sequence_tokens"]
     if not (type(steps) is int and 1 <= steps <= 4096 and 16 <= length <= 4096):
         raise ValueError("unbounded training plan")
-    examples = build_sft_examples(records, mode)
+    protocol = chat_protocol.protocol_name(parent["runtime"])
+    examples = (
+        chat_protocol.native_examples(records, mode)
+        if protocol == chat_protocol.NATIVE
+        else build_sft_examples(records, mode)
+    )
     if not examples:
         raise ValueError("no authorized successful training records")
     started_at_ns, started_cpu, started = (
@@ -354,7 +405,12 @@ def _train(records, parent, artifact_root, plan, mode, output):
     model, tokenizer, parent_digest = _load(parent, artifact_root)
     if parent["runtime"].get("adapter_directory"):
         raise ValueError("E1 comparison requires the same frozen base, not a prior arm")
-    encoded = [encode_example(tokenizer, example, length) for example in examples]
+    encoded = [
+        chat_protocol.encode_native_turns(tokenizer, example, length)
+        if protocol == chat_protocol.NATIVE
+        else [encode_example(tokenizer, example, length)]
+        for example in examples
+    ]
     model = peft.get_peft_model(
         model,
         peft.LoraConfig(
@@ -383,8 +439,11 @@ def _train(records, parent, artifact_root, plan, mode, output):
         [value for _, value in parameters], lr=settings["learning_rate"]
     )
     losses, consumed, supervised = [], 0, 0
+    turn_updates = [[0] * len(turns) for turns in encoded]
     for step in range(steps):
-        row = encoded[step % len(encoded)]
+        record_index = step % len(encoded)
+        turn_index = (step // len(encoded)) % len(encoded[record_index])
+        row = encoded[record_index][turn_index]
         padding = length - len(row["input_ids"])
         ids = torch.tensor([row["input_ids"] + [tokenizer.pad_token_id] * padding])
         labels = torch.tensor([row["labels"] + [-100] * padding])
@@ -398,6 +457,7 @@ def _train(records, parent, artifact_root, plan, mode, output):
         loss.backward()
         torch.nn.utils.clip_grad_norm_([value for _, value in parameters], 1.0)
         optimizer.step()
+        turn_updates[record_index][turn_index] += 1
         losses.append(float(loss.detach()))
         consumed += len(row["input_ids"])
         supervised += row["supervised_tokens"]
@@ -409,6 +469,9 @@ def _train(records, parent, artifact_root, plan, mode, output):
                         "loss": losses[-1],
                         "input_tokens": consumed,
                         "supervised_tokens": supervised,
+                        "record_id": row["record_id"],
+                        "record_group_index": record_index,
+                        "supervised_turn_index": turn_index,
                         "observed_at_ns": time.time_ns(),
                     }
                 )
@@ -452,6 +515,26 @@ def _train(records, parent, artifact_root, plan, mode, output):
         "parameter_after": after,
         "steps": steps,
         "mode": mode,
+        "message_protocol": protocol,
+        "chat_template_sha256": parent["runtime"].get("chat_template_sha256"),
+        "dropped_terminal_duplicates": sum(
+            turns[0].get("dropped_terminal_duplicates", 0) for turns in encoded
+        ),
+        "supervision_schedule": {
+            "rule": "record=step%record_count; turn=(step//record_count)%turn_count",
+            "original_record_groups": len(encoded),
+            "unique_task_ids": len({record["task_id"] for record in records}),
+            "encoded_supervised_turns": sum(len(turns) for turns in encoded),
+            "independent_sample_increment_from_turns": 0,
+            "record_updates": [
+                {
+                    "record_id": example["record_id"],
+                    "turn_updates": counts,
+                    "total_updates": sum(counts),
+                }
+                for example, counts in zip(examples, turn_updates)
+            ],
+        },
         "records_digest": digest(records),
         "training_source_ids": data_sources,
         "record_ids": [r["record_id"] for r in records],
