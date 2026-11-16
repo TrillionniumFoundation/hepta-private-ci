@@ -1206,268 +1206,268 @@ jobs:
           # The pinned original snapshot includes a tracked .gitattributes fixture.
           include-hidden-files: true
           path: |
-            ${{ runner.temp }}/hia-native/build.json
-            ${{ runner.temp }}/unified-component-gate/**/*.json
-            ${{ runner.temp }}/unified-component-gate/**/*.jsonl
-            ${{ runner.temp }}/unified-component-gate/**/*.stdout
-            ${{ runner.temp }}/unified-component-gate/**/*.stderr
-            ${{ runner.temp }}/unified-component-gate/**/*.bin
-            ${{ runner.temp }}/unified-component-gate/reference/similar-2.7.0/
-            ${{ runner.temp }}/unified-component-report.json.stdout
-            ${{ runner.temp }}/unified-policy/*.json
-            ${{ runner.temp }}/unified-policy/fix/
-            ${{ runner.temp }}/unified-policy/policy-profiles/
-            ${{ runner.temp }}/unified-policy/receipts/*.jsonl
-            ${{ runner.temp }}/unified-policy/receipts/indices/
-            ${{ runner.temp }}/unified-policy/receipts/receipts/
-            ${{ runner.temp }}/unified-policy/receipts/compiler-logs/
-            ${{ runner.temp }}/unified-policy/receipts/probes/*/probe.rs
-            ${{ runner.temp }}/unified-policy/receipts/probes/*/receipt.json
-            ${{ runner.temp }}/unified-policy/receipts/probes/*/*.stdout
-            ${{ runner.temp }}/unified-policy/receipts/probes/*/*.stderr
-            ${{ runner.temp }}/unified-policy-gate/*.json
-            ${{ runner.temp }}/unified-policy-gate/*.stdout
-            ${{ runner.temp }}/unified-policy-gate/*.stderr
-            ${{ runner.temp }}/unified-public-gate/*.json
-            ${{ runner.temp }}/unified-public-gate/*.stdout
-            ${{ runner.temp }}/unified-public-gate/*.stderr
-            ${{ runner.temp }}/unified-public-gate/cases.bin
-            ${{ runner.temp }}/unified-public-gate/original-source/
-            ${{ runner.temp }}/unified-public-gate/fixtures/
-            ${{ runner.temp }}/unified-public-gate/policy-*/native-call-counts.tsv
-            ${{ runner.temp }}/unified-*.json
-            ${{ runner.temp }}/unified-*.jsonl
-            ${{ runner.temp }}/unified-*.log
-            ${{ runner.temp }}/unified-*.stderr
-            ${{ runner.temp }}/hia-template-parse-abi.json
-            ${{ runner.temp }}/hia-template-parse-abi.log
-            ${{ runner.temp }}/hia-template-parse-abi-files/
-            ${{ runner.temp }}/hia-template-parse-receipt.json
-            ${{ runner.temp }}/hia-template-parse-receipt.log
-            ${{ runner.temp }}/hia-template-render-abi.json
-            ${{ runner.temp }}/hia-template-render-abi.log
-            ${{ runner.temp }}/hia-template-render-abi-files/
-            ${{ runner.temp }}/hia-template-render-receipts.json
-            ${{ runner.temp }}/hia-template-render-receipts.log
-            ${{ runner.temp }}/hia-template-caller.json
-            ${{ runner.temp }}/hia-template-caller.log
-            ${{ runner.temp }}/hia-template-caller/
-            ${{ runner.temp }}/hia-uuid-abi.json
-            ${{ runner.temp }}/hia-uuid-abi.log
-            ${{ runner.temp }}/hia-uuid-abi-files/
-            ${{ runner.temp }}/hia-uuid-receipt.json
-            ${{ runner.temp }}/hia-uuid-receipt.log
-            ${{ runner.temp }}/hia-uuid-caller.json
-            ${{ runner.temp }}/hia-uuid-caller.log
-            ${{ runner.temp }}/hia-uuid-caller/
-            ${{ runner.temp }}/hia-patch-standalone-abi.json
-            ${{ runner.temp }}/hia-patch-standalone-abi.calls.jsonl
-            ${{ runner.temp }}/hia-patch-standalone-abi.log
-            ${{ runner.temp }}/hia-patch-standalone-receipt.json
-            ${{ runner.temp }}/hia-patch-standalone-receipt.log
-            ${{ runner.temp }}/hia-patch-application-abi.json
-            ${{ runner.temp }}/hia-patch-application-abi.log
-            ${{ runner.temp }}/hia-patch-application-receipt.json
-            ${{ runner.temp }}/hia-patch-application-receipt.log
-            ${{ runner.temp }}/hia-patch-application-caller.json
-            ${{ runner.temp }}/hia-patch-application-caller.log
-            ${{ runner.temp }}/hia-patch-application-caller/commands/
-            ${{ runner.temp }}/hia-patch-application-caller/public-observations/
-            ${{ runner.temp }}/hia-patch-summary-abi.json
-            ${{ runner.temp }}/hia-patch-summary-abi.log
-            ${{ runner.temp }}/hia-patch-summary-receipt.json
-            ${{ runner.temp }}/hia-patch-summary-receipt.log
-            ${{ runner.temp }}/hia-patch-summary-caller.json
-            ${{ runner.temp }}/hia-patch-summary-caller.log
-            ${{ runner.temp }}/hia-patch-summary-caller/commands/
-            ${{ runner.temp }}/hia-patch-summary-caller/public-observations/
-            ${{ runner.temp }}/hia-patch-effects-abi.json
-            ${{ runner.temp }}/hia-patch-effects-abi.log
-            ${{ runner.temp }}/hia-patch-effects-receipt.json
-            ${{ runner.temp }}/hia-patch-effects-receipt.log
-            ${{ runner.temp }}/hia-patch-standalone-caller.json
-            ${{ runner.temp }}/hia-patch-standalone-caller.log
-            ${{ runner.temp }}/hia-patch-standalone-caller/commands/
-            ${{ runner.temp }}/hia-patch-standalone-caller/process-observations/
-            ${{ runner.temp }}/hia-patch-effects-caller.json
-            ${{ runner.temp }}/hia-patch-effects-caller.log
-            ${{ runner.temp }}/hia-patch-effects-caller/original/
-            ${{ runner.temp }}/hia-patch-effects-caller/original-source-manifest.json
-            ${{ runner.temp }}/hia-patch-effects-caller/metadata-source-inputs.json
-            ${{ runner.temp }}/hia-patch-effects-caller/default-dependency-manifest.json
-            ${{ runner.temp }}/hia-patch-effects-caller/native-dependency-manifest.json
-            ${{ runner.temp }}/hia-patch-effects-caller/actual-serde-identity.json
-            ${{ runner.temp }}/hia-patch-effects-caller/commands/
-            ${{ runner.temp }}/hia-patch-effects-caller/public-observations/
-            ${{ runner.temp }}/hia-patch-effects-caller/native-transport-report.json
-            ${{ runner.temp }}/hia-patch-effects-caller/native-transport/fixtures/
-            ${{ runner.temp }}/hia-toolchain.log
-            ${{ runner.temp }}/hia-patch-caller.log
-            ${{ runner.temp }}/hia-source-file-caller.json
-            ${{ runner.temp }}/hia-source-file-caller.log
-            ${{ runner.temp }}/hia-source-file-abi.json
-            ${{ runner.temp }}/hia-source-file-abi.log
-            ${{ runner.temp }}/hia-source-file-receipt.json
-            ${{ runner.temp }}/hia-source-file-receipt.log
-            ${{ runner.temp }}/hia-parser-caller.json
-            ${{ runner.temp }}/hia-parser-caller.log
-            ${{ runner.temp }}/hia-parser-host-receipt.json
-            ${{ runner.temp }}/hia-parser-host-receipt.log
-            ${{ runner.temp }}/hia-parser-abi.json
-            ${{ runner.temp }}/hia-parser-abi.log
-            ${{ runner.temp }}/hia-parser-receipt.json
-            ${{ runner.temp }}/hia-parser-receipt.log
-            ${{ runner.temp }}/hia-string-caller.json
-            ${{ runner.temp }}/hia-string-caller.log
-            ${{ runner.temp }}/hia-metric-caller.json
-            ${{ runner.temp }}/hia-metric-caller.log
-            ${{ runner.temp }}/hia-metric-abi.json
-            ${{ runner.temp }}/hia-metric-abi.log
-            ${{ runner.temp }}/hia-markdown-caller.json
-            ${{ runner.temp }}/hia-markdown-caller.log
-            ${{ runner.temp }}/hia-markdown-abi.json
-            ${{ runner.temp }}/hia-markdown-abi.log
-            ${{ runner.temp }}/hia-ascii-json-caller.json
-            ${{ runner.temp }}/hia-ascii-json-caller.log
-            ${{ runner.temp }}/hia-ascii-json-abi.json
-            ${{ runner.temp }}/hia-ascii-json-abi.log
-            ${{ runner.temp }}/hia-truncate-caller.json
-            ${{ runner.temp }}/hia-truncate-caller.log
-            ${{ runner.temp }}/hia-truncate-abi.json
-            ${{ runner.temp }}/hia-truncate-abi.log
-            ${{ runner.temp }}/hia-truncate-consumers.log
-            ${{ runner.temp }}/hia-token-budget-abi.json
-            ${{ runner.temp }}/hia-token-budget-abi.log
-            ${{ runner.temp }}/hia-scalar-admission.json
-            ${{ runner.temp }}/hia-scalar-admission.log
-            ${{ runner.temp }}/hia-scalar-receipt.json
-            ${{ runner.temp }}/hia-scalar-receipt.log
-            ${{ runner.temp }}/hia-native-crates.log
-            ${{ runner.temp }}/hia-installed-patch-build.log
-            ${{ runner.temp }}/hia-original-patch-build.log
-            ${{ runner.temp }}/hia-installed-patch.json
-            ${{ runner.temp }}/hia-installed-patch.log
-            ${{ runner.temp }}/hia-default-crates.log
-            ${{ runner.temp }}/hia-file-update-abi.json
-            ${{ runner.temp }}/hia-file-update-abi.log
-            ${{ runner.temp }}/hia-file-update-receipt.json
-            ${{ runner.temp }}/hia-file-update-receipt.log
-            ${{ runner.temp }}/hia-file-update-caller/original/
-            ${{ runner.temp }}/hia-file-update-caller.json
-            ${{ runner.temp }}/hia-file-update-caller.log
-            ${{ runner.temp }}/hia-file-update-caller/cases.json
-            ${{ runner.temp }}/hia-file-update-caller/original-source-manifest.json
-            ${{ runner.temp }}/hia-file-update-caller/metadata-source-inputs.json
-            ${{ runner.temp }}/hia-file-update-caller/default-dependency-manifest.json
-            ${{ runner.temp }}/hia-file-update-caller/native-dependency-manifest.json
-            ${{ runner.temp }}/hia-file-update-caller/commands/
-            ${{ runner.temp }}/hia-file-update-caller/observations/
-            ${{ runner.temp }}/hia-native-owner-clippy.log
-            ${{ runner.temp }}/hia-default-owner-clippy.log
-            ${{ runner.temp }}/hia-native-owner-fix.log
-            ${{ runner.temp }}/hia-template-consumers-native.log
-            ${{ runner.temp }}/hia-template-consumers-default.log
-            ${{ runner.temp }}/hia-string-template-source-before.json
-            ${{ runner.temp }}/hia-string-template-source-after.json
-            ${{ runner.temp }}/hia-string-template-metadata.json
-            ${{ runner.temp }}/hia-string-template-metadata.stderr
-            ${{ runner.temp }}/hia-string-template-fix.json
-            ${{ runner.temp }}/hia-string-template-fix/
-            ${{ runner.temp }}/hia-string-template-fix.log
-            ${{ runner.temp }}/hia-string-template-fix-validation.json
-            ${{ runner.temp }}/hia-string-template-format.log
-            ${{ runner.temp }}/hia-codex-owners.log
-            ${{ runner.temp }}/hia-installed-codex-build.log
-            ${{ runner.temp }}/hia-original-codex-build.log
-            ${{ runner.temp }}/hia-installed-codex.json
-            ${{ runner.temp }}/hia-installed-codex.log
-            ${{ runner.temp }}/hia-build.log
-            ${{ runner.temp }}/hia-word-memory.log
-            ${{ runner.temp }}/hia-build-receipt.json
-            ${{ runner.temp }}/hia-build-receipt.log
-            ${{ runner.temp }}/hia-seek-sequence.json
-            ${{ runner.temp }}/hia-seek-sequence.log
-            ${{ runner.temp }}/hia-utf8-boundaries.json
-            ${{ runner.temp }}/hia-utf8-boundaries.log
-            ${{ runner.temp }}/hia-template-parser.json
-            ${{ runner.temp }}/hia-template-parser.log
-            ${{ runner.temp }}/hia-template-abi.json
-            ${{ runner.temp }}/hia-template-abi.log
-            ${{ runner.temp }}/hia-template-render.json
-            ${{ runner.temp }}/hia-template-render.log
-            ${{ runner.temp }}/hia-template-placeholders.json
-            ${{ runner.temp }}/hia-template-placeholders.log
-            ${{ runner.temp }}/hia-template-index-abi.json
-            ${{ runner.temp }}/hia-template-index-abi.log
-            ${{ runner.temp }}/hia-execpolicy-caller.json
-            ${{ runner.temp }}/hia-execpolicy-caller.log
-            ${{ runner.temp }}/hia-execpolicy-abi.json
-            ${{ runner.temp }}/hia-execpolicy-abi.log
-            ${{ runner.temp }}/hia-prefix-admission-abi.json
-            ${{ runner.temp }}/hia-prefix-admission-abi.log
-            ${{ runner.temp }}/hia-prefix-scalar-admission.json
-            ${{ runner.temp }}/hia-prefix-scalar-admission.log
-            ${{ runner.temp }}/hia-execpolicy-allocations.json
-            ${{ runner.temp }}/hia-execpolicy-allocations.log
-            ${{ runner.temp }}/hia-installed-execpolicy-build.log
-            ${{ runner.temp }}/hia-original-execpolicy-build.log
-            ${{ runner.temp }}/hia-installed-execpolicy.json
-            ${{ runner.temp }}/hia-installed-execpolicy.log
-            ${{ runner.temp }}/hia-core-execpolicy.log
-            ${{ runner.temp }}/hia-policy-summary-abi.json
-            ${{ runner.temp }}/hia-policy-summary-abi.log
-            ${{ runner.temp }}/hia-policy-summary.json
-            ${{ runner.temp }}/hia-policy-summary.log
-            ${{ runner.temp }}/hia-policy-summary-artifacts/*.stdout
-            ${{ runner.temp }}/hia-policy-summary-artifacts/*.stderr
-            ${{ runner.temp }}/hia-policy-summary-artifacts/actual_cli_formatters.rs
-            ${{ runner.temp }}/hia-policy-summary-artifacts/capture_rustc.py
-            ${{ runner.temp }}/hia-policy-summary-artifacts/compiler-*.json
-            ${{ runner.temp }}/hia-network-domains-abi.json
-            ${{ runner.temp }}/hia-network-domains-abi.log
-            ${{ runner.temp }}/hia-network-domains.json
-            ${{ runner.temp }}/hia-network-domains.log
-            ${{ runner.temp }}/hia-core-network-domains.log
-            ${{ runner.temp }}/hia-network-domains-artifacts/*.stdout
-            ${{ runner.temp }}/hia-network-domains-artifacts/*.stderr
-            ${{ runner.temp }}/hia-network-domains-artifacts/capture_rustc.py
-            ${{ runner.temp }}/hia-network-domains-artifacts/compiler-*.json
-            ${{ runner.temp }}/hia-allowed-prefixes-abi.json
-            ${{ runner.temp }}/hia-allowed-prefixes-abi.log
-            ${{ runner.temp }}/hia-allowed-prefixes.json
-            ${{ runner.temp }}/hia-allowed-prefixes.log
-            ${{ runner.temp }}/hia-protocol-allowed-prefixes.log
-            ${{ runner.temp }}/hia-allowed-prefixes-artifacts/*.stdout
-            ${{ runner.temp }}/hia-allowed-prefixes-artifacts/*.stderr
-            ${{ runner.temp }}/hia-allowed-prefixes-artifacts/capture_rustc.py
-            ${{ runner.temp }}/hia-allowed-prefixes-artifacts/compiler-*.json
-            ${{ runner.temp }}/hia-command-dispatch-abi.json
-            ${{ runner.temp }}/hia-command-dispatch-abi.log
-            ${{ runner.temp }}/hia-command-dispatch.json
-            ${{ runner.temp }}/hia-command-dispatch.log
-            ${{ runner.temp }}/hia-command-dispatch-artifacts/*.stdout
-            ${{ runner.temp }}/hia-command-dispatch-artifacts/*.stderr
-            ${{ runner.temp }}/hia-command-dispatch-artifacts/capture_rustc.py
-            ${{ runner.temp }}/hia-command-dispatch-artifacts/compiler-*.json
-            ${{ runner.temp }}/hia-formatter-scope.log
-            ${{ runner.temp }}/hia-network-host-abi.json
-            ${{ runner.temp }}/hia-network-host-abi.log
-            ${{ runner.temp }}/hia-network-host.json
-            ${{ runner.temp }}/hia-network-host.log
-            ${{ runner.temp }}/hia-network-host-artifacts/*.stdout
-            ${{ runner.temp }}/hia-network-host-artifacts/*.stderr
-            ${{ runner.temp }}/hia-network-host-artifacts/capture_rustc.py
-            ${{ runner.temp }}/hia-network-host-artifacts/compiler-*.json
-            ${{ runner.temp }}/hia-network-host-artifacts/public_owner.rs
-            ${{ runner.temp }}/hia-uuid-compat-public.json
-            ${{ runner.temp }}/hia-uuid-compat-public.log
-            ${{ runner.temp }}/hia-uuid-window-legacy-abi.json
-            ${{ runner.temp }}/hia-uuid-window-legacy-abi.log
-            ${{ runner.temp }}/hia-template-window-legacy-abi.json
-            ${{ runner.temp }}/hia-template-window-legacy-abi.log
-            ${{ runner.temp }}/hia-joint-*-receipt.json
-            ${{ runner.temp }}/hia-joint-*-receipt.log
-            ${{ runner.temp }}/hia-native/*.link
+            ${{ format('{0}/hia-native/build.json
+            {0}/unified-component-gate/**/*.json
+            {0}/unified-component-gate/**/*.jsonl
+            {0}/unified-component-gate/**/*.stdout
+            {0}/unified-component-gate/**/*.stderr
+            {0}/unified-component-gate/**/*.bin
+            {0}/unified-component-gate/reference/similar-2.7.0/
+            {0}/unified-component-report.json.stdout
+            {0}/unified-policy/*.json
+            {0}/unified-policy/fix/
+            {0}/unified-policy/policy-profiles/
+            {0}/unified-policy/receipts/*.jsonl
+            {0}/unified-policy/receipts/indices/
+            {0}/unified-policy/receipts/receipts/
+            {0}/unified-policy/receipts/compiler-logs/
+            {0}/unified-policy/receipts/probes/*/probe.rs
+            {0}/unified-policy/receipts/probes/*/receipt.json
+            {0}/unified-policy/receipts/probes/*/*.stdout
+            {0}/unified-policy/receipts/probes/*/*.stderr
+            {0}/unified-policy-gate/*.json
+            {0}/unified-policy-gate/*.stdout
+            {0}/unified-policy-gate/*.stderr
+            {0}/unified-public-gate/*.json
+            {0}/unified-public-gate/*.stdout
+            {0}/unified-public-gate/*.stderr
+            {0}/unified-public-gate/cases.bin
+            {0}/unified-public-gate/original-source/
+            {0}/unified-public-gate/fixtures/
+            {0}/unified-public-gate/policy-*/native-call-counts.tsv
+            {0}/unified-*.json
+            {0}/unified-*.jsonl
+            {0}/unified-*.log
+            {0}/unified-*.stderr
+            {0}/hia-template-parse-abi.json
+            {0}/hia-template-parse-abi.log
+            {0}/hia-template-parse-abi-files/
+            {0}/hia-template-parse-receipt.json
+            {0}/hia-template-parse-receipt.log
+            {0}/hia-template-render-abi.json
+            {0}/hia-template-render-abi.log
+            {0}/hia-template-render-abi-files/
+            {0}/hia-template-render-receipts.json
+            {0}/hia-template-render-receipts.log
+            {0}/hia-template-caller.json
+            {0}/hia-template-caller.log
+            {0}/hia-template-caller/
+            {0}/hia-uuid-abi.json
+            {0}/hia-uuid-abi.log
+            {0}/hia-uuid-abi-files/
+            {0}/hia-uuid-receipt.json
+            {0}/hia-uuid-receipt.log
+            {0}/hia-uuid-caller.json
+            {0}/hia-uuid-caller.log
+            {0}/hia-uuid-caller/
+            {0}/hia-patch-standalone-abi.json
+            {0}/hia-patch-standalone-abi.calls.jsonl
+            {0}/hia-patch-standalone-abi.log
+            {0}/hia-patch-standalone-receipt.json
+            {0}/hia-patch-standalone-receipt.log
+            {0}/hia-patch-application-abi.json
+            {0}/hia-patch-application-abi.log
+            {0}/hia-patch-application-receipt.json
+            {0}/hia-patch-application-receipt.log
+            {0}/hia-patch-application-caller.json
+            {0}/hia-patch-application-caller.log
+            {0}/hia-patch-application-caller/commands/
+            {0}/hia-patch-application-caller/public-observations/
+            {0}/hia-patch-summary-abi.json
+            {0}/hia-patch-summary-abi.log
+            {0}/hia-patch-summary-receipt.json
+            {0}/hia-patch-summary-receipt.log
+            {0}/hia-patch-summary-caller.json
+            {0}/hia-patch-summary-caller.log
+            {0}/hia-patch-summary-caller/commands/
+            {0}/hia-patch-summary-caller/public-observations/
+            {0}/hia-patch-effects-abi.json
+            {0}/hia-patch-effects-abi.log
+            {0}/hia-patch-effects-receipt.json
+            {0}/hia-patch-effects-receipt.log
+            {0}/hia-patch-standalone-caller.json
+            {0}/hia-patch-standalone-caller.log
+            {0}/hia-patch-standalone-caller/commands/
+            {0}/hia-patch-standalone-caller/process-observations/
+            {0}/hia-patch-effects-caller.json
+            {0}/hia-patch-effects-caller.log
+            {0}/hia-patch-effects-caller/original/
+            {0}/hia-patch-effects-caller/original-source-manifest.json
+            {0}/hia-patch-effects-caller/metadata-source-inputs.json
+            {0}/hia-patch-effects-caller/default-dependency-manifest.json
+            {0}/hia-patch-effects-caller/native-dependency-manifest.json
+            {0}/hia-patch-effects-caller/actual-serde-identity.json
+            {0}/hia-patch-effects-caller/commands/
+            {0}/hia-patch-effects-caller/public-observations/
+            {0}/hia-patch-effects-caller/native-transport-report.json
+            {0}/hia-patch-effects-caller/native-transport/fixtures/
+            {0}/hia-toolchain.log
+            {0}/hia-patch-caller.log
+            {0}/hia-source-file-caller.json
+            {0}/hia-source-file-caller.log
+            {0}/hia-source-file-abi.json
+            {0}/hia-source-file-abi.log
+            {0}/hia-source-file-receipt.json
+            {0}/hia-source-file-receipt.log
+            {0}/hia-parser-caller.json
+            {0}/hia-parser-caller.log
+            {0}/hia-parser-host-receipt.json
+            {0}/hia-parser-host-receipt.log
+            {0}/hia-parser-abi.json
+            {0}/hia-parser-abi.log
+            {0}/hia-parser-receipt.json
+            {0}/hia-parser-receipt.log
+            {0}/hia-string-caller.json
+            {0}/hia-string-caller.log
+            {0}/hia-metric-caller.json
+            {0}/hia-metric-caller.log
+            {0}/hia-metric-abi.json
+            {0}/hia-metric-abi.log
+            {0}/hia-markdown-caller.json
+            {0}/hia-markdown-caller.log
+            {0}/hia-markdown-abi.json
+            {0}/hia-markdown-abi.log
+            {0}/hia-ascii-json-caller.json
+            {0}/hia-ascii-json-caller.log
+            {0}/hia-ascii-json-abi.json
+            {0}/hia-ascii-json-abi.log
+            {0}/hia-truncate-caller.json
+            {0}/hia-truncate-caller.log
+            {0}/hia-truncate-abi.json
+            {0}/hia-truncate-abi.log
+            {0}/hia-truncate-consumers.log
+            {0}/hia-token-budget-abi.json
+            {0}/hia-token-budget-abi.log
+            {0}/hia-scalar-admission.json
+            {0}/hia-scalar-admission.log
+            {0}/hia-scalar-receipt.json
+            {0}/hia-scalar-receipt.log
+            {0}/hia-native-crates.log
+            {0}/hia-installed-patch-build.log
+            {0}/hia-original-patch-build.log
+            {0}/hia-installed-patch.json
+            {0}/hia-installed-patch.log
+            {0}/hia-default-crates.log
+            {0}/hia-file-update-abi.json
+            {0}/hia-file-update-abi.log
+            {0}/hia-file-update-receipt.json
+            {0}/hia-file-update-receipt.log
+            {0}/hia-file-update-caller/original/
+            {0}/hia-file-update-caller.json
+            {0}/hia-file-update-caller.log
+            {0}/hia-file-update-caller/cases.json
+            {0}/hia-file-update-caller/original-source-manifest.json
+            {0}/hia-file-update-caller/metadata-source-inputs.json
+            {0}/hia-file-update-caller/default-dependency-manifest.json
+            {0}/hia-file-update-caller/native-dependency-manifest.json
+            {0}/hia-file-update-caller/commands/
+            {0}/hia-file-update-caller/observations/
+            {0}/hia-native-owner-clippy.log
+            {0}/hia-default-owner-clippy.log
+            {0}/hia-native-owner-fix.log
+            {0}/hia-template-consumers-native.log
+            {0}/hia-template-consumers-default.log
+            {0}/hia-string-template-source-before.json
+            {0}/hia-string-template-source-after.json
+            {0}/hia-string-template-metadata.json
+            {0}/hia-string-template-metadata.stderr
+            {0}/hia-string-template-fix.json
+            {0}/hia-string-template-fix/
+            {0}/hia-string-template-fix.log
+            {0}/hia-string-template-fix-validation.json
+            {0}/hia-string-template-format.log
+            {0}/hia-codex-owners.log
+            {0}/hia-installed-codex-build.log
+            {0}/hia-original-codex-build.log
+            {0}/hia-installed-codex.json
+            {0}/hia-installed-codex.log
+            {0}/hia-build.log
+            {0}/hia-word-memory.log
+            {0}/hia-build-receipt.json
+            {0}/hia-build-receipt.log
+            {0}/hia-seek-sequence.json
+            {0}/hia-seek-sequence.log
+            {0}/hia-utf8-boundaries.json
+            {0}/hia-utf8-boundaries.log
+            {0}/hia-template-parser.json
+            {0}/hia-template-parser.log
+            {0}/hia-template-abi.json
+            {0}/hia-template-abi.log
+            {0}/hia-template-render.json
+            {0}/hia-template-render.log
+            {0}/hia-template-placeholders.json
+            {0}/hia-template-placeholders.log
+            {0}/hia-template-index-abi.json
+            {0}/hia-template-index-abi.log
+            {0}/hia-execpolicy-caller.json
+            {0}/hia-execpolicy-caller.log
+            {0}/hia-execpolicy-abi.json
+            {0}/hia-execpolicy-abi.log
+            {0}/hia-prefix-admission-abi.json
+            {0}/hia-prefix-admission-abi.log
+            {0}/hia-prefix-scalar-admission.json
+            {0}/hia-prefix-scalar-admission.log
+            {0}/hia-execpolicy-allocations.json
+            {0}/hia-execpolicy-allocations.log
+            {0}/hia-installed-execpolicy-build.log
+            {0}/hia-original-execpolicy-build.log
+            {0}/hia-installed-execpolicy.json
+            {0}/hia-installed-execpolicy.log
+            {0}/hia-core-execpolicy.log
+            {0}/hia-policy-summary-abi.json
+            {0}/hia-policy-summary-abi.log
+            {0}/hia-policy-summary.json
+            {0}/hia-policy-summary.log
+            {0}/hia-policy-summary-artifacts/*.stdout
+            {0}/hia-policy-summary-artifacts/*.stderr
+            {0}/hia-policy-summary-artifacts/actual_cli_formatters.rs
+            {0}/hia-policy-summary-artifacts/capture_rustc.py
+            {0}/hia-policy-summary-artifacts/compiler-*.json
+            {0}/hia-network-domains-abi.json
+            {0}/hia-network-domains-abi.log
+            {0}/hia-network-domains.json
+            {0}/hia-network-domains.log
+            {0}/hia-core-network-domains.log
+            {0}/hia-network-domains-artifacts/*.stdout
+            {0}/hia-network-domains-artifacts/*.stderr
+            {0}/hia-network-domains-artifacts/capture_rustc.py
+            {0}/hia-network-domains-artifacts/compiler-*.json
+            {0}/hia-allowed-prefixes-abi.json
+            {0}/hia-allowed-prefixes-abi.log
+            {0}/hia-allowed-prefixes.json
+            {0}/hia-allowed-prefixes.log
+            {0}/hia-protocol-allowed-prefixes.log
+            {0}/hia-allowed-prefixes-artifacts/*.stdout
+            {0}/hia-allowed-prefixes-artifacts/*.stderr
+            {0}/hia-allowed-prefixes-artifacts/capture_rustc.py
+            {0}/hia-allowed-prefixes-artifacts/compiler-*.json
+            {0}/hia-command-dispatch-abi.json
+            {0}/hia-command-dispatch-abi.log
+            {0}/hia-command-dispatch.json
+            {0}/hia-command-dispatch.log
+            {0}/hia-command-dispatch-artifacts/*.stdout
+            {0}/hia-command-dispatch-artifacts/*.stderr
+            {0}/hia-command-dispatch-artifacts/capture_rustc.py
+            {0}/hia-command-dispatch-artifacts/compiler-*.json
+            {0}/hia-formatter-scope.log
+            {0}/hia-network-host-abi.json
+            {0}/hia-network-host-abi.log
+            {0}/hia-network-host.json
+            {0}/hia-network-host.log
+            {0}/hia-network-host-artifacts/*.stdout
+            {0}/hia-network-host-artifacts/*.stderr
+            {0}/hia-network-host-artifacts/capture_rustc.py
+            {0}/hia-network-host-artifacts/compiler-*.json
+            {0}/hia-network-host-artifacts/public_owner.rs
+            {0}/hia-uuid-compat-public.json
+            {0}/hia-uuid-compat-public.log
+            {0}/hia-uuid-window-legacy-abi.json
+            {0}/hia-uuid-window-legacy-abi.log
+            {0}/hia-template-window-legacy-abi.json
+            {0}/hia-template-window-legacy-abi.log
+            {0}/hia-joint-*-receipt.json
+            {0}/hia-joint-*-receipt.log
+            {0}/hia-native/*.link', runner.temp) }}
 
   historical-native17:
     name: Exact 74d1 legacy ABI and original owner gates
