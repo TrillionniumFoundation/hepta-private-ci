@@ -317,12 +317,7 @@ unsafe fn dacl_has_complete_deny_for_sid(
     scope: DenyAceScope,
 ) -> bool {
     if matches!(scope, DenyAceScope::Directory) {
-        return deny::has_complete_deny(
-            p_dacl,
-            psid,
-            required_mask,
-            deny::DenyTarget::Directory,
-        );
+        return deny::has_complete_deny(p_dacl, psid, required_mask, deny::DenyTarget::Directory);
     }
     if p_dacl.is_null() {
         return false;

@@ -52,11 +52,6 @@ pub(super) unsafe fn write_restricted_probe_token_from(
     capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
     unsafe {
-        create_token_with_caps_from(
-            base_token,
-            capabilities,
-            &[],
-            RestrictingIdentity::Exclude,
-        )
+        create_token_with_caps_from(base_token, capabilities, &[], RestrictingIdentity::Exclude)
     }
 }

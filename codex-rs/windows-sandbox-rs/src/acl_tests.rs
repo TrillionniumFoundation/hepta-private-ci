@@ -393,7 +393,9 @@ fn normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes()
         let mut complete = NativeAcl::new()?;
         complete.deny(&sid, mapped, 0)?;
         complete.deny(&sid, kind.mask(), inheritance)?;
-        assert!(unsafe { kind.already_present(complete.as_ptr(), sid.as_ptr(), DenyAceScope::Directory) });
+        assert!(unsafe {
+            kind.already_present(complete.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+        });
         for bit in (0..32)
             .map(|index| 1_u32 << index)
             .filter(|bit| mapped & bit != 0)
@@ -403,7 +405,13 @@ fn normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes()
                 incomplete.deny(&sid, effective, 0)?;
                 incomplete.deny(&sid, recursive, inheritance)?;
                 assert!(
-                    !unsafe { kind.already_present(incomplete.as_ptr(), sid.as_ptr(), DenyAceScope::Directory) },
+                    !unsafe {
+                        kind.already_present(
+                            incomplete.as_ptr(),
+                            sid.as_ptr(),
+                            DenyAceScope::Directory,
+                        )
+                    },
                     "missing right {bit:#x}, effective={effective:#x}, recursive={recursive:#x}",
                 );
             }
@@ -488,7 +496,9 @@ fn normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope() ->
             let mut acl = NativeAcl::new()?;
             acl.deny(&sid, kind.mask(), 0)?;
             acl.deny(recursive_sid, kind.mask(), flags)?;
-            assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory) });
+            assert!(!unsafe {
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+            });
         }
         let mut acl = NativeAcl::new()?;
         acl.deny(&sid, kind.mask(), 0)?;
@@ -499,7 +509,9 @@ fn normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope() ->
             return Err(std::io::Error::last_os_error().into());
         }
         acl.deny(&sid, kind.mask(), inheritance | u32::from(INHERIT_ONLY_ACE))?;
-        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory) });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+        });
     }
     Ok(())
 }
