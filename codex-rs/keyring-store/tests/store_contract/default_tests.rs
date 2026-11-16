@@ -26,7 +26,11 @@ struct MemoryStore {
 }
 
 impl MemoryStore {
-    fn credential(&self, service: &str, account: &str) -> keyring_core::Result<Arc<MockCredential>> {
+    fn credential(
+        &self,
+        service: &str,
+        account: &str,
+    ) -> keyring_core::Result<Arc<MockCredential>> {
         let mut credentials = self.credentials.lock().map_err(|_| {
             Error::NoStorageAccess(Box::new(io::Error::other("credential map lock poisoned")))
         })?;
@@ -34,11 +38,11 @@ impl MemoryStore {
             credentials
                 .entry((service.to_owned(), account.to_owned()))
                 .or_insert_with(|| {
-                Arc::new(MockCredential {
-                    specifiers: (service.to_owned(), account.to_owned()),
-                    inner: Mutex::new(RefCell::new(Default::default())),
-                })
-            }),
+                    Arc::new(MockCredential {
+                        specifiers: (service.to_owned(), account.to_owned()),
+                        inner: Mutex::new(RefCell::new(Default::default())),
+                    })
+                }),
         ))
     }
 }
