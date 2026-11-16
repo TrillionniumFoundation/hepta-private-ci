@@ -1,5 +1,4 @@
-//! External PQ clock/FinalUse frontier clients with Linux peer verification.
-//! Other platforms fail closed; no local substitute is selected.
+//! Actual external PQ clock/frontier clients. No local substitute is selected.
 //! The service owns protected time or durable CAS; signed responses attest to
 //! that service's answer, not to its operational independence or durability.
 //! Those properties require deployment qualification outside this client.
@@ -15,6 +14,7 @@ use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
 use crate::AuthorityTrustError;
 use crate::FinalUseFrontier;
+use crate::LearningTrustFrontier;
 use crate::pq_auth::PqNativeVerifier;
 use serde::Deserialize;
 use serde::Serialize;
@@ -59,6 +59,14 @@ pub enum PqTrustOperationV2 {
         expected: FinalUseFrontier,
         next: FinalUseFrontier,
     },
+    LearningFrontierLoad {
+        owner_id: String,
+    },
+    LearningFrontierCompareAndSet {
+        owner_id: String,
+        expected: LearningTrustFrontier,
+        next: LearningTrustFrontier,
+    },
 }
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
@@ -66,6 +74,8 @@ pub enum PqTrustOutcomeV2 {
     Clock { unix_ms: u64 },
     Frontier { value: FinalUseFrontier },
     CompareAndSetApplied { value: FinalUseFrontier },
+    LearningFrontier { value: LearningTrustFrontier },
+    LearningCompareAndSetApplied { value: LearningTrustFrontier },
     Conflict,
     Unavailable,
 }
@@ -237,6 +247,65 @@ impl AuthorityFrontierStore<FinalUseFrontier> for UnixPqFinalUseFrontier {
     }
 }
 
+/// Actual external adapter for the learning root/generation activation floor.
+/// Its operation tags are distinct from FinalUse, even on one service socket.
+pub struct UnixPqLearningTrustFrontier {
+    endpoint: Endpoint,
+}
+impl UnixPqLearningTrustFrontier {
+    pub fn new(config: UnixPqTrustEndpointConfig) -> Result<Self, AuthorityTrustError> {
+        Ok(Self {
+            endpoint: Endpoint::new(config)?,
+        })
+    }
+}
+impl AuthorityFrontierStore<LearningTrustFrontier> for UnixPqLearningTrustFrontier {
+    fn load(&self, owner_id: &str) -> Result<LearningTrustFrontier, AuthorityTrustError> {
+        match self
+            .endpoint
+            .exchange(PqTrustOperationV2::LearningFrontierLoad {
+                owner_id: owner_id.to_string(),
+            })? {
+            PqTrustOutcomeV2::LearningFrontier { value } if valid_learning_frontier(&value) => {
+                Ok(value)
+            }
+            _ => Err(AuthorityTrustError::Invalid),
+        }
+    }
+    fn compare_and_set(
+        &self,
+        owner_id: &str,
+        expected: &LearningTrustFrontier,
+        next: &LearningTrustFrontier,
+    ) -> Result<(), AuthorityTrustError> {
+        match self
+            .endpoint
+            .exchange(PqTrustOperationV2::LearningFrontierCompareAndSet {
+                owner_id: owner_id.to_string(),
+                expected: *expected,
+                next: *next,
+            })? {
+            PqTrustOutcomeV2::LearningCompareAndSetApplied { value } if value == *next => Ok(()),
+            _ => Err(AuthorityTrustError::Invalid),
+        }
+    }
+}
+fn valid_learning_frontier(f: &LearningTrustFrontier) -> bool {
+    f.root_digest != [0; 32]
+        && f.distribution_digest != [0; 32]
+        && f.generation > 0
+        && f.authority_epoch > 0
+}
+fn learning_owner(id: &str) -> bool {
+    id.strip_prefix("hepta-learning-trust:")
+        .is_some_and(|binding| {
+            binding.len() == 64
+                && binding
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+        })
+}
+
 /// Produce an OS-random request challenge for the shared PQ trust and issuer clients.
 pub fn fresh_challenge() -> Result<[u8; 32], AuthorityTrustError> {
     #[cfg(unix)]
@@ -282,6 +351,19 @@ fn validate_operation(operation: &PqTrustOperationV2) -> Result<(), AuthorityTru
         {
             Ok(())
         }
+        PqTrustOperationV2::LearningFrontierLoad { owner_id } if learning_owner(owner_id) => Ok(()),
+        PqTrustOperationV2::LearningFrontierCompareAndSet {
+            owner_id,
+            expected,
+            next,
+        } if learning_owner(owner_id)
+            && valid_learning_frontier(expected)
+            && valid_learning_frontier(next)
+            && expected.generation.checked_add(1) == Some(next.generation)
+            && next.authority_epoch >= expected.authority_epoch =>
+        {
+            Ok(())
+        }
         _ => Err(AuthorityTrustError::Invalid),
     }
 }
@@ -289,3 +371,7 @@ fn validate_operation(operation: &PqTrustOperationV2) -> Result<(), AuthorityTru
 #[cfg(all(test, target_os = "linux"))]
 #[path = "authority_trust_unix_tests.rs"]
 pub(crate) mod tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_trust_learning_tests.rs"]
+mod learning_tests;

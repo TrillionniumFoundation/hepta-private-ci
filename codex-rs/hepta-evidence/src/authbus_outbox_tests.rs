@@ -22,7 +22,7 @@ fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
     let issuer = IssuerRegistration {
         issuer_id: StableId::new("issuer:queue").unwrap(),
         key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
+        verifying_key: key.verifying_key().into(),
         revoked: false,
     };
     let claims = SignedMessageClaims {
@@ -36,7 +36,13 @@ fn fixture(sequence: u64, expiry: u64) -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: expiry,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (
+        issuer,
+        SignedMessage {
+            claims,
+            signature: signature.into(),
+        },
+    )
 }
 
 fn config(path: &std::path::Path) -> SqliteConfig {
@@ -242,7 +248,8 @@ async fn payload_route_and_retained_message_identity_cannot_be_substituted() {
     replacement.claims.message_id = message.claims.message_id;
     replacement.signature = SigningKey::from_bytes(&[37; 32])
         .sign(&replacement.claims.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -440,7 +447,7 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
          INSERT INTO authbus_outbox
          SELECT randomblob(32), 'issuer:synthetic:' || ((x - 1) / ?),
                 key_epoch, 'fixture:' || x, subject_id, scope_digest,
-                payload_digest, sequence, expires_at_ms, signature, payload,
+                payload_digest, sequence, expires_at_ms, auth_version, signature, payload,
                 state, fence, attempts, worker_id, lease_until_ms, available_at_ms,
                 created_at_ms, updated_at_ms, terminal_at_ms, acknowledgement
          FROM authbus_outbox, n WHERE delivery_id = ?",
@@ -642,7 +649,7 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
          SELECT randomblob(32), issuer_id,
                 randomblob(8),
                 'issuer-cap:' || x, subject_id, scope_digest, payload_digest,
-                sequence, expires_at_ms, signature, payload, state, fence, attempts,
+                sequence, expires_at_ms, auth_version, signature, payload, state, fence, attempts,
                 worker_id, lease_until_ms, available_at_ms, created_at_ms,
                 updated_at_ms, terminal_at_ms, acknowledgement
          FROM authbus_outbox, n

@@ -9,6 +9,7 @@ mod access_checks;
 #[path = "token_native_access_tests.rs"]
 mod native_access;
 
+use super::probe_support::Impersonation;
 use super::probe_support::*;
 use super::*;
 use anyhow::Context;

@@ -1,5 +1,6 @@
 //! Isolated mechanism experiment; no production token or original test changes.
 
+use super::probe_support::Impersonation;
 use super::probe_support::*;
 use super::*;
 use anyhow::Context;
