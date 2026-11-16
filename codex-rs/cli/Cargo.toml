@@ -4,6 +4,8 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 build = "build.rs"
+# Keep the CLI command roots and logs client explicit.
+autobins = false
 default-run = "codex"
 
 [[bin]]
