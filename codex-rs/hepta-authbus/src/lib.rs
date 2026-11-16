@@ -8,6 +8,12 @@
 
 #![forbid(unsafe_code)]
 
+mod crypto;
+mod crypto_profile;
+pub use crypto::AuthBusAlgorithm;
+pub use crypto::AuthBusSignature;
+pub use crypto::AuthBusVerifyingKey;
+
 mod authority;
 mod authority_schema;
 mod authority_store;
@@ -20,6 +26,7 @@ mod settlement;
 mod settlement_store;
 mod signed;
 mod sqlite;
+mod time_freshness;
 mod trust;
 mod trust_store;
 pub use authority::AuthBusAuthorityError;
@@ -48,6 +55,7 @@ pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
+pub use time_freshness::TrustedTimeChallenge;
 pub use trust::IssuerLifecycleState;
 pub use trust::IssuerPurpose;
 pub use trust::IssuerRecord;

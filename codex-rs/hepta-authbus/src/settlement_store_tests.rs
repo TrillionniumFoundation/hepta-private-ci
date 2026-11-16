@@ -103,7 +103,7 @@ async fn enroll_settlement(store: &AuthBusAuthorityStore, key: &SigningKey) -> I
             IssuerSpec {
                 issuer_id: id("issuer:settlement"),
                 key_epoch: Generation::new(1).expect("generation"),
-                verifying_key: key.verifying_key(),
+                verifying_key: key.verifying_key().into(),
             },
         )
         .await
@@ -129,7 +129,7 @@ fn evidence(
         expires_at_ms: observed_at_ms + 2_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    SignedSettlementEvidence { claims, signature }
+    SignedSettlementEvidence { claims, signature: signature.into() }
 }
 
 #[tokio::test]
@@ -445,3 +445,65 @@ async fn settlement_reloads_and_enforces_current_issuer_revocation() {
         Err(AuthBusAuthorityError::SettlementIssuerRevoked)
     ));
 }
+
+async fn registered(key: &SigningKey) -> (
+    TempDir,
+    AuthBusAuthorityStore,
+    PolicyDecision,
+    QuotaReservation,
+) {
+    let fixture = configured().await;
+    enroll_settlement(&fixture.1, key).await;
+    fixture
+}
+
+#[tokio::test]
+async fn settlement_rereads_registration_and_revocation_inside_the_commit_transaction() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            1,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .unwrap();
+    let key = SigningKey::from_bytes(&[42; 32]);
+    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
+    let quota = store.quota_snapshot(&dispatched.quota_key).await.unwrap();
+    assert!(matches!(
+        store.settle(&signed, sample(6, 1_600)).await,
+        Err(AuthBusAuthorityError::IssuerMissing)
+    ));
+    enroll_settlement(&store, &key).await;
+    let snapshot = store
+        .issuer_record(IssuerPurpose::Settlement, &signed.claims.issuer_id, signed.claims.key_epoch)
+        .await
+        .unwrap();
+    store
+        .revoke_issuer(
+            IssuerPurpose::Settlement,
+            &snapshot.issuer_id,
+            snapshot.key_epoch,
+            1,
+        )
+        .await
+        .unwrap();
+    assert_eq!(snapshot.state, crate::IssuerLifecycleState::Active);
+    assert!(matches!(
+        store.settle(&signed, sample(7, 1_700)).await,
+        Err(AuthBusAuthorityError::SettlementIssuerRevoked)
+    ));
+    assert_eq!(
+        store.quota_snapshot(&dispatched.quota_key).await.unwrap(),
+        quota
+    );
+    assert_eq!(
+        store.reservation(&dispatched.reservation_id).await.unwrap(),
+        dispatched
+    );
+}
+
+#[path = "settlement_issuer_tests.rs"]
+mod issuer_boundary;

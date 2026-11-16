@@ -127,6 +127,62 @@ impl AuthBusAuthorityOwner {
         Self::open(database_path, checkpoint_path, owner_id).await
     }
 
+    /// Open an already-bootstrapped ML-DSA-65 authority owner.
+    /// Classical owners remain bound to their original profile and cannot upgrade here.
+    pub async fn open_pq(
+        database_path: &Path,
+        checkpoint_path: PathBuf,
+        owner_id: &str,
+    ) -> Result<Self, AuthBusAuthorityError> {
+        let lease = AuthorityWriterLease::acquire(&checkpoint_path, database_path, owner_id)?;
+        let host = match AuthBusAuthorityHost::open_pq(database_path, checkpoint_path, owner_id).await
+        {
+            Ok(host) => host,
+            Err(error) => {
+                drop(lease);
+                return Err(error);
+            }
+        };
+        if let Err(error) = validate_database_files(database_path) {
+            drop(host);
+            drop(lease);
+            return Err(error);
+        }
+        Ok(Self {
+            host,
+            writer: Semaphore::new(/*permits*/ 1),
+            lease,
+        })
+    }
+
+    /// Bootstrap a new ML-DSA-65 owner with the same private-file and witness rules.
+    /// Existing databases and checkpoints are refused exactly as in the classical constructor.
+    pub async fn bootstrap_new_pq(
+        database_path: &Path,
+        checkpoint_path: PathBuf,
+        owner_id: &str,
+    ) -> Result<Self, AuthBusAuthorityError> {
+        validate_owner_id(owner_id)?;
+        validate_separate_private_parents(database_path, &checkpoint_path)?;
+        if database_path.exists() || checkpoint_path.exists() {
+            return Err(AuthBusAuthorityError::AlreadyExists);
+        }
+
+        prepare_new_database_file(database_path)?;
+        let store = AuthBusAuthorityStore::open_pq(database_path).await?;
+        let frontier = store.authority_frontier_digest().await?;
+        drop(store);
+        write_initial_checkpoint(
+            &checkpoint_path,
+            owner_id,
+            crate::AuthorityCheckpoint {
+                generation: 1,
+                digest: frontier,
+            },
+        )?;
+        Self::open_pq(database_path, checkpoint_path, owner_id).await
+    }
+
     #[must_use]
     pub fn admin(&self) -> AuthBusAdminPort<'_> {
         AuthBusAdminPort { owner: self }
@@ -296,6 +352,12 @@ pub struct AuthBusEffectPort<'a> {
 }
 
 impl AuthBusEffectPort<'_> {
+    pub async fn trusted_time_challenge(
+        &self,
+    ) -> Result<Option<crate::TrustedTimeChallenge>, AuthBusAuthorityError> {
+        serialized_mutation!(self, self.owner.host.trusted_time_challenge())
+    }
+
     pub async fn observe_trusted_time_attestation(
         &self,
         attestation: &SignedTrustedTimeAttestation,
@@ -408,6 +470,16 @@ pub struct AuthBusReadPort<'a> {
 }
 
 impl AuthBusReadPort<'_> {
+    pub async fn issuer_record(
+        &self,
+        purpose: IssuerPurpose,
+        issuer_id: &StableId,
+        key_epoch: Generation,
+    ) -> Result<IssuerRecord, AuthBusAuthorityError> {
+        self.owner.lease.assert_current()?;
+        self.owner.host.issuer_record(purpose, issuer_id, key_epoch).await
+    }
+
     pub async fn message_issuer(
         &self,
         issuer_id: &StableId,
@@ -766,3 +838,7 @@ fn sync_parent(path: &Path) -> Result<(), AuthBusAuthorityError> {
 #[cfg(all(test, unix))]
 #[path = "owner_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "owner_pq_tests.rs"]
+mod pq_tests;

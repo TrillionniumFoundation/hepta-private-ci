@@ -2,7 +2,8 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signature;
+use crate::AuthBusAlgorithm;
+use crate::AuthBusSignature;
 
 use crate::AuthBusAuthorityError;
 use crate::push_id;
@@ -28,7 +29,15 @@ pub struct SettlementEvidenceClaims {
 
 impl SettlementEvidenceClaims {
     pub fn signing_bytes(&self) -> Vec<u8> {
-        let mut bytes = b"hepta.authbus.settlement-evidence.v1\0".to_vec();
+        self.signing_bytes_for(AuthBusAlgorithm::Ed25519V1)
+    }
+
+    pub fn signing_bytes_for(&self, algorithm: AuthBusAlgorithm) -> Vec<u8> {
+        let mut bytes = match algorithm {
+            AuthBusAlgorithm::Ed25519V1 => b"hepta.authbus.settlement-evidence.v1\0".as_slice(),
+            AuthBusAlgorithm::MlDsa65V2 => b"hepta.authbus.settlement-evidence.pq.v2\0".as_slice(),
+        }
+        .to_vec();
         push_id(&mut bytes, &self.issuer_id);
         bytes.extend_from_slice(&self.key_epoch.get().to_be_bytes());
         push_id(&mut bytes, &self.reservation_id);
@@ -47,7 +56,7 @@ impl SettlementEvidenceClaims {
 
 pub struct SignedSettlementEvidence {
     pub claims: SettlementEvidenceClaims,
-    pub signature: [u8; 64],
+    pub signature: AuthBusSignature,
 }
 
 pub(crate) struct AuthenticatedSettlementEvidence {
@@ -58,7 +67,7 @@ pub(crate) struct AuthenticatedSettlementEvidence {
 impl SignedSettlementEvidence {
     pub(crate) fn receipt_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.authbus.settlement-receipt.v1\0".to_vec();
-        bytes.extend_from_slice(&self.claims.signing_bytes());
+        bytes.extend_from_slice(&self.claims.signing_bytes_for(self.signature.algorithm()));
         bytes.extend_from_slice(&self.signature);
         Digest32::of_bytes(&bytes)
     }
@@ -94,9 +103,9 @@ impl SignedSettlementEvidence {
         }
         issuer
             .verifying_key
-            .verify_strict(
-                &self.claims.signing_bytes(),
-                &Signature::from_bytes(&self.signature),
+            .verify(
+                &self.claims.signing_bytes_for(issuer.verifying_key.algorithm()),
+                &self.signature,
             )
             .map_err(|_| AuthBusAuthorityError::InvalidSettlementSignature)?;
         Ok(AuthenticatedSettlementEvidence {

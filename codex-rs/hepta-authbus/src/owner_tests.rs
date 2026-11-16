@@ -91,7 +91,7 @@ async fn concurrent_mutations_are_serialized_through_one_checkpoint_publisher() 
                         issuer_id: StableId::new(format!("issuer:concurrent:{index}"))
                             .expect("issuer id"),
                         key_epoch: Generation::new(1).expect("generation"),
-                        verifying_key: key.verifying_key(),
+                        verifying_key: key.verifying_key().into(),
                     },
                 )
                 .await
@@ -127,7 +127,7 @@ async fn crash_after_external_publication_is_reconciled_without_replaying_mutati
             IssuerSpec {
                 issuer_id: StableId::new("issuer:crash-window").expect("issuer id"),
                 key_epoch: Generation::new(1).expect("generation"),
-                verifying_key: key.verifying_key(),
+                verifying_key: key.verifying_key().into(),
             },
         )
         .await;
