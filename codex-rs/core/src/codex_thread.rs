@@ -805,12 +805,26 @@ impl CodexThread {
         request: TurnInputRequest,
         mode: TurnInputMode,
     ) -> CodexResult<TurnInputSubmission> {
-        if !matches!(mode, TurnInputMode::Steer { .. }) {
-            self.session
-                .services
-                .agent_control
-                .ensure_execution_capacity_for_turn_start(self)
-                .await?;
+        match &mode {
+            TurnInputMode::StartIfIdle => {
+                if let Some(reason) = self
+                    .session
+                    .services
+                    .agent_control
+                    .check_execution_capacity_for_turn_start(self)
+                    .await?
+                {
+                    return Ok(TurnInputSubmission::NotSubmitted { reason });
+                }
+            }
+            TurnInputMode::StartOrSteer => {
+                self.session
+                    .services
+                    .agent_control
+                    .ensure_execution_capacity_for_turn_start(self)
+                    .await?;
+            }
+            TurnInputMode::Steer { .. } => {}
         }
         self.io.submit_turn_input(request, mode).await
     }
