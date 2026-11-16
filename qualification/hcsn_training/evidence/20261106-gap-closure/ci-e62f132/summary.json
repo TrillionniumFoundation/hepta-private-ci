@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "source_commit": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+  "source_tree": "aafd1fe8447a98212a6c62b8a48474e723da3bf5",
+  "hcsn_workflow": {
+    "id": 42220007503,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+    "run_attempt": 1,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42220007503"
+  },
+  "source_and_owner": {
+    "job_id": 127899407807,
+    "python": {
+      "passed": 56,
+      "skipped": 0
+    },
+    "native": {
+      "passed": 195,
+      "skipped": 1,
+      "skip_scope": "subprocess fault helper exercised by parent test"
+    },
+    "automation": {
+      "passed": 119,
+      "skipped": 1,
+      "skip_scope": "signed fixture explicitly executed in each of three bridges"
+    },
+    "signed_workers": {
+      "backends": 3,
+      "passed_each": 1,
+      "ignored_each": 0
+    },
+    "second_blocks": {
+      "backends": 3,
+      "complete_state_weights_prediction_exact": true,
+      "optimizer_steps_each": 2,
+      "signed_dispatch_repeated": false
+    },
+    "artifact_id": 13504390017,
+    "artifact_bytes": 7051854,
+    "artifact_sha256": "144b66c8f3175ab2e4f55069ea458c5c0cd1d2f5a7149ba9e9b1853f3f5916b0",
+    "upload_nonregular_exclusion": "one deliberate negative-test FIFO inferred from source, per-test log and 531-to-530 member count; no remote lstat claim"
+  },
+  "agentd": {
+    "job_id": 127899407421,
+    "selected_tests_passed": 7,
+    "filtered_not_executed": 168,
+    "clippy": "passed",
+    "source_unchanged": true,
+    "artifact_id": 13503019963,
+    "artifact_bytes": 28340,
+    "artifact_sha256": "179f25f6aff798bdf70dbc82de2ce82f7a17a6177e149c5590c7067a4ae6bdc3"
+  },
+  "repository_blocking_workflow": {
+    "id": 42220007012,
+    "all_green": false,
+    "introduced_failure": "HCSN module directly opened FinalUseAuthority outside the existing product-caller closed set",
+    "fixed_followup_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "other_confirmed_baseline_failures": [
+      "empty README readiness discovery link",
+      "Windows checkout of existing long evidence paths",
+      "unchanged plasticity integration test references removed append_qualification"
+    ],
+    "scope": "Bazel Clippy and other failures also exist; no whole-repository success claim"
+  },
+  "scope": {
+    "production_trust": false,
+    "production_adoption": false,
+    "scientific_gain": false,
+    "existing_cuda_campaign_contacted": false,
+    "first_head_only": true
+  }
+}
