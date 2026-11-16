@@ -6,6 +6,8 @@ on:
       - ".github/workflows/ndu-windows-storage-probe.yml"
       - ".github/scripts/windows_mic_observation.py"
       - ".github/scripts/test_windows_mic_observation.py"
+      - ".github/scripts/windows-appcontainer-probe/probe.py"
+      - ".github/scripts/windows-appcontainer-probe/win32_api.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
@@ -752,4 +754,128 @@ jobs:
         with:
           name: ndu-windows-acl-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/hepta-windows-acl
+          if-no-files-found: error
+
+  appcontainer-mechanism:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Preserve committed source bytes and enable long paths
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: |
+          git config --global core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up reviewed Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Run exact AppContainer and LPAC mechanism experiment
+        shell: pwsh
+        run: |
+          @'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import re
+          import subprocess
+          import sys
+          import traceback
+          from datetime import datetime, timezone
+
+          ROOT = Path(os.environ["GITHUB_WORKSPACE"])
+          OUT = Path(os.environ["RUNNER_TEMP"]) / "hepta-appcontainer-mechanism"
+          HEAD = os.environ["EXPECTED_HEAD"]
+          PINS = {
+              ".github/scripts/windows-appcontainer-probe/probe.py": "c6dd142579e20651e73000bc1c7200715e729e0d6336d7d1935d3f877929959b",
+              ".github/scripts/windows-appcontainer-probe/win32_api.py": "9a10459b06eb6393f1fd7338ade903193a2382faf07d1cc5d34aacf00e39be8f",
+          }
+
+          def require(condition, message):
+              if not condition:
+                  raise RuntimeError(message)
+
+          def source_snapshot():
+              require(re.fullmatch(r"[0-9a-f]{40}", HEAD) is not None, "Invalid PR head SHA")
+              actual = subprocess.check_output(
+                  ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
+              ).strip()
+              require(actual == HEAD, "Checkout must equal PR head, not the merge SHA")
+              sources = {
+                  path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+                  for path in PINS
+              }
+              require(sources == PINS, "Reviewed experiment source bytes differ")
+              return {"head": actual, "sha256": sources}
+
+          OUT.mkdir(exist_ok=False)
+          stdout_path = OUT / "probe.stdout"
+          stderr_path = OUT / "probe.stderr"
+          stdout_path.touch(exist_ok=False)
+          stderr_path.touch(exist_ok=False)
+          state = {
+              "status": "RUNNING", "expected_head": HEAD,
+              "started_at": datetime.now(timezone.utc).isoformat(),
+              "windows": platform.win32_ver(), "python": sys.version,
+              "scope": "owned mechanism only; original positive tests remain required",
+              "production_qualification": False,
+              "argv": [sys.executable, "-B", next(iter(PINS)), "--repo", str(ROOT),
+                       "--source-head", HEAD, "--output", str(OUT / "observation.json")],
+          }
+          try:
+              require(os.name == "nt", "Native Windows is required")
+              state["before"] = source_snapshot()
+              with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:
+                  completed = subprocess.run(
+                      state["argv"], cwd=ROOT, stdout=stdout, stderr=stderr, check=False
+                  )
+              state["exit_code"] = completed.returncode
+              state["native_observation_present"] = (OUT / "observation.json").is_file()
+              require(completed.returncode == 0, "Native mechanism experiment failed")
+              observation = json.loads((OUT / "observation.json").read_text(encoding="utf-8"))
+              require(observation.get("source_head") == HEAD, "Native report head differs")
+              require(observation.get("all_bounded_hypotheses_passed") is True,
+                      "Native report did not pass the bounded hypotheses")
+              state["status"] = "PASS"
+          except Exception as error:
+              state["status"] = "FAIL"
+              state["error"] = {"type": type(error).__name__, "message": str(error)}
+              state["error_traceback"] = traceback.format_exc()
+          finally:
+              try:
+                  state["after"] = source_snapshot()
+                  require(state.get("before") == state["after"], "Source changed during probe")
+                  state["source_unchanged"] = True
+              except Exception as error:
+                  state["status"] = "FAIL"
+                  state["source_unchanged"] = False
+                  state["source_error"] = {"type": type(error).__name__, "message": str(error)}
+              state["finished_at"] = datetime.now(timezone.utc).isoformat()
+              with (OUT / "invocation-result.json").open("x", encoding="utf-8") as output:
+                  json.dump(state, output, indent=2)
+                  output.write("\n")
+              print(json.dumps(state, indent=2))
+          raise SystemExit(0 if state["status"] == "PASS" else 1)
+          '@ | python -B -
+          exit $LASTEXITCODE
+      - name: Preserve native mechanism observations and complete process logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-appcontainer-mechanism-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-appcontainer-mechanism
           if-no-files-found: error
