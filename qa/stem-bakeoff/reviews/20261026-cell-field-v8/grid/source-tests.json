@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.v8.grid-source-qualification.v1",
+  "registered_targeted_tests": {
+    "joint_core": 6,
+    "receding_prefix": 2,
+    "portfolio": 3,
+    "development": 3
+  },
+  "latest_affected_suite": {
+    "tests": 7,
+    "passed": 7,
+    "seconds": 5.086
+  },
+  "incremental_two_failed_prefix_test": {
+    "passed": true,
+    "seconds": 0.032
+  },
+  "independent_source_review": "paper_theory_audit reviewed source dependencies, all-Full census, complete32-only pairing and fixed old-first portfolio; source closure and exact parity family strengthened before freeze",
+  "just_fmt": "ran from codex-rs; no changed files have an owning formatter in this scope",
+  "scientific_acceptance": false,
+  "prospective_historical_grid_calls_before_freeze": 0
+}

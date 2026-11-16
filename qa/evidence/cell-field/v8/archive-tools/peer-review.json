@@ -1,0 +1,44 @@
+{
+  "actual_archive_approved": false,
+  "findings_closed": [
+    "Exact closed/interrupted/tools root whitelist; no automatic roots or nested overlap; live roots and whole Git worktrees rejected.",
+    "Sealed/tools roots require external expected hashes for every retained file. Complete maps must be derived from prior seals and approved receipts; a seal label or seal-file hash alone cannot reseal changed raw.",
+    "Only .py/.rs/.sh/.bzl may be exact Git source dependencies; local bytes are verified. JSON/NPZ/binary/XML/log raw remains included. Git publication itself remains separately host-verified.",
+    "Plan and archive output are canonical paths inside the approved workspace and outside every evidence root; input collisions and overwrite are rejected before write.",
+    "Tool/source identities checked during planning/measurement, each content stream and immediately after archive verification before finalization.",
+    "Hardlinks refer only to a preceding verified ordinary member with identical SHA256, byte count and archived mode; no symlink, traversal, forward link or chain.",
+    "Bounded independent verifier checks embedded manifest, exact tar/PAX framing, every content hash, hardlink identity, padding/footer, gzip CRC/EOF; rejects extra gzip/tar data and truncation without extraction.",
+    "Actual capacity/fsync probe, effective UID-sensitive free-space check, explicit compressed size cap and disk reserve; failure retains partial output rather than publishing success.",
+    "Archive finalization and receipt use no-overwrite links and directory fsync; fsynced complete receipt is the only publication commit marker.",
+    "Receipt distinguishes evidence/regular/hardlink/manifest/logical member counts and notes inode/mtime/ctime as concurrency checks, not scientific identity or original-time restoration."
+  ],
+  "new_label_access": false,
+  "new_model_experiments": 0,
+  "qualification": {
+    "actual_research_roots_used": false,
+    "elapsed_seconds": 0.268,
+    "tests": 15
+  },
+  "readme_sha256": "106863e78c3772372708c646d86ffc1fcd3db7a636b357f91190bdc27d4f6910",
+  "real_inventory_commands_run": 0,
+  "real_measurement_commands_run": 0,
+  "real_pack_commands_run": 0,
+  "remaining_preconditions": [
+    "Root must approve exact final roots and full historical expected maps after all output owners declare closure.",
+    "Root must approve plan SHA and explicit output/disk budget before real measurement or packing.",
+    "Old V5/V6 and V7/V7b raw archives remain exact external prerequisites, not automatically copied."
+  ],
+  "review_kind": "read-only source and saved small-fixture qualification review; no duplicate test run",
+  "reviewer": "pft_cell_evidence",
+  "schema": "hepta.v8-archive-tool-independent-source-review",
+  "scientific_verdict_from_archive": false,
+  "source_and_qualification_sha256": {
+    "archive_cli_v8.py": "0e92f8300cd0c3a49ecd7bc631cd39a08d5518713b8104f4f5394d05d103cb64",
+    "archive_pack_v8.py": "14643175300544b410c4dfce6e209a0537125e9db39d0f6579bf2ec817062e08",
+    "archive_plan_v8.py": "33fdae0dbef9e18a2451281fae5e7249f67f57d7a2768a42ef3a8305cb9efcb2",
+    "archive_verify_v8.py": "5bd87b8c892c3672d7b8d0a2bf8054e8aaa5f0117d11ec8e053ad5b866027633",
+    "test-final.log": "09d943c342590b8fbfcf80e3e3d2a08e2a929ebeb449f0e7deb9340b07fba342",
+    "test_archive_v8.py": "098ec16f9dafaddfb8021c908aef5e4c9434e5ecca68760874c69b8bcad49a49"
+  },
+  "status": "PASS"
+}

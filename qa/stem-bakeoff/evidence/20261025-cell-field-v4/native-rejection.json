@@ -1,0 +1,82 @@
+{
+  "activation": false,
+  "after_registry_head": "31fbe6b29c49810b1ccb0613a87887dfbfe06bfa95350651a355a5dc04a4da41",
+  "aggregates": [
+    {
+      "available": true,
+      "criterion_met": false,
+      "estimate": 0.0015052550078550311,
+      "gate": "task",
+      "lower_bound": -710.0,
+      "lower_bound_semantics": "conservative NLL-difference support floor from float64 tiny clipping; not a bootstrap lower CI",
+      "observations": 112,
+      "threshold": -0.001,
+      "upper_bound": 0.002178625835057478
+    },
+    {
+      "available": true,
+      "criterion_met": false,
+      "estimate": -0.04620405251217948,
+      "gate": "retention",
+      "lower_bound": -710.0,
+      "lower_bound_semantics": "conservative NLL-difference support floor from float64 tiny clipping; not a bootstrap lower CI",
+      "observations": 32,
+      "threshold": 0.0,
+      "upper_bound": 0.0368832032888788
+    },
+    {
+      "available": true,
+      "criterion_met": false,
+      "estimate": 13.065057839712304,
+      "gate": "total_cost",
+      "lower_bound": 0.0,
+      "lower_bound_semantics": "zero support floor; upper is maximum measured CPU ratio, not a CI",
+      "observations": 3,
+      "threshold": 3.0,
+      "upper_bound": 13.065057839712304
+    }
+  ],
+  "all_numeric_gates_pass": false,
+  "before_registry_head": "31fbe6b29c49810b1ccb0613a87887dfbfe06bfa95350651a355a5dc04a4da41",
+  "candidate_published": false,
+  "candidate_sha256": "3b88671eb6d88abaa3717c2252e4d80092e09931c5e0c0a85d338aa0fcfdaf52",
+  "compiled_source_sha256": {
+    "driver_lock": "1012539dc291ca54ff24cbca2d1c5716cc49aeef8c1fa50008af14a14d4fae2f",
+    "driver_main": "ac827450bee3d350306827ba35d32465eeea153e17e853fccf5e0d07135ac925",
+    "driver_owner": "8d1b3acd759301b79b63f39e91d61c32b3f10a5770675c2be92734f06143a352",
+    "driver_report": "a70e27872d770eaeae2341bbec92306cb4301fec9478f04803352f5978d83631",
+    "native_candidate_review": "9cc33363a127cd6cecf6b3f88b2ce6d8fbe88f084b6474f88d74197f7d0c2513",
+    "native_lib": "f571925f925ff5a05621d493de94a7643362c38e9cc76919edf9b4cf6b1634f6"
+  },
+  "gate_input_sha256": "b3303f532f04f81a5c268ca4420bd140aa67f8a8303a4c27eae1fb2eca1cf8f9",
+  "native_result": "GateFailed(task)",
+  "owner_bytes_unchanged": true,
+  "owner_file_sha256": {
+    "heads/1-a0375d5db4bc83395882f229828042724797c3475d3c11814e4b82a7758f1862.head": "41cdd52037cdb18e7bf4a5f9f9e855f0be8778364511002624c4130b50fe8c08",
+    "payloads/all12-warmup-9737384bb5fef3a684709e8da06216b56fe22e8a122febd063eca935a830725a.bin": "9737384bb5fef3a684709e8da06216b56fe22e8a122febd063eca935a830725a",
+    "registries/31fbe6b29c49810b1ccb0613a87887dfbfe06bfa95350651a355a5dc04a4da41-72cce0b36e38f36146ea6469e9beed9f5a083523b64ce878f4f7555e7dc38eb2.snapshot": "72cce0b36e38f36146ea6469e9beed9f5a083523b64ce878f4f7555e7dc38eb2",
+    "transactions/e028ae913d148efdd6607eacb62e5ef3a6b197aeb1a05d0c0998b9be165a8c40-0.checkpoint": "d1f3715ed22a246bda6bd1fc00ce8dca3bbf71deed669e70bce6478265ea14c0",
+    "transactions/e028ae913d148efdd6607eacb62e5ef3a6b197aeb1a05d0c0998b9be165a8c40-1.checkpoint": "e57939b8a359528c5c0fcbcdb92593110c3a5b10597524366efac7f41ca3012a",
+    "transactions/e028ae913d148efdd6607eacb62e5ef3a6b197aeb1a05d0c0998b9be165a8c40-2.checkpoint": "59ef36d9d39459a1a9fd864317efddf1e5efebfdc03478d53b1f8781c8ae7921",
+    "transactions/e028ae913d148efdd6607eacb62e5ef3a6b197aeb1a05d0c0998b9be165a8c40-3.checkpoint": "2b21cb512fe0befc93272eabf269981bfa642541cc2bfbf6e48b2e6e1164c2cd",
+    "transactions/e028ae913d148efdd6607eacb62e5ef3a6b197aeb1a05d0c0998b9be165a8c40-4.checkpoint": "658792244893add34ba136098dd122c40f8b581c5dd45af49bbe04be1e828188",
+    "witnesses/1-052cc8d5a6d551c76349ee082385f0269854d00b3a42a5717f51e62c238d90c5.witness": "9b59f0a489a3730174ffc084d2292f2a66b9786fcb6a520a1b0e37dff88e8de2",
+    "writer/owner.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "parameter_scope": "actual all12 float64 research state bundle; opaque artifact only; no native Q24 or serving compatibility",
+  "policy_digest": "854b8ab550f51360f05ef59fab99fd229a48f72c5b1fb12401af6f59d5acec37",
+  "predecessor_sha256": "9737384bb5fef3a684709e8da06216b56fe22e8a122febd063eca935a830725a",
+  "production_authority": false,
+  "protocol_sha256": "30880ddaae978f622cf6a99cf3888771daa954777e6f9ce2a75c25f01f166280",
+  "report_sha256": "8ecf4f030ae71d217aedcea80fab596df6dc676ab79044c57c0e4f8d9ee3d2e4",
+  "review_archive": {
+    "encoding": "native V1 canonical signing bytes followed by 64-byte Ed25519 signature",
+    "reviewer_public_key_hex": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0",
+    "signed_review_hex": "68657074612e6c6561726e696e672d6172746966616374732e736369656e74696669632d7265766965772e7631000000000000001b72657365617263682d72657669657765722d657068656d6572616c000000000000002472657365617263682d696d706f72742d616c6c31322d73747275637475726564342d68380000000000000001854b8ab550f51360f05ef59fab99fd229a48f72c5b1fb12401af6f59d5acec372cccc2d48f54ebe1fdeeb41fc8851059acff09c3a73c94dc3a92e87782c627bd31fbe6b29c49810b1ccb0613a87887dfbfe06bfa95350651a355a5dc04a4da418ecf4f030ae71d217aedcea80fab596df6dc676ab79044c57c0e4f8d9ee3d2e401376c4c89e5ee9830c630b40ec1e4cec30ae1611444b1ccd69e5d19a32d1d20588ecf4f030ae71d217aedcea80fab596df6dc676ab79044c57c0e4f8d9ee3d2e40000000000000070c0863000000000003f58a97f41f9e5f73f61d8e8d6c70130010c53ab306a33556985a0171d0e7e09fed2961b6689ea387f9084488476bedc338ecf4f030ae71d217aedcea80fab596df6dc676ab79044c57c0e4f8d9ee3d2e40000000000000020c086300000000000bfa7a80ebcf7074b3fa2e25aefcb7f1a01534c2228f7f5b4f0d68c426fa0c37021c31db7067078c30ae5afd1a0368f95f08ecf4f030ae71d217aedcea80fab596df6dc676ab79044c57c0e4f8d9ee3d2e400000000000000030000000000000000402a214f42dbd355402a214f42dbd355000000006addea6a000000006addeb96e960217b28188697168d805d46ad4cb019a4956dd7d0826715f1ebbfe05574310ee4e150e3ebd9edcb1f92367d66032c38da27c261aabc3c0666900c5bdef505",
+    "trust_scope": "public ephemeral research identity only"
+  },
+  "review_digest": "c389399635b1926354ea3d3ae5e59063b5a4c8d906190987aa1d25b7491c7073",
+  "schema": "hepta.real-report-native-rejection.v4",
+  "signed_negative_review_submitted": true,
+  "trust_scope": "public ephemeral research owner/reviewer keys; no production trust installed"
+}

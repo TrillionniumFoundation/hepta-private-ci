@@ -1,0 +1,602 @@
+{
+  "all96_original_cost_records_bound": true,
+  "confirmation_entry_passed": false,
+  "counts": {
+    "actual_error_slots": 0,
+    "complete32_slots": 96,
+    "cost_group_passes": 4,
+    "full_field_parity_passed": true,
+    "future_dev_margin_passes": 4,
+    "old_dev_margin_passes": 6
+  },
+  "cpu_ns": 1116962050,
+  "cpu_ratios_recomputed": 16,
+  "disposition": "REJECT_FOR_CONFIRMATION",
+  "full_field_parities": [
+    {
+      "actions": 0.0,
+      "fit": "v5-agnews-seed7-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-agnews-seed17-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-agnews-seed29-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-agnews-seed7-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-agnews-seed17-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-agnews-seed29-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-dbpedia-seed7-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-dbpedia-seed17-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-dbpedia-seed29-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-dbpedia-seed7-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-dbpedia-seed17-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v5-dbpedia-seed29-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-agnews-seed7-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-agnews-seed17-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-agnews-seed29-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-agnews-seed7-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-agnews-seed17-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-agnews-seed29-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-dbpedia-seed7-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-dbpedia-seed17-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-dbpedia-seed29-linear",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-dbpedia-seed7-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-dbpedia-seed17-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    },
+    {
+      "actions": 0.0,
+      "fit": "v6-dbpedia-seed29-gated",
+      "old_losses": 0.0,
+      "states": 0.0
+    }
+  ],
+  "groups": [
+    {
+      "candidate_h1_cpu_ratio": 2.340346094010121,
+      "cost_passes": true,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": -0.007826648032991573,
+          "passes": true
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.006856431703547875,
+          "passes": true
+        }
+      ],
+      "head": "linear",
+      "old_mean_difference": -0.0548302348674687,
+      "old_passes": true,
+      "task": "agnews",
+      "version": "v5"
+    },
+    {
+      "candidate_h1_cpu_ratio": 3.1216762609173916,
+      "cost_passes": false,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": -0.007592570211766908,
+          "passes": true
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.006371627913271322,
+          "passes": true
+        }
+      ],
+      "head": "gated",
+      "old_mean_difference": -0.0602459137063089,
+      "old_passes": true,
+      "task": "agnews",
+      "version": "v5"
+    },
+    {
+      "candidate_h1_cpu_ratio": 2.600527844797491,
+      "cost_passes": true,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": -0.005695519187209177,
+          "passes": false
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.003989785387347805,
+          "passes": false
+        }
+      ],
+      "head": "linear",
+      "old_mean_difference": -0.045706258711029485,
+      "old_passes": true,
+      "task": "dbpedia",
+      "version": "v5"
+    },
+    {
+      "candidate_h1_cpu_ratio": 1.7319397049113805,
+      "cost_passes": true,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": -0.001351323206703957,
+          "passes": false
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.0025463703505529413,
+          "passes": false
+        }
+      ],
+      "head": "gated",
+      "old_mean_difference": -0.030769520076288834,
+      "old_passes": true,
+      "task": "dbpedia",
+      "version": "v5"
+    },
+    {
+      "candidate_h1_cpu_ratio": 2.967799897817444,
+      "cost_passes": true,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": 0.0009468361127062012,
+          "passes": false
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.0009625283731041458,
+          "passes": false
+        }
+      ],
+      "head": "linear",
+      "old_mean_difference": -0.011206825524676582,
+      "old_passes": false,
+      "task": "agnews",
+      "version": "v6"
+    },
+    {
+      "candidate_h1_cpu_ratio": 3.1889072017563853,
+      "cost_passes": false,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": -0.003233024630692508,
+          "passes": false
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.0051930797177940635,
+          "passes": false
+        }
+      ],
+      "head": "gated",
+      "old_mean_difference": -0.008409241570813533,
+      "old_passes": false,
+      "task": "agnews",
+      "version": "v6"
+    },
+    {
+      "candidate_h1_cpu_ratio": 3.3652456520083236,
+      "cost_passes": false,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": 0.0028617936053684343,
+          "passes": false
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.0037123841844811543,
+          "passes": false
+        }
+      ],
+      "head": "linear",
+      "old_mean_difference": -0.07582899623492616,
+      "old_passes": true,
+      "task": "dbpedia",
+      "version": "v6"
+    },
+    {
+      "candidate_h1_cpu_ratio": 3.823992986194399,
+      "cost_passes": false,
+      "future": [
+        {
+          "baseline": "myopic_h1",
+          "mean_difference": 0.0018704451324757494,
+          "passes": false
+        },
+        {
+          "baseline": "loss2_remaining",
+          "mean_difference": -0.0028569915545534606,
+          "passes": false
+        }
+      ],
+      "head": "gated",
+      "old_mean_difference": -0.051517341680264575,
+      "old_passes": true,
+      "task": "dbpedia",
+      "version": "v6"
+    }
+  ],
+  "input_sha256": {
+    "hepta-repo-v8/qa/stem-bakeoff/cell_field_remaining_compressed_confirmation_entry_v8.json": "5b195a871b492a6680bcd2a3087c528ecce9fa55cbeb732d40116f4200b21b9a",
+    "pft-audit-v8-remaining/result/audit.json": "8451f3830951eee294f18d84118d9764aee5ea042179079bb4a88859a23c6d73",
+    "pft-audit-v8-remaining/result/cases.json": "900ae307fd91b94feb69872aaaa66b4064e05c039d70febbc6d04e33460c8a58",
+    "pft-data-v5/cohorts/agnews/sources.json": "b41b0c54dead07db0b1a5e21f78144fc85674354660d5585544559e727dbde62",
+    "pft-data-v5/cohorts/dbpedia/sources.json": "ba70de702e51f474b43ab7f0692c32b7a307c2aabc5048fb477417fdd566c4ed",
+    "pft-data-v6/cohorts/agnews/sources.json": "dbc88aaa9838b6de28e7c5a2c586cccc08de522dcf62871645a40f2c5742b289",
+    "pft-data-v6/cohorts/dbpedia/sources.json": "38cdd45106b6af4f41452444d9b3d2246bd4ee14b28dc755864c9a42511962f3",
+    "pft-remaining-evaluation-v8/evaluation.json": "8121678b55d77e96f44c4a15d76675fd6cb73aac297ec2a41b83131e92f3666a",
+    "pft-remaining-evaluation-v8/historical-provenance.json": "f50190f1d908e5ae890dfbedc80ea51ec15c971abafcb9fece115891f4e879b4",
+    "pft-remaining-evaluation-v8/per-source-dev-statistics.npz": "414edf010f49166eb77cb66574286e5cf728e36f918ec9bcc09e3a42ab9b6e78",
+    "pft-remaining-evaluation-v8/records.json": "818f37436c9c15a579eb804bcda88e92ddf86e9ed6d2ad955b0d5ad57f334171",
+    "pft-remaining-terminal-v8/control_seal.json": "f0b71272ec0e148bf05fad8b1e244defa4ae5802b26e40c8b017c44ead09cef4",
+    "pft-remaining-terminal-v8/executed_source.json": "a33363b1f6a20c30247e89d46a355faf9b7c3561d0a315fb181d3ebec5f8311b",
+    "pft-remaining-terminal-v8/report.json": "be41a3ac46db817396f9e5135987bae09ac6bc5f9c04943e4e3090bcad2d50f0",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/full_adjoint_remaining/policy-record.json.gz": "df203f118661b84a07bc15dffc72462e3d2b5b4ed3b3dceffeb92caf30a21236",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/full_adjoint_remaining/result.json": "1f73d657c926cba05807bd66a8ebddc5a2c9cb5603a3aeee092d673ab157f2a9",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/full_adjoint_remaining/trajectory.npz": "cfa88b8b8e30b628ddc86e0a93892fc33e7726761cc65ecbfef18bbd23d8d260",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/loss2_remaining/policy-record.json.gz": "bcfca13ccc45339a9c87906e58f9a71bc894244af8263a24ad29809fb3bdf9e4",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/loss2_remaining/result.json": "69bd797b7cc27e8b7467a5d1b8afc399ff465ac6d09e1ec81f7c71b4e190281c",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/myopic_h1/policy-record.json.gz": "9b8ceb279b99855ba9c4d7c5ea50aace9ff18630fe9670d1805f0f9b03318db3",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/myopic_h1/result.json": "7fd070c79f732e6d1505238f2d4b3d4f84d01a8a1f692885d4c2530849c68fd7",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/terminal_field8_remaining/policy-record.json.gz": "37f9e2825fd803cfabfbff10c43a9e2404cde9b308d101f17f2ac5d6831dc662",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/terminal_field8_remaining/result.json": "77b35e1e64eeb716ac1b1d021604f4b9b3845ebd0d75746f092bd42959f998fc",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-gated/terminal_field8_remaining/trajectory.npz": "cfa88b8b8e30b628ddc86e0a93892fc33e7726761cc65ecbfef18bbd23d8d260",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/full_adjoint_remaining/policy-record.json.gz": "ebf5ba4c7ee260f689cd92c9140083c0e819871c8150d19ddf06454a7a6f907b",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/full_adjoint_remaining/result.json": "9dea8f01321ecaddd1a0c77e1da1944e708d7ebc25ebdad45f8e8cf221f3a4bd",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/full_adjoint_remaining/trajectory.npz": "55f887d99d171eebc43f16f54e50adcb90055cc5d3d2d855162fa830ba1fc504",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/loss2_remaining/policy-record.json.gz": "e8360a2d118f0d9388a119179217f0bad871e9067aa4267687bfe2867133ad23",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/loss2_remaining/result.json": "79460c96efb3882638f7ae080459e8c01eaefad7630104b67d66d34666c17feb",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/myopic_h1/policy-record.json.gz": "86ded9a79ebc3255eb5f026be8674ef3466ed2e54bd47611cb243dfa191e7b04",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/myopic_h1/result.json": "f21443fd3531bd4681b5a09d20cb6adda011c22d78d12bddb218ac2e88b12181",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/terminal_field8_remaining/policy-record.json.gz": "c6d991a1244b7e8c04099fa5711f697e3e999886f3205f7e56b6a70bbf044773",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/terminal_field8_remaining/result.json": "8aa57f86b87c0528da7d41622cfc7727140a9f19f13cf5f9ef92d3e946d9d942",
+    "pft-remaining-terminal-v8/v5-agnews-seed17-linear/terminal_field8_remaining/trajectory.npz": "55f887d99d171eebc43f16f54e50adcb90055cc5d3d2d855162fa830ba1fc504",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/full_adjoint_remaining/policy-record.json.gz": "5e7ffab87f43c31e7032650d77d475504c0eb2c8db72d9166f7ca52cc7296cc5",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/full_adjoint_remaining/result.json": "0d4c6195c3317374bd42d24570fdf6a0be2f83468601f13d232025650e669692",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/full_adjoint_remaining/trajectory.npz": "4b5878d6d92015fd0678807fe8343d443743863d8f62a4538179c983de5e0c97",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/loss2_remaining/policy-record.json.gz": "1ecb60ebd3185610aad957c3e55b7d134b5f9d4450e691a75ecb3c67e1c4d376",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/loss2_remaining/result.json": "c166b6eca03ac284ee9d1ba9e41134e73514a0930e3fa4fdb0b6743ca4d10335",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/myopic_h1/policy-record.json.gz": "c3cc625741d1698673a8a4e93a305792ff00a7bdd0547b425c0655a9a726c95a",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/myopic_h1/result.json": "4f59ce980861922407aed88b8328b83ce2150a35e456435ade568d2fde543706",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/terminal_field8_remaining/policy-record.json.gz": "f863c4b0f590c83b2e5ad367a01e1027bd78bbd491776a57ade1098a59474f49",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/terminal_field8_remaining/result.json": "1d369ded3784920f707140b168b20dfb3425034d7406b2676edb38a465ff77eb",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-gated/terminal_field8_remaining/trajectory.npz": "4b5878d6d92015fd0678807fe8343d443743863d8f62a4538179c983de5e0c97",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/full_adjoint_remaining/policy-record.json.gz": "6dd51a059f97587a0e38f7fe17b3c8038ca406473ad6485f9ae17be6c310ca80",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/full_adjoint_remaining/result.json": "a8c74d6663ab2c7bf913e1b3284bb697edf9f2d17acdffed1aab7db4ebf2c51e",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/full_adjoint_remaining/trajectory.npz": "4a14bd615d6175e36c67e68142df3401ee18c554fe75a084fbf3acaca300090f",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/loss2_remaining/policy-record.json.gz": "3de53ca478c0c5181b9ec946f42ce178db245da81d4d149db78c1e747e77f219",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/loss2_remaining/result.json": "7aff94071ce479c3a604e86ca51f8b02deac187af3561216f70aacab7a95e3dc",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/myopic_h1/policy-record.json.gz": "6b30736aa12194ab690fe518cffed38c7fdac9f611899b45d21d339ce4afc908",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/myopic_h1/result.json": "d1be442c88a57ae49f6953cf6b32f322911e033965cc94bb8d189d2addf076a5",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/terminal_field8_remaining/policy-record.json.gz": "d8403e280d6450af30c6e82c76181a874b7ccef75d854ec4e8b1463e5cdb1408",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/terminal_field8_remaining/result.json": "f1fc037570a78a46422a84dabb5ae1c9c1b7715985950a5d535e7790c662b95e",
+    "pft-remaining-terminal-v8/v5-agnews-seed29-linear/terminal_field8_remaining/trajectory.npz": "4a14bd615d6175e36c67e68142df3401ee18c554fe75a084fbf3acaca300090f",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/full_adjoint_remaining/policy-record.json.gz": "34636f0c6cfe25c89c476f9d44cebc6970ea65ae1449039e8003234502d4e87f",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/full_adjoint_remaining/result.json": "0414c10d0e786262c3f03a91c46b19ac0e7ec95131c7a5d4e322e327a325d9ed",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/full_adjoint_remaining/trajectory.npz": "341c0d3b3bc68c602cac36b9006bca77f02159442aea81c03d9ef509904edceb",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/loss2_remaining/policy-record.json.gz": "5043d8288a7a2f86b8f2a6631033890216f83974a89e279840c754a2eb8b69a9",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/loss2_remaining/result.json": "0d3d997a4c0c6d0ea79edf08c649862f593176f631f9e392592a28ada2d5b270",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/myopic_h1/policy-record.json.gz": "58410e4614a39c8fdf89a06e84337ca5bc61d713f94ce2a1c7c4e75a950944cc",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/myopic_h1/result.json": "b1f91e4fea119457da4e034119dde75a219dc45ce15f21087be119ea43ef2752",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/terminal_field8_remaining/policy-record.json.gz": "65787392d3f4c81748a34faeadd77fcd4e2d8e77c64acef829a5d07eb46c18b8",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/terminal_field8_remaining/result.json": "3a96190492202e7bc5598faa2e80a75aaafdfaa5def1f91f206105f8df6dd47e",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-gated/terminal_field8_remaining/trajectory.npz": "341c0d3b3bc68c602cac36b9006bca77f02159442aea81c03d9ef509904edceb",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/full_adjoint_remaining/policy-record.json.gz": "4c2d5f2935980d9bd3b93094c48c88f522cd022d5d5dd269da8f33be1c6592c6",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/full_adjoint_remaining/result.json": "1332c754972d900915fe735bad0298e5731ffa9214eea40abf4060668053fca5",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/full_adjoint_remaining/trajectory.npz": "e7c6f1ac9603e0aa86c532b21f59306ce61391176dec291564f423bc2711a01b",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/loss2_remaining/policy-record.json.gz": "80f377fa13557348f51e7e4800b1bad46e6d9d61793643ff36e28edf9c1f50df",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/loss2_remaining/result.json": "961bacf9a36f267e5aa16492b2fd807f66c3eec1577080664d9b21cbb5e4bd27",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/myopic_h1/policy-record.json.gz": "bc8fdb54e9066b51f3b3f8069e0252dad3eae24949cf322e872fe390d0d56216",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/myopic_h1/result.json": "dd33b7555f0fea64d36676e6b10a8c1217f2c8cb43d9a84c965540181d834780",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/terminal_field8_remaining/policy-record.json.gz": "23a9b55e056cb0780dedd64311694434722dffa9d8f47f2fc8cc50394c38356f",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/terminal_field8_remaining/result.json": "73c5c356f9c1069cad875d9956b6375e23f76762efdbaf83b037c7f0241e4041",
+    "pft-remaining-terminal-v8/v5-agnews-seed7-linear/terminal_field8_remaining/trajectory.npz": "e7c6f1ac9603e0aa86c532b21f59306ce61391176dec291564f423bc2711a01b",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/full_adjoint_remaining/policy-record.json.gz": "a4683aaae92516a979b2b351ca07eb80c70ad81cc39f8645bdc52812987b0d82",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/full_adjoint_remaining/result.json": "3dd6d9fb023b83947ab98269edbe009f3024e8570bf2eb596021b21735c40e4c",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/full_adjoint_remaining/trajectory.npz": "22f318e51cbaabb4c735ad95fb65b785c1ff7791613adebccf628cfc4d5ec674",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/loss2_remaining/policy-record.json.gz": "65085f19672aa7c4c114dfacb9a5299e6c5f658ac2506dc16a9cbf04768432d5",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/loss2_remaining/result.json": "01a0e3f2fd35e7a89090a40670e8bce79cc76934058dc6540bbac89016ce8a49",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/myopic_h1/policy-record.json.gz": "6b6fc97413dd3f3b7a7d865d06c4d79be81f3e80b5f3771d32cf11ff84569cf3",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/myopic_h1/result.json": "1480c7e3c4450343cb8f9bad906670e254a8932079968565277240e6edbad7d1",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/terminal_field8_remaining/policy-record.json.gz": "fb8a488093b2e1e21ad832db1ca7f2840e506019e4934087d1dbf0d0e538212a",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/terminal_field8_remaining/result.json": "db2bd9f4f92eb78fec20a4387a2bf34cf88ee3c2f3dccdc0c390506988b6b073",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-gated/terminal_field8_remaining/trajectory.npz": "22f318e51cbaabb4c735ad95fb65b785c1ff7791613adebccf628cfc4d5ec674",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/full_adjoint_remaining/policy-record.json.gz": "90e95afaa301867b43e2beb7d3a121314a9d61d32607a9b093d9ca499bf21dc3",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/full_adjoint_remaining/result.json": "ca8678426af4bf43f413467a698c5daf1fad2949106423399564e767728dae9d",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/full_adjoint_remaining/trajectory.npz": "16e1b6869d4f6dc8155a43fa3c8e6069dec0d90f45f1ce4115110b4b7e9fea89",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/loss2_remaining/policy-record.json.gz": "cf547e5989ad7133dae4368b724e80cc1d166681f0103278f9570bd7814edf86",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/loss2_remaining/result.json": "aced444e6dec34ae4c965f9f09647ded35f91b0e116724992dd8d4f4ffd6cb9e",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/myopic_h1/policy-record.json.gz": "f0f1daf26f7c58bf6ee7e06f9230092ce52fe75106700e795af708b4e915e7e8",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/myopic_h1/result.json": "32f6d68235bd90069896932177552c76555366581a9ae1d9e0a682324bad1f71",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/terminal_field8_remaining/policy-record.json.gz": "b5d01519357e3d94222827531a091f9c4aaf380bf7c55f41b1bc9384aa7481de",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/terminal_field8_remaining/result.json": "bffe88b171a4dffcc0a8b3b28ad9865c4d279b13d7bfb5eee12b27ca56cf6791",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed17-linear/terminal_field8_remaining/trajectory.npz": "16e1b6869d4f6dc8155a43fa3c8e6069dec0d90f45f1ce4115110b4b7e9fea89",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/full_adjoint_remaining/policy-record.json.gz": "373ffc5d1425e5c190d819967b547d896f2d8e0d7fc95c00e28a547298e8e563",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/full_adjoint_remaining/result.json": "190df9b50c4ac1ba07a1b6db4d2a7333be16063420c92ba4ff9139da5030e46f",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/full_adjoint_remaining/trajectory.npz": "be1ead0fa9e73b17e893e91cc4453547300b581e25ae9f7f461bda5196cdb69f",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/loss2_remaining/policy-record.json.gz": "30cdae045d564ab0169e20c52594e3bc575f6ee18468f8da0f5245be043f210c",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/loss2_remaining/result.json": "839e179ce13b4b910535fdf5c1432fbd422219982a6ae099bc732e4731b778c3",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/myopic_h1/policy-record.json.gz": "3f3084fae53e1c5dd3691e812ab30ae750ae3f526bf1337936663ffb87eccad0",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/myopic_h1/result.json": "34d41e102560cb1ab9542b7aeb3e883b22a03c24dbc3dc558ce141c8bbae816b",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/terminal_field8_remaining/policy-record.json.gz": "0f8eebd3a817c2a72e10cc6ae93693641c906fa39650e96a53715cf6cf40f239",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/terminal_field8_remaining/result.json": "73743cbf3ec955ba40037495746b9e5930e043ca98adf44d3162fd2a01dc1af8",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-gated/terminal_field8_remaining/trajectory.npz": "be1ead0fa9e73b17e893e91cc4453547300b581e25ae9f7f461bda5196cdb69f",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/full_adjoint_remaining/policy-record.json.gz": "ca768e15a567d24cdc9f2cf81c8ccc778225f740a1169cd43383cf42286dfcd2",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/full_adjoint_remaining/result.json": "c03396cd10fd79b0afca018d9436d43ac2351179e2bc053fdb1f155fbcb20dd0",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/full_adjoint_remaining/trajectory.npz": "8ba0d97c5dc7ae7975af0de3837b2a81f529157b9ab8c62dbef9b6914a96ee48",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/loss2_remaining/policy-record.json.gz": "31c8097e5048cab49c7fd5d871e2dcd87be84d0339e5c2104048415d807c820c",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/loss2_remaining/result.json": "cd22a39ae7d3e5f5c0218963074ed4151f95ecff6c22c5309f135cb0f823c2ff",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/myopic_h1/policy-record.json.gz": "00deb6ff2643e8a48e637b0ae4e7af970cd95f385a89ec764d05c46a0d574666",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/myopic_h1/result.json": "7b791d156d543a66a80560a06d0a066986a77f87a1b6296182a878777af0adad",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/terminal_field8_remaining/policy-record.json.gz": "f2d6c5cef17132c303a0d27321c558eca5e8c15ed5063c8d8128fa95334d05b7",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/terminal_field8_remaining/result.json": "acb4612735a334ff0840be0f4d85591c6435f8078a6d44c73b25c0087a300a4b",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed29-linear/terminal_field8_remaining/trajectory.npz": "8ba0d97c5dc7ae7975af0de3837b2a81f529157b9ab8c62dbef9b6914a96ee48",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/full_adjoint_remaining/policy-record.json.gz": "3251951be0457e0661a4eceb618b53b212319cf372a899cf5fb6d3577d9a14d8",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/full_adjoint_remaining/result.json": "c56a109b93ea83f4fbcc5da4a16b3dfa8fd41819c72d551d1aa6ca975cf95a42",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/full_adjoint_remaining/trajectory.npz": "bfab421a7f6fc3ee027c19e5c38fa2a8cb42a76a4302b18c644f6f644b5b7faa",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/loss2_remaining/policy-record.json.gz": "e1bef2bafe937bd4e11d22397bcc792d959dfef9aed0d9b9ed67b904a9d43fdc",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/loss2_remaining/result.json": "d6d283c4dff57e9a23efd3a1de2b0991b3cf5de2e93cae3a0ee86ab0e2575017",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/myopic_h1/policy-record.json.gz": "934c923cbc2e3dd5a8b3e22e3ec4877ee67a7844acb368cf0e512b32bbb8a6ac",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/myopic_h1/result.json": "f4818846974bb06df292e3b0cbaddc4ca56734f3a74018cbc2b5c88cc05498eb",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/terminal_field8_remaining/policy-record.json.gz": "d240cd43ac029ec166ac235b4243136c11e0fc450e15ee7543d24291ffecfb90",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/terminal_field8_remaining/result.json": "99270d0818da764a45c7d2e8755cbf44804a62b480ec60cc42e2bd35dcf3f785",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-gated/terminal_field8_remaining/trajectory.npz": "bfab421a7f6fc3ee027c19e5c38fa2a8cb42a76a4302b18c644f6f644b5b7faa",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/full_adjoint_remaining/policy-record.json.gz": "c50db00b53763509068174c438d407be35d598747707dd9280dc15f5a18226a1",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/full_adjoint_remaining/result.json": "c82dfd9672ae11f0c6016f8fe75290a5e3779f3c032d28a16d67b5859948d7c0",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/full_adjoint_remaining/trajectory.npz": "dfa401d6e46b7ad00ea5739c999d95765514807d6a3dd6acc55d8bc7ebefc4e7",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/loss2_remaining/policy-record.json.gz": "be382605bb5063a1b524baeca5b6cb16b62d8fb08ab33c3d32a83853f1ef5623",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/loss2_remaining/result.json": "a02cd52199ed795678fa848e6250f2ae26179400f7fe12702e103c0875c0bcbe",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/myopic_h1/policy-record.json.gz": "eef927cdb579ddfe4594e4c89a663ec1cdbc3a62c4451784d813fa4b35725d1d",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/myopic_h1/result.json": "f22fb1b9eeb764d5aede2c455288541c73de9603b851ff0b125345edbfea67bb",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/terminal_field8_remaining/policy-record.json.gz": "decb7d69563b78aa28ecb1d561208a618017ce0d022839103e550870afbb7afc",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/terminal_field8_remaining/result.json": "8a3e17f6bb1d2a708b6f66f7d326bcce517002d016c2dd851833080e4c4c4c08",
+    "pft-remaining-terminal-v8/v5-dbpedia-seed7-linear/terminal_field8_remaining/trajectory.npz": "dfa401d6e46b7ad00ea5739c999d95765514807d6a3dd6acc55d8bc7ebefc4e7",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/full_adjoint_remaining/policy-record.json.gz": "067028c47247398a4cabb5b2ec9cd376d99313c210ba914446d0d0872ca053f3",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/full_adjoint_remaining/result.json": "7324c4aa2b82233ab398371cf090bdb20d791ce1336dac3b6acfca1d209ee235",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/full_adjoint_remaining/trajectory.npz": "9e083ab4d8c519bc46ea8b184639a0a641283bbf32811aa80c753f644ac21a58",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/loss2_remaining/policy-record.json.gz": "bdc95286c2655f8d15662243ad2e6ace7e44ac576a4650cd9ce6122e05fdc374",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/loss2_remaining/result.json": "fadb3fc5d8cbc4ad45f13016e430c07cfcbddffb4474d461f7e93e131bfdc0db",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/myopic_h1/policy-record.json.gz": "f39338987c266db886a5026abb58482447e7ed556cbc6fd75e811ae813ab9fb5",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/myopic_h1/result.json": "02f608247246519bd1e2e2eb15589f7f86eac8f8775f42899dcf33948eaa03b6",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/terminal_field8_remaining/policy-record.json.gz": "b7cfcf45c7cfc91991da6b09a75983e4e558041519a60f702e60b023342b3b6d",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/terminal_field8_remaining/result.json": "202f5c38a51221bcaf0b45c2446041f019fa03a5cbe1ef31ee0d3d0f86dfec02",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-gated/terminal_field8_remaining/trajectory.npz": "9e083ab4d8c519bc46ea8b184639a0a641283bbf32811aa80c753f644ac21a58",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/full_adjoint_remaining/policy-record.json.gz": "e557cc8d2271b02aabf2697befdee8793009ce9a775ff320887800576543d843",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/full_adjoint_remaining/result.json": "9c7a226da607eee21ead2e75f7d359c10aab042146f93b1a61bf13ad4bd65073",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/full_adjoint_remaining/trajectory.npz": "5655e2c374ca1e99e92d4e9576305c53eb198c8456dfeda9e3e9bb04dc84ad24",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/loss2_remaining/policy-record.json.gz": "2ab1bec0543821d0e2efb15d27c142401f0bd8d9f87de3ea7b0c00cae29db172",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/loss2_remaining/result.json": "61d5012ab2d5ceb54b1afb9c01c1b8476341427d5cae42758cb18167ff0beb14",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/myopic_h1/policy-record.json.gz": "c008587fc564497202cd92ffb7e0820f8fd6d54321f1b958c135694797229d69",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/myopic_h1/result.json": "e263799789aafd9dd1f166010ca1b5f59d58ecae615490224c825a17fd3e881f",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/terminal_field8_remaining/policy-record.json.gz": "0bf2689372fa8d9ee0aa68df58fd629355eec3bb80b7b2884444272f63efdaf6",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/terminal_field8_remaining/result.json": "7a6f20fd5ee9522279de8f063f6910090203a133110d39efcf5fe1ee803a66a9",
+    "pft-remaining-terminal-v8/v6-agnews-seed17-linear/terminal_field8_remaining/trajectory.npz": "5655e2c374ca1e99e92d4e9576305c53eb198c8456dfeda9e3e9bb04dc84ad24",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/full_adjoint_remaining/policy-record.json.gz": "02b7f4de9daf3b41ac453c416e226b5f2260f6ca3d22fa3d44bc3e70ff74854c",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/full_adjoint_remaining/result.json": "4df6ec7b56c2ca6821f92808a58a1589e4b1a4f151433f7e2ddca2ea6712ac5b",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/full_adjoint_remaining/trajectory.npz": "6079269129e374b055d54f45005b6088c76305f9d69c3f744bc1950808d3e231",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/loss2_remaining/policy-record.json.gz": "528480367fc6b2183ba71f0a3c57326e227e9a2c2705b494072abbc07ef5ba48",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/loss2_remaining/result.json": "a38d11466742ab9103d39eab331ced0d741de2c9fbd71f1eb23917d15780ddc7",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/myopic_h1/policy-record.json.gz": "6230d3dc08bcadaaa81863038523ab0152cb009c8a13a8caa0b8eddf4c99f8fc",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/myopic_h1/result.json": "6bd58eeb96ab62053b178724f0cd68a0816bac6f97214d45ba8c588ee6cb6cdb",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/terminal_field8_remaining/policy-record.json.gz": "fbb3f7e2374e9e7c6e9acb762c18353c2c64a30827afbc0b3c17648d0eb62a29",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/terminal_field8_remaining/result.json": "1bb089858c12e691e66b080b8c81c79e2e957dd5942e00371a289654a1ac6536",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-gated/terminal_field8_remaining/trajectory.npz": "6079269129e374b055d54f45005b6088c76305f9d69c3f744bc1950808d3e231",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/full_adjoint_remaining/policy-record.json.gz": "82d62713e38d71e80b7839cfddb3cc1517882eddddf01acbf6c014cc0b6e0a1d",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/full_adjoint_remaining/result.json": "8be9b8d7e3a420ab117687c3fdee13d02bb1c5b3d4b082973c9861211444bc2d",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/full_adjoint_remaining/trajectory.npz": "376166e6671ac8590d71f1b090f7dc14c75d9d463813276cfbdfc4067fd80760",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/loss2_remaining/policy-record.json.gz": "545a32ecb4ef5dd9f2fda5d3ede7b23388ac5ed84800654b06336d5b365eae54",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/loss2_remaining/result.json": "367fdec56820f008996c92ee8650f5ca0468fb0a26ed829afd76be7e85585f33",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/myopic_h1/policy-record.json.gz": "689f8f60764f40cacd8116e2f400528ed96a226a7bb8c94022fcc729ffec3021",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/myopic_h1/result.json": "15d5e137cd033cf38ea58d8e23d24c5790ec7f35dabcd7b870f6887a9f90e5cc",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/terminal_field8_remaining/policy-record.json.gz": "0f59fcd2dcdd0d800e9163636fefa1441330e78c44f910e6f858cb1bce238502",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/terminal_field8_remaining/result.json": "14646731e829f851f41fb76b43218ed686229ddb50fb961a586eaac618b0acdb",
+    "pft-remaining-terminal-v8/v6-agnews-seed29-linear/terminal_field8_remaining/trajectory.npz": "376166e6671ac8590d71f1b090f7dc14c75d9d463813276cfbdfc4067fd80760",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/full_adjoint_remaining/policy-record.json.gz": "d698b232eeb75524978f30e9d3dc2dd6a5125db8185d54e332b47b8719496088",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/full_adjoint_remaining/result.json": "89147559e0924ad2cbe6b4b3505a1ec5aacb21e5bcf78f62e727f2a782e80f81",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/full_adjoint_remaining/trajectory.npz": "34bc3ac9358a7b84c80ea45499331201e67343c66ab5c5dcedce3bb6d13afede",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/loss2_remaining/policy-record.json.gz": "498c361684bf90e4cf3b480f6b3ba36fcacb0c219a5752125af8509ddc14d0b9",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/loss2_remaining/result.json": "2663a77802a39dfca755b4bb53f79df3a7c50f8f1ced3a8f7d09f380b34cc1dd",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/myopic_h1/policy-record.json.gz": "001c07b702177cc0c3f4d0dee26771848d8068c384e4d68c35b250ceb93aa8f0",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/myopic_h1/result.json": "7f58c9a785bf838391e92795d675ad5a336e4bd174e802943ded77b6f5acc5f2",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/terminal_field8_remaining/policy-record.json.gz": "c1d8a0bca7752e928cdc3202750a1c870c0397423ca5b4f36057e513f77f5695",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/terminal_field8_remaining/result.json": "3b6e46d0b296c78d8d1164af9930d9b211512abb832b631a10bdb85daf9de96f",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-gated/terminal_field8_remaining/trajectory.npz": "34bc3ac9358a7b84c80ea45499331201e67343c66ab5c5dcedce3bb6d13afede",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/full_adjoint_remaining/policy-record.json.gz": "f31706b48ad62242583ed44fc0d87b4c43533af23b478767f5fac3289f992d5d",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/full_adjoint_remaining/result.json": "441f9ed39f1946a0c5fbae2664ff5d927d130e95380ab0ac8dd4eab022b6039f",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/full_adjoint_remaining/trajectory.npz": "a1a20f3adfbc432d30cce944a15c952d29cbce1e33c06d2fb6439a0cac6f8c94",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/loss2_remaining/policy-record.json.gz": "8b22a628cb29eea08bd258bb07c6f4b6295480e9e664e919c81ed7bee6e12827",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/loss2_remaining/result.json": "ff97a9be9f8a198b1a7f50a89f808c0f61e89b8d72c16865bba66aeffab75b33",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/myopic_h1/policy-record.json.gz": "f3894c159e00379000e75ea0b43d971fa11456947de54a74c7523c647938bd25",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/myopic_h1/result.json": "466dd9642a873f4214d88ae188888165027043e33e1081aa5261df330d45c589",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/terminal_field8_remaining/policy-record.json.gz": "1e2b23e002eca3eddeba524572c66b4284dcfd8d98f6cadd6758ded8a57be9c6",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/terminal_field8_remaining/result.json": "0ec68b8d81aa00ba3d86e64db54b29bd43dbe63a0048ebe337d5668f1cd1e17d",
+    "pft-remaining-terminal-v8/v6-agnews-seed7-linear/terminal_field8_remaining/trajectory.npz": "a1a20f3adfbc432d30cce944a15c952d29cbce1e33c06d2fb6439a0cac6f8c94",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/full_adjoint_remaining/policy-record.json.gz": "62d30840892e7d29903861ee0a5c7f4ae1c206fd6ca03cec8f070553249f311c",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/full_adjoint_remaining/result.json": "cfc4d847c5ed50df41d6d1d563bb62cb9d14007e073b6fe76c4775d57ae77c10",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/full_adjoint_remaining/trajectory.npz": "fcfe022840ed492dcc04e776b618a8bca9be3ff881e9a3700146ee78e608dfa1",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/loss2_remaining/policy-record.json.gz": "f7b1c9ef5d89f4a6ac601a44aed4622de71fd0886b829057603af8395ce6fa69",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/loss2_remaining/result.json": "f6d87ad0a488cbe8cb5c88bf094a928802b954eb79fd583775c62c31db555811",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/myopic_h1/policy-record.json.gz": "4576a103d4f28d29c741ff1072a688eea0ad1f46844c6fa2ba3a10018b3b9fa6",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/myopic_h1/result.json": "3b0e45f17d6fb7362450e50f8df45b321ca267ae873844049eb5ad223b99ac7c",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/terminal_field8_remaining/policy-record.json.gz": "33a99c4e656779af283eb4ae00572ae039aa9d76d20f228bb574b2ee69513aca",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/terminal_field8_remaining/result.json": "14a4be4823423bc1feb2c882fca32add621cfb31dde50d4e6c3bf97d1869d33e",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-gated/terminal_field8_remaining/trajectory.npz": "fcfe022840ed492dcc04e776b618a8bca9be3ff881e9a3700146ee78e608dfa1",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/full_adjoint_remaining/policy-record.json.gz": "ed007196f61b4bce49512f9a9ce8d2c6f2220e997482ffa32e055b3a3ab6703e",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/full_adjoint_remaining/result.json": "7f306ad6071eb0f3efb63361eaa8e6b5948bbd90b91508b1d949a3f4aecb8792",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/full_adjoint_remaining/trajectory.npz": "8763a0528d4c96014d5c031a074fa98a2b4c9c1d599e0fa707aed2cc16f6f564",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/loss2_remaining/policy-record.json.gz": "0032bf6468d9080d8f33902c2ee1f93ecf974cd73add1217f21af5d9a96b7cc4",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/loss2_remaining/result.json": "814cfcdeb5850de1e0e8058103315a2fd1fe54098c473bf9325bae2ceaaa87d6",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/myopic_h1/policy-record.json.gz": "7d75a0e6d737761c09ff6dcc182506ea5ca23cca7d01866febee0a29f0c4d20d",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/myopic_h1/result.json": "527def2eab9e58ae9708eb025a1b4934b1de181615dc40cc8774536e50ec4aad",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/terminal_field8_remaining/policy-record.json.gz": "9fbe4257b8343cfa98d5d55595f12705db328682bfc5df5cf46c6bf45ea556f9",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/terminal_field8_remaining/result.json": "cc95042c03fba9451ff870f834e031750e67733f581bf146af9c89b7a226e799",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed17-linear/terminal_field8_remaining/trajectory.npz": "8763a0528d4c96014d5c031a074fa98a2b4c9c1d599e0fa707aed2cc16f6f564",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/full_adjoint_remaining/policy-record.json.gz": "1351e28fa301899c0586b9ba85a831695ee11392f3ed927db5a2ff0dada9b8b8",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/full_adjoint_remaining/result.json": "07f4986e12186a7378b91bee93624776732f0f946565bb04ac3f6599d7e17faa",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/full_adjoint_remaining/trajectory.npz": "7329da45101ba445ec2c90389d92144b5f83b0d46e2874a0fdb5fb46c13b3e3b",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/loss2_remaining/policy-record.json.gz": "0fc21533f8e72f14e38f5d3480f49cd46a4f0100375dfef83f529c3a1b5d4229",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/loss2_remaining/result.json": "e93b42ff162a87243de982faad4f554c380e791591577ebbc3f828842a5237da",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/myopic_h1/policy-record.json.gz": "420a869c4e6822ab9ca6e4fff8d5f93e21d5937b198d4686135498b5386e9e7f",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/myopic_h1/result.json": "e0b60e6c3c50c16156b08fafb934c01da2ddae36a58e40003aed3cc8911597e4",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/terminal_field8_remaining/policy-record.json.gz": "402352bc0d6785264ed709ba37742ce81073c7e58a4c96586c38c61c31fc9a82",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/terminal_field8_remaining/result.json": "21ff78c4c3d60ad03dba3ab3223e54391420adf89d107b471f49c3fbaf90457f",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-gated/terminal_field8_remaining/trajectory.npz": "7329da45101ba445ec2c90389d92144b5f83b0d46e2874a0fdb5fb46c13b3e3b",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/full_adjoint_remaining/policy-record.json.gz": "7fba457882f596b1cb1528d6c8fa21b6549157197cb021a8aad31f8d093a99b9",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/full_adjoint_remaining/result.json": "d86078a49ee4e72eb58970c608b2af89bdf85b9f3f6871762f9b4d37f0bfae28",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/full_adjoint_remaining/trajectory.npz": "82c39accf2ba8ea886ad238d8610d194542e0db21464155ed4c71033f8e52f15",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/loss2_remaining/policy-record.json.gz": "f86256308debc7f9bac54d7493774e75178077dd738d323d33d74dcc773e6d4a",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/loss2_remaining/result.json": "6c5bfe4a3e5e068e9cb6743e137e6013f96047d843da928aa6b31caedc02b426",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/myopic_h1/policy-record.json.gz": "865818aad9d13dc5bec07621841be75a3730a1931b2436bc727c5c72630549e5",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/myopic_h1/result.json": "c1f2a3c5d83c99a3e6b0efaafcd5258088d4f4ffc1d476a9ce9bc9ab0f916055",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/terminal_field8_remaining/policy-record.json.gz": "505c24229032054de3a03c8281e61c1c41eaf8d7c378c449a5aec05a9f577d1b",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/terminal_field8_remaining/result.json": "6ce53de2a00412df4a292866bb6e87f158f11590ee518c2f25000facc623b4e4",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed29-linear/terminal_field8_remaining/trajectory.npz": "82c39accf2ba8ea886ad238d8610d194542e0db21464155ed4c71033f8e52f15",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/full_adjoint_remaining/policy-record.json.gz": "597b6c615440b2c270d8f051f9f4449552f764a18ff659ac3178ad00c179d235",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/full_adjoint_remaining/result.json": "817aa7447480133de19e1138db6f3db56074503e7e2f1d8cc49d5d9198a481ee",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/full_adjoint_remaining/trajectory.npz": "b4c7e2e7cabe96f37ee697ee9e0f33e689216d8ce8838bfa918bfa136f5dd1c0",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/loss2_remaining/policy-record.json.gz": "db0e047e61becd2b4d5145c3adfa40a7a80cbabb777777142fe95cf322de8d96",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/loss2_remaining/result.json": "9790b024127b2835a7a3be45814f05128952c9021067c15c2a2dcd794524df7c",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/myopic_h1/policy-record.json.gz": "a3c5b7b2bf191aabb7ef118ecf4c4bffd09e0bbe417e2437aaa817b609ec0723",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/myopic_h1/result.json": "cfdeadf8ba74825cb1f285e0c56aacc6aeb861245040b51a0d86f66e77ddca7e",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/terminal_field8_remaining/policy-record.json.gz": "6b636efd3a3c830396aec14fedc01862de699662545a06c5acd205a43e9a7b3a",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/terminal_field8_remaining/result.json": "5ac14a7d567fa6182ad286dd3a33b4352f8d3ef8439344c74d57927b9f2a1598",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-gated/terminal_field8_remaining/trajectory.npz": "b4c7e2e7cabe96f37ee697ee9e0f33e689216d8ce8838bfa918bfa136f5dd1c0",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/full_adjoint_remaining/policy-record.json.gz": "0b73825838a8da5a0a0c8e0d6147bfc3b42e691701767886d8b2dedbefc6bd31",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/full_adjoint_remaining/result.json": "9ddacf67bf9abb706bd9de89f09c642b13dffdae3b7fc40b2ac7747e77ae9376",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/full_adjoint_remaining/trajectory.npz": "ec54bfc38f49fc43d15aacf3a4277340c996374859ba6beec05eb1133037983f",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/loss2_remaining/policy-record.json.gz": "62f231ddd8030d06ffe3b6ebec6e86019633ccfee5678c4c253bb0e66d471e51",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/loss2_remaining/result.json": "15c3c356da2ed8ed7421aa7d969514fe7bf3c8ea008bbcbd9b96db4d0801318b",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/myopic_h1/policy-record.json.gz": "a203da0ae2b94ed60af38676bed48dc052c60581e5e60dacc75d6603efe783fd",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/myopic_h1/result.json": "fee03d85bc147aab441ae965d185c13d11ee3858ad98d5914c64a049cd34d81c",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/terminal_field8_remaining/policy-record.json.gz": "de2da2e85b3472b36d494c7c2c150470d253d74fede79c4459ca4b88f491d62d",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/terminal_field8_remaining/result.json": "0a72140e20bd1761366073b2daeb1af93fa06ca576c58e1a968d096aa0fdd12c",
+    "pft-remaining-terminal-v8/v6-dbpedia-seed7-linear/terminal_field8_remaining/trajectory.npz": "ec54bfc38f49fc43d15aacf3a4277340c996374859ba6beec05eb1133037983f"
+  },
+  "maximum_absolute_arithmetic_difference": 2.220446049250313e-16,
+  "new_model_forward_calls": 0,
+  "new_optimizer_or_planner_calls": 0,
+  "nll_accuracy_rows_recomputed": 216,
+  "numerical_scalar_checks": 768,
+  "paired_future_contrasts": 16,
+  "paired_old_contrasts": 8,
+  "per_source_arrays_checked": 440,
+  "private_key_or_new_label_reads": 0,
+  "schema": "hepta.remaining96-independent-statistics-peer-audit.v8",
+  "scientific_acceptance": false,
+  "scope": "Independent fsum source-statistic arithmetic, ordered historical component identities, original cost ledger binding and direct saved Full/field array parity. Trusts prior pinned control replay and original NLL/probability generation; no new inference or confidence intervals.",
+  "source_sha256": "b2154050d6be11d1394a95627855ff86f492dc4068335a80686daddbc2edbd4f",
+  "status": "PASS",
+  "wall_ns": 1186920330
+}

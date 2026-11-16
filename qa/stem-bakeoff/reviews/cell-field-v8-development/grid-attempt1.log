@@ -1,0 +1,59 @@
+{"configuration": 0, "fit": "v5-agnews-seed7-linear", "completed_primary_slots": 4, "policy_statuses": [{"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-agnews-seed17-linear", "completed_primary_slots": 8, "policy_statuses": [{"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-agnews-seed29-linear", "completed_primary_slots": 12, "policy_statuses": [{"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-agnews-seed7-gated", "completed_primary_slots": 16, "policy_statuses": [{"policy": "full_h8", "status": "completed", "completed_steps": 32}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-agnews-seed17-gated", "completed_primary_slots": 20, "policy_statuses": [{"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-agnews-seed29-gated", "completed_primary_slots": 24, "policy_statuses": [{"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-dbpedia-seed7-linear", "completed_primary_slots": 28, "policy_statuses": [{"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-dbpedia-seed17-linear", "completed_primary_slots": 32, "policy_statuses": [{"policy": "full_h8", "status": "completed", "completed_steps": 32}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-dbpedia-seed29-linear", "completed_primary_slots": 36, "policy_statuses": [{"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "completed", "completed_steps": 32}, {"policy": "future_field_h8", "status": "completed", "completed_steps": 32}, {"policy": "full_h8", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-dbpedia-seed7-gated", "completed_primary_slots": 40, "policy_statuses": [{"policy": "loss2_h8", "status": "not_executed_rejected", "completed_steps": 24}, {"policy": "future_field_h8", "status": "not_executed_rejected", "completed_steps": 27}, {"policy": "full_h8", "status": "not_executed_rejected", "completed_steps": 27}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}]}
+{"configuration": 0, "fit": "v5-dbpedia-seed17-gated", "completed_primary_slots": 44, "policy_statuses": [{"policy": "future_field_h8", "status": "not_executed_rejected", "completed_steps": 29}, {"policy": "full_h8", "status": "not_executed_rejected", "completed_steps": 29}, {"policy": "myopic_h1", "status": "completed", "completed_steps": 32}, {"policy": "loss2_h8", "status": "not_executed_rejected", "completed_steps": 25}]}
+Traceback (most recent call last):
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_artifacts_v8.py", line 26, in write_compressed
+    compressed.write(content)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/gzip.py", line 314, in write
+    return self._buffer.write(data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/gzip.py", line 137, in write
+    return gzip_file._write_raw(data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/gzip.py", line 326, in _write_raw
+    self.fileobj.write(self.compress.compress(data))
+OSError: [Errno 28] No space left on device
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_run_v8.py", line 151, in run_case
+    row = save_result(directory, descriptor, fit["warmup"], values, fit["anchors"], policy,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_artifacts_v8.py", line 44, in save_result
+    compressed = write_compressed(directory/"policy-record.json.gz", record)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_artifacts_v8.py", line 25, in write_compressed
+    with gzip.GzipFile(fileobj=stream, mode="wb", mtime=0) as compressed:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/gzip.py", line 371, in close
+    fileobj.write(self.compress.flush())
+OSError: [Errno 28] No space left on device
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_run_v8.py", line 230, in <module>
+    execute(**vars(parser.parse_args()))
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_run_v8.py", line 166, in execute
+    row, results[policy] = run_case(fit, configuration, policy, directory)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_run_v8.py", line 156, in run_case
+    return save_failure(directory, descriptor, policy, error, elapsed), None
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_development_artifacts_v8.py", line 89, in save_failure
+    write_json(directory/"result.json", row)
+  File "/workspace/scratch/60f94d809f44/hepta-repo-v8/qa/stem-bakeoff/cell_field_action_io.py", line 46, in write_json
+    path.write_bytes(canonical(_json_value(value)) + b"\n")
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1036, in write_bytes
+    with self.open(mode='wb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device

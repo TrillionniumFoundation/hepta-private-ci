@@ -1,0 +1,363 @@
+{
+  "additional_fixed_model": "future_field",
+  "anchor_offsets": [
+    0,
+    8,
+    16
+  ],
+  "authority": "DENY_ALL",
+  "base_commit": "65a8892c4331e2ea98d85373a51434cb2db1d8ac",
+  "classes": 4,
+  "data_plan": {
+    "class_mapping": "original source classes1..4 map to0..3; all other DBpedia classes excluded after graph closure",
+    "components": "union equal normalized title,body,full input or truncated input across all official splits and both complete corpora",
+    "counts": {
+      "current_probe": 128,
+      "current_train": 256,
+      "current_validation": 256,
+      "future_test": 512,
+      "old_probe": 128,
+      "old_test": 512,
+      "old_train": 256,
+      "old_validation": 256
+    },
+    "evaluation_labels": "AES-256-GCM payloads; evaluator-owned key; authenticated protocol/task/access/plaintext hashes",
+    "limits": "exact normalized identity exclusion; semantic paraphrase overlap and foundation pretraining exposure unknown",
+    "maximum_text_characters": 6000,
+    "normalization": "NFKC,casefold,Unicode word tokens,collapsed whitespace; source-only identity matching",
+    "previous_cohort_exclusion": {
+      "components_per_task": 2304,
+      "construction": "reconstruct original V5 deterministic selection from pinned source graph; verify hashes; exclude all roles",
+      "protocol_sha256": "654994abfb66e8872b0d6632b7d80d5058ad5af06adc2d2dea0de628395ba05e",
+      "sorted_component_set_sha256": {
+        "agnews": "f9fccb58c43a2270c4544348858d67e7d560ecce79fc7ddf310b1ae236e4787c",
+        "dbpedia": "ebfdfa614ce9c7101461070aaa413894102285a21f05489d18e51fba18595d5f"
+      }
+    },
+    "prior_exclusion": {
+      "20news_all_cleaned_bodies_subjects": "8f1b2514ca22a5ade8fbb9cfa5727df95fa587f4c87b786e15c759fa66d95610",
+      "uci_all_titles": "1f5f08691f0ce576cb0b5cfdbcb8c55e0ec14dda8f3e07933da72c500338845a"
+    },
+    "reject": [
+      "class_conflict",
+      "cross_task",
+      "cross_official_split",
+      "any_prior_identity",
+      "normalized_text_under20characters"
+    ],
+    "salt": "cell-field-fresh-v6-20261025",
+    "schema": "hepta.cell-field-fresh-data.v6",
+    "selection": "stable salted component SHA order; disjoint balanced roles; no retries or outcome-based resampling",
+    "sources": {
+      "agnews": {
+        "bytes": 11784327,
+        "class_count": 4,
+        "classes": [
+          "World",
+          "Sports",
+          "Business",
+          "Sci/Tech"
+        ],
+        "file": "ag-news.tar.gz",
+        "prefix": "ag_news_csv",
+        "sha256": "4e2fc37d369e6e317a8b62d0d2f11d379f8c3dde60c07c35a46b069a246498ad",
+        "test_rows": 7600,
+        "train_rows": 120000,
+        "url": "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms"
+      },
+      "dbpedia": {
+        "bytes": 68341698,
+        "class_count": 14,
+        "classes": [
+          "Company",
+          "EducationalInstitution",
+          "Artist",
+          "Athlete"
+        ],
+        "file": "dbpedia.tar.gz",
+        "prefix": "dbpedia_csv",
+        "sha256": "cad5773f85d7501bb2783833768bc624641cdddf7056000a06f12bcd0239a310",
+        "test_rows": 70000,
+        "train_rows": 560000,
+        "url": "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k"
+      }
+    },
+    "split": "official test supplies future; official train components partition old/current by fixed SHA parity",
+    "text": "original CSV title + newline + description/content; deterministic first6000characters"
+  },
+  "development": {
+    "grid_configurations": 9,
+    "report_sha256": "df0ddf8b993dab05a3da7b8852368ddb52b87c7188eaef7e8927c300004a9735",
+    "selected_index": 0,
+    "selection": "lexicographic: candidate incomplete count, groups with old validation regression, groups CPU>3, mean paired current-validation difference vs H1; all V4 labels are development",
+    "source": "previously disclosed V4 UCI/20NG validation; no V5 features/outcomes before freeze",
+    "v5_probe_only_failure": "V5 completion failed before any evaluation-label decryption:9/12 candidate fits completed32;3stopped. V5 remains unchanged and rejected on completion."
+  },
+  "encoder": "granite97m",
+  "encoder_batch_size": 16,
+  "encoder_inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+  "encoder_max_tokens": 192,
+  "encoder_profile": "text",
+  "encoder_revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+  "encoder_threads": 4,
+  "evaluation": {
+    "all_policy_census": 72,
+    "bootstrap_method": "class-stratified source-component percentile; per-example seed average; higher quantile",
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 20261025,
+    "candidate": "future_field_h8_repaired",
+    "cpu_aggregation": "sum over three paired seeds per task/head",
+    "cpu_scope": "own response construction, solver, all prospective trials, exact per-step repair and committed transitions; identical output/evaluation I/O separately reported",
+    "family_alpha": 0.05,
+    "family_size": 12,
+    "heads": [
+      "linear",
+      "gated"
+    ],
+    "improvement_margin": 0.001,
+    "independent_old_path": "report old-test NLL maximum excess across all actually committed states descriptively; primary retention gate remains terminal vs warmup",
+    "max_cpu_ratio": 3.0,
+    "policies": [
+      "zero",
+      "myopic_h1_repaired",
+      "loss2_h8_repaired",
+      "adjoint_h8_repaired",
+      "future_field_h8_repaired",
+      "response_h8_guarded"
+    ],
+    "primary_future_baselines": [
+      "myopic_h1_repaired",
+      "loss2_h8_repaired"
+    ],
+    "required_completed_policies": [
+      "future_field_h8_repaired",
+      "myopic_h1_repaired",
+      "loss2_h8_repaired"
+    ],
+    "required_completed_steps": 32,
+    "retention_margin": 0.0,
+    "seeds": [
+      7,
+      17,
+      29
+    ],
+    "splits": [
+      "current",
+      "future",
+      "old"
+    ],
+    "stopped_policy_scoring": "retain actual terminal predictions and count stops; only declared required policies block completion gate; all actual execution errors/missing/nonfinite outputs block acceptance",
+    "tasks": [
+      "agnews",
+      "dbpedia"
+    ]
+  },
+  "finite_window_field": {
+    "coefficient_source": "analytic actual Head/Adam JVP/VJP, full known reference and clock",
+    "field_dimensions": [
+      18,
+      16,
+      14,
+      12,
+      10,
+      8,
+      6,
+      4,
+      2
+    ],
+    "guarantee": "all charged outputs for every tangent origin/action sequence on frozen LTV reference; numerical identity tests; no global nonlinear closure or free observer claim",
+    "horizon": 8,
+    "identity": "O_k=[C_k;C_(k+1)A_k;...;C_H A_(H-1)...A_k]; z_next=drop_first2(z)+O_(k+1)E_k*u",
+    "nonlinear_safety": "separate exact per-step repair and actual full-state replay"
+  },
+  "fixed_library": {
+    "actions": 49,
+    "amplitudes": [
+      0.125,
+      0.5,
+      1.0
+    ],
+    "directions": 8,
+    "independence": "same preexisting SHA256 sign library; no learned/optimized directions and no reseeding",
+    "module": "cell_field_fixed_actions.py",
+    "physical_action": "one first post-Adam dt*u; zero suffix; abs(u_j)<=1/sqrt(p)",
+    "polarities": [
+      -1,
+      1
+    ]
+  },
+  "fixed_scoring": {
+    "current_shift": 0.03,
+    "direct_coefficient": 0.03,
+    "dt": 0.02,
+    "effort_price": 0.1,
+    "feasibility_tolerance": 1e-09,
+    "horizon": 8,
+    "scope": "unchanged V4 scoring for matched direction/amplitude mechanism diagnosis; V5 policy objective separately declared"
+  },
+  "h": 0.02,
+  "head_modes": [
+    "linear",
+    "gated"
+  ],
+  "label_access": "encrypted validation/final labels and evaluator-owned key; in-memory decryption only after complete protocol/code/prediction seal; controller open audit denies withheld payload names",
+  "models": [
+    "loss2",
+    "q4",
+    "history4",
+    "structured4",
+    "full",
+    "analytic",
+    "response_svd"
+  ],
+  "mpc": {
+    "candidate": "future_field_h8_repaired",
+    "cost": "own response construction, solver, all prospective trials, exact per-step repair and committed transitions; identical output/evaluation I/O separately reported",
+    "policies": [
+      "zero",
+      "myopic_h1_repaired",
+      "loss2_h8_repaired",
+      "adjoint_h8_repaired",
+      "future_field_h8_repaired",
+      "response_h8_guarded"
+    ],
+    "replan": "H1 every step; H8 optimize and commit frozen eight-action block, four blocks total",
+    "scope": "finite-window loss field18->2 coordinates with exact local LTV output closure; coefficients from complete state, all costs charged; matched per-step repair for primary policies",
+    "steps": 32
+  },
+  "native_base_commit": "991346aea6b15662f8cbe83ba9ae47d853e25c21",
+  "native_research_review": {
+    "authority_epoch": 1,
+    "ed25519_public_key_hex": "42c47f24882f9ed75669ac3081ab11da07fcd24c30630ed33224cce835fa29f5",
+    "required_audits": [
+      "independent_replay",
+      "independent_statistics"
+    ],
+    "reviewer_id": "cell-v6-research-reviewer",
+    "scope": "local-research-only",
+    "signed_proposal_validity_seconds": 900
+  },
+  "optimizer": {
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "gradient_clip": 5.0,
+    "l2": 0.001,
+    "learning_rate": 0.02,
+    "sampler": "full_batch"
+  },
+  "paper_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "paper_revision": "revision_2026-09-26-r45",
+  "policy_configuration": {
+    "action_bound": 4.0,
+    "backtracking": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0
+    ],
+    "dt": 0.02,
+    "effort_price": 0.03,
+    "hard_retention": true,
+    "old_weight": 0.0,
+    "steps": 32
+  },
+  "pressure": {
+    "backtracking": [
+      1.0,
+      0.5,
+      0.25,
+      0.125,
+      0.0
+    ],
+    "budgets": [
+      0.25,
+      1.0,
+      4.0
+    ],
+    "checkpoints": [
+      "prevention",
+      "recovery"
+    ],
+    "failures": "retain all infeasible/unresolved/rejected conditions; rejected zero is not advanced",
+    "hard_retention": [
+      false,
+      true
+    ],
+    "horizon": 8,
+    "max_search_steps": 256,
+    "models": [
+      "adjoint",
+      "loss2"
+    ],
+    "slots_per_checkpoint": 13,
+    "threshold": "original warmup old-probe NLL; no slack",
+    "verification": "paired original V5 exact guard and V6 per-step repair of identical frozen plans; repaired outputs under verified, original guard under guarded; no actual owner publication"
+  },
+  "production_authority": false,
+  "projection": {
+    "method": "Gaussian QR; diagonal R sign fixed; label-independent",
+    "seed": 20261024,
+    "width": 8
+  },
+  "publication_scope": "additive V5/V6 source, detailed reports and compact evidence on GitHub; preserve both rejected and accepted outcomes; raw corpora/large arrays stay local",
+  "registered_fits": 12,
+  "registered_fixed_anchors": 36,
+  "registered_fixed_branches": 1764,
+  "registered_policy_outputs": 72,
+  "registered_prediction_paths": 14112,
+  "registration": "remote V6 protocol before V6 feature/model outcomes and before any V5/V6 evaluation label decryption; training/probe-only V5 completion failure prompted engineering repair",
+  "repair": {
+    "accounting": "all unsuccessful trials, base transitions, repair gradients, selected replay and full checkpoint checks are charged",
+    "failure": "reject whole block without partial adoption; finite-search exhaustion is not global infeasibility; upstream unavailable plans stay unavailable",
+    "hold": "(theta_before-theta_afterAdam)/dt only if every coordinate fits same box; actual selected-action replay must pass",
+    "lambda_grid": "b*2^j/64 for j=0..11; b=action_bound/sqrt(p)",
+    "max_loss_trials_per_failed_step": 16,
+    "on_unsafe": "gradient at intended post-Adam head; g normalized by infinity norm; box project u-lambda*g",
+    "refinements": 2,
+    "scope": "declared probe and deterministic context; independent retention separately evaluated",
+    "sequence_horizon": 8,
+    "threshold": "original warmup old-probe NLL, strict loss<=anchor, no slack"
+  },
+  "response": {
+    "all_directions_preserved": "spectral residual multiplied by action norm; no action-family restriction",
+    "derivative": "analytic weighted CE Hessian products and exact Adam JVP/VJP in smooth regime; explicit failure at clips",
+    "impulse_compression_relative_tolerance": 1e-06,
+    "scope": "SVD statistic of complete-state local finite-window impulse map; all49 actions remain available"
+  },
+  "schema": "hepta.cell-field-fresh-protocol.v6",
+  "seeds": [
+    7,
+    17,
+    29
+  ],
+  "source_counts": {
+    "agnews": {
+      "current_probe": 128,
+      "current_train": 256,
+      "current_validation": 256,
+      "future_test": 512,
+      "old_probe": 128,
+      "old_test": 512,
+      "old_train": 256,
+      "old_validation": 256
+    },
+    "dbpedia": {
+      "current_probe": 128,
+      "current_train": 256,
+      "current_validation": 256,
+      "future_test": 512,
+      "old_probe": 128,
+      "old_test": 512,
+      "old_train": 256,
+      "old_validation": 256
+    }
+  },
+  "source_only_feasibility_sha256": "6fad9415f8d945987dda448890afce3906ae2486e8515fac5079a25c55299278",
+  "tasks": [
+    "agnews",
+    "dbpedia"
+  ],
+  "warmup_steps": 64
+}

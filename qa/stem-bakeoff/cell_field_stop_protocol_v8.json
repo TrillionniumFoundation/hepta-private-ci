@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.cell-field-stop-filter-protocol.v8",
+  "frozen": true,
+  "purpose": "paired local feasibility diagnostic at every exact V7b stopped origin",
+  "origins_manifest_sha256": "929d43714529995317be8aa8b7da4e6e0c57ef07418ea533b9d843bc605eb03c",
+  "planning_only_index_sha256": "fee97efebd8b20ef2a996cecc3ccc97e901b1272fceecde8e4671749000a0b26",
+  "census_sha256": "f3dbf2d06ca8064634b50a04dc70d5ab78d05c4a81423941324838979ca6d1f3",
+  "original_v7b_protocol_sha256": "e1827b6a0a4de9a083fca5c9401751b6063e63b447617a90719e64a089b4da7d",
+  "original_v7b_seal_sha256": "e3ad867157e293e0c80eee6a2985583688e851fee9ff98c68323f6fa83af6131",
+  "registered_origins": 98,
+  "registered_filter_slots": 196,
+  "horizon_census": {"1": 18, "8": 80},
+  "original_status_census": {"not_executed_rejected": 54, "not_executed_tangent_infeasible": 37, "not_executed_unresolved": 7},
+  "filters": ["single_ray_v7", "joint_actual_old_v8"],
+  "proposal": {
+    "new_shared_intention": true,
+    "historical_failed_intention_reconstructed": false,
+    "method_mapping": {"myopic_h1": {"method": "full", "horizon": 1}, "loss2_h8": {"method": "loss2", "horizon": 8}, "future_field_h8": {"method": "future_field", "horizon": 8}},
+    "objective": "same original current-panel risk, old_weight and current_dispersion plus original quadratic effort; no predicted old hard constraints",
+    "configuration_keys_from_original": ["dt", "effort_price", "action_bound", "old_weight", "current_dispersion"],
+    "effective_relinearizations": 0,
+    "original_relinearizations": "retained as origin metadata only; no V8 relinearization or actual-risk backtracking",
+    "actual_risk_backtracking_rollouts": 0,
+    "full_risk_fallback": false,
+    "reuse": "one exact generated action array shared by both filter calls; never regenerate separately"
+  },
+  "physical_constraints": {
+    "coordinate_action_box": "original action_bound/sqrt(parameter_count)",
+    "retention": "each of four original warmup old-panel losses at every prospective accepted update",
+    "threshold_slack": 0,
+    "adoption": "entire original H1 or H8 sequence certified atomically; failed prefix remains unadopted",
+    "original_stopped_controllers": "remain stopped; these are independent diagnostic continuations, not resumed original runs"
+  },
+  "bounded_search_difference": {
+    "single_ray_v7": "original maximum16 panel batches per step",
+    "joint_actual_old_v8": "maximum64 unique search batches including intended seed plus at most1 selected replay batch per step",
+    "interpretation": "algorithms and fixed search budgets differ; report actual queries/CPU and do not attribute any improvement solely to search geometry"
+  },
+  "order": "origin manifest order, alternating filter order by ordinal modulo2",
+  "measurement": {
+    "old_queries": "transparent loss_gradients observer matches exact normalized old-panel input identities; record all losses/gradient hashes and unique parameter vectors",
+    "optimizer_calls": "transparent advance observer records all prospective before/after complete state vectors, metadata, interventions and receipts, including failed branches",
+    "observer": "returns original results unchanged; restore class methods in finally; overflow or observation error fails integrity",
+    "cpu": "whole actual proposal and each filter separately, including observation overhead; independent replay and serialization excluded from controller comparison and included in total run",
+    "shared_proposal_cost": "charge once per counterfactual proposal-plus-filter pipeline; do not double-count in actual whole-run total",
+    "independent_replay": "every recorded old-panel value/gradient and every actual prospective optimizer transition, plus every returned accepted state/receipt and four zero-slack constraints"
+  },
+  "failure_handling": "all98origins and196filter slots retained; proposal/input/error slots unavailable rather than substituted; bounded rejection/unresolved is not global infeasibility",
+  "output": "compact compressed arrays and gzip query/trial records per slot; explicit cases, report and complete final seal; no duplicate feature caches",
+  "source_freeze_required": "separate remotely_published=true freeze JSON binds protocol_sha256, source_commit and exact source_hashes before any real-origin proposal/filter call",
+  "runtime": {"OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1", "record_python_numpy_scipy_platform_threadpool_info": true, "historical_v7_runtime": "thread setting not registered; remains unknown and is not retroactively declared single-thread"},
+  "new_confirmation_sources_selected": false,
+  "selection_labels_used": false,
+  "closed_loop32_completion_claimed": false,
+  "scientific_acceptance": false,
+  "authority": "DENY_ALL"
+}
