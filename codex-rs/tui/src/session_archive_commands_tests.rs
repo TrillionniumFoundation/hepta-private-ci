@@ -23,10 +23,13 @@ use crate::session_queue_commands::run_session_queue_action_with_app_server;
 use crate::tests::start_test_embedded_app_server;
 
 async fn build_config(temp_dir: &TempDir) -> std::io::Result<Config> {
-    ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(temp_dir.path().to_path_buf())
         .build()
-        .await
+        .await?;
+    let sqlite_home = config.sqlite.home().canonicalize()?;
+    config.sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.try_into()?);
+    Ok(config)
 }
 
 async fn state_runtime(config: &Config) -> std::io::Result<Arc<codex_state::StateRuntime>> {
