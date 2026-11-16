@@ -176,7 +176,7 @@ fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence
     // must never auto-clear the genuine signed RecoveryRequired fence.
     // Production recovery is performed by resolve_production_recovery()
     // with a verified, independently signed ProductionRecoveryDecision.
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -197,5 +197,57 @@ fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence
         .expect("still fenced signed intent");
     assert_eq!(terminal.status, SignedIntentStatus::RecoveryRequired);
     assert_eq!(terminal.target_release, "target-release");
+    assert_eq!(terminal, intent);
+    Ok(())
+}
+
+#[test]
+fn stale_abort_directive_cannot_terminalize_another_intent() -> Result<(), SupervisorError> {
+    let fleet = fleet()?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.agent_id,
+        starting.generation,
+        AgentLifecycle::Failed,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.agent_id)
+        .cloned()
+        .expect("registered agent");
+    let intent = SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"grant"),
+        fleet.agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        "source-release",
+        "target-release",
+        4,
+        failed.generation,
+        9,
+        SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_intent_raw(record.layout.run_root(), &intent)?;
+    let stale_directive =
+        SignedIntentRecoveryDirective::abort(Sha256Digest::for_bytes(b"other signed intent"))
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_signed_intent_recovery_directive(record.layout.run_root(), &stale_directive)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    let (quarantined, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(report.faults.is_empty());
+    assert!(quarantined.any_production_recovery_required());
+    assert_eq!(
+        read_signed_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("still unresolved")
+            .status,
+        SignedIntentStatus::RecoveryRequired
+    );
     Ok(())
 }
