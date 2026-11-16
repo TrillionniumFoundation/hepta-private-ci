@@ -542,17 +542,11 @@ fn workspace_token_refuses_empty_and_unrelated_capability_sets() -> Result<()> {
     Ok(())
 }
 
-#[test]
-fn workspace_token_refusal_leaves_existing_files_unchanged() -> Result<()> {
-    let fixture = tempfile::tempdir()?;
-    let existing = fixture.path().join("existing.txt");
-    std::fs::write(&existing, "original")?;
-    let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
-    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
-    assert_unavailable(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()]).map(OwnedToken)
-    });
-    assert_eq!(std::fs::read_to_string(&existing)?, "original");
-    assert_eq!(std::fs::read_dir(fixture.path())?.count(), 1);
-    Ok(())
-}
+#[path = "token_probe_support.rs"]
+mod probe_support;
+
+#[path = "token_read_authority_tests.rs"]
+mod read_authority_probe;
+
+#[path = "token_mic_probe_tests.rs"]
+mod mic_probe;

@@ -1,0 +1,122 @@
+{
+  "source_head": "577c03b5524fd45814dc71c3b5d847562ba2c410",
+  "artifact_id": 14200257405,
+  "artifact_sha256": "f5adf8f324f6398b73a3c6b5cfeced1598f278b7c1257809f6d67431be0c9bd5",
+  "artifact_bytes": 27683,
+  "run_id": 43809668796,
+  "job_id": 133108263117,
+  "native_result": {
+    "tests": 17,
+    "passed": 16,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "cases": [
+    {
+      "name": "acl::tests::acl_repair_rejects_replaced_path_with_different_object_type",
+      "seconds": "0.019",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::complete_file_denies_require_direct_scope",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::deny_ace_update_failure_is_an_error",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::fresh_write_deny_preserves_generic_read_and_denies_data_mutation",
+      "seconds": "0.015",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::native_file_and_directory_denies_retain_full_masks_and_are_idempotent",
+      "seconds": "0.020",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::native_normalized_directory_and_file_denies_repeat_without_any_acl_change",
+      "seconds": "0.019",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::normalized_deny_pair_cannot_combine_wrong_identity_or_nonrecursive_scope",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::normalized_deny_pair_requires_every_right_in_effective_and_recursive_scopes",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "seconds": "0.015",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+      "seconds": "0.014",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "token::tests::mic_probe::mic_labels_preserve_original_outside_and_protected_child_oracles",
+      "seconds": "0.105",
+      "outcome": "failed",
+      "failure": "Error: MIC_HYPOTHESIS original_oracle_failed case=2"
+    },
+    {
+      "name": "token::tests::read_authority_probe::full_restriction_preserves_prepared_read_and_mutation_boundaries",
+      "seconds": "0.090",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "token::tests::workspace_token_refusal_leaves_existing_files_unchanged",
+      "seconds": "0.017",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "token::tests::workspace_token_refuses_empty_and_unrelated_capability_sets",
+      "seconds": "0.014",
+      "outcome": "passed",
+      "failure": null
+    },
+    {
+      "name": "token::tests::workspace_token_refuses_multiple_capabilities_before_native_access",
+      "seconds": "0.013",
+      "outcome": "passed",
+      "failure": null
+    }
+  ],
+  "permission_qualification": false,
+  "source_unchanged": true,
+  "combined_native_execution": "pending"
+}
