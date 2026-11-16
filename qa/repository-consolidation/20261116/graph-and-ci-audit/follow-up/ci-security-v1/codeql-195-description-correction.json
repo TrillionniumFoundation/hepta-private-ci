@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-11-16T18:57:15.603589+00:00",
+  "kind": "Append-only correction of two transposed fixture descriptions",
+  "originalReport": {
+    "originalAnalysisId": 2176372976,
+    "originalSourceHead": "285e971b3af3a93a79169b56a42263069e473057",
+    "reviewedSourceHead": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+    "package": "codeql-complete195-proof",
+    "archiveMember": "complete-195-source-review.json",
+    "bytes": 909574,
+    "sha256": "dcefe306f5a8e1e702638f304355132a496a9a13dff3f7e5c89b6869b117de3f",
+    "repositoryParts": [
+      {
+        "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-security-v1/codeql-complete195-proof.tar.part-0000.gz",
+        "postBlob": "b9bc75d53993cfbe6cd341524aaa9da65881452c",
+        "bytes": 480000,
+        "sha256": "a3c8d6a6d805374d55a04add891062c59e7e456a7ce8856e7102dc2d7122c0da"
+      },
+      {
+        "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-security-v1/codeql-complete195-proof.tar.part-0001.gz",
+        "postBlob": "8387c0de62e5192e20f2350b1da33ee5a2a930b5",
+        "bytes": 480000,
+        "sha256": "d5c6b40a6caf8aeb9c2d5ff2c1cfc6bf135cc338096ef531f5e81df875c4603c"
+      },
+      {
+        "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-security-v1/codeql-complete195-proof.tar.part-0002.gz",
+        "postBlob": "1c5c773e0a0eec10294c6b0001012f8bf7221fd3",
+        "bytes": 480000,
+        "sha256": "805bc944a074607d7920bf2611e8ed89a1ec1c20522753075f83b2b9d9a1112f"
+      },
+      {
+        "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-security-v1/codeql-complete195-proof.tar.part-0003.gz",
+        "postBlob": "34661a2d368e247be318e3be1baf9999fe7fe709",
+        "bytes": 480000,
+        "sha256": "6fc6da020aac581f68f82ec15ee84e677294af251f997a0b02d9e03b96307bb0"
+      },
+      {
+        "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-security-v1/codeql-complete195-proof.tar.part-0004.gz",
+        "postBlob": "0e107d9dff8e33afd3ffd5f562cb76d211964409",
+        "bytes": 480000,
+        "sha256": "3809326082648d8f932e5e84f8402f7face1d9c3787c0afa9a624652ec1f1a83"
+      },
+      {
+        "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-security-v1/codeql-complete195-proof.tar.part-0005.gz",
+        "postBlob": "5b1f2133264a94a11df9ffadd41598110339aa1c",
+        "bytes": 244098,
+        "sha256": "8739b81b119383910036b8ba8de72d7ffc9923dd0a847b2ba10dcb6b898f9e4e"
+      }
+    ],
+    "reconstructedFromOriginalPartsByteIdentically": true
+  },
+  "corrections": [
+    {
+      "resultIndex": 9,
+      "ruleId": "rust/cleartext-logging",
+      "primaryPath": "codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "primaryLine": 341,
+      "functionContext": [
+        {
+          "kind": "function_item",
+          "name": "secret_detector_covers_common_key_shapes",
+          "startLine": 331,
+          "endLine": 344,
+          "attributes": ["#[test]"]
+        }
+      ],
+      "oldFields": {
+        "disposition": "synthetic search-session diagnostic",
+        "basis": "The app-server test helper formats synthetic fuzzy-search session identifiers and query fixtures. The reviewed producer is not an authentication credential source, and the helper belongs to the integration-test support tree."
+      },
+      "correctFields": {
+        "disposition": "synthetic secret-detector vectors",
+        "basis": "The cfg(test) cognitive detector suite uses literal key-shaped vectors to test secret recognition. The reported assertion formats synthetic test inputs and expected detection results; it is not a production secret source."
+      },
+      "sourcePins": [
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+          "baseBlob": "6b552dec6c25924f364df657134b314904b3002a",
+          "baseBytes": 31150,
+          "baseSha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad",
+          "currentBlob": "6b552dec6c25924f364df657134b314904b3002a",
+          "currentBytes": 31150,
+          "currentSha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad",
+          "unchanged": true
+        }
+      ]
+    },
+    {
+      "resultIndex": 22,
+      "ruleId": "rust/cleartext-logging",
+      "primaryPath": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "primaryLine": 1760,
+      "functionContext": [
+        {
+          "kind": "function_item",
+          "name": "read_stream_until_matching_notification",
+          "startLine": 1752,
+          "endLine": 1775,
+          "attributes": []
+        }
+      ],
+      "oldFields": {
+        "disposition": "synthetic secret-detector vectors",
+        "basis": "The cfg(test) cognitive detector suite uses literal key-shaped vectors to test secret recognition. The reported assertion formats synthetic test inputs and expected detection results; it is not a production secret source."
+      },
+      "correctFields": {
+        "disposition": "synthetic search-session diagnostic",
+        "basis": "The app-server test helper formats synthetic fuzzy-search session identifiers and query fixtures. The reviewed producer is not an authentication credential source, and the helper belongs to the integration-test support tree."
+      },
+      "sourcePins": [
+        {
+          "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+          "baseBlob": "625a1199138ca9eeacd37c6ec71d2ce8bb1007e5",
+          "baseBytes": 85252,
+          "baseSha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec",
+          "currentBlob": "625a1199138ca9eeacd37c6ec71d2ce8bb1007e5",
+          "currentBytes": 85252,
+          "currentSha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec",
+          "unchanged": true
+        },
+        {
+          "path": "codex-rs/app-server/tests/suite/fuzzy_file_search.rs",
+          "baseBlob": "34dd3cd9dc0c984c8984156a50f0b1fb54a0a3e1",
+          "baseBytes": 21539,
+          "baseSha256": "32eaebbbedcb4c151d64796ef272cdecadf2f075dddc7ae8a455bab82c783abc",
+          "currentBlob": "34dd3cd9dc0c984c8984156a50f0b1fb54a0a3e1",
+          "currentBytes": 21539,
+          "currentSha256": "32eaebbbedcb4c151d64796ef272cdecadf2f075dddc7ae8a455bab82c783abc",
+          "unchanged": true
+        }
+      ]
+    }
+  ],
+  "correctedProjection": {
+    "archiveMember": "corrected-complete-195-source-review.json",
+    "bytes": 909574,
+    "sha256": "a661d8bbb6a868cf3e9422106feba888ccbfb0d49ae5a58c3011d3b1f61bfcb4",
+    "changedFields": [
+      "results[9].disposition",
+      "results[9].basis",
+      "results[22].disposition",
+      "results[22].basis"
+    ],
+    "allOtherBytesAndJsonFieldsPreserved": true
+  },
+  "unchanged": {
+    "resultCount": 195,
+    "sourcePins": true,
+    "originalLocationsAndDataflows": true,
+    "bothReportedScopes": "test_or_fixture",
+    "riskClassificationCounts": true,
+    "alertDismissals": 0,
+    "ruleSuppressions": 0,
+    "remoteRefMutations": 0
+  },
+  "explanation": "The two fixture descriptions were transposed in the old report. Result 9 is the cognitive secret detector test; result 22 is the integration-test helper that prints descriptions of synthetic fuzzy-search sessions. The original report and raw source evidence remain unchanged. This addendum does not claim that the later analysis is clean.",
+  "proof": {
+    "name": "codeql-195-description-correction-proof.tar.gz",
+    "bytes": 162160,
+    "sha256": "3be84e532abbc52e083f70a8d6b09f87ec091aba5fc8c660bd6d5ba2dffce4e2",
+    "rawTarBytes": 1986560,
+    "rawTarSha256": "b39e80df6c7258f42e73703967afc6521f01d62796877ff6cee2f4197ec43d48",
+    "members": [
+      {
+        "path": "corrected-complete-195-source-review.json",
+        "bytes": 909574,
+        "sha256": "a661d8bbb6a868cf3e9422106feba888ccbfb0d49ae5a58c3011d3b1f61bfcb4"
+      },
+      {
+        "path": "original-complete-195-source-review.json",
+        "bytes": 909574,
+        "sha256": "dcefe306f5a8e1e702638f304355132a496a9a13dff3f7e5c89b6869b117de3f"
+      },
+      {
+        "path": "original-sarif-result-22.json",
+        "bytes": 14530,
+        "sha256": "2f66191566ae877858022fd5b74a290c29426c5a691a970a301e4333223b5923"
+      },
+      {
+        "path": "original-sarif-result-9.json",
+        "bytes": 2959,
+        "sha256": "70644ecd194a8359730313f115e44122749623f4b86a6ac0f67771c9866aa9ae"
+      },
+      {
+        "path": "source/codex-rs/app-server/tests/common/test_app_server.rs",
+        "bytes": 85252,
+        "sha256": "ce18af18a4f603990ea7c73b61d7981e96f9817dbc4f18d08cc5754d86dc3bec"
+      },
+      {
+        "path": "source/codex-rs/app-server/tests/suite/fuzzy_file_search.rs",
+        "bytes": 21539,
+        "sha256": "32eaebbbedcb4c151d64796ef272cdecadf2f075dddc7ae8a455bab82c783abc"
+      },
+      {
+        "path": "source/codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+        "bytes": 31150,
+        "sha256": "1ee472ade9c0c9c9f1382baa51ad8b82b13973994cafc286c9e3df54ea0171ad"
+      }
+    ]
+  }
+}

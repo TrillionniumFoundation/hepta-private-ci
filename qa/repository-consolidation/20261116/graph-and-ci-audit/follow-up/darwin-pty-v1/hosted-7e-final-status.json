@@ -1,0 +1,181 @@
+{
+  "head": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+  "capturedUtc": "2026-11-16T18:28:26.530319+00:00",
+  "checkCount": 211,
+  "counts": {
+    "failure": 23,
+    "success": 165,
+    "cancelled": 10,
+    "skipped": 13
+  },
+  "running": 0,
+  "codeqlRustAnalysisJob": {
+    "id": 133388308824,
+    "head_sha": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+    "name": "Analyze (rust)",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-16T15:06:36Z",
+    "completed_at": "2026-11-16T18:12:02Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43892827049/job/133388308824"
+  },
+  "codeqlAnnotationCount": 21,
+  "codeqlAnnotationSeverity": {
+    "critical": 10,
+    "high": 11
+  },
+  "codeqlAnalysisCountsAtHead": [
+    {
+      "id": 2179291038,
+      "category": "/language:rust",
+      "results": 193,
+      "error": "",
+      "warning": ""
+    },
+    {
+      "id": 2177747274,
+      "category": "/language:python",
+      "results": 4,
+      "error": "",
+      "warning": ""
+    },
+    {
+      "id": 2177700210,
+      "category": "/language:javascript-typescript",
+      "results": 0,
+      "error": "",
+      "warning": ""
+    },
+    {
+      "id": 2177694073,
+      "category": "/language:actions",
+      "results": 0,
+      "error": "",
+      "warning": ""
+    },
+    {
+      "id": 2177693275,
+      "category": "/language:c-cpp",
+      "results": 0,
+      "error": "",
+      "warning": ""
+    }
+  ],
+  "interpretation": "Successful analysis execution is separate from the failed CodeQL check. The 21 annotations are a subset; the new Rust analysis reports 193 results and Python reports 4. New full result reconciliation is pending. No result has been dismissed or suppressed.",
+  "laterSourceNotScannedHere": "OAuth diagnostics and subsequent merged source are absent from this published head; a later exact head scan is needed.",
+  "remoteMutation": false,
+  "archive": {
+    "name": "hosted-7e-final-capture.tar.gz",
+    "bytes": 68494,
+    "sha256": "9b6e6741c9626aea58e0fe666f5c23f4373848ad3baafdd7a4848e161aef6593",
+    "rawTarBytes": 2099200,
+    "rawTarSha256": "5b931c48a588f33bc50b9881aebc3721899f58c5fa94a6cfdac073a01ce5cdaf",
+    "members": [
+      {
+        "path": "capture-receipt.json",
+        "bytes": 2059,
+        "sha256": "2f9f6d568da960e2ef93332dc142c4a3e3c10524c8893287ae20161645b74ac3"
+      },
+      {
+        "path": "changed-check-133389095791.json",
+        "bytes": 3236,
+        "sha256": "e6e217c8c5a5b55d93e3649b5dcd0357998ad7f896bbad855255a377c01e8fcf"
+      },
+      {
+        "path": "checks-all.json",
+        "bytes": 1099349,
+        "sha256": "e43cd97d526363a1dbaa92aedd29d37a7d9f271ba1f55328951342fd05c27b75"
+      },
+      {
+        "path": "checks-page1.json",
+        "bytes": 371638,
+        "sha256": "66de2ebbf5d82e117fc2ea6344166610b7f1f6a3a921eda17fa413edcfa0c86c"
+      },
+      {
+        "path": "checks-page1.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "checks-page2.json",
+        "bytes": 371015,
+        "sha256": "c4cfcf6b33e617820b23cb159a1a9c741b23799240d55301ddf15adbc7423faa"
+      },
+      {
+        "path": "checks-page2.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "checks-page3.json",
+        "bytes": 37506,
+        "sha256": "84ee3b0ff5710402fa46c47a19a632f167e37fb5c77bc25feb9f9b504d0861e6"
+      },
+      {
+        "path": "checks-page3.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "codeql-analyses.json",
+        "bytes": 66926,
+        "sha256": "d76ef5c22be05838afea301ceb66d198772d6293a760818032c1ee02a8c2e79e"
+      },
+      {
+        "path": "codeql-analyses.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "codeql-check-annotations.json",
+        "bytes": 9939,
+        "sha256": "b34eddaa777198f70f56f57479762500a95b3cf5ea26500db4ed8e72cf8f78f4"
+      },
+      {
+        "path": "codeql-check-annotations.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "codeql-final-capture-receipt.json",
+        "bytes": 660,
+        "sha256": "96e683deaa9e8fdbe25dac455de634641fa1399526e12a68d61d39faacd98839"
+      },
+      {
+        "path": "codeql-run-43892827049.json",
+        "bytes": 14547,
+        "sha256": "3d561e66327e6f34b5d9d86a9faa6f3a902f83ab1fc3552e716b86cbf9e14707"
+      },
+      {
+        "path": "codeql-run-43892827049.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "codeql-rust-job-133388308824.json",
+        "bytes": 2758,
+        "sha256": "0401d4b54c01637ce8329c1811f2c23d74e5756fe378c3e1c632bddb328dc209"
+      },
+      {
+        "path": "codeql-rust-job-133388308824.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "statuses.json",
+        "bytes": 5515,
+        "sha256": "21a5d9b3db6bf2e0b059b1ecd0eb45c69c22ce671a2816e9b37db9c17244a1ae"
+      },
+      {
+        "path": "statuses.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "summary.json",
+        "bytes": 90211,
+        "sha256": "da35ad36a1bb21eb0406667337d1a11e042399597173aaa1c3cc2a261b93c874"
+      }
+    ]
+  }
+}

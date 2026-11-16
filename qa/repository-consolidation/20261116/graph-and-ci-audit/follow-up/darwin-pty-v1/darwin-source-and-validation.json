@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "baseHead": "3d6d17adfa92757085a371d67cd269e043d8dbed",
+  "baseTree": "2df942a48b4deb6b3539a48f6417f5308aabada3",
+  "sourceEntries": [
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_control_tests.rs",
+      "baseBlob": "4f88161aed645c552dfcb3f5a4ca9c17d38affc7",
+      "postBlob": "4fc50f2ad1c70088f0dd0c747c8da50bb72ecee8",
+      "bytes": 3614,
+      "sha256": "61e8219c21dabf7c353124d995fd1a7ac0dfd26e34a808f6cc7a73c0b8207a61",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-fixture-repair-v1/proposal/codex-rs/hepta-agentd/src/native_memory_control_tests.rs",
+      "baseUnchangedFromHosted7e": true,
+      "exactInverseRestoresAllOriginalBytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+      "baseBlob": "125f49fae191f536a0cffe559193ed3a5e3ab94e",
+      "postBlob": "1082a462a8b567cba28c828c37f437a0dd417fac",
+      "bytes": 9299,
+      "sha256": "c2459b1577b58463ce9b8c317c611a881d65629c03d4fa89a1276cdc64e252db",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-fixture-repair-v1/proposal/codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+      "baseUnchangedFromHosted7e": true,
+      "exactInverseRestoresAllOriginalBytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "baseBlob": "6c1f670060ca16c36a3199ffaec3fbd6dde4e40b",
+      "postBlob": "bfe504344d08dd98860c7146822b516601e4a68c",
+      "bytes": 10711,
+      "sha256": "c3defdd8fbe7b0fea9b25ab56bf463c29fd000c63f8a76f5b00cb5e411e7cec3",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-fixture-repair-v1/proposal/codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "baseUnchangedFromHosted7e": true,
+      "exactInverseRestoresAllOriginalBytes": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "baseBlob": "5405008109ffeedc2256863af2a368df16665aec",
+      "postBlob": "d4272a5d83e55e54ee01bdbc68e50809a4204496",
+      "bytes": 9990,
+      "sha256": "35e6ab8cb8f82fa3bdd7da106aecc131579e130be668a4b647a02d1160fc5bfe",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-fixture-repair-v2/proposal/codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "exactInverseRestoresAllOriginalBytes": true
+    }
+  ],
+  "laterRootCandidate": "7b718db56f941d779f53d94cb9177fe8b0eae090",
+  "laterRootTree": "46b6d43c409bdd6aa46e49282f98c2fa6495e5b0",
+  "rootCandidateScope": "Root independently verified these four exact postimages; native execution here was base3d6 plus these four, not the later combined candidate.",
+  "fixtureOnly": true,
+  "assertionsAndBudgetsUnchanged": true,
+  "exactInverseRestoresOtherOriginalSourceBytes": true,
+  "sourceInputs": 7777,
+  "finalResults": [
+    {
+      "name": "original-fmt-check",
+      "argv": ["just", "fmt", "--check"],
+      "returncode": 0,
+      "seconds": 1.174371628992958,
+      "logBytes": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceInputs": 7777,
+      "sourceInputsUnchanged": true,
+      "changedPaths": []
+    },
+    {
+      "name": "original-22-under-temp-alias",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(=native_memory_control_tests::native_memory_control_socket_requires_explicit_owner_and_generation) | test(=native_memory_current_tests::clock_continuity_loss_and_runtime_shutdown_fence_existing_handles) | test(=native_memory_current_tests::current_context_uses_actual_owners_and_exact_query_without_reclaiming) | test(=native_memory_current_tests::grant_revocation_and_authenticated_clock_expiry_refuse_current_use) | test(=native_memory_current_tests::objective_lifecycle_and_trust_revoke_an_existing_current_context) | test(=native_memory_current_tests::prepared_read_refuses_intervening_ndu_change_before_spending_grant) | test(=native_memory_model::tests::completed_source_revalidation_does_not_reopen_nonce_or_survive_revocation) | test(=native_memory_model::tests::native_memory_rejects_receipt_substitution) | test(=native_memory_model::tests::native_memory_revoked_source_authority_never_dispatches_model) | test(=native_memory_model::tests::native_memory_wrong_neuron_features_never_dispatch) | test(=native_memory_model::tick_binding_tests::native_tick_binding_preserves_model_tuple_and_rejects_rebinding) | test(=native_memory_model::tick_binding_tests::native_tick_wire_matches_python_and_tampered_live_context_is_rejected) | test(=native_memory_registration::current_tests::factory_rejects_foreign_preparation_and_key_before_spending_grant) | test(=native_memory_registration::current_tests::installation_requires_no_admitted_run_and_runtime_drop_closes_live_factory_children) | test(=native_memory_registration::startup_tests::starting_install_waits_for_running_readiness_and_drain_revokes_current_context) | test(=native_memory_registration::tests::registered_source_requires_exact_key_live_authority_and_retained_ancestry) | test(=native_memory_shadow_namespace::tests::durable_shadow_namespace_rejects_source_and_profile_substitution_before_recovery) | test(=native_memory_tick_owner::current_model::tests::ndu_change_during_source_revalidation_stops_decoder_and_successful_tick) | test(=objective_runtime::tests::current_read_survives_unrelated_durable_run_admission) | test(=state::objective_current_tests::current_read_is_owner_bound_read_only_and_explicitly_selected) | test(=state::objective_current_tests::current_read_rechecks_signature_epoch_and_fleet_without_readmission) | test(=state::objective_current_tests::released_and_readmitted_run_cannot_reuse_an_old_observation)",
+        "--test-threads",
+        "4",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "fail"
+      ],
+      "returncode": 0,
+      "seconds": 108.96013496399974,
+      "logBytes": 350669,
+      "logSha256": "fe67342c732a55aff184410832eba0f71011b3f3d764654ba531eb61dc466278",
+      "sourceInputs": 7777,
+      "sourceInputsUnchanged": true,
+      "changedPaths": [],
+      "summaries": [
+        "     Summary [  22.151s] 22 tests run: 22 passed, 1596 skipped"
+      ],
+      "passedOriginalTestNames": [
+        "native_memory_control_tests::native_memory_control_socket_requires_explicit_owner_and_generation",
+        "native_memory_current_tests::clock_continuity_loss_and_runtime_shutdown_fence_existing_handles",
+        "native_memory_current_tests::current_context_uses_actual_owners_and_exact_query_without_reclaiming",
+        "native_memory_current_tests::grant_revocation_and_authenticated_clock_expiry_refuse_current_use",
+        "native_memory_current_tests::objective_lifecycle_and_trust_revoke_an_existing_current_context",
+        "native_memory_current_tests::prepared_read_refuses_intervening_ndu_change_before_spending_grant",
+        "native_memory_model::tests::completed_source_revalidation_does_not_reopen_nonce_or_survive_revocation",
+        "native_memory_model::tests::native_memory_rejects_receipt_substitution",
+        "native_memory_model::tests::native_memory_revoked_source_authority_never_dispatches_model",
+        "native_memory_model::tests::native_memory_wrong_neuron_features_never_dispatch",
+        "native_memory_model::tick_binding_tests::native_tick_binding_preserves_model_tuple_and_rejects_rebinding",
+        "native_memory_model::tick_binding_tests::native_tick_wire_matches_python_and_tampered_live_context_is_rejected",
+        "native_memory_registration::current_tests::factory_rejects_foreign_preparation_and_key_before_spending_grant",
+        "native_memory_registration::current_tests::installation_requires_no_admitted_run_and_runtime_drop_closes_live_factory_children",
+        "native_memory_registration::startup_tests::starting_install_waits_for_running_readiness_and_drain_revokes_current_context",
+        "native_memory_registration::tests::registered_source_requires_exact_key_live_authority_and_retained_ancestry",
+        "native_memory_shadow_namespace::tests::durable_shadow_namespace_rejects_source_and_profile_substitution_before_recovery",
+        "native_memory_tick_owner::current_model::tests::ndu_change_during_source_revalidation_stops_decoder_and_successful_tick",
+        "objective_runtime::tests::current_read_survives_unrelated_durable_run_admission",
+        "state::objective_current_tests::current_read_is_owner_bound_read_only_and_explicitly_selected",
+        "state::objective_current_tests::current_read_rechecks_signature_epoch_and_fleet_without_readmission",
+        "state::objective_current_tests::released_and_readmitted_run_cannot_reuse_an_old_observation"
+      ],
+      "passedMatchedCount": 22
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "state": "Preflight rejected before Cargo by an overly broad host idle condition; later clarified to task target isolation.",
+      "testsExecuted": 0
+    },
+    {
+      "attempt": 2,
+      "state": "Compilation failed with ENOSPC; original fmt passed and inputs remained unchanged.",
+      "testsExecuted": 0,
+      "returncode": 101
+    },
+    {
+      "attempt": 3,
+      "state": "Actual tests executed under a symlink TMPDIR. One second independent fixture root was still noncanonical.",
+      "testsExecuted": 22,
+      "passed": 21,
+      "failed": 1,
+      "returncode": 100
+    },
+    {
+      "attempt": 4,
+      "state": "All original 22 exact names passed under symlink TMPDIR after the fourth fixture root repair.",
+      "testsExecuted": 22,
+      "passed": 22,
+      "failed": 0,
+      "returncode": 0
+    }
+  ],
+  "scopeLimits": [
+    "Linux alias validation exercises canonical root handling; the macOS short /tmp branch is not executed on Linux.",
+    "Production canonical path and symlink rejection remain unchanged.",
+    "The other 1596 tests were not selected; this is not full Agentd or hosted matrix qualification.",
+    "The original hosted Mac 22 failures and later job cancellation remain in the archive."
+  ],
+  "archive": {
+    "members": 58,
+    "rawTarBytes": 6103040,
+    "rawTarSha256": "3fddfa910f5a326daf3ba5eb07f05ff7f50ec5dfc23f806e882c63b39cbecf1f",
+    "gzipBytes": 2095585,
+    "gzipSha256": "91789e66a4ec6f58a7611ade40a88c0f0fe772904b864bd471f7ba181a7b23e8",
+    "gzipMtime": 0,
+    "orderedParts": [
+      {
+        "name": "darwin-native-proof.part-0000.gz",
+        "bytes": 480000,
+        "sha256": "0289903b567578001fc5a40a74864b2910e3f02c9952430725857306ae88651e"
+      },
+      {
+        "name": "darwin-native-proof.part-0001.gz",
+        "bytes": 480000,
+        "sha256": "524877f43dc641ffa94c062ca08e3a1a6323ae3786702a413c22b578c0c3e185"
+      },
+      {
+        "name": "darwin-native-proof.part-0002.gz",
+        "bytes": 480000,
+        "sha256": "c64267848141581f62db8bfdd24090a73744ed5a8065bc96ea8184e3233487f8"
+      },
+      {
+        "name": "darwin-native-proof.part-0003.gz",
+        "bytes": 480000,
+        "sha256": "c8130819f095b73b56e067c325731ce671abd5698ede06be58ec3dcf6d6968ea"
+      },
+      {
+        "name": "darwin-native-proof.part-0004.gz",
+        "bytes": 175585,
+        "sha256": "d6202aca627221d93341125e41c6c88ba7d0df069dcd80288d40c8d80f559f10"
+      }
+    ],
+    "roundTripByteEquality": true,
+    "memberHashes": [
+      {
+        "path": "cache-recovery/inventory.json.gz",
+        "bytes": 672549,
+        "sha256": "61c5cd53317cbfcce0e83501cd50b44d30c040f44d7866b4f30447bb74da71ce"
+      },
+      {
+        "path": "cache-recovery/receipt.json",
+        "bytes": 716,
+        "sha256": "06030ba6fd1bab8ed1aed741e1075aadf059b6b2ba598fcbc272fb8f73201366"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/baseline-source/codex-rs/hepta-agentd/src/native_memory_control_tests.rs",
+        "bytes": 3352,
+        "sha256": "0d36f27e6833d111020c66a3c80568c58e2e7bf2d77bf4e2b0dd6dcf85533216"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/baseline-source/codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+        "bytes": 9254,
+        "sha256": "664e3b4c6cb975a65a87289a6be1855a2c8691fe637d2a1c700333501a265ad3"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/baseline-source/codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+        "bytes": 10686,
+        "sha256": "430882881e8ea3fcf4006a52b89f4042c37dbf7ee607b0b21a5c68c5998a608c"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/clone.log",
+        "bytes": 114,
+        "sha256": "089b1b226e796facb95736ae865127628a41b713b8de97cccf08170ea1836ff2"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/codespell.log",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/diff-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/exact-transform.json",
+        "bytes": 1436,
+        "sha256": "b62ad63be56c07f3ab3bc762a9a93019cccd7f066d9d904f9470d21417ffd29c"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/just-fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-2/input-sources.json",
+        "bytes": 989972,
+        "sha256": "46e3fb79066f91798f8338ec31320a32205503eb64b1c284e05cbd285c2c2d8c"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-2/invocation.json",
+        "bytes": 6063,
+        "sha256": "f6d387932cba93d83f49a83ded1a67759469bdd06a2a20501ce389def8d75267"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-2/original-22-under-temp-alias.log",
+        "bytes": 48404,
+        "sha256": "0ac0de10e2523abfa8429477fce6d5f1485378c9d61f6fe9d35a3fa4ef98b05e"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-2/original-fmt-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-2/results.json",
+        "bytes": 3434,
+        "sha256": "7205e7fe885ac267f80bc092fbedced55e6f1aba45ad43da1c473f2ab95b88c3"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-2/target-isolation-preflight.json",
+        "bytes": 1011,
+        "sha256": "6960e8289e764299c6adb67fe869a178cc64ad00a3491b9f84918c75cef3d0c7"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/input-sources.json",
+        "bytes": 989972,
+        "sha256": "46e3fb79066f91798f8338ec31320a32205503eb64b1c284e05cbd285c2c2d8c"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/invocation.json",
+        "bytes": 6063,
+        "sha256": "1c593090dbec5d2588194608d2ddd0f345f170e3b3049979d972c3fa8f70725d"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/original-22-under-temp-alias.log",
+        "bytes": 358780,
+        "sha256": "83dc75b3b44a0e394e257fbabac0bbe68dadb106fe883e5b0179fd74ffcad8de"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/original-fmt-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/results.json",
+        "bytes": 5802,
+        "sha256": "28ba66f7aa6de766c7aee08beb380873917ca473857578ed0598372e53f23aaf"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/source-and-space-preflight.json",
+        "bytes": 652,
+        "sha256": "fdddc3ba2106f4f054bb1c80073a3d64969ad3b126e5180b67073070aed8bff6"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/native-alias-attempt-3/target-isolation-preflight.json",
+        "bytes": 180,
+        "sha256": "dbc38208b6e28b93cbd427e35f64cd590148b4a329b594ea9254ada3a1e3ddd7"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/proposal-manifest.json",
+        "bytes": 2015,
+        "sha256": "1ebd9f00ec9bb097035fbf54a7f71ee9bd22276912d225b1e1d5ff06b621b774"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/proposal.patch",
+        "bytes": 2441,
+        "sha256": "2aa94eaeb79e8de581492e4a7ed1acf043e411e3d16d41d5d83f091619741654"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/proposal/codex-rs/hepta-agentd/src/native_memory_control_tests.rs",
+        "bytes": 3614,
+        "sha256": "61e8219c21dabf7c353124d995fd1a7ac0dfd26e34a808f6cc7a73c0b8207a61"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/proposal/codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+        "bytes": 9299,
+        "sha256": "c2459b1577b58463ce9b8c317c611a881d65629c03d4fa89a1276cdc64e252db"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/proposal/codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+        "bytes": 10711,
+        "sha256": "c3defdd8fbe7b0fea9b25ab56bf463c29fd000c63f8a76f5b00cb5e411e7cec3"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/root-candidate-source-bridge.json",
+        "bytes": 2855,
+        "sha256": "5083fdc199e5032d5c6d2dfd78c4a250ee5c998b8fc128950d8250ae582f2c0a"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/setup-receipt.json",
+        "bytes": 4100,
+        "sha256": "61d398ae8cc4b3d49616787e0b297763edde41de4a305576ec07746223f20ed5"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/source-blob-receipts.json",
+        "bytes": 825,
+        "sha256": "224ed4fa5e110bc39ce003ef449920c79713e8811d53a4c08a11cbd8ca78a4b5"
+      },
+      {
+        "path": "darwin-fixture-repair-v1/source-review-and-test-map.json",
+        "bytes": 20956,
+        "sha256": "1b917fd6d9dfc78ed2002864903a66050fdb42c8539cfb73c5bbc0321a03f49b"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/attempt3-failure-excerpt.log",
+        "bytes": 1070,
+        "sha256": "f10d5f03693483956189e75c5c90a3288ded66afd2d2b430de04ecb1c9bc8bf3"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/baseline-source/codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+        "bytes": 9949,
+        "sha256": "e6ed4ef9da83e781fb9a175f30758b696392f0f30c1712068d1ccd52f4a88fba"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/just-fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/input-sources.json",
+        "bytes": 989972,
+        "sha256": "aa91bf5a42093f4512f03b1ced7a6436b2fa558e27ae8f983bfe036434653524"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/invocation.json",
+        "bytes": 6063,
+        "sha256": "cea225ae06acb41baf3211806935637f123cf122daa9b2309875f3378cfbbd86"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/original-22-under-temp-alias.log",
+        "bytes": 350669,
+        "sha256": "fe67342c732a55aff184410832eba0f71011b3f3d764654ba531eb61dc466278"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/original-fmt-check.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/results.json",
+        "bytes": 5919,
+        "sha256": "2e280c512fbe60b9ee4382db148718e7ab61ae0b3cb4c5018c576180d5acffde"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/source-and-space-preflight.json",
+        "bytes": 768,
+        "sha256": "bd9c6ce072197ef3237e817e0f0d4da2a468c15967205cfe9740df5f30c0685d"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/target-isolation-preflight.json",
+        "bytes": 1014,
+        "sha256": "f9674152d323cda6f555ea7477d3f0ecd9e4e1ba9246635659336933457af1f3"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/native-alias-attempt-4/temporary-directory-cleanup.json",
+        "bytes": 159,
+        "sha256": "a072f5701ae5aed552eb5c828af09bb7649725078c82690595b96353a500aceb"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/proposal-manifest.json",
+        "bytes": 3194,
+        "sha256": "f3933e1c7d2ef79b9d8688c8390efc4170b446d3e29983ded74b5172478e0ca0"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/proposal.patch",
+        "bytes": 676,
+        "sha256": "085ce22c8a6e79e58e73d27a8c705f7105e05019e2c27d3e681936ae0d1e66ed"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/proposal/codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+        "bytes": 9990,
+        "sha256": "35e6ab8cb8f82fa3bdd7da106aecc131579e130be668a4b647a02d1160fc5bfe"
+      },
+      {
+        "path": "darwin-fixture-repair-v2/source-blob-receipts.json",
+        "bytes": 1104,
+        "sha256": "57f5391107d25a9ed2a927e8c72e7b46f01b97173244642362edf1eef5923b79"
+      },
+      {
+        "path": "original-hosted/job-133389631109.log",
+        "bytes": 1405894,
+        "sha256": "bcb9b0a56d477252515e757cee1fc3813bf650c0d8944d00f88b280332a62d58"
+      },
+      {
+        "path": "original-hosted/mac-final-failure-inventory.json",
+        "bytes": 20992,
+        "sha256": "cb61f2cf0c7cf8b6627d9804a6a5bbeff5a95a9db94be3526f1ef4ce62921e33"
+      },
+      {
+        "path": "runners/native-alias-attempt-1.py",
+        "bytes": 4662,
+        "sha256": "50f71ddac0b0169b7b4b6dabdbf2480cb5fd9524aceb655b4bb3e76c3c2d59ba"
+      },
+      {
+        "path": "runners/native-alias-attempt-2.py",
+        "bytes": 5547,
+        "sha256": "ccfa701479c517e27bee1f83480e4bcc2aaf9114064193c3996ae302682006b7"
+      },
+      {
+        "path": "runners/native-alias-attempt-3.py",
+        "bytes": 6553,
+        "sha256": "b7e4b757e84ae8fa738a5cc4063e08f44af686f083ecc1fad700e5523cc851fd"
+      },
+      {
+        "path": "runners/native-alias-attempt-4.py",
+        "bytes": 6962,
+        "sha256": "7b00cf628af6c8568b971d1b0e958bc1b9cc096f533a27982b624c505180c162"
+      },
+      {
+        "path": "terminal-archives/attempt1.log",
+        "bytes": 3779,
+        "sha256": "ed435343b2fcc267b93ad9fb498b2bd8a72fc5415aea75d118b2a30e92879c0d"
+      },
+      {
+        "path": "terminal-archives/attempt2.log",
+        "bytes": 12354,
+        "sha256": "6f2456f0af620848406ce84eb635cf9ba1922dee843e73cd5f0885b4027e3f0a"
+      },
+      {
+        "path": "terminal-archives/attempt3.log",
+        "bytes": 15209,
+        "sha256": "898152513bc8e3fda0f083b19d94a559370c95fc1a2ab6b727f8be9090bf1e56"
+      },
+      {
+        "path": "terminal-archives/attempt4.log",
+        "bytes": 5777,
+        "sha256": "461d4c1497ed16c1ce251f6e25b214ea64828a81685e602b37df8c068aa47beb"
+      }
+    ]
+  }
+}

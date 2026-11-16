@@ -1,0 +1,590 @@
+{
+  "schema_version": 1,
+  "observed_utc": "2026-11-16T19:00:17.713856+00:00",
+  "candidate": "7b718db56f941d779f53d94cb9177fe8b0eae090",
+  "candidate_tree": "46b6d43c409bdd6aa46e49282f98c2fa6495e5b0",
+  "candidate_parents": ["64e75a27e2ddde802c713ccbc29e1da11b3b7c27"],
+  "main": {
+    "expected": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "observed": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "matches": true
+  },
+  "integration": {
+    "branch": "integration/hepta-single-main-20261113-ab5b",
+    "expected": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+    "observed": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+    "matches": true
+  },
+  "remote_heads": 7318,
+  "protected_count": 87,
+  "protected_markers": [
+    "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+    "3aa1f85ba90c79d220a5cadf2261def176892867"
+  ],
+  "protected_marker_intersection": 0,
+  "protected_head_intersection": 0,
+  "protected_current_vector": [
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+      "sha": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s01",
+      "sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s02",
+      "sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s03",
+      "sha": "f5f9e7f64e23173c3c99448c82202629e822add3",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s04",
+      "sha": "9bcc42c7120f449cf256439b1699874219eaa57b",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s05",
+      "sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s06",
+      "sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s07",
+      "sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s08",
+      "sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s09",
+      "sha": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s10",
+      "sha": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s11",
+      "sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s12",
+      "sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s01",
+      "sha": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s02",
+      "sha": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s03",
+      "sha": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s04",
+      "sha": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s05",
+      "sha": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s06",
+      "sha": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s07",
+      "sha": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s08",
+      "sha": "c3cf56498c45259493a909548448919afa414a7c",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s09",
+      "sha": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s10",
+      "sha": "e21376decc668982988bdc61641294b366cec5c8",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s11",
+      "sha": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s12",
+      "sha": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s13",
+      "sha": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s14",
+      "sha": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s15",
+      "sha": "02dda520dba03f6639005f16bcded2476524068d",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s16",
+      "sha": "2a620b20befadb6e450c4546786685fc716e114a",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s17",
+      "sha": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s18",
+      "sha": "1087cecf3bbefc89ea91dd55291fcb00c8ed712c",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s19",
+      "sha": "2486b93845184a9d438d0e0c87ecff5cc880b735",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s20",
+      "sha": "3d00e15073d416d8d5e8d4a72feede23a4c1486d",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s21",
+      "sha": "8dd202989833b96aec94dfe62feb40bf774dc558",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s22",
+      "sha": "1909960de4acc72a68cd037f1b045f4a328a8ef5",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s23",
+      "sha": "8017119833636df14c842172fd124e166f91ce71",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s24",
+      "sha": "42e32825ae20d460cb782856e00816661536853a",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-hia-ci-evidence-20261116-724f",
+      "sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/cell-hia-joint-20261115-724f",
+      "sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+      "markers": ["3aa1f85ba90c79d220a5cadf2261def176892867"]
+    },
+    {
+      "name": "codex/hepta-doc-map-real-source-20261115-r11",
+      "sha": "97fc55515538d0f661a330da6399c5785eb8eecb",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-allowed-prefixes-20261115-9f0b",
+      "sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-ci-core-test-binaries-20261115-a90d",
+      "sha": "4895cd93113b662d590f140d38736a30392081fc",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-command-dispatch-20261115-9f0b",
+      "sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-cross-owner-premerge-guard-20261116-v1",
+      "sha": "5aa8417222b537dea2bf57515383ff95401b1983",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+      "sha": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-execpolicy-prefix-20261115-9f0b",
+      "sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-file-update-20261115-9f38",
+      "sha": "8b138f979a77baeb78b28b8273febcef960dcb88",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-foundation-contract-20261114-9f38",
+      "sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-list-agents-completion-20261115-run11",
+      "sha": "355118ec887d22affe13b33ce3907c697e4360f4",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-macos-code-mode-startup-20261115-a90d",
+      "sha": "bb321262064982217002ae608f484a235c160e85",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-macos-matrix-cipher-20261115-a90d",
+      "sha": "842a49e96d7e6960267913825e01d53d96aab971",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-macos-matrix-phase-20261115-a90d",
+      "sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-macos-owner-20261114-a90d",
+      "sha": "57e489472a03515438df8ed7a0fabec882404f02",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-native-apparmor-profile-20261114",
+      "sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-native-bwrap-ci-20261114-p9",
+      "sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-native-codex-20261114-a90d",
+      "sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-native-ubuntu2204-sandbox-20261114",
+      "sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-network-domains-20261115-9f0b",
+      "sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-network-host-20261115-9f0b",
+      "sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-application-20261115-9f38",
+      "sha": "cae5db67213f2621910bf39ff048ee60c887317b",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-effects-20261115-9f38",
+      "sha": "aeb88f596b83186456caac577080bcb2f253ad32",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-integration-20261115-9f38",
+      "sha": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-output-20261115-9f38",
+      "sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-output-agentd-bridge-20261115-gpt6",
+      "sha": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-parser-20261115-9f38",
+      "sha": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-standalone-20261115-9f38",
+      "sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-patch-standalone-abi-producer-20261115-a11",
+      "sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-plasticity-status-sync-20261115-r11x",
+      "sha": "b34a4670c130111c06e24e070635391fa8694a60",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-policy-summary-20261115-9f0b",
+      "sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-render19-rama-sdk-bridge-20261116-a11",
+      "sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-retirement-consistency-20261115-turn11",
+      "sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-retirement-precheck-20261115-automation11",
+      "sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-source-file-20261114-9f38",
+      "sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-source-file-fastpath-20261115-9f38",
+      "sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-string-truncate-20261114-9f38",
+      "sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-template-parse-20261115-9f38",
+      "sha": "605832630c0c31742f26eee6c38f10cfa2490d90",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-template-render-20261115-9f38",
+      "sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-token-budget-abi-20261114-9f38",
+      "sha": "7fe65ae990187e6ff1130c791f902728b4e50197",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-twelve-integration-20261115-a90d",
+      "sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-union29-20261116-a90d",
+      "sha": "a7a08eae570640c70dd902f81690eaf9d077d649",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-union29-rama-sdk-20261116-gpt6",
+      "sha": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-uuid-20261115-9f38",
+      "sha": "c468f632201c39957d3fecb92f05b37aa650b45e",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-windowed-native-20261114",
+      "sha": "7e920e23b11e8f57891325a2e7805e8969c63551",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/hia-windows-owner-20261114-a90d",
+      "sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/sdk-resolver-abi-20261115-9f0b",
+      "sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/v8-canary-feature-parity-20261114-p9",
+      "sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    },
+    {
+      "name": "codex/windows-private-fs-diagnostics-20261115-9f0b",
+      "sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+      "markers": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"]
+    }
+  ],
+  "cell_experiment_serials_preserved": [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+    22, 23, 24
+  ],
+  "prior_observed_utc": "2026-11-16T18:09:40.087789+00:00",
+  "added_refs": [],
+  "changed_refs": [],
+  "deleted_refs": [],
+  "new_non_protected_refs": [],
+  "original_eligible": 7230,
+  "original_retained": 1796,
+  "original_pending": 5434,
+  "remote_graph": {
+    "commits": 76867,
+    "edges": 81344,
+    "canonical": {
+      "bytes": 6486651,
+      "sha256": "7a857d78e796b8f610bab36fed6e9447ef709f346c46cd604817d3ef01cc9287",
+      "git_blob": "88f62748a84a7c7a0c0a6d262ed8b5245cdaaa04"
+    }
+  },
+  "augmented_graph": {
+    "commits": 76881,
+    "edges": 81361,
+    "canonical": {
+      "bytes": 6487922,
+      "sha256": "4e910370fd7453305d0f4df59b1b4fe3c66613b21661debd78c30d132d43dc31",
+      "git_blob": "0ca961ff046af82e5bc9a8b0db41b9b5b4b9e449"
+    },
+    "candidate_only_commits": [
+      "0d5471875faedf49e7bdcf72b860426e524813b8",
+      "15287f0562e251250f5553d603b66c9a8f81ecde",
+      "3d6d17adfa92757085a371d67cd269e043d8dbed",
+      "47a575229621d7761b01afd9b11a799a92638c1c",
+      "64e75a27e2ddde802c713ccbc29e1da11b3b7c27",
+      "7b718db56f941d779f53d94cb9177fe8b0eae090",
+      "92875b8ba2d5fcbabde31f1e1fcd0ad7e5f81e10",
+      "94f7e4cd8d9df0691511a20c9ca4a39b6ef8bec6",
+      "a4133d81a2edb015ea7a6baf61d9a5a476ccbcac",
+      "a4d68b620fb3eab54959dac3971bf67ab66f66d3",
+      "c0ac821a1d851adc71a6135e5f0dc6c6daa17ff3",
+      "d2a87c1aca4e19cee4ebc89e5e0de2c75893f412",
+      "d8b24300d190bef3d3c9d94765b256412e3fb867",
+      "eef0975f9235f3ff7de1c3c02e6d6d80146af98b"
+    ]
+  },
+  "new_parent_rows_from_prior": 3,
+  "artifacts": [
+    {
+      "path": "refs.tsv.gz",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-before-checkpoint-1900/refs.tsv",
+      "raw": {
+        "bytes": 722928,
+        "sha256": "6626b184c1fa670d011149eac5e276b5c5b8195b55a62c42ea739418f7005c45",
+        "git_blob": "96e0f4c4ee8b6b15f4881576fb8627fa30d84619"
+      },
+      "compressed": {
+        "bytes": 268890,
+        "sha256": "435c89108432a2fd58c7b093a749aee57af6b1cdc853766582524553de8bd832",
+        "git_blob": "93712cf7c1c2133989db9b154b297d0089e65ab7"
+      },
+      "round_trip_verified": true
+    },
+    {
+      "path": "fresh-ref-protection.json.gz",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-before-checkpoint-1900/fresh-ref-protection.json",
+      "raw": {
+        "bytes": 752978,
+        "sha256": "3f7499f75425deb42ce0cd702fef79b1bb47479fbcd744695a5fe2c683d101d0",
+        "git_blob": "bb3bf9eec25ca9c100559725f5098ffb86d624c2"
+      },
+      "compressed": {
+        "bytes": 344053,
+        "sha256": "2e16e3adc0499ffee83b910d3b44a668c36204bb4630da78b99af947cb40ced4",
+        "git_blob": "6f324019d4edd87f143ba43a15840a23b0d80bd5"
+      },
+      "round_trip_verified": true
+    },
+    {
+      "path": "original-eligible-coverage.json.gz",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-before-checkpoint-1900/original-eligible-coverage.json",
+      "raw": {
+        "bytes": 960588,
+        "sha256": "052072e56d900470dea3efc76af6978d0830e02f896efb60af2baa7a974aa556",
+        "git_blob": "621c81c04426c5a965d4e37a8dcf23ce172728a4"
+      },
+      "compressed": {
+        "bytes": 275369,
+        "sha256": "3fd59c1e333f96003a96cbef83e4b07fd4ec17eec850a492d57c163c4f14b2b1",
+        "git_blob": "980ec8239451de2aeed77ee67f47b3d92f49a915"
+      },
+      "round_trip_verified": true
+    },
+    {
+      "path": "graph-delta.json.gz",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-before-checkpoint-1900/graph-delta.json",
+      "raw": {
+        "bytes": 674060,
+        "sha256": "17d85e49001631e8dab0102c0d8df5b38264dffb6baf0086b2d561e413b4cb70",
+        "git_blob": "ac96c388bacb8bf34d8b462e756411149adec19b"
+      },
+      "compressed": {
+        "bytes": 336405,
+        "sha256": "fbc317a9a3ec768ee6f0880d8a0575d7e841285d85a95aa2a838a8d8ea74777d",
+        "git_blob": "1e6de8ebc667e909fca67784feb57018c41162b3"
+      },
+      "round_trip_verified": true
+    },
+    {
+      "path": "capture-and-source-receipts.json.gz",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-before-checkpoint-1900/capture-and-source-receipts.json",
+      "raw": {
+        "bytes": 22591,
+        "sha256": "c5c0f0e8b0518f2b3b3a92ad7b8b02b01c52bfc772e9b90b9f70d315d641adb4",
+        "git_blob": "09bd71a8c6d9eac7cbc82755d9e590f547fd54af"
+      },
+      "compressed": {
+        "bytes": 8937,
+        "sha256": "b220446d8967c5799543ba70409429a3787a9075a898e474e03f0df8efd94856",
+        "git_blob": "6f3695ad11940a3e20a8dcce0c0e4f5816b478a8"
+      },
+      "round_trip_verified": true
+    }
+  ],
+  "restoration": "Verify each compressed identity, decompress each gzip into a new isolated file, and verify the exact original length, SHA256, and Git blob identity. No archived program needs to execute. The graph delta names the prior immutable graph parts and specifies exact canonical map reconstruction. All current walk roots and complete protected and eligible vectors are preserved. Historical snapshots remain unchanged.",
+  "scope": "Counts refer to the observed remote branch snapshot and original eligible tips. Unpublished candidate ancestry is kept separate. These are ancestry coverage counts, not a statement of code review or native qualification. No HIA branch, other remote ref, or shared checkout was written.",
+  "remote_writes": 0
+}
