@@ -1,0 +1,158 @@
+{
+  "archive_and_pattern_scan": {
+    "archives": [
+      {
+        "files": 136,
+        "sha256": "1fbe62e63c22efd220fee2b62e5a8306e578f706bff201350f185eee89d52252",
+        "side": "controller",
+        "uncompressed_bytes": 9436338
+      },
+      {
+        "files": 185,
+        "sha256": "a1dec072ac89676af62b6e37b676b3ff5958a806793e0c239a59d264292c374a",
+        "side": "worker",
+        "uncompressed_bytes": 8364975
+      }
+    ],
+    "findings": [],
+    "patterns": [
+      "authorization_header",
+      "aws_access_key_id",
+      "bare_secret_assignment",
+      "github_token",
+      "google_api_key",
+      "jwt_candidate",
+      "openai_token",
+      "pgp_private_key",
+      "private_key_pem",
+      "putty_private_key",
+      "quoted_secret_assignment",
+      "sendgrid_api_key",
+      "slack_token",
+      "stripe_secret",
+      "url_credential_parameter"
+    ],
+    "scope": "Known byte patterns only; no credential use or secret values printed."
+  },
+  "campaign": {
+    "compile_records": 208,
+    "exact_empty_wal_omissions": [
+      "memory/owner.sqlite-wal",
+      "predictor/owner.sqlite-wal"
+    ],
+    "original_build_sha256": "609794911213bdf455c6fffbc44f2b3400709eddd3189c690842607ede0c71d4",
+    "original_files_verified": 63,
+    "other_files_verified": 61,
+    "plan_sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282",
+    "readonly_report_sha256": "5d621b4b0c57a67a73896889e7ca811901f4d4600b2c0a85fdec19bb84b2da82",
+    "relocated_build_sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b",
+    "reported_native_counts": {
+      "memory": {
+        "completed": 265
+      },
+      "predictor": {
+        "completed": 457
+      }
+    },
+    "result_sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0",
+    "snapshot_manifest_sha256": "2b48a7d5938721c4a10ffb7204b5e153501a9f3fafb747b9dcf0a37a66bea8ef",
+    "snapshot_scope": "Original remote review_root copy was not archived. Current originals match all manifest bytes; earlier copy-after-review stability is a retained receipt assertion, not rerun here.",
+    "source_modules": 17,
+    "version_manifests": 6
+  },
+  "execution_counts": {
+    "checkpoint": 0,
+    "model": 0,
+    "native": 0,
+    "runtime": 0,
+    "sqlite_connections": 0
+  },
+  "identities": {
+    "binary_scope": "Runtime executable is not in these archives; its digest/build binding is retained-receipt evidence.",
+    "build_commands_verified": [
+      "source-copy",
+      "git-import",
+      "git-worktree",
+      "git-head",
+      "git-tree",
+      "git-clean-before",
+      "cargo-version",
+      "cargo-fmt",
+      "cargo-build",
+      "git-status"
+    ],
+    "build_receipt_sha256": "90f73f4c611f177e2fc94227f8845b5308df9370502ffc1896b65c939207389d",
+    "candidate_sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+    "harness_sha256": "9b1e122e8b1e5487f891db904093954176d654afe50bba6c2c1480f36ec39e0e",
+    "helper_source_commit": "12cd0514c7936955e090af88a35ee1237def2b7c",
+    "helpers": {
+      "runtime_process_bridge.py": "25ec3fcec67af03ebc19f3e6b500c9f0cd8f6feb1c260f54f40b3b8e128131f4",
+      "runtime_process_contract.py": "05a8d5fae86d20810df4dda5dd64ffa63645a30e723fe16b96fc469e1714a542",
+      "runtime_stdio.py": "cccbd3796b59ba6b89b4030dbcb16a626f378ec477520765a859e040c3ebcfda"
+    },
+    "runtime_binary_receipted_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+    "runtime_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+    "runtime_config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
+    "runtime_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a",
+    "source_receipts_sha256": "51168b6d707a1779b0f7be46abc24404c0a9bc2434e6fe8058e97ac43629ff79"
+  },
+  "lanes": [
+    {
+      "cold_tools": {
+        "process_read": 1,
+        "process_status": 2
+      },
+      "domain_from_stdout": true,
+      "first_tools": {
+        "process_read": 1,
+        "process_start": 1,
+        "process_status": 2
+      },
+      "job_id": "1a1e25ced5b-509a-1",
+      "label": "observe",
+      "stream_bytes_equal": true,
+      "whole_terminal_equal": true
+    },
+    {
+      "cold_tools": {
+        "process_read": 1,
+        "process_status": 2
+      },
+      "domain_from_stdout": true,
+      "first_tools": {
+        "process_read": 1,
+        "process_start": 1,
+        "process_status": 2
+      },
+      "job_id": "1a1e25cf66a-510d-1",
+      "label": "predict",
+      "stream_bytes_equal": true,
+      "whole_terminal_equal": true
+    },
+    {
+      "cold_tools": {
+        "process_read": 1,
+        "process_status": 2
+      },
+      "domain_from_stdout": true,
+      "first_tools": {
+        "process_read": 1,
+        "process_start": 1,
+        "process_status": 6
+      },
+      "job_id": "1a1e25cff37-5147-1",
+      "label": "campaign",
+      "stream_bytes_equal": true,
+      "whole_terminal_equal": true
+    }
+  ],
+  "original_files": 321,
+  "original_inventory_sha256": "21fb09dc80249b833fba3c66e157b44765e4577c4d6cbbd87cf0663808e532b6",
+  "originals_unchanged": true,
+  "private_key_or_token_pattern_hits": 0,
+  "root": "/workspace/scratch/724fb6d14866/runtime-bridge/evidence/actual-runtime-v4",
+  "schema": "hepta.actual-runtime-record-review.v1",
+  "scope": "Independent read-only consistency review of retained runtime observations, not execution or expanded qualification.",
+  "status": "READ_ONLY_RECORD_REVIEW_PASS",
+  "verifier_sha256": "a03860c1f4d2d6ee6d230e969028828cda325c173868d153be62b2ebb6989133"
+}

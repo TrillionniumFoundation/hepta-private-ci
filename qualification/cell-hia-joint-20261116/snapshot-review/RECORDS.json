@@ -1,0 +1,71 @@
+{
+  "actual_runtime_transport_verified": false,
+  "archive": "validation-records.tar.gz",
+  "archive_bytes": 18109,
+  "archive_scope": "All top-level acceptance records, exact executed/formatted postprocessor sources and original JSON review reports; no duplicate source/snapshot trees.",
+  "archive_sha256": "22d292e86a6b5127cedd8877a787f1364ee675adc94e12853f5df933301b62f4",
+  "final_postprocessor_sha256": "c1ee0250d546d8926f9837fefd68a815ee18b1d434658e967c17ea97bc66bb96",
+  "fixture_compile_calls": 0,
+  "fixture_origin_archive": "../../cell-hia-maintenance-20261116/raw-evidence.tar.gz",
+  "fixture_origin_archive_sha256": "f895b5e5aff58143ec5b493a026bcf5d906e52300443c22a2db06abaef87a9c8",
+  "frozen_verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+  "native_calls": 0,
+  "records": {
+    "ACCEPTANCE.json": {
+      "bytes": 10083,
+      "sha256": "37b4c45b6ea5fa6d5c5020d281a7bd5b3f1e77b33a0dab45666e0c33c54905af"
+    },
+    "EXECUTED_POSTPROCESSOR.py": {
+      "bytes": 12052,
+      "sha256": "c751b1363b1f72cbe9fe428827998ec16c598a26ac38037dfc38a5b2d7ddc94b"
+    },
+    "FORMATTED_POSTPROCESSOR.py": {
+      "bytes": 13727,
+      "sha256": "c1ee0250d546d8926f9837fefd68a815ee18b1d434658e967c17ea97bc66bb96"
+    },
+    "FORMAT_EQUIVALENCE.json": {
+      "bytes": 424,
+      "sha256": "5abe9e8e935989702115f8f148a6671a3f0f5a2b686c010dcfe8cd3988552321"
+    },
+    "empty-wal-report.json": {
+      "bytes": 142812,
+      "sha256": "77b7a17b2eb02fa0e2371008ab2523c052d30a20ca7ff2c452716751df6e408f"
+    },
+    "empty-wal-stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "empty-wal-stdout.txt": {
+      "bytes": 232,
+      "sha256": "1d8a123d5e7a6a2cc0f3eb94aecf2842c98e76f883e00b0e28f680f54ff92cbf"
+    },
+    "nonempty-wal-report.json": {
+      "bytes": 3131,
+      "sha256": "f8294e799996d98b404e79443a42fb6ab22ad2d844a81db4c03b2aab123c2d80"
+    },
+    "nonempty-wal-stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "nonempty-wal-stdout.txt": {
+      "bytes": 261,
+      "sha256": "e7e539ce36652a685f4dcf7b30b436549d305b2ab518540bea5e7bb0713eea6e"
+    },
+    "symlink-report.json": {
+      "bytes": 1520,
+      "sha256": "4d84c069e24c17f0a61162fd00b51b15d2741e82a5e92bd59054852441067296"
+    },
+    "symlink-stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "symlink-stdout.txt": {
+      "bytes": 244,
+      "sha256": "fb6a41ca92809817682f1b6076be0f573d719b8bcfb01494c5974fa94aa124e7"
+    }
+  },
+  "schema": "hepta.maintenance-snapshot-validation-records.v1",
+  "source_snapshot_payload_relation": "58 original campaign files are exact copies from retained local run; five explicit synthetic empty sidecars were added only to acceptance input. Original local/remote evidence is untouched.",
+  "status": "PASS",
+  "training_updates": 0
+}

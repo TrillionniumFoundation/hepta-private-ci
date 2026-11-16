@@ -1,0 +1,184 @@
+{
+  "binary": "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/target/release/hepta-runtime",
+  "binary_bytes": 17830320,
+  "binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+  "build_environment": {
+    "CARGO_HOME": "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/cargo-home",
+    "CARGO_TARGET_DIR": "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/target",
+    "PATH": "/opt/homebrew/opt/rustup/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+  },
+  "cargo_version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+  "commands": [
+    {
+      "args": [
+        "/usr/bin/scp",
+        "-oBatchMode=yes",
+        "-oConnectTimeout=10",
+        "ai395-lan:/home/qq/hepta-cell-joint-runtime-724fb6-v1/source-fix.bundle",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix.bundle"
+      ],
+      "elapsed_seconds": 0.384361625,
+      "exit_code": 0,
+      "label": "source-copy",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-v2",
+        "fetch",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix.bundle",
+        "HEAD"
+      ],
+      "elapsed_seconds": 0.6747759170000001,
+      "exit_code": 0,
+      "label": "git-import",
+      "stderr_sha256": "607c6d171ab6c07eb50647d553590b15a2b095ef7cbc66e0737db0d1ad8bfcd9",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-v2",
+        "worktree",
+        "add",
+        "--detach",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix",
+        "5f7f03a1f22905789371ce0e181a1a0f013beca9"
+      ],
+      "elapsed_seconds": 0.49762279200000004,
+      "exit_code": 0,
+      "label": "git-worktree",
+      "stderr_sha256": "0145411f31f9096c61a4655a77d659b269b4cec91a8b5280c9ea8486ecfdf8c6",
+      "stdout_sha256": "c1e95fbb737c2cac493284f4fb00e26008035999359ad1da232b7c6a9ca0d04d",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix",
+        "rev-parse",
+        "HEAD"
+      ],
+      "elapsed_seconds": 0.011760500000000063,
+      "exit_code": 0,
+      "label": "git-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "57538f361e487f062c5876f0c44e2f6813c52d2566dad6c6e8f87417519e8874",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "elapsed_seconds": 0.011469708000000134,
+      "exit_code": 0,
+      "label": "git-tree",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fa89dbff11ef5643b5e171260e44f7f770c010533d383b04886e107ee9d9a82a",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix",
+        "status",
+        "--porcelain",
+        "--untracked-files=no"
+      ],
+      "elapsed_seconds": 0.08954299999999993,
+      "exit_code": 0,
+      "label": "git-clean-before",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/opt/homebrew/opt/rustup/bin/cargo",
+        "+1.95.0",
+        "--version"
+      ],
+      "elapsed_seconds": 0.02359599999999995,
+      "exit_code": 0,
+      "label": "cargo-version",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/opt/homebrew/opt/rustup/bin/cargo",
+        "+1.95.0",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "elapsed_seconds": 1.049580375,
+      "exit_code": 0,
+      "label": "cargo-fmt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/opt/homebrew/opt/rustup/bin/cargo",
+        "+1.95.0",
+        "build",
+        "--offline",
+        "--locked",
+        "--all-features",
+        "--release",
+        "--bin",
+        "hepta-runtime",
+        "--jobs",
+        "2"
+      ],
+      "elapsed_seconds": 157.996383792,
+      "exit_code": 0,
+      "label": "cargo-build",
+      "stderr_sha256": "be5be506cac594570b27e0db1a12ed063741c03451a747269b2f1d715b828895",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "args": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/source-fix",
+        "status",
+        "--porcelain",
+        "--untracked-files=no"
+      ],
+      "elapsed_seconds": 0.15091958299998964,
+      "exit_code": 0,
+      "label": "git-status",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    }
+  ],
+  "ended_unix": 1794797957.498553,
+  "head": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+  "host": "mac",
+  "lock_sha256": "1509860cac0e7f26e6a845edfec1c87ae3bd92380ecaa357457e5263e861d631",
+  "schema": "hepta.runtime.isolated-source-build.v1",
+  "source_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+  "source_status": "",
+  "started_unix": 1794797796.569355,
+  "status": "PASS",
+  "tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a"
+}
