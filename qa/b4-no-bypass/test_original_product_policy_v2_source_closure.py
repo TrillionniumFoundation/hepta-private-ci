@@ -9,7 +9,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from protected_record_support import align_boundary_definition, align_protected_record, require_protected_record
@@ -31,7 +30,7 @@ class OriginalProductPolicyV2SourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.contract = json.loads((ROOT / CONTRACT).read_text())
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = cls.contract["rows"]
         # Preserve the immutable policy guards around the same borrowed
         # original-consumption release used by the merged physical owner.

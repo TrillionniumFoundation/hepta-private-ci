@@ -123,8 +123,15 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         ):
             continue
 
-        if path in CANONICAL_DOC_GROUPS:
-            selected.update(CANONICAL_DOC_GROUPS[path])
+        canonical_path = (
+            "CALLERS.toml"
+            if re.fullmatch(
+                r"scripts/hepta_callers_manifest_parts/part-[0-9]{4}\.toml\.gz", path
+            )
+            else path
+        )
+        if canonical_path in CANONICAL_DOC_GROUPS:
+            selected.update(CANONICAL_DOC_GROUPS[canonical_path])
             derived = True
             continue
 
@@ -179,8 +186,10 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(GROUPS)
             continue
 
-        if path.startswith("scripts/hepta_ci_") or path.startswith(
-            ".github/workflows/"
+        if (
+            path == "scripts/hepta_caller_manifest.py"
+            or path.startswith("scripts/hepta_ci_")
+            or path.startswith(".github/workflows/")
         ):
             full_repo = True
             selected.update(GROUPS)

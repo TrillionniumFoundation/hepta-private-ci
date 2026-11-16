@@ -5,7 +5,6 @@ Historical authorization and effect-order guards still run in their own suites.
 """
 from pathlib import Path
 import tempfile
-import tomllib
 import unittest
 
 import test_current_caller_migrations as migration
@@ -26,7 +25,7 @@ NEXT_USE = AGENT + "cell_q24_candidate_stage_next_use.rs"
 class OriginalStateSlotSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def verifies(self, path, source):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]

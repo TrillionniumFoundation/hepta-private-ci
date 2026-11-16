@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -246,7 +245,7 @@ CASES = (
 class OriginalBCustodySourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def test_original_guards_are_valid(self):
         paths = {AGENT + stem + ".rs" for stem, _, _ in CASES}

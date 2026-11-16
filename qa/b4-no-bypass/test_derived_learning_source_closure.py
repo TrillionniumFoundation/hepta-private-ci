@@ -9,7 +9,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -69,7 +68,7 @@ def require_structure(path, source):
 class DerivedLearningSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
         cls.sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))

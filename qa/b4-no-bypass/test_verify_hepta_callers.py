@@ -5,7 +5,6 @@ import json
 import sys
 import tempfile
 import textwrap
-import tomllib
 import unittest
 from pathlib import Path
 
@@ -526,7 +525,7 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
         )
 
     def check_path_source(self, path, mutate=None):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         rows = [row for row in manifest["protected_file"] if row["path"] == path]
         self.assertTrue(rows)
         source = (ROOT / path).read_text()
@@ -603,7 +602,7 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
             )
 
     def test_ack_retirement_refuses_an_unregistered_typed_caller(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         boundary = next(
             row
             for row in MODULE._boundary_rows(manifest)
@@ -962,7 +961,7 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
                 self.check_source("notes_literal_adapter", self.replace_once(old, new))
 
     def test_new_read_only_apis_reject_an_unregistered_product_caller(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         calls = {
             "notes_original_retained_reference_projection": (
                 "fn unregistered(verified: &VerifiedNotesThreadCall, route: &AgentdTextSessionConfig) {"
@@ -1115,7 +1114,7 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
 
 class DurableOperationsFinalUseBoundaryTests(unittest.TestCase):
     def test_durable_operations_claim_and_dispatch_are_separate_closed_boundaries(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         rows = {row["id"]: row for row in manifest["boundary"]}
         store_path = "codex-rs/hepta-operations/src/durable_store.rs"
         dispatch_path = "codex-rs/hepta-operations/src/durable_dispatch.rs"
@@ -1152,7 +1151,7 @@ class DurableOperationsFinalUseBoundaryTests(unittest.TestCase):
 
 class DeploymentIssuerLeaseCallerBoundaryTests(unittest.TestCase):
     def test_deployment_issuer_lease_tokens_are_consumed_at_pinned_boundaries(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         rows = {row["id"]: row for row in manifest["boundary"]}
         path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
         self.assertIn(path, rows["authority_lease_verify_use"]["product_callers"])
@@ -1174,7 +1173,7 @@ class DeploymentIssuerLeaseCallerBoundaryTests(unittest.TestCase):
 
 class RegisteredHumanTextReadbackBoundaryTests(unittest.TestCase):
     def test_registered_human_text_requires_pinned_issuer_readback(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         boundary = next(
             row
             for row in manifest["boundary"]
@@ -1271,7 +1270,7 @@ class RegisteredHumanTextReadbackBoundaryTests(unittest.TestCase):
 
 class RetainedHumanTextLookupCallerPatternTests(unittest.TestCase):
     def test_lookup_pattern_remains_bound_to_the_host_verifier(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         boundary = next(
             row
             for row in manifest["boundary"]
@@ -1310,7 +1309,7 @@ class RetainedHumanTextLookupCallerPatternTests(unittest.TestCase):
 
 class OriginalWriterRotationBoundaryMarkerTests(unittest.TestCase):
     def test_rotation_manifest_marker_matches_the_pinned_predecessor_call(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         boundary = next(
             row
             for row in manifest["boundary"]
@@ -1343,7 +1342,7 @@ class OriginalWriterRotationBoundaryMarkerTests(unittest.TestCase):
 
 class PhysicalCurrentRetiredAdoptionBoundaryMarkerTests(unittest.TestCase):
     def test_adoption_manifest_and_protected_file_match_boxed_profile(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         boundary = next(
             row
             for row in manifest["boundary"]
@@ -1395,7 +1394,7 @@ class PhysicalCurrentRetiredAdoptionBoundaryMarkerTests(unittest.TestCase):
 
 class PhysicalCurrentBackendGenesisBoundaryMarkerTests(unittest.TestCase):
     def test_backend_genesis_marker_matches_boxed_profile_in_both_manifests(self):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         boundary = next(
             row
             for row in manifest["boundary"]

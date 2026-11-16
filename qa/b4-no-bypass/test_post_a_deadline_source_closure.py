@@ -6,7 +6,6 @@ complete ordinary daemon and Root learning run.
 
 from pathlib import Path
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_ledger_readonly_source_closure as component
@@ -19,7 +18,7 @@ FEATURE = A + 'circuit_feature_learning_source.rs'
 class PostADeadlineSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / 'CALLERS.toml').read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / 'CALLERS.toml')
 
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers

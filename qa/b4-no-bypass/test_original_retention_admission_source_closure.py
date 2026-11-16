@@ -7,7 +7,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from rust_source_marker_support import source_marker_span
@@ -28,7 +27,7 @@ VERIFY = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify
 class OriginalRetentionAdmissionClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def records(self, path):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]

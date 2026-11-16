@@ -4,7 +4,6 @@ from dataclasses import replace
 import importlib.util
 from pathlib import Path
 import sys
-import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -74,7 +73,7 @@ OTHER = (
 class OrdinaryOriginalCallersSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(manifest)}
         paths = {
             A + "cell_q24_learning_historical_stage.rs",

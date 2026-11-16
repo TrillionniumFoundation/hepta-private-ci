@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -26,7 +25,7 @@ BOUNDARIES = {"product_original_holdout_release", "product_original_holdout_cons
 class OriginalHoldoutReleaseSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = [row for row in cls.manifest["protected_file"] if row["path"] in (RELEASE, RUNNER, OWNER)]
         assert {row["path"] for row in cls.rows} == {RELEASE, RUNNER, OWNER}
         all_boundaries = PROOF._boundary_rows(cls.manifest)

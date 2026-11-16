@@ -10,7 +10,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -135,7 +134,7 @@ def require_read_only_recovery(source):
 class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def check_mutation(self, path, mutate):
         rows = [r for r in self.manifest["protected_file"] if r["path"] == path]
@@ -360,7 +359,7 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
 class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {b.identifier: b for b in PROOF._boundary_rows(cls.manifest)}
         paths = {path for identifier, expected in CALLERS.items()
                  for path in (cls.boundaries[identifier].definition_path, *expected)}

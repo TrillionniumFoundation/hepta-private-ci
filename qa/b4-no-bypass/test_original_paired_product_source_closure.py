@@ -9,7 +9,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from protected_record_support import align_protected_record, require_protected_record
@@ -46,7 +45,7 @@ class OriginalPairedProductSourceClosureTests(unittest.TestCase):
             if marker.startswith("ProductComparisonModeV1::") and " => b\"" in marker:
                 arm, body = marker.split(" => ", 1)
                 literal["marker"] = arm + " => { " + body.rstrip(",") + " }"
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.contract["rows"] = [align_protected_record(row, cls.manifest["protected_file"])
                                 for row in cls.contract["rows"]]
 

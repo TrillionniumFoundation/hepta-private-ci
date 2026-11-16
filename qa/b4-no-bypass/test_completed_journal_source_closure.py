@@ -3,7 +3,6 @@
 from dataclasses import replace
 from pathlib import Path
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -17,7 +16,7 @@ PROOF = route.PROOF
 class CompletedJournalSourceClosure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def test_physical_checks_and_error_postchecks_cannot_disappear(self):
         source = (ROOT / PATH).read_text()

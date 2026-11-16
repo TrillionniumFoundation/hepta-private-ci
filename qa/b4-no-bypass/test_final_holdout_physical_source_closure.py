@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -24,7 +23,7 @@ REPLAY = PREFIX + "fenced_holdout_file_replay.rs"
 class FinalHoldoutPhysicalSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = [row for row in manifest["protected_file"] if row["path"] in (STORE, REPLAY)]
         assert {row["path"] for row in cls.rows} == {STORE, REPLAY}
 

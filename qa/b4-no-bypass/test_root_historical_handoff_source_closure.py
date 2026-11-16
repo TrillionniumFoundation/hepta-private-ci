@@ -5,7 +5,6 @@ authenticated experience, retirement, a new recipient or cold recovery.
 """
 
 import re
-import tomllib
 import unittest
 
 import test_root_historical_capture_source_closure as component
@@ -45,7 +44,7 @@ def require_one_durable_transition_per_request(source):
 class RootHistoricalHandoffClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     rejects_removal = component.RootHistoricalSourceCaptureClosureTests.rejects_removal
 

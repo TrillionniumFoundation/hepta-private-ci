@@ -29,7 +29,6 @@ import os
 import re
 import sys
 import tempfile
-import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -38,6 +37,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "CALLERS.toml"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+manifest_storage = importlib.import_module("hepta_caller_manifest")
 typed_callers = importlib.import_module("hepta_typed_callers")
 UnresolvedTypedReceiver = typed_callers.UnresolvedTypedReceiver
 authority_fields = typed_callers.authority_fields
@@ -65,8 +65,8 @@ class Boundary:
 
 def _load_manifest(path: Path) -> dict[str, Any]:
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
-    except (OSError, tomllib.TOMLDecodeError) as exc:
+        data = manifest_storage.load_manifest(path)
+    except manifest_storage.ManifestStorageError as exc:
         raise VerificationFailure(f"cannot read caller manifest: {exc}") from exc
     if data.get("schema_version") != 2:
         raise VerificationFailure("CALLERS.toml schema_version must be 2")

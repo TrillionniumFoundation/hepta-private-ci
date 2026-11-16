@@ -10,7 +10,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -80,7 +79,7 @@ def require_wire_fields(source):
 class OriginalQ24OutcomeControlSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def check_mutation(self, path, mutate):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
@@ -250,7 +249,7 @@ class OriginalQ24OutcomeControlSourceTests(unittest.TestCase):
 class OriginalQ24OutcomeControlCallerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
         paths = {path for identifier, expected in CALLERS.items()
                  for path in (cls.boundaries[identifier].definition_path, *expected)}

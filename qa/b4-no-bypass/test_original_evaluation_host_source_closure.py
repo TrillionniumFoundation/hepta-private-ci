@@ -7,7 +7,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from rust_source_marker_support import source_marker_span
@@ -52,7 +51,7 @@ EXPECTED = {
 class OriginalEvaluationHostClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
 
     def code(self, source):

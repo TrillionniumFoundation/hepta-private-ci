@@ -7,7 +7,6 @@ or daemon, and cannot qualify an ordinary A or a cold recovery.
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_initial_peer_ready_source_closure as ready
@@ -82,7 +81,7 @@ def verify_registration_phase(path, source):
 class InitialBaselinePhaseSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.paths = (*REGISTRATIONS, SLOT, TRANSPORT, LAUNCH, PREPARE, FEATURE)
         cls.rows = {
             path: [row for row in manifest["protected_file"] if row["path"] == path]

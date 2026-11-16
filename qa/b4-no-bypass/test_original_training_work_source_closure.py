@@ -5,7 +5,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -29,7 +28,7 @@ BOUNDARIES = {
 class OriginalTrainingWorkSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def guards(self, name, function, markers, occurrence=0):
         path = AGENT + name + ".rs"

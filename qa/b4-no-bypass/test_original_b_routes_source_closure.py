@@ -4,7 +4,6 @@ from dataclasses import replace
 import importlib.util
 from pathlib import Path
 import sys
-import tomllib
 import unittest
 
 
@@ -67,7 +66,7 @@ EXPECTED = {
 class OriginalBRouteSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
         paths = {
             cls.boundaries["root_independent_b_" + name].definition_path for name in EXPECTED

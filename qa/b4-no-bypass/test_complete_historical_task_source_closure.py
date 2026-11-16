@@ -2,7 +2,6 @@
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_original_cell_physical_source_closure as cell
@@ -46,7 +45,7 @@ def require_complete_structure(path, source):
 class CompleteHistoricalTaskSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     reject = cell.OriginalCellSourceClosureTests.reject
 

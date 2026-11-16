@@ -8,7 +8,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from rust_source_marker_support import source_marker_span
@@ -310,7 +309,7 @@ def require_literal(source, function, introduction, value):
 class OriginalOnPolicyEvaluationClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
         cls.rows = []
         for expected in OWNED_RULES:

@@ -9,7 +9,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from protected_record_support import align_protected_record, require_protected_record
@@ -61,7 +60,7 @@ class OriginalPreBPolicyClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.contract = json.loads(CONTRACT.read_text())
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = cls.contract["added_protected_records"] + [
             edit["after"] for edit in cls.contract["protected_record_replacements"]
         ]

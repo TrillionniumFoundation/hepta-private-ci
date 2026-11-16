@@ -5,7 +5,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,7 +26,7 @@ RECEIPTS = AGENT + "cell_q24_learning_historical_receipts.rs"
 class HistoricalQ24StageSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
 
     def rejects(self, path, function, marker, occurrence=0):

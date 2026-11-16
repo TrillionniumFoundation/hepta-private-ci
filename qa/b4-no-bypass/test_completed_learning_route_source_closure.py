@@ -4,7 +4,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -63,7 +62,7 @@ def require_ack_install_is_last(source):
 class CompletedLearningRouteSourceClosure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def reject(self, file, before, after=""):
         path = A + file + ".rs"

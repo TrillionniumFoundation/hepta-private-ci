@@ -5,7 +5,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -51,7 +50,7 @@ def require_post_read_cache_commit(source):
 class OriginalHoldoutCurrentSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def row(self, path):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]

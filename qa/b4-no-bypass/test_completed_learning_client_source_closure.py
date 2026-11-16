@@ -1,7 +1,6 @@
 """Completed history comes only from the original bounded Root exchanges."""
 
 from dataclasses import replace
-import tomllib
 import unittest
 
 import test_q24_completed_history_control_source_closure as control
@@ -17,7 +16,7 @@ CLIENT = AGENT + "root_historical_task_read_client.rs"
 class CompletedLearningClientSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     rejects = control.OriginalCompletedHistoryControlSourceTests.rejects
 

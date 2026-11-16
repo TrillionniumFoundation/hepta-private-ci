@@ -5,7 +5,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -37,7 +36,7 @@ def function_bounds(source, marker):
 class RunStartReadOnlySourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = [
             row for row in manifest["protected_file"]
             if row["path"] in (OWNER, FRAMES, READER)

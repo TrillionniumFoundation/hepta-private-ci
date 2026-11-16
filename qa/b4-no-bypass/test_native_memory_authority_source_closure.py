@@ -8,7 +8,6 @@ by the existing Rust owner tests.
 from dataclasses import replace
 from pathlib import Path
 import tempfile
-import tomllib
 import unittest
 
 import test_current_caller_migrations as migration
@@ -59,7 +58,7 @@ BOOTSTRAP_VERIFY = (
 class NativeMemoryAuthoritySourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {
             row.identifier: row for row in PROOF._boundary_rows(cls.manifest)
         }

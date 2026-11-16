@@ -6,7 +6,6 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
-import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -24,7 +23,7 @@ class RootAdminSourceClosureTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
-        self.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        self.manifest = MODULE._load_manifest(ROOT / "CALLERS.toml")
         for relative in {row["path"] for row in self.manifest["protected_file"]}:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)

@@ -14,6 +14,8 @@ on:
       - codex-rs/Cargo.lock
       - MODULE.bazel.lock
       - CALLERS.toml
+      - scripts/hepta_callers_manifest_parts/**
+      - scripts/hepta_caller_manifest.py
       - scripts/verify_hepta_callers.py
       - scripts/hepta_typed_callers.py
       - .github/workflows/hepta-hcsn-training-bridge.yml
@@ -206,9 +208,10 @@ jobs:
         run: |
           python3 scripts/verify_hepta_callers.py verify > "$RUNNER_TEMP/hcsn-agentd/callers.json"
           python3 - <<'PY' > "$RUNNER_TEMP/hcsn-agentd/source-pins.json"
-          import hashlib, json, tomllib
+          import hashlib, json
           from pathlib import Path
-          manifest = tomllib.loads(Path("CALLERS.toml").read_text())
+          from scripts.verify_hepta_callers import _load_manifest
+          manifest = _load_manifest(Path("CALLERS.toml"))
           required_paths = {
               "codex-rs/hepta-contracts/src/final_use.rs",
               "codex-rs/hepta-contracts/src/final_use_control.rs",

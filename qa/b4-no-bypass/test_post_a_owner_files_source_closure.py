@@ -1,6 +1,5 @@
 """Original keys/files are bound to actual current Root-selected owner roles."""
 
-import tomllib
 import unittest
 
 import test_historical_ledger_readonly_source_closure as component
@@ -13,7 +12,7 @@ FILES = AGENT + "production_post_a_q24_owners.rs"
 class PostAOwnerFilesSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = component.PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers

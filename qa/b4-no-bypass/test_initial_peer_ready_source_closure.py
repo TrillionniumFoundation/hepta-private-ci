@@ -7,7 +7,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -82,7 +81,7 @@ def structure(path, source):
 class InitialPeerReadySourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = {b.identifier: b for b in PROOF._boundary_rows(cls.manifest)}
         names = set(CALLERS) | {"root_initial_profile_check", "root_initial_profile_refusal"}
         paths = {cls.rows[name].definition_path for name in names}

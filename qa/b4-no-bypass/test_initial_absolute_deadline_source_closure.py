@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from rust_source_marker_support import source_marker_span
@@ -24,7 +23,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 class InitialAbsoluteDeadlineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def reject(self, filename, function, marker, occurrence=0, replacement=None):
         path = AGENT + filename

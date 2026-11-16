@@ -4,7 +4,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_publication_refusal_source_closure as original
@@ -48,7 +47,7 @@ def structure(path, source):
 class FirstPublicationAcceptanceSourceClosure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
         cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
             (ROOT / path).read_text())) for path in (ACCEPT, TRANSPORT)}

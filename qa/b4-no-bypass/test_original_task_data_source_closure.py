@@ -9,7 +9,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -103,7 +102,7 @@ def require_structure(path, source):
 class OriginalTaskDataSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
         paths = {DATA, DECISION, TASK, MATERIALIZER, CLIENT, ROOT_TASK,
                  route.PROTOCOL, route.PROVIDER, DERIVE}

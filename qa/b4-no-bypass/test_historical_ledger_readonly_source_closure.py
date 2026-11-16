@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import tempfile
-import tomllib
 import unittest
 
 from rust_source_marker_support import source_marker_span
@@ -18,7 +17,7 @@ LEDGER = "codex-rs/hepta-learning-ledger/src/"
 class HistoricalLedgerReadonlySourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def reject_removal(self, path, function, marker, occurrence=0):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]

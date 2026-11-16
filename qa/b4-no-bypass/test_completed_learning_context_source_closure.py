@@ -4,7 +4,6 @@ from pathlib import Path
 import importlib.util
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -22,7 +21,7 @@ PATH = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
 class CompletedLearningContextSourceClosure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.source = (ROOT / PATH).read_text()
         cls.rules = {
             "protected_file": [

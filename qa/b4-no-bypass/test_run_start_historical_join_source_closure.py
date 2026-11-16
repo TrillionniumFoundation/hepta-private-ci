@@ -5,7 +5,6 @@ the final Source/Cell/Ledger/RunStart historical product join.
 """
 
 from dataclasses import replace
-import tomllib
 import unittest
 
 import test_original_run_start_retention_source_closure as original
@@ -38,7 +37,7 @@ def require_structure(source):
 class RunStartHistoricalJoinSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
         paths = {PATH, original.STORE, original.A + "authority_host_historical_task.rs"}
         cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(

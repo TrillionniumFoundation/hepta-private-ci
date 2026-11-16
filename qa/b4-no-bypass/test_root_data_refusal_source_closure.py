@@ -7,7 +7,6 @@ execute the UID0 subprocess tests nor attest an A/learning/cold-recovery chain.
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_root_historical_capture_source_closure as component
@@ -148,7 +147,7 @@ def require_executed_child(source):
 class RootDataRefusalClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     rejects_removal = component.RootHistoricalSourceCaptureClosureTests.rejects_removal
 

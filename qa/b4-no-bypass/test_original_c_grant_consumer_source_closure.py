@@ -7,7 +7,6 @@ native execution or proof of an ordinary A/B/C positive result.
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,7 +28,7 @@ CONTINUATION = PREFIX + "production_post_a_continuation.rs"
 class OriginalCGrantConsumerSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.paths = (
             CLIENT, CURRENT_CLIENT, STORE, OWNER, PREPARED, AGGREGATE,
             WORKER, HANDOFF, CONTINUATION,

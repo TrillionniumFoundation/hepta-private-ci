@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -22,7 +21,7 @@ SPEC.loader.exec_module(PROOF)
 class Q24DatasetSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = [row for row in manifest["protected_file"] if row["path"] == SOURCE]
         cls.source = (ROOT / SOURCE).read_text()
 

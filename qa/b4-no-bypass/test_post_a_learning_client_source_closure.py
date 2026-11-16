@@ -1,6 +1,5 @@
 """Late installation keeps the actual original historical session and budget."""
 
-import tomllib
 import unittest
 
 import test_historical_ledger_readonly_source_closure as component
@@ -14,7 +13,7 @@ PROTOCOL = AGENT + "root_post_a_learning_protocol.rs"
 class PostALearningClientSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = component.PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers

@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -26,7 +25,7 @@ MODEL_CURRENT = AGENT + "cell_q24_model_current_admission.rs"
 class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def rejects(self, path, marker, replacement=""):
         original = (ROOT / path).read_text()

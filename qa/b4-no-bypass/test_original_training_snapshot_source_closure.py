@@ -5,7 +5,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -26,7 +25,7 @@ BOUND = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.source = (ROOT / SOURCE).read_text()
         cls.rows = [row for row in cls.manifest["protected_file"] if row["path"] == SOURCE]
 

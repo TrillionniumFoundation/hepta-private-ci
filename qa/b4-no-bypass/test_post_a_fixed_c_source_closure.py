@@ -1,5 +1,4 @@
 """Fresh C uses only the eight original files fixed by the same Root route."""
-import tomllib
 import unittest
 
 import test_historical_ledger_readonly_source_closure as component
@@ -11,7 +10,7 @@ PLAN, FILES = A + 'production_post_a_c_task.rs', A + 'production_post_a_c_files.
 class PostAFixedCSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / 'CALLERS.toml').read_text())
+        cls.manifest = component.PROOF._load_manifest(ROOT / 'CALLERS.toml')
 
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers

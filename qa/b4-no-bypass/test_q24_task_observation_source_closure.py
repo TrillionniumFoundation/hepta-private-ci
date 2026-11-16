@@ -5,7 +5,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,7 +24,7 @@ CLIENT = AGENT + "client_q24_outcome.rs"
 class OriginalQ24TaskObservationSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def rejects(self, path, function, marker, occurrence=0):
         source = (ROOT / path).read_text()

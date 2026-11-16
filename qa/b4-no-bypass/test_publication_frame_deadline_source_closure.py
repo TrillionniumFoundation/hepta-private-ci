@@ -1,7 +1,6 @@
 """The durable handler receives this actual frame's original deadline."""
 from pathlib import Path
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -13,7 +12,7 @@ PEER = "codex-rs/hepta-contracts/src/authority_host_peer.rs"
 class PublicationFrameDeadlineSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def mutate(self, path, change):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]

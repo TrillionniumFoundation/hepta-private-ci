@@ -3,7 +3,6 @@
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -17,7 +16,7 @@ DERIVE = "fn with_original_derived_profile<T>("
 class PostADeriveSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def reject(self, function, marker, occurrence=0):
         source = (ROOT / FILE).read_text()

@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -25,7 +24,7 @@ READER = PREFIX + "product_execution_readback.rs"
 class ExecutionPhysicalSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = [row for row in manifest["protected_file"]
                     if row["path"] in (STORE, PHYSICAL, READER)]
         assert {row["path"] for row in cls.rows} == {STORE, PHYSICAL, READER}

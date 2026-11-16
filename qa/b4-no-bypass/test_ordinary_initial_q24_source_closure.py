@@ -1,6 +1,5 @@
 """Guard the real ordinary first-A route; this is not execution qualification."""
 
-import tomllib
 import unittest
 
 import test_initial_artifact_readview_source_closure as component
@@ -12,7 +11,7 @@ AGENT = component.AGENT
 class OrdinaryInitialQ24SourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = component.PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     reject_removal = component.InitialArtifactReadviewClosureTests.reject_removal
 

@@ -2,7 +2,6 @@
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_root_data_refusal_source_closure as armed
@@ -46,7 +45,7 @@ def cell_armed_io(path, source):
 class OriginalCellSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def mutate(self, path, change):
         rows = [r for r in self.manifest["protected_file"] if r["path"] == path]

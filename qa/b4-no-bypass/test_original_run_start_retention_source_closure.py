@@ -8,7 +8,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_root_historical_capture_source_closure as component
@@ -126,7 +125,7 @@ def require_structure(path, source):
 class OriginalRunStartRetentionSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
         paths = {path for identifier, expected in CALLERS.items()
                  for path in (cls.boundaries[identifier].definition_path, *expected)}

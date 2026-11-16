@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 from protected_record_support import align_protected_record, require_protected_record
@@ -112,7 +111,7 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
         ):
             raise AssertionError("historical positive-root contract changed")
         cls.contract = json.loads(contract_bytes)
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         def explicit_original_types(value):
             if isinstance(value, str):
                 return value.replace(

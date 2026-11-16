@@ -8,7 +8,6 @@ from dataclasses import replace
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_historical_task_read_source_closure as route
@@ -103,7 +102,7 @@ def structure(path, source):
 class CompletedPublicationSourceClosure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
         paths = {cls.boundaries[key].definition_path for key in CALLERS}
         paths.update(path for callers in CALLERS.values() for path in callers)

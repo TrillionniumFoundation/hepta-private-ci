@@ -4,7 +4,6 @@ from dataclasses import replace
 import re
 import tempfile
 from pathlib import Path
-import tomllib
 import unittest
 
 import test_q24_completed_history_control_source_closure as control
@@ -67,7 +66,7 @@ def require_waits_for_received_ack(source):
 class OriginalTerminalAcceptanceSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     rejects = control.OriginalCompletedHistoryControlSourceTests.rejects
 

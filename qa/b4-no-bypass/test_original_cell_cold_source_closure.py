@@ -5,7 +5,6 @@ These checks do not execute Root or establish complete learning qualification.
 from pathlib import Path
 import re
 import tempfile
-import tomllib
 import unittest
 
 import test_original_cell_physical_source_closure as cell
@@ -34,7 +33,7 @@ def require_inside_existing_arm(source):
 class OriginalCellColdSourceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     reject = cell.OriginalCellSourceClosureTests.reject
 

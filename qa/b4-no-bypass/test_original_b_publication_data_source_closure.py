@@ -5,7 +5,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -25,7 +24,7 @@ SPEC.loader.exec_module(PROOF)
 class OriginalBPublicationDataSourceClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.row = next(row for row in PROOF._boundary_rows(cls.manifest) if row.identifier == IDENTIFIER)
         cls.rows = [row for row in cls.manifest["protected_file"] if row["path"] in (DATA, EXECUTE, OUTPUTS)]
         cls.raw = {path: (ROOT / path).read_text() for path in (DATA, EXECUTE, OUTPUTS)}

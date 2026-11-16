@@ -4,7 +4,6 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
-import tomllib
 import unittest
 
 
@@ -25,7 +24,7 @@ WITNESS = "codex-rs/hepta-neuron/src/witness.rs"
 class HistoricalSourceReadbackClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
     def check_mutation(self, path, mutation):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
