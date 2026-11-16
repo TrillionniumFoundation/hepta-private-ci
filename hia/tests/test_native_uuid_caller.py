@@ -25,9 +25,9 @@ def verify(args, report):
     library = args.library_dir.resolve(strict=True)
     report["inputs"] = {name: sha256(ROOT / name) for name in [
         "codex-rs/utils/string/src/lib.rs", "codex-rs/utils/string/src/hia_native_uuid.rs",
-        "hia/uuid_matches.hepta", "hia/tests/native_uuid_caller.rs",
+        "hia/uuid_find.hepta", "hia/tests/native_uuid_caller.rs",
     ]}
-    report["inputs"]["archive_sha256"] = sha256(library / "libcodex_hia_uuid_matches.a")
+    report["inputs"]["archive_sha256"] = sha256(library / "libcodex_hia_uuid_find.a")
     report["inputs"]["build_report_sha256"] = sha256(library / "build.json")
     report["rustc"] = run([rustc, "--version", "--verbose"], report).strip()
     os.chdir(ROOT / "codex-rs")
@@ -71,7 +71,7 @@ def verify(args, report):
         command += ["-L", f"dependency={dependency_dir}", "-L", f"native={library}", "-o", str(binary)]
         run(command, report, env=environment)
         symbols = run(["nm", "--defined-only", "--extern-only", str(binary)], report)
-        if not any(line.endswith(" codex_hia_uuid_matches") for line in symbols.splitlines()):
+        if not any(line.endswith(" codex_hia_uuid_find") for line in symbols.splitlines()):
             raise RuntimeError("the differential executable does not contain the native HIA UUID matcher")
         report["test_binary_sha256"] = sha256(binary)
         report["native_symbol_present"] = True

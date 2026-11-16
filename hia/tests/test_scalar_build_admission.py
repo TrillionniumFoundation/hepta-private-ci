@@ -55,10 +55,15 @@ def check_object_source(builder, observed):
             raise AssertionError(f"object source accepted {label}")
 
 
-def check_profile(builder, lock, module, observed):
-    borrowed_module = next((name for name in lock["modules"]
-                            if lock.get("entry_profiles", {}).get(name, "borrowed-buffers-u32-v1")
-                            == "borrowed-buffers-u32-v1"), None)
+def check_profile(builder, lock, module, observed, borrowed_module=None):
+    if borrowed_module is None:
+        borrowed_module = next((name for name in lock["modules"]
+                                if lock.get("entry_profiles", {}).get(name, "borrowed-buffers-u32-v1")
+                                == "borrowed-buffers-u32-v1"), None)
+    elif (borrowed_module not in lock["modules"]
+          or lock.get("entry_profiles", {}).get(borrowed_module, "borrowed-buffers-u32-v1")
+          != "borrowed-buffers-u32-v1"):
+        raise AssertionError("explicit borrowed fixture must be a locked borrowed module")
     if borrowed_module is None:
         raise AssertionError("a locked borrowed module is required to check the default profile")
     scalar = {"exports": ["f0"], "functions": [{"name": "f0", "params": [
@@ -222,7 +227,7 @@ def check_elf(builder, raw, observed):
     return inventory
 
 
-def verify(artifacts, module):
+def verify(artifacts, module, borrowed_module=None):
     inputs = {}
 
     def read(path):
@@ -305,7 +310,7 @@ def verify(artifacts, module):
     equal("produced-raw-object-length", compilation["produced_bytes"], len(raw))
 
     check_object_source(builder, observed)
-    check_profile(builder, lock, module, observed)
+    check_profile(builder, lock, module, observed, borrowed_module)
     inventory = check_elf(builder, raw, observed)
     equal("recorded-raw-object-inventory", row["object_inventory"], inventory)
     equal("normalized-section-count", struct.unpack_from("<H", named, 60)[0], 6)
@@ -352,6 +357,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--module", default=DEFAULT_MODULE)
+    parser.add_argument("--borrowed-module", help="Explicit locked borrowed fixture; default is the first borrowed module")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
     if re.fullmatch(r"[a-z0-9_]+", args.module) is None:
@@ -370,7 +376,7 @@ def main():
         "qualification_scope": "entry-profile and scalar ELF admission; behavioral gates separate",
     }
     try:
-        result = verify(artifacts, args.module)
+        result = verify(artifacts, args.module, args.borrowed_module)
     except (AssertionError, AttributeError, ImportError, IndexError, KeyError,
             OSError, RuntimeError, TypeError, ValueError, struct.error) as error:
         result["error"] = f"{type(error).__name__}: {error}"

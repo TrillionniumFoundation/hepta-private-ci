@@ -22,11 +22,7 @@ SPACE = set(range(9, 14)) | {32, 133, 160, 5760, 8232, 8233, 8239, 8287, 12288} 
 TRIM = ''.join(map(chr, sorted(SPACE)))
 HEPTA_REVISION = '0de5657a80f96b138525ac7ee9ce11712a83a10d'
 COMPILER_SHA = '76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273'
-MODULES = ['seek_sequence', 'utf8_boundaries', 'utf8_prefix', 'metric_tag',
-           'markdown_location', 'ascii_json_fragment', 'uuid_matches',
-           'template_parser', 'template_render', 'template_index', 'prefix_match',
-           'prefix_admission', 'policy_summary', 'network_domains',
-           'allowed_prefixes', 'command_dispatch', 'network_host']
+MODULES = ['seek_sequence', 'utf8_boundaries', 'utf8_prefix', 'metric_tag', 'markdown_location', 'ascii_json_fragment', 'truncate', 'token_budget', 'source_file', 'file_update', 'parser', 'patch_effects', 'unified_diff', 'patch_summary', 'patch_application', 'patch_standalone', 'uuid_find', 'template_parse', 'template_render', 'template_index', 'uuid_matches', 'template_parser', 'prefix_match', 'prefix_admission', 'policy_summary', 'network_domains', 'allowed_prefixes', 'command_dispatch', 'network_host']
 
 
 def words(*values):
@@ -136,12 +132,12 @@ def native_inputs(library, source, profile, report):
             raise RuntimeError('incremental compiler/object binding is invalid')
         report['native_build'] = {
             'schema': schema, 'profile': profile, 'module_count': 1,
-            'compiler_generations_verified': [], 'full17_manifest_verified': False,
+            'compiler_generations_verified': [], 'full29_manifest_verified': False,
             'compiler_bootstrap_rerun': False,
-            'scope': 'One existing module compiled by a reused B3; no full seventeen-module bootstrap claim.'}
-    elif profile == 'full-native17':
+            'scope': 'One existing module compiled by a reused B3; no full twenty-nine-module bootstrap claim.'}
+    elif profile == 'full-native29':
         if schema != 'codex.hia.native-build.v1':
-            raise RuntimeError('full native17 profile rejects incremental or unknown schemas')
+            raise RuntimeError('full native29 profile rejects incremental or unknown schemas')
         lock_path = source.parent / 'toolchain.json'
         lock = json.loads(lock_path.read_bytes())
         if (schema != 'codex.hia.native-build.v1' or build.get('status') != 'built'
@@ -153,14 +149,14 @@ def native_inputs(library, source, profile, report):
                 or lock.get('target') != 'x86_64-unknown-linux-gnu'
                 or lock.get('modules') != MODULES
                 or set(build.get('modules', {})) != set(MODULES)
-                or lock.get('entry_profiles') != {'prefix_admission': 'u64-pair-to-u64-v1'}):
-            raise RuntimeError('full native17 lock/compiler/module contract is invalid')
+                or lock.get('entry_profiles') != {'token_budget': 'u64-pair-to-u64-v1', 'prefix_admission': 'u64-pair-to-u64-v1'}):
+            raise RuntimeError('full native29 lock/compiler/module contract is invalid')
         bind(lock_path, build['toolchain_lock_sha256'])
         bind(source.parent / 'build.py', build['build_driver_sha256'])
         bind(source.parent / 'cargo_build.rs', build['cargo_helper_sha256'])
         generations = build['bootstrap_generations']
         if [item['case'] for item in generations] != ['B1', 'B2', 'B3']:
-            raise RuntimeError('full native17 requires exactly three ordered compiler generations')
+            raise RuntimeError('full native29 requires exactly three ordered compiler generations')
         for index, generation in enumerate(generations):
             name = generation['case']
             image = directory / 'bootstrap' / f'{name}.image.bin'
@@ -170,13 +166,13 @@ def native_inputs(library, source, profile, report):
                     or generation['format'] != ('seed-shared' if index == 0 else 'flat-x86-64')
                     or generation['forbidden_compiler_modules_loaded']
                     or (index and generation['artifact_sha256'] != COMPILER_SHA)):
-                raise RuntimeError(f'full native17 compiler generation is invalid: {name}')
+                raise RuntimeError(f'full native29 compiler generation is invalid: {name}')
             bind(image, COMPILER_SHA, generation['produced_bytes'])
         for name in MODULES:
             module = build['modules'][name]
             link = module['codex_link_abi']
             symbol = 'codex_hia_' + name
-            profile_name = 'u64-pair-to-u64-v1' if name == 'prefix_admission' else 'borrowed-buffers-u32-v1'
+            profile_name = 'u64-pair-to-u64-v1' if name in ('prefix_admission', 'token_budget') else 'borrowed-buffers-u32-v1'
             if (module['entry_profile'] != profile_name
                     or module['compilation']['status'] != 'returned'
                     or module['compilation']['abi_status'] != 0
@@ -187,22 +183,48 @@ def native_inputs(library, source, profile, report):
                     or link['archive'] != f'lib{symbol}.a'
                     or link['library'] != f'lib{symbol}.so'
                     or link['object'] != f'{name}.namespaced.o'):
-                raise RuntimeError(f'full native17 module binding is invalid: {name}')
+                raise RuntimeError(f'full native29 module binding is invalid: {name}')
             bind(source.parent / f'{name}.hepta', module['source_sha256'])
             bind(directory / f'{name}.so', module['library_sha256'], module['library_bytes'])
             object_sha = bind(directory / f'{name}.o', module['object_inventory']['object_sha256'])
             if object_sha != module['compilation']['produced_sha256']:
-                raise RuntimeError(f'full native17 emitted object mismatch: {name}')
+                raise RuntimeError(f'full native29 emitted object mismatch: {name}')
             bind(directory / link['archive'], link['archive_sha256'], link['archive_bytes'])
             bind(directory / link['object'], link['object_sha256'])
             bind(directory / link['library'], link['library_sha256'])
+            compilation = module['compilation']
+            compiler_input = directory / f'{name}.input.bin'
+            input_sha = bind(compiler_input, compilation['source_sha256'], compilation['input_bytes'])
+            if (compilation['input_sha256'] != input_sha
+                    or compilation['artifact_sha256'] != COMPILER_SHA
+                    or compilation['forbidden_compiler_modules_loaded']):
+                raise RuntimeError(f'full native29 actual compiler input mismatch: {name}')
+            fields = {
+                'module': name, 'target': lock['target'], 'mode': 'native-selfhost',
+                'revision': lock['revision'], 'symbol': symbol,
+                'object': link['object'], 'archive': link['archive'], 'archive_member': 'hia.o',
+                'source_sha256': module['source_sha256'],
+                'toolchain_lock_sha256': build['toolchain_lock_sha256'],
+                'build_driver_sha256': build['build_driver_sha256'],
+                'cargo_helper_sha256': build['cargo_helper_sha256'],
+                'object_sha256': link['object_sha256'], 'text_sha256': link['text_sha256'],
+                'archive_sha256': link['archive_sha256'], 'compiler_sha256': COMPILER_SHA,
+                'build_report_sha256': inputs[str(build_path)],
+            }
+            # Exact field order from the unchanged builder and Cargo helper.
+            expected_link = ('codex.hia.static-link.v1\n'
+                             + ''.join(f'{key}={value}\n' for key, value in fields.items()))
+            receipt = directory / f'{name}.link'
+            bind(receipt)
+            if receipt.read_bytes() != expected_link.encode('ascii'):
+                raise RuntimeError(f'full native29 actual static-link receipt mismatch: {name}')
         if build['modules']['network_host']['source_sha256'] != source_sha:
-            raise RuntimeError('full native17 network-host source mismatch')
+            raise RuntimeError('full native29 network-host source mismatch')
         report['native_build'] = {
             'schema': schema, 'profile': profile, 'module_count': len(MODULES),
             'compiler_generations_verified': ['B1', 'B2', 'B3'],
-            'full17_manifest_verified': True,
-            'scope': 'Existing native-selfhost report, all seventeen module artifacts and three fixed-point image identities; no compilation performed by this raw gate.'}
+            'full29_manifest_verified': True,
+            'scope': 'Existing native-selfhost report, all twenty-nine module artifacts and three fixed-point image identities; no compilation performed by this raw gate.'}
     else:
         raise RuntimeError('unknown native build profile')
     report['compiler_sha256'] = COMPILER_SHA
@@ -350,8 +372,8 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native17', 'local-incremental'],
-                        default='full-native17', help='Default requires all seventeen modules; local incremental evidence must be selected explicitly.')
+    parser.add_argument('--build-profile', choices=['full-native29', 'local-incremental'],
+                        default='full-native29', help='Default requires all twenty-nine modules; local incremental evidence must be selected explicitly.')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     if args.report.exists():

@@ -14,6 +14,11 @@ mod hia_native_uuid;
 #[cfg(feature = "hia-native")]
 pub use hia_native_uuid::find_uuids;
 // END HIA UUID FIND MODULE
+// BEGIN HIA UUID COMPATIBILITY TESTS
+#[cfg(test)]
+#[path = "uuid_tests.rs"]
+mod uuid_tests;
+// END HIA UUID COMPATIBILITY TESTS
 mod json;
 mod truncate;
 

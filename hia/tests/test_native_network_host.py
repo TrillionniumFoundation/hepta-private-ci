@@ -213,7 +213,7 @@ def completion(output, marker, label):
 
 
 def run_baselines(report, builds, predecessor, library, artifacts, rustc, edition, environment, run):
-    modes = [("original", builds["reference"], library), ("native17", builds["native"], library)]
+    modes = [("original", builds["reference"], library), ("native29", builds["native"], library)]
     if predecessor is not None:
         modes.insert(1, ("native16", predecessor[0], predecessor[1]))
     for kind in ("allocations", "performance"):
@@ -236,7 +236,7 @@ def run_baselines(report, builds, predecessor, library, artifacts, rustc, editio
                     for name in ("allocations", "performance"))
             symbols = run(f"symbols-{kind}-{label}", ["nm", "--defined-only", "--extern-only", str(executable)], environment)
             present = bool(re.search(r"\bT codex_hia_network_host$", symbols, re.MULTILINE))
-            if present != (label == "native17"):
+            if present != (label == "native29"):
                 raise RuntimeError(f"{kind}/{label}: unexpected network-host linkage")
             output = run(f"run-{kind}-{label}", [str(executable), label], environment, timeout=300)
             if prior_process is not None:
@@ -258,7 +258,7 @@ def run_baselines(report, builds, predecessor, library, artifacts, rustc, editio
         for label, result in report[kind].items():
             if [[row[key] for key in keys] for row in result["rows"]] != expected:
                 raise RuntimeError(f"{kind}/{label}: complete workload/result observations differ")
-    report["three_baselines_executed"] = all(set(report[kind]) == {"original", "native16", "native17"}
+    report["three_baselines_executed"] = all(set(report[kind]) == {"original", "native16", "native29"}
         for kind in ("allocations", "performance"))
     report["performance_qualification"] = False
 
@@ -277,7 +277,7 @@ def verify(args, report):
     report["source_sha256"] = source_hashes()
     native_admission = report["native_build_admission"] = {}
     bind_native_inputs(library / "network_host.so", ROOT / "hia/network_host.hepta",
-                       "full-native17", native_admission)
+                       "full-native29", native_admission)
     native = json.loads((library / "build.json").read_text())
     if "network_host" not in native["modules"]:
         raise RuntimeError("complete native build does not contain the network-host module")
@@ -352,7 +352,7 @@ def verify(args, report):
     if {name: sha(library / name) for name in report["native_inputs"]} != report["native_inputs"]:
         raise RuntimeError("native artifacts changed during public verification")
     if not recheck_native_inputs(native_admission):
-        raise RuntimeError("complete native17 admitted artifacts changed during public verification")
+        raise RuntimeError("complete native29 admitted artifacts changed during public verification")
     verify_predecessor16_inputs(report)
     report.update(passed=True, full_policy_migration=False, performance_qualification=False,
         passed_scope="complete normalization public/effect/error gates and listed allocation/timing observations",

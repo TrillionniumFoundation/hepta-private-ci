@@ -15,6 +15,8 @@ LIB_SHA = "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6"
 MODULE_BLOCK = '// BEGIN HIA UUID FIND MODULE\n#[cfg(feature = "hia-native")]\nmod hia_native_uuid;\n#[cfg(feature = "hia-native")]\npub use hia_native_uuid::find_uuids;\n// END HIA UUID FIND MODULE\n'
 GUARD_BLOCK = '// BEGIN HIA UUID FIND ORIGINAL GUARD\n#[cfg(not(feature = "hia-native"))]\n// END HIA UUID FIND ORIGINAL GUARD\n'
 
+COMPATIBILITY_TEST_BLOCK = '// BEGIN HIA UUID COMPATIBILITY TESTS\n#[cfg(test)]\n#[path = "uuid_tests.rs"]\nmod uuid_tests;\n// END HIA UUID COMPATIBILITY TESTS\n'
+
 
 def catalog():
     path = Path(__file__).with_name("sources.json")
@@ -70,14 +72,14 @@ def producing_source(producer, original):
             "original dependency/feature declarations changed")
     path = producer / CRATE / "src/lib.rs"
     raw = path.read_bytes()
-    for text in (MODULE_BLOCK, GUARD_BLOCK, '#[cfg(feature = "hia-native")]\nmod hia_native_truncate;\n'):
+    for text in (MODULE_BLOCK, GUARD_BLOCK, '#[cfg(feature = "hia-native")]\nmod hia_native_truncate;\n', COMPATIBILITY_TEST_BLOCK):
         block = text.encode()
         require(raw.count(block) == 1, "whole-library routing block missing or duplicated")
         raw = raw.replace(block, b"", 1)
     require(hashlib.sha256(raw).hexdigest() == LIB_SHA and raw == (original / "src/lib.rs").read_bytes(),
             "routing inverse did not recover the entire original library")
     return {"source": binding(path), "restored_original_sha256": LIB_SHA,
-            "restored_bytes": len(raw), "exact_blocks_removed": 3}
+            "restored_bytes": len(raw), "exact_blocks_removed": 4}
 
 
 def registry_source(producer, package, destination):
