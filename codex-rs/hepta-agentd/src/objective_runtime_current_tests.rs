@@ -151,6 +151,7 @@ pub(crate) async fn unadmitted_fixture_with_state(
     let checkpoint = result
         ._owner
         .path()
+        .canonicalize()?
         .join("current-objective-checkpoint.json");
     std::fs::write(
         &checkpoint,

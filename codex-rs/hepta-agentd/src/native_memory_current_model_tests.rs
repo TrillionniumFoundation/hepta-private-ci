@@ -48,7 +48,8 @@ async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick
         let current = native_memory_current_test_support::fixture().await?;
         let temp = tempfile::tempdir().unwrap();
         let owner = current.objective.state.identity().agent_id.clone();
-        let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).unwrap();
+        let root = temp.path().canonicalize()?;
+        let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
         let store = CognitiveStore::open(&fleet.layout().agent(&owner))
             .await
             .unwrap();

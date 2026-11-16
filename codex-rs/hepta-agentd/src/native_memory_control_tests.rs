@@ -13,6 +13,13 @@ use tokio_util::sync::CancellationToken;
 
 #[tokio::test]
 async fn native_memory_control_socket_requires_explicit_owner_and_generation() {
+    // Keep the real Unix control socket within Darwin's SUN_LEN bound.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::Builder::new()
+        .prefix("agentd-native-")
+        .tempdir_in("/tmp")
+        .unwrap();
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir().unwrap();
     let root = temp.path().canonicalize().unwrap();
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
