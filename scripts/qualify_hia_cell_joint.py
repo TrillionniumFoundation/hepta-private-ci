@@ -150,7 +150,7 @@ def freeze(hia_root, output):
         "source_bases": {
             "hia_compiler": build["compiler_commit"],
             "cells": "bb34e07389ad75d3b4629b63b0af0ee46f9b9594",
-            "runtime": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+            "runtime": "73b5c33d5762eefc0554a86750094350f18ae6a0",
         },
         "source_binding": "complete listed execution sources and artifacts; new files by SHA256",
         "runtime_execution": "local subprocess control; native runtime lane requires separate same-candidate execution",

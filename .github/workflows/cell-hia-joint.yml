@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: TrillionniumFoundation/hepta-runtime
-          ref: 5f7f03a1f22905789371ce0e181a1a0f013beca9
+          ref: 73b5c33d5762eefc0554a86750094350f18ae6a0
           path: runtime
       - uses: actions/setup-python@v5
         with:
@@ -88,7 +88,7 @@ jobs:
       - name: Actual runtime entry and cold original-job observation
         working-directory: cells
         run: |
-          python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 5f7f03a1f22905789371ce0e181a1a0f013beca9 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance
+          python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 73b5c33d5762eefc0554a86750094350f18ae6a0 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance
       - name: Independently check retained maintenance records
         working-directory: cells
         run: |
