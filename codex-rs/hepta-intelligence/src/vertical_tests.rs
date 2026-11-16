@@ -145,7 +145,7 @@ fn objective_profile() -> ObjectiveAdmissionProfileV1 {
             expected_unit: "ratio".to_string(),
             expected_direction: ObjectiveSoftDirectionV1::Maximize,
             dimension: id("quality.ratio"),
-            baseline_weight: FixedQ32::from_raw(1_i64 << 31),
+            baseline_weight: FixedQ32::ONE,
         }],
         evidence_requirements: vec![ObjectiveEvidenceProfileV1 {
             source_requirement_id: "evidence.quality".to_string(),
@@ -316,7 +316,10 @@ fn utility_contribution(candidate: &str, value: FixedQ32) -> ReadOnlyUtilityCont
 }
 
 fn vertical_request() -> ReadOnlyVerticalRequest {
-    let profile = objective_profile();
+    vertical_request_with_profile(objective_profile())
+}
+
+fn vertical_request_with_profile(profile: ObjectiveAdmissionProfileV1) -> ReadOnlyVerticalRequest {
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
     let objective_outcome = must(admit_and_compile_objective_v1(
@@ -498,4 +501,27 @@ fn omitted_cognitive_read_evidence_fails_closed() {
         ReadOnlyVerticalError::ReadEvidenceOmitted(item)
             if item == "context.memory.read"
     ));
+}
+
+#[test]
+fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations() {
+    for weight in [FixedQ32::ZERO, FixedQ32::from_raw(1_i64 << 31)] {
+        let mut profile = objective_profile();
+        profile.soft_dimensions[0].baseline_weight = weight;
+        for abstain_only in [false, true] {
+            let mut request = vertical_request_with_profile(profile.clone());
+            if abstain_only {
+                request
+                    .ndu_contributions
+                    .retain(|contribution| contribution.candidate_id == id("abstain"));
+            }
+
+            let error =
+                run_read_only_vertical(request).expect_err("incomplete weights must reject");
+            assert!(matches!(
+                error,
+                ReadOnlyVerticalError::Ndu(codex_hepta_ndu::NduError::IncompleteScalarization)
+            ));
+        }
+    }
 }
