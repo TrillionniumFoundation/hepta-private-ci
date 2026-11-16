@@ -1,6 +1,7 @@
 //! Isolated mechanism experiment; no production token or original test changes.
 
 use super::probe_support::*;
+use super::probe_support::Impersonation;
 use super::*;
 use anyhow::Context;
 use std::path::Path;

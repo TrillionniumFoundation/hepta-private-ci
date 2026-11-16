@@ -10,6 +10,7 @@ mod access_checks;
 mod native_access;
 
 use super::probe_support::*;
+use super::probe_support::Impersonation;
 use super::*;
 use anyhow::Context;
 use std::path::Path;
