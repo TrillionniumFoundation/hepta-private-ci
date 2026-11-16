@@ -142,6 +142,20 @@ fn report_bind_failure(stage: &'static str) {
     let _ = writeln!(std::io::stderr().lock(), "[sqlite-recovery-bind] {stage}");
 }
 
+#[cfg(unix)]
+fn report_sidecar_bind_failure(
+    sidecar: &'static str,
+    (error, subphase): (SqliteRecoveryError, &'static str),
+) -> SqliteRecoveryError {
+    use std::io::Write as _;
+
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "[sqlite-recovery-bind] {sidecar}.{subphase}"
+    );
+    error
+}
+
 impl ExistingSqliteRecoveryGuard {
     #[cfg(unix)]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
@@ -171,17 +185,17 @@ impl ExistingSqliteRecoveryGuard {
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-wal"),
             )
-            .inspect_err(|_| report_bind_failure("wal"))?,
+            .map_err(|error| report_sidecar_bind_failure("wal", error))?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-shm"),
             )
-            .inspect_err(|_| report_bind_failure("shm"))?,
+            .map_err(|error| report_sidecar_bind_failure("shm", error))?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-journal"),
             )
-            .inspect_err(|_| report_bind_failure("journal"))?,
+            .map_err(|error| report_sidecar_bind_failure("journal", error))?,
         ];
         let guard = Self {
             inner: Arc::new(RecoveryGuardInner {
@@ -297,15 +311,30 @@ impl RetainedObject {
         path: &Path,
         file_name: &OsStr,
     ) -> Result<Self, SqliteRecoveryError> {
-        let before = std::fs::symlink_metadata(path).map_err(indeterminate)?;
-        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateFile)?;
-        let descriptor = openat_read_only(parent, file_name)?;
+        Self::bind_file_with_subphase(parent, path, file_name).map_err(|(error, _)| error)
+    }
+
+    fn bind_file_with_subphase(
+        parent: &File,
+        path: &Path,
+        file_name: &OsStr,
+    ) -> Result<Self, (SqliteRecoveryError, &'static str)> {
+        let before = std::fs::symlink_metadata(path)
+            .map_err(indeterminate)
+            .map_err(|error| (error, "path_metadata"))?;
+        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateFile)
+            .map_err(|error| (error, "path_identity"))?;
+        let descriptor = openat_read_only(parent, file_name).map_err(|error| (error, "open"))?;
         let opened = FileSnapshot::validated(
-            &descriptor.metadata().map_err(indeterminate)?,
+            &descriptor
+                .metadata()
+                .map_err(indeterminate)
+                .map_err(|error| (error, "descriptor_metadata"))?,
             ObjectKind::PrivateFile,
-        )?;
+        )
+        .map_err(|error| (error, "descriptor_identity"))?;
         if opened != snapshot {
-            return Err(SqliteRecoveryError::Indeterminate);
+            return Err((SqliteRecoveryError::Indeterminate, "snapshot_comparison"));
         }
         Ok(Self {
             path: path.to_path_buf(),
@@ -340,14 +369,17 @@ enum RetainedOptionalObject {
 
 #[cfg(unix)]
 impl RetainedOptionalObject {
-    fn bind(parent: &File, path: PathBuf) -> Result<Self, SqliteRecoveryError> {
+    fn bind(parent: &File, path: PathBuf) -> Result<Self, (SqliteRecoveryError, &'static str)> {
         match std::fs::symlink_metadata(&path) {
             Ok(_) => {
-                let file_name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
-                RetainedObject::bind_file(parent, &path, file_name).map(Self::Present)
+                let file_name = path
+                    .file_name()
+                    .ok_or(SqliteRecoveryError::Indeterminate)
+                    .map_err(|error| (error, "name"))?;
+                RetainedObject::bind_file_with_subphase(parent, &path, file_name).map(Self::Present)
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(Self::Absent(path)),
-            Err(_) => Err(SqliteRecoveryError::Indeterminate),
+            Err(_) => Err((SqliteRecoveryError::Indeterminate, "presence_lookup")),
         }
     }
 
