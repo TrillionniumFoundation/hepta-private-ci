@@ -50,13 +50,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         super::super::validate_config(&owners.receipts.config, &owners.receipts.key)
             .map_err(owner_error)?;
         CellQ24TrainingOwnerV1::require_dataset_scope_with_source(
-            &owners.training,
+            &mut owners.training,
             dataset,
             &scope,
             source,
         )
         .map_err(owner_error)?;
-        CellQ24TrainingOwnerV1::require_original_dataset_source(&owners.training, source)
+        CellQ24TrainingOwnerV1::require_original_dataset_source(&mut owners.training, source)
             .map_err(owner_error)?;
         let result = work(&mut OriginalQ24TrainingOperationV1 {
             owners: &mut owners,
@@ -64,13 +64,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             source,
         });
         CellQ24TrainingOwnerV1::require_dataset_scope_with_source(
-            &owners.training,
+            &mut owners.training,
             dataset,
             &scope,
             source,
         )
         .map_err(owner_error)?;
-        CellQ24TrainingOwnerV1::require_original_dataset_source(&owners.training, source)
+        CellQ24TrainingOwnerV1::require_original_dataset_source(&mut owners.training, source)
             .map_err(owner_error)?;
         result
     }

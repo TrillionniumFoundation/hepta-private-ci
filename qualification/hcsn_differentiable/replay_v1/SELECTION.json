@@ -1,0 +1,67 @@
+{
+  "schema": "hcsn-real-checkpoint-replay-selection-v1",
+  "observed_source_job": "1a1ce437ab9-2564-15db",
+  "selection_policy": "all six fits, exact last observed complete epoch checkpoint, no outcome filtering",
+  "fits": [
+    {
+      "fit": "hcsn-s101-lr0.001",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/checkpoints/epoch-0116.pt",
+      "identity": {
+        "bytes": 450552,
+        "sha256": "eb017f86a0e3f7a1268591b10ef4f2727c36daf2edeed3aa9e5316d6eaa6c30b"
+      },
+      "epoch": 116,
+      "logical_main_updates": 1392
+    },
+    {
+      "fit": "hcsn-s101-lr0.003",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/checkpoints/epoch-0076.pt",
+      "identity": {
+        "bytes": 450552,
+        "sha256": "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5"
+      },
+      "epoch": 76,
+      "logical_main_updates": 912
+    },
+    {
+      "fit": "hcsn-s211-lr0.001",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/checkpoints/epoch-0126.pt",
+      "identity": {
+        "bytes": 450552,
+        "sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3"
+      },
+      "epoch": 126,
+      "logical_main_updates": 1512
+    },
+    {
+      "fit": "hcsn-s211-lr0.003",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/checkpoints/epoch-0050.pt",
+      "identity": {
+        "bytes": 450552,
+        "sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f"
+      },
+      "epoch": 50,
+      "logical_main_updates": 600
+    },
+    {
+      "fit": "hcsn-s307-lr0.001",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/checkpoints/epoch-0127.pt",
+      "identity": {
+        "bytes": 450552,
+        "sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441"
+      },
+      "epoch": 127,
+      "logical_main_updates": 1524
+    },
+    {
+      "fit": "hcsn-s307-lr0.003",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/checkpoints/epoch-0072.pt",
+      "identity": {
+        "bytes": 450616,
+        "sha256": "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee"
+      },
+      "epoch": 72,
+      "logical_main_updates": 864
+    }
+  ]
+}

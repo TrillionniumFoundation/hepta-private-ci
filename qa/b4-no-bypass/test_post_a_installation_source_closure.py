@@ -241,7 +241,7 @@ class PostAInstallationSourceTests(unittest.TestCase):
     def test_submit_consumes_one_attempt_and_cannot_renew_the_request(self):
         self.check(WORKER, "submit", ("let end = request_end.min(", "self.gate.session_end.get()",
             "compare_exchange(SERVING, SUBMITTED, Ordering::AcqRel, Ordering::Acquire)",
-            "self.sender.try_send(Submission {", "end.checked_duration_since(Instant::now())",
+            "self.sender.try_send(Submission {", 'end\n                .checked_duration_since(Instant::now())',
             ".filter(|duration| !duration.is_zero())", "receiver.recv_timeout(remaining)",
             "self.gate.phase.load(Ordering::Acquire) != INSTALLED", "self.gate.phase.store(CLOSED, Ordering::Release)"))
         for occurrence in (0, 1):
@@ -252,7 +252,7 @@ class PostAInstallationSourceTests(unittest.TestCase):
             "let end = submission.end.min(session_end)", "learning.q24_model.is_none()",
             "learning.backend.frozen_scope_binding()", "Some(frozen_scope.as_str())",
             "super::super::learning::BoundLearning::bind(learning, config, publication)?",
-            "end.checked_duration_since(Instant::now())", ".map(|duration| duration.min(timeout))",
+            'end\n                .checked_duration_since(Instant::now())', ".map(|duration| duration.min(timeout))",
             "crate::send_root_learning_handoff(", "crate::send_root_q24_model_factory_handoff(",
             "compare_exchange(SUBMITTED, INSTALLED, Ordering::AcqRel, Ordering::Acquire)",
             "submission.acknowledgement.try_send(())", "super::super::learning::serve_optional_until("))

@@ -48,7 +48,7 @@ pub(crate) enum GenerationEvent {
     },
 }
 
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct GenerationState {
     pub(crate) snapshot: CellRuntimeSnapshotV2,
     pub(crate) first_advance_input_digest: Option<[u8; 32]>,

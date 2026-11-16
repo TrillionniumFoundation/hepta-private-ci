@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-n256-independent-oracle-signedcontent-source-freeze-v2",
+  "identity": "hcsn-n256-independent-oracle-signedcontent-v2-20261115-c06d-001",
+  "base_commit": "a0ea6974e5de5e2f7b11d8f43e6360dacb06a1ea",
+  "parent_draft": 6368,
+  "historical_oracle_draft": 6300,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-independent-oracle-v2-intent.yml": "e7ff543450b159f350e628dabc16751042d20c7e224b9947278b806a0b1a3831",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/README.md": "f98a59b0ca7965585194fc038cdb0f5af5c838158940b0bacce7c6cfa89de6e9",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/REQUEST.json": "b99b8621b4ea6c4083815d736d07de96ef056251104224044d780c2135f7cdcc",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/__init__.py": "2872a485784a0b6147312a617ff47b6d9fec7d6e916227581d2de0ff55cc6f22",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py": "311eeeb69ba5002171d3aa765610bc9caea1cb2942309ba6e67543297cb74084",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/admission.py": "7f3c24118a3504d393d59b31576e8a140c206a154dfaecf4c5ec0aa327feb90c",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/static_inspector.py": "5948c23fd4089e98a0018d792ad822a37cb9ebfddcc988bf77c90a004a9af8ed",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/test_static.py": "5bea173765a54086dd0e050f0154cb2f019d3209af677eb945fe3e607d04c584",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/verify_source.py": "3393b56f6336cd7021ac91648fc92c7df2c569c28971984f9c8aac59817b3581"
+  },
+  "bindings": {
+    "candidate_source_sha256": "49616d4fcff9685a6cfcbee00ff45a2fd9ab4eb9c6ce04e62c02f927752d50db",
+    "candidate_admission_sha256": "d3ec236043f1563a6c05d0843a1b431ec1288da70047a3dc451031c25f67f61b",
+    "legacy_oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "phase_original_sha256": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "state_original_sha256": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "npz_b64_original_sha256": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb",
+    "t0_builder_source_sha256": "e96f8165cffc3e9f616f07bf42e18a0960a6213582f1e525f93ac5a8623f0b6c"
+  },
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "unresolved": [
+    "authentic provider admission, atomic execution freeze, and candidate source binding",
+    "runtime, host, ancestor-cgroup, allocation, calendar, and reviewer originals",
+    "independent numerical review of delay/reset/full-state semantics",
+    "N256 candidate-oracle execution and complete coordinate comparison"
+  ],
+  "status": "PASS_SOURCE_ONLY_HOLD_NUMERICAL",
+  "oracle_numerical_qualification": false,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

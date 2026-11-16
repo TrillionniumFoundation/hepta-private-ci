@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn-fixed-dense-sweep-cost-remaining-v1",
+  "all_closed": false,
+  "status": "HOLD_NO_GO",
+  "post_failure_development": true,
+  "fixed_profiles": [
+    "near800_0.5_far224_8",
+    "near960_0.48_far64_8"
+  ],
+  "qualified_bounded_diagnostics": {
+    "positive_first_cycle_reset_sweep": {
+      "source_commit": "e168a1f40eada46b8d21b2873cc9cf0e1758fc0a",
+      "resets": 188,
+      "times": [
+        0.001,
+        0.003,
+        0.02,
+        0.04,
+        0.08,
+        0.16
+      ],
+      "first_phase_uniform_width": 0.025,
+      "relative_reference_floor": 1e-12,
+      "below_floor_no_relative_admission": true,
+      "near800_negative_retained": true
+    },
+    "original_same_law_continuation": {
+      "source_commit": "1a532f58934b738df91220b0c91fb80c721d3982",
+      "posteriors_per_profile": 14336,
+      "profiles": 3,
+      "original_scaled_limit": 0.01,
+      "threshold_unchanged": true,
+      "failures": 0,
+      "noncancelling_failures": 0,
+      "new_profile_far_cost_charged": true
+    }
+  },
+  "open": [
+    "prospective independent finite risk admission",
+    "all initial laws and full finite M/H/R/A domain for new profiles",
+    "relative precision below1e-12",
+    "time below.001",
+    "finite horizon beyond.16 and delayed renewal for new profiles",
+    "physical parameter box",
+    "new-profile gradients and training",
+    "whole filtering trajectory and checkpoint replay",
+    "original independent complete C2 qualification",
+    "strong matched baselines and tuning budget",
+    "independent future-source task benefit",
+    "real asynchronous tasks",
+    "complete compute/storage/energy costs",
+    "production/default-cell/adoption"
+  ],
+  "old_source_admissions_not_transferred": true,
+  "old_unpublished_v3_raw_lost": "#6220",
+  "no_more_mesh_tuning_in_this_stage": true
+}

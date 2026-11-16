@@ -1,0 +1,318 @@
+{
+  "actual_original_outer_wall_ceiling_seconds": 12249.981482019182,
+  "all_common_tensors_frozen": true,
+  "all_main_epoch_orders_and_final_rng_checked": 79,
+  "arm": "event_time_lif",
+  "audit_status": "passed_completed_original_baseline",
+  "best_epoch": 77,
+  "diagnostic_updates": 256,
+  "epochs": 79,
+  "fresh_forward": {
+    "performed": false,
+    "scope": "one predeclared representative per original core"
+  },
+  "independent_ABC_class_weight_denominators_checked": 1204,
+  "independent_adequacy": {
+    "first_plateau_epoch": 79,
+    "independently_recomputed": true,
+    "quality_target_is_separate_from_adequacy": true,
+    "strict_best_epoch": 77
+  },
+  "independent_selected_development": {
+    "accuracy": 0.6183337506259389,
+    "balanced_accuracy_present_classes": 0.2873379327669128,
+    "brier_half_sum": 0.2719314183288835,
+    "brier_mean_classes": 0.049442076059796995,
+    "confusion_matrix": [
+      [
+        5217,
+        7,
+        114,
+        25,
+        0,
+        1106,
+        10,
+        1,
+        106,
+        0,
+        23
+      ],
+      [
+        54,
+        20,
+        0,
+        93,
+        0,
+        379,
+        63,
+        0,
+        0,
+        0,
+        22
+      ],
+      [
+        345,
+        0,
+        276,
+        215,
+        0,
+        147,
+        92,
+        4,
+        0,
+        2,
+        59
+      ],
+      [
+        19,
+        34,
+        452,
+        9260,
+        1,
+        185,
+        1089,
+        171,
+        0,
+        20,
+        269
+      ],
+      [
+        162,
+        1,
+        1,
+        1,
+        0,
+        131,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        578,
+        1,
+        114,
+        26,
+        3,
+        4027,
+        216,
+        0,
+        0,
+        0,
+        26
+      ],
+      [
+        219,
+        4,
+        197,
+        1401,
+        0,
+        372,
+        681,
+        49,
+        0,
+        0,
+        331
+      ],
+      [
+        20,
+        6,
+        17,
+        238,
+        0,
+        90,
+        358,
+        272,
+        0,
+        0,
+        25
+      ],
+      [
+        7,
+        2,
+        8,
+        580,
+        0,
+        0,
+        1317,
+        0,
+        0,
+        0,
+        31
+      ],
+      [
+        117,
+        0,
+        3,
+        0,
+        0,
+        71,
+        7,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        52,
+        1,
+        2,
+        72,
+        0,
+        19,
+        211,
+        0,
+        0,
+        0,
+        4
+      ]
+    ],
+    "ece_15_equal_width_bins": 0.08926064615914889,
+    "events": 31952,
+    "macro_f1_11_classes": 0.2830808207110156,
+    "macro_f1_present_classes": 0.2830808207110156,
+    "nll": 1.3630809531342098
+  },
+  "initial_seeded_constructor_exact": true,
+  "journal": {
+    "completed_epochs": 79,
+    "diagnostic_updates": 256,
+    "every_completed_epoch_complete_ABC": true,
+    "main_updates": 948,
+    "micro_forward_calls": {
+      "diagnostic": 256,
+      "main": 948
+    },
+    "partial_epoch_retained": false,
+    "partial_update_retained": false
+  },
+  "learning_rate": 0.003,
+  "main_updates": 948,
+  "memorization_passed": true,
+  "metric_absolute_differences": {
+    "accuracy": 0.0,
+    "balanced_accuracy_present_classes": 5.551115123125783e-17,
+    "brier_half_sum": 0.0,
+    "brier_mean_classes": 6.938893903907228e-18,
+    "ece_15_equal_width_bins": 5.551115123125783e-17,
+    "events": 0,
+    "macro_f1_11_classes": 0.0,
+    "macro_f1_present_classes": 0.0,
+    "nll": 2.220446049250313e-16
+  },
+  "model_configuration": {
+    "arm": "event_time_lif",
+    "cache_frozen_tables": false,
+    "freeze_shared": true,
+    "hcsn_grid": null,
+    "learn_core_adapter": true,
+    "plif_configuration": null,
+    "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+    "seed": 307,
+    "width": 16
+  },
+  "name": "event_time_lif-s307-lr0.003",
+  "optimizer_checks": {
+    "best.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 6,
+      "optimizer_steps": 924,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "9102a9006e7c3b39224d693d030c702ae71c985075355927d923164936537e30",
+      "torch_rng_format_valid": true
+    },
+    "last.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 6,
+      "optimizer_steps": 948,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "9102a9006e7c3b39224d693d030c702ae71c985075355927d923164936537e30",
+      "torch_rng_format_valid": true
+    },
+    "memorization.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 6,
+      "optimizer_steps": 256,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "9102a9006e7c3b39224d693d030c702ae71c985075355927d923164936537e30",
+      "torch_rng_format_valid": true
+    }
+  },
+  "original_fit_cpu_seconds": 701.207840188,
+  "original_full_process_cpu_exact": null,
+  "original_full_process_cpu_lower_bound": 702.637493994,
+  "original_stop_reason": "development_plateau",
+  "peak_rss_bytes": 849272832,
+  "report_sha256": "4b7be093663602326acae7aecd01b487e23c01530c545ddc6e74722a884e87ac",
+  "required_artifacts": {
+    "declared_files_checked": [
+      "best.pt",
+      "events.jsonl",
+      "initial.pt",
+      "last.pt",
+      "memorization.pt",
+      "plan.json"
+    ],
+    "logit_binding": "observed file hash plus independent selected/strict-best metrics; representative fresh forward remains separate",
+    "required_files_checked": [
+      "best.pt",
+      "development_logits.pt",
+      "events.jsonl",
+      "initial.pt",
+      "last.pt",
+      "memorization.pt",
+      "plan.json"
+    ]
+  },
+  "saved_logits_sha256": "f64bd4404056b65abea961149486badf96611fc7facaf2a4a631efe3c2979e95",
+  "scientific_admission": "HOLD",
+  "seed": 307,
+  "shared_initial_tensor_hashes": {
+    "frontend": "5613c209ce3748768b30e10447cd90cba586cc96b2d68942c55cab47278712b2",
+    "head": "2cccb4850e949090ba1a3facf4640a1f2551431f5c687f7fd34bdaedec6ce62a",
+    "temporal_adapter": "40db64f6bdd8cf7bf3c99e627e8dfdecabcc4a92150eef2e1b6410efc041a462"
+  },
+  "strict_best_metric_absolute_differences": {
+    "accuracy": 0.0,
+    "balanced_accuracy_present_classes": 5.551115123125783e-17,
+    "brier_half_sum": 0.0,
+    "brier_mean_classes": 6.938893903907228e-18,
+    "ece_15_equal_width_bins": 5.551115123125783e-17,
+    "events": 0,
+    "macro_f1_11_classes": 0.0,
+    "macro_f1_present_classes": 0.0,
+    "nll": 2.220446049250313e-16
+  },
+  "whole_original_process_wall_seconds": 704.451507830061
+}

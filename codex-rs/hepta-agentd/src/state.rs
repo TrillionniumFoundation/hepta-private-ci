@@ -37,6 +37,9 @@ pub use desktop_objective::AgentdDesktopObjectiveConfig;
 
 #[path = "state_control.rs"]
 mod control;
+#[path = "state_current_objective.rs"]
+mod current_objective;
+pub(crate) use current_objective::CurrentObjectiveReadV1;
 
 #[path = "state_episodic.rs"]
 mod episodic;
@@ -65,6 +68,7 @@ pub(crate) struct AgentdState {
     pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
     pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
     pub(crate) desktop_objective: std::sync::OnceLock<AgentdDesktopObjectiveConfig>,
+    pub(crate) native_memory_cell: std::sync::OnceLock<Arc<crate::AgentdNativeMemoryCell>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -191,6 +195,7 @@ impl AgentdState {
             notes_organ_root: std::sync::OnceLock::new(),
             notes_objective: std::sync::OnceLock::new(),
             desktop_objective: std::sync::OnceLock::new(),
+            native_memory_cell: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
@@ -959,4 +964,7 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
-mod isolation_tests;
+pub(crate) mod isolation_tests;
+#[cfg(all(test, unix))]
+#[path = "objective_runtime_current_tests.rs"]
+pub(crate) mod objective_current_tests;

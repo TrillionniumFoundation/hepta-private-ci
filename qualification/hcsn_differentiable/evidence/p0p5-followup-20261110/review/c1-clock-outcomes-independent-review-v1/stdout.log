@@ -1,0 +1,73 @@
+{
+  "result_bytes": 49648,
+  "result_sha256": "cee95cd956a9d256b594ad161196adaaeef5c4b31f49fc1e9f0fc1eff1aa7e97",
+  "C1_intervals": 351,
+  "table_checks": [
+    {
+      "arm": "gru",
+      "LR_means_from_all_six": {
+        "0.001": 0.22946824670467572,
+        "0.003": 0.42497474692463916
+      },
+      "selected_common_LR": 0.003,
+      "all_six_plus_C1_active_process_wall_seconds": 784.2627707126085,
+      "selected_LR_adequate_chains": 3,
+      "D_mean_macro_f1": 0.42497474692463916
+    },
+    {
+      "arm": "cfc",
+      "LR_means_from_all_six": {
+        "0.001": 0.26743966294056803,
+        "0.003": 0.34902507718809056
+      },
+      "selected_common_LR": 0.003,
+      "all_six_plus_C1_active_process_wall_seconds": 1701.8565244667698,
+      "selected_LR_adequate_chains": 3,
+      "D_mean_macro_f1": 0.34902507718809056
+    },
+    {
+      "arm": "snn_plif",
+      "LR_means_from_all_six": {
+        "0.001": 0.1163387990950381,
+        "0.003": 0.14997869521819712
+      },
+      "selected_common_LR": 0.003,
+      "all_six_plus_C1_active_process_wall_seconds": 1308.9980340020265,
+      "selected_LR_adequate_chains": 3,
+      "D_mean_macro_f1": 0.14997869521819712
+    },
+    {
+      "arm": "event_time_lif",
+      "LR_means_from_all_six": {
+        "0.001": 0.1625964947358252,
+        "0.003": 0.3130305208406941
+      },
+      "selected_common_LR": 0.003,
+      "all_six_plus_C1_active_process_wall_seconds": 3926.9682609040756,
+      "selected_LR_adequate_chains": 3,
+      "D_mean_macro_f1": 0.3130305208406941
+    },
+    {
+      "arm": "ssm_s4d",
+      "LR_means_from_all_six": {
+        "0.001": 0.32435676821803466,
+        "0.003": 0.3668656108888712
+      },
+      "selected_common_LR": 0.003,
+      "all_six_plus_C1_active_process_wall_seconds": 817.0979199488647,
+      "selected_LR_adequate_chains": 3,
+      "D_mean_macro_f1": 0.3668656108888712
+    },
+    {
+      "arm": "attention",
+      "LR_means_from_all_six": {
+        "0.001": 0.3977463063281223,
+        "0.003": 0.40261652244880747
+      },
+      "selected_common_LR": 0.003,
+      "all_six_plus_C1_active_process_wall_seconds": 1461.6004569418728,
+      "selected_LR_adequate_chains": 3,
+      "D_mean_macro_f1": 0.40261652244880747
+    }
+  ]
+}

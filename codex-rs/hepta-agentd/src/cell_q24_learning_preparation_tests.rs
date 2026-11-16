@@ -10,7 +10,7 @@ use crate::CellQ24LearningPreparationErrorV1 as Error;
 use crate::CellQ24PreparedLearningV1;
 use crate::HostAuthorityLearningProfileV1;
 
-#[path = "cell_q24_training_source_operation_tests.rs"]
+#[path = "cell_q24_prepared_training_source_operation_tests.rs"]
 mod source_operation;
 
 pub(super) fn config(
@@ -133,7 +133,7 @@ async fn q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recove
     );
     let cut = dataset_cut(&prepared)?;
     let material = prepared.training_material(cut.clone(), prepared.scope().clone())?;
-    let owner = CellQ24TrainingOwnerV1::create(
+    let mut owner = CellQ24TrainingOwnerV1::create(
         file(files.path(), "prepared-trainer")?,
         witness(files.path(), &cut)?,
         material.plan,

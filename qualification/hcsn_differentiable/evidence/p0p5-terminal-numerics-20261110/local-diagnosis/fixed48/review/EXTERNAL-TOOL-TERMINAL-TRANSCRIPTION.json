@@ -1,0 +1,13 @@
+{
+  "GNU_time_available": false,
+  "actual_scalar_executions": 1,
+  "chunk_id": "789833",
+  "command_summary": "/usr/bin/timeout --signal=KILL 120s python -B wait4_wrapper.py",
+  "exit_code": 0,
+  "infrastructure_launch_attempts": 2,
+  "replacement": "Complete launcher os.wait4 and monotonic interval; wrapper prefix and timeout exit separately retained.",
+  "schema": "tool-result-transcription-not-new-process-measurement",
+  "scope": "Tool-return metadata only; not a complete independent OS process wall measurement.",
+  "source": "original functions.exec exec_command return observed in this conversation",
+  "tool_wall_time_seconds": 0.120979967
+}

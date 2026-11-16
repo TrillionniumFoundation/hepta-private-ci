@@ -174,6 +174,26 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         })
     }
 
+    /// Qualification-only physical bytes from the original locked file.
+    /// The read is bounded (at most 8 MiB), keeps the lock and restores the
+    /// cursor on success or failure. No cached state substitutes for a read.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    pub fn qualification_file_bytes(&mut self, maximum_bytes: u64) -> Result<Vec<u8>, FileError> {
+        use crate::qualification_file_observation::ObservationError;
+
+        if self.poisoned {
+            return Err(FileError::Indeterminate);
+        }
+        match crate::qualification_file_observation::read(&mut self.file, maximum_bytes) {
+            Ok(bytes) => Ok(bytes),
+            Err(ObservationError::Capacity) => Err(FileError::Capacity),
+            Err(ObservationError::Io(error)) => {
+                self.poisoned = true;
+                Err(io_error(error))
+            }
+        }
+    }
+
     #[must_use]
     pub fn anchor(&self) -> ProductEvaluationExecutionAnchorV1 {
         self.anchor
@@ -398,6 +418,9 @@ fn acquire(file: File, binding: Digest32) -> Result<HeldFile, FileError> {
 fn io_error(error: io::Error) -> FileError {
     FileError::Io(error.kind())
 }
+
+#[path = "product_execution_current.rs"]
+mod current;
 
 #[cfg(test)]
 #[path = "product_execution_file_tests.rs"]

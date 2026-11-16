@@ -355,6 +355,23 @@ pub fn read_registry_snapshot(
         expected.encoded_bytes as u64,
         ArtifactStorageError::Corrupt,
     )?;
+    decode_registry_snapshot_bytes(&bytes, expected)
+}
+
+// Shared pure canonical decoder. This does not read a file or create a CURRENT capability.
+pub(crate) fn decode_registry_snapshot_bytes(
+    bytes: &[u8],
+    expected: RegistrySnapshotReceipt,
+) -> Result<ArtifactRegistry, ArtifactStorageError> {
+    if expected.binding.is_zero()
+        || expected.file_digest.is_zero()
+        || expected.records > MAX_DURABLE_ARTIFACT_RECORDS
+        || expected.encoded_bytes > MAX_SNAPSHOT
+        || expected.encoded_bytes == 0
+        || (expected.records == 0) != expected.head_digest.is_zero()
+    {
+        return Err(ArtifactStorageError::InvalidReceipt);
+    }
     if bytes.len() != expected.encoded_bytes || Digest32::of_bytes(&bytes) != expected.file_digest {
         return Err(ArtifactStorageError::Corrupt);
     }

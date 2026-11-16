@@ -1,0 +1,411 @@
+#!/usr/bin/env python3
+"""Local-only, research-only HF teacher forward for Hepta Stem bake-off.
+
+Supports EmbeddingGemma 2 mixed text/image/audio/video records and T5Gemma 2
+text Encoder records. Inputs, weights and revisions must be supplied offline.
+No network, remote code, teacher training, capability claims, Cell action or
+production authorization. The model hook counts MODULE forward calls, not
+physical GPU kernels or independent execution evidence.
+"""
+from __future__ import annotations
+
+import argparse
+from collections.abc import Mapping
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import time
+from typing import Any
+
+from teacher_snapshot import MODEL_TYPES, TeacherSnapshotError, verify_snapshot
+from teacher_media_seal import MAX_MEDIA_BATCH_BYTES, TeacherMediaSealError, sealed_media_inputs
+
+MODALITIES = ("text", "image", "audio", "video")
+MEDIA = frozenset(("image", "audio", "video"))
+MAX_RECORDS = 8
+MAX_MEDIA_BYTES = 128 * 1024 * 1024
+MAX_TEXT_CHARS = 16_384
+MAX_SEQUENCE = 8192
+MAX_T5_IMAGE_PIXELS = 16_777_216  # decoded image limit, not only file bytes
+
+
+class TeacherForwardError(ValueError):
+    pass
+
+
+def validate_records(records: object, media_root: str | Path, candidate: str) -> tuple[list, str]:
+    """Check local media and preserve ordered modality sources without URLs."""
+    root = Path(media_root).absolute()
+    if not root.is_dir() or root.is_symlink():
+        raise TeacherForwardError("media_root must be a real local directory")
+    if (not isinstance(records, list) or not 1 <= len(records) <= MAX_RECORDS
+            or candidate not in MODEL_TYPES):
+        raise TeacherForwardError("unregistered model or invalid batch size")
+    # The T5 multimodal processor accepts a homogeneous batch of one text +
+    # one image per sample. Mixing text-only and image rows would misalign the
+    # batched image tensors; keep separate candidate/split experiments.
+    t5_with_image = (candidate == "t5gemma2_encoder_270m" and
+                     any(isinstance(row, dict) and "image" in row for row in records))
+    if t5_with_image and any(not isinstance(row, dict) or set(row) != {"text", "image"}
+                             for row in records):
+        raise TeacherForwardError("mixed T5 image/text-only batches are unsupported")
+    conversations = []
+    receipts = []
+    total_media_bytes = 0
+    for record in records:
+        if not isinstance(record, dict) or not record or not set(record).issubset(MODALITIES):
+            raise TeacherForwardError("unknown or missing modality")
+        if candidate == "t5gemma2_encoder_270m":
+            if set(record) not in ({"text"}, {"text", "image"}):
+                raise TeacherForwardError("T5Gemma 2 accepts only text or text+one image")
+            prompt = record["text"]
+            if isinstance(prompt, str):
+                count = prompt.count("<start_of_image>")
+                if "image" in record and count != 1:
+                    raise TeacherForwardError("T5 image requires exactly one image marker")
+                if "image" not in record and count:
+                    raise TeacherForwardError("T5 image marker without sealed image")
+        content = []
+        sources = []
+        for modality in MODALITIES:
+            if modality not in record:
+                continue
+            value = record[modality]
+            if modality == "text":
+                if not isinstance(value, str) or not value.strip() or len(value) > MAX_TEXT_CHARS:
+                    raise TeacherForwardError("invalid bounded text")
+                content.append({"type": "text", "text": value})
+                sources.append((modality, hashlib.sha256(value.encode("utf-8")).hexdigest()))
+                continue
+            if (not isinstance(value, str) or not value or "\x00" in value
+                    or re.match(r"^[a-zA-Z]+://", value)
+                    or Path(value).is_absolute()
+                    or ".." in Path(value).parts):
+                raise TeacherForwardError("media must be a local relative path, not a URL")
+            path = root / value
+            if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+                raise TeacherForwardError("missing, linked or escaped local media")
+            if any(parent.is_symlink() for parent in list(path.parents) if parent != root and
+                   root in parent.parents):
+                raise TeacherForwardError("media path may not traverse symlinks")
+            declared_size = path.stat().st_size
+            if not 0 < declared_size <= MAX_MEDIA_BYTES:
+                raise TeacherForwardError("media file size outside bounds")
+            # Reject a large batch before hashing or loading any teacher model.
+            # Count repeated path references as separate processor inputs.
+            if total_media_bytes + declared_size > MAX_MEDIA_BATCH_BYTES:
+                raise TeacherForwardError("teacher media batch exceeds preflight byte budget")
+            total_media_bytes += declared_size
+            digest = hashlib.sha256()
+            read_size = 0
+            with path.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    read_size += len(chunk)
+                    if read_size > declared_size:
+                        raise TeacherForwardError("media changed size during preflight hashing")
+                    digest.update(chunk)
+            if read_size != declared_size:
+                raise TeacherForwardError("media changed size during preflight hashing")
+            content.append({"type": modality, "url": str(path)})
+            sources.append((modality, digest.hexdigest()))
+        if not content:
+            raise TeacherForwardError("empty modality content")
+        conversations.append([{"role": "user", "content": content}])
+        receipts.append(sources)
+    digest = hashlib.sha256(json.dumps(receipts, separators=(",", ":"), sort_keys=True).encode()).hexdigest()
+    return conversations, digest
+
+
+def mean_pool(tokens: Any, mask: Any, *, truncate_dim: int | None = None):
+    """Float32, mask-aware, post-truncation unit-normalized retrieval features."""
+    import torch
+    from torch.nn import functional as F
+    if (tokens.ndim != 3 or mask.ndim != 2 or tuple(tokens.shape[:2]) != tuple(mask.shape)
+            or not tokens.is_floating_point() or not bool(torch.isfinite(tokens).all())
+            or tokens.shape[1] == 0):
+        raise TeacherForwardError("nonfinite/incompatible teacher token states")
+    if not bool(torch.isin(mask, torch.tensor([0, 1], device=mask.device)).all()):
+        raise TeacherForwardError("attention mask must be binary")
+    if not bool((mask.sum(dim=1) > 0).all()):
+        raise TeacherForwardError("at least one token per sample is required")
+    m = mask.unsqueeze(-1).to(torch.float32)
+    pooled = (tokens.float() * m).sum(dim=1) / m.sum(dim=1).clamp(min=1)
+    if truncate_dim is not None:
+        if (type(truncate_dim) is not int or truncate_dim not in (128, 256, 512, 768)
+                or truncate_dim > pooled.shape[-1]):
+            raise TeacherForwardError("invalid EmbeddingGemma2 Matryoshka dimension")
+        pooled = pooled[:, :truncate_dim]
+    return F.normalize(pooled, p=2, dim=-1, eps=1e-8)
+
+
+MAX_T5_PROCESSED_PIXEL_ELEMENTS = 3 * MAX_T5_IMAGE_PIXELS
+
+
+def _validate_t5_encoder_inputs(inputs: object, *, batch_size: int,
+                                with_image: bool) -> dict:
+    """Fence exact processor fields, row identity and GPU transfer budgets.
+
+    Processors are local and pinned but may emit malformed tensors. Reject
+    unexpected fields instead of silently uploading unused tensors to CUDA.
+    This is an interface/budget guard, not a sandbox for executable plugins.
+    """
+    import torch
+
+    fields = {"input_ids", "attention_mask"}
+    if with_image:
+        fields.add("pixel_values")
+    if not isinstance(inputs, Mapping) or set(inputs) != fields:
+        raise TeacherForwardError("unexpected or missing T5 encoder processor fields")
+    ids, mask = inputs["input_ids"], inputs["attention_mask"]
+    if (not isinstance(ids, torch.Tensor)
+            or not isinstance(mask, torch.Tensor)
+            or ids.ndim != 2 or mask.ndim != 2
+            or ids.shape != mask.shape
+            or ids.shape[0] != batch_size
+            or not 0 < ids.shape[1] <= MAX_SEQUENCE):
+        raise TeacherForwardError("T5 token batch and attention shape mismatch")
+    if (ids.dtype not in (torch.int32, torch.int64)
+            or ids.device.type != "cpu"
+            or mask.dtype not in (torch.bool, torch.uint8, torch.int8,
+                                  torch.int16, torch.int32, torch.int64)
+            or mask.device.type != "cpu"):
+        raise TeacherForwardError("T5 token ids/mask must be CPU integer tensors")
+    if (not bool((ids >= 0).all())
+            or not bool(((mask == 0) | (mask == 1)).all())
+            or not bool((mask.sum(dim=1) > 0).all())):
+        raise TeacherForwardError("invalid T5 token ids or attention mask")
+    if with_image:
+        pixels = inputs["pixel_values"]
+        if (not isinstance(pixels, torch.Tensor) or pixels.ndim != 4
+                or pixels.shape[0] != batch_size or pixels.shape[1] != 3
+                or not 0 < pixels.shape[2] * pixels.shape[3] <= MAX_T5_IMAGE_PIXELS
+                or pixels.numel() > MAX_T5_PROCESSED_PIXEL_ELEMENTS):
+            raise TeacherForwardError("T5 processor image shape or batch budget exceeded")
+        if (pixels.device.type != "cpu"
+                or pixels.dtype not in (torch.float16, torch.bfloat16, torch.float32)
+                or not bool(torch.isfinite(pixels).all())):
+            raise TeacherForwardError("T5 processor image pixels must be finite CPU floats")
+    return {field: inputs[field] for field in
+            ("input_ids", "attention_mask", "pixel_values") if field in fields}
+
+def run_forward(*, candidate: str, snapshot: str | Path, media_root: str | Path,
+                records: list, revision: str, expected_inventory_sha256: str,
+                operator_accepted_terms: bool, device: str = "cpu",
+                truncate_dim: int | None = None,
+                feature_output_dir: str | Path | None = None) -> dict:
+    """Actually load a locally pinned checkpoint and execute ONE model/encoder call."""
+    verified = verify_snapshot(
+        snapshot, candidate=candidate, revision=revision,
+        expected_inventory_sha256=expected_inventory_sha256,
+        operator_accepted_terms=operator_accepted_terms,
+    )
+    conversations, source_digest = validate_records(records, media_root, candidate)
+    t5_with_image = (candidate == "t5gemma2_encoder_270m" and
+                     any(any(part["type"] == "image"
+                             for part in conversation[0]["content"])
+                         for conversation in conversations))
+    # Derive media seal inputs from the validated conversation, not mutable
+    # caller rows. Otherwise deleting media keys during model loading could
+    # bypass the seal and expose unverified original file paths to processors.
+    if candidate == "embeddinggemma2_740m" or t5_with_image:
+        preflight_root = Path(media_root).absolute()
+        preflight_rows = []
+        for conversation in conversations:
+            frozen_row = {}
+            for part in conversation[0]["content"]:
+                modality = part["type"]
+                frozen_row[modality] = (
+                    part["text"] if modality == "text"
+                    else str(Path(part["url"]).relative_to(preflight_root))
+                )
+            preflight_rows.append(frozen_row)
+    # Model loading and asynchronous hooks must not reread caller-owned rows.
+    validated_batch_size = len(conversations)
+    if device not in ("cpu", "cuda"):
+        raise TeacherForwardError("device must be cpu or cuda")
+    if truncate_dim is not None and candidate != "embeddinggemma2_740m":
+        raise TeacherForwardError("Matryoshka truncation is EmbeddingGemma2-only")
+
+    # Set before importing Hugging Face. No 'trust_remote_code' override.
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    import torch
+    from transformers import AutoModel, AutoModelForSeq2SeqLM, AutoProcessor, AutoTokenizer
+    if device == "cuda" and not torch.cuda.is_available():
+        raise TeacherForwardError("CUDA requested but unavailable")
+    dtype = torch.bfloat16 if device == "cuda" else torch.float32
+    root = str(Path(snapshot).absolute())
+    if candidate == "embeddinggemma2_740m":
+        processor = AutoProcessor.from_pretrained(root, local_files_only=True,
+                                                  trust_remote_code=False)
+        model = AutoModel.from_pretrained(root, local_files_only=True,
+                                          trust_remote_code=False, dtype=dtype).to(device).eval()
+        # Consume only the private, digest-matched snapshot. The original local
+        # files may change after hashing and must never define model inputs.
+        with sealed_media_inputs(
+            records=preflight_rows, media_root=media_root, candidate=candidate,
+            expected_source_digest=source_digest,
+            original_conversations=conversations,
+            validate_records=validate_records,
+        ) as frozen_conversations:
+            inputs = processor.apply_chat_template(
+                frozen_conversations, tokenize=True,
+                return_dict=True, return_tensors="pt")
+        observed_module = model
+    else:
+        model = AutoModelForSeq2SeqLM.from_pretrained(
+            root, local_files_only=True, trust_remote_code=False, dtype=dtype
+        ).to(device).eval()
+        # Text-only still uses the original lightweight tokenizer path.
+        # Image input requires a separate owner-private, byte-sealed processor
+        # path: never let Pillow/processor reread original mutable media files.
+        if t5_with_image:
+            processor = AutoProcessor.from_pretrained(
+                root, local_files_only=True, trust_remote_code=False)
+            with sealed_media_inputs(
+                records=preflight_rows, media_root=media_root, candidate=candidate,
+                expected_source_digest=source_digest,
+                original_conversations=conversations,
+                validate_records=validate_records,
+            ) as frozen_conversations:
+                try:
+                    from PIL import Image
+                except ImportError as error:
+                    raise TeacherForwardError("T5 image probe requires Pillow") from error
+                frozen_texts = []
+                images = []
+                for conversation in frozen_conversations:
+                    parts = conversation[0]["content"]
+                    frozen_texts.append(parts[0]["text"])
+                    image_path = Path(parts[1]["url"])
+                    try:
+                        with Image.open(image_path) as opened:
+                            width, height = opened.size
+                            if (type(width) is not int or type(height) is not int
+                                    or width < 1 or height < 1
+                                    or width * height > MAX_T5_IMAGE_PIXELS):
+                                raise TeacherForwardError("T5 decoded image budget exceeded")
+                            images.append(opened.convert("RGB").copy())
+                    except OSError as error:
+                        raise TeacherForwardError("T5 sealed image decode failed") from error
+                inputs = processor(text=frozen_texts, images=images,
+                                   padding=True, truncation=True,
+                                   max_length=MAX_SEQUENCE, return_tensors="pt")
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(
+                root, local_files_only=True, trust_remote_code=False)
+            frozen_texts = [conversation[0]["content"][0]["text"]
+                            for conversation in conversations]
+            inputs = tokenizer(frozen_texts, padding=True,
+                               truncation=True, max_length=MAX_SEQUENCE,
+                               return_tensors="pt")
+        observed_module = model.get_encoder()
+    if candidate == "t5gemma2_encoder_270m":
+        inputs = _validate_t5_encoder_inputs(
+            inputs, batch_size=validated_batch_size, with_image=t5_with_image)
+    elif (not isinstance(inputs, Mapping) or "attention_mask" not in inputs
+            or inputs["attention_mask"].ndim != 2
+            or inputs["attention_mask"].shape[1] > MAX_SEQUENCE):
+        raise TeacherForwardError("missing or unbounded teacher attention mask")
+    inputs = {key: val.to(device) if isinstance(val, torch.Tensor) else val
+              for key, val in inputs.items()}
+    module_calls = [0]
+    def hook(_module, _inputs, _outputs):
+        module_calls[0] += 1
+    handle = observed_module.register_forward_hook(hook)
+    start = time.perf_counter()
+    try:
+        with torch.inference_mode():
+            if candidate == "embeddinggemma2_740m":
+                tokens = model(**inputs).last_hidden_state
+            else:
+                encoder_kwargs = {"input_ids": inputs["input_ids"],
+                                  "attention_mask": inputs["attention_mask"]}
+                if t5_with_image:
+                    encoder_kwargs["pixel_values"] = inputs["pixel_values"]
+                tokens = observed_module(**encoder_kwargs).last_hidden_state
+            pooled = mean_pool(tokens, inputs["attention_mask"], truncate_dim=truncate_dim)
+        if device == "cuda":
+            torch.cuda.synchronize()
+    finally:
+        handle.remove()
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    if module_calls[0] != 1 or pooled.ndim != 2 or pooled.shape[0] != validated_batch_size:
+        raise TeacherForwardError("one model/encoder forward was not observed")
+    if candidate == "embeddinggemma2_740m" and pooled.shape[-1] != (truncate_dim or 768):
+        raise TeacherForwardError("EmbeddingGemma 2 expected 768-wide projection")
+    binary = pooled.detach().contiguous().cpu().numpy().tobytes()
+    feature_sha256 = hashlib.sha256(binary).hexdigest()
+    export_receipt = None
+    if feature_output_dir is not None:
+        # Explicitly optional: embeddings remain local, encrypted-at-rest
+        # policy is the operator's responsibility; never add to Git.
+        from feature_shard import write_shard
+
+        export_receipt = write_shard(
+            feature_output_dir, pooled, candidate=candidate,
+            revision=verified["revision"],
+            checkpoint_inventory_sha256=verified["inventory_sha256"],
+            ordered_source_manifest_sha256=source_digest,
+        )
+        if export_receipt["raw_feature_sha256"] != feature_sha256:
+            raise TeacherForwardError("offline feature shard digest mismatch")
+    return {
+        "schema": "hepta.teacher-local-forward.v1",
+        "candidate": candidate,
+        "revision": verified["revision"],
+        "inventory_sha256": verified["inventory_sha256"],
+        "ordered_source_manifest_sha256": source_digest,
+        "batch_size": validated_batch_size,
+        "feature_width": int(pooled.shape[-1]),
+        "feature_sha256": feature_sha256,
+        "feature_export": export_receipt,
+        "owner_model_forward_hook_calls": module_calls[0],
+        "physical_backend_kernel_count_attested": False,
+        "elapsed_ms_one_unqualified_sample": round(elapsed_ms, 3),
+        "source_disjoint_holdout_verified": False,
+        "model_performance_qualified": False,
+        "producer_attested_independently": False,
+        "authority": "DENY_ALL",
+        "mode": "SHADOW_ONLY",
+        "production_activation_allowed": False,
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--candidate", required=True, choices=sorted(MODEL_TYPES))
+    parser.add_argument("--snapshot", required=True)
+    parser.add_argument("--media-root", required=True)
+    parser.add_argument("--records-json", required=True)
+    parser.add_argument("--revision", required=True)
+    parser.add_argument("--expected-inventory-sha256", required=True)
+    parser.add_argument("--operator-accepted-terms", action="store_true")
+    parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
+    parser.add_argument("--truncate-dim", type=int)
+    parser.add_argument("--feature-output-dir",
+                        help="new owner-private feature shard directory outside Git checkout")
+    args = parser.parse_args()
+    try:
+        records = json.loads(Path(args.records_json).read_text(encoding="utf-8"))
+        result = run_forward(
+            candidate=args.candidate, snapshot=args.snapshot, media_root=args.media_root,
+            records=records, revision=args.revision,
+            expected_inventory_sha256=args.expected_inventory_sha256,
+            operator_accepted_terms=args.operator_accepted_terms,
+            device=args.device, truncate_dim=args.truncate_dim,
+            feature_output_dir=args.feature_output_dir,
+        )
+    except (TeacherSnapshotError, TeacherForwardError, TeacherMediaSealError,
+            OSError, ValueError, ImportError, RuntimeError) as error:
+        print(json.dumps({"status": "REJECTED", "reason": str(error),
+                          "authority": "DENY_ALL"}))
+        return 2
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

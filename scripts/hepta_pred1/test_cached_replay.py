@@ -206,7 +206,9 @@ class CachedReplayTests(unittest.TestCase):
             ("source_sha256_after", {}),
             ("executed_source_sha256_after", {}),
         )
-        with patch.object(R.Model, "load", side_effect=AssertionError("checkpoint opened before gate")):
+        with patch.object(
+            R.Model, "load", side_effect=AssertionError("checkpoint opened before gate")
+        ):
             for key, value in changes:
                 with self.subTest(field=key, value=value):
                     write(args.execution_receipt, {**receipt, key: value})

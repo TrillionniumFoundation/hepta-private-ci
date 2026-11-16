@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "source_commit": "32dfab46c84b46b7b09fbad38433ff73e34eb4b3",
+  "kind": "Read-only production call-path and protocol inspection; not a runtime measurement",
+  "correction": "The three original Source channels are not uniformly limited to 128 exchanges. A source visit count above 128 alone does not demonstrate a protocol failure. Existing fixed peer, pidfd, absolute expiry, complete-frame deadline and frame bound remain unchanged.",
+  "custody_path": {
+    "declaration": "cell_q24_training_bootstrap.rs::OriginalCellQ24TrainingBootstrapCustodyV1",
+    "bootstrap": "cell_q24_training_bootstrap_build.rs::build_original_owner",
+    "move": "material_source is consumed by OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset; that client and the original experience/dataset clients move into OriginalCellQ24RemoteTrainingSourceOwnersV1, then capture_original_remote_cell_q24_training_source_v1.",
+    "live": "cell_q24_training_source.rs::LiveOwners::read_original_evidence uses the same two LearningIterationEvidenceClientV1 values; OriginalMaterialSource::Remote uses OriginalCellQ24RemoteMaterialClientV1::read_current."
+  },
+  "channels": [
+    {
+      "name": "Source Experience evidence",
+      "client": "LearningIterationEvidenceClientV1::readback",
+      "server": "OriginalCellQ24MaterialEvidenceOwnerV1::serve_readback",
+      "nonce": "u64 checked_add per exchange; no explicit 128 cap in this client/server",
+      "limits": "Original pidfd/identity and absolute lifetime; at most 500 ms complete exchange deadline, at most 300 s original lifetime, 16 KiB frames."
+    },
+    {
+      "name": "Source Dataset evidence",
+      "client": "LearningIterationEvidenceClientV1::readback",
+      "server": "OriginalCellQ24MaterialEvidenceOwnerV1::serve_readback",
+      "nonce": "u64 checked_add per exchange; no explicit 128 cap in this client/server",
+      "limits": "Same original transport constraints; independent original role-specific connection."
+    },
+    {
+      "name": "Source Material",
+      "client": "OriginalCellQ24MaterialSourceConnectionV1 -> OriginalCellQ24RemoteMaterialClientV1::read_current",
+      "server": "OriginalCellQ24MaterialEvidenceOwnerV1::serve_material_source",
+      "nonce": "u64 checked_add per exchange; no explicit 128 cap in this client/server",
+      "limits": "Same original transport constraints; one complete response frame, no Begin/Page/Finish or hidden paging fallback; actual serialized response size has not been measured."
+    }
+  ],
+  "transport": "HostAuthorityPeerChannel and RootObservationStream contain no request counter/cap; they enforce held original descriptor, peer/lifetime, deadlines and frame bounds. Candidate/Training/Evaluator/Model/Selection/NextUse purpose-specific for128 caps must be counted separately.",
+  "read_quantities": {
+    "source_standalone_capture_each_original_owner": 2,
+    "source_completed_native_lane_each_original_owner": 2,
+    "minimum_bootstrap_plus_first_training_execute_each_original_owner": 18,
+    "candidate_transfer_actual_native_calls": 2,
+    "candidate_transfer_each_source_owner_reads": 4,
+    "candidate_transfer_frames": "ceil(original signed head bytes / 2048) + 1 request-response exchanges, including terminal Finish; at most 17 pages, and last actual nonce <=128 on this separate Candidate connection."
+  },
+  "source_pins": [
+    {
+      "file": "cell_q24_training_bootstrap.rs",
+      "sha": "35bf372850718a41f245c996ee91a71c184bed89",
+      "chars": 7779,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "cell_q24_material_source_connection.rs",
+      "sha": "df63719d221d05dce9862d4a82af424043b71a61",
+      "chars": 4583,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "cell_q24_material_source.rs",
+      "sha": "6152a6137874d726ced622353abb8bf172baf1a9",
+      "chars": 12045,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "learning_iteration_evidence_client.rs",
+      "sha": "2d056831d85260c201a638e57ca1ed63731d3fb5",
+      "chars": 14839,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "cell_q24_material_evidence_service.rs",
+      "sha": "b61dc81c7a14eca197fdec9e55c397743b69eac6",
+      "chars": 13528,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "cell_q24_material_source_service.rs",
+      "sha": "9b4db7d83af9ab11710710adc75279461c134fec",
+      "chars": 9142,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "authority_host_peer.rs",
+      "sha": "36e4524baea04320b7610325579f0ff206690fab",
+      "chars": 6672,
+      "explicit_128_matches": 0
+    },
+    {
+      "file": "root_observation_stream.rs",
+      "sha": "9d3d24bd5104be99372c8a55859360e792120605",
+      "chars": 9788,
+      "explicit_128_matches": 1
+    }
+  ],
+  "validation": {
+    "source_qa_executed": false,
+    "compiled": false,
+    "native_executed": false,
+    "ordinary_acceptance": 0,
+    "external_original_launcher_verified": false
+  },
+  "transport_non_counter_128": "The one literal 128 in RootObservationStream bounds /proc/sys/kernel/random/boot_id text; it is not an exchange counter."
+}

@@ -29,7 +29,7 @@ mod pure_projection;
 mod source_receipts;
 
 #[cfg(target_os = "linux")]
-#[path = "cell_q24_training_readback_tests.rs"]
+#[path = "cell_q24_prepared_training_readback_tests.rs"]
 mod training_readback;
 
 struct Dataset {

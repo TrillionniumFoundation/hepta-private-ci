@@ -1,0 +1,70 @@
+{
+  "all_measured_test_attempts_cpu_seconds": 13.483922,
+  "all_measured_test_attempts_wall_seconds": 14.004992692003725,
+  "candidate_contract": {
+    "bytes": 2167,
+    "sha256": "f69a841d6d64c3b19b9704e4855a555561727fa8b88b31d33c88e302bdda7c27"
+  },
+  "confirmation_E_access": false,
+  "coverage": "v2 actual main gradient microbatches are distinct from v1 no-grad checkpoint supplements; sparse visits do not establish whole-training qualification",
+  "earlier_attempt_preserved": {
+    "children_cpu_seconds": 5.249424,
+    "passed": true,
+    "receipt": {
+      "bytes": 15976,
+      "sha256": "2515259ed6e5434dcad5437a58b063a0294f61e71a237c25c5c46e579d784fb6"
+    },
+    "tested_source": {
+      "bytes": 191924,
+      "sha256": "0bc6a1748cf32a0237853a8458ddb04fb4998f91ce3a4650b9b9734419b74f6b"
+    },
+    "tests": 16,
+    "whole_wrapper_wall_seconds": 5.717592273002083
+  },
+  "execution_authorized": false,
+  "guard_sha256": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd",
+  "latest_software_tests": {
+    "children_cpu_seconds": 8.234498,
+    "new_execution_tests": 19,
+    "original_guard_tests": 21,
+    "passed": true,
+    "receipt": {
+      "bytes": 17622,
+      "sha256": "3bc10cf1e6ff9a2354c487e6c0589ef189018dc55d29a91cab3fd7acdc127f80"
+    },
+    "total": 40,
+    "whole_wrapper_wall_seconds": 8.287400419001642
+  },
+  "optimization_policy_v2": {
+    "bytes": 1859,
+    "sha256": "a1d5d5b8c11194506e9dea49e6b48eaa9c1edc72c6bc975d1e98bdc241b34875"
+  },
+  "original_supplement_policy_unchanged": {
+    "bytes": 2635,
+    "sha256": "8be888e29389321a1e41921244931b7950aa2db63a0d870d55cc5e3fc412a137"
+  },
+  "pending": [
+    "independent static review",
+    "root numerical/full-D assessment and explicit later decision",
+    "native same-runtime software preflight before any production C2 optimizer step"
+  ],
+  "production_runtime_receipt": {
+    "bytes": 1256,
+    "sha256": "dc6af342718078939396ec3eed1f438b0e769c892569b49a652b9a885948d0b8"
+  },
+  "program_manifest": {
+    "bytes": 10343,
+    "sha256": "a92837782976f76c3a17deb2b7886f003ace2eac6768a41e75d035e07e9ec2a4"
+  },
+  "real_production_checkpoint_reads": 0,
+  "real_production_optimizer_steps": 0,
+  "runtime_read_cost_scope": "single original byte read; reported functions call wall2.5s includes local filename lookup; individual native CPU unknown",
+  "schema": "hcsn-c2-preparation-handoff-v1",
+  "science_and_numerics": "HOLD",
+  "source_candidate": {
+    "bytes": 192939,
+    "sha256": "3d5f485da04bd1037fee1f309398019d6e8a00ac76d4aee8fc0399f5f5795654"
+  },
+  "status": "software-tested-awaiting-independent-review",
+  "unmeasured_preparation_costs": "interactive source editing, inspection and preliminary compile were not separately metered; not zero"
+}

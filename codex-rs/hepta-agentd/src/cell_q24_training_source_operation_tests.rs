@@ -1,96 +1,284 @@
-//! Actual task/Ledger component owners exercise borrow identity and withdrawal.
-//! Their explicit test issuers do not prove a deployed Root historical loop.
+//! Actual Source/Ledger and native owner mechanisms for one bounded operation.
+//! Same-UID evidence transport remains explicit fixture custody. These cases
+//! do not constitute ordinary Root assembly, adoption, or restart acceptance.
+
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
 
 use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
+
+use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;
 
 use super::*;
-use crate::cell_composed_q24::OriginalPreparedReadV1;
-use crate::cell_composed_q24::OriginalQ24DatasetReadV1;
 
 #[tokio::test]
-async fn q24_training_source_operation_requires_the_same_actual_dataset_capability()
+async fn source_operation_candidate_and_model_keep_two_reads_per_lane() -> anyhow::Result<()> {
+    let fixture = Harness::from_fixture(Fixture::candidate_pages().await?)?;
+    let (capture, peers) = fixture.capture().await?;
+    let training = CellQ24TrainingOwnerV1::create_from_original_source(
+        fixture.file("native-training", true)?,
+        fixture.witness("native-witness", true)?,
+        capture,
+    )?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
+    let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
+    let completed = stage
+        .execute_training(&fixture.config.dataset, Arc::new(AtomicBool::new(false)))
+        .await?;
+    assert!(matches!(
+        completed.outcome,
+        CellQ24TrainingOutcomeV1::Candidate(_)
+    ));
+    let retained = fixture.bytes()?;
+    let model_file = fixture.file("source-operation-model", true)?;
+    let model_witness = fixture.witness("source-operation-model-witness", true)?;
+    let dataset = fixture.config.dataset.clone();
+    let (stage, model, candidate) = tokio::task::spawn_blocking(move || {
+        let model = stage.create_model_owner(model_file, model_witness)?;
+        let candidate = stage.read_candidate_material(&dataset)?;
+        Ok::<_, StageError>((stage, model, candidate))
+    })
+    .await??;
+    assert!(!fs::read(fixture.root.join("source-operation-model"))?.is_empty());
+    assert_ne!(
+        candidate.bundle(),
+        &fixture.config.dataset.request.selected_bundle
+    );
+    assert_eq!(candidate.receipt(), &completed.receipt);
+    assert_eq!(candidate.attestation(), &completed.attestation);
+    // HQ24M001 plus two u16 dimensions and the original eight 64-wide i64 heads.
+    assert_eq!(candidate.heads().len(), 12 + 8 * 64 * 8);
+    let reread = stage.readback(&fixture.config.dataset).await?;
+    assert_eq!(reread.receipt, completed.receipt);
+    assert_eq!(reread.attestation, completed.attestation);
+    assert_eq!(fixture.bytes()?, retained);
+    drop((candidate, model, stage));
+    // Capture 2 + original admission 2 + SourceBound admission 2 +
+    // first fit 8 (its legacy pre/post/signing checks remain) +
+    // actual Model creation 2 + Candidate material 2 + final readback 2.
+    assert_eq!(finish(peers)?, [20, 20]);
+    Ok(())
+}
+
+struct GatedNativeRead {
+    witness: FileAnchorWitnessStore,
+    remaining: Arc<AtomicUsize>,
+    entered: Arc<tokio::sync::Notify>,
+    release: Mutex<std::sync::mpsc::Receiver<()>>,
+}
+
+impl AnchorWitnessStore for GatedNativeRead {
+    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+        if self
+            .remaining
+            .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |value| {
+                value.checked_sub(1)
+            })
+            == Ok(1)
+        {
+            self.entered.notify_one();
+            self.release
+                .lock()
+                .map_err(|_| WitnessStoreError::Indeterminate)?
+                .recv_timeout(Duration::from_secs(5))
+                .map_err(|_| WitnessStoreError::Indeterminate)?;
+        }
+        self.witness.current()
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
+    ) -> Result<(), WitnessStoreError> {
+        self.witness.compare_and_swap(expected, next)
+    }
+}
+
+type GatedStage = SourceBoundCellQ24TrainingStageV1<GatedNativeRead, FileAnchorWitnessStore>;
+
+async fn gated_completed_stage(
+    fixture: &Harness,
+) -> anyhow::Result<(
+    Arc<GatedStage>,
+    Peers,
+    Arc<AtomicUsize>,
+    Arc<tokio::sync::Notify>,
+    std::sync::mpsc::SyncSender<()>,
+)> {
+    let (capture, peers) = fixture.capture().await?;
+    let remaining = Arc::new(AtomicUsize::new(0));
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let (release, receiver) = std::sync::mpsc::sync_channel(1);
+    let training = CellQ24TrainingOwnerV1::create_from_original_source(
+        fixture.file("native-training", true)?,
+        GatedNativeRead {
+            witness: fixture.witness("native-witness", true)?,
+            remaining: Arc::clone(&remaining),
+            entered: Arc::clone(&entered),
+            release: Mutex::new(receiver),
+        },
+        capture,
+    )?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
+    let stage = Arc::new(SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?);
+    let completed = stage
+        .execute_training(&fixture.config.dataset, Arc::new(AtomicBool::new(false)))
+        .await?;
+    assert!(matches!(
+        completed.outcome,
+        CellQ24TrainingOutcomeV1::NoUpdate { .. }
+    ));
+    Ok((stage, peers, remaining, entered, release))
+}
+
+#[tokio::test]
+async fn source_operation_after_read_withdrawal_fences_completed_native_result()
 -> anyhow::Result<()> {
-    let root = tempfile::tempdir()?;
-    let (mut session, baseline, bundle, _current) = ordinary(
-        root.path(),
-        "training-source-borrow",
-        /*source_envelope*/ None,
-    )
-    .await?;
-    let publication = execute(&session, /*request_id*/ 1).await?;
-    let files = tempfile::tempdir()?;
-    let dataset = Dataset::new(
-        files.path(),
-        &[(&session, &publication, Some(2_i64 << 32))],
-        OutcomeTerminalityV1::Terminal,
-    )?;
-    let config = config(&dataset, &publication, baseline, bundle)?;
-    let prepared = prepare(config.clone(), &dataset)?;
-    let cut = dataset_cut(&prepared)?;
-    let material = prepared.training_material(cut.clone(), prepared.scope().clone())?;
-    let another = CellQ24PreparedLearningV1::recover(
-        config,
-        Arc::clone(&dataset.ledger),
-        dataset.tasks.clone(),
-        prepared.frozen_dataset().clone(),
-        prepared.initial(),
-        prepared.scope(),
-    )?;
-    let other_material = another.training_material(cut, another.scope().clone())?;
-    assert_eq!(material.batch.encoded(), other_material.batch.encoded());
-    prepared.with_original_prepared_operation(|read| -> anyhow::Result<()> {
-        OriginalQ24DatasetReadV1::require_current_batch(read, &material.batch.clone())?;
-        assert!(matches!(
-            OriginalPreparedReadV1::require_training_batch(read, &other_material.batch),
-            Err(CellQ24TrainingErrorV1::Binding(
-                "operation borrowed another Trainer Dataset capability"
-            ))
-        ));
-        let cancelled = std::sync::atomic::AtomicBool::new(/*val*/ true);
-        assert!(matches!(
-            material.plan.fit_with_original_source(
-                material.batch.clone(),
-                material.rule,
-                &cancelled,
-                read,
-            ),
-            Err(CellQ24TrainingErrorV1::Cancelled)
-        ));
-        Ok(())
-    })??;
-    session.stop().await?;
+    let fixture = Harness::new().await?;
+    let (stage, peers, remaining, entered, release) = gated_completed_stage(&fixture).await?;
+    let retained = fixture.bytes()?;
+    // Two witness reads precede Source begin. The third is actual native
+    // readback during work, after the complete Source before read.
+    remaining.store(3, Ordering::SeqCst);
+    let running = Arc::clone(&stage);
+    let dataset = fixture.config.dataset.clone();
+    let waiting = tokio::spawn(async move { running.readback(&dataset).await });
+    tokio::time::timeout(Duration::from_secs(5), entered.notified()).await?;
+    fixture
+        .source
+        .withdraw_source(&fixture.config.dataset.request.source_run_id)?;
+    release.send(())?;
+    assert!(matches!(waiting.await?, Err(StageError::CommitUncertain)));
+    assert!(matches!(
+        stage.readback(&fixture.config.dataset).await,
+        Err(StageError::CommitUncertain)
+    ));
+    assert_eq!(fixture.bytes()?, retained);
+    drop(stage);
+    assert_eq!(finish(peers)?, [16, 16]);
     Ok(())
 }
 
 #[tokio::test]
-async fn q24_training_source_operation_rechecks_withdrawal_before_return() -> anyhow::Result<()> {
-    let root = tempfile::tempdir()?;
-    let (mut session, baseline, bundle, _current) = ordinary(
-        root.path(),
-        "training-source-withdrawal",
-        /*source_envelope*/ None,
-    )
+async fn source_operation_cancelled_waiter_keeps_lane_then_fences() -> anyhow::Result<()> {
+    let fixture = Harness::new().await?;
+    let (stage, peers, remaining, entered, release) = gated_completed_stage(&fixture).await?;
+    let retained = fixture.bytes()?;
+    remaining.store(3, Ordering::SeqCst);
+    let running = Arc::clone(&stage);
+    let dataset = fixture.config.dataset.clone();
+    let waiting = tokio::spawn(async move { running.readback(&dataset).await });
+    tokio::time::timeout(Duration::from_secs(5), entered.notified()).await?;
+    waiting.abort();
+    assert!(matches!(waiting.await, Err(error) if error.is_cancelled()));
+    assert!(matches!(
+        stage.readback(&fixture.config.dataset).await,
+        Err(StageError::Busy)
+    ));
+    assert_eq!(fixture.bytes()?, retained);
+    release.send(())?;
+    let after = tokio::time::timeout(Duration::from_secs(10), async {
+        loop {
+            match stage.readback(&fixture.config.dataset).await {
+                Err(StageError::Busy) => tokio::task::yield_now().await,
+                other => break other,
+            }
+        }
+    })
     .await?;
-    let publication = execute(&session, /*request_id*/ 1).await?;
-    let files = tempfile::tempdir()?;
-    let dataset = Dataset::new(
-        files.path(),
-        &[(&session, &publication, Some(0))],
-        OutcomeTerminalityV1::Terminal,
+    assert!(matches!(after, Err(StageError::CommitUncertain)));
+    assert_eq!(fixture.bytes()?, retained);
+    drop(stage);
+    assert_eq!(finish(peers)?, [16, 16]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn source_operation_rejects_equal_capture_from_different_arc() -> anyhow::Result<()> {
+    let fixture = Harness::new().await?;
+    let (first, first_peers) = fixture.capture().await?;
+    let (second, second_peers) = fixture.capture().await?;
+    assert_eq!(
+        first.source_capture_binding(),
+        second.source_capture_binding()
+    );
+    tokio::task::spawn_blocking(move || {
+        let first = Arc::new(first);
+        let second = Arc::new(second);
+        let operation = OriginalCellQ24TrainingSourceV1::begin_source_operation(&first)?;
+        assert!(operation.require_original_source(&second).is_err());
+        drop(operation);
+        assert!(first.source_operation_fenced());
+        assert!(!second.source_operation_fenced());
+        assert!(matches!(
+            first.require_current_in_lane(),
+            Err(OriginalCellQ24TrainingSourceErrorV1::CaptureUncertain)
+        ));
+        second.require_current_in_lane()?;
+        Ok::<_, OriginalCellQ24TrainingSourceErrorV1>(())
+    })
+    .await??;
+    assert_eq!(finish(first_peers)?, [3, 3]);
+    assert_eq!(finish(second_peers)?, [4, 4]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn source_operation_abandoned_finish_preserves_real_native_effect_and_fences()
+-> anyhow::Result<()> {
+    let fixture = Harness::new().await?;
+    let (capture, peers) = fixture.capture().await?;
+    let mut training = CellQ24TrainingOwnerV1::create_from_original_source(
+        fixture.file("native-training", true)?,
+        fixture.witness("native-witness", true)?,
+        capture,
     )?;
-    let prepared = prepare(config(&dataset, &publication, baseline, bundle)?, &dataset)?;
-    let material = prepared.training_material(dataset_cut(&prepared)?, prepared.scope().clone())?;
-    let result = prepared.with_original_prepared_operation(|read| -> anyhow::Result<()> {
-        OriginalPreparedReadV1::require_training_batch(read, &material.batch)?;
-        session
-            .source
-            .withdraw_for_dataset_test(&publication.input().scope.run_id)?;
-        assert!(OriginalPreparedReadV1::require_training_batch(read, &material.batch).is_err());
-        // Even a caller that observes this failure and returns Ok cannot erase
-        // the enclosing operation's independent final source check.
-        Ok(())
-    });
-    assert!(result.is_err());
-    session.stop().await?;
+    drop(fixture.receipts(true)?);
+    let before = fixture.bytes()?;
+    tokio::task::spawn_blocking(move || {
+        let source = training
+            .original_source_for_operation()?
+            .expect("actual sealed Source");
+        let operation = OriginalCellQ24TrainingSourceV1::begin_source_operation(&source)?;
+        let completed = training.fit_or_readback(&AtomicBool::new(false))?;
+        assert!(matches!(
+            completed,
+            CellQ24TrainingOutcomeV1::NoUpdate { .. }
+        ));
+        // Simulate loss of the occupied operation before its after read/finish.
+        drop(operation);
+        assert!(matches!(
+            training.readback(),
+            Err(CellQ24TrainingOwnerErrorV1::CommitUncertain)
+        ));
+        Ok::<_, CellQ24TrainingOwnerErrorV1>(())
+    })
+    .await??;
+    assert_eq!(finish(peers)?, [7, 7]);
+    let after = fixture.bytes()?;
+    assert_ne!(before[0], after[0]);
+    assert_ne!(before[1], after[1]);
+    assert_eq!(before[2..], after[2..], "no Generator receipt was claimed");
+
+    let (capture, peers) = fixture.capture().await?;
+    let mut recovered = CellQ24TrainingOwnerV1::recover_from_original_source(
+        fixture.file("native-training", false)?,
+        fixture.witness("native-witness", false)?,
+        capture,
+    )?;
+    assert!(matches!(
+        recovered.readback()?,
+        CellQ24TrainingOutcomeV1::NoUpdate { .. }
+    ));
+    drop(recovered);
+    assert_eq!(finish(peers)?, [2, 2]);
+    assert_eq!(fixture.bytes()?, after);
     Ok(())
 }

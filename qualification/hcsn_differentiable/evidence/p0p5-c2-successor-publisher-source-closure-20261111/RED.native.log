@@ -1,0 +1,27 @@
+test_sha256 d1d1a931a215b681ac37110bc0aa68152d1c64a4ca5af178b1dfe188a70084b0
+RED_EXIT 1
+RED_STDERR test_mutated_recovery_durable_code_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_mutated_recovery_durable_code_must_fail_closed) ... FAIL
+test_no_recovery_durable_digest_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_no_recovery_durable_digest_must_fail_closed) ... FAIL
+
+======================================================================
+FAIL: test_mutated_recovery_durable_code_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_mutated_recovery_durable_code_must_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-durable-dep-t7-direct-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py", line 57, in test_mutated_recovery_durable_code_must_fail_closed
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_no_recovery_durable_digest_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_no_recovery_durable_digest_must_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-durable-dep-t7-direct-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py", line 51, in test_no_recovery_durable_digest_must_fail_closed
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.019s
+
+FAILED (failures=2)
+
+RED_STDOUT 

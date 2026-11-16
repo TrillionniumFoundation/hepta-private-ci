@@ -1,0 +1,71 @@
+{
+  "disposition": "no_blocking_finding_for_existing_authorized_native_software_tests_and_six_parent_validate_only",
+  "findings": [
+    {
+      "closure": "terminal_result_gate now requires identified JSON, matching parent/fit/config/source and all success artifacts. Missing or corrupt evidence is failed_terminal_evidence, while measured wait4 cost remains recorded.",
+      "description": "Old controller could label exit0 plus missing result as completed.",
+      "id": "C2-01",
+      "severity": "blocking_for_production_in_old_v1",
+      "status": "closed_in_v2_and_retained_in_v3"
+    },
+    {
+      "closure": "Frozen v3 binds every position, valid sample index, actual dt, network hash, update/episode/capture/layer, probability dimensions and pad exclusions. Independent AST positive control plus nine corruptions pass the intended accept/reject behavior.",
+      "description": "Exact old finish_pending AST accepted duplicated positions and wrong batch/dt/model identity with unchanged row count.",
+      "id": "C2-02",
+      "severity": "blocking_for_trace_admission_in_old_v2",
+      "status": "closed_in_v3"
+    },
+    {
+      "description": "Both runner and controller initialize formal_fits_started=0 and never change it even on the execute path. actual_continuations_started separately counts processes.",
+      "id": "C2-03",
+      "recommendation": "Remove or explicitly rename the constant as new_original_roster_fits_started; never use it to claim that executed continuations performed zero training. Production execution reports need unambiguous actual continuation and optimizer update counts.",
+      "severity": "reporting_ambiguity_for_future_execution",
+      "status": "open_in_reviewed_v3_not_a_readonly_preflight_blocker"
+    }
+  ],
+  "independent_gate_closure": {
+    "bytes": 2350,
+    "sha256": "10bbe91c15712104bf872c6500a00270e8cdbab101dfe10edeedbbdde7c4958d"
+  },
+  "independent_gate_closure_outer": {
+    "complete_child_wall_seconds": 0.0414969449993805,
+    "returncode": 0,
+    "scope": "Complete independent AST-only trace gate closure subprocess; no model/optimizer/numerical execution.",
+    "waited_child_CPU_seconds": 0.04072
+  },
+  "limits": [
+    "Static source review and model-free closure do not prove six real native parent admissions; those must have separate native original receipts.",
+    "Native validate-only code instantiates models and optimizer state for structural checking but performs no forward/backward/optimizer step; it must not be labelled zero optimizer construction.",
+    "C2 is adaptive extra active budget up to43200s and200 epochs, outside original common-budget views; original parent wall and discarded partial work are not refunded.",
+    "Scheduled actual-gradient traces and separate supplemental evaluation windows are bounded samples; neither grants whole-training numerical qualification.",
+    "Controller completed_attempt_roster describes complete accounting, not all fits successful or adequate.",
+    "Finalization reserve600s is inside the unchanged active cap and is not a guaranteed successful final evaluation; every timeout/failed/missing artifact remains explicit."
+  ],
+  "old_trace_counterexample": {
+    "bytes": 2528,
+    "sha256": "f86161ea44c0fde9df133f1d85087b9afa8cbea006b83db6ad77565bfc571af9"
+  },
+  "owner_source_unchanged": true,
+  "owner_tests": 53,
+  "owner_validation_result": {
+    "bytes": 19956,
+    "sha256": "a4ce429771c818dd0bac5c85cbcf3828577821b5aa356b9229b7823ccecf50a5"
+  },
+  "owner_validation_scope": "21 frozen guards +19 runner +8 terminal artifact +5 actual-visit coverage tests; synthetic fixtures only",
+  "production_execution_authorized_by_this_review": false,
+  "real_production_backward_calls": 0,
+  "real_production_checkpoint_reads": 0,
+  "real_production_forwards": 0,
+  "real_production_optimizer_steps": 0,
+  "reviewed_program_manifest": {
+    "bytes": 10906,
+    "sha256": "ed02f75a65fd1a5958e289d9b6a812a2feddb0096b787fbcc5b37331d0965648"
+  },
+  "reviewed_source_capsule": {
+    "bytes": 201153,
+    "sha256": "daa7e510ef6d790afe2b4c9db3afbf4a9e3a024565da1ee4c1d8301b802b17e7"
+  },
+  "schema": "independent-C2-v3-static-review-v1",
+  "scientific_admission": "HOLD",
+  "whole_training_numerical_admission": "HOLD"
+}

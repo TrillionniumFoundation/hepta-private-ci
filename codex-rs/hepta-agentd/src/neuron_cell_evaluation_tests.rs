@@ -359,3 +359,11 @@ fn signatures_for_another_fair_budget_cannot_publish_this_result() {
         (0, 0)
     );
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_model_selection_evaluation_support_tests.rs"]
+pub(crate) mod original_model_selection;
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_original_evaluation_plan_support_tests.rs"]
+pub(crate) mod original_provider;

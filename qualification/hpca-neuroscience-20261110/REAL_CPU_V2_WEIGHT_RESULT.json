@@ -1,0 +1,179 @@
+{
+  "aggregate": {
+    "0": {
+      "maximum_rms": 0.000136666418,
+      "mean_rms": 9.062919175e-05,
+      "minimum_rms": 6.1422053e-05,
+      "seeds_with_nonzero": 4
+    },
+    "1": {
+      "maximum_rms": 0.000202850731,
+      "mean_rms": 0.00013082350999999999,
+      "minimum_rms": 9.8100092e-05,
+      "seeds_with_nonzero": 4
+    }
+  },
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "identity_checks": "all original per-run recorded adapter SHA256 and byte sizes matched",
+  "independent_evaluator": "NOT_RUN",
+  "measured": {
+    "process_cpu_seconds": 0.162706,
+    "ru_maxrss_kib": 20048,
+    "wall_seconds": 0.162722
+  },
+  "owner_adopt": "NOT_RUN",
+  "pairs": [
+    {
+      "blobs": {
+        "bursty": {
+          "bytes": 560696,
+          "sha256": "bbf14a55ed1aea85f373c2b662c53d0665a6d1152fec7a6c3306a5e4ddcc6024"
+        },
+        "interleaved": {
+          "bytes": 560696,
+          "sha256": "5da94a4fafc3804b64dbfe26470d008f76c38a1fa1b515e088f894af921a82b0"
+        }
+      },
+      "groups": {
+        "0": {
+          "changed_elements": 69120,
+          "cosine": 0.999967612065,
+          "difference_l2": 0.035930534344,
+          "difference_max_abs": 0.003023696132,
+          "difference_rms": 0.000136666418,
+          "elements": 69120,
+          "relative_joint_l2": 0.00569106035
+        },
+        "1": {
+          "changed_elements": 69118,
+          "cosine": 0.999983389642,
+          "difference_l2": 0.025791184085,
+          "difference_max_abs": 0.003041799646,
+          "difference_rms": 9.8100092e-05,
+          "elements": 69120,
+          "relative_joint_l2": 0.004075811643
+        }
+      },
+      "max_tensor_difference_l2": 0.009960261455,
+      "nonzero_tensor_count": 60,
+      "seed": 11,
+      "tensor_count": 60
+    },
+    {
+      "blobs": {
+        "bursty": {
+          "bytes": 560696,
+          "sha256": "86204ff8f3b74b45355818259099a663fcd0456c965e0858ec3f50bccf72bfab"
+        },
+        "interleaved": {
+          "bytes": 560696,
+          "sha256": "f701b5f98ea9ee0048f6d0531ac8069a70dd9b602e9380f3fb677c9391c36a0f"
+        }
+      },
+      "groups": {
+        "0": {
+          "changed_elements": 69119,
+          "cosine": 0.999986189676,
+          "difference_l2": 0.023569382185,
+          "difference_max_abs": 0.002761831507,
+          "difference_rms": 8.9649183e-05,
+          "elements": 69120,
+          "relative_joint_l2": 0.003716224504
+        },
+        "1": {
+          "changed_elements": 69117,
+          "cosine": 0.999981299711,
+          "difference_l2": 0.027434260719,
+          "difference_max_abs": 0.003690114929,
+          "difference_rms": 0.000104349746,
+          "elements": 69120,
+          "relative_joint_l2": 0.004324385895
+        }
+      },
+      "max_tensor_difference_l2": 0.008456556775,
+      "nonzero_tensor_count": 60,
+      "seed": 17,
+      "tensor_count": 60
+    },
+    {
+      "blobs": {
+        "bursty": {
+          "bytes": 560696,
+          "sha256": "342ce2a5fe6facad84eec42d578eda9f6ab544180a610fb2fbff38c3bb4ff5c4"
+        },
+        "interleaved": {
+          "bytes": 560696,
+          "sha256": "d7cb0a9bd48ce77dca8f77c47a3108b07cd075a04d04e1ebd5c38ebd836f4175"
+        }
+      },
+      "groups": {
+        "0": {
+          "changed_elements": 69120,
+          "cosine": 0.999993789105,
+          "difference_l2": 0.016148277226,
+          "difference_max_abs": 0.001592272194,
+          "difference_rms": 6.1422053e-05,
+          "elements": 69120,
+          "relative_joint_l2": 0.002498039857
+        },
+        "1": {
+          "changed_elements": 69120,
+          "cosine": 0.999929689015,
+          "difference_l2": 0.053330842247,
+          "difference_max_abs": 0.003606429731,
+          "difference_rms": 0.000202850731,
+          "elements": 69120,
+          "relative_joint_l2": 0.008385184418
+        }
+      },
+      "max_tensor_difference_l2": 0.024522472789,
+      "nonzero_tensor_count": 60,
+      "seed": 23,
+      "tensor_count": 60
+    },
+    {
+      "blobs": {
+        "bursty": {
+          "bytes": 560696,
+          "sha256": "94b71b7e43fa7419e07be1f73273c5a2a9b0c7bf3333ff8aecabe07a508e0e28"
+        },
+        "interleaved": {
+          "bytes": 560696,
+          "sha256": "ab9174a7fecc2abd9576d6c09e5faf22429bf9beeb10ef4bb92b5e934969a0df"
+        }
+      },
+      "groups": {
+        "0": {
+          "changed_elements": 69120,
+          "cosine": 0.999990489409,
+          "difference_l2": 0.019659939442,
+          "difference_max_abs": 0.002636803314,
+          "difference_rms": 7.4779113e-05,
+          "elements": 69120,
+          "relative_joint_l2": 0.003087238785
+        },
+        "1": {
+          "changed_elements": 69118,
+          "cosine": 0.99997646511,
+          "difference_l2": 0.031021289028,
+          "difference_max_abs": 0.003648462298,
+          "difference_rms": 0.000117993471,
+          "elements": 69120,
+          "relative_joint_l2": 0.004851443189
+        }
+      },
+      "max_tensor_difference_l2": 0.009234308547,
+      "nonzero_tensor_count": 60,
+      "seed": 29,
+      "tensor_count": 60
+    }
+  ],
+  "parent_git_head": "0ed4fce8bd07d361bf7eba40c40fe73d1f349c66",
+  "production_qualification": "HOLD_NO_GO",
+  "qualifier": "actual retained checkpoint bytes; not a new training run or independent evaluation",
+  "schema": "HPCA-REAL-V2-RETAINED-ADAPTER-PAIR-DIAGNOSTIC-V1",
+  "scientific_benefit": "NOT_ESTABLISHED",
+  "source_archive_plan_sha256": "08677c300eff2e66807b19529728dbf9b7b1e8bd43fa265949763261f7bca6af",
+  "source_archive_result_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+  "source_archive_script_sha256": "4dded105ac0477c9747b13d98ee1b57d46dcc322d034121a55a9c63a12250e5e"
+}

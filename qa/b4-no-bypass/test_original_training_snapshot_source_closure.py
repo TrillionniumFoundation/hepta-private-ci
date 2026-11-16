@@ -20,6 +20,7 @@ STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 STAGE_OWNERS = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
 MODEL_DISPATCH = "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
 TRAINING_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
+BOUND = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 
 
 class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
@@ -69,10 +70,10 @@ class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
-            for path in (SOURCE, STAGE, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)
+            for path in (SOURCE, STAGE, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL, BOUND)
         }
         for name, callers in (
-            ("learning_original_training_stage_readback", (SOURCE, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)),
+            ("learning_original_training_stage_readback", (SOURCE, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL, BOUND)),
             ("learning_original_training_snapshot_readback", (STAGE_OWNERS,)),
         ):
             row = rows[name]

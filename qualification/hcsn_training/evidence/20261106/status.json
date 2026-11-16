@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-06T08:12:41.802486+00:00",
+  "scope": "Opt-in HCSN A shared training graph, explicit time contract, native candidate publication, and CPU cross-language engineering acceptance. Not production activation or science qualification.",
+  "research_base": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "rust_base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "review_stack": [
+    {
+      "pr": 4945,
+      "head": "8bf116d8ca0b41aea99b554b6ac1f65427ac9c98",
+      "layer": "time/profile"
+    },
+    {
+      "pr": 4946,
+      "head": "a54677d70e582a43a7947fc4630690fb7806f7d3",
+      "layer": "shared graph"
+    },
+    {
+      "pr": 4947,
+      "head": "3c683f6ce6d8b564361ebfa81f3adc3d8d185e5a",
+      "layer": "native owner handoff"
+    }
+  ],
+  "final_branch": "codex/hcsn-training-bridge-20261106",
+  "source_sha256": {
+    "codex-rs/hepta-neuron/src/continuous_time.rs": "ae08bcbc9c0a54cd376aa46ce98e1d87a2eee453e1abaef7e651eab4bff83313",
+    "codex-rs/hepta-neuron/src/continuous_time_tests.rs": "e1dd73e331bad212f06522b4511e86c9e6a5c9dc9e46e133272034068ed9d174",
+    "codex-rs/hepta-neuron/src/lib.rs": "01fbef4f136693685a3e151f0f49ec08a52daff6e8101866e07e02881f7f949a",
+    "codex-rs/hepta-learning-artifacts/src/hcsn_candidate.rs": "6ed338bf71d1ece130f35ab7e318dc1dbaaba8adb9bc5c629ae01285c7548de6",
+    "codex-rs/hepta-learning-artifacts/src/hcsn_candidate_tests.rs": "ad57fa8e17344174e18930cf3a5c1b145f4bd67d248764858cc87107781201c9",
+    "codex-rs/hepta-learning-artifacts/src/lib.rs": "74c7810d292ea33c0e4205926520cd265e470e442459c4be281ffddcd357be26",
+    "qualification/hcsn_training/__init__.py": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification/hcsn_training/handoff.py": "7809cc14ccd5750049e4a2b91462ed9655a30db0c2535d35e3e0f7c6472f2c21",
+    "qualification/hcsn_training/joint_graph.py": "a43a93520746de5e3d320f0699246149dfffadba439804953b71a7ddbda99835",
+    "qualification/hcsn_training/native_fixture.rs": "b914f2604994114f01e7a90ab622cd0388f90308cace85ffc0184069e6205ffb",
+    "qualification/hcsn_training/test_joint_graph.py": "3ca3bb61399b57b9ad1cebb1ee9511ab91f51552a6cd0571256ca37296c5ba05",
+    "qualification/hcsn_training/verify_bridge.py": "8daa13a0da4f036b5ec4152c7af61b650756706ad42385547ce9ef2a5a228052",
+    "qualification/hcsn_training/worker.py": "81e4c2b7f053604548157bc75d3ea4f10a86dfd986cbf9f76f84c78c2ec609ea"
+  },
+  "frozen_research_files": [
+    {
+      "path": "qualification/hcsn/__init__.py",
+      "base_git_blob": "8b44a01fbad4e7adfbefb5cebfb8613bc0c81eac",
+      "actual_git_blob": "8b44a01fbad4e7adfbefb5cebfb8613bc0c81eac",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/attempts.py",
+      "base_git_blob": "a467f64f4250360c48f27b0231b3752a772b54b1",
+      "actual_git_blob": "a467f64f4250360c48f27b0231b3752a772b54b1",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/audit_population.py",
+      "base_git_blob": "13388cb6b8e48c5e5c09abd3c8a47bfb50ad4cb1",
+      "actual_git_blob": "13388cb6b8e48c5e5c09abd3c8a47bfb50ad4cb1",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/baselines.py",
+      "base_git_blob": "950f5efec8877a1156d887963bffa8f34f600338",
+      "actual_git_blob": "950f5efec8877a1156d887963bffa8f34f600338",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/benchmark.py",
+      "base_git_blob": "1d284526bdc680ae7d6077f69e9a875aa4e5b88f",
+      "actual_git_blob": "1d284526bdc680ae7d6077f69e9a875aa4e5b88f",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/cells.py",
+      "base_git_blob": "3541ac98a51ffef1d383c5bd2020371a1d7d1c59",
+      "actual_git_blob": "3541ac98a51ffef1d383c5bd2020371a1d7d1c59",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/checks.py",
+      "base_git_blob": "538b8e7a0ab9c2b3ea3446815c919340b182b6d3",
+      "actual_git_blob": "538b8e7a0ab9c2b3ea3446815c919340b182b6d3",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/configs/full-rematerialized.json",
+      "base_git_blob": "5ecfb62dd37305e7416171965ce090ca4f0f9630",
+      "actual_git_blob": "5ecfb62dd37305e7416171965ce090ca4f0f9630",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/configs/full.json",
+      "base_git_blob": "59c1004a7be2990192be14cab01e2fa4c6cc3597",
+      "actual_git_blob": "59c1004a7be2990192be14cab01e2fa4c6cc3597",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/configs/smoke.json",
+      "base_git_blob": "440a9834706c733cff81cda0535e44780c9592f8",
+      "actual_git_blob": "440a9834706c733cff81cda0535e44780c9592f8",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/execution.py",
+      "base_git_blob": "6fae54cfb3e4b73132a1256200c5f93ad4d149d1",
+      "actual_git_blob": "6fae54cfb3e4b73132a1256200c5f93ad4d149d1",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/mechanisms.py",
+      "base_git_blob": "78abe762600e85c52bffae766fb1f115e27e5173",
+      "actual_git_blob": "78abe762600e85c52bffae766fb1f115e27e5173",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/population.py",
+      "base_git_blob": "54f73e10a9bad9c1881c313208ef7a5f072c335c",
+      "actual_git_blob": "54f73e10a9bad9c1881c313208ef7a5f072c335c",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/population_torch.py",
+      "base_git_blob": "499b8a97772081be02dc9e58ca560f8543e4fd47",
+      "actual_git_blob": "499b8a97772081be02dc9e58ca560f8543e4fd47",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/reference.py",
+      "base_git_blob": "34dbca501eb633788845be7ab0c128ecba1d1320",
+      "actual_git_blob": "34dbca501eb633788845be7ab0c128ecba1d1320",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/rematerialization.py",
+      "base_git_blob": "60028f91435153ed11c94c80dda2ee18513f0bd6",
+      "actual_git_blob": "60028f91435153ed11c94c80dda2ee18513f0bd6",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tensor.py",
+      "base_git_blob": "f11fe85d57515bb75924a6751118571a57b5b9f9",
+      "actual_git_blob": "f11fe85d57515bb75924a6751118571a57b5b9f9",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/__init__.py",
+      "base_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_audit_population.py",
+      "base_git_blob": "480453a48d1e8a34d6913cc340d739af4879fd95",
+      "actual_git_blob": "480453a48d1e8a34d6913cc340d739af4879fd95",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_benchmark.py",
+      "base_git_blob": "7f2c0f83c7064f1b390a42e6a1b04486706d5043",
+      "actual_git_blob": "7f2c0f83c7064f1b390a42e6a1b04486706d5043",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_cells.py",
+      "base_git_blob": "1cacabc543d4e18a061a7419069d6bfaa8ebf5c1",
+      "actual_git_blob": "1cacabc543d4e18a061a7419069d6bfaa8ebf5c1",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_checks.py",
+      "base_git_blob": "d736df6a24b6575c9d92149ffc65e962ad2d85ca",
+      "actual_git_blob": "d736df6a24b6575c9d92149ffc65e962ad2d85ca",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_execution.py",
+      "base_git_blob": "4a3d9cb73dcf96a47360335cb65bd8c5000ad2d6",
+      "actual_git_blob": "4a3d9cb73dcf96a47360335cb65bd8c5000ad2d6",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_hx_tensor.py",
+      "base_git_blob": "0adbf5f83e5cdc8e19e8766bc13155b43c0b2135",
+      "actual_git_blob": "0adbf5f83e5cdc8e19e8766bc13155b43c0b2135",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_population.py",
+      "base_git_blob": "091aafc7548d19ca52860499f95257c1f426d864",
+      "actual_git_blob": "091aafc7548d19ca52860499f95257c1f426d864",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_population_torch.py",
+      "base_git_blob": "6c91a6fd62f90eaa225b876bb57341713f483f38",
+      "actual_git_blob": "6c91a6fd62f90eaa225b876bb57341713f483f38",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_reference.py",
+      "base_git_blob": "5b8398aff3c411797c2b04a762306bc5b0c2379d",
+      "actual_git_blob": "5b8398aff3c411797c2b04a762306bc5b0c2379d",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/tests/test_tensor.py",
+      "base_git_blob": "f4574966a64a91c1ee1e4dc3c1dd1276e0458216",
+      "actual_git_blob": "f4574966a64a91c1ee1e4dc3c1dd1276e0458216",
+      "matches": true
+    },
+    {
+      "path": "qualification/hcsn/validate.py",
+      "base_git_blob": "f908ac0fd04c36e937f6085395ebf498073ecac2",
+      "actual_git_blob": "f908ac0fd04c36e937f6085395ebf498073ecac2",
+      "matches": true
+    }
+  ],
+  "native_tests": {
+    "passed": 194,
+    "discovery_ignored": 1,
+    "existing_ignored_helper_parent_passed": true,
+    "new_time_tests": 9,
+    "new_handoff_tests": 7,
+    "workspace": "four-crate projection",
+    "all_46_lockfile_packages_match_original": true,
+    "ordinary_unit_tests_before_final_formatting": true,
+    "evidence": "native/scope.json"
+  },
+  "python_tests": {
+    "passed": 8,
+    "skipped": 0,
+    "runtime": "torch 2.8.0+cpu / float64",
+    "retrospective_original_tool_output_transcript": true,
+    "absolute_run_time_not_retained": true,
+    "evidence": "python/"
+  },
+  "independent_boundary_review": {
+    "positive_high_timestamp_case": 1,
+    "negative_cases_rejected": 17,
+    "evidence": "independent-review/time-boundary-review.json"
+  },
+  "final_formatted_bridge": {
+    "status": "passed",
+    "result_file": "bridge/attempt-02-formatted/result.json",
+    "prior_attempt_retained": "bridge/attempt-01/",
+    "logical_cells": 2,
+    "trainable_parameters": 172,
+    "gradient_parameters": 172,
+    "completed_optimizer_steps": 1,
+    "resumed_output_exact": true,
+    "resumed_all_state_exact": true,
+    "base_bytes_unchanged": true,
+    "candidate_digest": "283a4f7e4d123fceb7806a20634cd422b7cbf361a1728163238ddca0b7ff4296",
+    "execution_source_digest": "1adbf2d66a749896a95f54617c0a3576000b523fb08fc9bcfde8b6ff07ea095b",
+    "wall_seconds": 8.391172573999938,
+    "cost_scope": "compile and all recorded child invocations included in wall; child diagnostics retain their scopes",
+    "synthetic_test_trust_only": true
+  },
+  "hosted_ci": {
+    "status_at_collection": "not_yet_dispatched; final PR will trigger the exact-head workflow",
+    "existing_research_ci_not_reused_as_qualification": true
+  },
+  "not_claimed": {
+    "ordinary_taskflow_hcsn_handler_registered": false,
+    "production_supervision_or_global_once_only_job_lock": false,
+    "production_model_activation": false,
+    "population_b_tensor_worker": false,
+    "arbitrary_dt_population_b_migration": false,
+    "coupled_nonlinear_ode_exact_solution": false,
+    "scientific_gain_qualified": false,
+    "cuda_campaign_completed": false,
+    "physical_energy_measured": false
+  },
+  "campaign": {
+    "read_only_snapshot": "campaign/scope.json",
+    "existing_controller_job_id": "1a1acdd69f2-fc05-5757",
+    "new_training_jobs_from_this_task": 0,
+    "new_installer_jobs_from_this_task": 0,
+    "budget_seeds_original_sources_changed": false,
+    "snapshot_is_not_current_status": true
+  },
+  "archive_policy": {
+    "raw_small_fixture_files": "retained byte-for-byte, including intentional negative-test copies",
+    "large_fixture_elf": "excluded from Git; exact hash, source/compiler/dependency identities and original local path retained in per-attempt inventory",
+    "public_third_party_crate_chunks": "excluded from Git; immutable lockfile hashes and transfer inventory retained; scratch originals preserved"
+  }
+}

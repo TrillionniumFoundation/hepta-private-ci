@@ -1,0 +1,98 @@
+{
+  "binding": {
+    "actual_initialization_and_import_probe": {
+      "api": {
+        "bytes": 21725,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/C2_ACTUAL_REMOTE.json",
+        "sha256": "aecc5e17feda9ab394d2f75b850082808b102839cffded2fec3c2bd4deeff0da"
+      },
+      "import_receipt": {
+        "bytes": 116925,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_durable_raw/imports/execution04/A-17/IMPORT_RECEIPT.json",
+        "sha256": "5215c9410345a1a5a3366cc33bcecc2e3bdd13947cbae8ee9cf9c2bbdc3ae074"
+      },
+      "pipeline": {
+        "bytes": 8638,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/registrations/initial/PIPELINE_CONFIG.json",
+        "sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e"
+      },
+      "probe": {
+        "bytes": 11406,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/import_probe/IMPORT_CLOSURE.json",
+        "sha256": "64c8838ebbfc28ba506747b1337798e7d4734bcc459db475082c9d4c8714f440"
+      },
+      "publication": {
+        "bytes": 4092,
+        "path": "/workspace/scratch/178ced6a501f/execution06_recovery_20261030/C2_PUBLICATION_VERIFIED.json",
+        "sha256": "c5c2e0797866a43e9d268b55b59627122ed5387393b53ec8982ca182db735c4d"
+      },
+      "raw_identity_sha256": "7ec3f7f489215ec3db583fa3f345a6ffa4260d847164b255a6917bfa7fc5851c"
+    },
+    "build_started": {
+      "bytes": 1582,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/BUILD_STARTED.json",
+      "sha256": "e87f3e9359a7a5eeb013eac9efa95bee64d414cfe889d3ed8e6f2ce2d62edf01"
+    },
+    "complete_inline_paths": 3428,
+    "cost_scope_note": {
+      "bytes": 1279,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/COST_SCOPE_NOTE.json",
+      "sha256": "52f6db6128fdc83dd1bc12e6d3c039d60112725abad6e8da3ed4db4611af07e7"
+    },
+    "directories": {
+      "bytes": 646147,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/DIRECTORIES.json",
+      "sha256": "04571877f907be860ffdc91233ed7e117336b7952a4e97a2873e2eb0d352b09b"
+    },
+    "execution_episode": "execution06_detached_20261030",
+    "explicit_finite_later_sidecar_boundary": true,
+    "external_references": {
+      "bytes": 1310512,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/EXTERNAL_REFERENCES.json",
+      "sha256": "b78538737e797e7a2b6200ecd688a508d154dbde41f73cb03e927787736a2ccd"
+    },
+    "import_logical_coverage": {
+      "bytes": 547279,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/IMPORT_LOGICAL_COVERAGE.json",
+      "sha256": "f30006c64d3c8fcba96b52c1811b998621650acb5aaf35da3c401c832f04d5ae"
+    },
+    "inline_logical_bytes": 624608104,
+    "label": "prelaunch_metadata",
+    "logical_paths": {
+      "bytes": 2791275,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/LOGICAL_PATHS.json",
+      "sha256": "d38c2072adde3ef70eef7de7e9ed59ed942e10b36659cc7658b6b7aebf95fef5"
+    },
+    "new_scientific_gradient_steps_here": 0,
+    "nonregular_fixture_metadata": {
+      "bytes": 3147,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/NONREGULAR_FIXTURES.json",
+      "sha256": "014368ed08cdd5bfc1a7174f9e07382d40552057969d3c9cb5c78b8fc4378062"
+    },
+    "phase": "PRELAUNCH_ONLY",
+    "remote_operations_here": 0,
+    "schema": "hepta.execution06.prelaunch-metadata-binding.1",
+    "scientific_completion_claim": false,
+    "scientific_workers_started_here": 0,
+    "selection": {
+      "bytes": 3329514,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/SELECTION.json",
+      "sha256": "7c14b573adbe5c9399f4a668ee27bc72948fddcbe891ebaf88713a6ff01f8598"
+    },
+    "snapshot_is_not_an_actual_production_start_or_capacity_admission": true,
+    "source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+    "source_references": {
+      "bytes": 2387,
+      "path": "/workspace/scratch/178ced6a501f/execution06_prelaunch_checkpoint/SOURCE_REFERENCES.json",
+      "sha256": "b41a62a19541e8413d251585dfee03d1869e147a6b48e56c4a75ce7362df5f44"
+    },
+    "symlink_representation_is_metadata_not_regular_payload": true
+  },
+  "cpu_seconds": 3.9898875670000002,
+  "logical_bytes_processed": 624608104,
+  "measurement_scope": "archive construction, compressed hashes, independent stream verification and manifest writes; excludes this receipt write",
+  "nested_in_supervisor_self_cpu_do_not_add_again": true,
+  "physical_archive_bytes": 10215136,
+  "schema": "hepta.fullstudy.durable-archive-cost.1",
+  "wall_seconds": 4.00289683900337
+}

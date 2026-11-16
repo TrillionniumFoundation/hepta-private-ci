@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.original-paired-evaluation-source-checkpoint.v1",
+  "parent": "cdcb22c0ff98de1fa6bb4884f6ad40bec219411f",
+  "parent_tree": "5e8db289c1b341e9b8af3135f52e7c76c2312f37",
+  "statistical_interface_blob": "ae603f8bf0d512db8814aaec9e5e312eb2533ac1",
+  "status": "source checkpoint pending paired statistical implementation, native compile, source QA and full caller validation",
+  "files": [
+    "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_contract.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_protocol.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_read.rs",
+    "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+    "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_proofs.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs"
+  ],
+  "unchanged_rules": [
+    "original shared-behavior provider files and all original shared plan/estimand/execution bytes",
+    "OPE estimators, strict metric margins, alpha, minimum clusters, weight caps",
+    "nonempty original retention, real panel Cells/Execution/Qualification/cohort before and after",
+    "no new permissions, keys, grants, inference policy, reconnect or transport cap"
+  ],
+  "actual_producer": "original readonly Source views plus original independent LedgerWriter only; no B execution authority or synthesized Outcomes",
+  "candidate_binding": "original non-Clone Candidate material matches full signed Training receipt; fixed registration/unique T candidate and actual B admission time strictly after T",
+  "fresh_empty": "actual committed Source decision predecessor digest must be ZERO",
+  "full_preregistration": "each actual run, episode, pair ID, full Cell input, monotonic/deadline/lease, masks, complete Circuit/Cell/routes and original outer RunStart protocol",
+  "native_cap_status": "existing Evaluator-only candidate inference authority is not established; execution and positive ordinary gates remain closed",
+  "principal_status": "cluster is actual original Source principal; one actual principal fails the existing minimum cluster requirement",
+  "native_version_fixture": "no actual full qualified on-policy E to Version effect fixture claimed",
+  "validation": {
+    "javascript_delimiter_check": "21 source postimages balanced; not a Rust parser",
+    "python": "not run",
+    "native": "not run",
+    "fullcaller": "not run",
+    "ordinary_acceptance": 0
+  }
+}

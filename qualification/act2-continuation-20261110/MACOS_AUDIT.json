@@ -1,0 +1,38 @@
+{
+  "scope": "twelve existing Automation fixtures on actual macOS Intel",
+  "status": "SCOPED_PASS",
+  "driver_sha": "4a5c8832d8e3417e6fd2a30a8bec540f4bbfaa65",
+  "baseline": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+  "candidate": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+  "stages": [
+    {
+      "name": "baseline-canonical",
+      "passed": 12,
+      "failed": 0,
+      "interpretation": "PASS"
+    },
+    {
+      "name": "baseline-alias",
+      "passed": 0,
+      "failed": 12,
+      "interpretation": "EXPECTED_INVALID_FAILURES"
+    },
+    {
+      "name": "candidate-alias",
+      "passed": 12,
+      "failed": 0,
+      "interpretation": "PASS"
+    }
+  ],
+  "all_manifest_member_hashes_checked": true,
+  "all_twelve_explicit_names_checked_in_each_stage": true,
+  "scoped_fix_exit": 0,
+  "source_clean_after_fix_and_fmt": true,
+  "does_not_cover": [
+    "two Agentd fixture roots",
+    "Windows",
+    "all historical broad CI failures",
+    "newer driver setup success",
+    "full ACT-2 promotion"
+  ]
+}

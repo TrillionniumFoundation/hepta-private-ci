@@ -1,0 +1,145 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/bin/python",
+        "-m",
+        "pip",
+        "download",
+        "--no-deps",
+        "--only-binary=:all:",
+        "--index-url",
+        "https://pypi.org/simple",
+        "--dest",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependency-recovery-002/wheels",
+        "spikingjelly==0.0.0.0.14"
+      ],
+      "name": "spikingjelly-download",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--ignore-installed",
+        "--no-deps",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependency-recovery-002/wheels/spikingjelly-0.0.0.0.14-py3-none-any.whl"
+      ],
+      "name": "spikingjelly-install",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/bin/python",
+        "-c",
+        "import json,importlib.metadata as m,torch,ncps,einops,numpy,spikingjelly; from ncps.torch import CfC; from spikingjelly.activation_based import neuron,functional,surrogate; print(json.dumps({\"packages\":{n:m.version(n) for n in [\"torch\",\"ncps\",\"einops\",\"numpy\",\"spikingjelly\"]},\"origins\":{n:__import__(n).__file__ for n in [\"torch\",\"ncps\",\"einops\",\"numpy\",\"spikingjelly\"]}}))"
+      ],
+      "name": "imports",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4"
+      ],
+      "name": "s4-init",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4",
+        "remote",
+        "add",
+        "origin",
+        "https://github.com/state-spaces/s4"
+      ],
+      "name": "s4-remote",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "http.version=HTTP/1.1",
+        "-C",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4",
+        "fetch",
+        "--depth=1",
+        "origin",
+        "e757cef57d89e448c413de7325ed5601aceaac13"
+      ],
+      "name": "s4-fetch",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4",
+        "checkout",
+        "--quiet",
+        "--detach",
+        "FETCH_HEAD"
+      ],
+      "name": "s4-checkout",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4",
+        "rev-parse",
+        "HEAD"
+      ],
+      "name": "s4-identity",
+      "returncode": 0
+    }
+  ],
+  "finished_utc": "2026-11-08T11:24:58.083410+00:00",
+  "original_key_module_hashes_after": {
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/einops/__init__.py": "acacaf13ae1b60c38c5c01b811f30c4951b1805674c79d5db7cda946cc389471",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/ncps/__init__.py": "6aa10ee86433da898c5224852f621e4daa19d3130a5b1095af3d0d275cf30939",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/numpy/__init__.py": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/__init__.py": "2f0deb66d5dff6b9c02a62832c3bf3824c2ee031c462a3afeb9ca170466da5bf"
+  },
+  "original_key_modules_unchanged": true,
+  "prior_attempt_sha256": "3f1ae9e41eb466f819e667d5ad5259e5858e6b858dcb62c18630422932dd2ba8",
+  "s4": {
+    "commit": "e757cef57d89e448c413de7325ed5601aceaac13",
+    "path": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4",
+    "repository": "https://github.com/state-spaces/s4"
+  },
+  "schema": "hcsn-localization-v2-dependency-recovery-v1",
+  "spikingjelly_source": "official PyPI release 0.0.0.0.14; wheel identity recorded, no claim of equality to the reference Git commit",
+  "started_utc": "2026-11-08T11:24:31.352461+00:00",
+  "status": "prepared",
+  "training_started": false,
+  "verified_imports": {
+    "origins": {
+      "einops": "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/einops/__init__.py",
+      "ncps": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/__init__.py",
+      "numpy": "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/numpy/__init__.py",
+      "spikingjelly": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/__init__.py",
+      "torch": "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/__init__.py"
+    },
+    "packages": {
+      "einops": "0.8.1",
+      "ncps": "1.0.1",
+      "numpy": "2.3.5",
+      "spikingjelly": "0.0.0.0.14",
+      "torch": "2.8.0+cu128"
+    }
+  },
+  "wheel": {
+    "bytes": 437590,
+    "name": "spikingjelly-0.0.0.0.14-py3-none-any.whl",
+    "sha256": "9f43c8f3164909e8503d6b5488a16c07b4e5338c6a70529fca408593c4baf151"
+  }
+}

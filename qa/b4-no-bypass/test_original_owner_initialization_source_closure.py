@@ -80,7 +80,9 @@ class OriginalOwnerInitializationSourceTests(unittest.TestCase):
                      "learning_original_source_files_create", "learning_original_source_files_recover",
                      "cell_q24_original_native_create", "cell_q24_original_native_recover",
                      "learning_original_training_stage_constructor"):
-            self.assertEqual(rows[name]["product_callers"], [])
+            expected = ([AGENT + "cell_q24_training_bootstrap_build.rs"]
+                        if name == "learning_original_training_stage_constructor" else [])
+            self.assertEqual(rows[name]["product_callers"], expected)
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
 
     def test_aggregate_keeps_real_factory_postcheck_even_when_initialization_fails(self):
@@ -146,9 +148,9 @@ class OriginalOwnerInitializationSourceTests(unittest.TestCase):
             "training.require_original_dataset_source(source)?",
             "training.require_dataset_scope_with_source(dataset, scope, source)?"))
         self.check_markers(STAGE_NEW, "fn from_original_owners_in_operation(", (
-            "Self::require_original_pair_with_source(&training, &receipts, dataset, scope, read)?",
-            "let mut owners = Owners { training, receipts }", "let result = owners.require_original_initial_receipts(read);",
-            "&owners.training", "&owners.receipts", "result?;", "dataset: dataset.clone()",
+            "Self::require_original_pair_with_source(&mut training, &receipts, dataset, scope, read)?",
+            'let mut owners = Owners {\n            training,\n            receipts,\n            source_fenced: false,\n        }', "let result = owners.require_original_initial_receipts(read);",
+            "&mut owners.training", "&owners.receipts", "result?;", "dataset: dataset.clone()",
             "owners: Arc::new(Mutex::new(owners))", "lane: Arc::new(Semaphore::new(/*permits*/ 1))"))
         self.check_markers(STAGE_NEW, "fn require_original_initial_receipts(", (
             "super::super::validate_config(&self.receipts.config, &self.receipts.key)?",

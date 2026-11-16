@@ -213,6 +213,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                     "-//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
                     "-//codex-rs/linux-sandbox:linux-sandbox-all-test",
                     "-//codex-rs/cli:cli-sandbox_network_proxy-test",
+                    "-//codex-rs/core:core-all-test",
                 ],
             ),
             (
@@ -235,6 +236,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                 [
                     "//codex-rs/linux-sandbox:linux-sandbox-all-test",
                     "//codex-rs/cli:cli-sandbox_network_proxy-test",
+                    "//codex-rs/core:core-all-test",
                 ],
             ),
         ]

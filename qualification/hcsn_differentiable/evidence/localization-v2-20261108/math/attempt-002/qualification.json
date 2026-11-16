@@ -1,0 +1,1341 @@
+{
+  "claim_boundary": "Small CPU mechanism fixtures only; no full-parameter-domain, high-resolution fidelity, large-model, hardware-energy, or formal-study claim.",
+  "cpu_interop_threads": 1,
+  "cpu_threads": 1,
+  "deterministic_algorithms": true,
+  "device": "cpu",
+  "errors": 0,
+  "evidence_class": "synthetic_mechanism_and_gradient_qualification",
+  "expected_failures": 0,
+  "failures": 0,
+  "finished_utc": "2026-11-08T11:25:01.244524+00:00",
+  "formal_fits_started": 0,
+  "old_s81_completion_credit": 0,
+  "peak_rss_native": 886816,
+  "peak_rss_native_unit": "KiB",
+  "peak_rss_scope": "Entire qualification process high-water mark; unavailable where Python resource is unsupported.",
+  "physical_energy_joules": null,
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "process_cpu_seconds": 29.095022364000002,
+  "provider_charges": null,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "schema": "hcsn-differentiable-cpu-qualification-v1",
+  "skipped": 0,
+  "source_after": {
+    "BENCHMARK.md": {
+      "bytes": 10923,
+      "sha256": "bcfbeb4174d834115017d23e4921838c401aa741fd49eef2572776ed633bc969"
+    },
+    "DATASET.md": {
+      "bytes": 7173,
+      "sha256": "820da5ac36a1553346a756eedac57aa9928a97e4e8c566ef5ca8beff01359bbd"
+    },
+    "MODEL.md": {
+      "bytes": 23128,
+      "sha256": "059a76bd635f95e6dfc467237f25b661859c61c94a09067aeb9165c28924f5ee"
+    },
+    "README.md": {
+      "bytes": 10689,
+      "sha256": "c9e56371ea22d637939675d837fbe85e74f9a9abcf7d3e05062f4abe2f370e3a"
+    },
+    "__init__.py": {
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "benchmark_admission.py": {
+      "bytes": 11635,
+      "sha256": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0"
+    },
+    "checkpoint.py": {
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "ci_baseline.json": {
+      "bytes": 12807,
+      "sha256": "9788b360050963ea0aee86fb825335fa45cdb4f32e0db60adfdf25812c9c4db2"
+    },
+    "contract.py": {
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    "encoder.py": {
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "error_budget.json": {
+      "bytes": 1686,
+      "sha256": "58581f46eaba0381884665b7b7ca7d191a4d026d7b3866622c5da72702649a86"
+    },
+    "error_budget.py": {
+      "bytes": 7352,
+      "sha256": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58"
+    },
+    "finite_renewal.py": {
+      "bytes": 7278,
+      "sha256": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de"
+    },
+    "localization_smoke.py": {
+      "bytes": 18604,
+      "sha256": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372"
+    },
+    "network.py": {
+      "bytes": 27553,
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687"
+    },
+    "operator.py": {
+      "bytes": 24715,
+      "sha256": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677"
+    },
+    "regenerative.py": {
+      "bytes": 7508,
+      "sha256": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1"
+    },
+    "research_protocol.json": {
+      "bytes": 1989,
+      "sha256": "27c84c4867f3967e2544639ca188fae865768dfc9d6928074062e027ca2a83e8"
+    },
+    "run_qualification.py": {
+      "bytes": 8166,
+      "sha256": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6"
+    },
+    "tests/test_benchmark_admission.py": {
+      "bytes": 6889,
+      "sha256": "f5372a17de53d86f39604f79a137cfa2fc0108b1158c04d52f7056b715d01e55"
+    },
+    "tests/test_encoder.py": {
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+    },
+    "tests/test_finite_renewal.py": {
+      "bytes": 8131,
+      "sha256": "394014c3c8b569af4436619e3c2a846970c282d5a3ff6d7248c1b091e89038aa"
+    },
+    "tests/test_network.py": {
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+    },
+    "tests/test_operator.py": {
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+    },
+    "tests/test_probability_intervals.py": {
+      "bytes": 4928,
+      "sha256": "14aba48940fbc279532a6a081d708f3a42fc3c94bcfeefad2aaaee09ff945ba9"
+    },
+    "tests/test_regenerative.py": {
+      "bytes": 8948,
+      "sha256": "d3b6b14859b235f7b2eee3ecefebf76a8e45d1eec34aa55315983be5e26887e0"
+    },
+    "tests/test_value.py": {
+      "bytes": 5704,
+      "sha256": "ce6d57768ca785d656fdcb1ab7c86d7379d16f47a58540044474d40378e2acf9"
+    },
+    "value.py": {
+      "bytes": 3174,
+      "sha256": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+    }
+  },
+  "source_before": {
+    "BENCHMARK.md": {
+      "bytes": 10923,
+      "sha256": "bcfbeb4174d834115017d23e4921838c401aa741fd49eef2572776ed633bc969"
+    },
+    "DATASET.md": {
+      "bytes": 7173,
+      "sha256": "820da5ac36a1553346a756eedac57aa9928a97e4e8c566ef5ca8beff01359bbd"
+    },
+    "MODEL.md": {
+      "bytes": 23128,
+      "sha256": "059a76bd635f95e6dfc467237f25b661859c61c94a09067aeb9165c28924f5ee"
+    },
+    "README.md": {
+      "bytes": 10689,
+      "sha256": "c9e56371ea22d637939675d837fbe85e74f9a9abcf7d3e05062f4abe2f370e3a"
+    },
+    "__init__.py": {
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "benchmark_admission.py": {
+      "bytes": 11635,
+      "sha256": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0"
+    },
+    "checkpoint.py": {
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "ci_baseline.json": {
+      "bytes": 12807,
+      "sha256": "9788b360050963ea0aee86fb825335fa45cdb4f32e0db60adfdf25812c9c4db2"
+    },
+    "contract.py": {
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    "encoder.py": {
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "error_budget.json": {
+      "bytes": 1686,
+      "sha256": "58581f46eaba0381884665b7b7ca7d191a4d026d7b3866622c5da72702649a86"
+    },
+    "error_budget.py": {
+      "bytes": 7352,
+      "sha256": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58"
+    },
+    "finite_renewal.py": {
+      "bytes": 7278,
+      "sha256": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de"
+    },
+    "localization_smoke.py": {
+      "bytes": 18604,
+      "sha256": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372"
+    },
+    "network.py": {
+      "bytes": 27553,
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687"
+    },
+    "operator.py": {
+      "bytes": 24715,
+      "sha256": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677"
+    },
+    "regenerative.py": {
+      "bytes": 7508,
+      "sha256": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1"
+    },
+    "research_protocol.json": {
+      "bytes": 1989,
+      "sha256": "27c84c4867f3967e2544639ca188fae865768dfc9d6928074062e027ca2a83e8"
+    },
+    "run_qualification.py": {
+      "bytes": 8166,
+      "sha256": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6"
+    },
+    "tests/test_benchmark_admission.py": {
+      "bytes": 6889,
+      "sha256": "f5372a17de53d86f39604f79a137cfa2fc0108b1158c04d52f7056b715d01e55"
+    },
+    "tests/test_encoder.py": {
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+    },
+    "tests/test_finite_renewal.py": {
+      "bytes": 8131,
+      "sha256": "394014c3c8b569af4436619e3c2a846970c282d5a3ff6d7248c1b091e89038aa"
+    },
+    "tests/test_network.py": {
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+    },
+    "tests/test_operator.py": {
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+    },
+    "tests/test_probability_intervals.py": {
+      "bytes": 4928,
+      "sha256": "14aba48940fbc279532a6a081d708f3a42fc3c94bcfeefad2aaaee09ff945ba9"
+    },
+    "tests/test_regenerative.py": {
+      "bytes": 8948,
+      "sha256": "d3b6b14859b235f7b2eee3ecefebf76a8e45d1eec34aa55315983be5e26887e0"
+    },
+    "tests/test_value.py": {
+      "bytes": 5704,
+      "sha256": "ce6d57768ca785d656fdcb1ab7c86d7379d16f47a58540044474d40378e2acf9"
+    },
+    "value.py": {
+      "bytes": 3174,
+      "sha256": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+    }
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-11-08T11:24:31.396583+00:00",
+  "status": "passed",
+  "tests": [
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_budget_is_aggregate_over_seeds_and_failed_attempts",
+      "wall_seconds": 0.0035565539728850126
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_complete_fixture_is_consistent_without_training",
+      "wall_seconds": 0.004732032073661685
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_content_only_cannot_retain_active_physical_bypass",
+      "wall_seconds": 0.0012695870827883482
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_each_group_leakage_axis_is_rejected",
+      "wall_seconds": 0.0021688619162887335
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_episodes_cannot_replace_training_runs",
+      "wall_seconds": 0.0030498120468109846
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_gap_and_unclosed_error_block_real_task_entry",
+      "wall_seconds": 0.001228200038895011
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_missing_baseline_or_unmatched_measurement_conditions_reject",
+      "wall_seconds": 0.0031213141046464443
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_plain_gate_capacity_is_checked",
+      "wall_seconds": 0.001270113978534937
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_reused_checkpoint_is_not_an_independent_training_seed",
+      "wall_seconds": 0.0031880668830126524
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_test_selection_and_training_fitted_frontend_are_required",
+      "wall_seconds": 0.0012699600774794817
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_unknown_energy_is_explicit_and_never_an_efficiency_win",
+      "wall_seconds": 0.0031391179654747248
+    },
+    {
+      "outcome": "pass",
+      "test": "test_benchmark_admission.BenchmarkAdmissionTests.test_zero_filled_energy_and_unknown_compute_are_rejected",
+      "wall_seconds": 0.003086128970608115
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_chunk_continuation_uses_exact_previous_clock",
+      "wall_seconds": 0.027454477036371827
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_continuation_never_rounds_a_retained_fp64_clock_down_to_fp32",
+      "wall_seconds": 0.0028205758426338434
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_fp64_absolute_times_differenced_before_model_cast",
+      "wall_seconds": 0.006630343152210116
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_invalid_observed_values_and_backward_time_reject",
+      "wall_seconds": 0.0016124080866575241
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_missing_channels_have_zero_input_gradient",
+      "wall_seconds": 0.019974772818386555
+    },
+    {
+      "outcome": "pass",
+      "test": "test_encoder.EncoderTests.test_per_example_time_missingness_and_padding_are_distinct",
+      "wall_seconds": 0.004136880161240697
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_all_physical_gradients_against_finite_difference",
+      "wall_seconds": 0.04932034504599869
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_counts_and_occupations_match_independent_integrals",
+      "wall_seconds": 0.42731665703468025
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_delay_boundary_is_continuous",
+      "wall_seconds": 0.007036891998723149
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_instantaneous_rate_is_derivative_of_cumulative_count",
+      "wall_seconds": 0.00699624209664762
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_invalid_and_unresolved_inputs_are_rejected",
+      "wall_seconds": 0.0024279579520225525
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_long_horizon_agrees_with_independent_perpetual_solution",
+      "wall_seconds": 0.005783500149846077
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_repeated_counts_are_distinct_from_first_hit_probability",
+      "wall_seconds": 0.0032248380593955517
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_second_event_matches_independent_convolution",
+      "wall_seconds": 0.021941683953627944
+    },
+    {
+      "outcome": "pass",
+      "test": "test_finite_renewal.FiniteRenewalTests.test_terminal_payment_once_and_zero_horizon",
+      "wall_seconds": 0.006236580898985267
+    },
+    {
+      "measurements": {
+        "advance_calls": 12,
+        "bptt": "full",
+        "elapsed_seconds": [
+          0.36500000000000005,
+          0.35
+        ],
+        "event_semantics": "conditional expected interval counts, not sampled spikes",
+        "expected_events_by_layer": [
+          1.4795259400504719,
+          1.5255986811716502
+        ],
+        "irregular_vs_uniform_prediction_max_difference": 0.01689737657401974,
+        "layer_count": 2,
+        "maximum_mass_residual": 4.440892098500626e-16,
+        "maximum_negative_probability": 0.0,
+        "minimum_observation_evidence": 0.8978280836886122,
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit",
+        "sequence_position": 6,
+        "truncate_every": null,
+        "truncation_unit": "global shared input positions, including padding"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_actual_dt_batched_mass_and_exactly_one_advance_per_layer_step",
+      "wall_seconds": 0.8840657658874989
+    },
+    {
+      "measurements": {
+        "recovery": {
+          "archive_bytes": 54177,
+          "autograd_tape_restored": false,
+          "next_optimizer_parameter_max_error": 0.0,
+          "next_prediction_max_error": 0.0
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_checkpoint_consumed_next_step_and_adam_match_detached_reference",
+      "wall_seconds": 3.675480764126405
+    },
+    {
+      "measurements": {
+        "chunk_prediction_max_error": 0.0,
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_chunk_continuation_preserves_full_layer_content_and_clocks",
+      "wall_seconds": 0.6327127190306783
+    },
+    {
+      "measurements": {
+        "bptt": {
+          "full_first_input_l1": 0.015421157831189528,
+          "truncated_early_input_l1": 0.0,
+          "truncated_last_input_l1": 0.006150970830426639
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_explicit_tbptt_cuts_early_inputs_without_changing_forward_values",
+      "wall_seconds": 0.7855895669199526
+    },
+    {
+      "measurements": {
+        "next_adam_step_after_rejections_finite": true,
+        "optimizer_moment_shape_and_nonfinite_rejections": 2,
+        "rejected_restore_cases": 9,
+        "same_shape_physics_parameter_permutation_rejected": true,
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_failed_restoration_preserves_all_model_optimizer_and_rng_values",
+      "wall_seconds": 2.038132956949994
+    },
+    {
+      "measurements": {
+        "cross_layer_fd": {
+          "autograd": 0.009637279488704261,
+          "finite_difference": 0.009637279488328154,
+          "raw_parameter_step": 2e-05,
+          "relative_error": 3.902627624225676e-11
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_first_layer_content_parameter_reaches_final_task_loss",
+      "wall_seconds": 1.3234313800930977
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_missing_observation_advances_but_padding_preserves_state",
+      "wall_seconds": 0.22359359194524586
+    },
+    {
+      "measurements": {
+        "long_no_observation": {
+          "elapsed": 2.4000000000000004,
+          "fidelity_claim": false,
+          "graph_retained": false,
+          "killed_expected_events": [
+            0.8912426963401777,
+            0.8912426963401777
+          ],
+          "killed_mass_residual": 4.440892098500626e-16,
+          "regenerative_expected_events": [
+            2.5591549844912196,
+            2.5591549844912196
+          ],
+          "regenerative_mass_residual": 1.9984014443252818e-15,
+          "steps": 32
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_no_reset_control_and_32_step_unobserved_transport",
+      "wall_seconds": 1.7721098940819502
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_operator_grid_ownership_cannot_differ_at_equal_state_count",
+      "wall_seconds": 0.0032915850169956684
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_parameter_update_requires_explicit_new_episode",
+      "wall_seconds": 0.15447446703910828
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_semantic_hyperparameter_and_buffer_changes_reject_continuation",
+      "wall_seconds": 0.028575265081599355
+    },
+    {
+      "measurements": {
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit",
+        "sensor_encoder_gradient_l1": 0.07433232752123013
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_sensor_encoder_streaming_and_checkpoint_use_actual_clock",
+      "wall_seconds": 1.120471519883722
+    },
+    {
+      "measurements": {
+        "cross_call_bptt": {
+          "early_gradient_l1": 0.0,
+          "last_gradient_l1": 0.006150970830426639,
+          "sequence_position": 6
+        },
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_tbptt_phase_survives_one_position_chunks",
+      "wall_seconds": 0.7684541211929172
+    },
+    {
+      "measurements": {
+        "physical_finite_differences": [
+          {
+            "absolute_error": 4.980718528585504e-12,
+            "autograd": 0.001588469911979731,
+            "finite_difference": 0.0015884699069990125,
+            "layer": 0,
+            "parameter": "raw_mu",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 3.1355447723765623e-09
+          },
+          {
+            "absolute_error": 3.422129767061133e-12,
+            "autograd": -0.002609531182065506,
+            "finite_difference": -0.002609531178643376,
+            "layer": 0,
+            "parameter": "raw_sigma",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 1.3113963882019741e-09
+          },
+          {
+            "absolute_error": 2.1275143918721845e-12,
+            "autograd": -3.984557609826899e-05,
+            "finite_difference": -3.9845578225783385e-05,
+            "layer": 0,
+            "parameter": "raw_log_boundary",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 5.3393989662208156e-08
+          },
+          {
+            "absolute_error": 2.2213730997060286e-12,
+            "autograd": -2.686468880593316e-05,
+            "finite_difference": -2.686469102730626e-05,
+            "layer": 0,
+            "parameter": "raw_absolute_reset",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 8.268746130183084e-08
+          },
+          {
+            "absolute_error": 1.0882406087375784e-12,
+            "autograd": 0.016194216523024663,
+            "finite_difference": 0.016194216521936422,
+            "layer": 1,
+            "parameter": "raw_mu",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 6.71993367008732e-11
+          },
+          {
+            "absolute_error": 1.6365459334921617e-12,
+            "autograd": -0.0053031173718732436,
+            "finite_difference": -0.005303117370236698,
+            "layer": 1,
+            "parameter": "raw_sigma",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 3.0860073777965004e-10
+          },
+          {
+            "absolute_error": 3.889943922530392e-14,
+            "autograd": -0.006984861566955477,
+            "finite_difference": -0.006984861566916577,
+            "layer": 1,
+            "parameter": "raw_log_boundary",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 5.5691066819895756e-12
+          },
+          {
+            "absolute_error": 8.94180562927005e-13,
+            "autograd": 0.0046781017287107415,
+            "finite_difference": 0.004678101729604922,
+            "layer": 1,
+            "parameter": "raw_absolute_reset",
+            "raw_parameter_step": 2e-05,
+            "relative_error": 1.911417524908166e-10
+          }
+        ],
+        "scope": "coarse 6-active/3-phase mechanism fixture; no high-resolution fidelity credit"
+      },
+      "outcome": "pass",
+      "test": "test_network.NetworkTests.test_two_layers_all_four_physical_parameters_have_task_fd_gradients",
+      "wall_seconds": 4.85568911395967
+    },
+    {
+      "numerical_evidence": {
+        "all_ad_values": [
+          2.9724808836059955,
+          -0.1704339983827852,
+          1.2440630441374518,
+          -1.6229507217615249
+        ],
+        "dt": 0.08,
+        "gradients": [
+          {
+            "absolute_error": 2.9391156175506694e-11,
+            "ad": 2.9724808836059955,
+            "central_fd": 2.9724808836353867,
+            "fd_step": 2e-06,
+            "parameter": "log_boundary",
+            "relative_error": 9.887752798450596e-12
+          },
+          {
+            "absolute_error": 3.780281643273042e-12,
+            "ad": -0.1704339983827852,
+            "central_fd": -0.17043399838656548,
+            "fd_step": 2e-06,
+            "parameter": "mu",
+            "relative_error": 2.2180325985774822e-11
+          },
+          {
+            "absolute_error": 1.450684017356707e-11,
+            "ad": 1.2440630441374518,
+            "central_fd": 1.244063044122945,
+            "fd_step": 2e-06,
+            "parameter": "sigma",
+            "relative_error": 1.1660856129381386e-11
+          },
+          {
+            "absolute_error": 5.6491256117396915e-11,
+            "ad": -1.6229507217615249,
+            "central_fd": -1.6229507218180161,
+            "fd_step": 2.39443472624362e-06,
+            "parameter": "absolute_reset",
+            "relative_error": 3.480774576699154e-11
+          }
+        ],
+        "grid": {
+          "K": 81,
+          "active": 64,
+          "phase": 16,
+          "quadrature": 16
+        },
+        "old_S81_pass_credit": 0,
+        "physical_values": {
+          "absolute_reset": 1.1972173631218102,
+          "log_boundary": 0.02,
+          "mu": -0.25,
+          "sigma": 0.45
+        },
+        "synthetic_loss": 0.14487103006381769
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_81_state_physical_gradient_fixture_is_new_evidence",
+      "wall_seconds": 0.8505037559662014
+    },
+    {
+      "numerical_evidence": {
+        "active_after_0.075": 0.0,
+        "active_after_0.1": 0.999751903221484,
+        "aligned_phase_row_l1_error": 0.0,
+        "initial_phase_row_reward_sum": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_aligned_remaining_time_transport_does_not_use_erlang_release",
+      "wall_seconds": 0.01446402189321816
+    },
+    {
+      "numerical_evidence": {
+        "all_ad_values": [
+          3.006902335679302,
+          -0.17007711014025523,
+          1.1907998943933933,
+          -1.5685582463491752
+        ],
+        "dt": 0.08,
+        "gradients": [
+          {
+            "absolute_error": 7.999823026239028e-12,
+            "ad": 3.006902335679302,
+            "central_fd": 3.006902335671302,
+            "fd_step": 2e-06,
+            "parameter": "log_boundary",
+            "relative_error": 2.660486485149427e-12
+          },
+          {
+            "absolute_error": 1.6588397322436776e-12,
+            "ad": -0.17007711014025523,
+            "central_fd": -0.17007711014191407,
+            "fd_step": 2e-06,
+            "parameter": "mu",
+            "relative_error": 9.753456716541837e-12
+          },
+          {
+            "absolute_error": 3.2704283725593086e-11,
+            "ad": 1.1907998943933933,
+            "central_fd": 1.190799894360689,
+            "fd_step": 2e-06,
+            "parameter": "sigma",
+            "relative_error": 2.746413052232677e-11
+          },
+          {
+            "absolute_error": 6.154010634418228e-11,
+            "ad": -1.5685582463491752,
+            "central_fd": -1.5685582464107153,
+            "fd_step": 2.39443472624362e-06,
+            "parameter": "absolute_reset",
+            "relative_error": 3.9233548696710916e-11
+          }
+        ],
+        "grid": {
+          "K": 25,
+          "active": 16,
+          "phase": 8,
+          "quadrature": 16
+        },
+        "old_S81_pass_credit": 0,
+        "physical_values": {
+          "absolute_reset": 1.1972173631218102,
+          "log_boundary": 0.02,
+          "mu": -0.25,
+          "sigma": 0.45
+        },
+        "synthetic_loss": 0.11720666446147864
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_all_four_physical_parameter_gradients_against_fd",
+      "wall_seconds": 0.37199082714505494
+    },
+    {
+      "numerical_evidence": {
+        "maximum_interval_value_difference": 0.0,
+        "maximum_risk_count_difference": 0.0,
+        "zero_duration_active_terminal_value": 0.2,
+        "zero_duration_refractory_terminal_value": 0.0,
+        "zero_duration_total_rewards": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_call_is_one_interval_reward_with_terminal_paid_once",
+      "wall_seconds": 0.027387678856030107
+    },
+    {
+      "numerical_evidence": {
+        "events_by_duration": [
+          0.0,
+          0.011778461974473435,
+          0.02644012005219027
+        ],
+        "maximum_content_total_error": 2.220446049250313e-16,
+        "maximum_mass_residual": 0.0,
+        "minimum_probability": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_conservation_content_transport_and_zero_duration",
+      "wall_seconds": 0.04753480805084109
+    },
+    {
+      "numerical_evidence": {},
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_contract_and_episode_snapshot_reject_changes",
+      "wall_seconds": 0.0017637449782341719
+    },
+    {
+      "numerical_evidence": {
+        "absolute_error": 9.119371924271036e-13,
+        "d_initial_mean_d_log_boundary": -1.9477165585359597,
+        "finite_difference": -1.9477165585368716,
+        "fixed_initial_log_std": 0.08
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_initial_absolute_mapping_has_real_boundary_derivative",
+      "wall_seconds": 0.004003815120086074
+    },
+    {
+      "numerical_evidence": {
+        "M_expected_cumulative_events": 142.2381294752177,
+        "average_event_rate_per_time_unit": 1.3890442331564228,
+        "checkpoints": [
+          {
+            "M_expected_cumulative_events": 0.0010839827385822007,
+            "mass_drift": 1.1102230246251565e-16,
+            "maximum_signed_content_total_error": 6.938893903907228e-18,
+            "minimum_probability": 0.0,
+            "step": 1
+          },
+          {
+            "M_expected_cumulative_events": 0.47315429745099474,
+            "mass_drift": 3.3306690738754696e-16,
+            "maximum_signed_content_total_error": 2.220446049250313e-16,
+            "minimum_probability": 7.431906175955441e-11,
+            "step": 16
+          },
+          {
+            "M_expected_cumulative_events": 8.85887495742798,
+            "mass_drift": 2.55351295663786e-15,
+            "maximum_signed_content_total_error": 5.329070518200751e-15,
+            "minimum_probability": 4.5776379709489074e-05,
+            "step": 256
+          },
+          {
+            "M_expected_cumulative_events": 35.535246893130314,
+            "mass_drift": 1.021405182655144e-14,
+            "maximum_signed_content_total_error": 2.7755575615628914e-14,
+            "minimum_probability": 5.1638394939774714e-05,
+            "step": 1024
+          },
+          {
+            "M_expected_cumulative_events": 142.2381294752177,
+            "mass_drift": 3.097522238704187e-14,
+            "maximum_signed_content_total_error": 7.527312106958561e-14,
+            "minimum_probability": 5.1640354845207756e-05,
+            "step": 4096
+          }
+        ],
+        "dt": 0.025,
+        "elapsed": 102.4,
+        "final_minimum_probability": 5.1640354845207756e-05,
+        "final_signed_content_totals": [
+          0.8301020807628674,
+          -0.6518841019507952,
+          -0.05416971771744906
+        ],
+        "grid_K": 25,
+        "initial_signed_content_totals": [
+          0.8301020807629427,
+          -0.6518841019508312,
+          -0.054169717717448634
+        ],
+        "maximum_recorded_mass_drift": 3.097522238704187e-14,
+        "maximum_recorded_signed_content_total_error": 7.527312106958561e-14,
+        "scope": "fixed numerical propagation only; no neural long-horizon superiority claim",
+        "steps": 4096
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_long_fixed_operator_conserves_mass_and_signed_content",
+      "wall_seconds": 0.2187443149741739
+    },
+    {
+      "numerical_evidence": {
+        "absorbed_reward_sum": 0.0,
+        "absorbed_self_probability": 1.0,
+        "maximum_absorption_hit_error": 0.0,
+        "regenerative_release_active_mass": 0.7034808034117815,
+        "unreachable_phase_mass": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_no_reset_control_is_explicit_permanent_absorption",
+      "wall_seconds": 0.038666338892653584
+    },
+    {
+      "numerical_evidence": {
+        "phase_projection": [
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 1.8735013540549512e-17,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 0.045900000000000205,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.3174300000000003,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.731088,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 0.045900000000000205,
+            "maximum_release_error": 0.16891199999999995,
+            "phase_cells": 10
+          },
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 8.992806499463764e-17,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.2743200000000003,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.8300159999999999,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 8.992806499463764e-17,
+            "maximum_release_error": 0.06998400000000005,
+            "phase_cells": 20
+          },
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 1.1102230246251564e-18,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.2500000000000002,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.8853120000000001,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 1.1102230246251564e-18,
+            "maximum_release_error": 0.014687999999999812,
+            "phase_cells": 40
+          },
+          {
+            "curve": [
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.013
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.026
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.039
+              },
+              {
+                "active_probability": 0.0,
+                "deterministic_release_reference": 0.0,
+                "elapsed": 0.052
+              },
+              {
+                "active_probability": 0.25000000000000017,
+                "deterministic_release_reference": 0.25000000000000017,
+                "elapsed": 0.065
+              },
+              {
+                "active_probability": 0.8971840000000002,
+                "deterministic_release_reference": 0.8999999999999999,
+                "elapsed": 0.078
+              }
+            ],
+            "early_release_at_0.052": 0.0,
+            "maximum_release_error": 0.0028159999999997076,
+            "phase_cells": 80
+          }
+        ],
+        "warning": "QPR can release earlier through repeated phase projection; it is not exact per-path delay"
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_phase_projection_early_release_and_refinement_are_disclosed",
+      "wall_seconds": 0.17984469304792583
+    },
+    {
+      "numerical_evidence": {
+        "absolute_errors": [
+          5.551115123125783e-17,
+          5.551115123125783e-17,
+          0.0
+        ],
+        "discount": 0.3,
+        "dt": 0.08,
+        "independent_reference": [
+          0.17022608736121497,
+          0.16763803158693885,
+          0.07421851724635825
+        ],
+        "mu": -0.1,
+        "point_row_mass_residual": 0.0,
+        "sigma": 0.5,
+        "torch": [
+          0.17022608736121492,
+          0.1676380315869388,
+          0.07421851724635825
+        ],
+        "x": 0.2
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_point_law_against_independent_first_passage_integrals",
+      "wall_seconds": 0.01282521802932024
+    },
+    {
+      "numerical_evidence": {
+        "interpretation": "finite-basis projection error, not an exact continuum semigroup",
+        "one_0.08_vs_two_0.04_max_row_l1": 0.18669725934986642
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_projected_operator_does_not_claim_exact_semigroup",
+      "wall_seconds": 0.060890604043379426
+    },
+    {
+      "numerical_evidence": {
+        "claim": "observed quadrature agreement, not a certified error bound",
+        "refinement": [
+          {
+            "max_row_l1": 1.1990522345343752e-07,
+            "maximum_reward_difference": 3.0190565325494134e-11,
+            "orders": [
+              16,
+              32
+            ]
+          },
+          {
+            "max_row_l1": 2.2130973354286234e-12,
+            "maximum_reward_difference": 9.66996621665217e-12,
+            "orders": [
+              32,
+              64
+            ]
+          }
+        ]
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_quadrature_refinement_records_actual_table_discrepancy",
+      "wall_seconds": 0.09712807205505669
+    },
+    {
+      "numerical_evidence": {
+        "continuum_reference": 0.36160619646966047,
+        "elapsed": 0.3,
+        "initial_log_mean": 0.25,
+        "initial_log_std": 0.08,
+        "mu": -0.2,
+        "refinement": [
+          {
+            "absolute_error": 0.036475346990489765,
+            "active_cells": 16,
+            "expected_first_hits": 0.39808154346015023
+          },
+          {
+            "absolute_error": 0.009725660995789698,
+            "active_cells": 32,
+            "expected_first_hits": 0.37133185746545017
+          },
+          {
+            "absolute_error": 0.0024733615868623993,
+            "active_cells": 64,
+            "expected_first_hits": 0.36407955805652287
+          }
+        ],
+        "sigma": 0.4,
+        "steps": 4
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_spatial_refinement_against_continuum_first_hit",
+      "wall_seconds": 0.0735814948566258
+    },
+    {
+      "numerical_evidence": {
+        "deterministic_renewal_reference": 1.4285714285714286,
+        "dt": 0.025,
+        "fixed_delay": 0.1,
+        "mu": -0.5,
+        "refinement": [
+          {
+            "K": 25,
+            "absolute_error": 0.0392109808618093,
+            "active_cells": 16,
+            "minimum_stationary_mass": 5.164035484520741e-05,
+            "phase_cells": 8,
+            "rate": 1.3893604477096193,
+            "refractory_probability": 0.13893604477096236,
+            "relative_error": 0.02744768660326651,
+            "stationarity_residual": 1.249000902703301e-16
+          },
+          {
+            "K": 81,
+            "absolute_error": 8.778344591231502e-06,
+            "active_cells": 64,
+            "minimum_stationary_mass": 2.278048829069799e-09,
+            "phase_cells": 16,
+            "rate": 1.4285626502268374,
+            "refractory_probability": 0.14285626502268545,
+            "relative_error": 6.144841213862051e-06,
+            "stationarity_residual": 4.128641872824801e-16
+          }
+        ],
+        "reset_margin": 0.3,
+        "sigma": 0.3
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_stationary_rate_against_negative_drift_renewal_mean",
+      "wall_seconds": 0.08021431788802147
+    },
+    {
+      "numerical_evidence": {
+        "tail_first_hit_probability": 0.06515935456380705,
+        "tail_retained_probability": 0.7428895974052401,
+        "tail_to_finite_active_probability": 0.19195104803095284
+      },
+      "outcome": "pass",
+      "test": "test_operator.OperatorNumericalTests.test_tail_mass_can_return_and_hit",
+      "wall_seconds": 0.036893441108986735
+    },
+    {
+      "numerical_evidence": {
+        "active_bin_profile": "direct_gaussian_interval_logdiff_reflection_v1",
+        "mass_residual": 2.220446049250313e-16,
+        "minimum_probability": 0.0
+      },
+      "outcome": "pass",
+      "test": "test_probability_intervals.ProbabilityIntervalTests.test_full_triggering_space_refinement_preserves_probability",
+      "wall_seconds": 0.8131841558497399
+    },
+    {
+      "outcome": "pass",
+      "test": "test_probability_intervals.ProbabilityIntervalTests.test_killed_intervals_and_first_order_gradients",
+      "wall_seconds": 0.02812685607932508
+    },
+    {
+      "outcome": "pass",
+      "test": "test_probability_intervals.ProbabilityIntervalTests.test_normal_intervals_cover_cdf_sf_and_extreme_tails",
+      "wall_seconds": 0.004531855927780271
+    },
+    {
+      "numerical_evidence": {
+        "probability": 1.1188585733699357e-16,
+        "reference_80_digits": 1.118858573369923e-16,
+        "relative_error": 1.1324274851176597e-14
+      },
+      "outcome": "pass",
+      "test": "test_probability_intervals.ProbabilityIntervalTests.test_rare_left_bin_matches_eighty_digit_reference",
+      "wall_seconds": 0.004130544140934944
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_declared_extreme_values_remain_resolved",
+      "wall_seconds": 0.004329473013058305
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_exact_basis_averages_and_coordinate_invariance",
+      "wall_seconds": 5.3566619721241295
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_explicit_cycle_sum_and_killed_control",
+      "wall_seconds": 0.0040444990154355764
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_invalid_domains_fail_without_silent_repairs",
+      "wall_seconds": 0.002332797972485423
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_laplace_matches_independent_first_passage_density_integral",
+      "wall_seconds": 0.058791310992091894
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_occupation_matches_independent_survival_integral",
+      "wall_seconds": 0.014071963028982282
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_parameter_gradients_against_central_difference",
+      "wall_seconds": 0.00921380310319364
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_renewal_boundary_and_generator_equation",
+      "wall_seconds": 0.0036486040335148573
+    },
+    {
+      "outcome": "pass",
+      "test": "test_regenerative.RegenerativeTests.test_small_root_and_denominator_against_decimal",
+      "wall_seconds": 0.0018197940662503242
+    },
+    {
+      "numerical_evidence": {
+        "arithmetic_error_estimate": 5.965709407538634e-14,
+        "finite_plus_continuation_error": 1.7763568394002505e-15,
+        "solver_residual": 8.881784197001252e-16
+      },
+      "outcome": "pass",
+      "test": "test_value.ValueTests.test_perpetual_continuation_and_terminal_independence",
+      "wall_seconds": 0.26085199299268425
+    },
+    {
+      "numerical_evidence": {
+        "projected_value_gradients": [
+          {
+            "AD": 13.919810017882348,
+            "FD": 13.919809992879449,
+            "absolute_error": 2.5002899306514337e-08,
+            "parameter": 0
+          },
+          {
+            "AD": -6.463232391924244,
+            "FD": -6.4632323909741265,
+            "absolute_error": 9.501173181547529e-10,
+            "parameter": 1
+          },
+          {
+            "AD": 2.0213134465804643,
+            "FD": 2.021313446509687,
+            "absolute_error": 7.077716190906358e-11,
+            "parameter": 2
+          },
+          {
+            "AD": -10.98260883496942,
+            "FD": -10.982608822884819,
+            "absolute_error": 1.2084601763717728e-08,
+            "parameter": 3
+          },
+          {
+            "AD": -12.649514808064076,
+            "FD": -12.649514821982953,
+            "absolute_error": 1.3918876717866624e-08,
+            "parameter": 4
+          }
+        ]
+      },
+      "outcome": "pass",
+      "test": "test_value.ValueTests.test_projected_value_physical_gradient",
+      "wall_seconds": 0.18157168780453503
+    },
+    {
+      "numerical_evidence": {
+        "repeated_call_overpayment": 0.5925614693663228,
+        "terminal_once_max_error": 5.551115123125783e-17
+      },
+      "outcome": "pass",
+      "test": "test_value.ValueTests.test_terminal_is_paid_once_even_with_zero_duration_padding",
+      "wall_seconds": 0.05894669215194881
+    },
+    {
+      "outcome": "pass",
+      "test": "test_value.ValueTests.test_variable_schedule_matches_independent_forward_accounting",
+      "wall_seconds": 0.06861433992162347
+    },
+    {
+      "outcome": "pass",
+      "test": "test_value.ValueTests.test_zero_duration_cannot_define_perpetual_chain",
+      "wall_seconds": 0.0014772741124033928
+    }
+  ],
+  "tests_run": 75,
+  "torch": "2.8.0+cu128",
+  "wall_seconds": 29.847972946008667
+}

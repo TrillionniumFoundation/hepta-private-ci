@@ -1,0 +1,20 @@
+{
+  "schema": "retained-firstcycle-math-plan-v1",
+  "status": "SOURCE_FROZEN_BEFORE_EXECUTION",
+  "retained_source_head": "49db2c4ae2b10077d261896979f8df9e53f69822",
+  "scope": "read frozen four DDE arrays; independent continuum first-cycle reference and internal identities",
+  "new_model_runs_planned": 0,
+  "new_spatial_model_runs_planned": 0,
+  "new_dde_runs_planned": 0,
+  "new_meshes_planned": 0,
+  "unique_reference_cases": 12,
+  "precisions": [
+    80,
+    120
+  ],
+  "relative_reference_floor": 1e-12,
+  "parameter_convention": "exact binary64 via mp.mpf(float), including phase_width",
+  "source_descriptors": "Original run.py at #6224 pins phase U[0,1/40] then float support .025, q=.15,delay=.2,active_reward=.4,hit_reward1 and mark-.7",
+  "mathematical_scope": "T<=.16<delay; first-cycle only; two exposed resets .32/.32725; no new prospective gate",
+  "all_closed": false
+}

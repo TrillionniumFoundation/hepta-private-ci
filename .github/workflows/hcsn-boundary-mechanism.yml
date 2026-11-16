@@ -1,0 +1,189 @@
+name: HCSN boundary mechanism study
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_boundary_factorial/**
+      - qualification/hcsn_qvi/continuum.py
+      - qualification/hcsn_qvi/run_continuum.py
+      - qualification/hcsn_qvi/tests/test_continuum.py
+      - .github/workflows/hcsn-boundary-mechanism.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-boundary-mechanism-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mechanism:
+    name: Boundary study (${{ matrix.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [continuum, factorial]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_HEAD: a83b2ecda37b0e18b05e7fedcaee0a63037c464f
+      LANE: ${{ matrix.lane }}
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Check out exact study source
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 8
+          persist-credentials: false
+
+      - name: Record source and execution identity
+        id: identity
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+          from datetime import datetime, timezone
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-boundary" / os.environ["LANE"]
+          out.mkdir(parents=True)
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          assert git("rev-parse", "HEAD") == os.environ["SOURCE_HEAD"]
+          roots = ["qualification/hcsn_boundary_factorial", "qualification/hcsn_differentiable",
+                   "qualification/hcsn_memory_controls", "qualification/hcsn_qvi"]
+          files = []
+          for root in roots:
+              for path in sorted(Path(root).rglob("*.py")):
+                  files.append({"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+          record = {"schema": "hcsn-boundary-study-source-v1", "source_head": git("rev-parse", "HEAD"),
+                    "tree": git("rev-parse", "HEAD^{tree}"), "event_sha": os.environ["GITHUB_SHA"],
+                    "run_id": os.environ["GITHUB_RUN_ID"], "attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                    "lane": os.environ["LANE"], "utc": datetime.now(timezone.utc).isoformat(),
+                    "platform": platform.platform(), "cpu_count": os.cpu_count(),
+                    "cpuinfo": Path("/proc/cpuinfo").read_text(), "source_files": files,
+                    "physical_energy_joules": None, "scientific_admission": "HOLD_NO_GO"}
+          (out / "identity.json").write_text(json.dumps(record, indent=2) + "\n")
+          print(json.dumps({k: v for k, v in record.items() if k not in {"cpuinfo", "source_files"}}))
+          PY
+
+      - name: Use pinned Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+
+      - name: Install study dependencies
+        id: runtime
+        run: |
+          python -m pip install --disable-pip-version-check numpy==2.5.4 mpmath==1.3.0
+          if [ "$LANE" = factorial ]; then
+            python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+          fi
+          python -m pip freeze --all > "$RUNNER_TEMP/hcsn-boundary/$LANE/pip-freeze.txt"
+          python -c "import sys, numpy, mpmath; print(sys.version, numpy.__version__, mpmath.__version__)"
+
+      - name: Test independent continuum oracle
+        id: continuum_tests
+        if: matrix.lane == 'continuum'
+        run: |
+          python -m unittest qualification.hcsn_qvi.tests.test_oracle qualification.hcsn_qvi.tests.test_continuum -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-boundary/$LANE/tests.log"
+
+      - name: Compare continuous free boundary with finite DP
+        id: continuum_experiment
+        if: matrix.lane == 'continuum'
+        run: |
+          python -m qualification.hcsn_qvi.run_continuum \
+            --output "$RUNNER_TEMP/hcsn-boundary/$LANE/result.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-boundary/$LANE/experiment.log"
+          cat "$RUNNER_TEMP/hcsn-boundary/$LANE/result.json"
+
+      - name: Test factorial interventions and boundary gradients
+        id: factorial_tests
+        if: matrix.lane == 'factorial'
+        run: |
+          python -m unittest qualification.hcsn_boundary_factorial.test_run -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-boundary/$LANE/tests.log"
+
+      - name: Run complete bounded four-arm development probe
+        id: factorial_experiment
+        if: matrix.lane == 'factorial'
+        run: |
+          python -m qualification.hcsn_boundary_factorial.run \
+            --output "$RUNNER_TEMP/hcsn-boundary/$LANE/experiment" \
+            --seeds 11 23 37 --updates 32 --train-per-task 4 --development-per-task 8 \
+            --wall-seconds 1200 2>&1 | tee "$RUNNER_TEMP/hcsn-boundary/$LANE/experiment.log"
+
+      - name: Install repository formatter entrypoint
+        if: always() && steps.checkout.outcome == 'success'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0
+
+      - name: Apply repository formatting and require unchanged source
+        id: clean
+        if: always() && steps.checkout.outcome == 'success'
+        working-directory: codex-rs
+        run: |
+          just fmt --base "$BASE_HEAD"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain terminal status for every outcome
+        if: always()
+        env:
+          STUDY_STEPS: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-boundary" / os.environ["LANE"]
+          out.mkdir(parents=True, exist_ok=True)
+          steps = json.loads(os.environ["STUDY_STEPS"])
+          experiment = os.environ["LANE"] + "_experiment"
+          tests = os.environ["LANE"] + "_tests"
+          required = ["checkout", "identity", "runtime", tests, experiment, "clean"]
+          outcomes = {key: steps.get(key, {}).get("outcome", "missing") for key in required}
+          record = {"schema": "hcsn-boundary-study-terminal-v1", "steps": outcomes,
+                    "completed": all(value == "success" for value in outcomes.values()),
+                    "scientific_admission": "HOLD_NO_GO",
+                    "utc": datetime.now(timezone.utc).isoformat(),
+                    "scope": "bounded mechanism development only; no independent real-task superiority or adoption"}
+          (out / "terminal.json").write_text(json.dumps(record, indent=2) + "\n")
+          print(json.dumps(record))
+          import base64
+          import hashlib
+          for name in ("result.json", "experiment/SUMMARY.json"):
+              path = out / name
+              if path.is_file():
+                  payload = path.read_bytes()
+                  print("HCSN_REPORT " + json.dumps({"path": name, "sha256": hashlib.sha256(payload).hexdigest(),
+                        "base64": base64.b64encode(payload).decode("ascii")}))
+          raise SystemExit(0 if record["completed"] else 1)
+          PY
+
+      - name: Preserve raw results checkpoints and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hcsn-boundary-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-boundary/${{ matrix.lane }}/
+          if-no-files-found: error
+          retention-days: 30

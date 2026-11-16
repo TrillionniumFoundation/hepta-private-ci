@@ -5,6 +5,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 import test_initial_artifact_readview_source_closure as component
 
 ROOT = component.ROOT
@@ -27,11 +29,11 @@ class HistoricalLedgerReadonlySourceTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = start
+        cursor = start
         for _ in range(occurrence + 1):
-            offset = source.index(marker, offset, end + 1) + len(marker)
-        offset -= len(marker)
-        mutation = source[:offset] + "/* " + marker + " */" + source[offset + len(marker):]
+            first, last = source_marker_span(source, marker, cursor, end + 1)
+            cursor = last
+        mutation = source[:first] + "/* " + source[first:last] + " */" + source[last:]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path

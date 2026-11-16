@@ -1,0 +1,499 @@
+{
+  "codec_contract_sha256": "12077c2c7559b4ba9b8000b0bf437e420a33f283fc66eea4deacbf1023dba30a",
+  "controller_profiles": {
+    "codec": "99ef69df7babcfc6b307f058b575793e479e6ea44f72739405e0a79bec5a9d13",
+    "ruff": "0207f1aaf34b144e4ac23c67d4797f243bc1f655d9d02d266ccfbc62b1057555"
+  },
+  "corrections": [
+    "codec001 partial control selected8 instead of planned1; gate correctly refused; codec002 selects1, all6checks pass",
+    "source-lint001 found unused json in qualification harness; removed before plan002; source-lint002 clean",
+    "observer helper imports moved into main, cleanup errors retained/prevent pass, parent CPU/wall added and logical source-byte scope clarified before plan002"
+  ],
+  "cost_scope": [
+    "outer wait4 CPU includes its waited descendants; nested serialized deltas are attribution only, not added again",
+    "parent process CPU and attempt wall through final inventory; final receipt serialization/external orchestrator excluded",
+    "logical source payload bytes, bounded candidate/raw output bytes, existing tool binary bytes retained separately",
+    "external tokenizer/model token inputs caller-declared; unknown is null",
+    "no whole-host/dollars/dynamic-library/model-base/peak-storage completeness claim"
+  ],
+  "files": {
+    "CODEC_V2.md": {
+      "bytes": 7327,
+      "lines": 115,
+      "sha256": "9c6559247e28dda346dc49938cfbf43d418ab8498efb29956065ee127d12ca9b"
+    },
+    "README.md": {
+      "bytes": 5900,
+      "lines": 105,
+      "sha256": "18c7ac449404a7555b02361a230ac2027c63decbd883401268d45f8292b73b04"
+    },
+    "attempt_ledger.py": {
+      "bytes": 3779,
+      "lines": 57,
+      "sha256": "4d28cb85e6c5e0332111b56674851959e5b811bd219b77748181b0e15cec1f7b"
+    },
+    "bounded_process.py": {
+      "bytes": 3597,
+      "lines": 113,
+      "sha256": "462a4088e1d5f28cd6d4aac45b9463862b531d58885c0bbc119258718caf1b88"
+    },
+    "candidate_observer_v2.py": {
+      "bytes": 4719,
+      "lines": 106,
+      "sha256": "c77cd1cb40f575f69caa558a31fd7e32cb4d3852b1dd1dd856a368fbd851daf3"
+    },
+    "codec_contract_v2.json": {
+      "bytes": 6082,
+      "lines": 131,
+      "sha256": "12077c2c7559b4ba9b8000b0bf437e420a33f283fc66eea4deacbf1023dba30a"
+    },
+    "codec_executor_v2.py": {
+      "bytes": 9197,
+      "lines": 165,
+      "sha256": "cea083768edef2e1a05c13461108293573279da5072aa0262799d21e282a8949"
+    },
+    "process_meter_v2.py": {
+      "bytes": 3213,
+      "lines": 75,
+      "sha256": "55f983524ee8a32f191f99de28a4afef51b50b2a3e046d3d6bdcdcf485244542"
+    },
+    "ruff_contract.json": {
+      "bytes": 12212,
+      "lines": 182,
+      "sha256": "df2507680813e86d08b94877e6985476927b2bb76d5ec4bdb083ad5b3e86a8dc"
+    },
+    "ruff_executor.py": {
+      "bytes": 11497,
+      "lines": 287,
+      "sha256": "5ddde4b8d543072e85930161e877018dc8bcb1156045e1ee795b9c184421bf8e"
+    },
+    "ruff_judge.py": {
+      "bytes": 2596,
+      "lines": 84,
+      "sha256": "259380ca4b1f60a5b4729dd3d5c0efaa7b35fac60a688ee8604e00368520fc1b"
+    },
+    "runtime_profile.py": {
+      "bytes": 1883,
+      "lines": 36,
+      "sha256": "265ff1e77a166e8d32fd646f826428e99e0ca2ff2e1b41449cc1726f45676700"
+    },
+    "task_contract_v2.py": {
+      "bytes": 3206,
+      "lines": 74,
+      "sha256": "f7de1cd2211eb9e0fec8266ed37f509c1e6dc247ce1240ebdb68eca0ef16b62a"
+    },
+    "test_codec_executor_v2.py": {
+      "bytes": 7240,
+      "lines": 123,
+      "sha256": "946ad49e8e3fcecfee58cad71d8b1cf56df0f8412d26367dbf4bfe3a9bebd479"
+    },
+    "test_ruff_executor.py": {
+      "bytes": 9088,
+      "lines": 228,
+      "sha256": "1e0495719e92e801976e6044140991741f0c9b43ef061fc57b66434af5354045"
+    }
+  },
+  "github_read_tool_calls": 10,
+  "limits": [
+    "selected local workflow entrypoint and static workflow selection only; not full GitHub Actions/apt/107test execution",
+    "same UID/interpreter trusted candidates; not hostile Python sandbox or remote attestation",
+    "private PATH simulates missing named tools; binaries still elsewhere on host",
+    "nonzero under missing-tools means failclosed there, not causal proof of tool-specific refusal",
+    "runtime profile SHA is identity only; controller must gate model generation on preceding same-profile qualification",
+    "both incidents historical/exposed; no new independent future sample or strong retrieval comparison"
+  ],
+  "model_calls": 0,
+  "new_failing_ref_manifest_verification": {
+    "blob_sha1": "7efded3d117ebafb80611e6959acb608620944e8",
+    "bytes": 883,
+    "commit": "a88f2832f2a1a4d3734c1c88f76977dcc9b98ff1",
+    "path": "qualification/ndu-dmgp-shadow/MANIFEST.json",
+    "sha256": "a7f4ad748d6938d700bcd66ee6bd819ecf7e6e07674a054c47da3acd41374be8"
+  },
+  "new_future_reads": 0,
+  "original_codec_source_files": 9,
+  "original_codec_test_ids": 21,
+  "original_media_python_files": 7,
+  "qualification_plans": [
+    "qualification-plan-001.json",
+    "qualification-plan-002.json"
+  ],
+  "recorded_utc": "2026-10-25T12:30:00.614407+00:00",
+  "retained_codec_runs": [
+    {
+      "accepted": false,
+      "attempts": [
+        {
+          "accepted": false,
+          "name": "empty-runner",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 0
+            },
+            "missing_ffprobe": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 0
+            },
+            "provisioned": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 0
+            }
+          },
+          "status": "task_failed"
+        },
+        {
+          "accepted": true,
+          "name": "known-fix",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "missing_ffprobe": {
+              "nested_calls": 1,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "provisioned": {
+              "nested_calls": 257,
+              "outcomes": {
+                "success": 21
+              },
+              "passed": true,
+              "runner_exit": 0,
+              "tests_run": 21
+            }
+          },
+          "status": "passed"
+        },
+        {
+          "accepted": false,
+          "name": "original",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {
+                "skip": 21
+              },
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 21
+            },
+            "missing_ffprobe": {
+              "nested_calls": 0,
+              "outcomes": {
+                "skip": 21
+              },
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 21
+            },
+            "provisioned": {
+              "nested_calls": 255,
+              "outcomes": {
+                "success": 21
+              },
+              "passed": true,
+              "runner_exit": 0,
+              "tests_run": 21
+            }
+          },
+          "status": "task_failed"
+        },
+        {
+          "accepted": false,
+          "name": "partial-suite",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "missing_ffprobe": {
+              "nested_calls": 1,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "provisioned": {
+              "nested_calls": 30,
+              "outcomes": {
+                "success": 8
+              },
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 8
+            }
+          },
+          "status": "task_failed"
+        },
+        {
+          "accepted": false,
+          "name": "path-escape",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "profile-hash-refusal",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "source-drift",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "test-edit",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "wrong-workflow",
+          "profiles": {},
+          "status": "rejected"
+        }
+      ],
+      "checks": 6,
+      "direct_wait4_cpu_seconds": 20.442367,
+      "direct_workers": 12,
+      "errors": 0,
+      "failures": 1,
+      "harness_wall_seconds": 21.189957431997755,
+      "nested_cpu_attribution_only": 19.062279999999994,
+      "nested_nonzero_returncodes": 2,
+      "nested_run_calls": 544,
+      "nested_with_observed_returncode": 544,
+      "run": "codec-qualification-001",
+      "sha256": "36d511bc0b907deb041ea90b8f9135414be7ca1498b296c0ab0daf4f0af95697"
+    },
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "accepted": false,
+          "name": "empty-runner",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 0
+            },
+            "missing_ffprobe": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 0
+            },
+            "provisioned": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 0
+            }
+          },
+          "status": "task_failed"
+        },
+        {
+          "accepted": true,
+          "name": "known-fix",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "missing_ffprobe": {
+              "nested_calls": 1,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "provisioned": {
+              "nested_calls": 257,
+              "outcomes": {
+                "success": 21
+              },
+              "passed": true,
+              "runner_exit": 0,
+              "tests_run": 21
+            }
+          },
+          "status": "passed"
+        },
+        {
+          "accepted": false,
+          "name": "original",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {
+                "skip": 21
+              },
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 21
+            },
+            "missing_ffprobe": {
+              "nested_calls": 0,
+              "outcomes": {
+                "skip": 21
+              },
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 21
+            },
+            "provisioned": {
+              "nested_calls": 255,
+              "outcomes": {
+                "success": 21
+              },
+              "passed": true,
+              "runner_exit": 0,
+              "tests_run": 21
+            }
+          },
+          "status": "task_failed"
+        },
+        {
+          "accepted": false,
+          "name": "partial-suite",
+          "profiles": {
+            "missing_ffmpeg": {
+              "nested_calls": 0,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "missing_ffprobe": {
+              "nested_calls": 1,
+              "outcomes": {},
+              "passed": true,
+              "runner_exit": 1,
+              "tests_run": 0
+            },
+            "provisioned": {
+              "nested_calls": 8,
+              "outcomes": {
+                "success": 1
+              },
+              "passed": false,
+              "runner_exit": 0,
+              "tests_run": 1
+            }
+          },
+          "status": "task_failed"
+        },
+        {
+          "accepted": false,
+          "name": "path-escape",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "profile-hash-refusal",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "source-drift",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "test-edit",
+          "profiles": {},
+          "status": "rejected"
+        },
+        {
+          "accepted": false,
+          "name": "wrong-workflow",
+          "profiles": {},
+          "status": "rejected"
+        }
+      ],
+      "checks": 6,
+      "direct_wait4_cpu_seconds": 21.352178,
+      "direct_workers": 12,
+      "errors": 0,
+      "failures": 0,
+      "harness_wall_seconds": 22.510369805000664,
+      "nested_cpu_attribution_only": 19.97682500000001,
+      "nested_nonzero_returncodes": 2,
+      "nested_run_calls": 522,
+      "nested_with_observed_returncode": 522,
+      "run": "codec-qualification-002",
+      "sha256": "22926cf3dc2c9b3b77c295692e0e7b0fc20f81740a29075cf839bebfc1bc6d57"
+    }
+  ],
+  "ruff_new_profile_qualification": {
+    "accepted": true,
+    "checks": 9,
+    "child_cpu_seconds_sum": 10.248344000000001,
+    "direct_spawned": 12,
+    "errors": 0,
+    "failures": 0,
+    "new_model_queries": 0,
+    "nonspawn_receipts": 1,
+    "runtime_profile_sha256": "0207f1aaf34b144e4ac23c67d4797f243bc1f655d9d02d266ccfbc62b1057555",
+    "sha256": "703575787acc68c0f0dfe895030e1dd1f76bbb2b48730359d2835f2c8590dbf8",
+    "training_updates": 0
+  },
+  "rust_build_or_test_commands": 0,
+  "schema": "hepta.memory-cell.second-incident-evaluation-summary.v1",
+  "scope": "two exposed historical development incidents; local entrypoint/task executor infrastructure, not general solver efficacy/future superiority",
+  "source_status": {
+    "changed_prior_files": [
+      "ruff_executor.py",
+      "test_ruff_executor.py"
+    ],
+    "exact_executed_sources": "executed-sources-plan002",
+    "final_fmt_run": false,
+    "new_source_files": [
+      "CODEC_V2.md",
+      "attempt_ledger.py",
+      "candidate_observer_v2.py",
+      "codec_contract_v2.json",
+      "codec_executor_v2.py",
+      "process_meter_v2.py",
+      "runtime_profile.py",
+      "task_contract_v2.py",
+      "test_codec_executor_v2.py"
+    ],
+    "prior_contract_and_QA_unchanged": true
+  },
+  "training_updates": 0
+}

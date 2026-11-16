@@ -1,0 +1,48 @@
+{
+  "bound_files": {
+    ".github/workflows/hcsn-currentstate-n256-generator-review.yml": "8801a1682bb20a3c94362fdd37a06fe60155ccfa3b7113fbe151fe7a3a900d81",
+    "qualification/hcsn_currentstate_n256_exact_generator_review/README.md": "bef6e7bc62bd6c6c06029b982ba0e6caa014664af409c68c32556598c8df3f27",
+    "qualification/hcsn_currentstate_n256_exact_generator_review/REQUEST.json": "e6af46b63a700a794997e7a620bb972bb2accd5ea032ffd8ba6c4c74ffb41908",
+    "qualification/hcsn_currentstate_n256_exact_generator_review/__init__.py": "bd3736e18a0715c48b1c5cbe9f832677c20ecaf4136a2ea6944d5913c6bcae69",
+    "qualification/hcsn_currentstate_n256_exact_generator_review/generator_review.py": "0beb616f348826e26591e60a4029b37b34091e257fbc5dd4c002409657c0e266",
+    "qualification/hcsn_currentstate_n256_exact_generator_review/test_review.py": "b759734399bd4a18e19c8948dcbb0c68964c0ad32a9441bfb245779c5aee81dd"
+  },
+  "input_originals": {
+    "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb"
+  },
+  "parent_loader": {
+    "qualification/hcsn_currentstate_n256_stdlib_loader/loader.py": "f61b3b4e52f3f44de3e095f9f96ba440cef4c74e2d9e71a53b4e9d509d3c1188"
+  },
+  "request": {
+    "all_closed": false,
+    "base_commit": "9684b08cccb813278263757e836bc3417443bf58",
+    "base_pull_request": 6334,
+    "branch": "research/hcsn-n256-exact-generator-review-20261114-c06d-v1",
+    "candidate_calls": 0,
+    "dynamic_calls": 0,
+    "generator_reconstruction_review_planned": true,
+    "historical_negative_and_unknown_preserved": true,
+    "idempotency_key": null,
+    "identity": "hcsn-currentstate-n256-exact-generator-review-20261114-c06d-v1",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "largegrid_qualification": false,
+    "local_development_attempts": 2,
+    "local_initial_red_preserved": true,
+    "local_initial_red_runtime_calls": 0,
+    "matrix_exponential_calls": 0,
+    "metadata_sha256": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+    "model_calls": 0,
+    "numerical_reference_records": 0,
+    "optimizer_calls": 0,
+    "oracle_calls": 0,
+    "production_adoption": false,
+    "provider_admitted": false,
+    "scope": "authentic_n256_exact_rational_generator_reconstruction_review",
+    "status": "HOLD",
+    "training_calls": 0
+  },
+  "verifier_sha256": "9ec7bb1fb77b06f097aaa407124041a4ac4406cf70431231ec1d2798e047545c"
+}

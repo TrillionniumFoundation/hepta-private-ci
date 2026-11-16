@@ -1804,6 +1804,12 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
         .with_max_level(Level::INFO)
         .with_writer(MockWriter::new(output))
         .finish();
+    // Keep two live dispatches while capturing. With only one scoped dispatch,
+    // tracing-core's callsite fast path consults the first caller's thread-local
+    // subscriber. A parallel untraced test can otherwise cache these shared
+    // communication callsites as disabled for this test as well.
+    let _callsite_registry_guard =
+        tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
     let _guard = tracing::subscriber::set_default(subscriber);
 
     let server = start_mock_server().await;

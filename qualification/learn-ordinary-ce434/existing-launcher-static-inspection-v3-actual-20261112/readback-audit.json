@@ -1,0 +1,54 @@
+{
+  "schema": "learn.known-launcher-static-classification-actual-root-audit.v1",
+  "prepared_commit": "7172998883b9170176225c1e8e47792419c3d61f",
+  "request_blob": "972e515d03956dc8ade7dc00dbf908c3b7a8a124",
+  "wrapper_blob": "7f8dc6b4e452ba7be2668a477590359f108adfcc",
+  "inspector_blob": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+  "job_id": "1a1d0b67038-2564-1bbc",
+  "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "actual_inner_exit": 0,
+  "actual_h_terminal_exit": 0,
+  "complete_durable_terminal": true,
+  "actual_result_classification": "unknown_static_purpose",
+  "source_before_after_equal": true,
+  "target_identity_sampled_before_after_equal": true,
+  "target_executed": false,
+  "referenced_paths_opened": false,
+  "ordinary_execution_authority_proven": false,
+  "runtime_owner_custody_observed": false,
+  "current_runtime_instance_observed": false,
+  "declared_original_root29_case": null,
+  "interpretation": "Successful inspection means only that the one pinned file was parsed under the original closed token policy. Unknown purpose remains unknown. No actual ordinary launcher, absence of a launcher, executable binary identity, fixture execution, owner custody, privilege, live runtime instance, adoption, fresh C or cold restart is established. No broader search or parser widening follows this result.",
+  "original_files": [
+    {
+      "filename": "result.original.json",
+      "sha": "91410e3eee751cafb4a8b47134b6366726fb91e9",
+      "bytes": 3133,
+      "sha256": "ac5c699e9f5610f3522f5eb1675bdb2f2e1702b0da4f880b7989c2c5c8dc2b39",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-classify-root01-v3/result.json",
+      "version": "2050:16282316:3133:1794502981854760790:1794502981854760790"
+    },
+    {
+      "filename": "execution.original.json",
+      "sha": "3374417354f753787b4c5f2e3b281e68774ab270",
+      "bytes": 2051,
+      "sha256": "bf12366882da8891d173fea584a42e9ded14be18ab9a4e79124bce84d62e43b2",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-launcher-classify-root01-v3/execution.json",
+      "version": "2050:16282319:2051:1794502981933534351:1794502981933759470"
+    },
+    {
+      "filename": "h-terminal-status.original-sdk.json",
+      "sha": "44d4e9f2dff5fa0cd41c3cc8706a1842182fa247",
+      "bytes": 908,
+      "sha256": "e381c87175108c6461c232fd215695b1f2542f15d5016677bdf5b9f45ef5bb08",
+      "operation_id": "68a97596f70ddbdffe48d43457b92ab52fb682e94a61a51b0f55f82cf3c2bcd4"
+    }
+  ],
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

@@ -58,20 +58,27 @@ class FinalHoldoutPhysicalSourceTests(unittest.TestCase):
             "bytes.len() as u64 != self.length", "Digest32::of_bytes(&bytes) != self.image_digest",
             "physical::replay_image(&bytes, self.binding,", "!= self.state", "self.poisoned = false"))
 
+    def test_combined_current_cannot_skip_original_physical_validation(self):
+        self.reject_removal(STORE, "fn require_current(", (
+            "let stable = self.require_physical_current()?",
+            "current::read_physical(&mut self.file, self.binding, None)",
+            "current.bytes == stable", "current.history_digest == self.history_digest",
+            "current.state == self.state"))
+
     def test_load_cannot_return_cached_state_without_physical_observation(self):
         self.reject_removal(STORE, "fn load(", (
-            "if self.poisoned", "binding != self.binding", "self.require_physical_current()?"))
+            "if self.poisoned", "binding != self.binding", "self.require_current()?"))
 
     def test_idempotent_cas_cannot_skip_physical_observation(self):
         self.reject_removal(STORE, "fn compare_and_swap(", (
-            "self.require_physical_current()?", "next.validate(binding)", "current_digest != expected"))
+            "self.require_current()?", "next.validate(binding)", "current_digest != expected"))
 
     def test_cas_ack_requires_post_sync_exact_image_and_replayed_state(self):
         self.reject_removal(STORE, "fn compare_and_swap(", (
             "expected_image.extend_from_slice(&frame)", "self.poisoned = true",
             ".and_then(|()| self.file.sync_all())", "physical::read_stable_image(&mut self.file)",
             "observed != expected_image", "physical::replay_image(&observed, binding,",
-            "!= Some(next)", "self.image_digest = Digest32::of_bytes(&observed)",
+            "!= Some(next)", "self.image_digest = Digest32::of_bytes(&current.bytes)",
             "self.poisoned = false"))
 
     def test_recovery_keeps_original_minimum_and_second_physical_image(self):

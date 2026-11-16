@@ -1,0 +1,7 @@
+{
+  "scope": "Clarification of retained committed-evidence-recovery-checks-v1/EXECUTION.json, which is not rewritten.",
+  "original_source_unchanged_field": "The original wrapper emitted source_unchanged=true without taking a separate prelaunch source digest. Both verifier results embed the same emitted source identity, which matches final bytes. This does not independently prove the file could not have changed during those two prior invocations.",
+  "prior_timer_scope": "Prior wrapper wall includes subprocess execution and the result-read/setup work inside its recorded interval; it is not a dedicated child-only wall measurement.",
+  "closure": "The later committed-current-evidence-closure-v2 invocation explicitly hashes the verifier and all requested inputs before and after, and separately measures the subprocess interval. No original failure/result is rewritten.",
+  "scientific_admission": "HOLD"
+}

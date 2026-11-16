@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "f41db48d00ebcfc1b6217313197d2c4b99bc666a",
+    "--head",
+    "8ce85627f92ecd9ff6cc21afc75472302eb0bb9d",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "exit_code": 0,
+  "seconds": 8.517,
+  "stdout_bytes": 124183,
+  "stdout_sha256": "3899672401d9c51a7189c016df91fcd309157d7be9f35f2504995b169ea9c7c7",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_commit": "8ce85627f92ecd9ff6cc21afc75472302eb0bb9d"
+}

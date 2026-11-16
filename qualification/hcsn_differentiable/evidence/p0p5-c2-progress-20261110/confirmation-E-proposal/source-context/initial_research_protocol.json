@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-real-benchmark-v1",
+  "status": "draft_blocked_missing_evidence_and_implementations",
+  "study_id": "hcsn-uci-localization-new-study",
+  "budget_origin": "new_study_only",
+  "old_study_credit": 0,
+  "formal_fits_started_in_this_work": 0,
+  "dataset": "UCI Localization Data for Person Activity, DOI 10.24432/C57G8X",
+  "dataset_url": "https://archive.ics.uci.edu/dataset/196/localization",
+  "task": "causal per-event 11-class activity classification; subjects A-C train, D dev, E test",
+  "data_sha256": null,
+  "split_sha256": null,
+  "protocol_sha256": null,
+  "measurement_context_sha256": null,
+  "timestamp_unit_verified": false,
+  "max_gap_seconds": null,
+  "qualified_max_dt_seconds": null,
+  "long_gap_policy": "reject",
+  "test_used_for_selection": false,
+  "partitions": {
+    "train": {"subjects": ["A", "B", "C"], "sequence_ids": [], "sequence_sha256": []},
+    "dev": {"subjects": ["D"], "sequence_ids": [], "sequence_sha256": []},
+    "test": {"subjects": ["E"], "sequence_ids": [], "sequence_sha256": []}
+  },
+  "frontend": {
+    "description": "Deterministic shared values/masks/time; normalize observed coordinates on training data only",
+    "sha256": null, "frozen": true, "fit_partition": "train", "causal": true
+  },
+  "training_seeds": [11, 23, 37, 53, 71],
+  "budget": {
+    "per_arm_wall_seconds": null,
+    "tuning_trials": null,
+    "max_trainable_parameters": null,
+    "authorization_reference": "current_user_full_research_request_and_standing_authorization"
+  },
+  "numerical_qualification": {
+    "passed": false, "source_sha256": null, "evidence_sha256": null,
+    "phase": {"budget": null, "observed": null},
+    "space": {"budget": null, "observed": null},
+    "tail": {"budget": null, "observed": null},
+    "time": {"budget": null, "observed": null}
+  },
+  "arms": {},
+  "results": [],
+  "claim_boundary": "Proposal and contract tests only. No real-task quality, completed fit, performance, energy or old-study completion claim."
+}

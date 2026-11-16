@@ -1,0 +1,24 @@
+{
+  "profile": {
+    "maximum_gap_micros": 1000000,
+    "forecast_horizon_micros": 500000,
+    "integration": {
+      "kind": "value_kernel"
+    }
+  },
+  "binding": {
+    "scope_digest": "2e543a502d97d3080df6611378d8c52c36b93c71e7bf0d78b19a12451f142601",
+    "generation": 1,
+    "writer_epoch": 1,
+    "clock_epoch": "49f3c56ed1545326eb00bc3db6a1338baba9977b9b1b5783d80ed76ad45b2851",
+    "model_digest": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f"
+  },
+  "start_micros": 17,
+  "ends": [
+    100017,
+    300017,
+    450017,
+    750017
+  ],
+  "initial_state_digest": "b9c250124f733a63ab0844ed9a675950a09a37313984e4a6e3ab5b637a02e143"
+}

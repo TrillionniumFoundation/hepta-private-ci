@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "as_of_utc": "2026-11-12",
+  "ordinary_acceptance": 0,
+  "status": "structural audit; positive 6/7 route still in draft and closed; actual frame/page counts and production FD assembly not measured",
+  "fixed_sources": {
+    "e_version": "ae8a0b52770e9edd4d0a7938bc3f3c2ea1cce16c",
+    "e_transfer": "6794167d5cd0f6663de86014c1f61826ae08aea1",
+    "source_split": "eda4ba64f19123cf773617a6bd2f604eb4be897c",
+    "candidate_paging": "d90de67dfd8a801b71d7afe6b08c9c1db8a71807",
+    "model_proposal": "24b1405aaf65499bccb012e1fc5cc51d88799e64",
+    "source_positive_merge": "5875001ff1df8b67a973eed0364406846865b78f"
+  },
+  "units": {
+    "exchange": "one request and one response",
+    "bidirectional_frames_per_successful_exchange": 2,
+    "finite_gate": "128 exchanges per original admitted channel, not 128 one-way frames",
+    "unknown_or_failure": "partial writes/reads and failed attempts consume their actual sequence and deadline; not available for retry credit"
+  },
+  "source_connections": [
+    {
+      "id": "training-source-experience",
+      "client": "LearningIterationEvidenceClientV1",
+      "server": "cell_q24_material_evidence_service.rs::serve_readback",
+      "request_cap": "u64 checked_add, no 128 loop",
+      "independent_connection": true
+    },
+    {
+      "id": "training-source-dataset",
+      "client": "LearningIterationEvidenceClientV1",
+      "server": "cell_q24_material_evidence_service.rs::serve_readback",
+      "request_cap": "u64 checked_add, no 128 loop",
+      "independent_connection": true
+    },
+    {
+      "id": "training-source-material",
+      "client": "OriginalCellQ24MaterialSourceConnectionV1",
+      "server": "cell_q24_material_source_service.rs::serve_material_source",
+      "request_cap": "u64 checked_add, no 128 loop",
+      "body": "one full bounded <=16384-byte JSON response; no paging fallback",
+      "independent_connection": true
+    }
+  ],
+  "source_lifetime": {
+    "exchange_ms": 500,
+    "absolute_lifetime_seconds": 300,
+    "no_reconnect": true,
+    "source": "RootObservationStream / HostAuthorityPeerChannel; boot_id 128 is a text byte bound, not an exchange limit"
+  },
+  "source_workload": {
+    "bootstrap_per_connection": 10,
+    "first_fit_per_connection": 8,
+    "completed_native_lane_per_connection": 2,
+    "bootstrap_components": {
+      "capture": 2,
+      "explicit_require_current": 2,
+      "original_stage_admission": 2,
+      "source_bound_admission": 2,
+      "command_owner_bind": 2
+    },
+    "fit_components": {
+      "occupied_split": 2,
+      "prefit_independent_capture": 2,
+      "post_optimizer_precomplete_independent_capture": 2,
+      "stage_presign_independent_capture": 2
+    },
+    "formula": "18 + 2*V + all other actual later native-lane visits, readiness/initial reads and recovery work not already in V",
+    "not_a_cap_failure": "Even a value above128 is not a Source request-limit violation; absolute deadline/latency/16KiB fit still require native measurement."
+  },
+  "finite_connections": [
+    {
+      "id": "root-experience-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "actual command profile differs from Training Source readonly Evidence endpoint; no alias or substitution"
+    },
+    {
+      "id": "root-dataset-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "common prefix reads both Material command owners"
+    },
+    {
+      "id": "root-training-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "separate t.stream; common prefix contributes10 reads in the proposed five post-T operations, plus startup/T/checkpoint work"
+    },
+    {
+      "id": "evaluator-training-evidence",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "one original evidence client Arc shared by host/primary/retention; Arc::ptr_eq enforced; every E command2 and every complete E material transfer2 actual requests"
+    },
+    {
+      "id": "candidate-heads",
+      "cap": 128,
+      "body_max": 16384,
+      "page_raw_bytes": 2048,
+      "max_raw_bytes": 32780,
+      "max_pages": 17,
+      "transfer_exchanges": "pC+1",
+      "actual_native_t_visits": 2,
+      "notes": "two actual Candidate transfers around Evaluation:2*(pC+1), max36; independent Evaluation readbacks add new complete transfers"
+    },
+    {
+      "id": "evaluator-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "Evaluation and Proposal precheck baseline2 requests; independent reads add actual requests"
+    },
+    {
+      "id": "model-host-to-e-material",
+      "cap": 128,
+      "body_max": 16384,
+      "page_raw_bytes": 8192,
+      "max_raw_bytes": 131072,
+      "max_pages": 16,
+      "transfer_exchanges": "pE+1",
+      "actual_e_to_t_requests": 2,
+      "notes": "state.material is one retained Arc client; multiple admitted Model clients to that host share this E connection"
+    },
+    {
+      "id": "root-model-command",
+      "cap": 128,
+      "body_max": 16384,
+      "transfer_exchanges": "pE+2",
+      "proposed_transfers": 4,
+      "notes": "Proposal + Selection explicit read + NextUse explicit read + final independent Root CURRENT; each additionally uses one complete E transfer"
+    },
+    {
+      "id": "version-model-command",
+      "cap": 128,
+      "body_max": 16384,
+      "transfer_exchanges": "pE+2",
+      "proposed_transfers": 2,
+      "notes": "Version publish + run C independent Version read; a cold/current Version read adds another actual Model/E transfer"
+    },
+    {
+      "id": "selector-model-command",
+      "cap": 128,
+      "body_max": 16384,
+      "transfer_exchanges": "pE+2",
+      "proposed_transfers": 6,
+      "notes": "S execute + initial C bind S read +2 S reads inside C execute +2 inside final C readback"
+    },
+    {
+      "id": "version-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "publish once; each independent readback is a fresh actual Model/E operation; run C calls host read internally rather than consuming this command nonce"
+    },
+    {
+      "id": "selector-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "Root S execute and initial C bind S read; each full response performs one Model operation"
+    },
+    {
+      "id": "c-observer-selector-evidence",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "C consumes independent S evidence client; every C response performs2 S requests, each deeply reads Model/E"
+    },
+    {
+      "id": "c-observer-training-evidence",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "C consumes independent T evidence client by value, not Root/E shared Arc; every C response performs2 T requests"
+    },
+    {
+      "id": "c-observer-command",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "one Execute + one final independent Readback in baseline; original C factory itself checks pins/signatures and does not do network T/S I/O"
+    },
+    {
+      "id": "selector-published-read",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "actual original Version/Cell/Source observations twice per S response; these local observations do not call Model/T again"
+    },
+    {
+      "id": "c-published-read",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "C Execute3 and Readback2 actual published reads; no native T/S/Model network recursion in this endpoint"
+    },
+    {
+      "id": "c-completion-readiness",
+      "cap": 128,
+      "body_max": 16384,
+      "notes": "at most128 original readiness exchanges; Ready polling + final independent Root7 observation each count. Endpoint only actual local Cell/Source/private journal, no T/S/Model deep reads"
+    },
+    {
+      "id": "version-root-final-use",
+      "cap": 1,
+      "request_max": 16384,
+      "response_max": 65536,
+      "notes": "private one-shot attenuation on original provider/pidfd/end; actual typed Prepared changed-model binding; signed response still checked by original publisher; no retry/rearm"
+    }
+  ],
+  "native_lane_counts": {
+    "E_command": 2,
+    "E_material_transfer": 2,
+    "Model_read": 5,
+    "Model_execute": 6,
+    "Candidate_transfer": 2,
+    "Selector_response": 5,
+    "C_response": 12,
+    "Version_publish": 5,
+    "Version_read": 5
+  },
+  "model_lane_decomposition": {
+    "read": "1 local Training preflight +2 E-owned T network reads +2 local native Model reads",
+    "execute": "1 local Training preflight +2 E-owned T network reads +3 local native create/commit/read; no native permit held across E I/O"
+  },
+  "proposed_success_path": {
+    "route_source": "Model peer draft, not implemented/validated by this ledger",
+    "steps": [
+      {
+        "name": "Evaluation",
+        "native_t_visits": 8,
+        "detail": "common prefix2 +Candidate transfers4 +E command2"
+      },
+      {
+        "name": "Proposal",
+        "native_t_visits": 10,
+        "detail": "common prefix2 +E before2 +Model execute6"
+      },
+      {
+        "name": "Selection",
+        "native_t_visits": 17,
+        "detail": "common prefix2 +explicit Model read5 +Version publish5 +S execute5"
+      },
+      {
+        "name": "NextUse",
+        "native_t_visits": 24,
+        "detail": "common prefix2 +explicit Model read5 +actual S initial-bind5 +C execute12"
+      },
+      {
+        "name": "final independent Root CURRENT",
+        "native_t_visits": 19,
+        "detail": "common prefix2 +explicit Model read5 +C readback12; plus1 readiness request with0T"
+      },
+      {
+        "name": "run C pre-entry Version CURRENT",
+        "native_t_visits": 5,
+        "detail": "independent Version read; occurs before actual ordinary crate::run and is required in addition to publication"
+      }
+    ],
+    "post_training_native_visits": 83,
+    "source_exchanges_each_from_known_build_fit_plus_path": 184,
+    "network_vs_local": {
+      "model_local_native": 37,
+      "e_owned_training_network": 28,
+      "candidate_network_driven_native": 4,
+      "root_common_training_network": 10,
+      "c_owned_training_network": 4
+    },
+    "e_material_transfers": 12,
+    "e_material_formula": "sum_i(ceil(body_i/8192)+1) <=128 on the same actual E material connection",
+    "same_body_examples": [
+      {
+        "pages": 9,
+        "exchanges": 120,
+        "bidirectional_frames": 240
+      },
+      {
+        "pages": 10,
+        "exchanges": 132,
+        "bidirectional_frames": 264
+      },
+      {
+        "pages": 16,
+        "exchanges": 204,
+        "bidirectional_frames": 408
+      }
+    ],
+    "model_channel_max_body_examples": {
+      "root4": 72,
+      "version2": 36,
+      "selector6": 108
+    },
+    "no_current_measurement": true,
+    "polling_correction": "The fixed NoUpdate await_completed_c reads common prefix only inside Some(ready), not on every NotReady. Positive draft likewise does actual readiness each poll and common tail only on Ready.",
+    "additional_successful_partial_current": "resident_learning_delivery polls original.deliver every3s. Root readback performs owner.read before completed snapshot validation; successful partial5/6 reads can occur outside the Candidate operation lock and add actual Model/E work. Their count is unknown, not assumed0."
+  },
+  "not_counted_as_zero": [
+    "all pre-E original Experience/Dataset/Training commands, admission/Ready/initial readonly reads, and initial Root owner confirmation",
+    "actual Root/S/C provider factory caller topology and admitted FD-instance mapping from external production launcher",
+    "successful partial5/6 and repeated7 Root Current polls, Busy/Unknown responses, cancellations, failed Begin/Page/Finish and recovery",
+    "cold independent Version read (+1 Model/E transfer) and any separate cold E/S/C reads",
+    "complete serialized E bodies, operation identifier overhead, member count and source full Material size",
+    "actual per-exchange and total elapsed time against original500ms/30s/300s deadlines",
+    "the positive eligibility obstruction documented separately; no successful ordinary route currently exists"
+  ],
+  "constraints": [
+    "no cross-request CURRENT cache",
+    "no connection replacement",
+    "no extended128 cap",
+    "no grant/key/issuer fabrication",
+    "physical final CURRENT/journal and full nested fresh verification retained"
+  ],
+  "conclusion": "No full ordinary frame/deadline budget is proven. Source128 is not a production gate; the real shared E material128 gate requires actual body pages and all successful independent reads."
+}

@@ -40,6 +40,16 @@ name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
 required-features = ["qualification-cognitive-write"]
 
+[[example]]
+name = "native_memory_daemon"
+path = "examples/native_memory_daemon.rs"
+required-features = ["qualification-cognitive-write"]
+
+[[example]]
+name = "native_memory_shadow"
+path = "examples/native_memory_shadow.rs"
+required-features = ["qualification-cognitive-write"]
+
 [lints]
 workspace = true
 
@@ -49,6 +59,7 @@ path = "src/bin/hepta-g2-native-owner.rs"
 test = false
 
 [dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
 anyhow = { workspace = true }
 base64 = { workspace = true }
 codex-app-server = { workspace = true }
@@ -107,6 +118,7 @@ tokio = { workspace = true, features = [
     "fs",
     "io-util",
     "macros",
+    "process",
     "rt-multi-thread",
     "signal",
     "sync",
@@ -123,7 +135,7 @@ libc = { workspace = true }
 [dev-dependencies]
 codex-hepta-memory = { workspace = true, features = ["qualification-lease-clock"] }
 codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-owned-file-read"] }
-codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-owned-file-read"] }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-owned-file-read", "qualification-file-observation"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core", features = ["qualification-owned-file-read"] }

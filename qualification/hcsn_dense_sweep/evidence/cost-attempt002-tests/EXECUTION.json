@@ -1,0 +1,50 @@
+{
+  "identity": "fixed-profile-right-tail-cost-tests-attempt002",
+  "persisted_source_commit": "1a532f58934b738df91220b0c91fb80c721d3982",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "qualification.hcsn_dense_sweep.test_cost_reference",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/c06d659c1e72/dense-v3-reproduction",
+  "started_utc": "2026-11-12T08:42:00.842731+00:00",
+  "finished_utc": "2026-11-12T08:42:01.677729+00:00",
+  "exit_code": 0,
+  "wall_seconds": 0.8350254310003038,
+  "child_user_seconds": 1.770816,
+  "child_system_seconds": 0.12448899999999999,
+  "child_peak_rss_kib": 65776,
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/COST_AUDIT.md": "f448160339dd18200f7aa6960777de6988be2e6b0a5d6bcb8ac6433c45986151",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/test_cost_reference.py": "4db8c3cc54bb283f577f963801657dd0320485a8a54983b91cb4397a469523ae",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/COST_DEPENDENCIES.json": "212a817014bbad4414d288f45d2c9adac797d16ce7eb77d23f680a7c7685913f",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/migration1024.py": "a83ed9101afc2b71e0aec2b8f62a7fffc7b1be172e528deaa3992d39444a163e",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_audit.py": "6f1ebd0899584d199b82a40a7ac41726a15190c31d5a093026d56779c6b2f73c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/sweep.py": "fc609b7dd91e6ccba8a50ff1126b07faac891363d505724f52f20c169216db65",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/verify_sweep.py": "af832b26fba531e32b8dce77e381154d00d23aa425debb8b623fface62f754d3",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_reference.py": "cc7060653322c132eb7a10d5bd066eef9b210771ea1fd3946175607385624ba4"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/COST_AUDIT.md": "f448160339dd18200f7aa6960777de6988be2e6b0a5d6bcb8ac6433c45986151",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/test_cost_reference.py": "4db8c3cc54bb283f577f963801657dd0320485a8a54983b91cb4397a469523ae",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/COST_DEPENDENCIES.json": "212a817014bbad4414d288f45d2c9adac797d16ce7eb77d23f680a7c7685913f",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/migration1024.py": "a83ed9101afc2b71e0aec2b8f62a7fffc7b1be172e528deaa3992d39444a163e",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_audit.py": "6f1ebd0899584d199b82a40a7ac41726a15190c31d5a093026d56779c6b2f73c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/sweep.py": "fc609b7dd91e6ccba8a50ff1126b07faac891363d505724f52f20c169216db65",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/verify_sweep.py": "af832b26fba531e32b8dce77e381154d00d23aa425debb8b623fface62f754d3",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_reference.py": "cc7060653322c132eb7a10d5bd066eef9b210771ea1fd3946175607385624ba4"
+  },
+  "source_unchanged": true,
+  "files": {
+    "TESTS.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "TESTS.stderr": {
+      "bytes": 926,
+      "sha256": "f98a076283b70e1043b2b9e1f78c6bdaceba935b3675e384ff104c7f13cbdd7e"
+    }
+  }
+}

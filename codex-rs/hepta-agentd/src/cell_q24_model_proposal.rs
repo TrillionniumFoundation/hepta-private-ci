@@ -77,6 +77,10 @@ pub(crate) fn prepare_original_q24_model_material<
     Ok(admission.key(binding).binding_digest)
 }
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_current_owner.rs"]
+mod current;
+
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24ModelProposalErrorV1 {
     #[error("Q24 model proposal binding: {0}")]
@@ -95,6 +99,9 @@ pub enum CellQ24ModelProposalErrorV1 {
     Iteration(#[from] LearningIterationError),
     #[error("evidence: {0}")]
     Evidence(#[from] SignedEvidenceError),
+    #[cfg(target_os = "linux")]
+    #[error("original current Evaluation material: {0}")]
+    OriginalEvaluationMaterial(Box<crate::OriginalCellEvaluationCommandErrorV1>),
     #[error("proposal file: {0}")]
     File(#[from] LockedFileProductEvaluationExecutionErrorV1),
     #[error("proposal store: {0}")]
@@ -169,6 +176,16 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         if witness.current()?.is_some() {
             return Err(Error::Binding("proposal witness already initialized"));
         }
+        Self::create_empty_original(file, witness, dataset_cut, scope, binding)
+    }
+
+    fn create_empty_original(
+        file: File,
+        mut witness: W,
+        dataset_cut: LearningIterationSnapshotV1,
+        scope: Digest32,
+        binding: Digest32,
+    ) -> Result<Self, Error> {
         let journal = LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;
         witness
             .compare_and_swap(None, anchor(journal.anchor())?)
@@ -207,6 +224,17 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         let minimum = witness
             .current()?
             .ok_or(Error::Binding("original proposal witness"))?;
+        Self::recover_existing_original(file, witness, dataset_cut, scope, binding, minimum)
+    }
+
+    fn recover_existing_original(
+        file: File,
+        mut witness: W,
+        dataset_cut: LearningIterationSnapshotV1,
+        scope: Digest32,
+        binding: Digest32,
+        minimum: JournalAnchor,
+    ) -> Result<Self, Error> {
         let journal = LockedFileProductEvaluationExecutionStoreV1::recover(
             file,
             binding,
@@ -259,8 +287,19 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         }
         let payload = admission.encode(now)?;
         self.require_current()?;
+        self.complete_admitted(admission, &key, &payload)
+    }
+
+    // One original claim/completion algorithm shared by local and sealed remote
+    // admission. Each caller checks CURRENT and its pure authorization first.
+    fn complete_admitted(
+        &mut self,
+        admission: &Admission,
+        key: &ProductEvaluationExecutionKeyV1,
+        payload: &[u8],
+    ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
         let before = anchor(self.journal.anchor())?;
-        match self.journal.claim(&key) {
+        match self.journal.claim(key) {
             Ok(ProductEvaluationExecutionClaimV1::Claimed) => self.anchor_append(before)?,
             Ok(ProductEvaluationExecutionClaimV1::Existing(state)) => {
                 return self.decode_current(admission, state);
@@ -271,12 +310,12 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
             }
         }
         let before = anchor(self.journal.anchor())?;
-        if self.journal.complete(&key, &payload).is_err() {
+        if self.journal.complete(key, payload).is_err() {
             self.fenced = true;
             return Err(Error::CommitUncertain);
         }
         self.anchor_append(before)?;
-        let state = self.journal.readback(&key)?;
+        let state = self.journal.readback(key)?;
         self.decode_current(admission, state)
     }
 
@@ -300,7 +339,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     }
 
     fn admit<T: AnchorWitnessStore, S: FinalHoldoutCasStoreV1>(
-        &self,
+        &mut self,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
         now: u64,
@@ -337,14 +376,26 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         self.test_clock = Some(Box::new(clock));
     }
 
-    fn require_current(&self) -> Result<(), Error> {
-        if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())?) {
+    fn require_current(&mut self) -> Result<(), Error> {
+        if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        Ok(())
+        let result = (|| {
+            let before = self.witness.current()?;
+            let physical = anchor(self.journal.read_current_anchor()?)?;
+            let after = self.witness.current()?;
+            if before != Some(physical) || after != Some(physical) {
+                return Err(Error::CommitUncertain);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
     fn decode_current(
-        &self,
+        &mut self,
         admission: &Admission,
         state: ProductEvaluationExecutionStateV1,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {

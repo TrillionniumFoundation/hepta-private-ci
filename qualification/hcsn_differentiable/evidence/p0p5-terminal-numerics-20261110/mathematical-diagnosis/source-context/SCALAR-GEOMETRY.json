@@ -1,0 +1,42 @@
+{
+  "active_cell_width": 0.01875,
+  "archived_pressure_step_geometry": [
+    {
+      "h": 1e-07,
+      "h_over_h_star": 18.61733410885553,
+      "nearest_node_over_diffusion_length": 0.2317614789781837
+    },
+    {
+      "h": 8e-07,
+      "h_over_h_star": 148.93867287084424,
+      "nearest_node_over_diffusion_length": 0.08194005670164858
+    }
+  ],
+  "cost_scope": "After imports through result construction, before JSON serialization and process exit; full manual/outer timing unknown.",
+  "function_source_sha256": "7819a79839c24e27301a22998220159401ff1203b28f9a6e9ba452849af54e3b",
+  "h_star_distance_squared_over_sigma_squared": 5.371338313815508e-09,
+  "h_star_is_not_a_certified_quadrature_tolerance_threshold": true,
+  "interpretation": "Neither archived positive gap lies in h much smaller than h_star for this nominal geometry. The fixed-node h-to-zero limit alone therefore does not identify those pressure failures. This ratio is not a quadrature-accuracy pass.",
+  "minimum_unit_node": 0.001368069075259215,
+  "nearest_source_node_distance_to_cell_edge": 2.565129516111028e-05,
+  "nominal_sigma_from_frozen_network_default": 0.35,
+  "numerical_qualification_granted": false,
+  "prefix_own_CPU_seconds": 0.013124434999999997,
+  "prefix_wall_seconds": 0.013394806999713182,
+  "pure_phase_nominal_geometry": {
+    "delay": 0.2,
+    "number": 16,
+    "width": 0.0125
+  },
+  "quadrature_order": 32,
+  "schema": "hcsn-short-time-node-geometry-v1",
+  "scientific_benefit_granted": false,
+  "scope": "Single q=32 source-node geometry calculation with named nominal sigma; no transition matrix, model, probability, oracle, pressure reproduction or parameter sweep.",
+  "source": {
+    "bytes": 25180,
+    "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/operator.py",
+    "sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+  },
+  "source_after_sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+  "weights_sum": 1.0
+}

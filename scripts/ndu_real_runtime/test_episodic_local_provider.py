@@ -30,6 +30,8 @@ class LocalProviderTests(unittest.TestCase):
         self.site = self.root / "site"
         self.site.mkdir()
         (self.site / "placeholder.py").write_text("# fixture runtime\n")
+        self.bubblewrap = self.root / "fixture-bubblewrap"
+        self.bubblewrap.write_bytes(b"fixture tool bytes; execution is mocked\n")
         python = Path("/usr/bin/python3")
         self.profile = provider.LocalProviderProfile(
             "fixture",
@@ -141,6 +143,7 @@ class LocalProviderTests(unittest.TestCase):
     )
     def test_sealed_exact_request_and_no_private_mounts(self):
         def capture(command, log, **kwargs):
+            self.assertEqual(command[0], str(self.bubblewrap))
             self.assertIn("--unshare-all", command)
             self.assertIn("--clearenv", command)
             self.assertNotIn(str(self.model), command)
@@ -155,9 +158,15 @@ class LocalProviderTests(unittest.TestCase):
             log.write_bytes(b"fixture no generation\n")
             return {"returncode": 1, "timed_out": False, "output_limit_exceeded": False}
 
-        with patch.object(provider, "execute_logged", side_effect=capture):
+        with (
+            patch.object(provider, "execute_logged", side_effect=capture),
+            patch.object(provider.shutil, "which", return_value=str(self.bubblewrap)),
+        ):
             result = self.run_provider()
         self.assertEqual(result["status"], "EXECUTION_FAILED")
+        self.assertEqual(
+            result["bubblewrap"], provider._pin(self.bubblewrap.read_bytes())
+        )
         self.assertFalse(result["local_generation_returned"])
         self.assertFalse(result["observer_authenticated"])
 
@@ -237,6 +246,7 @@ class LocalProviderTests(unittest.TestCase):
         )
 
         def capture(command, log, **kwargs):
+            self.assertEqual(command[0], str(self.bubblewrap))
             bootstrap = {
                 "empty": True,
                 "namespaces": {
@@ -260,9 +270,15 @@ class LocalProviderTests(unittest.TestCase):
             )
             return {"returncode": 0, "timed_out": False, "output_limit_exceeded": False}
 
-        with patch.object(provider, "execute_logged", side_effect=capture) as execute:
+        with (
+            patch.object(provider, "execute_logged", side_effect=capture) as execute,
+            patch.object(provider.shutil, "which", return_value=str(self.bubblewrap)),
+        ):
             first = self.run_provider()
             self.assertEqual(first["status"], "RETURNED")
+            self.assertEqual(
+                first["bubblewrap"], provider._pin(self.bubblewrap.read_bytes())
+            )
             output = self.root / "journal" / hashlib.sha256(b"fixture-id").hexdigest()
             self.assertEqual((output / "model-input.json").read_bytes(), model_input)
             self.assertEqual(self.run_provider(), first)

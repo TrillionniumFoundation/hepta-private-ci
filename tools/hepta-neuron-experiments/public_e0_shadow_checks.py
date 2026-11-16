@@ -4,7 +4,9 @@ from __future__ import annotations
 import hashlib
 import importlib
 import json
+import math
 import py_compile
+import struct
 import subprocess
 import sys
 import tempfile
@@ -65,6 +67,60 @@ class E0ShadowContractTests(unittest.TestCase):
             output.mkdir()
             with self.assertRaisesRegex(ValueError, "never overwritten"):
                 e0.run(hf_checkout=root, projection_checkout=root, output=output)
+
+
+class FeatureNormalizerTests(unittest.TestCase):
+    def test_full_width_direction_and_norm_are_preserved_without_clipping(self):
+        vector = [12.0] + [0.0] * 766 + [-16.0]
+        normalized, norm = e0.normalize_feature(vector, e0.L2_FEATURE_PROFILE)
+        expected = tuple(struct.unpack(">f", struct.pack(">f", value))[0]
+                         for value in [0.6] + [0.0] * 766 + [-0.8])
+        self.assertEqual((normalized, norm), (expected, 20.0))
+        scaled = [2 * value for value in vector]
+        self.assertEqual(e0.normalize_feature(scaled, e0.L2_FEATURE_PROFILE),
+                         (expected, 40.0))
+        self.assertNotEqual(e0.feature_hash(vector), e0.feature_hash(scaled))
+        self.assertEqual(e0.normalize_feature(vector, e0.RAW_FEATURE_PROFILE),
+                         (vector, None))
+
+    def test_zero_and_finite_f32_extremes_enter_existing_projector(self):
+        projection = e0.make_diagnostic_projection(
+            LowRankProjectionQ24, encoder="a" * 64, preprocessor="b" * 64,
+            runtime="c" * 64, normalizer="d" * 64)
+        for magnitude in (0.0, float.fromhex("0x1p-149"),
+                          float.fromhex("0x1.fffffep127")):
+            with self.subTest(magnitude=magnitude):
+                vector = [magnitude, -magnitude] + [0.0] * 766
+                normalized, norm = e0.normalize_feature(vector, e0.L2_FEATURE_PROFILE)
+                self.assertTrue(math.isfinite(norm))
+                self.assertEqual(norm == 0, magnitude == 0)
+                self.assertTrue(all(math.isfinite(x) and abs(x) <= 1 for x in normalized))
+                self.assertEqual(len(projection.project_float32(normalized)), 256)
+
+    def test_invalid_features_and_unknown_profile_are_rejected(self):
+        for value in (float("nan"), float("inf"), True, 1e40, 10 ** 1000):
+            with self.subTest(value=str(value)[:30]), self.assertRaises(ValueError):
+                e0.normalize_feature([value] + [0.0] * 767, e0.L2_FEATURE_PROFILE)
+        with self.assertRaisesRegex(ValueError, "wrong real HF feature width"):
+            e0.normalize_feature([0.0] * 512, e0.L2_FEATURE_PROFILE)
+        with self.assertRaisesRegex(ValueError, "unknown feature normalizer"):
+            e0.normalize_feature([0.0] * 768, "unregistered")
+
+    def test_source_digest_changes_normalizer_and_projection_identity(self):
+        digests = []
+        projections = []
+        for source_digest in ("a" * 64, "b" * 64):
+            with mock.patch.object(e0, "file_sha256", return_value=source_digest):
+                binding = e0.feature_normalizer_binding(e0.L2_FEATURE_PROFILE)
+            digests.append(binding.pop("digest"))
+            self.assertEqual(binding["implementation_sha256"], source_digest)
+            self.assertEqual(digests[-1], hashlib.sha256(json.dumps(
+                binding, sort_keys=True, separators=(",", ":")).encode()).hexdigest())
+            projections.append(e0.make_diagnostic_projection(
+                LowRankProjectionQ24, encoder="a" * 64, preprocessor="b" * 64,
+                runtime="c" * 64, normalizer=digests[-1]).digest)
+        self.assertNotEqual(digests[0], digests[1])
+        self.assertNotEqual(projections[0], projections[1])
 
 
 class ProjectSourceBindingTests(unittest.TestCase):
@@ -188,7 +244,8 @@ class E0ProjectionDiagnosticsTests(unittest.TestCase):
         def tolist(self):
             return list(self)
 
-    def invoke(self, output, vectors, snapshot_error=None):
+    def invoke(self, output, vectors, snapshot_error=None,
+               feature_normalizer=e0.RAW_FEATURE_PROFILE, source_digests=None):
         self.forward = mock.Mock(
             side_effect=[(self.Feature(vector), 12) for vector in vectors])
         self.guard = mock.Mock()
@@ -219,6 +276,8 @@ class E0ProjectionDiagnosticsTests(unittest.TestCase):
             loaded_sources=lambda: [])
 
         def pinned_file(path):
+            if source_digests is not None and path == Path(e0.__file__):
+                return next(source_digests)
             return (e0.MODEL_WEIGHT_SHA256 if path.name == "model.safetensors"
                     else "b" * 64)
 
@@ -227,7 +286,8 @@ class E0ProjectionDiagnosticsTests(unittest.TestCase):
                                   return_value=output.parent / "synthetic-snapshot",
                                   side_effect=snapshot_error), \
                 mock.patch.object(e0, "file_sha256", side_effect=pinned_file):
-            return e0._run_bound(output=output, sources=sources)
+            return e0._run_bound(output=output, sources=sources,
+                                 feature_normalizer=feature_normalizer)
 
     def expected_diagnostic(self, vector, completed, **observed):
         return {
@@ -316,6 +376,63 @@ class E0ProjectionDiagnosticsTests(unittest.TestCase):
             self.assertNotIn("projection_input_diagnostic", result)
             self.assertFalse((output / "FAILED.json").exists())
             self.guard.remove.assert_called_once()
+
+    def test_normalized_route_records_raw_norm_and_projected_evidence(self):
+        vector = [12.0] + [0.0] * 766 + [-16.0]
+        other = [16.0] + [0.0] * 766 + [12.0]
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "attempt"
+            result = self.invoke(output, [vector, other, vector],
+                                 feature_normalizer=e0.L2_FEATURE_PROFILE)
+            self.assertEqual(result, json.loads((output / "shadow.json").read_text()))
+            self.assertEqual(result["schema"], "hepta.e0.public-pretrained-q24-shadow.v3")
+            self.assertFalse(result["e0_accepted"])
+            self.assertFalse(result["production_authorized"])
+            self.assertEqual(result["actual_hf_forward_calls"], 3)
+            binding = result["feature_normalizer"]
+            self.assertEqual(binding["profile"], e0.L2_FEATURE_PROFILE)
+            projection = e0.make_diagnostic_projection(
+                LowRankProjectionQ24, encoder=e0.SNAPSHOT_SHA256, preprocessor="b" * 64,
+                runtime=hashlib.sha256(b"torch:2.10.0/transformers:4.57.1/cpu/fp32/eager").hexdigest(),
+                normalizer=binding["digest"])
+            self.assertEqual(result["q24_projection"]["digest"], projection.digest)
+            for row, raw in zip(result["observations"], (vector, other, vector)):
+                normalized, _ = e0.normalize_feature(raw, e0.L2_FEATURE_PROFILE)
+                self.assertEqual(row["feature_sha256"], e0.feature_hash(raw))
+                self.assertEqual(row["normalization"], {
+                    "normalizer_digest": binding["digest"],
+                    "l2_norm_f64_hex": (20.0).hex(),
+                    "projector_input_f32_sha256": e0.feature_hash(normalized),
+                })
+            first, second, repeated = result["observations"]
+            self.assertEqual(first, repeated)
+            self.assertNotEqual(first["q24_sha256"], second["q24_sha256"])
+            self.assertFalse((output / "FAILED.json").exists())
+
+    def test_normalized_collapse_is_not_hidden_by_different_raw_hashes(self):
+        vector = [12.0] + [0.0] * 766 + [-16.0]
+        scaled = [2 * value for value in vector]
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "attempt"
+            with self.assertRaisesRegex(ValueError, "normalized inputs collapsed"):
+                self.invoke(output, [vector, scaled, vector],
+                            feature_normalizer=e0.L2_FEATURE_PROFILE)
+            failure = json.loads((output / "FAILED.json").read_text())
+            self.assertEqual(failure["feature_normalizer"]["profile"], e0.L2_FEATURE_PROFILE)
+            self.assertFalse(failure["completed"])
+            self.assertFalse((output / "shadow.json").exists())
+
+    def test_normalizer_source_drift_prevents_success_receipt(self):
+        vectors = [[0.0] * 768, [0.125] * 768, [0.0] * 768]
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "attempt"
+            with self.assertRaisesRegex(ValueError, "normalizer source changed"):
+                self.invoke(output, vectors, feature_normalizer=e0.L2_FEATURE_PROFILE,
+                            source_digests=iter(("a" * 64, "b" * 64)))
+            failure = json.loads((output / "FAILED.json").read_text())
+            self.assertEqual(failure["feature_normalizer"]["implementation_sha256"], "a" * 64)
+            self.assertFalse(failure["completed"])
+            self.assertFalse((output / "shadow.json").exists())
 
 
 if __name__ == "__main__":

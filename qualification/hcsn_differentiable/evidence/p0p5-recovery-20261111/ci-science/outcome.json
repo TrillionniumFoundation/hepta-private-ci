@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn-ci-outcome-v1",
+  "finished_utc": "2026-11-10T23:22:40.203706+00:00",
+  "science_status": "PASSED_DECLARED_FIXTURES",
+  "steps": {
+    "checkout": "success",
+    "identity": "success",
+    "python": "success",
+    "runtime": "success",
+    "qualification": "success",
+    "budget": "success",
+    "evidence": "success",
+    "qvi": "success",
+    "controls": "success",
+    "clean": "success"
+  },
+  "step_exit_codes": {
+    "qualification": 0,
+    "error-budget": 0
+  },
+  "rerun_of_old_evidence": false,
+  "claim": "CPU fixture qualification only; no real-task or repository-wide pass."
+}

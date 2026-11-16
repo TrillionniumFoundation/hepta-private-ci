@@ -7,6 +7,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -32,12 +34,12 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = start
+        cursor = start
         for _ in range(occurrence + 1):
-            offset = source.index(marker, offset, end + 1) + len(marker)
-        offset -= len(marker)
-        replacement = replacement if replacement is not None else "/* " + marker + " */"
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+            first, last = source_marker_span(source, marker, cursor, end + 1)
+            cursor = last
+        replacement = replacement if replacement is not None else "/* " + source[first:last] + " */"
+        changed = source[:first] + replacement + source[last:]
         rows = [r for r in self.manifest["protected_file"] if r["path"] == path]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -86,7 +88,7 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
         filename = "root_generation_publication_stream.rs"
         self.reject(filename, "fn exchange(",
                     "let end = (Instant::now() + self.timeout).min(self.end)")
-        for marker in ("end.checked_duration_since(Instant::now())",
+        for marker in ('end\n                .checked_duration_since(Instant::now())',
                        "remaining.is_zero()", "if ready <= 0",
                        "let poll_error = (ready < 0).then(io::Error::last_os_error)",
                        "error.kind() == io::ErrorKind::Interrupted",

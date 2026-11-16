@@ -1,0 +1,30 @@
+{
+  "all_closed": false,
+  "candidate_container_bytes": 2716636,
+  "conceptual_fp64_coordinates": 18225028,
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponentials": 0,
+    "optimizer_steps": 0,
+    "oracle_numeric_calls": 0,
+    "serializer_numeric_calls": 0,
+    "torch_calls": 0,
+    "training_runs": 0
+  },
+  "forbidden_calls_present": [],
+  "forbidden_imports_present": [],
+  "imports": [
+    "argparse",
+    "hashlib",
+    "json",
+    "math",
+    "pathlib"
+  ],
+  "largegrid_qualification": false,
+  "oracle_payload_bytes": 145800224,
+  "result_sha256": "5200a73ded53f421b658ecf84863d28563e25ca7c5ca9b010df09184b99e952d",
+  "schema": "hcsn-n256-streaming-fullstate-independent-review-v1",
+  "source_sha256": "f24c2b562d67135eafc1dc60142e2f0eacbf7beafb9e7e783c80d64b589726aa",
+  "status": "PASS_STATIC_REVIEW_HOLD_DYNAMIC",
+  "total_preserved_bytes": 149578828
+}

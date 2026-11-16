@@ -1,0 +1,57 @@
+{
+  "authority": "DENY_ALL",
+  "candidate": "granite97m",
+  "files": [
+    {
+      "bytes": 1216,
+      "path": "config.json",
+      "sha256": "de948b0bdc6f356afad7a84b276d8dd7e7fe10fb9add1bb5e610621c28e41ebc",
+      "upstream_git_blob": "774645fd28bb27f79c33a67f7051256ed2fa9a09",
+      "upstream_lfs_sha256": null
+    },
+    {
+      "bytes": 25301672,
+      "path": "tokenizer.json",
+      "sha256": "4f2842d568e2724370aec203652a42ac783c7937f8347a1a2cc7506d71f1582f",
+      "upstream_git_blob": "2d1698e93712945e0bcfd54967776a94d4995653",
+      "upstream_lfs_sha256": "4f2842d568e2724370aec203652a42ac783c7937f8347a1a2cc7506d71f1582f"
+    },
+    {
+      "bytes": 12860,
+      "path": "tokenizer_config.json",
+      "sha256": "6ed69389e30a8ecabfce2f9ebcdf0c908b34056f24d994340f2f216521c057d5",
+      "upstream_git_blob": "6a228fd8b96ac3833a7878c92653c9dc4f85ac5d",
+      "upstream_lfs_sha256": null
+    },
+    {
+      "bytes": 871,
+      "path": "special_tokens_map.json",
+      "sha256": "013787ee251ff611722479197c00853b62113ad303cb0a36524231783c676c69",
+      "upstream_git_blob": "d1a49f7ece7a2cf8ba21f77d97b2413e142ab73b",
+      "upstream_lfs_sha256": null
+    },
+    {
+      "bytes": 20684,
+      "path": "README.md",
+      "sha256": "a73d22110e7e6d947f55cdd4f1a8b0b622e340fd09a66d302f5fe800899024bd",
+      "upstream_git_blob": "ee9e323ec8ac4ec76d46916ea43e96da8558b969",
+      "upstream_lfs_sha256": null
+    },
+    {
+      "bytes": 194889568,
+      "path": "model.safetensors",
+      "sha256": "f3ea88b230492811046145513710e76b4cc8c2ad49e8708da0e7247e548903be",
+      "upstream_git_blob": "53f433ad114d9a0ce7cb4cd9679418895cb93ae8",
+      "upstream_lfs_sha256": "f3ea88b230492811046145513710e76b4cc8c2ad49e8708da0e7247e548903be"
+    }
+  ],
+  "inventory_sha256": "08bdb7bb7eefb051ac74924787354a3638ba8a0e6fe6ffdd96ae57d6f1402db3",
+  "metadata_sha256": "a6b21eda24d086edda45d39820486fc61704d265e4b310c672fe1572b05c1040",
+  "metadata_url": "https://huggingface.co/api/models/ibm-granite/granite-embedding-97m-multilingual-r2/revision/835ad14087e140460703cf0fae09f97d469d65c2?blobs=true",
+  "mode": "SHADOW_ONLY",
+  "publisher_signature_verified": false,
+  "quality_qualified": false,
+  "repository": "ibm-granite/granite-embedding-97m-multilingual-r2",
+  "revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+  "schema": "hepta.public-checkpoint-acquisition.v1"
+}

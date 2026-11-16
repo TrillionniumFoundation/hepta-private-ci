@@ -1,0 +1,67 @@
+{
+  "key": "10f77bdf1c65f654ac876f14a2e9dfdeedb19ca411e6efcf2016aa3b8ca997d3",
+  "source_sha256": "f6debd63e6ac6979144a923efdaad5d1f4a99ad2cd602b9174831bcebc6bb2ad",
+  "config": {
+    "profile": "fault-injection-only",
+    "device": "cpu",
+    "tasks": [
+      "delayed_recall"
+    ],
+    "models": [
+      "gru"
+    ],
+    "seeds": [
+      0
+    ],
+    "data_seed": 271828,
+    "train_count": 8,
+    "validation_count": 4,
+    "test_count": 4,
+    "length": 8,
+    "hidden_size": 8,
+    "batch_size": 4,
+    "train_steps": 1,
+    "learning_rate": 0.003,
+    "dt": 0.1,
+    "latency_repeats": 1,
+    "cpu_threads": 2
+  },
+  "dataset": {
+    "split_sha256": [
+      "f79d7f6a530a83a957d24af25cc621f2cd7f79251dbb775e2bb9466fb54abe60",
+      "a696b97427b3d01d942e7a5f3fdf0f4b91f8f181fd56c6ff5fd26e939994dd01",
+      "6b3a42b055000e6957e5ecfda70922fc23ef08816986be56a1b2e362b3f7345b"
+    ],
+    "constant_predictor_test_mse": 0.6615792512893677
+  },
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpu_count": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "device": "cpu",
+    "device_name": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": null,
+    "cuda_available": false
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "mamba-ssm": null,
+    "triton": null,
+    "causal-conv1d": null,
+    "nvidia-ml-py": null
+  },
+  "task": "delayed_recall",
+  "model": "gru",
+  "seed": 0,
+  "attempt_id": "744b5d5386184eb1bdd2cfe985a027e3",
+  "started_utc": "2026-11-05T14:14:41.408990+00:00"
+}

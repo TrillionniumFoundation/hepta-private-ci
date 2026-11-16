@@ -1,0 +1,44 @@
+{"stage": "original", "name": "gru-s101-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "cfc-s101-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "snn_plif-s101-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "event_time_lif-s101-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "ssm_s4d-s101-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "attention-s101-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "gru-s101-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "cfc-s101-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "snn_plif-s101-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "event_time_lif-s101-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "ssm_s4d-s101-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "attention-s101-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "gru-s211-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "cfc-s211-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "snn_plif-s211-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "event_time_lif-s211-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "ssm_s4d-s211-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "attention-s211-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "gru-s211-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "cfc-s211-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "snn_plif-s211-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "event_time_lif-s211-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "ssm_s4d-s211-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "attention-s211-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "gru-s307-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "cfc-s307-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "snn_plif-s307-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "event_time_lif-s307-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "ssm_s4d-s307-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "attention-s307-lr0.001", "audit_status": "passed_completed_original_baseline", "original_adequacy": false}
+{"stage": "original", "name": "gru-s307-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "cfc-s307-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "snn_plif-s307-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "event_time_lif-s307-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "ssm_s4d-s307-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "original", "name": "attention-s307-lr0.003", "audit_status": "passed_completed_original_baseline", "original_adequacy": true}
+{"stage": "C1", "name": "attention-s101-lr0.001", "audit_status": "audit_failed"}
+{"stage": "C1", "name": "attention-s211-lr0.001", "audit_status": "audit_failed"}
+{"stage": "C1", "name": "attention-s307-lr0.001", "audit_status": "audit_failed"}
+{"stage": "C1", "name": "gru-s211-lr0.001", "audit_status": "audit_failed"}
+{"stage": "C1", "name": "ssm_s4d-s211-lr0.001", "audit_status": "audit_failed"}
+{"stage": "C1", "name": "ssm_s4d-s211-lr0.003", "audit_status": "audit_failed"}
+{"stage": "C1", "name": "ssm_s4d-s307-lr0.001", "audit_status": "audit_failed"}
+{"schema": "fresh42-completed-baseline36-plus-C1-independent-review-v1", "mode": "completed_baseline_subset_and_C1_phase_chains", "passed": false, "full42_final_audit": false, "started_utc": "2026-11-10T17:26:01.787110+00:00", "finished_utc": "2026-11-10T17:26:19.914284+00:00", "original_baseline_heuristic_adequacy_passes": 26, "combined_baseline_chain_heuristic_adequacy_passes": 26, "memorization_failures_retained": ["snn_plif-s101-lr0.001", "cfc-s211-lr0.001", "snn_plif-s307-lr0.001"], "review_process_wall_seconds": 20.309695262927562, "review_process_cpu_sample_seconds": 18.963314579, "peak_rss_bytes": 1105670144, "original_baseline_audit_counts": {"passed_completed_original_baseline": 36}, "C1_audit_counts": {"audit_failed": 7}, "result_sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052", "scientific_admission": "HOLD"}

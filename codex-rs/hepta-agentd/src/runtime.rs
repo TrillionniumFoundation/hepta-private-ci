@@ -86,6 +86,14 @@ pub async fn run_with_shutdown(
     let circuit_learning_delivery = learning_iteration
         .as_mut()
         .and_then(crate::LearningIterationRuntimeBootstrapV1::take_circuit_delivery);
+    #[cfg(target_os = "linux")]
+    let resident_learning = config.take_root_resident_learning_delivery();
+    #[cfg(target_os = "linux")]
+    if resident_learning.is_some() && (learning_iteration.is_some() || circuit_task.is_none()) {
+        return Err(AgentdError::Invalid(
+            "resident learning requires exclusive ordinary delivery".into(),
+        ));
+    }
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
     if let Some(learning) = &learning_iteration {
@@ -130,6 +138,20 @@ pub async fn run_with_shutdown(
     } else {
         app_server_model_tools
     };
+    let native_memory_cell = config.native_memory_cell();
+    let native_memory_registration = config.native_memory_registration();
+    #[cfg(target_os = "linux")]
+    let native_memory_process_host = config.native_memory_process_host();
+    if native_memory_registration.is_some()
+        && (production_writer_host.is_none() || objective_profile_file.is_none())
+    {
+        return Err(AgentdError::Invalid(
+            "native memory registration requires Objective and recovered writer owners".to_string(),
+        ));
+    }
+    let _native_memory_lifetime = native_memory_cell
+        .as_ref()
+        .map(|cell| cell.cancellation.clone().drop_guard());
     if production_operations.is_some() && production_writer_host.is_none() {
         return Err(AgentdError::Invalid(
             "production operations require an independently recovered production writer host"
@@ -220,6 +242,11 @@ pub async fn run_with_shutdown(
             .desktop_objective
             .set(desktop)
             .map_err(|_| AgentdError::Invalid("Desktop Objective already attached".into()))?;
+    }
+    if let Some(cell) = native_memory_cell {
+        state.native_memory_cell.set(cell).map_err(|_| {
+            AgentdError::Invalid("native memory owner already attached".to_string())
+        })?;
     }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
@@ -399,6 +426,25 @@ pub async fn run_with_shutdown(
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
+    let _native_memory_registration_lifetime = native_memory_registration
+        .map(|registration| {
+            let writer = production_writer_host.as_ref().ok_or_else(|| {
+                AgentdError::Invalid("native memory recovered writer is unavailable".to_string())
+            })?;
+            registration
+                .attach(&state, Arc::clone(writer), &cancellation)
+                .map_err(|error| AgentdError::Protocol(error.to_string()))
+        })
+        .transpose()?;
+    #[cfg(target_os = "linux")]
+    let native_memory_control = native_memory_process_host
+        .map(|host| {
+            crate::native_memory_host_control::NativeMemoryProcessControl::bind(
+                host,
+                cancellation.clone(),
+            )
+        })
+        .transpose()?;
     let (control, app_server_socket) = match sockets {
         crate::config::AgentdSocketInputs::Bind => (
             AgentdControlServer::bind(
@@ -439,6 +485,10 @@ pub async fn run_with_shutdown(
                 "circuit-task-owner",
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(control) = native_memory_control {
+            tasks.spawn_required("native-memory-current-control", control.run())?;
         }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
@@ -518,6 +568,28 @@ pub async fn run_with_shutdown(
             tasks.spawn_required(
                 "circuit-learning-delivery",
                 delivery.run(store, Arc::clone(&state), cancellation.clone()),
+            )?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(delivery) = resident_learning {
+            if state.objective_runtime.get().is_none() {
+                return Err(AgentdError::Invalid(
+                    "resident learning requires its original Objective owner".into(),
+                ));
+            }
+            let store = automation_store.clone().ok_or_else(|| {
+                AgentdError::Invalid(
+                    "resident learning requires its original AutomationStore".into(),
+                )
+            })?;
+            tasks.spawn_required(
+                "root-resident-learning-delivery",
+                crate::AgentdRootResidentDeliveryV3::run_original_resident_delivery(
+                    delivery,
+                    store,
+                    Arc::clone(&state),
+                    cancellation.clone(),
+                ),
             )?;
         }
         if let Some(owner) = terminal_learning {

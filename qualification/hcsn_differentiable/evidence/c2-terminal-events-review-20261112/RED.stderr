@@ -1,0 +1,181 @@
+test_boolean_update_counter_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_boolean_update_counter_is_rejected) ... ok
+test_complete_two_update_journal_is_admitted (test_terminal_event_accounting.TerminalEventAccountingTests.test_complete_two_update_journal_is_admitted) ... ok
+test_duplicate_json_key_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_duplicate_json_key_is_rejected) ... ok
+test_duplicate_optimizer_completion_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_duplicate_optimizer_completion_is_rejected) ... ok
+test_empty_batch_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_empty_batch_is_rejected) ... FAIL
+test_empty_epoch_checkpoint_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_empty_epoch_checkpoint_is_rejected) ... FAIL
+test_empty_epoch_order_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_empty_epoch_order_is_rejected) ... FAIL
+test_epoch_summary_disagreement_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_epoch_summary_disagreement_is_rejected) ... ok
+test_final_checkpoint_alias_disagreement_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_final_checkpoint_alias_disagreement_is_rejected) ... FAIL
+test_finished_failure_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_finished_failure_is_rejected) ... ok
+test_float_epoch_row_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_epoch_row_is_rejected) ... FAIL
+test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) ... 
+  test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='parent_retained_epochs') ... FAIL
+  test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='retained_main_updates_at_resume') ... FAIL
+  test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='logical_main_updates') ... FAIL
+  test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='new_main_updates') ... FAIL
+  test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='actual_executed_main_updates_logged_all_phases') ... FAIL
+test_foreign_epoch_commit_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_foreign_epoch_commit_is_rejected) ... FAIL
+test_hash_consistent_float_commit_epoch_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_hash_consistent_float_commit_epoch_is_rejected) ... FAIL
+test_hash_consistent_wrong_commit_chain_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_hash_consistent_wrong_commit_chain_is_rejected) ... FAIL
+test_hash_matching_empty_journal_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_hash_matching_empty_journal_is_rejected) ... ok
+test_missing_epoch_checkpoint_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_missing_epoch_checkpoint_is_rejected) ... FAIL
+test_missing_epoch_commit_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_missing_epoch_commit_is_rejected) ... FAIL
+test_missing_optimizer_start_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_missing_optimizer_start_is_rejected) ... ok
+test_missing_second_update_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_missing_second_update_is_rejected) ... ok
+test_nonfinite_json_field_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_nonfinite_json_field_is_rejected) ... ok
+test_premature_epoch_cap_stop_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_premature_epoch_cap_stop_is_rejected) ... FAIL
+test_records_after_finished_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_records_after_finished_are_rejected) ... ok
+test_repeated_first_batch_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_repeated_first_batch_is_rejected) ... FAIL
+test_torn_final_record_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_torn_final_record_is_rejected) ... ok
+test_wrong_epoch_population_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_wrong_epoch_population_is_rejected) ... FAIL
+test_wrong_logical_step_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_wrong_logical_step_is_rejected) ... ok
+
+======================================================================
+FAIL: test_empty_batch_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_empty_batch_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 192, in test_empty_batch_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_empty_epoch_checkpoint_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_empty_epoch_checkpoint_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 229, in test_empty_epoch_checkpoint_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_empty_epoch_order_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_empty_epoch_order_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 182, in test_empty_epoch_order_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_final_checkpoint_alias_disagreement_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_final_checkpoint_alias_disagreement_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 244, in test_final_checkpoint_alias_disagreement_is_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_float_epoch_row_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_epoch_row_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 173, in test_float_epoch_row_is_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='parent_retained_epochs')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 168, in test_float_terminal_counters_are_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='retained_main_updates_at_resume')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 168, in test_float_terminal_counters_are_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='logical_main_updates')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 168, in test_float_terminal_counters_are_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='new_main_updates')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 168, in test_float_terminal_counters_are_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_float_terminal_counters_are_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_float_terminal_counters_are_rejected) (counter='actual_executed_main_updates_logged_all_phases')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 168, in test_float_terminal_counters_are_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_foreign_epoch_commit_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_foreign_epoch_commit_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 206, in test_foreign_epoch_commit_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_hash_consistent_float_commit_epoch_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_hash_consistent_float_commit_epoch_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 238, in test_hash_consistent_float_commit_epoch_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_hash_consistent_wrong_commit_chain_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_hash_consistent_wrong_commit_chain_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 215, in test_hash_consistent_wrong_commit_chain_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_missing_epoch_checkpoint_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_missing_epoch_checkpoint_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 219, in test_missing_epoch_checkpoint_is_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_missing_epoch_commit_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_missing_epoch_commit_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 201, in test_missing_epoch_commit_is_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_premature_epoch_cap_stop_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_premature_epoch_cap_stop_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 177, in test_premature_epoch_cap_stop_is_rejected
+    self.assertFalse(self.invoke()['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_repeated_first_batch_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_repeated_first_batch_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 197, in test_repeated_first_batch_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_wrong_epoch_population_is_rejected (test_terminal_event_accounting.TerminalEventAccountingTests.test_wrong_epoch_population_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c06d659c1e72/c2-integrity/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py", line 187, in test_wrong_epoch_population_is_rejected
+    self.assertFalse(self.invoke(events)['terminal_evidence_complete'])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.228s
+
+FAILED (failures=18)

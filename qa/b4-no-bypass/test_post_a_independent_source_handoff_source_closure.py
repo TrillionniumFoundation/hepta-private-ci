@@ -49,7 +49,7 @@ class PostAIndependentSourceHandoffTests(unittest.TestCase):
     def test_source_handoff_does_not_renew_the_session_or_acknowledge_installation_early(self):
         self.check_markers(WORKER, 'fn run_installation(', (
             'let end = submission.end.min(session_end)',
-            'end.checked_duration_since(Instant::now())',
+            'end\n                .checked_duration_since(Instant::now())',
             '.map(|duration| duration.min(timeout))',
             'crate::send_root_independent_b_evaluation_handoff(',
             'compare_exchange(SUBMITTED, INSTALLED, Ordering::AcqRel, Ordering::Acquire)',

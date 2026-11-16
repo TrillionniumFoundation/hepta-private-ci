@@ -9,7 +9,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 {
     #[cfg(target_os = "linux")]
     pub(crate) fn require_original_pair_with_source(
-        training: &CellQ24TrainingOwnerV1<TW>,
+        training: &mut CellQ24TrainingOwnerV1<TW>,
         receipts: &OriginalCellQ24TrainingReceiptOwnerV1<RW>,
         dataset: &LearningIterationSnapshotV1,
         scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
@@ -26,17 +26,21 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 
     #[cfg(target_os = "linux")]
     pub(crate) fn from_original_owners_in_operation(
-        training: CellQ24TrainingOwnerV1<TW>,
+        mut training: CellQ24TrainingOwnerV1<TW>,
         receipts: OriginalCellQ24TrainingReceiptOwnerV1<RW>,
         dataset: &LearningIterationSnapshotV1,
         scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
         read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
     ) -> Result<Self, Error> {
-        Self::require_original_pair_with_source(&training, &receipts, dataset, scope, read)?;
-        let mut owners = Owners { training, receipts };
+        Self::require_original_pair_with_source(&mut training, &receipts, dataset, scope, read)?;
+        let mut owners = Owners {
+            training,
+            receipts,
+            source_fenced: false,
+        };
         let result = owners.require_original_initial_receipts(read);
         Self::require_original_pair_with_source(
-            &owners.training,
+            &mut owners.training,
             &owners.receipts,
             dataset,
             scope,
@@ -47,6 +51,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             dataset: dataset.clone(),
             owners: Arc::new(Mutex::new(owners)),
             lane: Arc::new(Semaphore::new(/*permits*/ 1)),
+            source_abandoned: Arc::new(AtomicBool::new(false)),
         })
     }
 }

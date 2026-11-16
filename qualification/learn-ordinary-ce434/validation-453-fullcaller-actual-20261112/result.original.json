@@ -1,0 +1,210 @@
+{
+  "elapsed_seconds": 1320.815843605902,
+  "evidence_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/fullcaller-4537458b51b6-isolated-v1",
+  "exit_code": 1,
+  "finished_observing_at": "2026-11-12T17:03:21.006860+00:00",
+  "maximum_run_observation_seconds": 10800,
+  "ordinary_acceptance": 0,
+  "original_budgets": {
+    "self-test": 300,
+    "verify": 4800
+  },
+  "original_output_limit_bytes": 67108864,
+  "phases": [
+    {
+      "actual_child_exit": 0,
+      "budget_seconds": 300,
+      "child_pid": 1699329,
+      "classification_exit_is_not_child_exit": true,
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "elapsed_seconds": 0.25585846696048975,
+      "finished_observing_at": "2026-11-12T16:41:21.709788+00:00",
+      "gate_classification_exit": 0,
+      "gate_status": "passed",
+      "late_success_does_not_change_gate": true,
+      "logs": [
+        {
+          "complete": true,
+          "file": "self-test.stdout.log",
+          "prefix_bytes": 48,
+          "prefix_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+          "size_after_snapshot": 48,
+          "stable_during_snapshot": true
+        },
+        {
+          "complete": true,
+          "file": "self-test.stderr.log",
+          "prefix_bytes": 0,
+          "prefix_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_after_snapshot": 0,
+          "stable_during_snapshot": true
+        }
+      ],
+      "original_process_complete": true,
+      "phase": "self-test",
+      "receipt": {
+        "status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"
+      },
+      "receipt_error": null,
+      "recorder_pid": 1699296,
+      "run_id": "0655af5207ba4ac48cd17d7b84310a77",
+      "signals_sent": [],
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "started_at": "2026-11-12T16:41:21.305685+00:00",
+      "started_monotonic": 1579347.297992645,
+      "status": "terminal"
+    },
+    {
+      "actual_child_exit": 1,
+      "budget_seconds": 4800,
+      "child_pid": 1699342,
+      "classification_exit_is_not_child_exit": true,
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "elapsed_seconds": 1318.145882239798,
+      "finished_observing_at": "2026-11-12T17:03:19.866771+00:00",
+      "gate_classification_exit": 1,
+      "gate_status": "original_command_or_receipt_failed",
+      "late_success_does_not_change_gate": true,
+      "logs": [
+        {
+          "complete": true,
+          "file": "verify.stdout.log",
+          "prefix_bytes": 0,
+          "prefix_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_after_snapshot": 0,
+          "stable_during_snapshot": true
+        },
+        {
+          "complete": true,
+          "file": "verify.stderr.log",
+          "prefix_bytes": 191,
+          "prefix_sha256": "53a0ada62c068d21c5cf1e56d0764ec608d596812d229eaf6e8ec1391a10d2cb",
+          "size_after_snapshot": 191,
+          "stable_during_snapshot": true
+        }
+      ],
+      "original_process_complete": true,
+      "phase": "verify",
+      "receipt": null,
+      "receipt_error": null,
+      "recorder_pid": 1699296,
+      "run_id": "0655af5207ba4ac48cd17d7b84310a77",
+      "signals_sent": [],
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "started_at": "2026-11-12T16:41:21.717141+00:00",
+      "started_monotonic": 1579347.709450293,
+      "status": "terminal"
+    }
+  ],
+  "recorder_pid": 1699296,
+  "run_id": "0655af5207ba4ac48cd17d7b84310a77",
+  "schema": "hepta.original-full-caller-record.v1",
+  "signals_sent": [],
+  "source_after": {
+    "clean": true,
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "pins": {
+      ".github/workflows/hepta-daemon-learning-native.yml": {
+        "bytes": 27362,
+        "expected_git_blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "git_blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "sha256": "917566e873e93a169886e32f601ac581248e74523ebb0546ddca07b242dd847d"
+      },
+      "AGENTS.md": {
+        "bytes": 22519,
+        "expected_git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      "CALLERS.toml": {
+        "bytes": 1619732,
+        "expected_git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+        "git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+        "sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e"
+      },
+      "scripts/hepta_ci_exec.py": {
+        "bytes": 12863,
+        "expected_git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      "scripts/hepta_typed_callers.py": {
+        "bytes": 7672,
+        "expected_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+      },
+      "scripts/verify_hepta_callers.py": {
+        "bytes": 38402,
+        "expected_git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+        "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+        "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+      }
+    },
+    "status_bytes": 0,
+    "status_file": "source-after.status.txt",
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "source_before": {
+    "clean": true,
+    "head": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "pins": {
+      ".github/workflows/hepta-daemon-learning-native.yml": {
+        "bytes": 27362,
+        "expected_git_blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "git_blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "sha256": "917566e873e93a169886e32f601ac581248e74523ebb0546ddca07b242dd847d"
+      },
+      "AGENTS.md": {
+        "bytes": 22519,
+        "expected_git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      "CALLERS.toml": {
+        "bytes": 1619732,
+        "expected_git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+        "git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+        "sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e"
+      },
+      "scripts/hepta_ci_exec.py": {
+        "bytes": 12863,
+        "expected_git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      "scripts/hepta_typed_callers.py": {
+        "bytes": 7672,
+        "expected_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+      },
+      "scripts/verify_hepta_callers.py": {
+        "bytes": 38402,
+        "expected_git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+        "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+        "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+      }
+    },
+    "status_bytes": 0,
+    "status_file": "source-before.status.txt",
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "started_at": "2026-11-12T16:41:20.191047+00:00",
+  "status": "failed_original_gates",
+  "worktree": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+}

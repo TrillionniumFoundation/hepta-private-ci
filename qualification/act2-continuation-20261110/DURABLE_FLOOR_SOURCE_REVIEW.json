@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_REVIEW_WITH_RUNTIME_AND_SCOPE_LIMITS",
+  "compiled": false,
+  "tests_executed_by_reviewer": false,
+  "files": [
+    {
+      "path": "codex-rs/hepta-memory/src/production_notes_read_fence.rs",
+      "sha256": "41a7607402d864b4983409f0404de76cbd8efd146689bd3c80106ad826f439e1",
+      "bytes": 7366
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_notes_read_fence_tests.rs",
+      "sha256": "915ef4d4c0fc70e685e28ec5f5155059450524dfe4e638c7e53a2330dcb977b5",
+      "bytes": 9871
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "sha256": "ff98c703702aa0304b87e97166a8a93a3cf8f33003054c40828b57547bd7bc16",
+      "bytes": 28748
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+      "sha256": "393187784c269e9ddd6e2499965aa9b5f72f693bfe4fc08a093f32edf204b7a1",
+      "bytes": 16464
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_ui_worker.rs",
+      "sha256": "8b0afee112eaf83d08275b6db9c7d295be045a3370afce4a7ecba19751b1a3ea",
+      "bytes": 13771
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "finding": "SQL MAX can hide a damaged non-selected historical row",
+      "resolution": "replaced with bounded keyset pages and per-candidate payload/receipt validation",
+      "status": "addressed_in_source"
+    },
+    {
+      "id": "F2",
+      "finding": "Literal UI fresh-read publishing path bypassed durable floor",
+      "resolution": "notes_ui_worker refresh path now checks under original deadline",
+      "status": "addressed_in_source"
+    },
+    {
+      "id": "F3",
+      "finding": "Reopen of same lease does not test cross-lease floor",
+      "resolution": "test now opens successor with a different lease and no Notes receipts",
+      "status": "addressed_in_test_source"
+    }
+  ],
+  "scope_limits": [
+    "Assumes original verified immutable journal membership; not an independent protected Current or full-database corruption oracle",
+    "Matching history above 1024 is unavailable, never silently truncated",
+    "Caller passes fresh document from original authenticated nonce-correlated I/O; API does not authenticate arbitrary input",
+    "No guarantee for source and destination jointly restored, external edits without source receipts, or later asynchronous report delivery",
+    "Ignored capacity test must be explicitly executed before capacity qualification",
+    "Depends on new typed fence receipt document_state and topic exports; integration/native compilation remains necessary"
+  ]
+}

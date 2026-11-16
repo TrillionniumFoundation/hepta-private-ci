@@ -1,0 +1,83 @@
+{
+  "audit_argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/launch_native.py",
+    "--base",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1",
+    "--launch-dir",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-final-audit-launch-v1",
+    "--terminal-snapshot",
+    "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/terminal-snapshot.json",
+    "--terminal-snapshot-sha256",
+    "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49"
+  ],
+  "audit_started_utc": "2026-11-10T19:21:57.453216+00:00",
+  "bootstrap_source_sha256": "da15ff9b0dcf6ba8e2b08af1800763845ad0b7551671d7a33f74190aebc9fd47",
+  "complete_bootstrap_wall_seconds": 10808.759284527972,
+  "complete_waited_children_CPU_seconds": 10299.398115,
+  "concurrency": "One audit controller and one serial stage, each numerical stage CPU single thread; original fresh42 training has terminated. May overlap an independent read-only full-D quality replay; no dedicated-idle-host claim.",
+  "download_phase_waited_children_CPU_seconds": 0.179256,
+  "download_phase_wall_seconds": 2.2853977729100734,
+  "energy_joules": null,
+  "finished_utc": "2026-11-10T22:21:57.587859+00:00",
+  "native_audit_started": true,
+  "native_validation": {
+    "actual_trained_model_read": false,
+    "argv": [
+      "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "expected_tests": 23,
+    "fixture_scope": "Synthetic metadata and tiny synthetic states; no scientific training credit.",
+    "observed_tests": 23,
+    "optimizer_steps_executed": 0,
+    "passed": true,
+    "pid": 1969477,
+    "program_after": {
+      "manifest_sha256": "154826bbabda6cd44b552e1215f4b5ea5d471ff7b6c2fd7e5abd927ee753f75e",
+      "verified_members": 25
+    },
+    "returncode": 0,
+    "stderr_sha256": "b4fc26e84deb154f6833f16969b11e913a3806f3cd5b35ac76f9d40c8096a221",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timed_out": false,
+    "unittest_seconds": 3.373,
+    "waited_child_CPU_seconds": 5.630780999999999,
+    "wall_ceiling_seconds": 90,
+    "whole_child_wall_seconds": 6.334076476050541
+  },
+  "per_stage_RSS_limit_bytes": 2147483648,
+  "per_stage_address_space_limit_bytes": 8589934592,
+  "per_stage_wall_ceiling_seconds": 900,
+  "program_after": {
+    "manifest_sha256": "154826bbabda6cd44b552e1215f4b5ea5d471ff7b6c2fd7e5abd927ee753f75e",
+    "verified_members": 25
+  },
+  "program_before": {
+    "manifest_sha256": "154826bbabda6cd44b552e1215f4b5ea5d471ff7b6c2fd7e5abd927ee753f75e",
+    "verified_members": 25
+  },
+  "program_blob": "08ebea8b88fb8f6bb0cfc7a385f7c8b0c5334810",
+  "program_bytes": 51013,
+  "program_sha256": "51c7c54ed96f40f39c8ebb5b0d04ee0c42f6f462012faf356efe6c3a9446419f",
+  "returncode": 1,
+  "schema": "terminal-HCSN-numerics-bootstrap-v1",
+  "scientific_admission": "HOLD",
+  "stable_key": "hcsn-terminal-numerics-audit-c385-v1",
+  "started_utc": "2026-11-10T19:21:48.828920+00:00",
+  "status": "failed_or_numerical_stage_incomplete",
+  "timing_scope": "Bootstrap exit wall/children CPU includes Git fetch, native validation, hard audit launcher and all audit stages; nested values must not be added.",
+  "whole_audit_wall_ceiling_seconds": 10800,
+  "whole_training_domain_admission": "HOLD"
+}

@@ -1,0 +1,120 @@
+{
+  "actual_retained_count_read": false,
+  "byte_binding": "Eight reviewed files equal the exact v8 source capsule; counts use the pinned prepared manifest, not live fit results.",
+  "caps": {
+    "after_drop": "capture/model digest/range/padding/seen counters still run; individual posterior records are not retained.",
+    "bytes": 33554432,
+    "footer": "dropped=seen-retained; truncated iff dropped>0. Missing end footer is rejected by read_trace; no complete coverage inferred from a header alone.",
+    "records": 4096,
+    "scope": "Chronological retained prefix, not random or stratified sampling.",
+    "stopping": "First reached record/byte budget fixes drop_reason and stops all subsequent retention; byte check reserves 16384 bytes for footer."
+  },
+  "capture_semantics": {
+    "call_point": "Inside HCSNCore.forward after the complete sequence has been evaluated, before returning logits to loss/backward; all microbatches precede the one effective-batch optimizer step.",
+    "capture": "One completed microbatch forward, including padded time positions in the returned trace.",
+    "configuration_binding": "Each visit carries GridSpec, physical values, operator configuration; header binds data manifest and fit-plan SHA; complete trainer/runtime identity comes from the separate fit source ledger.",
+    "content_state_in_trace": false,
+    "created_after_memorization_restoration": true,
+    "diagnostic_and_all_development_evaluations_captured": false,
+    "episode_id": "Ordered microbatch episode IDs joined with '+', interpreted with batch_indices and the update journal.",
+    "expected_events": "Conditional expected interval count from the preceding flow, before current observation conditioning.",
+    "main_only": true,
+    "model_sha256": "Tensor digest of the inner ContinuousSpikingNetwork state_dict; not the full CoreStudyModel, optimizer or checkpoint file SHA.",
+    "partial_failure_scope": "Only completed capture calls are represented. A forward that fails before capture can have unrecorded internal visits; a captured forward can also precede a later failed backward or optimizer attempt.",
+    "posterior": "Current probability after the interval flow and current observation conditioning.",
+    "prior": "Previous conditioned probability at the interval start, or the reset initial state at position zero; not the after-flow pre-conditioning prior.",
+    "record": "One (capture, time position, layer) with at least one valid sample; contains vectors for every valid sample in that microbatch.",
+    "record_not_a_sample_or_update": true,
+    "state_window": "HCSNCore resets initial_state for every independent input window; no carry across dataset windows.",
+    "update_index": "Number of completed main optimizer updates before the current attempted effective batch, zero-based; all its microbatches share this index."
+  },
+  "coverage_bound": {
+    "byte_budget_only_tightens_bound": true,
+    "cannot_cover_even_one_full_epoch": true,
+    "complete_capture_calls_per_epoch": 45,
+    "complete_optimizer_updates_per_epoch": 12,
+    "effective_batch": 32,
+    "layers": 1,
+    "main_sample_position_layer_states_at_minimum_epochs": 2676480,
+    "maximum_retained_sample_position_layer_states_ignoring_byte_cap": 32768,
+    "maximum_visit_records_per_complete_epoch": 11520,
+    "microbatch": 8,
+    "minimum_complete_epochs": 30,
+    "minimum_visit_records_per_complete_epoch": 11152,
+    "probability_coefficients": 273,
+    "retained_fraction_upper_bound_at_minimum_epochs": 0.012242945958871354,
+    "train_events_per_epoch": 89216,
+    "train_windows": 356
+  },
+  "data_manifest": {
+    "bytes": 101622,
+    "path": "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/data-manifest.json",
+    "sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb"
+  },
+  "final_model_export": "A later fixed-window forward from a trained checkpoint is supplemental final-model evaluation, not the original training access trace. Bind checkpoint/file+tensor/config/data/window/hash identities separately.",
+  "model_forward_or_training_executed": false,
+  "native_or_live_fit_access": false,
+  "padding_semantics": {
+    "all_padding_position": "No visit record and no seen-record increment, but excluded sample-position-layer counts still increase.",
+    "batch_indices": "Microbatch-local valid row indices, excluding padding.",
+    "builder": "x=0, dt=0, y=-1 after each episode's true length; all microbatches retain the original effective-batch padded length.",
+    "mask": "valid=x[...,12:24].bool().any(-1); the same mask is passed as observed and valid_mask.",
+    "padded_states_excluded": "Number of masked-out sample-position-layer states over completed captures; not visit-record count.",
+    "padding_validation": "Recorder requires masked-out dt and network predictions to be exactly zero."
+  },
+  "plan": {
+    "bytes": 3861,
+    "path": "/workspace/scratch/c385a7439f8e/campaign-v2-plan.json",
+    "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114"
+  },
+  "schema": "independent-v8-training-recorder-source-scope-v1",
+  "scientific_admission": "HOLD",
+  "source_archive": {
+    "bytes": 121388,
+    "path": "/workspace/scratch/c385a7439f8e/training-source-v8.zip",
+    "sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102"
+  },
+  "sources": {
+    "proposals/localization-v2/episodes.py": {
+      "bytes": 9697,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v2/episodes.py",
+      "sha256": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b"
+    },
+    "proposals/localization-v3/campaign.py": {
+      "bytes": 10182,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/campaign.py",
+      "sha256": "7c353cd58d4ea555e4a44b04cc4acd43352ce227bbbb197eeaeec1954bee8f28"
+    },
+    "proposals/localization-v3/cores.py": {
+      "bytes": 16079,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/cores.py",
+      "sha256": "95fcf93747520414a062183affd546f599bc415b2a9daa47e59db20f67412302"
+    },
+    "proposals/localization-v3/hcsn_study_support.py": {
+      "bytes": 3733,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/hcsn_study_support.py",
+      "sha256": "be6ef7c077c66eb8e650058987159351357f6232290673226587b48d4071c613"
+    },
+    "proposals/localization-v3/train.py": {
+      "bytes": 22822,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/train.py",
+      "sha256": "06cb85c7a0da85fb8d656526c2b07285979bc6c47c2e00c154e89f43bcfc1a22"
+    },
+    "qualification/hcsn_differentiable/contract.py": {
+      "bytes": 5122,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/contract.py",
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    "qualification/hcsn_differentiable/network.py": {
+      "bytes": 27553,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/network.py",
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687"
+    },
+    "qualification/hcsn_differentiable/training_domain.py": {
+      "bytes": 9899,
+      "path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/training_domain.py",
+      "sha256": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf"
+    }
+  },
+  "whole_training_qualification": false
+}

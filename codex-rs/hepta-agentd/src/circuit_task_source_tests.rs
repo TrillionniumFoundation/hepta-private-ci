@@ -41,7 +41,19 @@ mod history;
 #[path = "circuit_task_source_data_tests.rs"]
 pub(crate) mod data;
 
-fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
+fn source_bytes<W: AnchorWitnessStore>(
+    owner: &DurableCircuitTaskSourceV1<W>,
+) -> anyhow::Result<Vec<u8>> {
+    let mut original = owner
+        .0
+        .lock()
+        .map_err(|_| anyhow::anyhow!("source fixture owner poisoned"))?;
+    Ok(original
+        .journal
+        .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)?)
+}
+
+pub(crate) fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)
         .write(true)
@@ -50,7 +62,7 @@ fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
         .open(root.join(name))?)
 }
 
-fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
+pub(crate) fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
     witness_from_file(opened(root, name)?, name)
 }
 
@@ -66,7 +78,7 @@ fn witness_from_file(file: File, name: &str) -> anyhow::Result<FileAnchorWitness
     )?)
 }
 
-fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
+pub(crate) fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
     let root = root.canonicalize()?;
     let agent_id = AgentId::parse(cell::scope("A").agent_id.as_str())?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -85,7 +97,7 @@ fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
     })
 }
 
-fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
+pub(crate) fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
     Ok(TaskFlowFence::new(
         identity.agent_id.clone(),
         "original-source-owner",
@@ -95,7 +107,7 @@ fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
     )?)
 }
 
-fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
+pub(crate) fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
     let input = cell::input(run);
     CircuitTaskSourceInputV1 {
         scope: input.scope,
@@ -110,7 +122,7 @@ fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
     }
 }
 
-fn record(run: &str) -> RunStartRecordV1 {
+pub(crate) fn record(run: &str) -> RunStartRecordV1 {
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             issuer_id: cell::id("fixture-issuer"),
@@ -190,7 +202,7 @@ fn cell_owner_from_files(
     )?)
 }
 
-fn time() -> crate::CircuitCellTimeV1 {
+pub(crate) fn time() -> crate::CircuitCellTimeV1 {
     crate::CircuitCellTimeV1 {
         circuit_millis: 20,
         cell_micros: 20,
@@ -340,12 +352,38 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     assert_eq!(recovered, receipt);
     reopened.publish_result(&identity, &record("A"), &recovered)?;
     assert_eq!(recovered_calls.load(Ordering::SeqCst), 0);
+    // Compare every physical file after closing the replay owners, then reopen
+    // the exact retained state again before the distinct next input. No
+    // concurrent read through a second handle is used while Windows locks live.
+    drop(driver);
+    drop(reopened);
     assert_eq!(
         observers
             .each_ref()
             .map(|file| { crate::test_support::read_file_bytes(file).expect("same files") }),
         original_files
     );
+    let reopened = Source::recover(
+        opened(root.path(), "source-journal")?,
+        witness(root.path(), "source-witness")?,
+        &identity,
+        &fence,
+        &registry()?,
+        sources.clone(),
+    )?;
+    let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
+    let next_calls = Arc::clone(&model.calls);
+    let mut driver = CircuitTaskDriverV1 {
+        store: store.clone(),
+        fence: fence.clone(),
+        inputs: reopened.clone(),
+        cells: AgentdCircuitCellOwnerV1::new(
+            registry()?,
+            cell_owner(root.path(), &sources)?,
+            model,
+            cell::Encoder,
+        ),
+    };
     let next = reopened.build(&identity, &record("C"))?;
     let next_receipt = driver
         .execute(&next, CircuitTaskModeV1::Drive, || Ok(time()))
@@ -357,7 +395,7 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         next_publication.publication_digest(),
         published.publication_digest()
     );
-    assert_eq!(recovered_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(next_calls.load(Ordering::SeqCst), 1);
     {
         let observer = reopened.readback();
         assert_eq!(
@@ -779,3 +817,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
     }
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_current_tests.rs"]
+mod physical_current;

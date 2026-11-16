@@ -98,13 +98,24 @@ pub(super) fn journal_with_manifest(
     task_digest: [u8; 32],
     manifest: CellBackendManifestV2,
 ) -> Journal {
+    journal_with_manifest_for_run(path, name, costs, task_digest, manifest, "comparison")
+}
+
+pub(super) fn journal_with_manifest_for_run(
+    path: &Path,
+    name: &str,
+    costs: Costs,
+    task_digest: [u8; 32],
+    manifest: CellBackendManifestV2,
+    run_id: &str,
+) -> Journal {
     let source = manifest.source_digest;
     let initial = CellRuntimeSnapshotV2 {
         scope: CellGenerationScopeV2 {
             principal_digest: [15; 32],
             agent_id: "agent".into(),
             cell_id: name.into(),
-            run_id: "comparison".into(),
+            run_id: run_id.into(),
         },
         manifest_digest: checked(manifest.digest()),
         generation: 1,
@@ -289,6 +300,14 @@ impl Fixture {
     }
 
     pub(super) fn with_clusters(costs: Costs, clusters: usize) -> Self {
+        Self::with_original_namespace(costs, clusters, digest("binding"))
+    }
+
+    pub(super) fn with_original_namespace(
+        costs: Costs,
+        clusters: usize,
+        namespace: Digest32,
+    ) -> Self {
         let directory = checked(tempfile::tempdir());
         let candidate = journal(
             directory.path(),
@@ -309,11 +328,11 @@ impl Fixture {
         let holdout_observer = checked(holdout_file.try_clone());
         let store = checked(LockedFileFinalHoldoutCasStoreV1::create(
             holdout_file,
-            digest("binding"),
+            namespace,
         ));
         let owner = checked(FencedFinalHoldoutOwnerV1::initialize(
             store,
-            digest("binding"),
+            namespace,
             fence(),
         ));
         let initial_bytes = checked(fs::metadata(&path)).len();

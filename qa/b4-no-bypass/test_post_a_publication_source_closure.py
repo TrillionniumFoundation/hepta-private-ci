@@ -136,7 +136,7 @@ class PostAPublicationSourceTests(unittest.TestCase):
             "uid == 0", "gid == 0", "(expected.uid, expected.gid, expected.mode) != (uid, gid, 0o100600)",
             "expected.device == 0", "expected.inode == 0", "OriginalFile::open_original(&expected.path)?"))
         self.check(MATERIAL, "observe_ready", (
-            "self.require_original()?", "self.original.original_descriptor()?", "OpenOptions::new().read(true)",
+            "self.require_original()?", "self.original.original_descriptor()?", 'OpenOptions::new()\n            .read(true)',
             "libc::O_CLOEXEC | libc::O_NONBLOCK", "file.try_lock_shared()",
             "Err(TryLockError::WouldBlock) => return Ok(None)", "metadata.len() == 0",
             "metadata.len() > 65_536", "file.read_exact_at(&mut bytes", "observed.require_unchanged()?"))

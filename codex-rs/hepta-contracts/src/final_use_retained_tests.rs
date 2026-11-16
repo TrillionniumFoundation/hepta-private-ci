@@ -214,6 +214,28 @@ fn retained_entry_rejects_another_owner_unspent_nonce_and_changed_signature() {
 }
 
 #[test]
+fn retained_classical_owner_rejects_a_resigned_pq_schema() {
+    let fixture = Fixture::new().unwrap();
+    let authority = fixture.open().unwrap();
+    let witness = fixture.enter(&authority).unwrap();
+    let before = authority.current_external_frontier().unwrap();
+    let mut changed = fixture.signed.clone();
+    changed.grant.schema_version = 2;
+    changed.signature = fixture
+        .issuer
+        .sign(&changed.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+
+    assert_eq!(
+        authority.verify_retained_use(&changed, &changed.grant.binding, &witness),
+        Err(FinalUseError::InvalidGrant)
+    );
+    assert_eq!(authority.current_external_frontier().unwrap(), before);
+    assert_eq!(authority.capacity().unwrap().used_nonces, 1);
+}
+
+#[test]
 fn retained_witness_must_match_original_dispatch_binding_and_entry_window() {
     let fixture = Fixture::new().unwrap();
     let authority = fixture.open().unwrap();

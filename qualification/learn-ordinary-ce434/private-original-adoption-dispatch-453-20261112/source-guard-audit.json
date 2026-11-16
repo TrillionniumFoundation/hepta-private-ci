@@ -1,0 +1,1255 @@
+{
+  "schema": "hepta.learn.private-original-candidate-adoption-dispatch.v1",
+  "status": "PREPARED_INDEPENDENT_SOURCE_CHILD; NOT MERGED; NO NEW EXECUTION OR ORDINARY ACCEPTANCE",
+  "parent": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "ordinary_acceptance_count": 0,
+  "production_delta": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "before": {
+        "blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+        "bytes": 8213,
+        "sha256": "b9a3b517be42c0f833300af644c05034af2a9e32aedc4d1d65397db10e863e31"
+      },
+      "after": {
+        "blob": "02671dff43091e3bb56a050166d3990a64f57e79",
+        "bytes": 8347,
+        "sha256": "cb1b581efa0bd22e21b84aa0ea7e35daab72262f5b7e9e0b89197542a291a460"
+      },
+      "exact_edits": [
+        {
+          "before": "                Err(Error::OwnerUnavailable(\n                    \"original Candidate selection and adoption route is absent\",\n                ))",
+          "after": "                let Self::Candidate(stages) = self else {\n                    return Err(Error::WrongScope);\n                };\n                OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(\n                    stages, snapshot, stage,\n                )"
+        }
+      ],
+      "forward_whole_file_equal": true,
+      "inverse_whole_file_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "before": {
+        "blob": "936300641ff24012652f186713f840d908d283e3",
+        "bytes": 12398,
+        "sha256": "c048efbc9665547a8f98c020fa6456c9ca08230afc4305adc0eee35ada14502d"
+      },
+      "after": {
+        "blob": "65137e97220c76a891ac390c56f9bfd8d2aa506b",
+        "bytes": 13021,
+        "sha256": "d09e3a975506f735d4ea10ad8ad4e141ab91d7669303a8aebe541aea45b25cd9"
+      },
+      "exact_edits": [
+        {
+          "before": "impl Owners {\n",
+          "after": "impl Owners {\n    /// Qualify only the concrete original positive route. This does not read\n    /// CURRENT or authorize an effect; Root still begins the durable dispatch\n    /// and each original owner rechecks the same gate at its effect boundary.\n    pub(crate) fn require_original_adoption_stage(\n        &self,\n        snapshot: &LearningIterationSnapshotV1,\n        stage: Stage,\n    ) -> Result<(), Error> {\n        self.require_adoption_cut(snapshot, stage, Action::Execute)?;\n        if self.common.root.is_none() {\n            return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));\n        }\n        Ok(())\n    }\n\n"
+        }
+      ],
+      "forward_whole_file_equal": true,
+      "inverse_whole_file_equal": true
+    }
+  ],
+  "scope": {
+    "change": "Only the Root concrete Candidate Selection/NextUse branch now delegates to a private qualification wrapper over the unchanged original adoption-cut predicate and an already-installed Root gate presence check.",
+    "eligibility": "The predicate checks original model cut, exact5/6, Fresh origin, coordinator next-stage and absolute deadline, followed by gate presence.",
+    "not_proven_by_eligibility": [
+      "Gate CURRENT or fresh Root CAS at this check",
+      "Independent Qualified nonempty E/retention panel",
+      "FinalUse/Version issuance or task C authority",
+      "Successful Selection/NextUse effect or ordinary acceptance"
+    ],
+    "actual_path": "The unchanged runtime calls actual gate.begin before execute_original_stage; Candidate executes only execute_original_evidence, preserving same-operation opaque proof and all original Model/E/Version/S/C current reads, FinalUse/issuer checks, physical effects and post-CAS revalidation."
+  },
+  "unchanged_production_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "blob": "5a43a41181b071aeb61562596ccb0e3601af45c8",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+      "blob": "9df7156f13e7bf19c2686c55bdff96bce2ff8fee",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+      "blob": "43e24b94f0bdf5c5703ba52fc79cc55db6de673b",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "blob": "fe8f78c9fd3de48e7ff13318317fa33863749e94",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "blob": "36ae446b390fc4633bada3c1ceec27743bd38cf0",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "blob": "14b344feba96f7f1a0ce80ee5b8a11541dfbf663",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "blob": "ecaf44f44b0c3d04456cf41e16e2f13bf176bd43",
+      "whole_source_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_model_version_issuer.rs",
+      "blob": "05b712efd6dd9953c5503cb4b5ba35f212cc377f",
+      "whole_source_unchanged": true
+    }
+  ],
+  "retained_rejections": [
+    "Generic Candidate trait execute_stage positive Selection/NextUse remains denied.",
+    "Generic Candidate trait receipt_attestation for Model/adoption remains denied.",
+    "NoUpdate branch separation and original NoUpdate effects are unchanged.",
+    "Recovered/readback-only origin cannot execute the Candidate private effect path.",
+    "Incorrect cut count, model prefix, next stage, snapshot scope or original deadline rejects.",
+    "Missing original installed Root gate rejects eligibility.",
+    "Cancellation, withdrawn/expired Root authority and wrong pending cut still reject in original actual gate.begin/current before and around original effects.",
+    "Original independent E, complete retention, fixed policy, actor separation, Model/Version/issuer denial and uncertain-state fences remain unchanged."
+  ],
+  "no_new_authority": {
+    "grants": false,
+    "keys": false,
+    "principals": false,
+    "UIDs": false,
+    "connections": false,
+    "public_owner_interfaces": false,
+    "widened_deadlines_resources_or_statistical_rules": false,
+    "new_role_signer": false,
+    "new_fixture_capability": false
+  },
+  "manifest": {
+    "before_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "after": {
+      "key": "manifest",
+      "path": "CALLERS.toml",
+      "sha": "95c8261a6c3eec23d038ba5aec754d618731d222",
+      "bytes": 1621149,
+      "sha256": "36dfcb45464a959bd2053e5c53f05fbc676ca8b8cc45d7e66d88aa64cb4b1a99"
+    },
+    "full_record_counter": {
+      "before": {
+        "boundaries": 736,
+        "protected": 506
+      },
+      "after": {
+        "boundaries": 737,
+        "protected": 506
+      },
+      "complete_unowned_raw_records_preserved": 1240,
+      "replaced_complete_records": 2,
+      "added_boundary": 1,
+      "root_authority": {
+        "runtime_authority": false,
+        "production_caller": false,
+        "production_writer": false,
+        "external_effect": false,
+        "self_issued_acceptance": false,
+        "promotion": false,
+        "release": false
+      },
+      "root_authority_preserved": true,
+      "all_original_inventory_ids_preserved": true,
+      "inventory_ids": 737,
+      "complete_multiset_verified": true
+    },
+    "replacements": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "before": {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+          "required": [
+            "pub(super) enum ResidentOriginalStageOwnersV3",
+            "NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)",
+            "Candidate(OriginalCellQ24CandidateStageOwnersV1)",
+            "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+            "Err(Error::OwnerUnavailable(\n                    \"original Candidate selection and adoption route is absent\",\n                ))",
+            "pub(super) struct ResidentStageCompletion<'a>",
+            "candidate: Option<OriginalCandidateOperationEvidence<'a>>"
+          ],
+          "forbidden": [
+            "pub enum ResidentOriginalStageOwnersV3",
+            "impl Clone for ResidentOriginalStageOwnersV3",
+            "dyn LearningIterationStageOwnerPortsV1",
+            "Box<dyn",
+            "FnOnce",
+            "FnMut",
+            "SigningKey",
+            "File::open",
+            "File::create",
+            "UnixStream::connect",
+            "permit_all",
+            "if false",
+            "unwrap_or",
+            "LearningIterationObservationV1::TrainingNoUpdateV2",
+            "LearningEvidenceVerifierV1::new",
+            "impl Clone for ResidentStageCompletion",
+            "Deserialize",
+            "Serialize"
+          ],
+          "required_function_order": [
+            {
+              "function": "fn require_initial(",
+              "sequence": [
+                "fn require_initial(",
+                "match self",
+                "Self::NoUpdate(stages)",
+                "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+                "stages, initial, scope, verifier",
+                "Self::Candidate(stages)",
+                "OriginalCellQ24CandidateStageOwnersV1::require_initial(",
+                "stages, initial, scope, verifier"
+              ],
+              "top_level": [
+                "match self"
+              ]
+            },
+            {
+              "function": "fn install_fresh_resident_gate(",
+              "sequence": [
+                "fn install_fresh_resident_gate(",
+                "&mut self",
+                "match self",
+                "Self::NoUpdate(stages)",
+                "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)",
+                "Self::Candidate(stages)",
+                "OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)"
+              ],
+              "top_level": [
+                "match self"
+              ]
+            },
+            {
+              "function": "fn require_stage(",
+              "sequence": [
+                "fn require_stage(",
+                "snapshot: &LearningIterationSnapshotV1",
+                "match stage",
+                "Stage::Evaluation | Stage::Proposal => match self",
+                "Self::NoUpdate(_) => Err(Error::OwnerUnavailable(",
+                "Self::Candidate(_) => Ok(())",
+                "Stage::Selection | Stage::NextUse",
+                "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()",
+                "Err(Error::OwnerUnavailable(\n                                                                               ,\n                ))",
+                "Stage::Experience\n            | Stage::Dataset\n            | Stage::Training\n            | Stage::Selection\n            | Stage::NextUse => Ok(())"
+              ],
+              "top_level": [
+                "match stage"
+              ]
+            },
+            {
+              "function": "fn read_original_candidate_evidence(",
+              "sequence": [
+                "fn read_original_candidate_evidence(",
+                "match self",
+                "Self::Candidate(stages)",
+                "OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot).await",
+                "Self::NoUpdate(_) => Err(Error::OwnerUnavailable("
+              ],
+              "top_level": [
+                "match self"
+              ]
+            },
+            {
+              "function": "fn execute_original_stage(",
+              "sequence": [
+                "fn execute_original_stage(",
+                "if let Self::Candidate(stages) = self",
+                "matches!(stage, Stage::Evaluation | Stage::Proposal)",
+                "matches!(stage, Stage::Selection | Stage::NextUse)",
+                "snapshot.training_no_update_v2().is_none()",
+                "OriginalCellQ24CandidateStageOwnersV1::execute_original_evidence(",
+                "stages, snapshot, stage",
+                "receipt: candidate.receipt().clone()",
+                "candidate: Some(candidate)",
+                "LearningIterationStageOwnerPortsV1::execute_stage(self, snapshot, stage).await?",
+                "Ok(ResidentStageCompletion { receipt, candidate: None })"
+              ],
+              "top_level": [
+                "if let Self::Candidate",
+                "let receipt",
+                "Ok(ResidentStageCompletion { receipt, candidate: None })"
+              ]
+            },
+            {
+              "function": "fn consume_original_candidate_evidence(",
+              "sequence": [
+                "fn consume_original_candidate_evidence(",
+                "match self",
+                "Self::Candidate(stages)",
+                "OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed)",
+                "Self::NoUpdate(_) => Err(Error::WrongScope)"
+              ],
+              "top_level": [
+                "match self"
+              ]
+            }
+          ],
+          "required_order": [
+            [
+              "fn validate_recovery<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+              "fn execute_stage<'a>"
+            ],
+            [
+              "fn execute_stage<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+              "fn prepare_proposal<'a>"
+            ],
+            [
+              "fn prepare_proposal<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+              "fn receipt_attestation<'a>"
+            ],
+            [
+              "fn receipt_attestation<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+              "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+              "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds"
+            ]
+          ]
+        },
+        "after": {
+          "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+          "required": [
+            "pub(super) enum ResidentOriginalStageOwnersV3",
+            "NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)",
+            "Candidate(OriginalCellQ24CandidateStageOwnersV1)",
+            "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+            "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
+            "pub(super) struct ResidentStageCompletion<'a>",
+            "candidate: Option<OriginalCandidateOperationEvidence<'a>>"
+          ],
+          "forbidden": [
+            "pub enum ResidentOriginalStageOwnersV3",
+            "impl Clone for ResidentOriginalStageOwnersV3",
+            "dyn LearningIterationStageOwnerPortsV1",
+            "Box<dyn",
+            "FnOnce",
+            "FnMut",
+            "SigningKey",
+            "File::open",
+            "File::create",
+            "UnixStream::connect",
+            "permit_all",
+            "if false",
+            "unwrap_or",
+            "LearningIterationObservationV1::TrainingNoUpdateV2",
+            "LearningEvidenceVerifierV1::new",
+            "impl Clone for ResidentStageCompletion",
+            "Deserialize",
+            "Serialize"
+          ],
+          "required_function_order": [
+            {
+              "function": "fn require_initial(",
+              "sequence": [
+                "fn require_initial(",
+                "match self",
+                "Self::NoUpdate(stages)",
+                "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(",
+                "stages, initial, scope, verifier",
+                "Self::Candidate(stages)",
+                "OriginalCellQ24CandidateStageOwnersV1::require_initial(",
+                "stages, initial, scope, verifier"
+              ],
+              "top_level": [
+                "match self"
+              ]
+            },
+            {
+              "function": "fn install_fresh_resident_gate(",
+              "sequence": [
+                "fn install_fresh_resident_gate(",
+                "&mut self",
+                "match self",
+                "Self::NoUpdate(stages)",
+                "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)",
+                "Self::Candidate(stages)",
+                "OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)"
+              ],
+              "top_level": [
+                "match self"
+              ]
+            },
+            {
+              "function": "fn require_stage(",
+              "sequence": [
+                "fn require_stage(",
+                "snapshot: &LearningIterationSnapshotV1",
+                "match stage",
+                "Stage::Evaluation | Stage::Proposal => match self",
+                "Self::NoUpdate(_) => Err(Error::OwnerUnavailable(",
+                "Self::Candidate(_) => Ok(())",
+                "Stage::Selection | Stage::NextUse",
+                "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()",
+                "let Self::Candidate(stages) = self else {",
+                "return Err(Error::WrongScope);",
+                "};",
+                "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
+                "stages, snapshot, stage",
+                "Stage::Experience\n            | Stage::Dataset\n            | Stage::Training\n            | Stage::Selection\n            | Stage::NextUse => Ok(())"
+              ],
+              "top_level": [
+                "match stage"
+              ]
+            },
+            {
+              "function": "fn read_original_candidate_evidence(",
+              "sequence": [
+                "fn read_original_candidate_evidence(",
+                "match self",
+                "Self::Candidate(stages)",
+                "OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot).await",
+                "Self::NoUpdate(_) => Err(Error::OwnerUnavailable("
+              ],
+              "top_level": [
+                "match self"
+              ]
+            },
+            {
+              "function": "fn execute_original_stage(",
+              "sequence": [
+                "fn execute_original_stage(",
+                "if let Self::Candidate(stages) = self",
+                "matches!(stage, Stage::Evaluation | Stage::Proposal)",
+                "matches!(stage, Stage::Selection | Stage::NextUse)",
+                "snapshot.training_no_update_v2().is_none()",
+                "OriginalCellQ24CandidateStageOwnersV1::execute_original_evidence(",
+                "stages, snapshot, stage",
+                "receipt: candidate.receipt().clone()",
+                "candidate: Some(candidate)",
+                "LearningIterationStageOwnerPortsV1::execute_stage(self, snapshot, stage).await?",
+                "Ok(ResidentStageCompletion { receipt, candidate: None })"
+              ],
+              "top_level": [
+                "if let Self::Candidate",
+                "let receipt",
+                "Ok(ResidentStageCompletion { receipt, candidate: None })"
+              ]
+            },
+            {
+              "function": "fn consume_original_candidate_evidence(",
+              "sequence": [
+                "fn consume_original_candidate_evidence(",
+                "match self",
+                "Self::Candidate(stages)",
+                "OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed)",
+                "Self::NoUpdate(_) => Err(Error::WrongScope)"
+              ],
+              "top_level": [
+                "match self"
+              ]
+            }
+          ],
+          "required_order": [
+            [
+              "fn validate_recovery<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)",
+              "fn execute_stage<'a>"
+            ],
+            [
+              "fn execute_stage<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)",
+              "fn prepare_proposal<'a>"
+            ],
+            [
+              "fn prepare_proposal<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)",
+              "fn receipt_attestation<'a>"
+            ],
+            [
+              "fn receipt_attestation<'a>",
+              "match self",
+              "Self::NoUpdate(stages)",
+              "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+              "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds",
+              "Self::Candidate(stages)",
+              "LearningIterationStageOwnerPortsV1::receipt_attestation(",
+              "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds"
+            ]
+          ]
+        },
+        "raw_before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs\"\nrequired = [\"pub(super) enum ResidentOriginalStageOwnersV3\", \"NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)\", \"Candidate(OriginalCellQ24CandidateStageOwnersV1)\", \"impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3\", \"Err(Error::OwnerUnavailable(\\n                    \\\"original Candidate selection and adoption route is absent\\\",\\n                ))\", \"pub(super) struct ResidentStageCompletion<'a>\", \"candidate: Option<OriginalCandidateOperationEvidence<'a>>\"]\nforbidden = [\"pub enum ResidentOriginalStageOwnersV3\", \"impl Clone for ResidentOriginalStageOwnersV3\", \"dyn LearningIterationStageOwnerPortsV1\", \"Box<dyn\", \"FnOnce\", \"FnMut\", \"SigningKey\", \"File::open\", \"File::create\", \"UnixStream::connect\", \"permit_all\", \"if false\", \"unwrap_or\", \"LearningIterationObservationV1::TrainingNoUpdateV2\", \"LearningEvidenceVerifierV1::new\", \"impl Clone for ResidentStageCompletion\", \"Deserialize\", \"Serialize\"]\nrequired_function_order = [\n    { \"function\" = \"fn require_initial(\", \"sequence\" = [\"fn require_initial(\", \"match self\", \"Self::NoUpdate(stages)\", \"OriginalCellQ24NoUpdateStageOwnersV1::require_initial(\", \"stages, initial, scope, verifier\", \"Self::Candidate(stages)\", \"OriginalCellQ24CandidateStageOwnersV1::require_initial(\", \"stages, initial, scope, verifier\"], \"top_level\" = [\"match self\"] },\n    { \"function\" = \"fn install_fresh_resident_gate(\", \"sequence\" = [\"fn install_fresh_resident_gate(\", \"&mut self\", \"match self\", \"Self::NoUpdate(stages)\", \"OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)\", \"Self::Candidate(stages)\", \"OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)\"], \"top_level\" = [\"match self\"] },\n    { \"function\" = \"fn require_stage(\", \"sequence\" = [\"fn require_stage(\", \"snapshot: &LearningIterationSnapshotV1\", \"match stage\", \"Stage::Evaluation | Stage::Proposal => match self\", \"Self::NoUpdate(_) => Err(Error::OwnerUnavailable(\", \"Self::Candidate(_) => Ok(())\", \"Stage::Selection | Stage::NextUse\", \"matches!(self, Self::Candidate(_))\\n                    && snapshot.training_no_update_v2().is_none()\", \"Err(Error::OwnerUnavailable(\\n                                                                               ,\\n                ))\", \"Stage::Experience\\n            | Stage::Dataset\\n            | Stage::Training\\n            | Stage::Selection\\n            | Stage::NextUse => Ok(())\"], \"top_level\" = [\"match stage\"] },\n    { \"function\" = \"fn read_original_candidate_evidence(\", \"sequence\" = [\"fn read_original_candidate_evidence(\", \"match self\", \"Self::Candidate(stages)\", \"OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot).await\", \"Self::NoUpdate(_) => Err(Error::OwnerUnavailable(\"], \"top_level\" = [\"match self\"] },\n    { \"function\" = \"fn execute_original_stage(\", \"sequence\" = [\"fn execute_original_stage(\", \"if let Self::Candidate(stages) = self\", \"matches!(stage, Stage::Evaluation | Stage::Proposal)\", \"matches!(stage, Stage::Selection | Stage::NextUse)\", \"snapshot.training_no_update_v2().is_none()\", \"OriginalCellQ24CandidateStageOwnersV1::execute_original_evidence(\", \"stages, snapshot, stage\", \"receipt: candidate.receipt().clone()\", \"candidate: Some(candidate)\", \"LearningIterationStageOwnerPortsV1::execute_stage(self, snapshot, stage).await?\", \"Ok(ResidentStageCompletion { receipt, candidate: None })\"], \"top_level\" = [\"if let Self::Candidate\", \"let receipt\", \"Ok(ResidentStageCompletion { receipt, candidate: None })\"] },\n    { \"function\" = \"fn consume_original_candidate_evidence(\", \"sequence\" = [\"fn consume_original_candidate_evidence(\", \"match self\", \"Self::Candidate(stages)\", \"OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed)\", \"Self::NoUpdate(_) => Err(Error::WrongScope)\"], \"top_level\" = [\"match self\"] },\n]\nrequired_order = [\n    [\"fn validate_recovery<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)\", \"fn execute_stage<'a>\"],\n    [\"fn execute_stage<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)\", \"fn prepare_proposal<'a>\"],\n    [\"fn prepare_proposal<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)\", \"fn receipt_attestation<'a>\"],\n    [\"fn receipt_attestation<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::receipt_attestation(\", \"stages,\\n                snapshot,\\n                receipt,\\n                now_unix_seconds\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::receipt_attestation(\", \"stages,\\n                snapshot,\\n                receipt,\\n                now_unix_seconds\"],\n]\n\n",
+        "raw_after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs\"\nrequired = [\"pub(super) enum ResidentOriginalStageOwnersV3\", \"NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1)\", \"Candidate(OriginalCellQ24CandidateStageOwnersV1)\", \"impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3\", \"OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(\", \"pub(super) struct ResidentStageCompletion<'a>\", \"candidate: Option<OriginalCandidateOperationEvidence<'a>>\"]\nforbidden = [\"pub enum ResidentOriginalStageOwnersV3\", \"impl Clone for ResidentOriginalStageOwnersV3\", \"dyn LearningIterationStageOwnerPortsV1\", \"Box<dyn\", \"FnOnce\", \"FnMut\", \"SigningKey\", \"File::open\", \"File::create\", \"UnixStream::connect\", \"permit_all\", \"if false\", \"unwrap_or\", \"LearningIterationObservationV1::TrainingNoUpdateV2\", \"LearningEvidenceVerifierV1::new\", \"impl Clone for ResidentStageCompletion\", \"Deserialize\", \"Serialize\"]\nrequired_function_order = [\n    { \"function\" = \"fn require_initial(\", \"sequence\" = [\"fn require_initial(\", \"match self\", \"Self::NoUpdate(stages)\", \"OriginalCellQ24NoUpdateStageOwnersV1::require_initial(\", \"stages, initial, scope, verifier\", \"Self::Candidate(stages)\", \"OriginalCellQ24CandidateStageOwnersV1::require_initial(\", \"stages, initial, scope, verifier\"], \"top_level\" = [\"match self\"] },\n    { \"function\" = \"fn install_fresh_resident_gate(\", \"sequence\" = [\"fn install_fresh_resident_gate(\", \"&mut self\", \"match self\", \"Self::NoUpdate(stages)\", \"OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(stages, gate)\", \"Self::Candidate(stages)\", \"OriginalCellQ24CandidateStageOwnersV1::install_fresh_resident_gate(stages, gate)\"], \"top_level\" = [\"match self\"] },\n    { \"function\" = \"fn require_stage(\", \"sequence\" = [\"fn require_stage(\", \"snapshot: &LearningIterationSnapshotV1\", \"match stage\", \"Stage::Evaluation | Stage::Proposal => match self\", \"Self::NoUpdate(_) => Err(Error::OwnerUnavailable(\", \"Self::Candidate(_) => Ok(())\", \"Stage::Selection | Stage::NextUse\", \"matches!(self, Self::Candidate(_))\\n                    && snapshot.training_no_update_v2().is_none()\", \"let Self::Candidate(stages) = self else {\", \"return Err(Error::WrongScope);\", \"};\", \"OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(\", \"stages, snapshot, stage\", \"Stage::Experience\\n            | Stage::Dataset\\n            | Stage::Training\\n            | Stage::Selection\\n            | Stage::NextUse => Ok(())\"], \"top_level\" = [\"match stage\"] },\n    { \"function\" = \"fn read_original_candidate_evidence(\", \"sequence\" = [\"fn read_original_candidate_evidence(\", \"match self\", \"Self::Candidate(stages)\", \"OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot).await\", \"Self::NoUpdate(_) => Err(Error::OwnerUnavailable(\"], \"top_level\" = [\"match self\"] },\n    { \"function\" = \"fn execute_original_stage(\", \"sequence\" = [\"fn execute_original_stage(\", \"if let Self::Candidate(stages) = self\", \"matches!(stage, Stage::Evaluation | Stage::Proposal)\", \"matches!(stage, Stage::Selection | Stage::NextUse)\", \"snapshot.training_no_update_v2().is_none()\", \"OriginalCellQ24CandidateStageOwnersV1::execute_original_evidence(\", \"stages, snapshot, stage\", \"receipt: candidate.receipt().clone()\", \"candidate: Some(candidate)\", \"LearningIterationStageOwnerPortsV1::execute_stage(self, snapshot, stage).await?\", \"Ok(ResidentStageCompletion { receipt, candidate: None })\"], \"top_level\" = [\"if let Self::Candidate\", \"let receipt\", \"Ok(ResidentStageCompletion { receipt, candidate: None })\"] },\n    { \"function\" = \"fn consume_original_candidate_evidence(\", \"sequence\" = [\"fn consume_original_candidate_evidence(\", \"match self\", \"Self::Candidate(stages)\", \"OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed)\", \"Self::NoUpdate(_) => Err(Error::WrongScope)\"], \"top_level\" = [\"match self\"] },\n]\nrequired_order = [\n    [\"fn validate_recovery<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::validate_recovery(stages, snapshot)\", \"fn execute_stage<'a>\"],\n    [\"fn execute_stage<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::execute_stage(stages, snapshot, stage)\", \"fn prepare_proposal<'a>\"],\n    [\"fn prepare_proposal<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::prepare_proposal(stages, snapshot)\", \"fn receipt_attestation<'a>\"],\n    [\"fn receipt_attestation<'a>\", \"match self\", \"Self::NoUpdate(stages)\", \"LearningIterationStageOwnerPortsV1::receipt_attestation(\", \"stages,\\n                snapshot,\\n                receipt,\\n                now_unix_seconds\", \"Self::Candidate(stages)\", \"LearningIterationStageOwnerPortsV1::receipt_attestation(\", \"stages,\\n                snapshot,\\n                receipt,\\n                now_unix_seconds\"],\n]\n\n"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "before": {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "required": [
+            "pub(super) struct AdoptionLane",
+            "model: Option<OriginalCellQ24ModelCommandReceiptV1>",
+            "selector: Option<Arc<OriginalCircuitModelSelectionCommandClientV1>>",
+            "version: Option<Arc<OriginalCircuitModelVersionClientV1>>",
+            "observer: Option<Arc<OriginalCircuitCandidateNextUseCommandClientV1>>",
+            "readiness: Option<Arc<OriginalCircuitCandidateCompletionReadinessClientV1>>",
+            "selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>",
+            "next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>",
+            "publication: Option<OriginalCircuitModelVersionPublicationV1>",
+            "failed: bool"
+          ],
+          "forbidden": [
+            "SigningKey",
+            "SigningSecret",
+            "UnixStream::connect",
+            "UnixListener::bind",
+            "File::open",
+            "File::create",
+            "OpenOptions",
+            "permit_all",
+            "read_cached",
+            "transmute",
+            "if false",
+            "impl Clone",
+            "Deserialize",
+            "Serialize",
+            "pub model:",
+            "pub publication:",
+            "pub selection:",
+            "pub next_use:",
+            "pub channel:",
+            "channel.next = 1",
+            "execution_requested = false",
+            "RootResidentLearningEffectGateV3::new"
+          ],
+          "required_order": [],
+          "required_function_order": [
+            {
+              "function": "fn model_cut(",
+              "sequence": [
+                "fn model_cut(",
+                "owners: &Owners,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                ") -> Result<LearningIterationSnapshotV1, Error> {",
+                "owners.training_prefix(snapshot)?;",
+                "if !(5..=7).contains(&snapshot.receipts.len()) {",
+                "return Err(Error::WrongScope);",
+                "}",
+                "let mut cut = LearningIterationCoordinatorV1::from_snapshot(",
+                "owners.common.material.initial.clone(),",
+                ")?;",
+                "for receipt in &snapshot.receipts[..5] {",
+                "cut.record(receipt.clone(), receipt.observed_unix_seconds)?;",
+                "}",
+                "if cut.next_stage() != Some(Stage::Selection) {",
+                "return Err(Error::WrongScope);",
+                "}",
+                "owners.common.material.scope.validate_snapshot(cut.snapshot())?;",
+                "Ok(cut.snapshot().clone())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn publication_context(",
+              "sequence": [
+                "fn publication_context(",
+                "owners: &Owners,",
+                "operation: &CandidateOriginalOperation<'_>,",
+                "completed: &OriginalCellQ24ModelReadCompletionV1,",
+                ") -> Result<OriginalCircuitModelPublicationContextV1, Error> {",
+                "operation.require_owner(owners)?;",
+                "if completed.model().snapshot() != &model_cut(owners, &operation.supplied)? {",
+                "return Err(Error::WrongScope);",
+                "}",
+                "OriginalCircuitModelPublicationContextV1::from_original_receipt(",
+                "owners.common.material.clone(),",
+                "owners.protocol.clone(),",
+                "operation.dataset.clone(),",
+                "operation.training.clone(),",
+                "completed.material().original_evaluation().clone(),",
+                "completed.model().clone(),",
+                ").map_err(|_| Error::WrongScope)",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_published_selection(",
+              "sequence": [
+                "fn require_published_selection(",
+                "publication: &OriginalCircuitModelVersionPublicationV1,",
+                "selection: &OriginalCircuitModelSelectionCommandReceiptV1,",
+                ") -> Result<(), Error> {",
+                "if publication.authority() != AuthorityPosture::DENY_ALL",
+                "|| !matches!(&selection.receipt().observation,",
+                "LearningIterationObservationV1::Selection { candidate_bundle, selection_digest }",
+                "if *candidate_bundle == publication.bundle_digest()",
+                "&& *selection_digest == publication.selection_digest())",
+                "|| publication.run_id() == &selection.snapshot().request.source_run_id",
+                "{",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_adoption_cut(",
+              "sequence": [
+                "fn require_adoption_cut(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                "stage: Stage,",
+                "action: Action,",
+                ") -> Result<(), Error> {",
+                "self.require_live_deadline()?;",
+                "model_cut(self, snapshot)?;",
+                "let expected = match (stage, action) {",
+                "(Stage::Selection, Action::Execute) => 5,",
+                "(Stage::Selection, Action::Readback) => 6,",
+                "(Stage::NextUse, Action::Execute) => 6,",
+                "(Stage::NextUse, Action::Readback) => 7,",
+                "_ => return Err(Error::WrongScope),",
+                "};",
+                "if snapshot.receipts.len() != expected",
+                "|| action == Action::Execute && (",
+                "self.common.origin != Origin::Fresh",
+                "|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()",
+                "!= Some(stage)",
+                ")",
+                "{",
+                "return Err(Error::WrongScope);",
+                "}",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn begin_adoption(",
+              "sequence": [
+                "fn begin_adoption(&self) -> Result<(), Error> {",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;",
+                "if lane.failed { return Err(Error::CommitUncertain); }",
+                "lane.failed = true;",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn bind_adoption_selection(",
+              "sequence": [
+                "fn bind_adoption_selection(",
+                "&self,",
+                "operation: &CandidateOriginalOperation<'_>,",
+                "completed: &OriginalCellQ24ModelReadCompletionV1,",
+                "readback_only: bool,",
+                ") -> Result<(Arc<OriginalCircuitModelSelectionCommandClientV1>,",
+                "Arc<OriginalCircuitModelVersionClientV1>), Error> {",
+                "let publication = publication_context(self, operation, completed)?;",
+                "let context = OriginalCircuitCandidateLearningReadContextV1::from_original_model(",
+                "publication,",
+                ").map_err(|_| Error::WrongScope)?;",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;",
+                "if lane.model.as_ref().is_some_and(|saved| saved != completed.model()) {",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "if lane.selector.is_none() && lane.version.is_none() {",
+                "let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;",
+                "let (selector, version) = common.take_candidate_selection_channels(",
+                "&operation.dataset, &operation.training,",
+                ")?;",
+                "let selector = OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel(",
+                "selector, context.clone(), readback_only, None,",
+                ").map_err(|_| Error::CommitUncertain)?;",
+                "let version = if readback_only {",
+                "OriginalCircuitModelVersionClientV1::recover_original_stage_channel(version, context)",
+                "} else {",
+                "OriginalCircuitModelVersionClientV1::bind_original_stage_channel(version, context)",
+                "}.map_err(|_| Error::CommitUncertain)?;",
+                "lane.selector = Some(Arc::new(selector));",
+                "lane.version = Some(Arc::new(version));",
+                "lane.model = Some(completed.model().clone());",
+                "}",
+                "Ok((",
+                "Arc::clone(lane.selector.as_ref().ok_or(Error::CommitUncertain)?),",
+                "Arc::clone(lane.version.as_ref().ok_or(Error::CommitUncertain)?),",
+                "))",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_adoption_effect(",
+              "sequence": [
+                "fn require_adoption_effect(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                ") -> Result<(), Error> {",
+                "self.require_live_deadline()?;",
+                "let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;",
+                "RootResidentLearningEffectGateV3::require_current(",
+                "gate, snapshot, &self.common.material.scope,",
+                ").await",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn original_selection(",
+              "sequence": [
+                "fn original_selection(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                "action: Action,",
+                ") -> Result<OriginalCandidateOperationEvidence<'_>, Error> {",
+                "self.require_adoption_cut(snapshot, Stage::Selection, action)?;",
+                "let operation = CandidateOriginalOperation::begin(self, snapshot).await?;",
+                "self.begin_adoption()?;",
+                "let completed: OriginalCellQ24ModelReadCompletionV1 =\n            self.read_model_for_adoption(&operation).await?;",
+                "let context: OriginalCircuitModelPublicationContextV1 =\n            publication_context(self, &operation, &completed)?;",
+                "let (selector, version) = self.bind_adoption_selection(",
+                "&operation, &completed,",
+                "self.common.origin == Origin::Recovered || action == Action::Readback,",
+                ")?;",
+                "context.authenticate_material(completed.material(), auth::now()?, false)",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "let published = match action {",
+                "Action::Execute => {",
+                "self.require_adoption_effect(snapshot).await?;",
+                "let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;",
+                "let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);",
+                "let result = OriginalCircuitModelVersionClientV1::publish_original_version(",
+                "version.as_ref(), cancellation,",
+                ").await;",
+                "self.require_adoption_effect(snapshot).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "result.map_err(|_| Error::CommitUncertain)?",
+                "}",
+                "Action::Readback => OriginalCircuitModelVersionClientV1::readback(version.as_ref())",
+                ".await.map_err(|_| Error::CommitUncertain)?,",
+                "};",
+                "let publication = published.publication().ok_or(Error::OwnerUnavailable(",
+                ",",
+                "))?;",
+                "if published.authority() != AuthorityPosture::DENY_ALL",
+                "|| publication.authority() != AuthorityPosture::DENY_ALL",
+                "{",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "{",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;",
+                "if lane.publication.as_ref().is_some_and(|saved| saved != publication) {",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "lane.publication = Some(publication.clone());",
+                "}",
+                "context.authenticate_material(completed.material(), auth::now()?, action == Action::Execute)",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "let original = match action {",
+                "Action::Execute => {",
+                "self.require_adoption_effect(snapshot).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "let result = OriginalCircuitModelSelectionCommandClientV1::execute_selection(",
+                "selector.as_ref(),",
+                ").await;",
+                "self.require_adoption_effect(snapshot).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "result.map_err(|_| Error::CommitUncertain)?",
+                "}",
+                "Action::Readback => OriginalCircuitModelSelectionCommandClientV1::readback(",
+                "selector.as_ref(),",
+                ").await.map_err(|_| Error::CommitUncertain)?,",
+                "};",
+                "let closed = CandidateOriginalOperation::close(operation).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "require_published_selection(publication, &original)?;",
+                "let evidence = closed.selection(completed, original.clone(), publication.clone())",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;",
+                "if lane.selection.as_ref().is_some_and(|saved| saved != &original) {",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "lane.selection = Some(original);",
+                "lane.failed = false;",
+                "Ok(evidence)",
+                "}"
+              ],
+              "top_level": []
+            }
+          ]
+        },
+        "after": {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+          "required": [
+            "pub(super) struct AdoptionLane",
+            "model: Option<OriginalCellQ24ModelCommandReceiptV1>",
+            "selector: Option<Arc<OriginalCircuitModelSelectionCommandClientV1>>",
+            "version: Option<Arc<OriginalCircuitModelVersionClientV1>>",
+            "observer: Option<Arc<OriginalCircuitCandidateNextUseCommandClientV1>>",
+            "readiness: Option<Arc<OriginalCircuitCandidateCompletionReadinessClientV1>>",
+            "selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>",
+            "next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>",
+            "publication: Option<OriginalCircuitModelVersionPublicationV1>",
+            "failed: bool",
+            "pub(crate) fn require_original_adoption_stage(",
+            "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
+          ],
+          "forbidden": [
+            "SigningKey",
+            "SigningSecret",
+            "UnixStream::connect",
+            "UnixListener::bind",
+            "File::open",
+            "File::create",
+            "OpenOptions",
+            "permit_all",
+            "read_cached",
+            "transmute",
+            "if false",
+            "impl Clone",
+            "Deserialize",
+            "Serialize",
+            "pub model:",
+            "pub publication:",
+            "pub selection:",
+            "pub next_use:",
+            "pub channel:",
+            "channel.next = 1",
+            "execution_requested = false",
+            "RootResidentLearningEffectGateV3::new",
+            "pub fn require_original_adoption_stage"
+          ],
+          "required_order": [],
+          "required_function_order": [
+            {
+              "function": "fn model_cut(",
+              "sequence": [
+                "fn model_cut(",
+                "owners: &Owners,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                ") -> Result<LearningIterationSnapshotV1, Error> {",
+                "owners.training_prefix(snapshot)?;",
+                "if !(5..=7).contains(&snapshot.receipts.len()) {",
+                "return Err(Error::WrongScope);",
+                "}",
+                "let mut cut = LearningIterationCoordinatorV1::from_snapshot(",
+                "owners.common.material.initial.clone(),",
+                ")?;",
+                "for receipt in &snapshot.receipts[..5] {",
+                "cut.record(receipt.clone(), receipt.observed_unix_seconds)?;",
+                "}",
+                "if cut.next_stage() != Some(Stage::Selection) {",
+                "return Err(Error::WrongScope);",
+                "}",
+                "owners.common.material.scope.validate_snapshot(cut.snapshot())?;",
+                "Ok(cut.snapshot().clone())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn publication_context(",
+              "sequence": [
+                "fn publication_context(",
+                "owners: &Owners,",
+                "operation: &CandidateOriginalOperation<'_>,",
+                "completed: &OriginalCellQ24ModelReadCompletionV1,",
+                ") -> Result<OriginalCircuitModelPublicationContextV1, Error> {",
+                "operation.require_owner(owners)?;",
+                "if completed.model().snapshot() != &model_cut(owners, &operation.supplied)? {",
+                "return Err(Error::WrongScope);",
+                "}",
+                "OriginalCircuitModelPublicationContextV1::from_original_receipt(",
+                "owners.common.material.clone(),",
+                "owners.protocol.clone(),",
+                "operation.dataset.clone(),",
+                "operation.training.clone(),",
+                "completed.material().original_evaluation().clone(),",
+                "completed.model().clone(),",
+                ").map_err(|_| Error::WrongScope)",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_published_selection(",
+              "sequence": [
+                "fn require_published_selection(",
+                "publication: &OriginalCircuitModelVersionPublicationV1,",
+                "selection: &OriginalCircuitModelSelectionCommandReceiptV1,",
+                ") -> Result<(), Error> {",
+                "if publication.authority() != AuthorityPosture::DENY_ALL",
+                "|| !matches!(&selection.receipt().observation,",
+                "LearningIterationObservationV1::Selection { candidate_bundle, selection_digest }",
+                "if *candidate_bundle == publication.bundle_digest()",
+                "&& *selection_digest == publication.selection_digest())",
+                "|| publication.run_id() == &selection.snapshot().request.source_run_id",
+                "{",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_adoption_cut(",
+              "sequence": [
+                "fn require_adoption_cut(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                "stage: Stage,",
+                "action: Action,",
+                ") -> Result<(), Error> {",
+                "self.require_live_deadline()?;",
+                "model_cut(self, snapshot)?;",
+                "let expected = match (stage, action) {",
+                "(Stage::Selection, Action::Execute) => 5,",
+                "(Stage::Selection, Action::Readback) => 6,",
+                "(Stage::NextUse, Action::Execute) => 6,",
+                "(Stage::NextUse, Action::Readback) => 7,",
+                "_ => return Err(Error::WrongScope),",
+                "};",
+                "if snapshot.receipts.len() != expected",
+                "|| action == Action::Execute && (",
+                "self.common.origin != Origin::Fresh",
+                "|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()",
+                "!= Some(stage)",
+                ")",
+                "{",
+                "return Err(Error::WrongScope);",
+                "}",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn begin_adoption(",
+              "sequence": [
+                "fn begin_adoption(&self) -> Result<(), Error> {",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;",
+                "if lane.failed { return Err(Error::CommitUncertain); }",
+                "lane.failed = true;",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn bind_adoption_selection(",
+              "sequence": [
+                "fn bind_adoption_selection(",
+                "&self,",
+                "operation: &CandidateOriginalOperation<'_>,",
+                "completed: &OriginalCellQ24ModelReadCompletionV1,",
+                "readback_only: bool,",
+                ") -> Result<(Arc<OriginalCircuitModelSelectionCommandClientV1>,",
+                "Arc<OriginalCircuitModelVersionClientV1>), Error> {",
+                "let publication = publication_context(self, operation, completed)?;",
+                "let context = OriginalCircuitCandidateLearningReadContextV1::from_original_model(",
+                "publication,",
+                ").map_err(|_| Error::WrongScope)?;",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;",
+                "if lane.model.as_ref().is_some_and(|saved| saved != completed.model()) {",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "if lane.selector.is_none() && lane.version.is_none() {",
+                "let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;",
+                "let (selector, version) = common.take_candidate_selection_channels(",
+                "&operation.dataset, &operation.training,",
+                ")?;",
+                "let selector = OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel(",
+                "selector, context.clone(), readback_only, None,",
+                ").map_err(|_| Error::CommitUncertain)?;",
+                "let version = if readback_only {",
+                "OriginalCircuitModelVersionClientV1::recover_original_stage_channel(version, context)",
+                "} else {",
+                "OriginalCircuitModelVersionClientV1::bind_original_stage_channel(version, context)",
+                "}.map_err(|_| Error::CommitUncertain)?;",
+                "lane.selector = Some(Arc::new(selector));",
+                "lane.version = Some(Arc::new(version));",
+                "lane.model = Some(completed.model().clone());",
+                "}",
+                "Ok((",
+                "Arc::clone(lane.selector.as_ref().ok_or(Error::CommitUncertain)?),",
+                "Arc::clone(lane.version.as_ref().ok_or(Error::CommitUncertain)?),",
+                "))",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_adoption_effect(",
+              "sequence": [
+                "fn require_adoption_effect(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                ") -> Result<(), Error> {",
+                "self.require_live_deadline()?;",
+                "let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;",
+                "RootResidentLearningEffectGateV3::require_current(",
+                "gate, snapshot, &self.common.material.scope,",
+                ").await",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn original_selection(",
+              "sequence": [
+                "fn original_selection(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                "action: Action,",
+                ") -> Result<OriginalCandidateOperationEvidence<'_>, Error> {",
+                "self.require_adoption_cut(snapshot, Stage::Selection, action)?;",
+                "let operation = CandidateOriginalOperation::begin(self, snapshot).await?;",
+                "self.begin_adoption()?;",
+                "let completed: OriginalCellQ24ModelReadCompletionV1 =\n            self.read_model_for_adoption(&operation).await?;",
+                "let context: OriginalCircuitModelPublicationContextV1 =\n            publication_context(self, &operation, &completed)?;",
+                "let (selector, version) = self.bind_adoption_selection(",
+                "&operation, &completed,",
+                "self.common.origin == Origin::Recovered || action == Action::Readback,",
+                ")?;",
+                "context.authenticate_material(completed.material(), auth::now()?, false)",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "let published = match action {",
+                "Action::Execute => {",
+                "self.require_adoption_effect(snapshot).await?;",
+                "let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;",
+                "let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);",
+                "let result = OriginalCircuitModelVersionClientV1::publish_original_version(",
+                "version.as_ref(), cancellation,",
+                ").await;",
+                "self.require_adoption_effect(snapshot).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "result.map_err(|_| Error::CommitUncertain)?",
+                "}",
+                "Action::Readback => OriginalCircuitModelVersionClientV1::readback(version.as_ref())",
+                ".await.map_err(|_| Error::CommitUncertain)?,",
+                "};",
+                "let publication = published.publication().ok_or(Error::OwnerUnavailable(",
+                ",",
+                "))?;",
+                "if published.authority() != AuthorityPosture::DENY_ALL",
+                "|| publication.authority() != AuthorityPosture::DENY_ALL",
+                "{",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "{",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;",
+                "if lane.publication.as_ref().is_some_and(|saved| saved != publication) {",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "lane.publication = Some(publication.clone());",
+                "}",
+                "context.authenticate_material(completed.material(), auth::now()?, action == Action::Execute)",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "let original = match action {",
+                "Action::Execute => {",
+                "self.require_adoption_effect(snapshot).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "let result = OriginalCircuitModelSelectionCommandClientV1::execute_selection(",
+                "selector.as_ref(),",
+                ").await;",
+                "self.require_adoption_effect(snapshot).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "result.map_err(|_| Error::CommitUncertain)?",
+                "}",
+                "Action::Readback => OriginalCircuitModelSelectionCommandClientV1::readback(",
+                "selector.as_ref(),",
+                ").await.map_err(|_| Error::CommitUncertain)?,",
+                "};",
+                "let closed = CandidateOriginalOperation::close(operation).await",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "require_published_selection(publication, &original)?;",
+                "let evidence = closed.selection(completed, original.clone(), publication.clone())",
+                ".map_err(|_| Error::CommitUncertain)?;",
+                "self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;",
+                "let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;",
+                "if lane.selection.as_ref().is_some_and(|saved| saved != &original) {",
+                "return Err(Error::CommitUncertain);",
+                "}",
+                "lane.selection = Some(original);",
+                "lane.failed = false;",
+                "Ok(evidence)",
+                "}"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn require_original_adoption_stage(",
+              "sequence": [
+                "fn require_original_adoption_stage(",
+                "&self,",
+                "snapshot: &LearningIterationSnapshotV1,",
+                "stage: Stage,",
+                ") -> Result<(), Error> {",
+                "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+                "if self.common.root.is_none() {",
+                "return Err(Error::OwnerUnavailable(",
+                "));",
+                "}",
+                "Ok(())",
+                "}"
+              ],
+              "top_level": [
+                "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+                "if self.common.root.is_none() {",
+                "Ok(())"
+              ]
+            }
+          ]
+        },
+        "raw_before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs\"\nrequired = [\"pub(super) struct AdoptionLane\", \"model: Option<OriginalCellQ24ModelCommandReceiptV1>\", \"selector: Option<Arc<OriginalCircuitModelSelectionCommandClientV1>>\", \"version: Option<Arc<OriginalCircuitModelVersionClientV1>>\", \"observer: Option<Arc<OriginalCircuitCandidateNextUseCommandClientV1>>\", \"readiness: Option<Arc<OriginalCircuitCandidateCompletionReadinessClientV1>>\", \"selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>\", \"next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>\", \"publication: Option<OriginalCircuitModelVersionPublicationV1>\", \"failed: bool\"]\nforbidden = [\"SigningKey\", \"SigningSecret\", \"UnixStream::connect\", \"UnixListener::bind\", \"File::open\", \"File::create\", \"OpenOptions\", \"permit_all\", \"read_cached\", \"transmute\", \"if false\", \"impl Clone\", \"Deserialize\", \"Serialize\", \"pub model:\", \"pub publication:\", \"pub selection:\", \"pub next_use:\", \"pub channel:\", \"channel.next = 1\", \"execution_requested = false\", \"RootResidentLearningEffectGateV3::new\"]\nrequired_order = []\nrequired_function_order = [{ \"function\" = \"fn model_cut(\", \"sequence\" = [\"fn model_cut(\", \"owners: &Owners,\", \"snapshot: &LearningIterationSnapshotV1,\", \") -> Result<LearningIterationSnapshotV1, Error> {\", \"owners.training_prefix(snapshot)?;\", \"if !(5..=7).contains(&snapshot.receipts.len()) {\", \"return Err(Error::WrongScope);\", \"}\", \"let mut cut = LearningIterationCoordinatorV1::from_snapshot(\", \"owners.common.material.initial.clone(),\", \")?;\", \"for receipt in &snapshot.receipts[..5] {\", \"cut.record(receipt.clone(), receipt.observed_unix_seconds)?;\", \"}\", \"if cut.next_stage() != Some(Stage::Selection) {\", \"return Err(Error::WrongScope);\", \"}\", \"owners.common.material.scope.validate_snapshot(cut.snapshot())?;\", \"Ok(cut.snapshot().clone())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn publication_context(\", \"sequence\" = [\"fn publication_context(\", \"owners: &Owners,\", \"operation: &CandidateOriginalOperation<'_>,\", \"completed: &OriginalCellQ24ModelReadCompletionV1,\", \") -> Result<OriginalCircuitModelPublicationContextV1, Error> {\", \"operation.require_owner(owners)?;\", \"if completed.model().snapshot() != &model_cut(owners, &operation.supplied)? {\", \"return Err(Error::WrongScope);\", \"}\", \"OriginalCircuitModelPublicationContextV1::from_original_receipt(\", \"owners.common.material.clone(),\", \"owners.protocol.clone(),\", \"operation.dataset.clone(),\", \"operation.training.clone(),\", \"completed.material().original_evaluation().clone(),\", \"completed.model().clone(),\", \").map_err(|_| Error::WrongScope)\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_published_selection(\", \"sequence\" = [\"fn require_published_selection(\", \"publication: &OriginalCircuitModelVersionPublicationV1,\", \"selection: &OriginalCircuitModelSelectionCommandReceiptV1,\", \") -> Result<(), Error> {\", \"if publication.authority() != AuthorityPosture::DENY_ALL\", \"|| !matches!(&selection.receipt().observation,\", \"LearningIterationObservationV1::Selection { candidate_bundle, selection_digest }\", \"if *candidate_bundle == publication.bundle_digest()\", \"&& *selection_digest == publication.selection_digest())\", \"|| publication.run_id() == &selection.snapshot().request.source_run_id\", \"{\", \"return Err(Error::CommitUncertain);\", \"}\", \"Ok(())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_adoption_cut(\", \"sequence\" = [\"fn require_adoption_cut(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \"stage: Stage,\", \"action: Action,\", \") -> Result<(), Error> {\", \"self.require_live_deadline()?;\", \"model_cut(self, snapshot)?;\", \"let expected = match (stage, action) {\", \"(Stage::Selection, Action::Execute) => 5,\", \"(Stage::Selection, Action::Readback) => 6,\", \"(Stage::NextUse, Action::Execute) => 6,\", \"(Stage::NextUse, Action::Readback) => 7,\", \"_ => return Err(Error::WrongScope),\", \"};\", \"if snapshot.receipts.len() != expected\", \"|| action == Action::Execute && (\", \"self.common.origin != Origin::Fresh\", \"|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()\", \"!= Some(stage)\", \")\", \"{\", \"return Err(Error::WrongScope);\", \"}\", \"Ok(())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn begin_adoption(\", \"sequence\" = [\"fn begin_adoption(&self) -> Result<(), Error> {\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;\", \"if lane.failed { return Err(Error::CommitUncertain); }\", \"lane.failed = true;\", \"Ok(())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn bind_adoption_selection(\", \"sequence\" = [\"fn bind_adoption_selection(\", \"&self,\", \"operation: &CandidateOriginalOperation<'_>,\", \"completed: &OriginalCellQ24ModelReadCompletionV1,\", \"readback_only: bool,\", \") -> Result<(Arc<OriginalCircuitModelSelectionCommandClientV1>,\", \"Arc<OriginalCircuitModelVersionClientV1>), Error> {\", \"let publication = publication_context(self, operation, completed)?;\", \"let context = OriginalCircuitCandidateLearningReadContextV1::from_original_model(\", \"publication,\", \").map_err(|_| Error::WrongScope)?;\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;\", \"if lane.model.as_ref().is_some_and(|saved| saved != completed.model()) {\", \"return Err(Error::CommitUncertain);\", \"}\", \"if lane.selector.is_none() && lane.version.is_none() {\", \"let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;\", \"let (selector, version) = common.take_candidate_selection_channels(\", \"&operation.dataset, &operation.training,\", \")?;\", \"let selector = OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel(\", \"selector, context.clone(), readback_only, None,\", \").map_err(|_| Error::CommitUncertain)?;\", \"let version = if readback_only {\", \"OriginalCircuitModelVersionClientV1::recover_original_stage_channel(version, context)\", \"} else {\", \"OriginalCircuitModelVersionClientV1::bind_original_stage_channel(version, context)\", \"}.map_err(|_| Error::CommitUncertain)?;\", \"lane.selector = Some(Arc::new(selector));\", \"lane.version = Some(Arc::new(version));\", \"lane.model = Some(completed.model().clone());\", \"}\", \"Ok((\", \"Arc::clone(lane.selector.as_ref().ok_or(Error::CommitUncertain)?),\", \"Arc::clone(lane.version.as_ref().ok_or(Error::CommitUncertain)?),\", \"))\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_adoption_effect(\", \"sequence\" = [\"fn require_adoption_effect(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \") -> Result<(), Error> {\", \"self.require_live_deadline()?;\", \"let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\", \"RootResidentLearningEffectGateV3::require_current(\", \"gate, snapshot, &self.common.material.scope,\", \").await\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn original_selection(\", \"sequence\" = [\"fn original_selection(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \"action: Action,\", \") -> Result<OriginalCandidateOperationEvidence<'_>, Error> {\", \"self.require_adoption_cut(snapshot, Stage::Selection, action)?;\", \"let operation = CandidateOriginalOperation::begin(self, snapshot).await?;\", \"self.begin_adoption()?;\", \"let completed: OriginalCellQ24ModelReadCompletionV1 =\\n            self.read_model_for_adoption(&operation).await?;\", \"let context: OriginalCircuitModelPublicationContextV1 =\\n            publication_context(self, &operation, &completed)?;\", \"let (selector, version) = self.bind_adoption_selection(\", \"&operation, &completed,\", \"self.common.origin == Origin::Recovered || action == Action::Readback,\", \")?;\", \"context.authenticate_material(completed.material(), auth::now()?, false)\", \".map_err(|_| Error::CommitUncertain)?;\", \"let published = match action {\", \"Action::Execute => {\", \"self.require_adoption_effect(snapshot).await?;\", \"let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\", \"let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);\", \"let result = OriginalCircuitModelVersionClientV1::publish_original_version(\", \"version.as_ref(), cancellation,\", \").await;\", \"self.require_adoption_effect(snapshot).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"result.map_err(|_| Error::CommitUncertain)?\", \"}\", \"Action::Readback => OriginalCircuitModelVersionClientV1::readback(version.as_ref())\", \".await.map_err(|_| Error::CommitUncertain)?,\", \"};\", \"let publication = published.publication().ok_or(Error::OwnerUnavailable(\", \",\", \"))?;\", \"if published.authority() != AuthorityPosture::DENY_ALL\", \"|| publication.authority() != AuthorityPosture::DENY_ALL\", \"{\", \"return Err(Error::CommitUncertain);\", \"}\", \"{\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;\", \"if lane.publication.as_ref().is_some_and(|saved| saved != publication) {\", \"return Err(Error::CommitUncertain);\", \"}\", \"lane.publication = Some(publication.clone());\", \"}\", \"context.authenticate_material(completed.material(), auth::now()?, action == Action::Execute)\", \".map_err(|_| Error::CommitUncertain)?;\", \"let original = match action {\", \"Action::Execute => {\", \"self.require_adoption_effect(snapshot).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"let result = OriginalCircuitModelSelectionCommandClientV1::execute_selection(\", \"selector.as_ref(),\", \").await;\", \"self.require_adoption_effect(snapshot).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"result.map_err(|_| Error::CommitUncertain)?\", \"}\", \"Action::Readback => OriginalCircuitModelSelectionCommandClientV1::readback(\", \"selector.as_ref(),\", \").await.map_err(|_| Error::CommitUncertain)?,\", \"};\", \"let closed = CandidateOriginalOperation::close(operation).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"require_published_selection(publication, &original)?;\", \"let evidence = closed.selection(completed, original.clone(), publication.clone())\", \".map_err(|_| Error::CommitUncertain)?;\", \"self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;\", \"if lane.selection.as_ref().is_some_and(|saved| saved != &original) {\", \"return Err(Error::CommitUncertain);\", \"}\", \"lane.selection = Some(original);\", \"lane.failed = false;\", \"Ok(evidence)\", \"}\"], \"top_level\" = [] }]\n\n",
+        "raw_after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs\"\nrequired = [\"pub(super) struct AdoptionLane\", \"model: Option<OriginalCellQ24ModelCommandReceiptV1>\", \"selector: Option<Arc<OriginalCircuitModelSelectionCommandClientV1>>\", \"version: Option<Arc<OriginalCircuitModelVersionClientV1>>\", \"observer: Option<Arc<OriginalCircuitCandidateNextUseCommandClientV1>>\", \"readiness: Option<Arc<OriginalCircuitCandidateCompletionReadinessClientV1>>\", \"selection: Option<OriginalCircuitModelSelectionCommandReceiptV1>\", \"next_use: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>\", \"publication: Option<OriginalCircuitModelVersionPublicationV1>\", \"failed: bool\", \"pub(crate) fn require_original_adoption_stage(\", \"return Err(Error::OwnerUnavailable(\\\"fresh resident continuation\\\"));\"]\nforbidden = [\"SigningKey\", \"SigningSecret\", \"UnixStream::connect\", \"UnixListener::bind\", \"File::open\", \"File::create\", \"OpenOptions\", \"permit_all\", \"read_cached\", \"transmute\", \"if false\", \"impl Clone\", \"Deserialize\", \"Serialize\", \"pub model:\", \"pub publication:\", \"pub selection:\", \"pub next_use:\", \"pub channel:\", \"channel.next = 1\", \"execution_requested = false\", \"RootResidentLearningEffectGateV3::new\", \"pub fn require_original_adoption_stage\"]\nrequired_order = []\nrequired_function_order = [{ \"function\" = \"fn model_cut(\", \"sequence\" = [\"fn model_cut(\", \"owners: &Owners,\", \"snapshot: &LearningIterationSnapshotV1,\", \") -> Result<LearningIterationSnapshotV1, Error> {\", \"owners.training_prefix(snapshot)?;\", \"if !(5..=7).contains(&snapshot.receipts.len()) {\", \"return Err(Error::WrongScope);\", \"}\", \"let mut cut = LearningIterationCoordinatorV1::from_snapshot(\", \"owners.common.material.initial.clone(),\", \")?;\", \"for receipt in &snapshot.receipts[..5] {\", \"cut.record(receipt.clone(), receipt.observed_unix_seconds)?;\", \"}\", \"if cut.next_stage() != Some(Stage::Selection) {\", \"return Err(Error::WrongScope);\", \"}\", \"owners.common.material.scope.validate_snapshot(cut.snapshot())?;\", \"Ok(cut.snapshot().clone())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn publication_context(\", \"sequence\" = [\"fn publication_context(\", \"owners: &Owners,\", \"operation: &CandidateOriginalOperation<'_>,\", \"completed: &OriginalCellQ24ModelReadCompletionV1,\", \") -> Result<OriginalCircuitModelPublicationContextV1, Error> {\", \"operation.require_owner(owners)?;\", \"if completed.model().snapshot() != &model_cut(owners, &operation.supplied)? {\", \"return Err(Error::WrongScope);\", \"}\", \"OriginalCircuitModelPublicationContextV1::from_original_receipt(\", \"owners.common.material.clone(),\", \"owners.protocol.clone(),\", \"operation.dataset.clone(),\", \"operation.training.clone(),\", \"completed.material().original_evaluation().clone(),\", \"completed.model().clone(),\", \").map_err(|_| Error::WrongScope)\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_published_selection(\", \"sequence\" = [\"fn require_published_selection(\", \"publication: &OriginalCircuitModelVersionPublicationV1,\", \"selection: &OriginalCircuitModelSelectionCommandReceiptV1,\", \") -> Result<(), Error> {\", \"if publication.authority() != AuthorityPosture::DENY_ALL\", \"|| !matches!(&selection.receipt().observation,\", \"LearningIterationObservationV1::Selection { candidate_bundle, selection_digest }\", \"if *candidate_bundle == publication.bundle_digest()\", \"&& *selection_digest == publication.selection_digest())\", \"|| publication.run_id() == &selection.snapshot().request.source_run_id\", \"{\", \"return Err(Error::CommitUncertain);\", \"}\", \"Ok(())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_adoption_cut(\", \"sequence\" = [\"fn require_adoption_cut(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \"stage: Stage,\", \"action: Action,\", \") -> Result<(), Error> {\", \"self.require_live_deadline()?;\", \"model_cut(self, snapshot)?;\", \"let expected = match (stage, action) {\", \"(Stage::Selection, Action::Execute) => 5,\", \"(Stage::Selection, Action::Readback) => 6,\", \"(Stage::NextUse, Action::Execute) => 6,\", \"(Stage::NextUse, Action::Readback) => 7,\", \"_ => return Err(Error::WrongScope),\", \"};\", \"if snapshot.receipts.len() != expected\", \"|| action == Action::Execute && (\", \"self.common.origin != Origin::Fresh\", \"|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()\", \"!= Some(stage)\", \")\", \"{\", \"return Err(Error::WrongScope);\", \"}\", \"Ok(())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn begin_adoption(\", \"sequence\" = [\"fn begin_adoption(&self) -> Result<(), Error> {\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;\", \"if lane.failed { return Err(Error::CommitUncertain); }\", \"lane.failed = true;\", \"Ok(())\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn bind_adoption_selection(\", \"sequence\" = [\"fn bind_adoption_selection(\", \"&self,\", \"operation: &CandidateOriginalOperation<'_>,\", \"completed: &OriginalCellQ24ModelReadCompletionV1,\", \"readback_only: bool,\", \") -> Result<(Arc<OriginalCircuitModelSelectionCommandClientV1>,\", \"Arc<OriginalCircuitModelVersionClientV1>), Error> {\", \"let publication = publication_context(self, operation, completed)?;\", \"let context = OriginalCircuitCandidateLearningReadContextV1::from_original_model(\", \"publication,\", \").map_err(|_| Error::WrongScope)?;\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;\", \"if lane.model.as_ref().is_some_and(|saved| saved != completed.model()) {\", \"return Err(Error::CommitUncertain);\", \"}\", \"if lane.selector.is_none() && lane.version.is_none() {\", \"let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;\", \"let (selector, version) = common.take_candidate_selection_channels(\", \"&operation.dataset, &operation.training,\", \")?;\", \"let selector = OriginalCircuitModelSelectionCommandClientV1::bind_original_stage_channel(\", \"selector, context.clone(), readback_only, None,\", \").map_err(|_| Error::CommitUncertain)?;\", \"let version = if readback_only {\", \"OriginalCircuitModelVersionClientV1::recover_original_stage_channel(version, context)\", \"} else {\", \"OriginalCircuitModelVersionClientV1::bind_original_stage_channel(version, context)\", \"}.map_err(|_| Error::CommitUncertain)?;\", \"lane.selector = Some(Arc::new(selector));\", \"lane.version = Some(Arc::new(version));\", \"lane.model = Some(completed.model().clone());\", \"}\", \"Ok((\", \"Arc::clone(lane.selector.as_ref().ok_or(Error::CommitUncertain)?),\", \"Arc::clone(lane.version.as_ref().ok_or(Error::CommitUncertain)?),\", \"))\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_adoption_effect(\", \"sequence\" = [\"fn require_adoption_effect(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \") -> Result<(), Error> {\", \"self.require_live_deadline()?;\", \"let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\", \"RootResidentLearningEffectGateV3::require_current(\", \"gate, snapshot, &self.common.material.scope,\", \").await\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn original_selection(\", \"sequence\" = [\"fn original_selection(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \"action: Action,\", \") -> Result<OriginalCandidateOperationEvidence<'_>, Error> {\", \"self.require_adoption_cut(snapshot, Stage::Selection, action)?;\", \"let operation = CandidateOriginalOperation::begin(self, snapshot).await?;\", \"self.begin_adoption()?;\", \"let completed: OriginalCellQ24ModelReadCompletionV1 =\\n            self.read_model_for_adoption(&operation).await?;\", \"let context: OriginalCircuitModelPublicationContextV1 =\\n            publication_context(self, &operation, &completed)?;\", \"let (selector, version) = self.bind_adoption_selection(\", \"&operation, &completed,\", \"self.common.origin == Origin::Recovered || action == Action::Readback,\", \")?;\", \"context.authenticate_material(completed.material(), auth::now()?, false)\", \".map_err(|_| Error::CommitUncertain)?;\", \"let published = match action {\", \"Action::Execute => {\", \"self.require_adoption_effect(snapshot).await?;\", \"let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\", \"let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);\", \"let result = OriginalCircuitModelVersionClientV1::publish_original_version(\", \"version.as_ref(), cancellation,\", \").await;\", \"self.require_adoption_effect(snapshot).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"result.map_err(|_| Error::CommitUncertain)?\", \"}\", \"Action::Readback => OriginalCircuitModelVersionClientV1::readback(version.as_ref())\", \".await.map_err(|_| Error::CommitUncertain)?,\", \"};\", \"let publication = published.publication().ok_or(Error::OwnerUnavailable(\", \",\", \"))?;\", \"if published.authority() != AuthorityPosture::DENY_ALL\", \"|| publication.authority() != AuthorityPosture::DENY_ALL\", \"{\", \"return Err(Error::CommitUncertain);\", \"}\", \"{\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::QueueFull)?;\", \"if lane.publication.as_ref().is_some_and(|saved| saved != publication) {\", \"return Err(Error::CommitUncertain);\", \"}\", \"lane.publication = Some(publication.clone());\", \"}\", \"context.authenticate_material(completed.material(), auth::now()?, action == Action::Execute)\", \".map_err(|_| Error::CommitUncertain)?;\", \"let original = match action {\", \"Action::Execute => {\", \"self.require_adoption_effect(snapshot).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"let result = OriginalCircuitModelSelectionCommandClientV1::execute_selection(\", \"selector.as_ref(),\", \").await;\", \"self.require_adoption_effect(snapshot).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"result.map_err(|_| Error::CommitUncertain)?\", \"}\", \"Action::Readback => OriginalCircuitModelSelectionCommandClientV1::readback(\", \"selector.as_ref(),\", \").await.map_err(|_| Error::CommitUncertain)?,\", \"};\", \"let closed = CandidateOriginalOperation::close(operation).await\", \".map_err(|_| Error::CommitUncertain)?;\", \"require_published_selection(publication, &original)?;\", \"let evidence = closed.selection(completed, original.clone(), publication.clone())\", \".map_err(|_| Error::CommitUncertain)?;\", \"self.require_live_deadline().map_err(|_| Error::CommitUncertain)?;\", \"let mut lane = self.adoption.try_lock().map_err(|_| Error::CommitUncertain)?;\", \"if lane.selection.as_ref().is_some_and(|saved| saved != &original) {\", \"return Err(Error::CommitUncertain);\", \"}\", \"lane.selection = Some(original);\", \"lane.failed = false;\", \"Ok(evidence)\", \"}\"], \"top_level\" = [] }, { \"function\" = \"fn require_original_adoption_stage(\", \"sequence\" = [\"fn require_original_adoption_stage(\", \"&self,\", \"snapshot: &LearningIterationSnapshotV1,\", \"stage: Stage,\", \") -> Result<(), Error> {\", \"self.require_adoption_cut(snapshot, stage, Action::Execute)?;\", \"if self.common.root.is_none() {\", \"return Err(Error::OwnerUnavailable(\", \"));\", \"}\", \"Ok(())\", \"}\"], \"top_level\" = [\"self.require_adoption_cut(snapshot, stage, Action::Execute)?;\", \"if self.common.root.is_none() {\", \"Ok(())\"] }]\n\n"
+      }
+    ],
+    "boundary_added": {
+      "id": "learning_original_candidate_adoption_stage",
+      "symbol": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage",
+      "receiver_type": "OriginalCellQ24CandidateStageOwnersV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_adoption_stage(",
+        "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+        "if self.common.root.is_none() {",
+        "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+      ],
+      "caller_markers": [
+        "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage("
+      ]
+    },
+    "original_definition_path_exclusion_preserved": true,
+    "unchanged_existing_empty_ordinary_factory_caller_sets": true
+  },
+  "live_contract": {
+    "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/route-current-contract.json",
+    "before_blob": "398718743fa9e0b6fac6ccdc51cd136cf7f18948",
+    "after": {
+      "key": "route_contract",
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/route-current-contract.json",
+      "sha": "d762c02f5a9f1574d50bb7d0a1846401d15022d7",
+      "bytes": 324919,
+      "sha256": "ac2f3d9e8ab1f290fd5894deddbeda977231600ff885cb551a1f7b96764f849e"
+    },
+    "complete_current_rows": 13,
+    "complete_unowned_rows_preserved": 11,
+    "historical_refresh_records_preserved": 5,
+    "old_deletion_mutations_preserved": 69,
+    "new_deletion_mutations": 5,
+    "private_injections_preserved": 12,
+    "old_boundary_after_rows_preserved": 24,
+    "old_boundary_additions_preserved": 8,
+    "added_private_boundary": 1,
+    "rule": "Update full matching records only. No path deduplication; the suffix QA still requires exact count(row)==1."
+  },
+  "source_qa": {
+    "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+    "before_blob": "a22b0644aaf5ed7594b44dac03770d49d8ac6eb2",
+    "after": {
+      "key": "qa",
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "sha": "40e257dfe3eaf926a95711e95949425fc4387ae9",
+      "bytes": 15584,
+      "sha256": "51bc33b415c72d028a761ad946638666e732e002fa54737834e24db82232bc64"
+    },
+    "preserved_methods": [
+      "test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle",
+      "test_both_factories_consume_original_values_under_the_same_root_registration",
+      "test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape",
+      "test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied"
+    ],
+    "new_methods": [
+      "test_private_adoption_dispatch_keeps_exact_fresh_cut_and_installed_gate",
+      "test_private_adoption_never_replaces_generic_denials_or_actual_root_fences"
+    ],
+    "new_deletion_replacement_controls": 46,
+    "generic_denial_and_gate_freshness_controls_retained": true,
+    "no_load_tests_or_dynamic_inventory_change": true,
+    "expected_source_method_delta": 2,
+    "parent_expected_source_methods": 443,
+    "child_expected_source_methods": 445,
+    "native_inventory_unchanged": {
+      "cases": 201,
+      "groups": 43,
+      "ignored_root_cases": 29
+    },
+    "caveat": "The new positive baseline is a source guard acceptance, not runtime positive eligibility. No new native mechanism case or ordinary success is claimed."
+  },
+  "static_projection": {
+    "engine": "V8 translation of the fixed existing Rust mask/function-order/required/forbidden rules; original verifier untouched.",
+    "verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "marker_helper_blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c",
+    "contract_baseline_rows": 13,
+    "contract_baseline_functions": 84,
+    "contract_deletion_controls_rejected": 74,
+    "private_injections_rejected": 12,
+    "new_resident_controls_rejected": 46,
+    "original_python_or_full_typed_scan_executed": false,
+    "rust_compile_or_native_executed": false,
+    "test_counts_are_expected_inventory_not_execution": true
+  },
+  "mechanism_status": {
+    "actual_qualified_resident_5_to_6_to_7": "NOT DEMONSTRATED",
+    "new_eligibility_runtime_positive": "NOT DEMONSTRATED",
+    "blocker": "The existing fixed RootModel fixture exports only a projection of actual T/Model values with explicit E/Product fixture metadata; it does not transfer original fresh common Material/Trainer clients, baseline or initial Training connection to a Candidate bundle. Existing adapters cannot legally reconstruct that custody.",
+    "policy": "No fake gate, new Qualified signature, Recovered-to-Fresh mutation, copied opaque effect or lowered frozen rule is introduced to create a test pass.",
+    "details": "mechanism-feasibility.json",
+    "existing_checks_not_rerun": "Existing actual Root Fresh CAS/cancellation/post-CAS-expiry, original Candidate negative and local S/Observer mechanisms remain byte-identical; their old outcomes do not validate this child."
+  },
+  "archival_materials": {
+    "ordinary_source_audit": "782a41774414237ab06df421c3184e24b8ca0e9d",
+    "ordinary_source_readme": "f5f7914443e66457b11950ed8249ff602d6feb21",
+    "maintenance_script": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+    "maintenance_null_binding": "fa0e410ef34d1c0b72fc5cd3c8f78d3178a75a99",
+    "maintenance_current_status": "35c93a73ddf783cbc10a55ecc4834b80aba61010",
+    "maintenance_peer": "8f6f237e5402d76446debd95b71d2abf5bbf07c6",
+    "maintenance_executable_request": false,
+    "maintenance_note": "Historical v2/old outer pairing remains deliberately unbound. Nothing in this source child supplies actual terminal evidence or permits running maintenance."
+  }
+}

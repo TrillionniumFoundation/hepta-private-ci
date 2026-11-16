@@ -1,0 +1,30 @@
+name: hcsn-currentstate-n256-joint-comparator-intent
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_joint_comparator_intent/**"
+      - ".github/workflows/hcsn-currentstate-n256-joint-comparator-intent.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  static-source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run small stdlib fixtures
+        run: |
+          python -m unittest qualification.hcsn_currentstate_n256_joint_comparator_intent.test_static
+          python -O -m unittest qualification.hcsn_currentstate_n256_joint_comparator_intent.test_static
+      - name: Audit source intent without numerical imports
+        run: |
+          python -m qualification.hcsn_currentstate_n256_joint_comparator_intent.static_inspector \
+            --package-root qualification/hcsn_currentstate_n256_joint_comparator_intent \
+            --qualification-root qualification

@@ -1,0 +1,50 @@
+{
+  "observed_utc": "2026-11-10T19:01:24.111Z",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5829",
+      "number": 5829,
+      "state": "open",
+      "merged": false,
+      "mergeable": false,
+      "draft": true,
+      "body": "## Why\n\nThe HCSN research claims need a reproducible chain to the actual source, model, data, configuration and raw execution records. Earlier evidence gaps, unsuccessful trials and publication failures must remain inspectable.\n\n## What this changes\n\nThis is a mechanical archival change on top of #5803. It adds the frozen 2026-11-10 P0–P5 evidence package: 472 manifest-bound files, exact runtime/source capsules, numerical successes and failures, baseline36 plus C1 independent reviews, a finite QVI fixture, generated non-diffusion controls, and a 55-row cost ledger with explicit overlapping scopes.\n\nThe snapshot records the original six HCSN fits as last observed at 18:01 UTC and was curated at 18:36 UTC. Their later budget-exhausted terminal records and subsequent checkpoint numerical review belong to a separate append-only package. This PR does not retrospectively rewrite that observation.\n\nLarge model/log archives are held in an unpublished draft release with authenticated byte verification; incomplete asset attempts are explicitly retained. CURRENT and the prospective research protocol are separate reviewable changes. The prospective single-clock fix in #5821 is not substituted for native C1 source.\n\n## Validation and scope\n\n- Independent snapshot review: 472 file size/SHA256 bindings, 38 archive instances, 182 relative links, 55 cost references and 245 explicit data bindings verified.\n- Repository evidence checker: all three historical/current manifests and four Markdown entry points passed, covering 659 file entries with no errors.\n- Baseline36+C1: 33/36 attempts meet the declared training heuristic after continuation; three memorization failures remain. This is not a completed or sufficiently trained HCSN comparison.\n- Existing hosted science fixtures passed on their recorded source tree; repository-wide CI, full training-domain numerical accuracy, scientific benefit, GPU/energy efficiency and production admission remain separately gated.\n\nExact local tree: `5290969fac4c50f6c9663ff32124c734873490a8`.\nThe GitHub API mirror was verified to have the identical entire tree before advancing this branch. No main-branch merge or release publication is requested.",
+      "title": "evidence(hcsn): preserve and index the P0–P5 research source chain",
+      "base": "codex/hcsn-p2-continuation-tests-api-20261110-c385",
+      "base_sha": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+      "head": "codex/hcsn-evidence-api-20261110-c385",
+      "head_sha": "4135db06b31943d42a2d66f4f8020ace08c0fa43",
+      "head_repo_id": 1320694176,
+      "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "merge_commit_sha": null,
+      "user": {
+        "login": "ProfHepta",
+        "name": "ProfHepta",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+        "id": 102159240
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2026-11-10T19:01:22Z",
+      "updated_at": "2026-11-10T19:01:22Z",
+      "closed_at": null,
+      "merged_at": null,
+      "commits": 7,
+      "changed_files": 467,
+      "additions": 129409,
+      "deletions": 0,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5829",
+      "display_title": "evidence(hcsn): preserve and index the P0–P5 research source chain"
+    },
+    "isError": false
+  }
+}

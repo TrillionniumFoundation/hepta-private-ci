@@ -114,6 +114,7 @@ jobs:
               -//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
               -//codex-rs/linux-sandbox:linux-sandbox-all-test
               -//codex-rs/cli:cli-sandbox_network_proxy-test
+              -//codex-rs/core:core-all-test
             )
           fi
 
@@ -174,7 +175,8 @@ jobs:
             --build_metadata=TAG_job=native-linux-sandbox-tests \
             -- \
             //codex-rs/linux-sandbox:linux-sandbox-all-test \
-            //codex-rs/cli:cli-sandbox_network_proxy-test
+            //codex-rs/cli:cli-sandbox_network_proxy-test \
+            //codex-rs/core:core-all-test
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()

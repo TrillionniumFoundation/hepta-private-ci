@@ -156,3 +156,131 @@ and parses Python, embedded Python and shell blocks. These are static integrity
 checks, not new source-gate or native qualification runs. No trigger is widened
 to main, pull requests or manual dispatch; retired branch names remain inert.
 Individual pins and counts are in `legacy-small/mem8-source-gates-v*.json`.
+
+## Historical Fence v0.13 isolated qualification
+
+The entire incoming one-workflow harness was reviewed. It stays restricted to
+its original branch, exact source parent/tree and preceding SHA, verifies the
+original blob-policy sources and seven pinned Fence files, and retains before
+and after identities with read-only repository permission. The artifact correctly
+states that Fence post hooks and the final job log are not yet observed.
+
+Thirty whitespace-only blank lines were cleaned; parsed YAML is identical,
+including every embedded Python byte represented by the YAML value. All shell
+blocks and embedded Python parse. The historical workflow was not executed,
+and this retention is not current Fence/native qualification.
+
+## Historical MEM formatter diagnostic
+
+The 34-line Prettier diagnostic is retained unchanged. It runs only on its old
+branch or an explicit dispatch, uses read-only contents permission and a frozen
+pnpm installation with lifecycle scripts disabled, and prints a formatter diff
+from the disposable checkout. It cannot commit or push that rewrite. YAML and
+shell parsing pass. No dependency installation or formatter was launched here.
+
+## Historical Windows scoped lint
+
+The complete Windows harness and workflow were reviewed. They retain an exact
+old source/tree, pinned lock and recipe bytes, three explicit `just fix --locked`
+commands, a single Actions job timeout and before/after tool/source checks.
+Any rewrite, nonzero exit or interruption remains a failure; a collection
+snapshot cannot replace a missing command exit. Mutation is confined to the
+isolated checkout, with no source commit or remote push. Its original old-branch
+guard remains intact. Python and YAML parse. The PowerShell blocks were read but
+not parsed or executed because PowerShell/Windows is unavailable here. No
+Windows native/lint success is claimed.
+
+## Historical Bazel lock V5
+
+The full driver and workflow were reviewed. The original old-branch guard,
+immutable source/tree, driver SHA and strict receipt-wrapper identity remain.
+It uses an owned Bazelisk/output/repository cache, one bounded original lock
+command and exact before/after source, lock and executable identities. A lock
+rewrite remains a failed gate requiring another reviewed candidate; there is no
+automatic commit, reset or retry. The driver SHA matches the workflow, Python
+and embedded Python parse, and all shell blocks pass `bash -n`. No Bazel download,
+lock regeneration or native project qualification was run.
+
+## Terminal-loss covariance research contracts
+
+The estimator, all fixtures, README and workflow were read in full. Complete
+source/seed/arm pairing, failed or over-budget full losses, train-only fitting,
+source/image-disjoint frozen holdout and immutable per-arm proposal identities
+are preserved. Portfolio weights remain an additive surrogate; they do not
+represent measured mixture performance or authorize any production action.
+
+All nine synthetic numerical/custody tests pass against the integrated source,
+without skips. The path-filtered exact-head workflow installs pinned NumPy and
+runs only those synthetic tests with read-only contents permission. No real Cell
+generation, blind experiment, model promotion or native qualification was run.
+
+## ACT-2 historical fixture contrast and continuation evidence
+
+The complete Python driver, workflow and protocol were reviewed. The old-branch
+trigger and read-only permission remain. It requires an actual macOS host and
+two fixed source identities across canonical, symlinked-baseline and repaired
+paths. The red stage requires exactly the twelve named Invalid failures; later
+formatting/source drift cannot become a clean pass. No desktop, native test or
+historical driver was run.
+
+All 23 ZIPs retain incoming bytes. Their 409 members pass CRC checks; nine
+original macOS manifest entries plus source/command-log bindings match. Two raw
+architecture logs keep every original byte through deterministic gzip with
+original and stored pins in an adjacent manifest. README documents reconstruction.
+Source whitespace checks remain unchanged, no evidence whitespace is erased,
+and no historical claim is transferred to this integrated tree.
+
+## Cell lifecycle historical refusal evidence
+
+The archive and full three-document delta were reviewed. Current runtime source
+already contains both mandatory public refusal calls; the documentation now
+separates that DENY_ALL boundary from private process-local mechanics. The normal
+merge preserves other composed documentation. Its generated plasticity status
+and referenced test symbols validate, while old documentation-output pins remain
+explicitly historical because current document bytes differ.
+
+All 39 original manifest members, eight phase streams and the decompressed
+materialization inventory match their pins. The original top-level native runner
+is retained byte-for-byte as gzip with a reconstruction manifest, so its trailing
+blank line is preserved without weakening whitespace checks. It was parsed only;
+no historical negative control, native test or source mutation was executed.
+
+## Retire the automatic runtime.codex bootstrap
+
+The old workflow would run on main pull requests, execute a decoded historical
+source transformation and commit/push to its old branch using write permission
+and persisted credentials. Its small gzip payload is corrupt, while its shell
+pipeline could leave an empty Python file that compiled successfully. Both
+original payloads and the original workflow are preserved exactly for review.
+
+The active workflow now requires a manual dispatch with a false-default opt-in,
+uses read-only contents permission and inspects the selected source. The new
+inspector pins encoded bytes, bounds encoded/decoded size and parses Python AST
+without writing or executing the decoded program. There is no transformation,
+commit or push. Its actual check fails with the original corrupt payload and
+successfully parses the larger source proposal; this is the expected honest
+archive result, not qualification. Five regressions pass, including a source
+that would create a file if it were executed, corrupt original bytes, changed
+hash, excessive decoded size and invalid syntax.
+
+The larger preserved proposal contains exact dispatch binding and a cross-owner
+pre-effect abort/ack outbox design. Those Rust changes were not blindly applied;
+they remain an explicit semantic-review item against the latest runtime source.
+
+## Source-only recovery with an explicit raw archive gap
+
+The two historical archive scripts and complete notebook code cell were reviewed.
+The three supplied source-only tarballs match their sidecars, internal manifests
+and all 339 selected member hashes; 243 Python files and 31 JSON files parse.
+Bundle members were not executed. The fixed-host historical checker is preserved
+with an explicit warning that its missing-manifest path and process exit cannot
+serve as a current integrity gate; independent strict checks were used here.
+
+Seven blobs above the repository limit now use exact ordered pieces of at most
+400000 bytes, with original byte/SHA/Git identities and tested reconstruction.
+The source-only HCSN V9 bundle is complete, but its separate raw evidence ZIP was
+already missing original part 004 (2000000 bytes). That gap remains explicit;
+no full raw ZIP/replay claim or replacement bytes were invented. The existing
+notebook code passes its declared 24/48/24 finite-grid numerical cases offline.
+Its original bytes/output stay intact, and no training, network or Library
+mutation was performed.

@@ -1,0 +1,18 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-B",
+    "-"
+  ],
+  "stdin": "import pathlib,os,json,subprocess,time,hashlib\nBOOT=\"14f92beb-43c6-4786-839e-b57307ae8048\"\nJOBS={\n \"1a1ce727d17-2564-167b\":{\"supervisor_pid\":3965683,\"supervisor_start_ticks\":154263948,\"child_pid\":3965691,\"child_start_ticks\":154263956},\n \"1a1ce768bc3-2564-1695\":{\"supervisor_pid\":3977414,\"supervisor_start_ticks\":154290982,\"child_pid\":3977433,\"child_start_ticks\":154290993}}\nstart=time.time()\nresult={\"schema\":\"hcsn-cancel-current-readonly-snapshot-v1\",\"sampled_unix_seconds\":start,\"original_boot\":BOOT,\"current_boot\":pathlib.Path(\"/proc/sys/kernel/random/boot_id\").read_text().strip(),\"original_identities\":JOBS,\"snapshot_atomic\":False,\"proc_scan\":{\"rows\":0,\"vanished\":0,\"errors\":[],\"matches\":[],\"budget_exhausted\":False},\"journals\":[],\"new_model_executions\":0,\"new_optimizer_calls\":0}\nparents={v[k] for v in JOBS.values() for k in (\"supervisor_pid\",\"child_pid\")}\ngroups={v[\"child_pid\"] for v in JOBS.values()}\nrows={}\ndeadline=time.monotonic()+10\nfor entry in pathlib.Path(\"/proc\").iterdir():\n if not entry.name.isdigit():continue\n if len(rows)>=100000 or time.monotonic()>deadline:\n  result[\"proc_scan\"][\"budget_exhausted\"]=True;break\n try:\n  raw=(entry/\"stat\").read_bytes()\n  if len(raw)>16384:raise ValueError(\"stat exceeds bound\")\n  fields=raw.rsplit(b\")\",1)[1].split()\n  pid=int(entry.name)\n  rows[pid]={\"pid\":pid,\"ppid\":int(fields[1]),\"pgrp\":int(fields[2]),\"session\":int(fields[3]),\"state\":fields[0].decode(\"ascii\"),\"start_ticks\":int(fields[19])}\n except (FileNotFoundError,ProcessLookupError):\n  result[\"proc_scan\"][\"vanished\"]+=1\n except Exception as exc:\n  result[\"proc_scan\"][\"errors\"].append({\"pid\":int(entry.name),\"error\":type(exc).__name__})\nresult[\"proc_scan\"][\"rows\"]=len(rows)\nselected={pid for pid,row in rows.items() if pid in parents or row[\"pgrp\"] in groups or row[\"session\"] in groups}\nwhile True:\n more={pid for pid,row in rows.items() if row[\"ppid\"] in parents|selected}\n if more<=selected:break\n selected|=more\nresult[\"proc_scan\"][\"matches\"]=[rows[pid] for pid in sorted(selected)]\nresult[\"proc_scan\"][\"visibility_complete\"]=not result[\"proc_scan\"][\"errors\"] and not result[\"proc_scan\"][\"budget_exhausted\"]\nfor job in JOBS:\n for scope in (\"--user\",\"--system\"):\n  command=[\"/usr/bin/journalctl\",scope,\"--no-pager\",\"--unit=hepta-runtime-job-\"+job+\".service\",\"--since=@1794464900\",\"--until=@1794465400\",\"--lines=32\",\"--output=json\",\"--output-fields=__REALTIME_TIMESTAMP,_BOOT_ID,_PID,_COMM,_SYSTEMD_UNIT,_SYSTEMD_USER_UNIT,MESSAGE,RESULT,JOB_RESULT\"]\n  row={\"job_id\":job,\"scope\":scope,\"args\":command}\n  try:\n   p=subprocess.run(command,capture_output=True,timeout=8,check=False)\n   row.update(exit_code=p.returncode,stdout_bytes=len(p.stdout),stdout_sha256=hashlib.sha256(p.stdout).hexdigest(),stdout=p.stdout[:32768].decode(\"utf-8\",\"replace\"),stdout_truncated=len(p.stdout)>32768,stderr=p.stderr[:4096].decode(\"utf-8\",\"replace\"),stderr_bytes=len(p.stderr),stderr_truncated=len(p.stderr)>4096)\n  except subprocess.TimeoutExpired:\n   row.update(timed_out=True,observation_complete=False)\n  result[\"journals\"].append(row)\nresult[\"elapsed_seconds\"]=time.time()-start\nprint(json.dumps(result,sort_keys=True))\n",
+  "cwd": "/home/qian-qi",
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "idempotency_key": "hcsn-c2-sigterm-journal-readonly-c06d-v2",
+  "timeout_seconds": 60,
+  "cpu_quota_percent": 100,
+  "memory_max_bytes": 268435456,
+  "nice": 10
+}

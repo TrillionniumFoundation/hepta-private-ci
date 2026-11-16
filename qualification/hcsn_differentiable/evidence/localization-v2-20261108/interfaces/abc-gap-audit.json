@@ -1,0 +1,451 @@
+{
+  "abc_all_gaps_leq_point_two": true,
+  "abc_contains_gap_gt_point_one": true,
+  "abc_max_gap_seconds": 0.162175,
+  "abc_max_gap_ticks": 1621750,
+  "abc_sequence_at_max": "C02",
+  "archive_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+  "data_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+  "history": "Post-selection read-only audit. The actual d=0.2 choice followed full-dataset metadata/clock/global-gap inspection, including E; this finding does not rewrite that choice as ABC-only. E supplied no model fitting, tuning or scoring.",
+  "schema": "localization-v2-postselection-time-domain-audit-v1",
+  "selected_windows": {
+    "A01": {
+      "class_count": 2,
+      "events": 128,
+      "label_counts": {
+        "sitting down": 6,
+        "walking": 122
+      },
+      "source_rows": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ]
+    },
+    "D01": {
+      "class_count": 1,
+      "events": 64,
+      "label_counts": {
+        "walking": 64
+      },
+      "source_rows": [
+        89217,
+        89218,
+        89219,
+        89220,
+        89221,
+        89222,
+        89223,
+        89224,
+        89225,
+        89226,
+        89227,
+        89228,
+        89229,
+        89230,
+        89231,
+        89232,
+        89233,
+        89234,
+        89235,
+        89236,
+        89237,
+        89238,
+        89239,
+        89240,
+        89241,
+        89242,
+        89243,
+        89244,
+        89245,
+        89246,
+        89247,
+        89248,
+        89249,
+        89250,
+        89251,
+        89252,
+        89253,
+        89254,
+        89255,
+        89256,
+        89257,
+        89258,
+        89259,
+        89260,
+        89261,
+        89262,
+        89263,
+        89264,
+        89265,
+        89266,
+        89267,
+        89268,
+        89269,
+        89270,
+        89271,
+        89272,
+        89273,
+        89274,
+        89275,
+        89276,
+        89277,
+        89278,
+        89279,
+        89280
+      ]
+    }
+  },
+  "sequence_gaps": {
+    "A01": {
+      "events": 5830,
+      "max_gap_seconds": 0.1351457,
+      "max_gap_ticks": 1351457,
+      "source_rows_at_max": [
+        1140,
+        1141
+      ]
+    },
+    "A02": {
+      "events": 5691,
+      "max_gap_seconds": 0.1351456,
+      "max_gap_ticks": 1351456,
+      "source_rows_at_max": [
+        11300,
+        11301
+      ]
+    },
+    "A03": {
+      "events": 5326,
+      "max_gap_seconds": 0.1351455,
+      "max_gap_ticks": 1351455,
+      "source_rows_at_max": [
+        16448,
+        16449
+      ]
+    },
+    "A04": {
+      "events": 5402,
+      "max_gap_seconds": 0.1081169,
+      "max_gap_ticks": 1081169,
+      "source_rows_at_max": [
+        22006,
+        22007
+      ]
+    },
+    "A05": {
+      "events": 5224,
+      "max_gap_seconds": 0.1351455,
+      "max_gap_ticks": 1351455,
+      "source_rows_at_max": [
+        23140,
+        23141
+      ]
+    },
+    "B01": {
+      "events": 6647,
+      "max_gap_seconds": 0.1351454,
+      "max_gap_ticks": 1351454,
+      "source_rows_at_max": [
+        29236,
+        29237
+      ]
+    },
+    "B02": {
+      "events": 6091,
+      "max_gap_seconds": 0.1081169,
+      "max_gap_ticks": 1081169,
+      "source_rows_at_max": [
+        39911,
+        39912
+      ]
+    },
+    "B03": {
+      "events": 5670,
+      "max_gap_seconds": 0.1621744,
+      "max_gap_ticks": 1621744,
+      "source_rows_at_max": [
+        42608,
+        42609
+      ]
+    },
+    "B04": {
+      "events": 5789,
+      "max_gap_seconds": 0.1621747,
+      "max_gap_ticks": 1621747,
+      "source_rows_at_max": [
+        48417,
+        48418
+      ]
+    },
+    "B05": {
+      "events": 5953,
+      "max_gap_seconds": 0.1351453,
+      "max_gap_ticks": 1351453,
+      "source_rows_at_max": [
+        52154,
+        52155
+      ]
+    },
+    "C01": {
+      "events": 6297,
+      "max_gap_seconds": 0.108117,
+      "max_gap_ticks": 1081170,
+      "source_rows_at_max": [
+        59849,
+        59850
+      ]
+    },
+    "C02": {
+      "events": 6216,
+      "max_gap_seconds": 0.162175,
+      "max_gap_ticks": 1621750,
+      "source_rows_at_max": [
+        69343,
+        69344
+      ]
+    },
+    "C03": {
+      "events": 6267,
+      "max_gap_seconds": 0.1351459,
+      "max_gap_ticks": 1351459,
+      "source_rows_at_max": [
+        74255,
+        74256
+      ]
+    },
+    "C04": {
+      "events": 6323,
+      "max_gap_seconds": 0.1081169,
+      "max_gap_ticks": 1081169,
+      "source_rows_at_max": [
+        81875,
+        81876
+      ]
+    },
+    "C05": {
+      "events": 6490,
+      "max_gap_seconds": 0.1081169,
+      "max_gap_ticks": 1081169,
+      "source_rows_at_max": [
+        86857,
+        86858
+      ]
+    },
+    "D01": {
+      "events": 7463,
+      "max_gap_seconds": 0.1351457,
+      "max_gap_ticks": 1351457,
+      "source_rows_at_max": [
+        90751,
+        90752
+      ]
+    },
+    "D02": {
+      "events": 6416,
+      "max_gap_seconds": 0.1351459,
+      "max_gap_ticks": 1351459,
+      "source_rows_at_max": [
+        102008,
+        102009
+      ]
+    },
+    "D03": {
+      "events": 6562,
+      "max_gap_seconds": 0.1351459,
+      "max_gap_ticks": 1351459,
+      "source_rows_at_max": [
+        108804,
+        108805
+      ]
+    },
+    "D04": {
+      "events": 5454,
+      "max_gap_seconds": 0.1351459,
+      "max_gap_ticks": 1351459,
+      "source_rows_at_max": [
+        112023,
+        112024
+      ]
+    },
+    "D05": {
+      "events": 6057,
+      "max_gap_seconds": 0.1351455,
+      "max_gap_ticks": 1351455,
+      "source_rows_at_max": [
+        119459,
+        119460
+      ]
+    },
+    "E01": {
+      "events": 9098,
+      "max_gap_seconds": 0.1621741,
+      "max_gap_ticks": 1621741,
+      "source_rows_at_max": [
+        128454,
+        128455
+      ]
+    },
+    "E02": {
+      "events": 8075,
+      "max_gap_seconds": 0.1081169,
+      "max_gap_ticks": 1081169,
+      "source_rows_at_max": [
+        133676,
+        133677
+      ]
+    },
+    "E03": {
+      "events": 9112,
+      "max_gap_seconds": 0.1570358,
+      "max_gap_ticks": 1570358,
+      "source_rows_at_max": [
+        140421,
+        140423
+      ]
+    },
+    "E04": {
+      "events": 8514,
+      "max_gap_seconds": 0.1351457,
+      "max_gap_ticks": 1351457,
+      "source_rows_at_max": [
+        149464,
+        149465
+      ]
+    },
+    "E05": {
+      "events": 8893,
+      "max_gap_seconds": 0.135145,
+      "max_gap_ticks": 1351450,
+      "source_rows_at_max": [
+        163900,
+        163901
+      ]
+    }
+  }
+}

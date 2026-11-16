@@ -1,0 +1,85 @@
+{
+  "schema": "hcsn-c2-readonly-terminal-reconciliation-v1",
+  "observed_host_time_utc": "2026-11-11T04:33:07Z",
+  "repository_base_commit": "0ea7e54d9b74dcfb237de1c52a6aefbcf0a07823",
+  "original_host": "desktop",
+  "original_durable_job_id": "1a1c74f3308-be2a-75",
+  "original_job_status": {
+    "state": "finalizing",
+    "outcome": "unknown",
+    "reason": "supervisor disappeared without a confirmed terminal receipt",
+    "status_authoritative": false,
+    "terminal_publication_confirmed": false
+  },
+  "original_result_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/RESULT.json",
+  "original_result_observation": "FileNotFoundError; absent in read-only 04:33 UTC check",
+  "original_journal": {
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/commands.jsonl",
+    "bytes": 28672,
+    "sha256": "1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f",
+    "ends_in_newline": false,
+    "complete_json_rows": 16,
+    "invalid_json_rows": [
+      {
+        "line": 17,
+        "length": 693,
+        "error": "invalid_json",
+        "suffix": ": 28824.455493663903, \"command\": [\"/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/de"
+      }
+    ],
+    "producer_terminal_claims": [
+      "hcsn-s101-lr0.001",
+      "hcsn-s101-lr0.003",
+      "hcsn-s211-lr0.003",
+      "hcsn-s307-lr0.003"
+    ],
+    "producer_claim_count": 4,
+    "expected_names": [
+      "hcsn-s101-lr0.001",
+      "hcsn-s101-lr0.003",
+      "hcsn-s211-lr0.001",
+      "hcsn-s211-lr0.003",
+      "hcsn-s307-lr0.001",
+      "hcsn-s307-lr0.003"
+    ],
+    "latest_valid_prefix_status_by_name": {
+      "hcsn-s101-lr0.001": {
+        "line": 16,
+        "status": "completed",
+        "terminal_evidence_complete": true
+      },
+      "hcsn-s101-lr0.003": {
+        "line": 15,
+        "status": "completed",
+        "terminal_evidence_complete": true
+      },
+      "hcsn-s211-lr0.001": {
+        "line": 7,
+        "status": "running",
+        "terminal_evidence_complete": false
+      },
+      "hcsn-s211-lr0.003": {
+        "line": 13,
+        "status": "completed",
+        "terminal_evidence_complete": true
+      },
+      "hcsn-s307-lr0.001": {
+        "line": 10,
+        "status": "running",
+        "terminal_evidence_complete": false
+      },
+      "hcsn-s307-lr0.003": {
+        "line": 14,
+        "status": "completed",
+        "terminal_evidence_complete": true
+      }
+    }
+  },
+  "sampled_service_unit": "hepta-runtime-job-1a1c74f3308-be2a-75: not-found (system and user scopes)",
+  "sampled_old_pids": "not observed by one read-only ps sample; not a lifetime proof",
+  "sampled_disk_free": "40G free, 96% used on /dev/sda2; no established causal diagnosis",
+  "interpretation": "HOLD_NO_GO; producer claims are not independent replay; missing original RESULT, torn trailing JSON and unknown supervisor terminal prevent all-six terminal reconciliation",
+  "new_training_or_observer_started_by_this_audit": false,
+  "scientific_benefit_qualified": false,
+  "adoption_allowed": false
+}

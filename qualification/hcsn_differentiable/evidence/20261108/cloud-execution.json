@@ -1,0 +1,65 @@
+{
+  "account": "colab_account_3",
+  "cloud_execution_stopped": true,
+  "cloud_process_group_alive": false,
+  "energy_joules": null,
+  "execution_exit_code": 0,
+  "execution_finished_utc": 1794115981.7610788,
+  "execution_receipt_state": "succeeded",
+  "execution_started_utc": 1794115960.7569382,
+  "kernel_allocation_attempts": 1,
+  "lease_created_utc": "2026-11-08T05:29:18.789071+00:00",
+  "lease_interval_seconds_including_orchestration_and_waiting": 559.067481,
+  "lease_phase": "released",
+  "lease_released_utc": "2026-11-08T05:38:37.856552+00:00",
+  "old_study_completion_credit": 0,
+  "payload_sha256": "45d868a1cc0af1884f3ede56f359cc4cf392279724e95db02da1d409be7e4ce1",
+  "private_complete_receipts_sha256": "31a1e7a68a195a4f27cf1dc3cc5e827f84f64c417ce68f37ef91ae75dc716c14",
+  "provider": "colab",
+  "provider_charges": null,
+  "release_attempts": 1,
+  "remote_execution_submit_attempts": 1,
+  "remote_rss_hard_limit_exposed": false,
+  "remote_wall_limit_seconds": 300,
+  "resource": {
+    "accelerator": "NONE",
+    "shape": "STANDARD",
+    "variant": "DEFAULT"
+  },
+  "result_bytes": 34079,
+  "result_sha256": "d925fb594178ca0418cb3d4ecaf2206df131fb8ff79f2ebcacbf72b9d7520545",
+  "runtime_allocation_attempts": 1,
+  "schema": "hcsn.cloud-execution-public-receipt.v1",
+  "source_and_test_inventory_match_native": true,
+  "source_zip_sha256": "a23d9ca4d9f2aac36ebaa1029f7c47046582b6249458b8648ad22574ea8ef804",
+  "terminal_log_checks": {
+    "stderr": {
+      "eof": true,
+      "observed_size": 6196,
+      "sha256": "91ceaf1798eb58fc8c20f6bc1061e1f1e97a40ff5ae4014c0d6867e639491e7c",
+      "verified": true
+    },
+    "stdout": {
+      "eof": true,
+      "observed_size": 12678,
+      "sha256": "2a862ef6835e584bc7e62f3b62e894252aee692ef38df311b4b610662511e82c",
+      "verified": true
+    },
+    "verification": {
+      "checks": {
+        "cpu_single_thread": true,
+        "no_skips_or_failures": true,
+        "result_passed": true,
+        "source_matches_native": true,
+        "source_unchanged": true,
+        "test_inventory_matches_native": true
+      },
+      "native_result_sha256": "b614eba8783997eb10c7c41a0fd9afb8ff30ac38b8ea10eeb8e1923ab25e2365",
+      "old_study_completion_credit": 0,
+      "result_bytes": 34079,
+      "result_sha256": "d925fb594178ca0418cb3d4ecaf2206df131fb8ff79f2ebcacbf72b9d7520545",
+      "source_zip_sha256": "a23d9ca4d9f2aac36ebaa1029f7c47046582b6249458b8648ad22574ea8ef804"
+    }
+  },
+  "wrapper_sha256": "8b24154d4eafe1f802402ebce6a305c90c98c5ef817bd1be88f4601259b4b815"
+}

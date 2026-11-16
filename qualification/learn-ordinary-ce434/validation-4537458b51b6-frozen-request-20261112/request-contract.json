@@ -1,0 +1,232 @@
+{
+  "schema": "hepta.learn.fixed-repairs.full-source-native.frozen-request.v1",
+  "status": "prepared-not-dispatched",
+  "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "canonical_source_verified": {
+    "canonical_commit": {
+      "authorZone": "-0500",
+      "committerZone": "-0500",
+      "trailing_newline": 0
+    },
+    "canonical_tree": true,
+    "base_paths": 19,
+    "left_paths": 9,
+    "all_original_child_blobs_equal": true,
+    "only_existing_four_rust_modified": true
+  },
+  "source_parents": [
+    "58bb796c285e47a049423390a3bdd44607e6c44b",
+    "6e7f8bf879afb1b6b3de88089d7103c252c68a5c"
+  ],
+  "code_branch": "codex/learn-a671-complete-repairs-ce434-20261112-v1",
+  "delivery_commit_is_not_checkout_source": true,
+  "prior": {
+    "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "checkout": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "clean_before_fetch": true,
+    "clean_rechecked_after_fetch": true,
+    "outer": {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/result.json",
+      "bytes": 2396,
+      "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60",
+      "git_blob": "6839a4c985cc39825965808aeead3196b48ae5ee"
+    },
+    "native": {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json",
+      "bytes": 51057,
+      "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71",
+      "git_blob": "efe2855cc997b1af10824cd5499dd0ee7a76f807"
+    },
+    "actual_fields_preserved": [
+      "source_sha",
+      "source_tree",
+      "state",
+      "source_after",
+      "source_status_after"
+    ],
+    "both_original_state": "failed",
+    "no_schema_field_required": true,
+    "provenance": "Complete outer/native originals independently read from fixed export commit 09408731efbdad70742a2ac9679f23ad4650042e and matched byte counts/SHA256. Runtime still must compare these actual original files and clean a671 checkout before any transition.",
+    "no_failed_run_erasure": "The prior failure is retained as an immutable precondition; no failed result is relabelled or replaced.",
+    "actual_evidence_commit": "09408731efbdad70742a2ac9679f23ad4650042e"
+  },
+  "request": {
+    "tool": "mcp__codex_apps__h_process_start",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "learn-ce434-4537458b51b6-fixed-full-source-native-v1",
+    "exact_argument_keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "last_argument_is_complete_outer": true,
+    "timeout_seconds_absent": true,
+    "resource_overrides_absent": true,
+    "dispatched": false,
+    "dispatch_owner": "Root"
+  },
+  "worktree": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+  "outer_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-validation-v1",
+  "native_directory": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-4537458b51b6-v1",
+  "frozen_files": {
+    "prepare-and-validate.py": {
+      "sha": "d446168389b2d43af74e2d7066b1e3bb9db5de87",
+      "bytes": 93589,
+      "sha256": "6b5d0115e37bd1e5f29825024b8a829be271779d158581c0cc8e17c2dd2297cb",
+      "full_readback": true
+    },
+    "native-runner.py": {
+      "sha": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+      "bytes": 13257,
+      "sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1",
+      "full_readback": true
+    },
+    "source-suite-runner.py": {
+      "sha": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "bytes": 71126,
+      "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+      "full_readback": true
+    },
+    "frozen-request.json": {
+      "sha": "b9c37cebd498393cdfa87dc52c8820a24a4f10bc",
+      "bytes": 97760,
+      "sha256": "7ed86ad1ec0b761b6999a6fb91d1a1e69aa3e5acfa70fd2182a5cd655a438add",
+      "full_readback": true
+    }
+  },
+  "exact_rebinding": {
+    "original_successfully_executed_outer_blob": "b5838b5f994f112f85b0bf93566174e8ab8ee18f",
+    "reviewed_template_blob": "eac867f6f897657c7019489936373b7f08a3d50a",
+    "template_contract_blob": "3f58fa43806d49ca2aee78060146d67b60e3254f",
+    "template_edit_groups": 7,
+    "final_stamp_edits": [
+      {
+        "label": "exclusive-outer-directory",
+        "before": "unified-__FINAL_SOURCE_SHORT__-validation-v1",
+        "after": "unified-4537458b51b6-validation-v1"
+      },
+      {
+        "label": "exclusive-native-directory",
+        "before": "live-owners-full-__FINAL_SOURCE_SHORT__-v1",
+        "after": "live-owners-full-4537458b51b6-v1"
+      },
+      {
+        "label": "exact-source-sha",
+        "before": "fixed=__FINAL_SOURCE_SHA__",
+        "after": "fixed=\"4537458b51b6ca936264aecea7cfe384b941d0d1\""
+      },
+      {
+        "label": "exact-source-tree",
+        "before": "tree=__FINAL_SOURCE_TREE__",
+        "after": "tree=\"8cbd7b269c9c39df4ee3ffcefed8473060696184\""
+      }
+    ],
+    "reverse_reconstructs_complete_template": true,
+    "complete_source_runner_preserved": true,
+    "complete_native_runner_preserved": true
+  },
+  "inventories": {
+    "manifest": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "manifest_sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e",
+    "native": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+    "source_modules": 62,
+    "source_methods": 443,
+    "native_cases": 201,
+    "native_groups": 43,
+    "all_original_423_methods_and_190_native_tuples_retained": true,
+    "whole_repo_tracked_rs": 6777,
+    "scoped_verifier_rs": 6655,
+    "source_roots": [
+      "codex-rs"
+    ],
+    "boundary_records": 736,
+    "protected_records": 506
+  },
+  "source_runner": {
+    "embedded_manifest": false,
+    "embedded_old_source_sha": false,
+    "loads_actual_checked_out_sources": true,
+    "fixed_method_ids": 443,
+    "all_original_cases_and_subtests_preserved": true,
+    "body_byte_equal_to": "0397e37ba2f93117bede8ab547404a72b8f9946c"
+  },
+  "manifest_binding": {
+    "exact_final_tree_and_fixed_path_verified": true,
+    "actual_manifest_hash_logged_by_outer": true,
+    "no_manifest_bytes_embedded_in_source_suite": true,
+    "restored_footer_is_not_new_authority": true,
+    "six_actual_source_pins": {
+      "CALLERS.toml": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+      "scripts/verify_hepta_callers.py": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "scripts/hepta_typed_callers.py": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "scripts/hepta_ci_exec.py": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      ".github/workflows/hepta-daemon-learning-native.yml": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    }
+  },
+  "fixed_native_controls": {
+    "command": "just test --locked --offline",
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-neuron"
+    ],
+    "lib": true,
+    "test_threads": 2,
+    "retries": 0,
+    "no_tests": "fail",
+    "timeout_seconds": 3600,
+    "strict_selected_tuple_counter": true,
+    "failed_or_skipped_or_flaky_rejected": true,
+    "exact_source_clean_before_after": true,
+    "original_helper_build_and_verify": true,
+    "original_V8_hashes_and_old_recovery_record_unchanged": true,
+    "parent_output_limit_bytes": 8388608,
+    "original_nextest_per_test_watchdog_seconds": 60,
+    "scope": "Original native driver is byte-for-byte dd7d; no timing, resource, case or retry change."
+  },
+  "target_v2": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+    "creation_record_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+    "creation_record_bytes": 2506,
+    "creation_record_sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+    "creation_source": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "creation_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+    "creation_identity_is_historical_provenance_not_final_source": true,
+    "original_driver_rechecks_same_owned_device_inode_mode_identity": true,
+    "historical_dependency_recovery_v1_record_unchanged": true,
+    "original_private_v8_pair_hashes_unchanged": true,
+    "no_target_creation_or_dependency_installation_in_this_rebinding": true
+  },
+  "checkout_transition": "Fetch exact candidate through the already verified original Git transport. Require original completed clean HEAD and tree, exact prior terminal file hashes, and no change during fetch. Require fetched exact tree then git switch --detach exact SHA; no reset/clean/force, no merge main.",
+  "execution_order": "The original outer runs source443 and original native201 concurrently, then original caller scanner self-test. This package does not dispatch full caller verification or Root29.",
+  "no_prior_result_transfer": "a671 had source37 errors/native17 failures; all results remain scoped to a671. A fixed source candidate is not a passing result.",
+  "remaining_separate_gates": [
+    "Full original caller verify on this same source",
+    "Original Root29 only after the actual full main native gate passes",
+    "Existing scoped just fix/just fmt maintenance under Root control"
+  ],
+  "validation": {
+    "Git_API_and_pure_V8_only": true,
+    "Python_parse_compile_or_execute": false,
+    "H_query_or_dispatch": false,
+    "source_QA_or_native_run": false,
+    "no_budget_or_authority_change": true,
+    "ordinary_acceptance": 0
+  }
+}

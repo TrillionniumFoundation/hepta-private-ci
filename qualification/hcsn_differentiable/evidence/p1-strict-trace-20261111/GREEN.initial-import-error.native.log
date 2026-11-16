@@ -1,0 +1,46 @@
+test_duplicate_footer_count_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_footer_count_rejected) ... ok
+test_duplicate_top_level_schema_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_top_level_schema_rejected) ... ok
+test_infinity_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_infinity_constant_rejected) ... ok
+test_legitimate_small_finite_float (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_legitimate_small_finite_float) ... ok
+test_nan_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nan_constant_rejected) ... ok
+test_negative_infinity_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_negative_infinity_constant_rejected) ... ok
+test_nested_duplicate_visit_key_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nested_duplicate_visit_key_rejected) ... ok
+test_nonobject_record_rejected_as_value_error (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nonobject_record_rejected_as_value_error) ... ok
+test_overflow_float_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_overflow_float_rejected) ... ok
+test_valid_canonical_trace (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_valid_canonical_trace) ... ok
+test_strict_json (unittest.loader._FailedTest.test_strict_json) ... ERROR
+test_atomic_checkpoint_nonempty_and_no_overwrite (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_atomic_checkpoint_nonempty_and_no_overwrite) ... ok
+test_concurrent_append_has_unbroken_hash_chain (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_concurrent_append_has_unbroken_hash_chain) ... ok
+test_duplicate_terminal_rejected (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_duplicate_terminal_rejected) ... ok
+test_failing_serializer_never_publishes (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_failing_serializer_never_publishes) ... ok
+test_forged_canonical_receipt_without_native_proofs_is_rejected (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_forged_canonical_receipt_without_native_proofs_is_rejected) ... ok
+test_hard_exit_after_atomic_link_never_implies_terminal (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_hard_exit_after_atomic_link_never_implies_terminal) ... ok
+test_hard_exit_while_serializing_no_false_checkpoint (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_hard_exit_while_serializing_no_false_checkpoint) ... ok
+test_identity_spoof_and_roster_duplicates (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_identity_spoof_and_roster_duplicates) ... ok
+test_mutated_checksum_and_gap_rejected (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_mutated_checksum_and_gap_rejected) ... ok
+test_nonfinite_spoof_and_missing_native_proof_rejected (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_nonfinite_spoof_and_missing_native_proof_rejected) ... ok
+test_post_terminal_progress_is_contradictory (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_post_terminal_progress_is_contradictory) ... ok
+test_semantically_invalid_checkpoint_never_publishes (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_semantically_invalid_checkpoint_never_publishes) ... ok
+test_six_missing_not_promoted (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_six_missing_not_promoted) ... ok
+test_six_terminal_is_still_not_independent_admission (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_six_terminal_is_still_not_independent_admission) ... ok
+test_terminal_status_str_subclass_rejected (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_terminal_status_str_subclass_rejected) ... ok
+test_torn_jsonl_is_not_a_receipt (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_torn_jsonl_is_not_a_receipt) ... ok
+test_zero_byte_existing_checkpoint_rejected_not_overwritten (qualification.hcsn_differentiable.recovery_v1.test_c2_durable.DurableTests.test_zero_byte_existing_checkpoint_rejected_not_overwritten) ... ok
+
+======================================================================
+ERROR: test_strict_json (unittest.loader._FailedTest.test_strict_json)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_strict_json
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/recovery_v1/test_strict_json.py", line 4, in <module>
+    from c2_durable import append_receipt, read_receipts, EvidenceError
+ModuleNotFoundError: No module named 'c2_durable'
+
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.331s
+
+FAILED (errors=1)

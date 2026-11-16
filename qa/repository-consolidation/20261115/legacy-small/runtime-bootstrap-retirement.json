@@ -1,0 +1,97 @@
+{
+  "base": "77062608df5d52aee2007322c454d06748e02807",
+  "incoming": "774a1728c3df50af8738cd156f17757e0256b3f4",
+  "preview_tree": "88d3b4d94b58c3062bdb0fea3c9dfd9256b805f9",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Original workflow automatically ran on main PRs, checked out the retired branch with persisted write credentials, executed a decoded transformation and committed/pushed back. Its small gzip is corrupt and the old pipeline lacked pipefail/errexit, permitting an empty output to compile. Original workflow retained byte-for-byte outside active workflow directory. Active entry is manual, false-default opt-in, read-only, and only bounded pinned decode/AST inspection; no transformation execution, commit, push or fixed retired ref.",
+  "payload_bytes_preserved": true,
+  "inspection": {
+    "schema": "hepta.runtime-codex.archived-source-inspection.v1",
+    "status": "FAIL_ARCHIVE_INTEGRITY",
+    "payloads": [
+      {
+        "path": ".github/runtime_codex_closure.py.gz.b64",
+        "status": "INVALID_ARCHIVE",
+        "expected_encoded_sha256": "89333cfc9c1cc67782590767015eb8ca5ad80226d28230993d709ff0afd1fdfc",
+        "source_executed": false,
+        "source_applied": false,
+        "encoded_bytes": 677,
+        "encoded_sha256": "89333cfc9c1cc67782590767015eb8ca5ad80226d28230993d709ff0afd1fdfc",
+        "error_type": "Error",
+        "error": "Excess data after padding"
+      },
+      {
+        "path": ".github/runtime_codex_closure_original.py.gz.b64",
+        "status": "VALID_PYTHON_SOURCE_ONLY",
+        "expected_encoded_sha256": "479205b06ab57eeb16121153f9b1a7174d8f02b4c6b6941ccbc7fd3564d08286",
+        "source_executed": false,
+        "source_applied": false,
+        "encoded_bytes": 17112,
+        "encoded_sha256": "479205b06ab57eeb16121153f9b1a7174d8f02b4c6b6941ccbc7fd3564d08286",
+        "decoded_bytes": 63676,
+        "decoded_sha256": "ad8eebe29a0108d941c032d22bf3d14ec23b7d161479360e9b0695be823b5aa8",
+        "ast_nodes": 873
+      }
+    ],
+    "source_executed": false,
+    "source_applied": false,
+    "qualification": false
+  },
+  "inspection_exit": 1,
+  "tests": {
+    "count": 5,
+    "skipped": 0,
+    "exit": 0,
+    "log": "qa/repository-consolidation/20261115/legacy-small/runtime-codex-inspector-tests.txt"
+  },
+  "pending_rust_proposal": "Original decoded source proposes exact dispatch digests, pre-effect abort state and a cross-owner abort/ack outbox. These are retained source proposals, not applied or qualified changes; semantic review against latest runtime is still required.",
+  "qualification": false,
+  "remote_actions_executed": false,
+  "new_source_pins": {
+    ".github/scripts/inspect_runtime_codex_archive.py": {
+      "bytes": 3426,
+      "sha256": "49a7e68b4d613bba882db8011113c99bb83fb857399984c542811d982432d9d5",
+      "git_blob": "adccff4e51e9debdc35bb4af104f601570f5fe3f"
+    },
+    "scripts/tests/test_runtime_codex_archive.py": {
+      "bytes": 2782,
+      "sha256": "dd2435006cb971f60db390c012213da0035168102a9bbfb71df26f7a767ccded",
+      "git_blob": "9de40e89daac40e9af3143e925e58032fe3f5db1"
+    }
+  },
+  "incoming_file_pins": {
+    ".github/runtime_codex_closure.py.gz.b64": {
+      "bytes": 677,
+      "sha256": "89333cfc9c1cc67782590767015eb8ca5ad80226d28230993d709ff0afd1fdfc",
+      "git_blob": "304cbacf0f6c9598936a2535f208d06f02617cbe"
+    },
+    ".github/runtime_codex_closure_original.py.gz.b64": {
+      "bytes": 17112,
+      "sha256": "479205b06ab57eeb16121153f9b1a7174d8f02b4c6b6941ccbc7fd3564d08286",
+      "git_blob": "966d672102a633ad7a5d9324ed9dbb5cc1e397fb"
+    },
+    ".github/workflows/runtime-codex-bootstrap.yml": {
+      "bytes": 1350,
+      "sha256": "b090d75b0e3f33f3e68b2cad2363de2834cdb3d2c7ec33bd0f735825a0843288",
+      "git_blob": "391d5d436cabff56ce4b5886e7cbada84894eb20"
+    }
+  },
+  "final_changed_file_pins": {
+    ".github/runtime_codex_closure.py.gz.b64": {
+      "bytes": 677,
+      "sha256": "89333cfc9c1cc67782590767015eb8ca5ad80226d28230993d709ff0afd1fdfc",
+      "git_blob": "304cbacf0f6c9598936a2535f208d06f02617cbe"
+    },
+    ".github/runtime_codex_closure_original.py.gz.b64": {
+      "bytes": 17112,
+      "sha256": "479205b06ab57eeb16121153f9b1a7174d8f02b4c6b6941ccbc7fd3564d08286",
+      "git_blob": "966d672102a633ad7a5d9324ed9dbb5cc1e397fb"
+    },
+    ".github/workflows/runtime-codex-bootstrap.yml": {
+      "bytes": 1242,
+      "sha256": "e1ee9ba691cb870e47f72963751f60c0d03e4a51daf1926bcf14af413a6bf73b",
+      "git_blob": "a2a165ced1b1d2f258d916d27e6f1b96058bcc47"
+    }
+  }
+}

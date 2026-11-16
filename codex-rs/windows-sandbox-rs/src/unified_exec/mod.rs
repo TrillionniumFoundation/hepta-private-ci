@@ -52,7 +52,7 @@ enum WindowsSandboxBackend {
     Elevated,
 }
 
-/// Select the only backend that can enforce the requested filesystem policy.
+/// Map a requested filesystem policy to its backend, without admitting execution.
 ///
 /// A `WRITE_RESTRICTED` token limits ordinary write access through restricting
 /// SIDs, but Windows can authorize deletion through a parent directory's
@@ -61,9 +61,9 @@ enum WindowsSandboxBackend {
 /// declared writable roots. Explicit filesystem overrides have the same
 /// problem because their effective parent ACLs are not part of the token.
 ///
-/// Explicit Elevated requests use the broker's separate provisioning path. The
-/// public entry refuses RestrictedToken requests before this selector, including
-/// profiles this mapping would otherwise redirect to the broker. Disabled is an
+/// Explicit Elevated requests map to the broker's separate provisioning path.
+/// The public entry refuses both unqualified backends before this selector,
+/// including profiles this mapping would otherwise redirect to the broker. Disabled is an
 /// invalid level for this sandbox-session API; ordinary disabled execution uses
 /// SandboxType::None outside it. Neither backend selection nor a read-only profile
 /// qualifies a deletion boundary under ambient parent rights. There is no fallback
@@ -109,9 +109,9 @@ pub async fn spawn_windows_sandbox_session_for_level(
             // or override into broker provisioning.
             crate::legacy_admission::require_legacy_filesystem_isolation()?;
         }
-        // Explicit Elevated is a separate entry with its own identity and native
-        // qualification requirements. It is not a fallback for a legacy request.
-        WindowsSandboxLevel::Elevated => {}
+        WindowsSandboxLevel::Elevated => {
+            crate::elevated_admission::require_elevated_filesystem_isolation()?;
+        }
         WindowsSandboxLevel::Disabled => {
             bail!("disabled Windows sandbox level cannot launch a sandbox session");
         }

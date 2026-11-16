@@ -37,6 +37,8 @@ WIDTH = 768
 NATIVE_WIDTH = 256
 Q = 1 << 24
 SCHEMA = "hepta.e0.public-pretrained-q24-shadow.v2"
+RAW_FEATURE_PROFILE = "raw-f32-v1"
+L2_FEATURE_PROFILE = "unit-l2-f32-v1"
 SOURCE_PREFIX = "qualification/stem-cell-v1/"
 MAX_SOURCE_FILES = 128
 MAX_SOURCE_FILE_BYTES = 1 << 20
@@ -207,6 +209,43 @@ def feature_hash(vector) -> str:
     return h.hexdigest()
 
 
+def feature_normalizer_binding(profile):
+    require(profile in (RAW_FEATURE_PROFILE, L2_FEATURE_PROFILE), "unknown feature normalizer")
+    if profile == RAW_FEATURE_PROFILE:
+        return {"profile": profile,
+                "digest": hashlib.sha256(b"mean-pool.valid-mask.fp32.v1").hexdigest()}
+    binding = {
+        "profile": profile,
+        "input": "mean-pool.valid-mask.fp32.v1",
+        "algorithm": "finite-f32/hypot-f64/divide-f64/round-f32;zero=zero",
+        "implementation_sha256": file_sha256(Path(__file__)),
+    }
+    binding["digest"] = hashlib.sha256(
+        json.dumps(binding, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return binding
+
+
+def normalize_feature(vector, profile):
+    require(profile in (RAW_FEATURE_PROFILE, L2_FEATURE_PROFILE), "unknown feature normalizer")
+    if profile == RAW_FEATURE_PROFILE:
+        return vector, None
+    require(len(vector) == WIDTH, "wrong real HF feature width")
+    require(all(type(value) in (int, float) for value in vector),
+            "non-finite numeric feature")
+    try:
+        values = tuple(struct.unpack(">f", struct.pack(">f", value))[0] for value in vector)
+    except (OverflowError, struct.error) as exc:
+        raise ValueError("invalid f32 normalization input") from exc
+    require(all(math.isfinite(value) for value in values), "non-finite numeric feature")
+    # hypot avoids overflow and underflow over the entire finite F32 range.
+    norm = math.hypot(*values)
+    normalized = tuple(struct.unpack(">f", struct.pack(">f", value / norm))[0]
+                       for value in values) if norm else values
+    require(all(math.isfinite(value) and abs(value) <= 1 for value in normalized),
+            "normalized feature outside unit bound")
+    return normalized, norm
+
+
 def control_readout(native_bridge, projected):
     # Deliberately fixed control (not trained, not a selected Cell Head).
     drive = [0] * (NATIVE_WIDTH * 2)
@@ -239,18 +278,25 @@ def ensure_snapshot(root: Path, *, hf_source: Path) -> Path:
     return snapshot
 
 
-def run(*, hf_checkout: Path, projection_checkout: Path, output: Path) -> dict:
+def run(*, hf_checkout: Path, projection_checkout: Path, output: Path,
+        feature_normalizer=RAW_FEATURE_PROFILE) -> dict:
     require(not output.exists(), "nonempty/existing output is never overwritten")
+    require(feature_normalizer in (RAW_FEATURE_PROFILE, L2_FEATURE_PROFILE),
+            "unknown feature normalizer")
     specifications = (
         (hf_checkout, HF_SOURCE_COMMIT, HF_SOURCE_TREE, None),
         (projection_checkout, PROJECTION_SOURCE_COMMIT, PROJECTION_SOURCE_TREE,
          ("stem_projection", "native_bridge")),
     )
     with bound_project_sources(specifications) as sources:
-        return _run_bound(output=output, sources=sources)
+        return _run_bound(output=output, sources=sources, feature_normalizer=feature_normalizer)
 
 
-def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
+def _run_bound(*, output: Path, sources: ProjectSourceLoader,
+               feature_normalizer=RAW_FEATURE_PROFILE) -> dict:
+    normalizer = feature_normalizer_binding(feature_normalizer)
+    normalized_profile = feature_normalizer == L2_FEATURE_PROFILE
+    schema = "hepta.e0.public-pretrained-q24-shadow.v3" if normalized_profile else SCHEMA
     import torch
     import transformers
     from transformers import AutoTokenizer
@@ -275,11 +321,10 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
         runtime_digest = hashlib.sha256(
             ("torch:" + str(torch.__version__) + "/transformers:" +
              str(transformers.__version__) + "/cpu/fp32/eager").encode()).hexdigest()
-        normalizer_digest = hashlib.sha256(b"mean-pool.valid-mask.fp32.v1").hexdigest()
         projection = make_diagnostic_projection(
             LowRankProjectionQ24, encoder=SNAPSHOT_SHA256,
             preprocessor=preprocessor_digest, runtime=runtime_digest,
-            normalizer=normalizer_digest)
+            normalizer=normalizer["digest"])
         # These three public texts are not evaluation/training observations.
         texts = ("The engineer repaired the electric motor.",
                  "A garden contains green plants and red flowers.",
@@ -299,7 +344,8 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
                         "non-768 actual encoder result")
                 vector = feature.tolist()
                 try:
-                    projected = projection.project_float32(vector)
+                    projector_input, l2_norm = normalize_feature(vector, feature_normalizer)
+                    projected = projection.project_float32(projector_input)
                 except ValueError:
                     finite = [value for value in vector if math.isfinite(value)]
                     outside = [(index, value) for index, value in enumerate(vector)
@@ -336,10 +382,18 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
                                             for v in projected)).hexdigest(),
                                "diagnostic_readout": logits,
                                "source_width": WIDTH, "projected_width": NATIVE_WIDTH})
+                if normalized_profile:
+                    result[-1]["normalization"] = {
+                        "normalizer_digest": normalizer["digest"],
+                        "l2_norm_f64_hex": l2_norm.hex(),
+                        "projector_input_f32_sha256": feature_hash(projector_input),
+                    }
         finally:
             guard.remove()
         require(values[0] == values[2], "repeat input lost deterministic parity")
         require(values[0] != values[1], "different inputs collapsed to identical Q24 result")
+        if normalized_profile:
+            require(values[0][1] != values[1][1], "normalized inputs collapsed to identical Q24 result")
         # Prove the projection responds to the last coordinate; no 512-wide silent slicing.
         perturb = [0.0] * WIDTH
         perturb[-1] = 0.25
@@ -351,11 +405,14 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
         require(snapshot_digest(snapshot) == SNAPSHOT_SHA256 and
                 file_sha256(snapshot / "model.safetensors") == MODEL_WEIGHT_SHA256,
                 "snapshot drift after physical forward")
+        if normalized_profile:
+            require(file_sha256(Path(__file__)) == normalizer["implementation_sha256"],
+                    "normalizer source changed during execution")
         peak_rss_kib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         if sys.platform == "darwin":
             peak_rss_kib //= 1024
         record = {
-            "schema": SCHEMA,
+            "schema": schema,
             "project_python_sources": sources.loaded_sources(),
             "project_python_binding": "verified_git_blobs_compiled_from_same_bytes",
             "external_runtime_binding": "existing_version_checks_only",
@@ -385,16 +442,20 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
             "ndu_benefit_established": False, "e0_accepted": False,
             "production_authorized": False,
         }
-        (output / "shadow.json").open("x", encoding="utf-8").write(
-            json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n")
+        if normalized_profile:
+            record["feature_normalizer"] = normalizer
+        with (output / "shadow.json").open("x", encoding="utf-8") as stream:
+            stream.write(json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n")
         return record
     except BaseException as exc:
-        (output / "FAILED.json").open("x", encoding="utf-8").write(
-            json.dumps({"schema": SCHEMA, "completed": False,
-                        "error_type": type(exc).__name__, "e0_accepted": False,
-                        "production_authorized": False,
-                        "projection_input_diagnostic": projection_failure},
-                       indent=2, allow_nan=False) + "\n")
+        failure = {"schema": schema, "completed": False,
+                   "error_type": type(exc).__name__, "e0_accepted": False,
+                   "production_authorized": False,
+                   "projection_input_diagnostic": projection_failure}
+        if normalized_profile:
+            failure["feature_normalizer"] = normalizer
+        with (output / "FAILED.json").open("x", encoding="utf-8") as stream:
+            stream.write(json.dumps(failure, indent=2, allow_nan=False) + "\n")
         raise
 
 
@@ -403,9 +464,11 @@ def main() -> None:
     p.add_argument("--hf-checkout", type=Path, required=True)
     p.add_argument("--projection-checkout", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--feature-normalizer", choices=(RAW_FEATURE_PROFILE, L2_FEATURE_PROFILE),
+                   default=RAW_FEATURE_PROFILE)
     args = p.parse_args()
     report = run(hf_checkout=args.hf_checkout, projection_checkout=args.projection_checkout,
-                 output=args.output)
+                 output=args.output, feature_normalizer=args.feature_normalizer)
     print(json.dumps({"schema": report["schema"],
                       "model_forward_calls": report["actual_hf_forward_calls"],
                       "e0_accepted": report["e0_accepted"]}, sort_keys=True))

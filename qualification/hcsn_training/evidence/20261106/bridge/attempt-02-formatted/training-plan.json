@@ -1,0 +1,59 @@
+{
+  "anchor_digest": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+  "intervals": [
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 100000,
+      "end_micros": 100017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 17,
+      "substep_micros": 100000,
+      "substeps": 1
+    },
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 200000,
+      "end_micros": 300017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 100017,
+      "substep_micros": 200000,
+      "substeps": 1
+    },
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 150000,
+      "end_micros": 450017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 300017,
+      "substep_micros": 150000,
+      "substeps": 1
+    },
+    {
+      "checkpoint_before": "8aea63cbc98e497812df0815ecdce7949dbd4a742ca0c0cb0240d94a7598f917",
+      "elapsed_micros": 300000,
+      "end_micros": 750017,
+      "forecast_horizon_micros": 500000,
+      "profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+      "schema_version": 1,
+      "start_micros": 450017,
+      "substep_micros": 300000,
+      "substeps": 1
+    }
+  ],
+  "model_digest": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f",
+  "pid": 39,
+  "profile": {
+    "forecast_horizon_micros": 500000,
+    "integration": {
+      "kind": "value_kernel"
+    },
+    "maximum_gap_micros": 1000000
+  },
+  "state_digest": "b9c250124f733a63ab0844ed9a675950a09a37313984e4a6e3ab5b637a02e143"
+}

@@ -94,6 +94,46 @@ impl Fixture {
     /// Private same-UID mechanism fixture. The public constructor forbids it;
     /// a separately selected actual-Root test exercises that constructor.
     pub fn client(&self) -> anyhow::Result<(LearningIterationEvidenceClientV1, UnixStream)> {
+        self.client_with_lifetime(Duration::from_secs(5))
+    }
+
+    /// Receipt-owner tests perform physical CURRENT reads between exchanges.
+    /// Retain the same original descriptors for the permitted channel lifetime;
+    /// the per-frame deadline remains the production 500 milliseconds.
+    pub fn original_owner_client(
+        &self,
+    ) -> anyhow::Result<(
+        LearningIterationEvidenceClientV1,
+        codex_hepta_contracts::HostAuthorityPeerChannel,
+    )> {
+        use codex_hepta_contracts::HostAuthorityPeerChannel;
+        use codex_hepta_contracts::HostAuthorityPeerPolicy;
+        use codex_hepta_contracts::HostIssuerPeer;
+
+        let (client, server) = self.client_with_lifetime(Duration::from_secs(300))?;
+        let peer = HostIssuerPeer {
+            // SAFETY: observe only the original fixture process's current UID.
+            uid: unsafe { libc::geteuid() },
+            pid: std::process::id(),
+        };
+        let channel = HostAuthorityPeerChannel::from_stream(
+            server,
+            HostAuthorityPeerPolicy {
+                peer,
+                timeout: Duration::from_millis(500),
+                lifetime: Duration::from_secs(300),
+                request_bound: 16_384,
+                response_bound: 16_384,
+            },
+            pidfd(peer.pid)?,
+        )?;
+        Ok((client, channel))
+    }
+
+    fn client_with_lifetime(
+        &self,
+        lifetime: Duration,
+    ) -> anyhow::Result<(LearningIterationEvidenceClientV1, UnixStream)> {
         let (stream, server) = UnixStream::pair()?;
         let peer = identity(std::process::id())?;
         // SAFETY: this only reads the fixture process's current UID.
@@ -103,11 +143,12 @@ impl Fixture {
             peer,
             pidfd(std::process::id())?,
             Duration::from_millis(500),
-            Duration::from_secs(5),
+            lifetime,
             uid,
         )?;
         Ok((
             LearningIterationEvidenceClientV1 {
+                command: None,
                 channel: Mutex::new(Some(Channel {
                     transport,
                     next_request_id: 1,

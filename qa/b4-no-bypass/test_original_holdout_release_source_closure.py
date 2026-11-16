@@ -122,7 +122,7 @@ class OriginalHoldoutReleaseSourceTests(unittest.TestCase):
 
     def test_owner_reads_current_store_fence_snapshot_and_exact_plan(self):
         self.reject_removal(OWNER, "fn read_consumption(", (
-            "if self.poisoned", ".load(self.binding)?", "current.validate(self.binding)?",
+            "if self.poisoned", "match self.store.load(self.binding)", "current.validate(self.binding)?",
             "if current.fence != self.fence", "if current.state_digest != self.state_digest",
             "if journal.snapshot() != self.journal.snapshot()", "if &record.plan != plan"))
 

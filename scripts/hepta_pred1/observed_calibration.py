@@ -27,7 +27,8 @@ def _statistics(values, count):
         "eligible": len(observed),
         "missing": count - len(observed),
         "mean": math.fsum(value / len(observed) for value in observed)
-        if observed else None,
+        if observed
+        else None,
     }
 
 
@@ -44,43 +45,64 @@ def _summary(rows):
     bins = []
     for index in range(10):
         eligible = [
-            row for row in rows
-            if row["scores"] is not None and row["scores"]["quality_brier"] is not None
+            row
+            for row in rows
+            if row["scores"] is not None
+            and row["scores"]["quality_brier"] is not None
             and min(int(row["prediction"]["success_probability"] * 10), 9) == index
         ]
-        bins.append({
-            "lower": index / 10, "upper": (index + 1) / 10,
-            "count": len(eligible),
-            "mean_prediction": _statistics(
-                [row["prediction"]["success_probability"] for row in eligible], len(eligible)
-            )["mean"],
-            "outcome_rate": _statistics(
-                [row["decision"].evidence.outcome for row in eligible], len(eligible)
-            )["mean"],
-        })
+        bins.append(
+            {
+                "lower": index / 10,
+                "upper": (index + 1) / 10,
+                "count": len(eligible),
+                "mean_prediction": _statistics(
+                    [row["prediction"]["success_probability"] for row in eligible],
+                    len(eligible),
+                )["mean"],
+                "outcome_rate": _statistics(
+                    [row["decision"].evidence.outcome for row in eligible],
+                    len(eligible),
+                )["mean"],
+            }
+        )
     coverage = {}
     for name in ("duration", "cost"):
         coverage[name] = []
         for index, level in enumerate(QUANTILES):
-            stats = _statistics([
-                None if row["scores"] is None
-                else row["scores"][name + "_quantiles"][index]["covered"]
-                for row in rows
-            ], count)
+            stats = _statistics(
+                [
+                    None
+                    if row["scores"] is None
+                    else row["scores"][name + "_quantiles"][index]["covered"]
+                    for row in rows
+                ],
+                count,
+            )
             coverage[name].append({"level": level, **stats, "coverage": stats["mean"]})
-    complete_cost = sum(all(d.costs[key] is not None for key in COST_FIELDS) for d in decisions)
+    complete_cost = sum(
+        all(d.costs[key] is not None for key in COST_FIELDS) for d in decisions
+    )
     full_wall = sum(d.full_wall_seconds is not None for d in decisions)
     return {
         "count": count,
         "task_group_count": len({d.task_group for d in decisions}),
         "source_counts": dict(Counter(d.source for d in decisions)),
-        "evidence_source_counts": dict(Counter(d.evidence.source.value for d in decisions)),
-        "observation_status_counts": dict(Counter(d.evidence.observation_status.value for d in decisions)),
-        "time_kind_counts": dict(Counter(d.evidence.time_kind.value for d in decisions)),
+        "evidence_source_counts": dict(
+            Counter(d.evidence.source.value for d in decisions)
+        ),
+        "observation_status_counts": dict(
+            Counter(d.evidence.observation_status.value for d in decisions)
+        ),
+        "time_kind_counts": dict(
+            Counter(d.evidence.time_kind.value for d in decisions)
+        ),
         "unsupported_predictions": sum(row["prediction"] is None for row in rows),
         "unobserved_chosen_actions": sum(not row["executed"] for row in rows),
         "unknown_outcome_count": sum(d.evidence.outcome is None for d in decisions),
-        "final_cost_missing_count": sum(d.evidence.final_cost is None for d in decisions),
+        "final_cost_missing_count": sum(
+            d.evidence.final_cost is None for d in decisions
+        ),
         "cost_ledger_complete_count": complete_cost,
         "cost_ledger_incomplete_count": count - complete_cost,
         "full_wall_observed_count": full_wall,
@@ -109,7 +131,9 @@ def summarize_offline_forecasts(
     """
     if not isinstance(observations, list) or not isinstance(predictions, list):
         raise ValueError("observations and predictions must be bounded lists")
-    if not 1 <= len(observations) <= MAX_OBSERVATIONS or len(predictions) != len(observations):
+    if not 1 <= len(observations) <= MAX_OBSERVATIONS or len(predictions) != len(
+        observations
+    ):
         raise ValueError("need 1..4096 observations with matching predictions")
     if not all(isinstance(d, ObservedDecision) for d in observations):
         raise ValueError("observed decisions required")
@@ -128,9 +152,12 @@ def summarize_offline_forecasts(
             and decision.execution_ref is not None
         )
         row = {
-            "decision": decision, "prediction": prediction, "executed": executed,
+            "decision": decision,
+            "prediction": prediction,
+            "executed": executed,
             "scores": score_forecast(prediction, decision.evidence)
-            if executed and prediction is not None else None,
+            if executed and prediction is not None
+            else None,
         }
         rows.append(row)
         grouped[decision.source, decision.split, decision.chosen_action].append(row)
@@ -138,13 +165,21 @@ def summarize_offline_forecasts(
         "schema": "pred1-offline-calibration-v1",
         "overall": _summary(rows),
         "groups": [
-            {"source": source, "split": split, "chosen_action": action, **_summary(group)}
+            {
+                "source": source,
+                "split": split,
+                "chosen_action": action,
+                **_summary(group),
+            }
             for (source, split, action), group in sorted(grouped.items())
         ],
         "scope": "offline complete-case chosen-action diagnostics; informative missingness can bias all-task calibration; original decisions are unchanged",
         "cost_scope": "cost CRPS targets final action cost, not the full physical ledger",
-        "decision": "NoUpdate", "candidate_eligible": False,
-        "prediction_deployed": False, "production_activation": False,
+        "decision": "NoUpdate",
+        "candidate_eligible": False,
+        "prediction_deployed": False,
+        "production_activation": False,
         "native_provenance_authenticated": False,
-        "causal_policy_value_identified": False, "counterfactual_policy_value": None,
+        "causal_policy_value_identified": False,
+        "counterfactual_policy_value": None,
     }

@@ -1,0 +1,164 @@
+{
+  "schema": "learn.original-archive-only-restoration-independent-peer.v1",
+  "reviewer": "learn_evaluator_budget",
+  "status": "PREPARED SOURCE REVIEW; NO BLOCKING FINDING IN FINAL CD5A/E7A3; NO H EXECUTION",
+  "source": {
+    "commit": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "preserved_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "preserved_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "reviewed_artifacts": {
+    "original_script": {
+      "blob": "29961b07486dcf1cfd2a4875a7b17733ed06547a",
+      "bytes": 6956
+    },
+    "final_script": {
+      "blob": "cd5a0242cd76a9c4bd24719469c83ad311cf7017",
+      "bytes": 15185,
+      "sha256": "26fff0bc29d2e89f22fa27f9103ffd8ad31345458200c133302f3239c150da2b"
+    },
+    "final_request": {
+      "blob": "e7a3e64784c844e8815d1038f3f3754a25c0abdf",
+      "bytes": 16152,
+      "sha256": "49959defb9bafc8ef49b4de710f67013093f981d16585298fb06401a3cd20416"
+    },
+    "final_contract": {
+      "blob": "aa2f608adfebeb0df981e30e12c489c42d655a40",
+      "bytes": 12795,
+      "sha256": "4806798ebe35b8d6c66bc0280fecf87b54ae3fde47d9e6c419bfe0898cc3c33c"
+    },
+    "exact_edits": {
+      "blob": "8e562d5a9febf878ac2e1a66b9559e8ee389c977",
+      "bytes": 27442,
+      "sha256": "5257bf7efc696e19d65d075c1479b175b5254187ac69c3b6bbbddaa44cb2695f"
+    },
+    "full_patch": {
+      "blob": "c1b5c46ab03de8f2facc65128f1b33010294bc69",
+      "bytes": 21023,
+      "sha256": "e853c771c07073a0c2e2ad4f7db58e65cb111a12f3f604183512c9b745af9f05"
+    },
+    "two_line_revision_spec": {
+      "blob": "46ffa8341913e0792c05891d25e5e0ebc4bb0fe2",
+      "bytes": 1413,
+      "sha256": "45bcfbbaab76ea307f9d3c556281ed94ccb10cbebce2a3f8b21220f1b2ee7d5a"
+    },
+    "two_line_revision_patch": {
+      "blob": "6d0ae83e4375a9b80b2557b36acbc3598fe481cc",
+      "bytes": 346,
+      "sha256": "b240fa4087d5e84d66c15b70364f47c72537fffab68394efda195e2bfb52ba7f"
+    },
+    "actual_v3_stdout": {
+      "blob": "436d38ed0df15ac406ce0929dc1f245f7b03f5c7",
+      "bytes": 655,
+      "sha256": "38002ba8b3d6704d1e656bf4519675c11796d6f0b7b78bdfcda5733708acb3f5"
+    },
+    "actual_v3_stderr": {
+      "blob": "1397638ca2916f5866f033a9e215cbaf0010de89",
+      "bytes": 624,
+      "sha256": "cdd37fa97dc99c9233512355f8b746c2442494889e919c5ffe0a71b5520cad38"
+    }
+  },
+  "actual_probe_pins": {
+    "home_archive": {
+      "blob": "a791fbc7559c4b89685a201d0514b4e00d7360fb",
+      "bytes": 264,
+      "sha256": "1996000f0e920b7a94c73ae34281a85dc53c73eb43a8981f6837a43174968a2c"
+    },
+    "home_binding": {
+      "blob": "c98f307f37a9521c68bcf630bc7018370bea105b",
+      "bytes": 645,
+      "sha256": "60cf45d1987fbeba657a16dc96f25ac9bf1c51e6e04f6fdccce07ceb8efc34ea"
+    },
+    "fallback_binding": {
+      "blob": "aafc90907c6294ebf03ce17d7b622227229c73b7",
+      "bytes": 673,
+      "sha256": "8362fda557fca5bfec4a41fe06bb9138c216cb21158a70b53b81655b2db4ec79"
+    },
+    "current_binding": {
+      "blob": "2995ec567d1c1b54e8c8623f9dfb7afdc6c4e959",
+      "bytes": 627,
+      "sha256": "6339f7cc037798fce1bba6707dadba5fdf4a5be9cbec7d5b1f931a167654d98a"
+    }
+  },
+  "actual_basis": [
+    "The complete original v3 stdout reports /data device2067/inode2, uid1000 and 194867552256 free bytes, with v1/v2 target lstat FileNotFoundError observations only.",
+    "The complete original v3 stderr names the current private archive lstat FileNotFoundError. It does not prove missing binding or parent directories; the failed script had not reached binding verification or the first mkdir.",
+    "The current-binding SDK record explicitly reports the expected path, 39884 bytes, SHA256 7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506, device2067/inode40370261, uid/gid1000, nlink1 and0400. Nanosecond timestamps remain exact decimal strings.",
+    "The home-archive probe reports FileNotFoundError; its raw error only names the basename. The final script independently lstat-checks the full fixed home path at actual preflight, before installation and before success.",
+    "Home and fallback binding probes both show the same original hash and size with0444. The final script has no copy, fallback, write or chmod path for those or the existing current binding."
+  ],
+  "independently_checked": {
+    "original_to_final_hunks": 10,
+    "removed": 59,
+    "added": 178,
+    "original_json_forward_inverse_complete_equal": true,
+    "original_patch_forward_inverse_complete_equal": true,
+    "home_fix_patch_hunks": 2,
+    "home_fix_patch_forward_inverse_complete_equal": true,
+    "final_contract_artifacts_all_match_full_api_reads": true,
+    "final_curl_assignment_equal": true,
+    "unchanged_original_manifest_digest": true,
+    "original_network_maxima": {
+      "connect_seconds": 20,
+      "total_seconds": 300,
+      "redirects": 5,
+      "max_bytes": 29366352
+    },
+    "home_absence_checks": 3
+  },
+  "request": {
+    "fields": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "idempotency_key": "learn-ce434-453-original-archive-only-recovery-v1",
+    "embedded_script_complete_equal": true,
+    "no_added_timeout_resource_or_dispatch_fields": true,
+    "unchanged_original_envelope_except_script_and_key": true
+  },
+  "boundary_review": [
+    "All actual source, absence, existing directory, original binding, original manifest, dependency source, old441/e5c receipt and original SOCKS checks occur before the sole new mkdir. Normal uid/euid1000 and no inherited Git-location override are required.",
+    "Existing v1 root and private-pins must be canonical owned0700 directories. The script never creates these directories or any v1/v2/v3 target. Their device/inode/uid/gid/mode and canonical identities are checked before installation and again after; directory timestamp changes from creating the authorized archive are not mislabeled as immutable.",
+    "The current binding is opened only read-only with NOFOLLOW. Its whole descriptor hash and lstat/fstat identity, including exact size/mode/nlink/uid/gid/inode/device and mtime/ctime strings, must equal the actual SDK pin and must still match before installation and at completion.",
+    "The original official archive URL, a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583, artifact length29366352, original SOCKS endpoint and the complete curl command assignment are byte-identical to the reviewed299 script. Only the partial variable now points inside the new exclusive evidence directory.",
+    "Curl is one directly owned Popen with its actual wait result and raw log retained. No wrapper timeout, kill, signal, retry or replay is added; curl's original20/300/5/29366352 bounds remain. This does not make a claim about external H supervisor behavior.",
+    "After complete partial length/hash verification, installation opens the already verified private directory fd, checks its actual identity, and opens the archive basename relative to that fd with O_CREAT|O_EXCL|O_NOFOLLOW. The preflight absence check is not the protection against overwrite: the final exclusive syscall is.",
+    "Copying retains the verified incoming fd, verifies its identity and full copied bytes, flushes/fsyncs and independently rehashes the new destination fd. Only this newly created fd receives fchmod0400. Path/descriptor identity, final length/hash and directory fsync follow.",
+    "Before success, original binding, directories, both exact clean worktrees, historical receipts and manifest are read again; v1/v2 targets and the home archive must remain absent. No historical receipt is replaced and no source, service, dependency version, permissions policy or resource budget is changed.",
+    "Failure keeps the new evidence, partial and any actually created archive, records failure when the new output exists, and rethrows. A partial failed destination is not silently removed or retried. New archive creation can precede a later failed tail check; the receipt does not claim rollback."
+  ],
+  "resolved_review_issue": {
+    "identified_by": "Root",
+    "original_draft": "1c5cc24a2009a760be528e3f7d2e840e6a9beddc",
+    "issue": "Home archive absence was checked only initially.",
+    "final_resolution": "Only two identical require_absent calls were added, before exclusive install and before final success. The final script has three checks. Both exact revision directions reproduce the complete original draft.",
+    "final_script": "cd5a0242cd76a9c4bd24719469c83ad311cf7017"
+  },
+  "limitations": {
+    "python_parse_or_execution": false,
+    "H_dispatch": false,
+    "filesystem_changes_by_reviewer": false,
+    "download_by_reviewer": false,
+    "actual_restore_result": null,
+    "v3_creation_result": null,
+    "native_target_identity": null,
+    "native_tests": 0,
+    "ordinary_acceptance": 0,
+    "meaning": "This is a source/contract/request peer only. Root must independently obtain the new actual terminal and complete receipt. Successful archive restoration does not establish v3 target creation, native201, Root29, full-caller or ordinary acceptance. Native-only remains unbound until a distinct actual successful v3 receipt is verified."
+  }
+}

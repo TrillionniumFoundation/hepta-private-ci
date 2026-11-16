@@ -2469,7 +2469,21 @@ async fn read_kg_sqlite_evidence(
         i64,
         i64,
     ) = sqlx::query_as(
-        "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
+        "WITH selected_heads AS (
+             SELECT h.projection_scope, h.trigger_memory_id AS memory_id,
+                    h.trigger_memory_revision AS memory_revision
+             FROM kg_projection_generation_receipts AS h
+             JOIN kg_projection AS p ON p.projection_scope = h.projection_scope
+             WHERE h.generation <= p.generation
+               AND h.generation = (
+                   SELECT MAX(previous.generation)
+                   FROM kg_projection_generation_receipts AS previous
+                   WHERE previous.projection_scope = h.projection_scope
+                     AND previous.trigger_memory_id = h.trigger_memory_id
+                     AND previous.generation <= p.generation
+               )
+         )
+         SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
                 (SELECT COUNT(*) FROM kg_revision_entities AS n
@@ -2495,10 +2509,12 @@ async fn read_kg_sqlite_evidence(
           AND storage.storage_mode = 'revision_facts_v1'
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
+         JOIN kg_projection_generation_storage AS storage
+           ON storage.projection_scope = r.projection_scope
+          AND storage.generation = r.generation
+          AND storage.storage_mode = 'revision_facts_v1'
          WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
     )
-    .bind(expected_source_id)
-    .bind(expected_source_id)
     .bind(memory_id)
     .bind(memory_revision)
     .fetch_one(&pool)

@@ -1,0 +1,42 @@
+{
+  "schema": "c2-v4-budget-reporting-independent-static-review-v1",
+  "scope": "Static source/AST and retained receipts only; no production imports or model execution.",
+  "changed_existing_manifest_files": [
+    "c2_controller.py",
+    "c2_runner.py",
+    "test_c2_execution.py"
+  ],
+  "added_manifest_files": [
+    "DIFF-v3-to-v4.patch",
+    "REPORTING-DELTA.json",
+    "REVISION-v4.md",
+    "test_c2_reporting.py"
+  ],
+  "runner_AST_equal_after_stripping_only_reporting_fields": true,
+  "controller_changed_functions_after_stripping_reporting_fields": [
+    "cost_totals",
+    "terminal_result_gate"
+  ],
+  "unchanged_boundary_io_recording_contract_policies": true,
+  "native_v3_source_bound": true,
+  "native_v3_validation_scope": "53 synthetic software tests and 6 real-parent validation-only children; no production forward/backward/update.",
+  "v4_validation_scope": "one existing real tiny synthetic replay plus four reporting regression tests; no production data or models",
+  "v4_fully_tested_natively": false,
+  "v4_targeted_validation_original_cost": {
+    "whole_process_wall_seconds": 4.538071391998528,
+    "children_cpu_seconds": 4.088808
+  },
+  "slot_soft_budget_seconds": 120,
+  "slot_budget_scope": "One capture slot including all three fixed episodes, not 120 seconds per episode; soft checks, not a preemptive slot timeout.",
+  "terminal_slots": [
+    "terminal-last",
+    "terminal-best"
+  ],
+  "cumulative_active_wall_cap_seconds": 43200,
+  "finalization_reserve_seconds_inside_cap": 600,
+  "finalization_completion_guaranteed": false,
+  "source_blocker_identified_in_reporting_delta": false,
+  "execution_authorized_by_this_review": false,
+  "numerical_admission": "HOLD",
+  "scientific_admission": "HOLD"
+}

@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "<stdin>", line 14, in <module>
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/retry_native_transport_inline_tree.py", line 84, in <module>
+    runpy.run_path(str(ROOT / 'native_publish_inline_tree.py'), run_name='__main__')
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/native_publish_inline_tree.py", line 134, in <module>
+    parent = get(f"{PREFIX}/git/commits/{SPEC['parent_commit']}")
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/native_publish_inline_tree.py", line 63, in get
+    raise RuntimeError(result.stderr[-2000:])
+RuntimeError: gh: API rate limit exceeded for user ID 102159240. If you reach out to GitHub Support for help, please include the request ID E837:18281A:64B8FC:BA871B:6AF0662A and timestamp 2026-11-08 12:08:10 UTC. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) (HTTP 403)
+

@@ -14,6 +14,8 @@ doctest = false
 default = []
 # Read physical owner bytes only in explicitly enabled qualification fixtures.
 qualification-owned-file-read = []
+# Bounded original-handle byte observations for qualification fixtures only.
+qualification-file-observation = []
 # Explicit compatibility escape hatch for trusted in-process fixtures only.
 # Production and qualification consumers must use signed admission APIs.
 trusted-inprocess-eval = []

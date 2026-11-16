@@ -1,0 +1,218 @@
+{
+  "review_identity": "currentstate-cost-negative-readonly-001",
+  "artifact_commit": "a9a7fc48d6c27636fc3b5c71065c1a33b7111807",
+  "source_freeze_commit": "de3d9372d8bd53bb4c523c6f1a43e3e213d33790",
+  "reviewer_execution": {
+    "candidate_imports": 0,
+    "reference_imports": 0,
+    "scipy_imports": 0,
+    "expm": 0,
+    "quadrature": 0,
+    "model_runs": 0,
+    "scalar_decimal_exp_only": true
+  },
+  "input_roster_before": {
+    "evidence/currentstate-attempt001/SUMMARY.json": {
+      "bytes": 9513,
+      "sha256": "3d02cf23edf22a48f86671ef5af4187fc463827bbb973a966936139c6ce8d944"
+    },
+    "evidence/currentstate-attempt001/NEGATIVE_CONTROL.json": {
+      "bytes": 2484,
+      "sha256": "930433fddbfa4c3ab053509b984add51fc68351fab3fbaa9a6dc7cca109f6f06"
+    },
+    "qualification/hcsn_currentstate/PLAN.json": {
+      "bytes": 1658,
+      "sha256": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498"
+    },
+    "qualification/hcsn_currentstate/audit.py": {
+      "bytes": 12312,
+      "sha256": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2"
+    },
+    "qualification/hcsn_currentstate/negative_control.py": {
+      "bytes": 1360,
+      "sha256": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e"
+    },
+    "qualification/hcsn_currentstate/packets.py": {
+      "bytes": 16766,
+      "sha256": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd"
+    },
+    "qualification/hcsn_currentstate/reference.py": {
+      "bytes": 5742,
+      "sha256": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149"
+    },
+    "qualification/hcsn_currentstate/SPEC.md": {
+      "bytes": 7988,
+      "sha256": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b"
+    }
+  },
+  "input_roster_after": {
+    "evidence/currentstate-attempt001/SUMMARY.json": {
+      "bytes": 9513,
+      "sha256": "3d02cf23edf22a48f86671ef5af4187fc463827bbb973a966936139c6ce8d944"
+    },
+    "evidence/currentstate-attempt001/NEGATIVE_CONTROL.json": {
+      "bytes": 2484,
+      "sha256": "930433fddbfa4c3ab053509b984add51fc68351fab3fbaa9a6dc7cca109f6f06"
+    },
+    "qualification/hcsn_currentstate/PLAN.json": {
+      "bytes": 1658,
+      "sha256": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498"
+    },
+    "qualification/hcsn_currentstate/audit.py": {
+      "bytes": 12312,
+      "sha256": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2"
+    },
+    "qualification/hcsn_currentstate/negative_control.py": {
+      "bytes": 1360,
+      "sha256": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e"
+    },
+    "qualification/hcsn_currentstate/packets.py": {
+      "bytes": 16766,
+      "sha256": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd"
+    },
+    "qualification/hcsn_currentstate/reference.py": {
+      "bytes": 5742,
+      "sha256": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149"
+    },
+    "qualification/hcsn_currentstate/SPEC.md": {
+      "bytes": 7988,
+      "sha256": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b"
+    }
+  },
+  "unchanged": true,
+  "cost": {
+    "ledgers": [
+      {
+        "fixture": "mixed",
+        "mode": "fine",
+        "maximum": 500,
+        "expm_calls": 114,
+        "segments": 11,
+        "max_matrix": 15
+      },
+      {
+        "fixture": "mixed",
+        "mode": "coarse",
+        "maximum": 500,
+        "expm_calls": 26,
+        "segments": 6,
+        "max_matrix": 15
+      },
+      {
+        "fixture": "mixed",
+        "mode": "cold",
+        "maximum": 500,
+        "expm_calls": 56,
+        "segments": 5,
+        "max_matrix": 15
+      },
+      {
+        "fixture": "rare",
+        "mode": "fine",
+        "maximum": 500,
+        "expm_calls": 114,
+        "segments": 11,
+        "max_matrix": 12
+      },
+      {
+        "fixture": "rare",
+        "mode": "coarse",
+        "maximum": 500,
+        "expm_calls": 26,
+        "segments": 6,
+        "max_matrix": 12
+      },
+      {
+        "fixture": "rare",
+        "mode": "cold",
+        "maximum": 500,
+        "expm_calls": 56,
+        "segments": 5,
+        "max_matrix": 12
+      }
+    ],
+    "references": [
+      {
+        "fixture": "mixed",
+        "order": 32,
+        "expm_calls": 3216,
+        "gl_nodes": 288
+      },
+      {
+        "fixture": "mixed",
+        "order": 64,
+        "expm_calls": 6288,
+        "gl_nodes": 576
+      },
+      {
+        "fixture": "rare",
+        "order": 32,
+        "expm_calls": 3216,
+        "gl_nodes": 288
+      },
+      {
+        "fixture": "rare",
+        "order": 64,
+        "expm_calls": 6288,
+        "gl_nodes": 576
+      }
+    ],
+    "candidate_expm_calls": 392,
+    "candidate_segments": 44,
+    "reference_expm_calls": 19008,
+    "reference_gl_nodes": 1728,
+    "max_recorded_augmented_dimension": 15,
+    "fixed_roster_hard_candidate_expm_upper_bound": 3000,
+    "fixed_roster_hard_candidate_segments_upper_bound": 120,
+    "fixed_roster_hard_reference_expm_upper_bound": 80000,
+    "fixed_roster_hard_reference_gl_upper_bound": 10000,
+    "fixed_roster_cpu_hard_upper_bound_seconds": 173,
+    "saved_wall_seconds": 1.7589822850004566,
+    "saved_parent_cpu_seconds": 0.917592353,
+    "saved_children_cpu_seconds": 0.830407,
+    "saved_sum_cpu_seconds": 1.747999353,
+    "saved_parent_max_rss_KiB": 53608,
+    "saved_parent_max_rss_MiB": 52.3515625,
+    "memory_limit_interpretation": "RLIMIT_AS=536870912 per process, not total RSS; saved ru_maxrss is parent only; child RSS not recorded"
+  },
+  "negative_control_checks": [
+    {
+      "dps": 80,
+      "decimal_precision": 140,
+      "input_convention": "exact decimal rationals; mathematical counterexample",
+      "saved_scalar_errors": {
+        "weight0": "2.40288003999373849386862355976821111470199845714785528255508E-81",
+        "weight1": "2.40288003999373849386862355976821111470199845714785528255508E-81",
+        "weights_sum": "0E-80",
+        "current_Z": "1.96921048723575360425032062130162987589324604985921482161847E-81",
+        "same_Z_from_saved_weights": "2.00471740736342105392305271936974258664421300599942106387526E-81",
+        "future_active_B": "1.63818097950208186970785970252886021635941646494220529701473E-81",
+        "future_first_hit_B": "2.32848815596656290861186609837657064849131937672048463655846E-82"
+      },
+      "comparison_absolute_limit": "1E-79",
+      "saved_equal_Z_residual": "1.054219794323052322434857405127001900770996138236850755007776302510814429096976e-81",
+      "future_active_B": "0.46794514017047630545860831921590977917644161037039607106660841533511569525967074",
+      "future_first_hit_B": "0.024143894894829405076983696119427125106856325723237236639630632486188953759845619"
+    },
+    {
+      "dps": 120,
+      "decimal_precision": 180,
+      "input_convention": "exact decimal rationals; mathematical counterexample",
+      "saved_scalar_errors": {
+        "weight0": "1.542852144717442370040450967857174384995489002582087643074E-123",
+        "weight1": "1.542852144717442370040450967857174384995489002582087643074E-123",
+        "weights_sum": "0E-120",
+        "current_Z": "2.46049859214821618465671988075464994923740740599939032048693E-121",
+        "same_Z_from_saved_weights": "2.46027060770055551242450346881998403580631002538032362126934E-121",
+        "future_active_B": "4.16464942205297012330593175453332652710155110609128369244793E-121",
+        "future_first_hit_B": "3.19376720484636559684421795883803826601276972852370252813753E-122"
+      },
+      "comparison_absolute_limit": "1E-119",
+      "saved_equal_Z_residual": "9.68147978712329568204507658321587961892554798012197716371940735336104087024421491215670558569253649227014385626888616885e-122",
+      "future_active_B": "0.467945140170476305458608319215909779176441610370396071066608415335115695259670738361819020497918130292140297471139783641",
+      "future_first_hit_B": "0.0241438948948294050769836961194271251068563257232372366396306324861889537598456192328488155966562908611866098376570648491"
+    }
+  ],
+  "scope": "Saved real-coefficient phase-law counterexample supports insufficiency of scalar totals for future continuation. It is not an exact binary64 serialized-state collision or arbitrary model restore certificate.",
+  "verdict": "No arithmetic discrepancy found in reviewed saved cost and negative-control data."
+}

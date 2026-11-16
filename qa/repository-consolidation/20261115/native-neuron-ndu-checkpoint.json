@@ -1,0 +1,184 @@
+{
+  "schema": 1,
+  "steps": [
+    {
+      "label": "helpers-build",
+      "command": [
+        "python3",
+        "/home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/scripts/hepta_ci_v8.py",
+        "--run",
+        "python3",
+        "/home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/scripts/hepta_cell_test_helpers.py",
+        "--output-dir",
+        "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers",
+        "--package",
+        "codex-hepta-infer-worker-host"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers-build.log",
+      "sha256": "5033accee4f497df1501134ebd4d9b19909842f09117f44039dacc8e19b2ff11",
+      "bytes": 354
+    },
+    {
+      "label": "helpers-verify",
+      "command": [
+        "python3",
+        "/home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/scripts/hepta_cell_test_helpers.py",
+        "--output-dir",
+        "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--verify-only"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers-verify.log",
+      "sha256": "70496efdc9ae1a16848067e57a51aeb963779cef2c8c1fb2d48ae5c702848e2f",
+      "bytes": 1144
+    },
+    {
+      "label": "neuron",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-neuron",
+        "--lib",
+        "--features",
+        "qualification-owned-file-read",
+        "--retries",
+        "0"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-neuron.log",
+      "sha256": "549772032ed92fa6dafad26c3a19a73896e7d39c01306b6c01d4c6351718353f",
+      "bytes": 39100
+    },
+    {
+      "label": "ndu-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-ndu",
+        "--bin",
+        "ndu-group-replay",
+        "--bin",
+        "ndu-group-control",
+        "--message-format=json-render-diagnostics"
+      ],
+      "exit_code": 0,
+      "stdout": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-ndu.jsonl",
+      "stderr": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-ndu.stderr.log"
+    },
+    {
+      "label": "python-four-native",
+      "command": [
+        "/home/qian-qi/hepta-rust-audit-078e4036190f-python-venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_native_group_control.ExecutedNativeGroupControlTests.test_actual_native_decisions_match_oracle_and_report_child_cost",
+        "test_native_ndu_bridge.ExecutedNativeNduTests.test_real_native_composition_matches_q32_receipts",
+        "test_reader_execution.ReaderExecutionTests.test_real_native_q32_binary_controls_a_live_recurrent_reader",
+        "test_token_execution.TokenExecutionTests.test_existing_q32_binary_controls_real_token_callbacks"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-python-four-native.log",
+      "sha256": "e716f095f47e31246254167753aeeded4995189f19bad492feba596e600dd895",
+      "bytes": 782
+    },
+    {
+      "label": "ndu-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-ndu",
+        "--retries",
+        "0"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-ndu-tests.log",
+      "sha256": "a09481b4a4e96d9b4816d2dc83be0397e4eadc424e160b9bf29a9d89dacef916",
+      "bytes": 11669
+    },
+    {
+      "label": "scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-ndu"
+      ],
+      "exit_code": 0,
+      "log": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-scoped-fix.log",
+      "sha256": "b4e5cda24af51c645fb4ad7485d30d9d6857bb881e90907b44342a3d255fcc19",
+      "bytes": 1775
+    }
+  ],
+  "complete": true,
+  "hydrated_compile_data": {
+    "path": "docs/modules/MODULES.json",
+    "git_blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d",
+    "bytes": 60119,
+    "sha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716"
+  },
+  "source_head": "3cc4915aee47b1d9921f757cc06e3297512c2431",
+  "source_tree": "1b2835ded0c195446ae2849ca95344f1e2ccd84c",
+  "ndu_artifacts": {
+    "ndu-group-replay": {
+      "compiler_executable": "/home/qian-qi/hepta-rust-audit-078e4036190f-target/debug/ndu-group-replay",
+      "executable": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-ndu-bin/ndu-group-replay",
+      "sha256": "e3fb00276eb1bdafc5db03bf065628c4d8c12175736206ad1af938090e32cd07",
+      "bytes": 15871600,
+      "package_id": "path+file:///home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/codex-rs/hepta-ndu#codex-hepta-ndu@0.0.0"
+    },
+    "ndu-group-control": {
+      "compiler_executable": "/home/qian-qi/hepta-rust-audit-078e4036190f-target/debug/ndu-group-control",
+      "executable": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-ndu-bin/ndu-group-control",
+      "sha256": "da4da077ee420c4f529c5ef26c7169b9f272620810f49e405a43f82f1ff34c6c",
+      "bytes": 15940720,
+      "package_id": "path+file:///home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/codex-rs/hepta-ndu#codex-hepta-ndu@0.0.0"
+    }
+  },
+  "source_after_tests": {
+    "head": "3cc4915aee47b1d9921f757cc06e3297512c2431",
+    "status": ""
+  },
+  "fix_patch_bytes": 0,
+  "fix_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_job": {
+    "host": "rog",
+    "job_id": "1a1e015dfb8-392-2985",
+    "exit_code": 0
+  },
+  "test_counts": {
+    "neuron": {
+      "run": 274,
+      "passed": 274,
+      "skipped": 0
+    },
+    "ndu": {
+      "run": 81,
+      "passed": 81,
+      "skipped": 0
+    },
+    "previously_skipped_python_native": {
+      "run": 4,
+      "passed": 4,
+      "skipped": 0
+    }
+  },
+  "scope": "Source 9b8de495 plus the verified root-native-v2 Rust patch; this receipt does not qualify the later Learning/HCSN combined source."
+}

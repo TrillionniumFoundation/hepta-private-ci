@@ -1,0 +1,76 @@
+{
+  "schema": "hcsn-terminal-coupling-repair-audit-v1",
+  "recorded_utc": "2026-11-16T01:09:04.678965+00:00",
+  "original_source_commit": "d40c166e4d8a1f051473afe9ef78981b2a7c3183",
+  "integrated_baseline_commit": "8825b4738095ecbb1fb40747e5af94f5db33814d",
+  "original_source_sha256": "29993c6ea70593d24446ca66eb0d5447e74c77478c04d991396ae01e3a4c3832",
+  "repaired_source_sha256": "8e4536d81f1313e04a7825bffa90a7bd240c2506de48cddaea5d9913cbe9dc0c",
+  "repaired_tests_sha256": "2af9223ed5ca284535a9115e48cdc2445844a3491695270fe6beeee71bef8768",
+  "repaired_source_freeze_sha256": "26324f9882e50f6f9016948cfb20321bf5d276787dee1d64e0d0f8ae4f2b8c7b",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "regression_red": {
+    "original_tests_passed": 7,
+    "test_methods": 9,
+    "attack_failures": 4,
+    "process_exit": 1,
+    "cause": "valid rehashed observation and receipt were not required to describe identical execution facts"
+  },
+  "green": {
+    "package_count": 6,
+    "normal_test_methods_passed": 31,
+    "optimized_test_methods_passed": 31,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "attack_cases_rejected": 4,
+    "source_verifiers_passed": 2
+  },
+  "source_review": {
+    "new_python_files_ast_parsed": 334,
+    "workflow_files_duplicate_key_parsed": 63,
+    "manual_scope": "conflicted CI workflows, supervisor BUILD/runfile data, terminal publication and receipt dependencies; broad scientific sources have syntax inventory only"
+  },
+  "preservation": {
+    "original_source_files_byte_identical": 9,
+    "original_terminal_event_files_retained": 26,
+    "historical_zip_archives_verified": 3,
+    "historical_zip_members_verified": 21,
+    "prior_holds_unchanged": true
+  },
+  "bounded_qvi_fixture": {
+    "unit_tests_passed": 7,
+    "continuum_fixture_passed": true,
+    "continuum_certificate": false,
+    "neural_task_benefit_established": false
+  },
+  "files": {
+    "RED.stderr": {
+      "bytes": 6335,
+      "sha256": "27a30724761ff27e1237ad5f54016422757fa1e44967a39f3e7646f58dc5c613"
+    },
+    "GREEN.stderr": {
+      "bytes": 7162,
+      "sha256": "5a1cce2f5827010b015feae44145e66a1846782e2d4425ce92ad5b542395f4e9"
+    },
+    "GREEN_OPT.stderr": {
+      "bytes": 7162,
+      "sha256": "64edc9b71292797bb3b169c195af460fdb7a643b86e66c2b6c00d7b1ee9ed17c"
+    },
+    "QVI_TESTS.stderr": {
+      "bytes": 1219,
+      "sha256": "fdf20fd5fca990b9a9324cc2123af55a838fdc396b91c3c0357d665861bc4d97"
+    },
+    "QVI_CONTINUUM.json": {
+      "bytes": 5323,
+      "sha256": "17d3778972e25542c795e174868ad48d6649503ab1c25b03fedd9efffc1be01b"
+    }
+  },
+  "authentic_terminal_originals": 0,
+  "authentic_publications": 0,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "full_rust_workspace_qualified": false,
+  "native_supervisor_bazel_executed": false,
+  "all_closed": false,
+  "status": "SCOPED_REPAIR_VERIFIED_FULL_QUALIFICATION_HOLD"
+}

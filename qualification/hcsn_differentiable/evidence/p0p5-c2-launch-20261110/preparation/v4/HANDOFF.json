@@ -1,0 +1,47 @@
+{
+  "all_previous_versions_and_attempt_costs_remain": true,
+  "candidate_bundle": {
+    "bytes": 234038,
+    "path": "/workspace/scratch/c385a7439f8e/c2-candidate-handoff-v4/hcsn-c2-execution-candidate-20261110-v4.zip",
+    "sha256": "5e4e71233548dd0131df36b3a65f0c6afd13c06083960f4a3c458300239789c2"
+  },
+  "cumulative_active_wall_limit_seconds": 43200,
+  "finalization_reserve_seconds_inside_same_cap": 600,
+  "independent_static_review_result": {
+    "bytes": 27902,
+    "path": "/workspace/scratch/c385a7439f8e/c2-v4-budget-reporting-independent-review-v1/RESULT.json",
+    "sha256": "39e52f422138b2012d4a670f0fcb193819073db0caaf3c1a117b6896dc570028"
+  },
+  "max_total_epochs": 200,
+  "native_test_scope": "V3 only: 53 synthetic software tests plus six real parent bind-only validations. Model/optimizer construction and loading occurred; no real-data forward/backward/optimizer step.",
+  "numerical_admission": "HOLD",
+  "original_v3_native_receipt": {
+    "bytes": 65033,
+    "path": "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/RESULT.json",
+    "sha256": "61552a97bfffb9e35ac7c7068c411231089cb175b3f36d303f09fca0a51548d7"
+  },
+  "real_c2_execution_authorized_by_this_handoff": false,
+  "real_c2_execution_started": false,
+  "reserve_is_not_a_completion_guarantee": true,
+  "schema": "c2-v4-reporting-only-handoff-v1",
+  "scientific_admission": "HOLD",
+  "slot_budget_scope": "One shared soft clock for all three episodes in the capture slot, not 120 seconds for each episode; operation-level overruns may still cause honest budget failure.",
+  "source_capsule": {
+    "bytes": 209455,
+    "path": "/workspace/scratch/c385a7439f8e/c2-execution-validation-attempt-05/TESTED-SOURCE.zip",
+    "sha256": "95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079"
+  },
+  "source_manifest": {
+    "bytes": 11464,
+    "path": "/workspace/scratch/c385a7439f8e/c2-execution-candidate-v4/PROGRAM-MANIFEST.json",
+    "sha256": "322eb8f76cce589ba44ed66eff822f7b497e6507106a1ad56a65bdc8c83f7f57"
+  },
+  "supplemental_three_episode_slot_soft_budget_seconds": 120,
+  "v4_targeted_result": {
+    "bytes": 18023,
+    "path": "/workspace/scratch/c385a7439f8e/c2-execution-validation-attempt-05/RESULT.json",
+    "sha256": "123450967295041fbd77fa8bb566b4f1c48d6c8a72acc5ba3fe07acf09501f9c"
+  },
+  "v4_test_scope": "One existing tiny synthetic exact-replay test plus four reporting regressions. V4 did not receive another native preflight.",
+  "v4_training_recovery_recording_budget_changed": false
+}

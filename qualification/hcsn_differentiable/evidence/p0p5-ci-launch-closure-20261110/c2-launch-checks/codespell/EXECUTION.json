@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "uv",
+    "tool",
+    "run",
+    "--offline",
+    "--from",
+    "codespell==2.4.3",
+    "codespell",
+    "--quiet-level=2",
+    "--ignore-words=.codespellignore",
+    "--skip=./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json",
+    "./qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110"
+  ],
+  "returncode": 0,
+  "whole_child_wall_seconds": 0.28908414100078517,
+  "waited_child_CPU_seconds": 0.285217,
+  "manifest_before_sha256": "093b993e5794f36318303f325f29eadf038853725d6eaeafdaaef941ccb1e09d",
+  "manifest_after_sha256": "093b993e5794f36318303f325f29eadf038853725d6eaeafdaaef941ccb1e09d",
+  "scope": "Codespell on new immutable archive text only; no model or qualification rerun."
+}

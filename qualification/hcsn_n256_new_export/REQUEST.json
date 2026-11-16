@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-n256-new-export-request-v1",
+  "identity": "hcsn-n256-new-export-20261112-c06d-attempt001",
+  "base_commit": "0296bce6a8e2ad0998f7ad67143005b109f857ad",
+  "execution": "one local export/mapping invocation after remote source freeze",
+  "intervals": 256,
+  "source_visit": "seed37/c0_b1/update24/position1/visit897",
+  "historical_N256_export_present": false,
+  "new_export_only": true,
+  "allowed_calls": {
+    "graded_node_generation": 1,
+    "migration_lift": 1,
+    "migration": 1,
+    "serialization": 1,
+    "independent_stdlib_audit": 1
+  },
+  "forbidden_calls": {
+    "DDE": 0,
+    "model": 0,
+    "matrix_exponential": 0,
+    "spatial_matrix": 0,
+    "discounted_hit_solve": 0,
+    "backward": 0,
+    "optimizer": 0,
+    "training": 0
+  },
+  "outputs": [
+    "N256_STATE.npz",
+    "N256_STATE.npz.b64",
+    "N256_STATE.json",
+    "N256_PHASE.json",
+    "METADATA.json",
+    "COSTS.json",
+    "RECEIPT.json",
+    "AUDIT.json"
+  ],
+  "qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

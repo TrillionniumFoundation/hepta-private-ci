@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "identity": "hcsn-c2-original-parent-recovery-20261114-c06d-v1",
+  "status": "EVIDENCE_ONLY_HOLD",
+  "source_parent_pr": 6308,
+  "source_parent_head": "4e073dfd53a868fa8360aa8fd1bb078f405b1c6e",
+  "discovery": {
+    "job_id": "1a1d8312d92-392-ccc",
+    "idempotency_key": "hcsn-c2-selected-hcsn-roots-parent-sha-scan-20261114-c06d-v1",
+    "outcome": "succeeded",
+    "exit_code": 0,
+    "terminal_publication_confirmed": true,
+    "selection": "top-level directory basename contains hcsn, symlinks excluded",
+    "root_count": 61,
+    "entries_seen": 64901,
+    "pt_candidates_hashed": 621,
+    "capped": false,
+    "error_count": 0,
+    "torch_imports": 0,
+    "model_executions": 0,
+    "optimizer_calls": 0,
+    "matches": [
+      {
+        "fit": "s101-lr0.001",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.001/last.pt",
+        "sha256": "e0c8c946aa8010bfcf4df5b9e155235d2fb6b12a9832e4eaa5db3d9afb154d78",
+        "size": 450552,
+        "nlink": 1
+      },
+      {
+        "fit": "s101-lr0.003",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.003/last.pt",
+        "sha256": "bea446e64571e7cd424411036eff207bb6839af4495a7b60cf0f9df81181ba05",
+        "size": 450616,
+        "nlink": 1
+      },
+      {
+        "fit": "s211-lr0.001",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/last.pt",
+        "sha256": "cdbca6e633c6aba5f72f08f259ab08b1c5c2c5745d1dbd2f323a78df876e1e79",
+        "size": 450552,
+        "nlink": 1
+      },
+      {
+        "fit": "s211-lr0.003",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003/last.pt",
+        "sha256": "b7d162101f18628fcfcabb21e9609499d62c8a26ad6d53b9c375ed2e0439d2f4",
+        "size": 450488,
+        "nlink": 1
+      },
+      {
+        "fit": "s307-lr0.001",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/last.pt",
+        "sha256": "17d6ad363d82ba31b006d0a4f55ca9c63453fa2c9c34f7370f022e2ff66a4f5c",
+        "size": 450552,
+        "nlink": 1
+      },
+      {
+        "fit": "s307-lr0.003",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.003/last.pt",
+        "sha256": "736ee7d7afe911a3cf5bb7f7ad97babff4dfb74e28a46ec9c148579160a5075c",
+        "size": 450552,
+        "nlink": 1
+      }
+    ]
+  },
+  "preserved_prior_observations": [
+    {
+      "job_id": null,
+      "outcome": "INVALID_ARGUMENT",
+      "executed": false,
+      "note": "facade admission refused before job creation"
+    },
+    {
+      "job_id": "1a1d82e25b3-392-cc2",
+      "outcome": "failed",
+      "exit_code": 127,
+      "executed_python": false,
+      "note": "stale worktree cwd; terminal launch failure"
+    },
+    {
+      "job_id": "1a1d82ea5f1-392-cc3",
+      "outcome": "succeeded",
+      "entries_seen": 100001,
+      "pt_candidates_hashed": 2,
+      "matches": 0,
+      "capped": true
+    },
+    {
+      "job_id": "1a1d82f5cf7-392-cc5",
+      "outcome": "succeeded",
+      "entries_seen": 500001,
+      "pt_candidates_hashed": 2,
+      "matches": 0,
+      "capped": true
+    },
+    {
+      "job_id": "1a1d83098ac-392-cca",
+      "outcome": "succeeded",
+      "archive_path": "/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip",
+      "archive_sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75",
+      "pt_members": 6,
+      "original_parent_matches": 0,
+      "note": "archive contains the six known later checkpoints"
+    }
+  ],
+  "unchanged_blockers": {
+    "original_replay_job": "desktop 1a1c74f3308-be2a-75",
+    "original_replay_status": "UNKNOWN_NON_AUTHORITATIVE",
+    "original_replay_restarted": false,
+    "original_replay_optimizer_calls": "UNKNOWN",
+    "full_training_replay_completed_fits": "0/6",
+    "resource_freeze_complete": false,
+    "all_closed": false
+  },
+  "grants": [
+    "six original parent checkpoint byte identities recovered at exact host paths"
+  ],
+  "does_not_grant": [
+    "Torch deserialization or semantic state audit",
+    "model, Adam, RNG, or cursor completeness",
+    "remaining-wall or start-parent ledger freeze",
+    "resource-safe full replay admission",
+    "full training replay",
+    "production adoption"
+  ]
+}

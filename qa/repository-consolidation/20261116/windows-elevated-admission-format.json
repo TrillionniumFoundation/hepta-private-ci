@@ -1,0 +1,37 @@
+{
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "root": "/home/qian-qi/hepta-rust-audit-813a1bed10e0-windows-guard-format-v1",
+  "exit_code": 0,
+  "output": "",
+  "input_sha256": {
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs": "43167849dd825c12793938437b90152c4ac0719bdd1301d148875ef0a721c4d6",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission.rs": "fafe8cf67b02f02a61bbd56f225825a6c48722d3a9806ad6041f6e5c96fc6d7f",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission_tests.rs": "05fd0246e3f8a17079fc8b0b5a9f5e676be8598dd4fe01171f7745307c10ef5d",
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": "86bf7b5b7e6d5f284930b7caa38c66856169bcaa2c272be82eb476edf84c25ed",
+    "codex-rs/windows-sandbox-rs/src/lib.rs": "fcecdd7436bba43464ccad1db1ec3acd61269f15b4a3fa503eede67bd062d286",
+    "codex-rs/windows-sandbox-rs/src/token.rs": "b6b37f065b81d9556e9e4f351e177b2d725989aa536c177b56485eab89376c66",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs": "b51533866b11122040cbc8413d2d2fdcc8bb12cfb46842a3a963af827dbcc3d6",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs": "0d3994e3212178d117e8c96990f444ca0f84aa55e643324196ce8961c97400f8",
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs": "39775b02ab3136c41e310c4efde6de270c323dad57dcb60cfe574da2ec6f91dd"
+  },
+  "output_sha256": {
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs": "43167849dd825c12793938437b90152c4ac0719bdd1301d148875ef0a721c4d6",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission.rs": "fafe8cf67b02f02a61bbd56f225825a6c48722d3a9806ad6041f6e5c96fc6d7f",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission_tests.rs": "524dec81fbeb3c35037167239504b65afb690f57b01fb7a58087c79900d32198",
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": "86bf7b5b7e6d5f284930b7caa38c66856169bcaa2c272be82eb476edf84c25ed",
+    "codex-rs/windows-sandbox-rs/src/lib.rs": "fcecdd7436bba43464ccad1db1ec3acd61269f15b4a3fa503eede67bd062d286",
+    "codex-rs/windows-sandbox-rs/src/token.rs": "b6b37f065b81d9556e9e4f351e177b2d725989aa536c177b56485eab89376c66",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs": "b51533866b11122040cbc8413d2d2fdcc8bb12cfb46842a3a963af827dbcc3d6",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs": "0d3994e3212178d117e8c96990f444ca0f84aa55e643324196ce8961c97400f8",
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs": "39775b02ab3136c41e310c4efde6de270c323dad57dcb60cfe574da2ec6f91dd"
+  },
+  "changed_files": [
+    "codex-rs/windows-sandbox-rs/src/elevated_admission_tests.rs"
+  ],
+  "host": "rog",
+  "durable_job_id": "1a1e1e74415-392-2fbc",
+  "scope": "Exact changed Rust source snapshot; formatting only, not native Windows compilation or execution"
+}

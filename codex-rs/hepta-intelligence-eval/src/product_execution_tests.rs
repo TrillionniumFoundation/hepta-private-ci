@@ -540,3 +540,13 @@ fn bounded_codec_rejects_truncation_trailing_bytes_and_historical_binding_change
     wrong.sequence += 1;
     assert!(execution_codec::decode_execution(&encoded, &test.frozen, &wrong).is_err());
 }
+
+#[path = "product_execution_evidence_tests.rs"]
+mod original_evidence;
+
+#[cfg(target_os = "linux")]
+#[path = "product_execution_holdout_current_tests.rs"]
+mod holdout_current;
+
+#[path = "product_paired_tests.rs"]
+mod paired_tests;

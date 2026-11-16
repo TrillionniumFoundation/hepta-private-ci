@@ -1,0 +1,1251 @@
+{
+  "C1_epoch_curve_checks": [
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 144.189667517,
+        "cumulative_cpu_upper_seconds": 144.189667517,
+        "cumulative_process_wall_seconds": 144.2715558449272,
+        "epoch": 59,
+        "phase": "parent",
+        "quality": 0.3044302175740919
+      },
+      "name": "attention-s101-lr0.001",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 281.235580868,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 283.5224818487186,
+            "epoch": 113,
+            "phase": "C1",
+            "quality": 0.404946496408478
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 281.235580868,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 283.5224818487186,
+            "epoch": 113,
+            "phase": "C1",
+            "quality": 0.404946496408478
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 281.235580868,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 283.5224818487186,
+            "epoch": 113,
+            "phase": "C1",
+            "quality": 0.404946496408478
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    },
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 127.538722767,
+        "cumulative_cpu_upper_seconds": 127.538722767,
+        "cumulative_process_wall_seconds": 127.6087812751066,
+        "epoch": 51,
+        "phase": "parent",
+        "quality": 0.3047469561774649
+      },
+      "name": "attention-s211-lr0.001",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 222.388790684,
+            "cumulative_cpu_upper_seconds": 222.388790684,
+            "cumulative_process_wall_seconds": 222.46569550107233,
+            "epoch": 91,
+            "phase": "parent",
+            "quality": 0.3859802507952638
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 222.388790684,
+            "cumulative_cpu_upper_seconds": 222.388790684,
+            "cumulative_process_wall_seconds": 222.46569550107233,
+            "epoch": 91,
+            "phase": "parent",
+            "quality": 0.3859802507952638
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 222.388790684,
+            "cumulative_cpu_upper_seconds": 222.388790684,
+            "cumulative_process_wall_seconds": 222.46569550107233,
+            "epoch": 91,
+            "phase": "parent",
+            "quality": 0.3859802507952638
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    },
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 167.214232169,
+        "cumulative_cpu_upper_seconds": 167.214232169,
+        "cumulative_process_wall_seconds": 167.2372160970699,
+        "epoch": 69,
+        "phase": "parent",
+        "quality": 0.30025580675083147
+      },
+      "name": "attention-s307-lr0.001",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 296.669722894,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 298.38734465115704,
+            "epoch": 120,
+            "phase": "C1",
+            "quality": 0.36539557524936084
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 368.461397509,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 370.32099183718674,
+            "epoch": 150,
+            "phase": "C1",
+            "quality": 0.40231217178062484
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 368.461397509,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 370.32099183718674,
+            "epoch": 150,
+            "phase": "C1",
+            "quality": 0.40231217178062484
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    },
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 130.545076924,
+        "cumulative_cpu_upper_seconds": 130.545076924,
+        "cumulative_process_wall_seconds": 130.60537917003967,
+        "epoch": 45,
+        "phase": "parent",
+        "quality": 0.30243880372334814
+      },
+      "name": "gru-s211-lr0.001",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 204.506904408,
+            "cumulative_cpu_upper_seconds": 204.506904408,
+            "cumulative_process_wall_seconds": 204.5784063260071,
+            "epoch": 91,
+            "phase": "parent",
+            "quality": 0.39700924766948104
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 204.506904408,
+            "cumulative_cpu_upper_seconds": 204.506904408,
+            "cumulative_process_wall_seconds": 204.5784063260071,
+            "epoch": 91,
+            "phase": "parent",
+            "quality": 0.39700924766948104
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 204.506904408,
+            "cumulative_cpu_upper_seconds": 204.506904408,
+            "cumulative_process_wall_seconds": 204.5784063260071,
+            "epoch": 91,
+            "phase": "parent",
+            "quality": 0.39700924766948104
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    },
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 133.576464826,
+        "cumulative_cpu_upper_seconds": null,
+        "cumulative_process_wall_seconds": 135.04852862190455,
+        "epoch": 132,
+        "phase": "C1",
+        "quality": 0.30200835008146937
+      },
+      "name": "ssm_s4d-s211-lr0.001",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 226.121111512,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 228.0503544639796,
+            "epoch": 233,
+            "phase": "C1",
+            "quality": 0.35340260368232135
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 226.121111512,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 228.0503544639796,
+            "epoch": 233,
+            "phase": "C1",
+            "quality": 0.35340260368232135
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 226.121111512,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 228.0503544639796,
+            "epoch": 233,
+            "phase": "C1",
+            "quality": 0.35340260368232135
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    },
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 46.395058533,
+        "cumulative_cpu_upper_seconds": 46.395058533,
+        "cumulative_process_wall_seconds": 46.42821491905488,
+        "epoch": 46,
+        "phase": "parent",
+        "quality": 0.3013165509809904
+      },
+      "name": "ssm_s4d-s211-lr0.003",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 132.987010618,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 134.35914981621318,
+            "epoch": 139,
+            "phase": "C1",
+            "quality": 0.3941618595113974
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 132.987010618,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 134.35914981621318,
+            "epoch": 139,
+            "phase": "C1",
+            "quality": 0.3941618595113974
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 132.987010618,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 134.35914981621318,
+            "epoch": 139,
+            "phase": "C1",
+            "quality": 0.3941618595113974
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    },
+    {
+      "first_crossing_from_epoch_points": {
+        "cumulative_cpu_lower_seconds": 121.712632316,
+        "cumulative_cpu_upper_seconds": null,
+        "cumulative_process_wall_seconds": 123.17880412377417,
+        "epoch": 121,
+        "phase": "C1",
+        "quality": 0.30029721943682347
+      },
+      "name": "ssm_s4d-s307-lr0.001",
+      "wall_cuts_from_original_later_cumulative": [
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 175.329988761,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 176.9957131256815,
+            "epoch": 185,
+            "phase": "C1",
+            "quality": 0.35066837826934105
+          },
+          "budget": 300,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 175.329988761,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 176.9957131256815,
+            "epoch": 185,
+            "phase": "C1",
+            "quality": 0.35066837826934105
+          },
+          "budget": 900,
+          "no_interpolation": true
+        },
+        {
+          "best_observed": {
+            "cumulative_cpu_lower_seconds": 175.329988761,
+            "cumulative_cpu_upper_seconds": null,
+            "cumulative_process_wall_seconds": 176.9957131256815,
+            "epoch": 185,
+            "phase": "C1",
+            "quality": 0.35066837826934105
+          },
+          "budget": 1800,
+          "no_interpolation": true
+        }
+      ]
+    }
+  ],
+  "C1_stopping_checks": [
+    {
+      "best_epoch": 113,
+      "child_outer_seconds": 62.70266661187634,
+      "complete_parent_outer_seconds": 246.14111755392514,
+      "cumulative_epochs": 123,
+      "first_plateau_epoch": 123,
+      "name": "attention-s101-lr0.001"
+    },
+    {
+      "best_epoch": 91,
+      "child_outer_seconds": 10.295233050128445,
+      "complete_parent_outer_seconds": 245.11576004512608,
+      "cumulative_epochs": 101,
+      "first_plateau_epoch": 101,
+      "name": "attention-s211-lr0.001"
+    },
+    {
+      "best_epoch": 150,
+      "child_outer_seconds": 152.81079764803872,
+      "complete_parent_outer_seconds": 243.3649618451018,
+      "cumulative_epochs": 160,
+      "first_plateau_epoch": 160,
+      "name": "attention-s307-lr0.001"
+    },
+    {
+      "best_epoch": 91,
+      "child_outer_seconds": 8.54430363792926,
+      "complete_parent_outer_seconds": 220.29764117789455,
+      "cumulative_epochs": 101,
+      "first_plateau_epoch": 101,
+      "name": "gru-s211-lr0.001"
+    },
+    {
+      "best_epoch": 233,
+      "child_outer_seconds": 131.61019100388512,
+      "complete_parent_outer_seconds": 99.47318234387785,
+      "cumulative_epochs": 235,
+      "first_plateau_epoch": 235,
+      "name": "ssm_s4d-s211-lr0.001"
+    },
+    {
+      "best_epoch": 139,
+      "child_outer_seconds": 40.07614029897377,
+      "complete_parent_outer_seconds": 95.69844984216616,
+      "cumulative_epochs": 139,
+      "first_plateau_epoch": 139,
+      "name": "ssm_s4d-s211-lr0.003"
+    },
+    {
+      "best_epoch": 185,
+      "child_outer_seconds": 86.0088814010378,
+      "complete_parent_outer_seconds": 98.40970221185125,
+      "cumulative_epochs": 192,
+      "first_plateau_epoch": 192,
+      "name": "ssm_s4d-s307-lr0.001"
+    }
+  ],
+  "HCSN_final_result_reviewed": false,
+  "clock_interval_checks": [
+    {
+      "continued_epochs": 23,
+      "intervals_checked": 23,
+      "maximum_sample_gap_seconds": 3.7050340324640274e-06,
+      "minimum_sample_gap_seconds": 1.5131663531064987e-06,
+      "name": "attention-s101-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 1,
+      "intervals_checked": 1,
+      "maximum_sample_gap_seconds": 1.9669532775878906e-06,
+      "minimum_sample_gap_seconds": 1.9669532775878906e-06,
+      "name": "attention-s211-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 60,
+      "intervals_checked": 60,
+      "maximum_sample_gap_seconds": 4.270812496542931e-06,
+      "minimum_sample_gap_seconds": 1.553911715745926e-06,
+      "name": "attention-s307-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 1,
+      "intervals_checked": 1,
+      "maximum_sample_gap_seconds": 1.8968712538480759e-06,
+      "minimum_sample_gap_seconds": 1.8968712538480759e-06,
+      "name": "gru-s211-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 135,
+      "intervals_checked": 135,
+      "maximum_sample_gap_seconds": 1.1297175660729408e-05,
+      "minimum_sample_gap_seconds": 1.2919772416353226e-06,
+      "name": "ssm_s4d-s211-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 39,
+      "intervals_checked": 39,
+      "maximum_sample_gap_seconds": 4.464993253350258e-06,
+      "minimum_sample_gap_seconds": 1.3550743460655212e-06,
+      "name": "ssm_s4d-s211-lr0.003",
+      "strict_order_and_outer_end_bound": true
+    },
+    {
+      "continued_epochs": 92,
+      "intervals_checked": 92,
+      "maximum_sample_gap_seconds": 4.353933036327362e-06,
+      "minimum_sample_gap_seconds": 1.393025740981102e-06,
+      "name": "ssm_s4d-s307-lr0.001",
+      "strict_order_and_outer_end_bound": true
+    }
+  ],
+  "combined_heuristic_passes": 33,
+  "common_D_label_counts": [
+    6609,
+    631,
+    1140,
+    11500,
+    297,
+    4991,
+    3254,
+    1026,
+    1945,
+    198,
+    361
+  ],
+  "confusion_matrix_metric_checks": [
+    {
+      "accuracy": 0.6886579869804708,
+      "macro_f1": 0.3809064235579278,
+      "name": "attention-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.6937280921382073,
+      "macro_f1": 0.4324502923711034,
+      "name": "attention-s101-lr0.003"
+    },
+    {
+      "accuracy": 0.635327991987982,
+      "macro_f1": 0.3859802507952637,
+      "name": "attention-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6390836254381572,
+      "macro_f1": 0.34644104148461874,
+      "name": "attention-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.6544191286930395,
+      "macro_f1": 0.34150601184111595,
+      "name": "attention-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.6984852278417626,
+      "macro_f1": 0.4289582334907003,
+      "name": "attention-s307-lr0.003"
+    },
+    {
+      "accuracy": 0.6352341011517276,
+      "macro_f1": 0.302533143716238,
+      "name": "cfc-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.6636830245368052,
+      "macro_f1": 0.36034167105692955,
+      "name": "cfc-s101-lr0.003"
+    },
+    {
+      "accuracy": 0.6318227341011518,
+      "macro_f1": 0.2159805944196675,
+      "name": "cfc-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6056584877315974,
+      "macro_f1": 0.3306016097654832,
+      "name": "cfc-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.6740423134702053,
+      "macro_f1": 0.28380525068579854,
+      "name": "cfc-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.7182648973460191,
+      "macro_f1": 0.35613195074185905,
+      "name": "cfc-s307-lr0.003"
+    },
+    {
+      "accuracy": 0.5384952428642964,
+      "macro_f1": 0.16093349163582665,
+      "name": "event_time_lif-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.6613044566850276,
+      "macro_f1": 0.3609448591863218,
+      "name": "event_time_lif-s101-lr0.003"
+    },
+    {
+      "accuracy": 0.5963007010515774,
+      "macro_f1": 0.17956166528302406,
+      "name": "event_time_lif-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6034989984977466,
+      "macro_f1": 0.2950658826247449,
+      "name": "event_time_lif-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.5453179769654481,
+      "macro_f1": 0.1472943272886248,
+      "name": "event_time_lif-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.6183337506259389,
+      "macro_f1": 0.2830808207110156,
+      "name": "event_time_lif-s307-lr0.003"
+    },
+    {
+      "accuracy": 0.534207561342013,
+      "macro_f1": 0.16003227453900104,
+      "name": "gru-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.7066224336504757,
+      "macro_f1": 0.4323336875767939,
+      "name": "gru-s101-lr0.003"
+    },
+    {
+      "accuracy": 0.7335378067100651,
+      "macro_f1": 0.3970092476694809,
+      "name": "gru-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.7432398597896845,
+      "macro_f1": 0.4120451582007052,
+      "name": "gru-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.545036304456685,
+      "macro_f1": 0.13136321790554528,
+      "name": "gru-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.7339759639459189,
+      "macro_f1": 0.43054539499641825,
+      "name": "gru-s307-lr0.003"
+    },
+    {
+      "accuracy": 0.5233475212819229,
+      "macro_f1": 0.16036716731498657,
+      "name": "snn_plif-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.5403417626439659,
+      "macro_f1": 0.1693177824903847,
+      "name": "snn_plif-s101-lr0.003"
+    },
+    {
+      "accuracy": 0.3459877315973961,
+      "macro_f1": 0.08087865707514069,
+      "name": "snn_plif-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.3378192288432649,
+      "macro_f1": 0.11265936958100765,
+      "name": "snn_plif-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.3825425638457687,
+      "macro_f1": 0.10777057289498705,
+      "name": "snn_plif-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.5170568352528793,
+      "macro_f1": 0.167958933583199,
+      "name": "snn_plif-s307-lr0.003"
+    },
+    {
+      "accuracy": 0.5577741612418627,
+      "macro_f1": 0.2689993227024416,
+      "name": "ssm_s4d-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.585378067100651,
+      "macro_f1": 0.34775117413844636,
+      "name": "ssm_s4d-s101-lr0.003"
+    },
+    {
+      "accuracy": 0.5926389584376565,
+      "macro_f1": 0.2674109769330336,
+      "name": "ssm_s4d-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6227153229844767,
+      "macro_f1": 0.3726874986971993,
+      "name": "ssm_s4d-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.5694792188282424,
+      "macro_f1": 0.2804947310363793,
+      "name": "ssm_s4d-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.6274411617426139,
+      "macro_f1": 0.35868379901676983,
+      "name": "ssm_s4d-s307-lr0.003"
+    },
+    {
+      "accuracy": 0.6873435152729094,
+      "macro_f1": 0.4049464964084781,
+      "name": "attention-s101-lr0.001"
+    },
+    {
+      "accuracy": 0.635327991987982,
+      "macro_f1": 0.3859802507952637,
+      "name": "attention-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6858412618928392,
+      "macro_f1": 0.40231217178062495,
+      "name": "attention-s307-lr0.001"
+    },
+    {
+      "accuracy": 0.7335378067100651,
+      "macro_f1": 0.3970092476694809,
+      "name": "gru-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6135453179769654,
+      "macro_f1": 0.35340260368232135,
+      "name": "ssm_s4d-s211-lr0.001"
+    },
+    {
+      "accuracy": 0.6338257386079119,
+      "macro_f1": 0.39416185951139754,
+      "name": "ssm_s4d-s211-lr0.003"
+    },
+    {
+      "accuracy": 0.6044066099148723,
+      "macro_f1": 0.35066837826934105,
+      "name": "ssm_s4d-s307-lr0.001"
+    }
+  ],
+  "created_utc": "2026-11-10T18:52:58.478713+00:00",
+  "first_crossing_presentation_limitation": "CORE_TABLE uses original report.process_time_to_quality_seconds for uncontinued fits, but per-epoch row clocks for a C1 chain's parent crossing. Both are observed clocks; do not call the whole column uniformly recomputed from one epoch field. All seven C1 row curves/cuts were independently recomputed here; uncontinued-fit crossing timestamps were not rederived from raw parent reports in this review.",
+  "fixed_LR_table_checks": [
+    {
+      "D_mean_macro_f1": 0.42497474692463916,
+      "LR_means_from_all_six": {
+        "0.001": 0.22946824670467572,
+        "0.003": 0.42497474692463916
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 784.2627707126085,
+      "arm": "gru",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.34902507718809056,
+      "LR_means_from_all_six": {
+        "0.001": 0.26743966294056803,
+        "0.003": 0.34902507718809056
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 1701.8565244667698,
+      "arm": "cfc",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.14997869521819712,
+      "LR_means_from_all_six": {
+        "0.001": 0.1163387990950381,
+        "0.003": 0.14997869521819712
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 1308.9980340020265,
+      "arm": "snn_plif",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.3130305208406941,
+      "LR_means_from_all_six": {
+        "0.001": 0.1625964947358252,
+        "0.003": 0.3130305208406941
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 3926.9682609040756,
+      "arm": "event_time_lif",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.3668656108888712,
+      "LR_means_from_all_six": {
+        "0.001": 0.32435676821803466,
+        "0.003": 0.3668656108888712
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 817.0979199488647,
+      "arm": "ssm_s4d",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    },
+    {
+      "D_mean_macro_f1": 0.40261652244880747,
+      "LR_means_from_all_six": {
+        "0.001": 0.3977463063281223,
+        "0.003": 0.40261652244880747
+      },
+      "all_six_plus_C1_active_process_wall_seconds": 1461.6004569418728,
+      "arm": "attention",
+      "selected_LR_adequate_chains": 3,
+      "selected_common_LR": 0.003
+    }
+  ],
+  "fresh_logits_scope": "Native reviewer reports seven exact no-grad logits comparisons; this pass rechecks bound metadata and tables, not the large logits themselves.",
+  "full_results_read": [
+    {
+      "bytes": 542491,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-aggregate-originals-v1/v1-RESULT.json",
+      "sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052",
+      "version": 1
+    },
+    {
+      "bytes": 887134,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-aggregate-originals-v1/v2-RESULT.json",
+      "sha256": "c90afba67ce09871e49c2a117cec3403a2b7fdec6528e600402557d6a7863094",
+      "version": 2
+    }
+  ],
+  "inputs": {
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-aggregate-originals-v1/v1-RESULT.json": {
+      "bytes": 542491,
+      "sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-aggregate-originals-v1/v2-RESULT.json": {
+      "bytes": 887134,
+      "sha256": "c90afba67ce09871e49c2a117cec3403a2b7fdec6528e600402557d6a7863094"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/COPY_LIST.json": {
+      "bytes": 38596,
+      "sha256": "3bf389d0d58d56b3bde2d866727acb6feec4464a64c16a073d09660c770a1d52"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/MANIFEST.json": {
+      "bytes": 16887,
+      "sha256": "54060533d6a294891ce6dcd7a245e5a84a243ab8eba6de382f27c48399e81dad"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/collection-source.py": {
+      "bytes": 5242,
+      "sha256": "2d538cdb839f6dce4d73b147cdefe5b1d3b7ff70ae8e5c1f824612fae7d2ece1"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/launch/launch.json": {
+      "bytes": 1400,
+      "sha256": "bd79587003520b39fde19d50712c7a88b6730cdce976d499357acad71790f05f"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/launch/receipt.json": {
+      "bytes": 3481,
+      "sha256": "3fd710bd48e35ffd9f42e9b8ce134906b3a43cfca9a3d21465eb06333e40d3e7"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/launch/review.stderr": {
+      "bytes": 407,
+      "sha256": "8662c2e88762ea62bd6f6a9e2680fa57de84dd317034bb69c774b01c2ea0c4a8"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/launch/review.stdout": {
+      "bytes": 6304,
+      "sha256": "6d1926c5b14bbde4cfec5cb951d7f2bb9599a243abe5f08297c1d7b5601b427b"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/ARCHIVE.json": {
+      "bytes": 316,
+      "sha256": "bc7ae17f502624f395e5146c5b458be081a364991c8e55d9d5e238a8cc24fcc3"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-attention-s101-lr0.001.json": {
+      "bytes": 1205,
+      "sha256": "b0bde0ce887ba0939b3ed5ddaffa6c99fc2f4d46c6753c667fbe94e2a27fb1e6"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-attention-s211-lr0.001.json": {
+      "bytes": 1205,
+      "sha256": "8d9b0e0549fa2f78513d626d0970cedfcca929a306957a194f8facc55f8dcb75"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-attention-s307-lr0.001.json": {
+      "bytes": 1205,
+      "sha256": "0fd7bfaacf5e8729e6355d2d5a8560d13753d1a3afc922146ea0961b495a1531"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-gru-s211-lr0.001.json": {
+      "bytes": 1199,
+      "sha256": "ffa20ca3974ac7f37cda435c46b36eeb3f5f9870804ff88ce6697a74144d0dfc"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-ssm_s4d-s211-lr0.001.json": {
+      "bytes": 1203,
+      "sha256": "e2d1aac74bea696197686a817d884f4bb85a947015a2cc9be0929396fcb5ad52"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-ssm_s4d-s211-lr0.003.json": {
+      "bytes": 1203,
+      "sha256": "2bdc9a2166d504438eefa79cd60362bf92d70a388d4ac2cd8fdcd34ff7e58f9e"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/C1-ssm_s4d-s307-lr0.001.json": {
+      "bytes": 1203,
+      "sha256": "c76ebc7dbb2d3611b50497e154618eab847fff4e1836971ac0306876d4baaa2f"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/MANIFEST.json": {
+      "bytes": 8325,
+      "sha256": "097753167f3e7c42e1e45c968360fe657b86eadb8b965730f448e9a2e0f32889"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/SUMMARY.json": {
+      "bytes": 926,
+      "sha256": "6c4ef38c9ba41c228e86f4ec9db43919d0b49dcf7c85692c75caf4dd82851549"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-attention-s101-lr0.001.json": {
+      "bytes": 7685,
+      "sha256": "1923e821f245deccb43205bfe7673586c5289bfa70b2a11fb12ec521d5801f9f"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-attention-s101-lr0.003.json": {
+      "bytes": 7386,
+      "sha256": "153d87d1dd90df0ccf3b396f529e6da4f277ebf3517d9eebfd8645997c5de6e2"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-attention-s211-lr0.001.json": {
+      "bytes": 7337,
+      "sha256": "e83bc0fd7ed316f69d0960c4bc97cfa75534ebc6707d24c616d74d6fc045487e"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-attention-s211-lr0.003.json": {
+      "bytes": 7269,
+      "sha256": "6b60463318593dbddbcb105bdeb53e1c86e719563a5f35e69c49726f4f938c54"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-attention-s307-lr0.001.json": {
+      "bytes": 7297,
+      "sha256": "47c8461b62aec8b6ddf3538e41077b616cfd3bd2bd8828d0fc713bf79920570f"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-attention-s307-lr0.003.json": {
+      "bytes": 7278,
+      "sha256": "c0a4c3737a301ce9585551be43db246f69597f398875820054689557f59e214d"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-cfc-s101-lr0.001.json": {
+      "bytes": 7580,
+      "sha256": "e4a8287758458c0d375ce73920210dfffc9433ebea1cf1018d8b9a15fc18f31c"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-cfc-s101-lr0.003.json": {
+      "bytes": 7197,
+      "sha256": "c7658d6bcdf5eb7f5bca8428a7f1b2869269ce3b83dd0f63b70e9080eb87c63e"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-cfc-s211-lr0.001.json": {
+      "bytes": 7226,
+      "sha256": "c0e7b3b0e4259efec2b325ba4a094cb158dab49446eceeea00ae971a1e8dc251"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-cfc-s211-lr0.003.json": {
+      "bytes": 7275,
+      "sha256": "0f1f752459347a6be0dd9a49cb2f8a4e209f2e7fd86d5d62a15088e21df681b1"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-cfc-s307-lr0.001.json": {
+      "bytes": 7202,
+      "sha256": "07058ce206fcba76d9ff1fbefa188d0b839c7ef0b2261f022d375d17e18225f3"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-cfc-s307-lr0.003.json": {
+      "bytes": 7198,
+      "sha256": "058d195b13233d19c854887a05e0f0d4eaab29121de2ebd2ef5cacbade6a53ec"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-commands-context-after.jsonl": {
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-commands-context.jsonl": {
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-event_time_lif-s101-lr0.001.json": {
+      "bytes": 7717,
+      "sha256": "98190d10a77fe4ffe2322afe16a8f11facf1e086ac416c3f3700b0250d0c6ad2"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-event_time_lif-s101-lr0.003.json": {
+      "bytes": 7121,
+      "sha256": "fc47ed7ecaa12a644e14c3753145523e174cdb926ae4ee21179dd2d89e147f95"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-event_time_lif-s211-lr0.001.json": {
+      "bytes": 7131,
+      "sha256": "abb8c1754e64e87c4a111dacb51f959bef9c3f0cb738bbac038d195e1f21bb9c"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-event_time_lif-s211-lr0.003.json": {
+      "bytes": 7265,
+      "sha256": "ea0215a6601f5ea17f5028a3efd9e99784ecbbb6018d71f4b265746adac4547a"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-event_time_lif-s307-lr0.001.json": {
+      "bytes": 7163,
+      "sha256": "f48533418835dc90d63b73d8626d94f2670be9a86d54d637eba5a0f7e0e69eda"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-event_time_lif-s307-lr0.003.json": {
+      "bytes": 7275,
+      "sha256": "eaecbe866d9584bd624f1de688419e85618248b8628f230e612fe4e2792d0422"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-gru-s101-lr0.001.json": {
+      "bytes": 7596,
+      "sha256": "b482a52faed47d49b026f7116869d99c92c29531cd75c2af59e3f5591ec9e393"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-gru-s101-lr0.003.json": {
+      "bytes": 7155,
+      "sha256": "8a1e2c56276b99f2d8c8751ae921cb32b403cb9bec0ae3dc39aa09c09d995dda"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-gru-s211-lr0.001.json": {
+      "bytes": 7252,
+      "sha256": "8afe45161d114e353f892d1316d85f01cd69ea2cd471ddaa770efb6ca06ad6d5"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-gru-s211-lr0.003.json": {
+      "bytes": 7162,
+      "sha256": "98fa4394136bc202772f2c5195cd1a7c566dd0961ec26922207edda057a41ab6"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-gru-s307-lr0.001.json": {
+      "bytes": 7200,
+      "sha256": "fb3bdc80b45b55be0d5154a6445f7d4119dc757016b9b20a4c442eb19f286810"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-gru-s307-lr0.003.json": {
+      "bytes": 7250,
+      "sha256": "c18f413896c83e735412bc22f09b698c6d351d32289f156d86e840fb25799a51"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-snn_plif-s101-lr0.001.json": {
+      "bytes": 7732,
+      "sha256": "c3a18e529d8472fb1f4e37101d75d445538e2455d73ec8dd63dded3ac89a4d6f"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-snn_plif-s101-lr0.003.json": {
+      "bytes": 7367,
+      "sha256": "2fc84fd21130fd10dd0f76f3ecbd154565e4fe7ce0f8db8a461fb4b3d237daf8"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-snn_plif-s211-lr0.001.json": {
+      "bytes": 7364,
+      "sha256": "f056e21b141daac0359afb569d6a921cbc68d35f32a33356f3fd00357768e4b4"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-snn_plif-s211-lr0.003.json": {
+      "bytes": 7233,
+      "sha256": "f71aa5c89dd465b4fc9bb0994c45023d959d7faa9b4cafd525a6397bfdb4fb92"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-snn_plif-s307-lr0.001.json": {
+      "bytes": 7371,
+      "sha256": "1375d5039db731d19aa90cc47dc8424c459b52a21610976790aba8c27bb9eed1"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-snn_plif-s307-lr0.003.json": {
+      "bytes": 7415,
+      "sha256": "db7ca96b11b3a2aae91426959204494cf7a66af9303d5898782ef53dce34a99d"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-ssm_s4d-s101-lr0.001.json": {
+      "bytes": 7577,
+      "sha256": "d648197043492934cad471dd7bb2c45ee4e04b69507820c8be797007adcd31fe"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-ssm_s4d-s101-lr0.003.json": {
+      "bytes": 7316,
+      "sha256": "9ea264c695926ab6c6f232d0d5c6945ed231baeaff0250c0bb090771b0aecc3b"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-ssm_s4d-s211-lr0.001.json": {
+      "bytes": 7242,
+      "sha256": "8d197c1286c64befffb04d5f7fbc55983c6db66e06ea2c4bab1e3972749081a1"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-ssm_s4d-s211-lr0.003.json": {
+      "bytes": 7186,
+      "sha256": "8af438590640b403b4617fde4299b3b2c3796be68be4be6ffeb1d89013460978"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-ssm_s4d-s307-lr0.001.json": {
+      "bytes": 7204,
+      "sha256": "2c8f4463420463df1c8c5f641dc0da4b8f1191ad52ae67692db6d7426d3788a9"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/output/original-ssm_s4d-s307-lr0.003.json": {
+      "bytes": 7279,
+      "sha256": "91794434e6189a1d73d3070f33d52284d3cb068648e9b6637b87c28346ee1ce0"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/MANIFEST.json": {
+      "bytes": 9559,
+      "sha256": "e0bd84a6356f7e2df30f5eee853ff458c09f7f304e15696be4e662a57895ce31"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/README.md": {
+      "bytes": 4033,
+      "sha256": "a661b9c3ea008064adf25b9c9114c5338a696c3066c08eb64d7dc7fa1ab43c20"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/VALIDATION.json": {
+      "bytes": 15044,
+      "sha256": "981378bf6cac8b5efe314b708106b31f9e6a4dbe500d2141998c24ff64a6746c"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/adapter-tests.stderr": {
+      "bytes": 1591,
+      "sha256": "631b47df8358dfbebceda5a22bb920b61acf871d6c8e4ec68f31a2980e2a180e"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/adapter-tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/disabled-assertions-rejected.stderr": {
+      "bytes": 658,
+      "sha256": "d0b84480ff14ea40599ab70dcf388a637dbe4dde9de77df2f5288e7bf1a67770"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/disabled-assertions-rejected.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/frozen-helper-tests.stderr": {
+      "bytes": 3885,
+      "sha256": "d876302be331e8ebee6db2004f0682bfdbb73c3fa96ae2173eee677a87532dcf"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/frozen-helper-tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/help.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/preparation/validation/help.stdout": {
+      "bytes": 238,
+      "sha256": "24a9b7953f4cb7525ab0f98a6642758b1dd1fad222b4f13e9e7842d99cb6c33b"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/source/baseline36-c1-independent-reviewer-program-v1.zip": {
+      "bytes": 160604,
+      "sha256": "2f68f48b5cf4f758ab503ac1621cf4b17039ef9169a4c57cfd4dd7f6d8c25034"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v1/source/launch_baseline36_c1_review_v1.py": {
+      "bytes": 5685,
+      "sha256": "56b64f43b110635f1d4330767556465fada7e22bae2406224ddb0c4379ebaae9"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json": {
+      "bytes": 240641,
+      "sha256": "1511fe97bec17637deef2dd336b97f8bb04dbc6421708d55909896e9f6bba6e6"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/7c1d5728af45e5f3c337b6f1b724a47eaa720580.json": {
+      "bytes": 8255,
+      "sha256": "919e21825b57cf6a15fcd8826d9735517e7e9d5a22ec608dacca8af90a3e8096"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/7c1d5728af45e5f3c337b6f1b724a47eaa720580.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/bootstrap-source.py": {
+      "bytes": 3924,
+      "sha256": "d1b6110e6b877f1a1dfde88a30d8a1c98acb7918e2ab18c5599558a5ff2d5ca9"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/download-receipt.json": {
+      "bytes": 1226,
+      "sha256": "39095018f5c43f852c307a64f18a363a9d5bfd32300db185d8fdb4543036b581"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/bootstrap/receipt.json": {
+      "bytes": 1716,
+      "sha256": "9d9970413afa6ed2f78d4547ec4f1eb1f867034141f2394dd1b04af510e4854b"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/launch/launch.json": {
+      "bytes": 1492,
+      "sha256": "b01ba7fbf7cb470c55a47162c46df98c1ea4ea147cb2ecbec9ff9be5205e2777"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/launch/receipt.json": {
+      "bytes": 3545,
+      "sha256": "312a2ff92b530e9cd3aa69c2051eb6cd1f189d3dc96c694b7725935ef30b985c"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/launch/review.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/launch/review.stdout": {
+      "bytes": 1460,
+      "sha256": "1bd1e2b937b32338853796c5256fd2cf777066a4bc6175f8f4e078e0dae13f20"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/ARCHIVE.json": {
+      "bytes": 316,
+      "sha256": "85704299e872ec220936ad9cefeb6512d4ef4c28a177062754bda1a2b77f4ad6"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-attention-s101-lr0.001.json": {
+      "bytes": 57683,
+      "sha256": "a0cc8d971e3e847d3bf452d8f3719dc6ea4d0373e66f94ae12ced6c7fce787fd"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-attention-s211-lr0.001.json": {
+      "bytes": 44592,
+      "sha256": "6d0158003a848f8c381a88f7979f6e6b301dae8ca3e709a39bfdf043081ac53d"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-attention-s307-lr0.001.json": {
+      "bytes": 79998,
+      "sha256": "a717dc8efb752bcc07a15011cc9cc423b321cd84fad2e6788b2e938065352f0c"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-gru-s211-lr0.001.json": {
+      "bytes": 44261,
+      "sha256": "2d5f997d2b36cf1ea28fc3d36f4d847cb8ec979ae23d94517adefe5797a69d3f"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-ssm_s4d-s211-lr0.001.json": {
+      "bytes": 125649,
+      "sha256": "d6f05e9a6435b0cfe749c9d6b62f6ac3187e077b1031fb01c25dbd05c28fa406"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-ssm_s4d-s211-lr0.003.json": {
+      "bytes": 67726,
+      "sha256": "484c1d8f4706eb8a23ccc1d85a1b7676ee129479b30c5bdea3cff7deccd7fa2e"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/C1-ssm_s4d-s307-lr0.001.json": {
+      "bytes": 99576,
+      "sha256": "9259874f5dd25f93672afbb328000132609466337f359ad080dcde751d8b3c5c"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/CORE_TABLE.json": {
+      "bytes": 70494,
+      "sha256": "ebf943e36a3da47352a70d46d41e9ad73d5e97d7778908fd4933bda699455dfe"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/MANIFEST.json": {
+      "bytes": 3014,
+      "sha256": "dc6e757ba8c40698f59b21272884cf875f9d47e3fdd61269068554f3a0ef8713"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/README.md": {
+      "bytes": 1762,
+      "sha256": "a48b9c53fb57e6d421c4e7d530f383e0b3f9b3369425a8669859a5a846d38deb"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/SUMMARY.json": {
+      "bytes": 900,
+      "sha256": "cad3db1ac581338371f51da8f0bd1214ac6d4e61bde61de2512e264f616881d6"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/original-commands-context-after.jsonl": {
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/output/original-commands-context.jsonl": {
+      "bytes": 166152,
+      "sha256": "6d365332edad098abf5269b143e1f1e49665b98dcf3f3651bdb473267f7c1fcf"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/MANIFEST.json": {
+      "bytes": 10286,
+      "sha256": "0d5c1360b8e4f418cfff3ff2f29b7e392ffcb8cd4c281a00c09dd16946a06601"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/README.md": {
+      "bytes": 3669,
+      "sha256": "de8a0461227554856fe454e3a7d0b790268e645653a8aa071623b941ee93dbeb"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/VALIDATION.json": {
+      "bytes": 16052,
+      "sha256": "b331de24b72e73458ee9e73c76ae700efc99436a86cde9ca5845f5163f3bc85e"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/adapter-tests.stderr": {
+      "bytes": 2326,
+      "sha256": "dd0458a5953f00a7a15d4fc2264795ea29d2fe2180daf1ff28037bd47db1a7bc"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/adapter-tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/disabled-assertions-rejected.stderr": {
+      "bytes": 664,
+      "sha256": "a60ac72cbbebbb7bce0248bbbfe3b5cfaa6866b0f70d214ed86ae04763baf0d0"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/disabled-assertions-rejected.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/frozen-helper-tests.stderr": {
+      "bytes": 3885,
+      "sha256": "d876302be331e8ebee6db2004f0682bfdbb73c3fa96ae2173eee677a87532dcf"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/frozen-helper-tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/help.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/preparation/validation/help.stdout": {
+      "bytes": 241,
+      "sha256": "8b991fdf0fbd2697a804d2dcf98de2418fe2dc77cbd71b87633a817fe2cbc3dc"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/source/baseline36-c1-independent-reviewer-program-v2.zip": {
+      "bytes": 174435,
+      "sha256": "6ede11014d33e219f6ebc109911ad50a8550bb585388b16b5c604a2d4cb54c51"
+    },
+    "/workspace/scratch/c385a7439f8e/baseline36-c1-review-small-originals-v1/v2/source/launch_baseline36_c1_review_v2.py": {
+      "bytes": 5768,
+      "sha256": "94be43962ba77b72cc99ae12ea057dc8af6318e17908c496718828819ae6d6f4"
+    },
+    "/workspace/scratch/c385a7439f8e/c1-clock-outcomes-independent-review-v1/RESULT.json": {
+      "bytes": 49648,
+      "sha256": "cee95cd956a9d256b594ad161196adaaeef5c4b31f49fc1e9f0fc1eff1aa7e97"
+    },
+    "/workspace/scratch/c385a7439f8e/campaign-v2-plan.json": {
+      "bytes": 3861,
+      "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114"
+    },
+    "/workspace/scratch/c385a7439f8e/native-c1-completed-20261110-v1/RESULT.json": {
+      "bytes": 45528,
+      "sha256": "f09e2d72f9c8c49fc03c0669713faba46cd634fb26185f33f2ae962c0350c894"
+    }
+  },
+  "inputs_unchanged": true,
+  "memorization_failures_retained": [
+    "snn_plif-s101-lr0.001",
+    "cfc-s211-lr0.001",
+    "snn_plif-s307-lr0.001"
+  ],
+  "model_or_logit_forward_repeated": false,
+  "native_checkpoint_read": false,
+  "new_supplement_review_cost": {
+    "waited_review_child_cpu_seconds": 15.326924,
+    "whole_review_process_wall_seconds": 16.16734547005035
+  },
+  "original_heuristic_passes": 26,
+  "passed_scoped_recomputation": true,
+  "prior_failed_review_cost": {
+    "waited_review_child_cpu_seconds": 21.723336,
+    "whole_review_process_wall_seconds": 22.93758828798309
+  },
+  "review_cost_scope": "Two distinct native review child costs; launcher/packaging/bootstrap have separate scopes and are not added again here.",
+  "review_cpu_sample_before_serialization_seconds": 0.131911874,
+  "review_wall_sample_before_serialization_seconds": 0.04805585699796211,
+  "schema": "independent-C1-actual-clock-and-selection-review-v1",
+  "scientific_admission": "HOLD",
+  "small_manifest_members_checked": 105,
+  "training_performed": false
+}

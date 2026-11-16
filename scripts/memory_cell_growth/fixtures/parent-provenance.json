@@ -1,0 +1,34 @@
+{
+  "active_generation": 2,
+  "active_manifest_sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05",
+  "derivation": "Apply original lifecycle revisions to Alice and Bob, then omit Alice; exact remaining facts digest matches the already executed clean-replay receipt. No model outputs used.",
+  "epoch": 1,
+  "historical_writes": {
+    "clean_replay": {
+      "input_tokens": 28480,
+      "seconds": 267.7488396500012,
+      "steps": 512
+    },
+    "correction": {
+      "input_tokens": 28464,
+      "seconds": 272.408753615,
+      "steps": 512
+    },
+    "original": {
+      "input_tokens": 28464,
+      "seconds": 284.8944501829992,
+      "steps": 512
+    }
+  },
+  "original_lifecycle_result_sha256": "a8bd641a93e41175674f1653a8c5a5799cadf782b8f0c99d72cd7b5ba19df167",
+  "original_source_file_sha256": "9080d8212c52662e574df2887783f82926e6a023cf394c52bd4d7ca99544e07d",
+  "parent_source_facts_digest": "f5fbc8cb0e8b038e88b1624c21b6667b786bd4456446f105854be81f3ee38e51",
+  "parent_source_file_sha256": "1e2ee44982654500732596e6d41e4f7222702ce3b187f2eb1fced0c24afd70ce",
+  "production_accepted": false,
+  "revoked": [
+    "ecbf81965c51e8b9dc77b163f56f5428046b0b0e32b8c6c93079367178471967",
+    "ff61b0a343d65ca74aab7f58964c4e834989a8c7760e9d31bc5a78283e62f5fc"
+  ],
+  "schema": "hepta.parametric-memory.arrival-parent-provenance.v1",
+  "scope": "parametric-confirmation"
+}

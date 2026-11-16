@@ -22,9 +22,9 @@ modify Neuron V1's input maximum of 512 dimensions.
 
 The hosted research branch has already executed the real pretrained CPU Encoder, but
 not the Q24 cross-branch stitch. **Its historical receipt is not claimed as a pass
-for this new executable/commit.** New records use schema
-`hepta.e0.public-pretrained-q24-shadow.v2`; historical v1 records are not relabeled
-as evidence of the new source binding or timing semantics.
+for this new executable/commit.** The default raw feature profile retains schema
+`hepta.e0.public-pretrained-q24-shadow.v2`. The explicit unit-L2 profile below uses
+v3; historical v1/v2 records are not relabeled as evidence of a later profile.
 
 ## Physical read-only path
 
@@ -95,8 +95,29 @@ the unchanged Q24 rejection; they are not pretrained execution evidence.
 
 These optional diagnostics apply to the new attempt only. Earlier failure
 archives without coordinates or extrema remain unchanged and cannot be
-retrospectively populated from a later run. No normalization, clipping, input
-selection, model pin or Q24 threshold is changed.
+retrospectively populated from a later run. The default `raw-f32-v1` profile keeps
+this rejection behavior and does not normalize or clip features.
+
+## Explicit unit-L2 feature profile
+
+The workflow now explicitly selects `--feature-normalizer unit-l2-f32-v1`.
+This profile canonicalizes all 768 finite feature coordinates to float32,
+computes their full-vector L2 norm with float64 `hypot`, divides by that norm,
+and rounds the result to float32. A zero vector stays zero. Each resulting
+coordinate is in `[-1,1]`; the existing projector's `[-8,8]` rejection and Q24
+arithmetic are unchanged. No coordinate clipping, slicing, input selection,
+model change, or task-data fitting is performed.
+
+The v3 receipt binds the profile, algorithm and executing script's source-file
+SHA-256 into the normalizer digest passed to the projector. It retains each
+raw feature hash, exact float64 norm as a hex string, normalized input hash and
+Q24 output hash. The source file is checked again before a success receipt;
+this is source-file binding, not authentication of the complete Python runtime.
+Distinct public inputs must also have distinct Q24 outputs after normalization.
+The raw profile remains available for reproducing the original range failure.
+Synthetic tests cover the numerical transformation and receipt contract only;
+the new profile requires a fresh physical run with the pinned pretrained model.
+It does not change any E0 or production acceptance field to true.
 
 ## Still blocking E0
 

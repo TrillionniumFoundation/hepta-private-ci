@@ -1,0 +1,16 @@
+{
+  "schema": "metadata-probe-execution-v1",
+  "argv": [
+    "python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/c2-native-envelope-independent-review-v1/probe.py",
+    "/workspace/scratch/c385a7439f8e/c2-native-envelope-independent-review-v1/candidate-source",
+    "/workspace/scratch/c385a7439f8e/c2-native-envelope-independent-review-v1/cases"
+  ],
+  "returncode": 0,
+  "timed_out": false,
+  "whole_child_wall_seconds": 0.2671000059999642,
+  "wait4_child_CPU_seconds": 0.241674,
+  "wait4_peak_RSS_bytes": 20979712,
+  "scope": "One independent stdlib metadata process; no model, native process, actual core or oracle; source snapshot immutable."
+}

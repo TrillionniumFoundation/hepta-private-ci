@@ -1,0 +1,2437 @@
+{
+  "authority_created": false,
+  "elf_observation": {
+    "association": "Observed at the sole Root-listed owned test artifact path after the pinned terminal. This is not a source-to-binary attestation.",
+    "identity": {
+      "st_ctime_ns": 1794493547896610631,
+      "st_dev": 2067,
+      "st_gid": 1000,
+      "st_ino": 26363360,
+      "st_mode": 33216,
+      "st_mtime_ns": 1794493547863611611,
+      "st_nlink": 1,
+      "st_size": 286453648,
+      "st_uid": 1000
+    },
+    "preexisting_hash_pin": null,
+    "sha256": "6be8aa9483e58df56f8cac926f0c76bda85a17ecc1675605cf749efee41e46c2"
+  },
+  "elf_path": "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+  "elf_sha256_after": "6be8aa9483e58df56f8cac926f0c76bda85a17ecc1675605cf749efee41e46c2",
+  "functions": [
+    {
+      "address": 81796272,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e01cb0",
+        "--stop-address=0x4e01cc7",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 23,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed",
+          "family": "PanelFixture.completed",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 6,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": []
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members12PanelFixture9completed17hd325fc69a32369f7E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 528,
+      "prologue_file": "prologue-000.txt",
+      "prologue_sha256": "0eda0eaf3bfbe618d9fbe81050176a2851f934b8c05d30909d261316d881fe33",
+      "size": 23
+    },
+    {
+      "address": 81796304,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e01cd0",
+        "--stop-address=0x4e01ed0",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::PanelFixture::completed::{{closure}}",
+          "family": "PanelFixture.completed",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 88,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x4e01cd0",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x4e01cda",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x4e01ce1",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x4e01ce9",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x4e01cee",
+            "instruction": "sub $0xb28,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 2856
+          },
+          {
+            "address": "0x4e01cf5",
+            "instruction": "mov %rsi,0x150(%rsp)"
+          },
+          {
+            "address": "0x4e01cfd",
+            "instruction": "mov %rdi,0x158(%rsp)"
+          },
+          {
+            "address": "0x4e01d05",
+            "instruction": "mov %rdi,0x160(%rsp)"
+          },
+          {
+            "address": "0x4e01d0d",
+            "instruction": "mov %rdx,0x170(%rsp)"
+          },
+          {
+            "address": "0x4e01d1c",
+            "instruction": "mov %rax,0x168(%rsp)"
+          },
+          {
+            "address": "0x4e01d24",
+            "instruction": "mov 0x168(%rsp),%rcx"
+          },
+          {
+            "address": "0x4e01d3e",
+            "instruction": "mov 0x150(%rsp),%rax"
+          },
+          {
+            "address": "0x4e01d4d",
+            "instruction": "movb $0x0,0x1f1b47(%rsp)"
+          },
+          {
+            "address": "0x4e01d55",
+            "instruction": "movb $0x0,0x1f1b46(%rsp)"
+          },
+          {
+            "address": "0x4e01d5d",
+            "instruction": "movb $0x0,0x1f1b45(%rsp)"
+          },
+          {
+            "address": "0x4e01d71",
+            "instruction": "lea 0x17880(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e01d99",
+            "instruction": "mov 0x170(%rsp),%rax"
+          },
+          {
+            "address": "0x4e01da1",
+            "instruction": "mov %rax,0x170(%rsp)"
+          },
+          {
+            "address": "0x4e01dae",
+            "instruction": "mov 0x170(%rsp),%rax"
+          },
+          {
+            "address": "0x4e01db6",
+            "instruction": "mov %rax,0x170(%rsp)"
+          },
+          {
+            "address": "0x4e01dc3",
+            "instruction": "mov 0x170(%rsp),%rax"
+          },
+          {
+            "address": "0x4e01dcb",
+            "instruction": "mov %rax,0x170(%rsp)"
+          },
+          {
+            "address": "0x4e01dd8",
+            "instruction": "mov 0x150(%rsp),%rax"
+          },
+          {
+            "address": "0x4e01de7",
+            "instruction": "mov 0x2257a8(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e01df9",
+            "instruction": "mov %rcx,0x140(%rsp)"
+          },
+          {
+            "address": "0x4e01e01",
+            "instruction": "mov %eax,0x14c(%rsp)"
+          },
+          {
+            "address": "0x4e01e0a",
+            "instruction": "mov 0x140(%rsp),%rcx"
+          },
+          {
+            "address": "0x4e01e12",
+            "instruction": "mov 0x14c(%rsp),%eax"
+          },
+          {
+            "address": "0x4e01e19",
+            "instruction": "mov %rcx,0x2257a8(%rsp)"
+          },
+          {
+            "address": "0x4e01e21",
+            "instruction": "mov %eax,0x2257b0(%rsp)"
+          },
+          {
+            "address": "0x4e01e39",
+            "instruction": "mov %rax,0x138(%rsp)"
+          },
+          {
+            "address": "0x4e01e48",
+            "instruction": "mov %rcx,0x24fb08(%rsp)"
+          },
+          {
+            "address": "0x4e01e50",
+            "instruction": "mov %eax,0x24fb10(%rsp)"
+          },
+          {
+            "address": "0x4e01e57",
+            "instruction": "lea 0x17880(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e01e6c",
+            "instruction": "mov 0x24fb08(%rsp),%rcx"
+          },
+          {
+            "address": "0x4e01e74",
+            "instruction": "mov 0x24fb10(%rsp),%eax"
+          },
+          {
+            "address": "0x4e01e7b",
+            "instruction": "mov %rcx,0x140(%rsp)"
+          },
+          {
+            "address": "0x4e01e83",
+            "instruction": "mov %eax,0x14c(%rsp)"
+          },
+          {
+            "address": "0x4e01e8f",
+            "instruction": "mov 0x138(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e01e97",
+            "instruction": "lea 0x17880(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e01ea9",
+            "instruction": "mov 0x138(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e01eb6",
+            "instruction": "mov %rax,0x130(%rsp)"
+          },
+          {
+            "address": "0x4e01ec0",
+            "instruction": "mov 0x150(%rsp),%rax"
+          },
+          {
+            "address": "0x4e01ec8",
+            "instruction": "mov 0x130(%rsp),%rcx"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members12PanelFixture9completed28_$u7b$$u7b$closure$u7d$$u7d$17h2c21aec63681edabE",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 7104,
+      "prologue_file": "prologue-001.txt",
+      "prologue_sha256": "8c9e59bdc6ee9946f055bd014be491f3f7cd8d5e810f695259db0ddb597c177c",
+      "size": 5498
+    },
+    {
+      "address": 81817968,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e07170",
+        "--stop-address=0x4e0719d",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 45,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::completed_member",
+          "family": "completed_member",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 12,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": []
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members16completed_member17h39f71964cc372770E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 718,
+      "prologue_file": "prologue-002.txt",
+      "prologue_sha256": "4cbadc50b33d33acbeebbb2aca2c446dd7b417dabbc2da29deb5fe411abd5c79",
+      "size": 45
+    },
+    {
+      "address": 81818016,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e071a0",
+        "--stop-address=0x4e073a0",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::completed_member::{{closure}}",
+          "family": "completed_member",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 92,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x4e071a0",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x4e071aa",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x4e071b1",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x4e071b9",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x4e071be",
+            "instruction": "sub $0x7e8,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 2024
+          },
+          {
+            "address": "0x4e071c5",
+            "instruction": "mov %rsi,0x130(%rsp)"
+          },
+          {
+            "address": "0x4e071cd",
+            "instruction": "mov %rdi,0x138(%rsp)"
+          },
+          {
+            "address": "0x4e071d5",
+            "instruction": "mov %rdi,0x140(%rsp)"
+          },
+          {
+            "address": "0x4e071dd",
+            "instruction": "mov %rdx,0x150(%rsp)"
+          },
+          {
+            "address": "0x4e071ec",
+            "instruction": "mov %rax,0x148(%rsp)"
+          },
+          {
+            "address": "0x4e071f4",
+            "instruction": "mov 0x148(%rsp),%rcx"
+          },
+          {
+            "address": "0x4e0720e",
+            "instruction": "mov 0x130(%rsp),%rax"
+          },
+          {
+            "address": "0x4e07240",
+            "instruction": "movb $0x0,0x6f107(%rsp)"
+          },
+          {
+            "address": "0x4e07248",
+            "instruction": "movb $0x0,0x6f106(%rsp)"
+          },
+          {
+            "address": "0x4e07250",
+            "instruction": "movb $0x0,0x6f105(%rsp)"
+          },
+          {
+            "address": "0x4e07258",
+            "instruction": "movb $0x0,0x6f104(%rsp)"
+          },
+          {
+            "address": "0x4e07260",
+            "instruction": "movb $0x0,0x6f103(%rsp)"
+          },
+          {
+            "address": "0x4e072a4",
+            "instruction": "lea 0x3548(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e072cf",
+            "instruction": "mov 0x150(%rsp),%rax"
+          },
+          {
+            "address": "0x4e072d7",
+            "instruction": "mov %rax,0x150(%rsp)"
+          },
+          {
+            "address": "0x4e072e1",
+            "instruction": "mov 0x150(%rsp),%rax"
+          },
+          {
+            "address": "0x4e072e9",
+            "instruction": "mov %rax,0x150(%rsp)"
+          },
+          {
+            "address": "0x4e072f6",
+            "instruction": "mov 0x130(%rsp),%rax"
+          },
+          {
+            "address": "0x4e07315",
+            "instruction": "mov %rcx,0x786f0(%rsp)"
+          },
+          {
+            "address": "0x4e0731d",
+            "instruction": "mov %eax,0x786f8(%rsp)"
+          },
+          {
+            "address": "0x4e07326",
+            "instruction": "lea 0x160(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0732e",
+            "instruction": "lea 0x3548(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e0733d",
+            "instruction": "mov 0x130(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0734c",
+            "instruction": "lea 0x160(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e0735e",
+            "instruction": "mov 0x130(%rsp),%rax"
+          },
+          {
+            "address": "0x4e0736c",
+            "instruction": "mov %rax,0x128(%rsp)"
+          },
+          {
+            "address": "0x4e07390",
+            "instruction": "mov 0x130(%rsp),%rdi"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members16completed_member28_$u7b$$u7b$closure$u7d$$u7d$17h76edf0fe91c2df96E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 6654,
+      "prologue_file": "prologue-003.txt",
+      "prologue_sha256": "260022f1797bdc360fa8aced05f6f6109e7c72285d446953eabb40e451c60cc0",
+      "size": 4646
+    },
+    {
+      "address": 81822672,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e083d0",
+        "--stop-address=0x4e085a0",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 464,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+          "family": "original_panel_test",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 91,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x4e083d0",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x4e083da",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x4e083e1",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x4e083e9",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x4e083ee",
+            "instruction": "sub $0x5a8,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 1448
+          },
+          {
+            "address": "0x4e083f5",
+            "instruction": "movb $0x0,0x37329(%rsp)"
+          },
+          {
+            "address": "0x4e083fd",
+            "instruction": "lea 0xca210(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e08405",
+            "instruction": "lea 0x18(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e08416",
+            "instruction": "lea 0xca210(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0842d",
+            "instruction": "mov %rcx,0x194598(%rsp)"
+          },
+          {
+            "address": "0x4e08435",
+            "instruction": "mov %eax,0x1945a0(%rsp)"
+          },
+          {
+            "address": "0x4e08445",
+            "instruction": "lea 0x1944a8(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0845f",
+            "instruction": "lea 0x1944a8(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0846e",
+            "instruction": "mov %rax,0x10(%rsp)"
+          },
+          {
+            "address": "0x4e0847c",
+            "instruction": "lea 0x1944a8(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0848d",
+            "instruction": "mov %rcx,0x194598(%rsp)"
+          },
+          {
+            "address": "0x4e08495",
+            "instruction": "mov %eax,0x1945a0(%rsp)"
+          },
+          {
+            "address": "0x4e0849e",
+            "instruction": "mov 0x10(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e084ac",
+            "instruction": "mov %rax,0x8(%rsp)"
+          },
+          {
+            "address": "0x4e084b3",
+            "instruction": "mov 0x8(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e084bf",
+            "instruction": "lea 0x194458(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e084e0",
+            "instruction": "lea 0x194408(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e084e8",
+            "instruction": "lea 0x194458(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e08507",
+            "instruction": "lea 0x194408(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0850f",
+            "instruction": "lea 0xca210(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e0851c",
+            "instruction": "mov %rax,(%rsp)"
+          },
+          {
+            "address": "0x4e08529",
+            "instruction": "lea 0x194408(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0853d",
+            "instruction": "mov %rcx,0x194598(%rsp)"
+          },
+          {
+            "address": "0x4e08545",
+            "instruction": "mov %eax,0x1945a0(%rsp)"
+          },
+          {
+            "address": "0x4e08555",
+            "instruction": "lea 0x194408(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e08568",
+            "instruction": "lea 0x1944a8(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e08574",
+            "instruction": "lea 0xca210(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e08581",
+            "instruction": "mov (%rsp),%rax"
+          },
+          {
+            "address": "0x4e08585",
+            "instruction": "add $0x1945a8,%rsp"
+          },
+          {
+            "address": "0x4e08593",
+            "instruction": "mov 0x194598(%rsp),%rdi"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures17h8760cb85d08dac43E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 8558,
+      "prologue_file": "prologue-004.txt",
+      "prologue_sha256": "28c02bd8d06c53461e341ddb5b4c630d9928f9965d60bdb9219ec4a30f95fbf8",
+      "size": 464
+    },
+    {
+      "address": 81823136,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e085a0",
+        "--stop-address=0x4e087a0",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}",
+          "family": "original_panel_test",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 91,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x4e085a0",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x4e085aa",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x4e085b1",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x4e085b9",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x4e085be",
+            "instruction": "sub $0xbe8,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 3048
+          },
+          {
+            "address": "0x4e085c5",
+            "instruction": "mov %rdi,0x388(%rsp)"
+          },
+          {
+            "address": "0x4e085cd",
+            "instruction": "mov %rsi,0x398(%rsp)"
+          },
+          {
+            "address": "0x4e085dc",
+            "instruction": "mov %rax,0x390(%rsp)"
+          },
+          {
+            "address": "0x4e085e4",
+            "instruction": "mov 0x390(%rsp),%rcx"
+          },
+          {
+            "address": "0x4e085fe",
+            "instruction": "mov 0x388(%rsp),%rax"
+          },
+          {
+            "address": "0x4e0860d",
+            "instruction": "lea 0x73a70(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e08637",
+            "instruction": "mov 0x398(%rsp),%rax"
+          },
+          {
+            "address": "0x4e0863f",
+            "instruction": "mov %rax,0x398(%rsp)"
+          },
+          {
+            "address": "0x4e0864c",
+            "instruction": "mov 0x398(%rsp),%rax"
+          },
+          {
+            "address": "0x4e08654",
+            "instruction": "mov %rax,0x398(%rsp)"
+          },
+          {
+            "address": "0x4e08661",
+            "instruction": "mov 0x398(%rsp),%rax"
+          },
+          {
+            "address": "0x4e08669",
+            "instruction": "mov %rax,0x398(%rsp)"
+          },
+          {
+            "address": "0x4e08676",
+            "instruction": "mov 0x398(%rsp),%rax"
+          },
+          {
+            "address": "0x4e0867e",
+            "instruction": "mov %rax,0x398(%rsp)"
+          },
+          {
+            "address": "0x4e0868b",
+            "instruction": "mov 0x388(%rsp),%rax"
+          },
+          {
+            "address": "0x4e086a1",
+            "instruction": "mov 0x2dd148(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e086b3",
+            "instruction": "mov %rcx,0x2dd148(%rsp)"
+          },
+          {
+            "address": "0x4e086bb",
+            "instruction": "mov %eax,0x2dd150(%rsp)"
+          },
+          {
+            "address": "0x4e086c4",
+            "instruction": "lea 0x34010(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e086cc",
+            "instruction": "lea 0x73a70(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e086db",
+            "instruction": "mov 0x388(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e086ea",
+            "instruction": "lea 0x34010(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e086fc",
+            "instruction": "mov 0x388(%rsp),%rax"
+          },
+          {
+            "address": "0x4e0870a",
+            "instruction": "mov %rax,0x380(%rsp)"
+          },
+          {
+            "address": "0x4e0872e",
+            "instruction": "mov 0x388(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0874c",
+            "instruction": "mov %rcx,0x2dd148(%rsp)"
+          },
+          {
+            "address": "0x4e08754",
+            "instruction": "mov %eax,0x2dd150(%rsp)"
+          },
+          {
+            "address": "0x4e0875d",
+            "instruction": "mov 0x380(%rsp),%rsi"
+          },
+          {
+            "address": "0x4e08765",
+            "instruction": "mov 0x398(%rsp),%rdx"
+          },
+          {
+            "address": "0x4e0876d",
+            "instruction": "lea 0xb34d0(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e08783",
+            "instruction": "cmpq $0x3,0xb34d0(%rsp)"
+          },
+          {
+            "address": "0x4e08798",
+            "instruction": "mov 0x388(%rsp),%rax"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17h66153facd4c167efE",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 8937,
+      "prologue_file": "prologue-005.txt",
+      "prologue_sha256": "3a8547f48ad34b58de62c34cb0cadd6131a80dc6a8e3cbb13e008ecf44449eaf",
+      "size": 8067
+    },
+    {
+      "address": 81831216,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x4e0a530",
+        "--stop-address=0x4e0a55a",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 42,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures::{{closure}}",
+          "family": "original_panel_test",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 10,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x4e0a530",
+            "instruction": "sub $0x18,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 24
+          },
+          {
+            "address": "0x4e0a534",
+            "instruction": "mov %rdi,0x8(%rsp)"
+          },
+          {
+            "address": "0x4e0a539",
+            "instruction": "mov %rdi,0x10(%rsp)"
+          },
+          {
+            "address": "0x4e0a543",
+            "instruction": "mov 0x8(%rsp),%rdi"
+          },
+          {
+            "address": "0x4e0a550",
+            "instruction": "mov 0x10(%rsp),%rax"
+          },
+          {
+            "address": "0x4e0a555",
+            "instruction": "add $0x18,%rsp"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13panel_members73original_panel_reads_actual_b_and_retention_with_full_original_signatures28_$u7b$$u7b$closure$u7d$$u7d$17hbe05bddfd39c0425E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 1008,
+      "prologue_file": "prologue-006.txt",
+      "prologue_sha256": "b2dfa6c25f4950dab87358ebb91af04286c8c48420a25b194093e245c4f61ec8",
+      "size": 42
+    },
+    {
+      "address": 85532592,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5191fb0",
+        "--stop-address=0x5191fb7",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 7,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered",
+          "family": "preregistered",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 3,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": []
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13preregistered17hc4e8d3fc0315722fE",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 410,
+      "prologue_file": "prologue-007.txt",
+      "prologue_sha256": "7896dcee181761c326ceca80e24359566a10845e71ff33543b5bb773b5437eec",
+      "size": 7
+    },
+    {
+      "address": 85532608,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5191fc0",
+        "--stop-address=0x51921c0",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::preregistered::{{closure}}",
+          "family": "preregistered",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 96,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5191fc0",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x5191fca",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x5191fd1",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x5191fd9",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x5191fde",
+            "instruction": "sub $0x848,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 2120
+          },
+          {
+            "address": "0x5191fe5",
+            "instruction": "mov %rsi,0x178(%rsp)"
+          },
+          {
+            "address": "0x5191fed",
+            "instruction": "mov %rdi,0x180(%rsp)"
+          },
+          {
+            "address": "0x5191ff5",
+            "instruction": "mov %rdi,0x188(%rsp)"
+          },
+          {
+            "address": "0x5191ffd",
+            "instruction": "mov %rdx,0x198(%rsp)"
+          },
+          {
+            "address": "0x5192008",
+            "instruction": "mov %rax,0x190(%rsp)"
+          },
+          {
+            "address": "0x5192010",
+            "instruction": "mov 0x190(%rsp),%rcx"
+          },
+          {
+            "address": "0x519202a",
+            "instruction": "mov 0x178(%rsp),%rax"
+          },
+          {
+            "address": "0x5192036",
+            "instruction": "movb $0x0,0x12b74f(%rsp)"
+          },
+          {
+            "address": "0x519203e",
+            "instruction": "movb $0x0,0x12b74e(%rsp)"
+          },
+          {
+            "address": "0x519204d",
+            "instruction": "lea 0x87a8(%rsp),%rdi"
+          },
+          {
+            "address": "0x5192077",
+            "instruction": "mov 0x198(%rsp),%rax"
+          },
+          {
+            "address": "0x519207f",
+            "instruction": "mov %rax,0x198(%rsp)"
+          },
+          {
+            "address": "0x5192089",
+            "instruction": "mov 0x198(%rsp),%rax"
+          },
+          {
+            "address": "0x5192091",
+            "instruction": "mov %rax,0x198(%rsp)"
+          },
+          {
+            "address": "0x519209e",
+            "instruction": "mov 0x178(%rsp),%rax"
+          },
+          {
+            "address": "0x51920ad",
+            "instruction": "mov 0x142e58(%rsp),%rdi"
+          },
+          {
+            "address": "0x51920bf",
+            "instruction": "mov %rcx,0x142e58(%rsp)"
+          },
+          {
+            "address": "0x51920c7",
+            "instruction": "mov %eax,0x142e60(%rsp)"
+          },
+          {
+            "address": "0x51920d0",
+            "instruction": "lea 0x4048(%rsp),%rdi"
+          },
+          {
+            "address": "0x51920d8",
+            "instruction": "lea 0x87a8(%rsp),%rsi"
+          },
+          {
+            "address": "0x51920e7",
+            "instruction": "mov 0x178(%rsp),%rdi"
+          },
+          {
+            "address": "0x51920f3",
+            "instruction": "lea 0x4048(%rsp),%rsi"
+          },
+          {
+            "address": "0x5192105",
+            "instruction": "mov 0x178(%rsp),%rax"
+          },
+          {
+            "address": "0x5192111",
+            "instruction": "mov %rax,0x170(%rsp)"
+          },
+          {
+            "address": "0x5192135",
+            "instruction": "mov 0x178(%rsp),%rdi"
+          },
+          {
+            "address": "0x5192150",
+            "instruction": "mov %rcx,0x142e58(%rsp)"
+          },
+          {
+            "address": "0x5192158",
+            "instruction": "mov %eax,0x142e60(%rsp)"
+          },
+          {
+            "address": "0x5192161",
+            "instruction": "mov 0x170(%rsp),%rsi"
+          },
+          {
+            "address": "0x5192169",
+            "instruction": "mov 0x198(%rsp),%rdx"
+          },
+          {
+            "address": "0x5192171",
+            "instruction": "lea 0xcf08(%rsp),%rdi"
+          },
+          {
+            "address": "0x5192187",
+            "instruction": "cmpq $0x4,0xcf08(%rsp)"
+          },
+          {
+            "address": "0x519219c",
+            "instruction": "mov 0x188(%rsp),%rax"
+          },
+          {
+            "address": "0x51921a4",
+            "instruction": "mov 0x178(%rsp),%rcx"
+          },
+          {
+            "address": "0x51921ac",
+            "instruction": "mov 0x180(%rsp),%rdx"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original19evaluation_provider13preregistered28_$u7b$$u7b$closure$u7d$$u7d$17h81e9cae01c803934E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 7180,
+      "prologue_file": "prologue-008.txt",
+      "prologue_sha256": "01b6a3dc495f830477fc1fc679482461c2217762f193d4e718ff0555628fce7c",
+      "size": 5360
+    },
+    {
+      "address": 94378448,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a019d0",
+        "--stop-address=0x5a019fa",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 42,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_profile",
+          "family": "PositiveFixture.ready_with_profile",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 12,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": []
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture18ready_with_profile17h8debf99f2059b504E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 702,
+      "prologue_file": "prologue-009.txt",
+      "prologue_sha256": "cb0a702c572dd27f53dfd5a1c0f45bfe88cd251d1f1828caf84e9b007d3af41a",
+      "size": 42
+    },
+    {
+      "address": 94378496,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a01a00",
+        "--stop-address=0x5a01c00",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_profile::{{closure}}",
+          "family": "PositiveFixture.ready_with_profile",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 105,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5a01a00",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x5a01a0a",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x5a01a11",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x5a01a19",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x5a01a1e",
+            "instruction": "sub $0x2e8,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 744
+          },
+          {
+            "address": "0x5a01a25",
+            "instruction": "mov %rsi,0x60(%rsp)"
+          },
+          {
+            "address": "0x5a01a2a",
+            "instruction": "mov %rdi,0x68(%rsp)"
+          },
+          {
+            "address": "0x5a01a2f",
+            "instruction": "mov %rdi,0x70(%rsp)"
+          },
+          {
+            "address": "0x5a01a34",
+            "instruction": "mov %rdx,0x80(%rsp)"
+          },
+          {
+            "address": "0x5a01a40",
+            "instruction": "mov %rax,0x78(%rsp)"
+          },
+          {
+            "address": "0x5a01a45",
+            "instruction": "mov 0x78(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a01a5c",
+            "instruction": "mov 0x60(%rsp),%rax"
+          },
+          {
+            "address": "0x5a01a83",
+            "instruction": "lea 0xc538(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01aad",
+            "instruction": "mov 0x80(%rsp),%rax"
+          },
+          {
+            "address": "0x5a01ab5",
+            "instruction": "mov %rax,0x80(%rsp)"
+          },
+          {
+            "address": "0x5a01abf",
+            "instruction": "mov 0x80(%rsp),%rax"
+          },
+          {
+            "address": "0x5a01ac7",
+            "instruction": "mov %rax,0x80(%rsp)"
+          },
+          {
+            "address": "0x5a01ad4",
+            "instruction": "mov 0x60(%rsp),%rax"
+          },
+          {
+            "address": "0x5a01ae1",
+            "instruction": "mov 0xcf430(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01af3",
+            "instruction": "mov %rcx,0xcf430(%rsp)"
+          },
+          {
+            "address": "0x5a01afb",
+            "instruction": "mov %eax,0xcf438(%rsp)"
+          },
+          {
+            "address": "0x5a01b04",
+            "instruction": "lea 0x7dd8(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01b0c",
+            "instruction": "lea 0xc538(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a01b1b",
+            "instruction": "mov 0x60(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01b24",
+            "instruction": "lea 0x7dd8(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a01b36",
+            "instruction": "mov 0x60(%rsp),%rax"
+          },
+          {
+            "address": "0x5a01b3f",
+            "instruction": "mov %rax,0x58(%rsp)"
+          },
+          {
+            "address": "0x5a01b60",
+            "instruction": "mov 0x60(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01b78",
+            "instruction": "mov %rcx,0xcf430(%rsp)"
+          },
+          {
+            "address": "0x5a01b80",
+            "instruction": "mov %eax,0xcf438(%rsp)"
+          },
+          {
+            "address": "0x5a01b89",
+            "instruction": "mov 0x58(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a01b8e",
+            "instruction": "mov 0x80(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a01b96",
+            "instruction": "lea 0x10c98(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01bac",
+            "instruction": "cmpq $0x4,0x10c98(%rsp)"
+          },
+          {
+            "address": "0x5a01bc1",
+            "instruction": "mov 0x70(%rsp),%rax"
+          },
+          {
+            "address": "0x5a01bc6",
+            "instruction": "mov 0x60(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a01bcb",
+            "instruction": "mov 0x68(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a01bdb",
+            "instruction": "add $0xd32e8,%rsp"
+          },
+          {
+            "address": "0x5a01be3",
+            "instruction": "lea 0x14b40(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a01beb",
+            "instruction": "lea 0x10c98(%rsp),%rsi"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture18ready_with_profile28_$u7b$$u7b$closure$u7d$$u7d$17h133af8d6e8287622E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 7518,
+      "prologue_file": "prologue-010.txt",
+      "prologue_sha256": "0881f63af4503e55aa7f6ede15aec67c36f051dca945992a7a8795ea6c6b9d4e",
+      "size": 1246
+    },
+    {
+      "address": 94381920,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a02760",
+        "--stop-address=0x5a027de",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 126,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission",
+          "family": "PositiveFixture.ready_with_admission",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 25,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5a02760",
+            "instruction": "sub $0x28,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 40
+          },
+          {
+            "address": "0x5a02764",
+            "instruction": "mov %rcx,0x10(%rsp)"
+          },
+          {
+            "address": "0x5a02769",
+            "instruction": "mov %rdx,0x8(%rsp)"
+          },
+          {
+            "address": "0x5a0276e",
+            "instruction": "mov %rdi,0x18(%rsp)"
+          },
+          {
+            "address": "0x5a02776",
+            "instruction": "mov %rax,0x20(%rsp)"
+          },
+          {
+            "address": "0x5a0278c",
+            "instruction": "mov 0x8(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a02791",
+            "instruction": "mov 0x10(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a02796",
+            "instruction": "mov 0x18(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0279b",
+            "instruction": "mov 0x20(%rsp),%rax"
+          },
+          {
+            "address": "0x5a027d9",
+            "instruction": "add $0x28,%rsp"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission17heb68ac5c7b6e52d0E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 1135,
+      "prologue_file": "prologue-011.txt",
+      "prologue_sha256": "6051df2704bdb8fe69235498afe818cf49af667c525204f5b6e0ded8497596ab",
+      "size": 126
+    },
+    {
+      "address": 94382048,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a027e0",
+        "--stop-address=0x5a029e0",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission::{{closure}}",
+          "family": "PositiveFixture.ready_with_admission",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 76,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5a027e0",
+            "instruction": "push %r14"
+          },
+          {
+            "address": "0x5a027e2",
+            "instruction": "push %rbx"
+          },
+          {
+            "address": "0x5a027e3",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x5a027ed",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x5a027f4",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x5a027fc",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x5a02801",
+            "instruction": "sub $0x8e8,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 2280
+          },
+          {
+            "address": "0x5a02808",
+            "instruction": "mov %rsi,0xbc8(%rsp)"
+          },
+          {
+            "address": "0x5a02810",
+            "instruction": "mov %rdi,0xbd0(%rsp)"
+          },
+          {
+            "address": "0x5a02818",
+            "instruction": "mov %rdi,0xbd8(%rsp)"
+          },
+          {
+            "address": "0x5a02820",
+            "instruction": "mov %rdx,0xbe8(%rsp)"
+          },
+          {
+            "address": "0x5a0282f",
+            "instruction": "mov %rax,0xbe0(%rsp)"
+          },
+          {
+            "address": "0x5a02837",
+            "instruction": "mov 0xbe0(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a02851",
+            "instruction": "mov 0xbc8(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a02891",
+            "instruction": "movb $0x0,0x1afdf7(%rsp)"
+          },
+          {
+            "address": "0x5a028a0",
+            "instruction": "movb $0x0,0x1afdf6(%rsp)"
+          },
+          {
+            "address": "0x5a028a8",
+            "instruction": "movb $0x0,0x1afdf5(%rsp)"
+          },
+          {
+            "address": "0x5a028b0",
+            "instruction": "movb $0x0,0x1afdf4(%rsp)"
+          },
+          {
+            "address": "0x5a028e9",
+            "instruction": "movb $0x0,0x1afdf3(%rsp)"
+          },
+          {
+            "address": "0x5a028f1",
+            "instruction": "movb $0x0,0x1afdf2(%rsp)"
+          },
+          {
+            "address": "0x5a028f9",
+            "instruction": "movb $0x0,0x1afdf1(%rsp)"
+          },
+          {
+            "address": "0x5a0290f",
+            "instruction": "movb $0x0,0x1afdf0(%rsp)"
+          },
+          {
+            "address": "0x5a02917",
+            "instruction": "movb $0x0,0x1afdef(%rsp)"
+          },
+          {
+            "address": "0x5a0291f",
+            "instruction": "movb $0x0,0x1afdee(%rsp)"
+          },
+          {
+            "address": "0x5a0292e",
+            "instruction": "movb $0x0,0x1afded(%rsp)"
+          },
+          {
+            "address": "0x5a0293d",
+            "instruction": "movb $0x0,0x1afdec(%rsp)"
+          },
+          {
+            "address": "0x5a0294c",
+            "instruction": "movb $0x0,0x1afdeb(%rsp)"
+          },
+          {
+            "address": "0x5a02954",
+            "instruction": "movb $0x0,0x1afdea(%rsp)"
+          },
+          {
+            "address": "0x5a0295c",
+            "instruction": "movb $0x0,0x1afde9(%rsp)"
+          },
+          {
+            "address": "0x5a0298e",
+            "instruction": "movb $0x0,0x1afde8(%rsp)"
+          },
+          {
+            "address": "0x5a02996",
+            "instruction": "movb $0x0,0x1afde7(%rsp)"
+          },
+          {
+            "address": "0x5a0299e",
+            "instruction": "movb $0x0,0x1afde6(%rsp)"
+          },
+          {
+            "address": "0x5a029ad",
+            "instruction": "movb $0x0,0x1afde5(%rsp)"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$17h0e4054f6a1345fb5E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 3266,
+      "prologue_file": "prologue-012.txt",
+      "prologue_sha256": "73106eee347d4ff557ae7722a4b0d1824cca153afefb6c395ae12f91e9e75b44",
+      "size": 48690
+    },
+    {
+      "address": 94430752,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a0e620",
+        "--stop-address=0x5a0e820",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission::{{closure}}::{{closure}}",
+          "family": "PositiveFixture.ready_with_admission",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 94,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5a0e620",
+            "instruction": "sub $0x698,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 1688
+          },
+          {
+            "address": "0x5a0e627",
+            "instruction": "mov %rsi,0x20(%rsp)"
+          },
+          {
+            "address": "0x5a0e62c",
+            "instruction": "mov %rdi,0x28(%rsp)"
+          },
+          {
+            "address": "0x5a0e631",
+            "instruction": "mov %rdi,0x30(%rsp)"
+          },
+          {
+            "address": "0x5a0e639",
+            "instruction": "lea 0x98(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e646",
+            "instruction": "lea 0x68(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e64b",
+            "instruction": "lea 0x98(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e658",
+            "instruction": "mov 0x68(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a0e674",
+            "instruction": "mov 0x28(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e679",
+            "instruction": "mov 0x70(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e68f",
+            "instruction": "lea 0xc8(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e697",
+            "instruction": "lea 0x68(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e6a6",
+            "instruction": "lea 0x38(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e6ab",
+            "instruction": "lea 0xc8(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e6bd",
+            "instruction": "mov 0x20(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0e6c6",
+            "instruction": "mov %rcx,0x10(%rsp)"
+          },
+          {
+            "address": "0x5a0e6cf",
+            "instruction": "mov %rcx,0x18(%rsp)"
+          },
+          {
+            "address": "0x5a0e6d8",
+            "instruction": "mov %rcx,(%rsp)"
+          },
+          {
+            "address": "0x5a0e6e0",
+            "instruction": "mov %rcx,0x8(%rsp)"
+          },
+          {
+            "address": "0x5a0e6ed",
+            "instruction": "mov (%rsp),%r9"
+          },
+          {
+            "address": "0x5a0e6f1",
+            "instruction": "mov 0x8(%rsp),%r8"
+          },
+          {
+            "address": "0x5a0e6f6",
+            "instruction": "mov 0x10(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e6fb",
+            "instruction": "mov 0x18(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a0e703",
+            "instruction": "mov 0x20(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0e71b",
+            "instruction": "mov %r9,0x3f8(%rsp)"
+          },
+          {
+            "address": "0x5a0e723",
+            "instruction": "mov %r8,0x400(%rsp)"
+          },
+          {
+            "address": "0x5a0e72b",
+            "instruction": "mov %rdi,0x408(%rsp)"
+          },
+          {
+            "address": "0x5a0e733",
+            "instruction": "mov %rcx,0x410(%rsp)"
+          },
+          {
+            "address": "0x5a0e73b",
+            "instruction": "mov %rax,0x418(%rsp)"
+          },
+          {
+            "address": "0x5a0e743",
+            "instruction": "lea 0x38(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0e748",
+            "instruction": "mov %rax,0x420(%rsp)"
+          },
+          {
+            "address": "0x5a0e750",
+            "instruction": "lea 0x278(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e758",
+            "instruction": "lea 0x3f8(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a0e765",
+            "instruction": "lea 0xf8(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e76d",
+            "instruction": "lea 0x278(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e78b",
+            "instruction": "cmp %rdx,0xf8(%rsp)"
+          },
+          {
+            "address": "0x5a0e79f",
+            "instruction": "lea 0xf8(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e7ab",
+            "instruction": "lea 0x428(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e7bd",
+            "instruction": "lea 0x620(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e7c5",
+            "instruction": "lea 0x428(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e7d7",
+            "instruction": "mov 0x28(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e7dc",
+            "instruction": "lea 0x620(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e7f2",
+            "instruction": "lea 0x4a0(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e7fa",
+            "instruction": "lea 0xf8(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e80c",
+            "instruction": "mov 0x28(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e811",
+            "instruction": "lea 0x4a0(%rsp),%rsi"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h15019330eec7fa8eE",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 5468,
+      "prologue_file": "prologue-013.txt",
+      "prologue_sha256": "5a75cb0041d0d381b644c3ae5d3c9e5eb098c60341636ec0d01189eb4d7eddeb",
+      "size": 528
+    },
+    {
+      "address": 94431280,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a0e830",
+        "--stop-address=0x5a0ea30",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready_with_admission::{{closure}}::{{closure}}",
+          "family": "PositiveFixture.ready_with_admission",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 93,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5a0e830",
+            "instruction": "sub $0xb08,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 2824
+          },
+          {
+            "address": "0x5a0e837",
+            "instruction": "mov %rsi,0x48(%rsp)"
+          },
+          {
+            "address": "0x5a0e83c",
+            "instruction": "mov %rdi,0x50(%rsp)"
+          },
+          {
+            "address": "0x5a0e841",
+            "instruction": "mov %rdi,0x58(%rsp)"
+          },
+          {
+            "address": "0x5a0e846",
+            "instruction": "movb $0x0,0xa17(%rsp)"
+          },
+          {
+            "address": "0x5a0e851",
+            "instruction": "mov %rax,0x60(%rsp)"
+          },
+          {
+            "address": "0x5a0e862",
+            "instruction": "lea 0x740(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e882",
+            "instruction": "lea 0x730(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e88a",
+            "instruction": "lea 0x740(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e898",
+            "instruction": "mov 0x730(%rsp),%eax"
+          },
+          {
+            "address": "0x5a0e8a7",
+            "instruction": "mov 0x50(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e8ac",
+            "instruction": "mov 0x738(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e8c0",
+            "instruction": "movb $0x0,0xa17(%rsp)"
+          },
+          {
+            "address": "0x5a0e8cd",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0e8d2",
+            "instruction": "mov 0x734(%rsp),%ecx"
+          },
+          {
+            "address": "0x5a0e8d9",
+            "instruction": "movb $0x1,0xa17(%rsp)"
+          },
+          {
+            "address": "0x5a0e8e1",
+            "instruction": "mov %ecx,0x72c(%rsp)"
+          },
+          {
+            "address": "0x5a0e8f1",
+            "instruction": "mov %rdx,0x38(%rsp)"
+          },
+          {
+            "address": "0x5a0e8f6",
+            "instruction": "mov %rax,0x40(%rsp)"
+          },
+          {
+            "address": "0x5a0e904",
+            "instruction": "lea 0x72c(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e918",
+            "instruction": "mov %rcx,0xa18(%rsp)"
+          },
+          {
+            "address": "0x5a0e920",
+            "instruction": "mov %eax,0xa20(%rsp)"
+          },
+          {
+            "address": "0x5a0e929",
+            "instruction": "mov 0x38(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a0e92e",
+            "instruction": "mov 0x40(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e933",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0e947",
+            "instruction": "movaps %xmm1,0x920(%rsp)"
+          },
+          {
+            "address": "0x5a0e94f",
+            "instruction": "movaps %xmm0,0x910(%rsp)"
+          },
+          {
+            "address": "0x5a0e957",
+            "instruction": "mov %rsp,%rax"
+          },
+          {
+            "address": "0x5a0e95a",
+            "instruction": "lea 0x910(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a0e973",
+            "instruction": "lea 0x830(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e988",
+            "instruction": "lea 0x750(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e990",
+            "instruction": "lea 0x830(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e9a6",
+            "instruction": "cmpq $0x2,0x750(%rsp)"
+          },
+          {
+            "address": "0x5a0e9bb",
+            "instruction": "mov 0x50(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e9c0",
+            "instruction": "mov 0x758(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e9d9",
+            "instruction": "lea 0x930(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0e9e1",
+            "instruction": "mov %rdi,0x10(%rsp)"
+          },
+          {
+            "address": "0x5a0e9e6",
+            "instruction": "lea 0x750(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0e9f3",
+            "instruction": "mov %rdx,0x18(%rsp)"
+          },
+          {
+            "address": "0x5a0e9ff",
+            "instruction": "mov %rax,0x20(%rsp)"
+          },
+          {
+            "address": "0x5a0ea06",
+            "instruction": "mov 0x10(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0ea0b",
+            "instruction": "mov 0x18(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a0ea10",
+            "instruction": "mov 0x20(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0ea15",
+            "instruction": "movb $0x0,0xa17(%rsp)"
+          },
+          {
+            "address": "0x5a0ea1d",
+            "instruction": "mov 0x72c(%rsp),%ecx"
+          },
+          {
+            "address": "0x5a0ea24",
+            "instruction": "mov %ecx,0x2c(%rsp)"
+          },
+          {
+            "address": "0x5a0ea28",
+            "instruction": "lea 0xa28(%rsp),%rdi"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h86bc062749f9a581E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 6795,
+      "prologue_file": "prologue-014.txt",
+      "prologue_sha256": "3b146c5c150c2fec0c727b851d69c699477502182516615f9ad114d9069e7525",
+      "size": 677
+    },
+    {
+      "address": 94436976,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a0fe70",
+        "--stop-address=0x5a0fe7b",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 11,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready",
+          "family": "PositiveFixture.ready",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 3,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": []
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready17h333be72f50f79af0E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 404,
+      "prologue_file": "prologue-015.txt",
+      "prologue_sha256": "ca6f2c8dc5cfbd6a27de4cdbd7ac73aede6e5286a8283afe3de28dad7c05437b",
+      "size": 11
+    },
+    {
+      "address": 94436992,
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--wide",
+        "--no-show-raw-insn",
+        "--start-address=0x5a0fe80",
+        "--stop-address=0x5a10080",
+        "--",
+        "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+      ],
+      "exit_code": 0,
+      "inspected_address_bytes": 512,
+      "names": [
+        {
+          "demangled": "codex_hepta_agentd::runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::PositiveFixture::ready::{{closure}}",
+          "family": "PositiveFixture.ready",
+          "type": "t"
+        }
+      ],
+      "observations": {
+        "computed_total_frame_bytes": null,
+        "instruction_count_in_bounded_slice": 112,
+        "interpretation": "Immediate operands only. Loops, probes, calls, dynamic allocation and simultaneous caller frames are not summed. Static instruction evidence is not peak stack usage.",
+        "stack_related_instructions": [
+          {
+            "address": "0x5a0fe80",
+            "instruction": "mov %rsp,%r11"
+          },
+          {
+            "address": "0x5a0fe8a",
+            "instruction": "sub $0x1000,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 4096
+          },
+          {
+            "address": "0x5a0fe91",
+            "instruction": "movq $0x0,(%rsp)"
+          },
+          {
+            "address": "0x5a0fe99",
+            "instruction": "cmp %r11,%rsp"
+          },
+          {
+            "address": "0x5a0fe9e",
+            "instruction": "sub $0xe28,%rsp",
+            "rsp_subtract_bytes_per_instruction_execution": 3624
+          },
+          {
+            "address": "0x5a0fea5",
+            "instruction": "mov %rsi,0x48(%rsp)"
+          },
+          {
+            "address": "0x5a0feaa",
+            "instruction": "mov %rdi,0x50(%rsp)"
+          },
+          {
+            "address": "0x5a0feaf",
+            "instruction": "mov %rdi,0x58(%rsp)"
+          },
+          {
+            "address": "0x5a0feb4",
+            "instruction": "mov %rdx,0x68(%rsp)"
+          },
+          {
+            "address": "0x5a0fec0",
+            "instruction": "mov %rax,0x60(%rsp)"
+          },
+          {
+            "address": "0x5a0fec5",
+            "instruction": "mov 0x60(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a0fee3",
+            "instruction": "lea 0x6ddd0(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0ff0d",
+            "instruction": "mov 0x68(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0ff12",
+            "instruction": "mov %rax,0x68(%rsp)"
+          },
+          {
+            "address": "0x5a0ff1c",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0ff28",
+            "instruction": "mov 0xaee18(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0ff3a",
+            "instruction": "mov %rcx,0xaee18(%rsp)"
+          },
+          {
+            "address": "0x5a0ff42",
+            "instruction": "mov %eax,0xaee20(%rsp)"
+          },
+          {
+            "address": "0x5a0ff50",
+            "instruction": "mov %rdx,0x38(%rsp)"
+          },
+          {
+            "address": "0x5a0ff55",
+            "instruction": "mov %rax,0x40(%rsp)"
+          },
+          {
+            "address": "0x5a0ff5c",
+            "instruction": "mov 0x38(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0ff61",
+            "instruction": "mov 0x40(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0ff6f",
+            "instruction": "mov %rdx,0x28(%rsp)"
+          },
+          {
+            "address": "0x5a0ff74",
+            "instruction": "mov %rax,0x30(%rsp)"
+          },
+          {
+            "address": "0x5a0ff7b",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0ff80",
+            "instruction": "mov 0x28(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a0ff85",
+            "instruction": "mov 0x30(%rsp),%rdx"
+          },
+          {
+            "address": "0x5a0ff9a",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0ffaa",
+            "instruction": "lea 0x99360(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0ffb9",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a0ffc2",
+            "instruction": "lea 0x36f20(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0ffca",
+            "instruction": "lea 0x6ddd0(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0ffd9",
+            "instruction": "lea 0x70(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0ffde",
+            "instruction": "lea 0x36f20(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a0ffed",
+            "instruction": "mov 0x48(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a0fff6",
+            "instruction": "lea 0x70(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a10005",
+            "instruction": "mov 0x48(%rsp),%rax"
+          },
+          {
+            "address": "0x5a1000e",
+            "instruction": "mov %rax,0x20(%rsp)"
+          },
+          {
+            "address": "0x5a10017",
+            "instruction": "mov 0x50(%rsp),%rdi"
+          },
+          {
+            "address": "0x5a1001c",
+            "instruction": "lea 0x99360(%rsp),%rsi"
+          },
+          {
+            "address": "0x5a1002e",
+            "instruction": "mov 0x48(%rsp),%rcx"
+          },
+          {
+            "address": "0x5a10033",
+            "instruction": "mov 0x58(%rsp),%rax"
+          },
+          {
+            "address": "0x5a1003f",
+            "instruction": "add $0xaee28,%rsp"
+          },
+          {
+            "address": "0x5a10061",
+            "instruction": "mov 0x48(%rsp),%rdi"
+          }
+        ]
+      },
+      "original_mangled_names": [
+        {
+          "name": "_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture5ready28_$u7b$$u7b$closure$u7d$$u7d$17h82a429adfaa58133E",
+          "type": "t"
+        }
+      ],
+      "prologue_bytes": 8344,
+      "prologue_file": "prologue-016.txt",
+      "prologue_sha256": "ff4c88a68e16b2ebab223d9c261c32c0063266c0bd7346e1285b2d70be3fb21b",
+      "size": 707
+    }
+  ],
+  "limits": [
+    "No target execution, test rerun, stack/deadline change, process attachment or signals.",
+    "Only named symbol entry slices; no automatic whole-function disassembly.",
+    "Reserved bytes in a static frame are not peak stack use, recursion evidence or a causal proof.",
+    "Missing symbols, inlining and construction temporaries may leave the cause unresolved."
+  ],
+  "missing_requested_families": [
+    "HostFixture.new"
+  ],
+  "native_terminal": {
+    "identity": {
+      "st_ctime_ns": 1794493982738410635,
+      "st_dev": 2050,
+      "st_gid": 1000,
+      "st_ino": 16129792,
+      "st_mode": 33152,
+      "st_mtime_ns": 1794493982738410635,
+      "st_nlink": 1,
+      "st_size": 51057,
+      "st_uid": 1000
+    },
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json",
+    "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+  },
+  "nm_demangled": {
+    "argv": [
+      "/usr/bin/nm",
+      "--defined-only",
+      "--print-size",
+      "--format=posix",
+      "--demangle=rust",
+      "--",
+      "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+    ],
+    "exit_code": 0,
+    "stderr_file": "nm-demangled.stderr"
+  },
+  "nm_raw": {
+    "argv": [
+      "/usr/bin/nm",
+      "--defined-only",
+      "--print-size",
+      "--format=posix",
+      "--no-demangle",
+      "--",
+      "/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd"
+    ],
+    "exit_code": 0,
+    "stderr_file": "nm-raw.stderr"
+  },
+  "outer_terminal": {
+    "identity": {
+      "st_ctime_ns": 1794493983020683491,
+      "st_dev": 2050,
+      "st_gid": 1000,
+      "st_ino": 16187722,
+      "st_mode": 33152,
+      "st_mtime_ns": 1794493983004683967,
+      "st_nlink": 1,
+      "st_size": 2396,
+      "st_uid": 1000
+    },
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/result.json",
+    "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60"
+  },
+  "process_attached": false,
+  "schema": "hepta.learn.static-frame-diagnostic.v1",
+  "selected_symbol_count": 17,
+  "signals_sent": false,
+  "source_after": {
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "status": "",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "source_before": {
+    "head": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "status": "",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "state": "observed_static_only",
+  "target_executed": false,
+  "tests_executed": 0
+}

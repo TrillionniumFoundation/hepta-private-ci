@@ -1,0 +1,169 @@
+{
+  "schema": "learn.original-v3-attempt2-actual-root-readback.v1",
+  "request_blob": "b21a49b2e8b6d05135c069d0f3d496e9e7360ec2",
+  "prepared_commit": "aafaf73a679c1b8ece2116478a7ad7397e78ee05",
+  "job": "1a1d0dc3eb7-2564-1bd4",
+  "key": "learn-ce434-453-private-build-target-recovery-v3-attempt2",
+  "actual_h_state": "succeeded",
+  "actual_exit_code": 0,
+  "complete_durable_terminal": true,
+  "timed_out": false,
+  "cancelled": false,
+  "result": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-4537458b51b6-v3-attempt2/result.json",
+    "version": "2050:16320034:12843:1794505460260123363:1794505460274122948",
+    "bytes": 12843,
+    "sha256": "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b"
+  },
+  "creation_source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "creation_source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "future_test_source_sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+  "future_test_source_tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443",
+  "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v3",
+  "target": "/data/hepta-learn-ce434-runtime-20261112-v3/target",
+  "root_identity": {
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o40700",
+    "uid": 1000,
+    "nlink": 3
+  },
+  "target_identity": {
+    "device": 2067,
+    "inode": 47972398,
+    "mode": "0o40700",
+    "uid": 1000,
+    "nlink": 2
+  },
+  "archive_only_receipt": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/result.json",
+    "bytes": 7554,
+    "sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3",
+    "metadata": {
+      "device": 2050,
+      "inode": 16319985,
+      "mode": "0o100600",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 7554,
+      "mtime_ns": "1794504802757544457",
+      "ctime_ns": "1794504802836542106"
+    },
+    "artifacts": [
+      {
+        "key": "RUSTY_V8_ARCHIVE",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+        "metadata": {
+          "device": 2067,
+          "inode": 40370259,
+          "mode": "0o100400",
+          "nlink": 1,
+          "uid": 1000,
+          "gid": 1000,
+          "bytes": 29366352,
+          "mtime_ns": "1794504802273558861",
+          "ctime_ns": "1794504802472552939"
+        }
+      },
+      {
+        "key": "RUSTY_V8_SRC_BINDING_PATH",
+        "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+        "metadata": {
+          "device": 2067,
+          "inode": 40370261,
+          "mode": "0o100400",
+          "nlink": 1,
+          "uid": 1000,
+          "gid": 1000,
+          "bytes": 39884,
+          "mtime_ns": "1794482968901013685",
+          "ctime_ns": "1794482968909814746"
+        }
+      }
+    ],
+    "source_before": {
+      "current": {
+        "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+        "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+        "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+        "status": "",
+        "directory": {
+          "device": 2050,
+          "inode": 13007679,
+          "uid": 1000,
+          "gid": 1000,
+          "mode": "0o40700"
+        }
+      },
+      "preserved": {
+        "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+        "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+        "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+        "status": "",
+        "directory": {
+          "device": 2050,
+          "inode": 52497821,
+          "uid": 1000,
+          "gid": 1000,
+          "mode": "0o40700"
+        }
+      }
+    },
+    "source_after": {
+      "current": {
+        "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+        "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+        "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+        "status": "",
+        "directory": {
+          "device": 2050,
+          "inode": 13007679,
+          "uid": 1000,
+          "gid": 1000,
+          "mode": "0o40700"
+        }
+      },
+      "preserved": {
+        "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+        "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+        "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+        "status": "",
+        "directory": {
+          "device": 2050,
+          "inode": 52497821,
+          "uid": 1000,
+          "gid": 1000,
+          "mode": "0o40700"
+        }
+      }
+    },
+    "existing_private_directories": {
+      "/data/hepta-learn-ce434-runtime-20261112-v1": {
+        "device": 2067,
+        "inode": 40370256,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o40700"
+      },
+      "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins": {
+        "device": 2067,
+        "inode": 40370257,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o40700"
+      }
+    }
+  },
+  "source_and_preserved_source_before_after_equal": true,
+  "full_archive_restoration_before_after_equal": true,
+  "unchanged_native_16KiB_creation_receipt_ceiling_satisfied": true,
+  "existing_paths_removed_or_changed": false,
+  "earlier_failed_attempt_preserved": true,
+  "native_tests_executed": 0,
+  "ordinary_acceptance": 0
+}

@@ -1,0 +1,5 @@
+# HCSN new C2 successor runner/controller — unadopted draft
+
+Snapshot of a previously untracked, independently read-only inspected desktop successor candidate, using a separate GitHub branch based on #5987; the original unknown-terminal C2 job and all parallel worktrees remain untouched. `c2_successor_v1` copies frozen C2 source, adds fail-closed checkpoint publication and explicit receipts to runner/controller entrypoints, and records ancestor byte identities. The source is NOT an approved or launched six-fit training campaign: frozen new contract and source/data/model/config manifest, real native job wiring, full resource measurement, failure injection, and model replay remain open. Six local wiring tests passed in the original desktop Python 3.12.3 / PyTorch 2.8.0+cu128 environment. Local test source is an input snapshot, not producer status admission.
+
+Evidence in `NATIVE-GREEN.log` and `NATIVE-RECEIPT.json`. Original C2 remains 4/6 producer reports, 2/6 zero-byte interrupted checkpoints, 0/6 independently replayed. No Go or science claim. Preserve all original failures and do not silently retry unknown effects.

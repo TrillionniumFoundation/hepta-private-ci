@@ -1,0 +1,26 @@
+{
+  "schema": "read-only-sparse-control-observation-result-v3",
+  "status": "same_MCP_internal_errors_no_new_native_state",
+  "read_span": {
+    "requested_utc": "2026-11-11T01:30:42.885Z",
+    "returned_utc": "2026-11-11T01:30:44.341Z"
+  },
+  "per_call_control_wall_seconds": [
+    1.456,
+    0.883
+  ],
+  "cost_scope": "Concurrent control calls; their durations are not additive elapsed wall and do not measure model CPU.",
+  "new_durable_start_calls": 0,
+  "health_retries": 0,
+  "service_mutations": 0,
+  "last_valid_status": {
+    "request_start_utc": "2026-11-11T00:25:25.440Z",
+    "response_return_utc": "2026-11-11T00:25:38.584Z",
+    "reported_state": "running",
+    "exact_native_sample_timestamp": null
+  },
+  "current_original_C2_state": "unknown",
+  "v9_launch_ack": "unknown",
+  "last_complete_commands_snapshot_terminal_rows": 3,
+  "total_original_candidates": 6
+}

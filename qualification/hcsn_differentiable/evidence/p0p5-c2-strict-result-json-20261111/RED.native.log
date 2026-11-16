@@ -1,0 +1,63 @@
+Native job_id: 1a1cb094794-2564-9b7
+Native process_status: {"at_unix_ms":1794407749073,"audit_recorded":true,"automatic_retry":false,"cancelled":false,"exit_code":0,"job_id":"1a1cb094794-2564-9b7","launch_nonce":"254faa174db4dd55ffb824f0ec0e4d3b","log_bytes":{"stderr":{"seen":0,"stored":0},"stdout":{"seen":5339,"stored":5339}},"log_errors":{"stderr":null,"stdout":null},"log_synced":{"stderr":true,"stdout":true},"log_truncated":{"stderr":false,"stdout":false},"output_complete":true,"output_durable":true,"state":"succeeded","terminal_publication_confirmed":true,"terminal_publication_protocol":1,"timed_out":false}
+---- ORIGINAL STDOUT ----
+c2_durable.py 12491 c02d45119837c1b25a4b6ee0788b0c638718486c0301a8e90c5aa6d1f6252157
+c2_native_replay.py 8410 655f0035985926c695712339e8ed855b48f890082f2aa2160118e5d40e1e48dc
+test_c2_native_replay.py 10821 f4e1c72ee3fc41bb8e4ed1669d35d68e88a365c2c7176c97702d8fb81bd50436
+INNER_EXIT 1
+STDERR_BEGIN
+test_duplicate_native_job_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_native_job_rejected) ... ok
+test_duplicate_result_key_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_result_key_with_matching_receipt_rejected) ... FAIL
+test_exit_zero_mismatch_rejected (test_c2_native_replay.NativeObservationTests.test_exit_zero_mismatch_rejected) ... ok
+test_failed_terminal_not_scientific_success (test_c2_native_replay.NativeObservationTests.test_failed_terminal_not_scientific_success) ... ok
+test_fractional_native_rss_rejected_even_with_bound_checksum (test_c2_native_replay.NativeObservationTests.test_fractional_native_rss_rejected_even_with_bound_checksum) ... ok
+test_impossible_zero_wall_with_positive_cpu_rejected (test_c2_native_replay.NativeObservationTests.test_impossible_zero_wall_with_positive_cpu_rejected) ... ok
+test_missing_native_status_rejected (test_c2_native_replay.NativeObservationTests.test_missing_native_status_rejected) ... ok
+test_missing_roster_keeps_full_denominator (test_c2_native_replay.NativeObservationTests.test_missing_roster_keeps_full_denominator) ... ok
+test_native_log_truncation_nested_numeric_flags_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_nested_numeric_flags_rejected) ... ok
+test_native_log_truncation_numeric_zero_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_numeric_zero_rejected) ... ok
+test_native_unknown_and_false_terminal_rejected (test_c2_native_replay.NativeObservationTests.test_native_unknown_and_false_terminal_rejected) ... ok
+test_non_wait4_child_cost_rejected_even_if_rehashed (test_c2_native_replay.NativeObservationTests.test_non_wait4_child_cost_rejected_even_if_rehashed) ... ok
+test_nonfinite_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_nonfinite_result_with_matching_receipt_rejected) ... FAIL
+test_rebound_duplicate_resource_json_key_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_duplicate_resource_json_key_rejected) ... ok
+test_rebound_nonfinite_extra_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_nonfinite_extra_resource_field_rejected) ... ok
+test_rebound_overflow_exponent_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_overflow_exponent_resource_field_rejected) ... ok
+test_rebound_oversized_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_oversized_resource_field_rejected) ... ok
+test_resource_hash_change_rejected (test_c2_native_replay.NativeObservationTests.test_resource_hash_change_rejected) ... ok
+test_scalar_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_scalar_result_with_matching_receipt_rejected) ... FAIL
+test_six_matching_copies_not_live_attestation_or_science (test_c2_native_replay.NativeObservationTests.test_six_matching_copies_not_live_attestation_or_science) ... ok
+test_undurable_output_rejected (test_c2_native_replay.NativeObservationTests.test_undurable_output_rejected) ... ok
+
+======================================================================
+FAIL: test_duplicate_result_key_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_result_key_with_matching_receipt_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-c2-result-json-audit-20261111-red/test_c2_native_replay.py", line 224, in test_duplicate_result_key_with_matching_receipt_rejected
+    self.assertIn(NAMES[0], report["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_nonfinite_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_nonfinite_result_with_matching_receipt_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-c2-result-json-audit-20261111-red/test_c2_native_replay.py", line 228, in test_nonfinite_result_with_matching_receipt_rejected
+    self.assertIn(NAMES[0], report["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_scalar_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_scalar_result_with_matching_receipt_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-c2-result-json-audit-20261111-red/test_c2_native_replay.py", line 232, in test_scalar_result_with_matching_receipt_rejected
+    self.assertIn(NAMES[0], report["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.804s
+
+FAILED (failures=3)
+
+STDERR_END
+
+---- ORIGINAL STDERR ----
+

@@ -124,11 +124,14 @@ def _check_parameters(params):
     return margin
 
 
-def _first_hit(x, horizon, mu, sigma, discount=None):
-    """F or G_q, with zero for nonpositive deadlines and strict x>0.
+def _first_hit_logprob(x, horizon, mu, sigma, discount=None):
+    """log(F) or log(G_q) before probability underflow, for strict x>0.
 
     Nonpositive deadlines arise from fixed refractory interval geometry.
-    They are not replaced by trainable soft steps.
+    Their log probability is -inf with zero derivative. Positive deadlines
+    preserve first-order log-risk derivatives even when exp(log-risk) rounds
+    to zero in FP64. This does not turn the network's conditional expected
+    event-count readout into a log-risk channel or qualify the whole domain.
     """
     x, horizon = torch.broadcast_tensors(x, _tensor(horizon, x))
     positive = horizon > 0
@@ -151,8 +154,13 @@ def _first_hit(x, horizon, mu, sigma, discount=None):
                                 (root + mu) / sigma.square())
         first = root_minus * x + _logcdf((-x - root * time) / scale)
         second = -root_plus * x + _logcdf((-x + root * time) / scale)
-    result = torch.exp(torch.logaddexp(first, second))
-    return torch.where(positive, result, torch.zeros_like(result))
+    result = torch.logaddexp(first, second)
+    return torch.where(positive, result, torch.full_like(result, -math.inf))
+
+
+def _first_hit(x, horizon, mu, sigma, discount=None):
+    """F or G_q, retaining the existing probability-space interface."""
+    return torch.exp(_first_hit_logprob(x, horizon, mu, sigma, discount))
 
 
 def _survivor_tail(x, horizon, mu, sigma, edge):

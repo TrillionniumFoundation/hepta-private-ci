@@ -1,0 +1,120 @@
+{
+  "commit": "122367ee1b225b8a1be067009cb3487011b6612b",
+  "tree": "375add5e53b1e64da74f0138024629bf24ac8e27",
+  "actual_base": "5394e0eb14252513a06718d72f2da24c551f3a26",
+  "checks": [
+    {
+      "section": "boundary",
+      "actual": 678,
+      "complete_counter_residual": 0
+    },
+    {
+      "section": "protected_file",
+      "actual": 460,
+      "complete_counter_residual": 0
+    }
+  ],
+  "boundary_ids": 678,
+  "metadata_ids": 678,
+  "rust_parent_blobs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_read_wire.rs",
+      "before": "721190d14f2f3f3698391719a447870eac435ea8",
+      "after": "a42005348043a23c11cf40af00bff27d4528374e",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_binding.rs",
+      "before": "f43567288b741b35a260357033a3be7f12866e16",
+      "after": "6c1dd86b2185e0c4775b79c3a5fb49b93b610406",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+      "before": "1c79c190f662838ce96e83d28a92e47e7b9655ff",
+      "after": "731fedec8a6c5204f8e002b30ebc67892346b6c0",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_publication.rs",
+      "before": "8c4618fd7f65903c60ae28fd0eccca6377671572",
+      "after": "c2a5bb3404f3fb9f4e6b830bf39b3ef793390062",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_model_recovery.rs",
+      "before": "fa3cee24ff238e2cf74b3a8f8bd182d37a0060de",
+      "after": "0bfbe49023186bea2adeab8dcefb5a9c976b83a9",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+      "before": "3912eb7c7f8523374c8e66d9a5a139b7b9e0a2bb",
+      "after": "74f1f61eb23ab2d40175321a1505408b7ae9bfe7",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+      "before": "1f3566cf60c0b017b447e9a59e61a9325a2e7713",
+      "after": "1c5d3d4414d718ad34097ff4770dbd11c0fc8503",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+      "before": "7369c2ebdd16ee3b19b116b1ae397dfe12b9d60d",
+      "after": "99f3f3e35669317d82d738c7c9308044cd6f692d",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+      "before": "7a564ab8b0a5afd72d787f1e42d5ab3369667213",
+      "after": "394532edc720e8bf9c405285a002eaf79634e194",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "before": "54e1bfc71f19ae1e19df52fc3cee0c07ab5ca383",
+      "after": "6fdff45b375c19cb4c6c5e0d85270af18192d20d",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+      "before": "bdc560b100e0b8360e4f24d4ab878eba42f8eb45",
+      "after": "03106c90bc652bbbbce658bb21adc5003f02c5f9",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+      "before": "9466be4a81ed193503ce06b5ca6027781a15c15f",
+      "after": "7f9da85c007eb995e98867be03b942a65ebfc858",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "before": "80c7794d0fa6382e5b843679c067e76388e10102",
+      "after": "5570a22b6b55b1b3c99bbc49102797460ed6ee12",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_wire.rs",
+      "before": "0e87be00b4714ecbb3263e8899e03b69b201c488",
+      "after": "976268d4b3608da1bdd4df60f3923cc7ed6a5b91",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "before": "ecffada4e7e1de53f1ef7f9b6fa9d899caac3b1d",
+      "after": "bdc22108fc791a881cb4f85bb74d2dfe1201116a",
+      "exact_right": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_read_operation.rs",
+      "before": "f2ccccc2aded55cf6a31dd8e51023a136cca3fd3",
+      "after": "67c2163e8d8bd16f303230b1a0a4c2156db9d990",
+      "exact_right": true
+    }
+  ],
+  "source_qa_executed": false,
+  "native_executed": false,
+  "ordinary_acceptance": 0
+}

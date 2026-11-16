@@ -135,8 +135,11 @@ impl ArtifactOwnerReadView<'_> {
         now: u64,
     ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
         let mut records = Vec::new();
-        for entry in fs::read_dir(self.root.join("heads"))? {
-            if records.len() >= MAX_HEAD_RECORDS {
+        for (index, entry) in fs::read_dir(self.root.join("heads"))?
+            .take(MAX_HEAD_RECORDS + 1)
+            .enumerate()
+        {
+            if index >= MAX_HEAD_RECORDS {
                 return Err(ArtifactOwnerHostError::Capacity);
             }
             let entry = entry?;

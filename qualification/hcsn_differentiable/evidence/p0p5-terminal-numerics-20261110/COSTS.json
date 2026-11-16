@@ -1,0 +1,33 @@
+{
+  "C2_observers": [
+    {
+      "receipt": "c2-at-222353/GNU-TIME.txt",
+      "user_plus_system_seconds_rounded": 0.44,
+      "whole_wall_seconds_rounded": 0.46
+    },
+    {
+      "receipt": "c2-at-224540/GNU-TIME.txt",
+      "user_plus_system_seconds_rounded": 0.4,
+      "whole_wall_seconds_rounded": 0.41
+    }
+  ],
+  "additive_grand_total": null,
+  "billing": null,
+  "current_CI_API_observation_cost": null,
+  "energy_joules": null,
+  "independent_metadata_review": [
+    "numerics-independent-review/EXECUTION.json",
+    "numerics-independent-review/CLOSURE-EXECUTION.json"
+  ],
+  "local_scalar_diagnostic": "local-diagnosis/fixed48/COSTS.json",
+  "mathematical_source_assembly": "mathematical-diagnosis/PREPARATION-RECEIPT.json",
+  "original_numerics_and_collection": "numerical-audit/COST-RECORDS.json",
+  "prior_appendix_verification": "previous-appendix-checks/local-checks/EXECUTION.json",
+  "publication_control_archive_GNU": "publication-originals/ARCHIVE-GNU-TIME.txt",
+  "publication_inventory_GNU": "publication-originals/INVENTORY-GNU-TIME.txt",
+  "publication_whole_GNU": "publication-originals/GNU-TIME.txt",
+  "publication_whole_user_plus_system_seconds_rounded": 8.11,
+  "publication_whole_wall_seconds_rounded": 62.92,
+  "rule": "Original, collector, publisher and scalar jobs are separate. Their nested bootstrap/worker/stage/prefix measurements are not additive. The killed unreaped numerical worker CPU and historical unmeasured wrappers remain unknown, not zero.",
+  "schema": "terminal-numerics-cost-source-index-v1"
+}

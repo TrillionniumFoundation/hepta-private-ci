@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-441de918b863-validation-v1/native-runner.py", line 38, in <module>
+    info=target.lstat()
+         ^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 849, in lstat
+    return self.stat(follow_symlinks=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 842, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-3270e8e8d310-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz'

@@ -1,0 +1,17 @@
+--- a/root29-4537458b51b6-runner.py
++++ b/root29-4537458b51b6-runner.py
+@@ -21,1 +21,1 @@
+-REPO = Path("/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1")
++REPO = Path("/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1")
+@@ -23,1 +23,1 @@
+-MAIN = EVIDENCE / "live-owners-full-4537458b51b6-v1"
++MAIN = EVIDENCE / "live-owners-full-4537458b51b6-isolated-v1"
+@@ -33,1 +33,1 @@
+-NATIVE_DRIVER = EVIDENCE / "unified-4537458b51b6-validation-v1/native-runner.py"
++NATIVE_DRIVER = EVIDENCE / "unified-4537458b51b6-isolated-v1/native-runner.py"
+@@ -34,1 +34,1 @@
+-NATIVE_DRIVER_SHA256 = "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1"
++NATIVE_DRIVER_SHA256 = "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+@@ -318,1 +318,1 @@
+-out = EVIDENCE / ("root-uid-29-4537458b51b6-" + attempt)
++out = EVIDENCE / ("root-29-4537458b51b6-isolated-" + attempt)

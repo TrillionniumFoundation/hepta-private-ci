@@ -42,6 +42,10 @@ const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
 const COGNITIVE_READ_UNAVAILABLE_CODE: &str = "cognitive_read_unavailable";
 
+#[path = "native_memory_control.rs"]
+mod native_memory_control;
+use native_memory_control::NativeMemoryOperation;
+
 impl AgentdState {
     pub(crate) async fn response(
         &self,
@@ -161,6 +165,14 @@ impl AgentdState {
             crate::AgentdMethod::Generation { request } => {
                 AgentdPayload::Generation(self.generation_control(request).await?)
             }
+            crate::AgentdMethod::MemoryCellReadStart { request } => {
+                self.native_memory_control(NativeMemoryOperation::Start(request))
+                    .await?
+            }
+            crate::AgentdMethod::MemoryCellReadStatus { invocation_id } => {
+                self.native_memory_control(NativeMemoryOperation::Status(invocation_id))
+                    .await?
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -264,6 +276,12 @@ impl AgentdState {
                             /*minor*/ 0,
                         )
                         .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.native_memory_cell.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("memory.cell.native", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.canonical_intelligence_enabled() {

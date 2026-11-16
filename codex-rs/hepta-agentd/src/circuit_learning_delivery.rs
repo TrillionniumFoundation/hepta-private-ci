@@ -16,6 +16,16 @@ use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use crate::LearningIterationHandleV1;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 
+#[cfg(target_os = "linux")]
+#[path = "resident_learning_delivery.rs"]
+mod resident;
+#[cfg(target_os = "linux")]
+pub(crate) use resident::AgentdRootResidentDeliveryV3;
+#[cfg(target_os = "linux")]
+pub use resident::AgentdRootResidentEnrollmentV3;
+#[cfg(target_os = "linux")]
+pub(crate) use resident::root_resident_learning_delivery_v3;
+
 enum DeliveryMode {
     FirstAttempt,
     Readback,

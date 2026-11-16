@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn-mathematical-object-contract-v1",
+  "positioning": "Regenerative probability flow and content memory constrained by a shared generator",
+  "coordinate": "x = log(V) - log(b) > 0; mu is log-state drift; x_r = log(V_r) - log(b)",
+  "generator": "L = mu*d_x + 0.5*sigma^2*d_xx",
+  "objects": {
+    "E": {
+      "meaning": "He-Xiong financial equity with rollover cash flows and endogenous default",
+      "units": "financial value",
+      "implementation": ["qualification/hcsn/reference.py:hx_equity_closed", "qualification/hcsn/reference.py:hx_equity"],
+      "network_consumes_financial_equity": false
+    },
+    "C": {
+      "meaning": "Killed single-cycle value; C_T has zero absorption payoff; C_T^(a,h) explicitly adds a hit payoff",
+      "units": "reward",
+      "implementation": ["qualification/hcsn_regenerative/process.py:ValueReceipt.single_cycle", "qualification/hcsn_differentiable/regenerative.py:PerpetualValue.single_cycle_value"],
+      "legacy_note": "The scalar process docstring calls single_cycle E; that field is a neural killed-cycle reward, not financial equity."
+    },
+    "U": {
+      "meaning": "Regenerative value including repeated events, delay and reset; a finite-horizon terminal payoff occurs once",
+      "units": "reward",
+      "continuum_implementation": ["qualification/hcsn_differentiable/regenerative.py:perpetual_value", "qualification/hcsn_differentiable/finite_renewal.py:finite_renewal_value"],
+      "projected_implementation": ["qualification/hcsn_differentiable/value.py:finite_basis_value", "qualification/hcsn_differentiable/value.py:perpetual_basis_value"],
+      "filtered_network_value_implemented": false
+    },
+    "F": {
+      "meaning": "P_x(tau_0 <= T) for a single active killed cycle",
+      "units": "probability",
+      "implementation": ["qualification/hcsn/reference.py:first_passage_cdf", "qualification/hcsn_differentiable/finite_renewal.py:FiniteRenewalValue.first_hit_probability"]
+    },
+    "G": {
+      "meaning": "E_x[exp(-q*tau_0)*1(tau_0 <= T)]; its complement is not survival",
+      "units": "discounted event mass",
+      "implementation": ["qualification/hcsn/reference.py:discounted_first_passage", "qualification/hcsn_differentiable/finite_renewal.py:FiniteRenewalValue.discounted_first_hit"]
+    },
+    "J": {
+      "meaning": "dM(T)/dT, a repeated-event rate; not the single-cycle first-hit density and not M(T)/T",
+      "units": "expected events / physical time",
+      "implementation": ["qualification/hcsn_differentiable/finite_renewal.py:FiniteRenewalValue.event_rate"]
+    },
+    "M": {
+      "meaning": "E[N_T], a repeated-event count that may exceed one",
+      "units": "expected events",
+      "implementation": ["qualification/hcsn_differentiable/finite_renewal.py:FiniteRenewalValue.expected_events"]
+    }
+  },
+  "readouts": {
+    "interval_value": "Legacy call = active_reward*A_q + hit_reward*G_q + terminal_reward*exp(-q*dt)*P(active at endpoint)",
+    "repeated_query": "A pure operator query does not pay or accumulate anything; summing interval_value repeats the terminal feature and does not compute U.",
+    "network_forward": "A new valid input position consumes an observation even when dt is zero; replaying it from the returned state repeats conditioning and content write.",
+    "padding": "dt=0, observed=False, valid=False preserves physical state and masks prediction; the global sequence position still advances.",
+    "risk_count_identity": "For dt <= refractory every represented source path has at most one hit, so flow.risk equals flow.expected_events. They are duplicate channels in the current network.",
+    "observation_filtering": "Summed conditional interval expectations are a filtered compensator-style readout, not a new unconditional first-hit CDF or a smoothed full-history count."
+  },
+  "qualification_boundary": {
+    "constructor_domain_is_qualified_domain": false,
+    "finite_grid_has_exact_semigroup": false,
+    "trained_threshold_is_qvi_optimum": false,
+    "numerical_pass_implies_scientific_benefit": false,
+    "numerical_pass_implies_repository_ci_pass": false
+  }
+}

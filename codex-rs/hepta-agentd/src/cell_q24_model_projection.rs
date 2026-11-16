@@ -160,24 +160,20 @@ pub(super) fn project_original_qualified_model<S: FinalHoldoutCasStoreV1>(
     }
     // Complete canonical manifest payloads, both evaluated journals and the
     // original training observation enter this record, not only a model name.
-    let material = Digest32::of_parts(&[
-        b"hepta.cell.q24.model-proposal-material.v1\0",
-        training.evidence_digest.as_array(),
-        &serde_json::to_vec(&comparison.candidate.manifest)
-            .map_err(|_| Error::Binding("candidate manifest encoding"))?,
-        &serde_json::to_vec(&comparison.fixed_expert.manifest)
-            .map_err(|_| Error::Binding("fixed manifest encoding"))?,
-        comparison.candidate.journal_cut.as_array(),
-        comparison.fixed_expert.journal_cut.as_array(),
+    let material = crate::cell_q24_model_material::original_model_material_digest(
+        training.evidence_digest,
+        &comparison.candidate.manifest,
+        &comparison.fixed_expert.manifest,
+        comparison.candidate.journal_cut,
+        comparison.fixed_expert.journal_cut,
         inputs
             .evaluation
             .plan()
             .product_plan()
             .frozen_plan
-            .plan_digest
-            .as_array(),
-        inputs.qualification.product().evidence_digest.as_array(),
-    ]);
+            .plan_digest,
+        inputs.qualification.product().evidence_digest,
+    )?;
     coordinator.record(evaluation.clone(), evaluation.observed_unix_seconds)?;
     Ok(Admission {
         cut: coordinator.snapshot().clone(),

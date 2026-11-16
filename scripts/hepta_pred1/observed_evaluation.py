@@ -21,13 +21,22 @@ import numpy as np
 from .contracts import Evidence, EvidenceSource, EffectTimeKind, ObservationStatus
 
 COST_FIELDS = (
-    "action", "preparation", "inference", "training", "validation", "failures",
-    "recovery", "transport",
+    "action",
+    "preparation",
+    "inference",
+    "training",
+    "validation",
+    "failures",
+    "recovery",
+    "transport",
 )
 QUANTILES = (0.1, 0.5, 0.9)
 FORECAST_FIELDS = {
-    "success_probability", "duration_values", "duration_probabilities",
-    "cost_values", "cost_probabilities",
+    "success_probability",
+    "duration_values",
+    "duration_probabilities",
+    "cost_values",
+    "cost_probabilities",
 }
 
 
@@ -101,7 +110,10 @@ class UtilityContract:
 
     @property
     def budget_limits(self):
-        return {"max_wall_seconds": self.max_wall_seconds, "max_total_cost": self.max_total_cost}
+        return {
+            "max_wall_seconds": self.max_wall_seconds,
+            "max_total_cost": self.max_total_cost,
+        }
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -134,7 +146,13 @@ class ObservedDecision:
     source: str = "fixture"
 
     def __post_init__(self):
-        for key in ("sample_id", "task_group", "policy_id", "chosen_action", "clock_id"):
+        for key in (
+            "sample_id",
+            "task_group",
+            "policy_id",
+            "chosen_action",
+            "clock_id",
+        ):
             _text(getattr(self, key))
         for key in ("information_set_digest", "budget_contract_digest"):
             _digest(getattr(self, key))
@@ -142,9 +160,15 @@ class ObservedDecision:
             raise ValueError("invalid split")
         if self.source not in ("fixture", "declared_owner"):
             raise ValueError("invalid observation source")
-        if not isinstance(self.evidence, Evidence) or self.evidence.source == EvidenceSource.IMAGINED:
+        if (
+            not isinstance(self.evidence, Evidence)
+            or self.evidence.source == EvidenceSource.IMAGINED
+        ):
             raise ValueError("factual Evidence required")
-        if self.source == "declared_owner" and self.evidence.source != EvidenceSource.REAL:
+        if (
+            self.source == "declared_owner"
+            and self.evidence.source != EvidenceSource.REAL
+        ):
             raise ValueError("owner declaration cannot use simulator evidence")
         for key in ("prediction_at", "decision_at"):
             object.__setattr__(self, key, _number(getattr(self, key)))
@@ -159,18 +183,28 @@ class ObservedDecision:
         object.__setattr__(self, "prediction", _freeze_forecast(self.prediction))
         if not isinstance(self.costs, Mapping) or set(self.costs) != set(COST_FIELDS):
             raise ValueError("complete ledger field set required; use None for unknown")
-        costs = {key: None if value is None else _number(value) for key, value in self.costs.items()}
+        costs = {
+            key: None if value is None else _number(value)
+            for key, value in self.costs.items()
+        }
         action = costs["action"]
         if action is not None and action < self.evidence.confirmed_cost_lower_bound:
             raise ValueError("action ledger is below confirmed cost")
-        if self.evidence.final_cost is not None and action is not None and action != self.evidence.final_cost:
+        if (
+            self.evidence.final_cost is not None
+            and action is not None
+            and action != self.evidence.final_cost
+        ):
             raise ValueError("action ledger differs from final cost evidence")
         object.__setattr__(self, "costs", MappingProxyType(costs))
         if self.full_wall_seconds is not None:
             wall = _number(self.full_wall_seconds)
             if wall < self.evidence.observed_at - self.decision_at:
                 raise ValueError("full wall time omits decision-to-receipt waiting")
-            if self.evidence.time_kind == EffectTimeKind.EXACT and wall < self.evidence.time_lower:
+            if (
+                self.evidence.time_kind == EffectTimeKind.EXACT
+                and wall < self.evidence.time_lower
+            ):
                 raise ValueError("full wall time is shorter than exact effect duration")
             object.__setattr__(self, "full_wall_seconds", wall)
 
@@ -192,7 +226,9 @@ def _marginal(forecast, name, truth):
     x = np.asarray(forecast[name + "_values"])
     p = np.asarray(forecast[name + "_probabilities"])
     cumulative = np.cumsum(p)
-    quantiles = [float(x[min(np.searchsorted(cumulative, q), len(x) - 1)]) for q in QUANTILES]
+    quantiles = [
+        float(x[min(np.searchsorted(cumulative, q), len(x) - 1)]) for q in QUANTILES
+    ]
     if truth is None:
         score = None
     else:
@@ -202,7 +238,11 @@ def _marginal(forecast, name, truth):
             raise ValueError("nonfinite marginal score")
         score = max(0.0, score)
     return score, [
-        {"level": q, "prediction": value, "covered": None if truth is None else truth <= value}
+        {
+            "level": q,
+            "prediction": value,
+            "covered": None if truth is None else truth <= value,
+        }
         for q, value in zip(QUANTILES, quantiles)
     ]
 
@@ -212,20 +252,28 @@ def score_forecast(prediction, evidence):
     if not isinstance(evidence, Evidence) or evidence.source == EvidenceSource.IMAGINED:
         raise ValueError("factual Evidence required")
     forecast = _freeze_forecast(prediction)
-    duration = evidence.time_lower if evidence.time_kind == EffectTimeKind.EXACT else None
+    duration = (
+        evidence.time_lower if evidence.time_kind == EffectTimeKind.EXACT else None
+    )
     duration_score, duration_coverage = _marginal(forecast, "duration", duration)
     cost_score, cost_coverage = _marginal(forecast, "cost", evidence.final_cost)
     return {
-        "quality_brier": None if evidence.outcome is None else (forecast["success_probability"] - evidence.outcome) ** 2,
-        "duration_crps": duration_score, "cost_crps": cost_score,
-        "duration_quantiles": duration_coverage, "cost_quantiles": cost_coverage,
+        "quality_brier": None
+        if evidence.outcome is None
+        else (forecast["success_probability"] - evidence.outcome) ** 2,
+        "duration_crps": duration_score,
+        "cost_crps": cost_score,
+        "duration_quantiles": duration_coverage,
+        "cost_quantiles": cost_coverage,
         "score_scope": "forecast scores alone do not establish execution, predecision prediction or causal policy gain",
     }
 
 
 def score_observed(decision, contract):
     """Score only the chosen and executed action; no other action is imputed."""
-    if not isinstance(decision, ObservedDecision) or not isinstance(contract, UtilityContract):
+    if not isinstance(decision, ObservedDecision) or not isinstance(
+        contract, UtilityContract
+    ):
         raise ValueError("observed decision and utility contract required")
     if decision.budget_contract_digest != contract.digest:
         raise ValueError("budget utility contract digest differs")
@@ -236,12 +284,34 @@ def score_observed(decision, contract):
     total = None if missing else math.fsum(decision.costs.values())
     if total is not None and not math.isfinite(total):
         raise ValueError("nonfinite complete cost")
-    within_cost = None if total is None or contract.max_total_cost is None else total <= contract.max_total_cost
-    within_time = None if decision.full_wall_seconds is None or contract.max_wall_seconds is None else decision.full_wall_seconds <= contract.max_wall_seconds
-    within_budget = False if False in (within_cost, within_time) else None if None in (within_cost, within_time) else True
+    within_cost = (
+        None
+        if total is None or contract.max_total_cost is None
+        else total <= contract.max_total_cost
+    )
+    within_time = (
+        None
+        if decision.full_wall_seconds is None or contract.max_wall_seconds is None
+        else decision.full_wall_seconds <= contract.max_wall_seconds
+    )
+    within_budget = (
+        False
+        if False in (within_cost, within_time)
+        else None
+        if None in (within_cost, within_time)
+        else True
+    )
     utility = None
-    if outcome is not None and total is not None and decision.full_wall_seconds is not None:
-        utility = outcome - contract.cost_weight * total - contract.time_weight * decision.full_wall_seconds
+    if (
+        outcome is not None
+        and total is not None
+        and decision.full_wall_seconds is not None
+    ):
+        utility = (
+            outcome
+            - contract.cost_weight * total
+            - contract.time_weight * decision.full_wall_seconds
+        )
         if not math.isfinite(utility):
             raise ValueError("nonfinite actual utility")
     if executed:
@@ -250,17 +320,27 @@ def score_observed(decision, contract):
         metrics = {key: None for key in ("quality_brier", "duration_crps", "cost_crps")}
         for name in ("duration", "cost"):
             _, metrics[name + "_quantiles"] = _marginal(f, name, None)
-        metrics["score_scope"] = "chosen action was not observed executed; factual scores unavailable"
+        metrics["score_scope"] = (
+            "chosen action was not observed executed; factual scores unavailable"
+        )
     return {
-        "sample_id": decision.sample_id, "task_group": decision.task_group,
-        "split": decision.split, "policy_id": decision.policy_id, "source": decision.source,
+        "sample_id": decision.sample_id,
+        "task_group": decision.task_group,
+        "split": decision.split,
+        "policy_id": decision.policy_id,
+        "source": decision.source,
         "executed_choice_observed": executed,
-        "observation_status": e.observation_status.value, "time_kind": e.time_kind.value,
-        "outcome": outcome, "success_probability": f["success_probability"],
+        "observation_status": e.observation_status.value,
+        "time_kind": e.time_kind.value,
+        "outcome": outcome,
+        "success_probability": f["success_probability"],
         **metrics,
-        "missing_cost_items": missing, "cost_ledger_complete": not missing,
-        "full_cost": total, "full_wall_seconds": decision.full_wall_seconds,
-        "budget_limits": contract.budget_limits, "within_budget": within_budget,
+        "missing_cost_items": missing,
+        "cost_ledger_complete": not missing,
+        "full_cost": total,
+        "full_wall_seconds": decision.full_wall_seconds,
+        "budget_limits": contract.budget_limits,
+        "within_budget": within_budget,
         "actual_net_utility": utility,
         "counterfactual_policy_value": None,
     }
@@ -268,7 +348,11 @@ def score_observed(decision, contract):
 
 def _records(decisions):
     rows = list(itertools.islice(iter(decisions), 4097))
-    if not rows or len(rows) > 4096 or not all(isinstance(d, ObservedDecision) for d in rows):
+    if (
+        not rows
+        or len(rows) > 4096
+        or not all(isinstance(d, ObservedDecision) for d in rows)
+    ):
         raise ValueError("need 1..4096 observed decisions")
     seen, units, refs, splits = set(), set(), set(), {}
     for d in rows:
@@ -280,7 +364,10 @@ def _records(decisions):
         if d.task_group in splits and splits[d.task_group] != d.split:
             raise ValueError("task group crosses data splits")
         splits[d.task_group] = d.split
-        for kind, ref in (("execution", d.execution_ref), ("receipt", d.evidence.receipt_ref)):
+        for kind, ref in (
+            ("execution", d.execution_ref),
+            ("receipt", d.evidence.receipt_ref),
+        ):
             if ref is not None:
                 if (kind, ref) in refs:
                     raise ValueError("reused execution or effect receipt")
@@ -294,36 +381,86 @@ def evaluate_observed(decisions, contract):
     summaries = []
     keys = sorted({(r["source"], r["split"], r["policy_id"]) for r in scored})
     for source, split, policy in keys:
-        rows = [r for r in scored if (r["source"], r["split"], r["policy_id"]) == (source, split, policy)]
+        rows = [
+            r
+            for r in scored
+            if (r["source"], r["split"], r["policy_id"]) == (source, split, policy)
+        ]
         metrics = {}
-        for field in ("quality_brier", "duration_crps", "cost_crps", "actual_net_utility"):
+        for field in (
+            "quality_brier",
+            "duration_crps",
+            "cost_crps",
+            "actual_net_utility",
+        ):
             values = [r[field] for r in rows if r[field] is not None]
-            metrics[field] = {"observed_count": len(values), "mean": float(np.mean(values)) if values else None}
+            metrics[field] = {
+                "observed_count": len(values),
+                "mean": float(np.mean(values)) if values else None,
+            }
         reliability = []
         for b in range(10):
-            observed = [r for r in rows if r["outcome"] is not None and min(int(r["success_probability"] * 10), 9) == b]
-            reliability.append({
-                "lower": b / 10, "upper": (b + 1) / 10, "count": len(observed),
-                "mean_prediction": float(np.mean([r["success_probability"] for r in observed])) if observed else None,
-                "outcome_rate": float(np.mean([r["outcome"] for r in observed])) if observed else None,
-            })
+            observed = [
+                r
+                for r in rows
+                if r["outcome"] is not None
+                and min(int(r["success_probability"] * 10), 9) == b
+            ]
+            reliability.append(
+                {
+                    "lower": b / 10,
+                    "upper": (b + 1) / 10,
+                    "count": len(observed),
+                    "mean_prediction": float(
+                        np.mean([r["success_probability"] for r in observed])
+                    )
+                    if observed
+                    else None,
+                    "outcome_rate": float(np.mean([r["outcome"] for r in observed]))
+                    if observed
+                    else None,
+                }
+            )
         coverage = {}
         for name in ("duration", "cost"):
             coverage[name] = []
             for i, level in enumerate(QUANTILES):
-                values = [r[name + "_quantiles"][i]["covered"] for r in rows if r[name + "_quantiles"][i]["covered"] is not None]
-                coverage[name].append({"level": level, "observed_count": len(values), "coverage": float(np.mean(values)) if values else None})
-        summaries.append({
-            "source": source, "split": split, "policy_id": policy, "count": len(rows),
-            "observation_status_counts": dict(Counter(r["observation_status"] for r in rows)),
-            "time_kind_counts": dict(Counter(r["time_kind"] for r in rows)),
-            "unobserved_chosen_actions": sum(not r["executed_choice_observed"] for r in rows),
-            "metrics": metrics, "success_reliability_bins": reliability,
-            "quantile_coverage": coverage,
-        })
+                values = [
+                    r[name + "_quantiles"][i]["covered"]
+                    for r in rows
+                    if r[name + "_quantiles"][i]["covered"] is not None
+                ]
+                coverage[name].append(
+                    {
+                        "level": level,
+                        "observed_count": len(values),
+                        "coverage": float(np.mean(values)) if values else None,
+                    }
+                )
+        summaries.append(
+            {
+                "source": source,
+                "split": split,
+                "policy_id": policy,
+                "count": len(rows),
+                "observation_status_counts": dict(
+                    Counter(r["observation_status"] for r in rows)
+                ),
+                "time_kind_counts": dict(Counter(r["time_kind"] for r in rows)),
+                "unobserved_chosen_actions": sum(
+                    not r["executed_choice_observed"] for r in rows
+                ),
+                "metrics": metrics,
+                "success_reliability_bins": reliability,
+                "quantile_coverage": coverage,
+            }
+        )
     return {
-        "schema": "pred1-observed-evaluation-v1", "decision": "NoUpdate",
-        "utility_contract_sha256": contract.digest, "summaries": summaries, "per_sample": scored,
+        "schema": "pred1-observed-evaluation-v1",
+        "decision": "NoUpdate",
+        "utility_contract_sha256": contract.digest,
+        "summaries": summaries,
+        "per_sample": scored,
         "budget_limits": contract.budget_limits,
         "counterfactual_policy_value": None,
         "scope": "actual chosen-action labels only; missingness may be informative; complete-case scores do not identify all-task calibration",
@@ -353,7 +490,13 @@ class PairedRegistration:
     alpha: float = 0.05
 
     def __post_init__(self):
-        for key in ("registration_ref", "clock_id", "candidate_policy_id", "parent_policy_id", "design"):
+        for key in (
+            "registration_ref",
+            "clock_id",
+            "candidate_policy_id",
+            "parent_policy_id",
+            "design",
+        ):
             _text(getattr(self, key))
         if self.candidate_policy_id == self.parent_policy_id:
             raise ValueError("different policy identities required")
@@ -386,10 +529,18 @@ def paired_adoption_gate(decisions, contract, registration=None):
     2..16 prespecified independent groups; no post-hoc subset of complete rows.
     """
     result = {
-        "decision": "NoUpdate", "candidate_eligible": False, "production_activation": False,
-        "reasons": [], "paired_groups": 0, "mean_net_gain": None, "one_sided_signflip_p": None,
-        "budget_limits": contract.budget_limits if isinstance(contract, UtilityContract) else None,
-        "within_budget": None, "over_budget_samples": None,
+        "decision": "NoUpdate",
+        "candidate_eligible": False,
+        "production_activation": False,
+        "reasons": [],
+        "paired_groups": 0,
+        "mean_net_gain": None,
+        "one_sided_signflip_p": None,
+        "budget_limits": contract.budget_limits
+        if isinstance(contract, UtilityContract)
+        else None,
+        "within_budget": None,
+        "over_budget_samples": None,
         "verification_scope": "conditional numerical eligibility under supplied owner, preregistration, pairing and independence declarations; not authentication or external adoption approval",
         "counterfactual_scope": "only actual paired task replicas; other unexecuted actions remain unidentified",
     }
@@ -402,21 +553,32 @@ def paired_adoption_gate(decisions, contract, registration=None):
         result["reasons"] = [str(exc)]
         return result
     r, reasons = registration, result["reasons"]
-    if not isinstance(contract, UtilityContract) or r.utility_contract_digest != contract.digest:
+    if (
+        not isinstance(contract, UtilityContract)
+        or r.utility_contract_digest != contract.digest
+    ):
         reasons.append("utility_contract_differs")
     elif r.budget_contract_digest != contract.digest:
         reasons.append("budget_utility_contract_differs")
-    if isinstance(contract, UtilityContract) and any(value is None for value in contract.budget_limits.values()):
+    if isinstance(contract, UtilityContract) and any(
+        value is None for value in contract.budget_limits.values()
+    ):
         reasons.append("explicit_shared_budget_limits_missing")
     if not r.new_confirmation or not r.independent_groups:
         reasons.append("new_independent_confirmation_not_declared")
-    if r.design != "randomized_paired_replicas" or not r.assignment_evidence_ref or not r.owner_evidence_ref:
+    if (
+        r.design != "randomized_paired_replicas"
+        or not r.assignment_evidence_ref
+        or not r.owner_evidence_ref
+    ):
         reasons.append("actual_randomized_pair_or_owner_evidence_missing")
     groups = set(r.task_groups)
     if not 2 <= len(groups) <= 16 or groups & set(r.excluded_task_groups):
         reasons.append("invalid_or_previously_used_confirmation_groups")
     policies = {r.candidate_policy_id, r.parent_policy_id}
-    if {(d.task_group, d.policy_id) for d in rows} != set(itertools.product(groups, policies)):
+    if {(d.task_group, d.policy_id) for d in rows} != set(
+        itertools.product(groups, policies)
+    ):
         reasons.append("actual_paired_group_coverage_incomplete")
     if any(d.split != "confirm" or d.source != "declared_owner" for d in rows):
         reasons.append("non_owner_or_non_confirmation_observation")
@@ -429,17 +591,28 @@ def paired_adoption_gate(decisions, contract, registration=None):
         reasons.append("budget_contract_differs")
     lookup = {(d.task_group, d.policy_id): d for d in rows}
     for group in groups:
-        pair = [lookup.get((group, p)) for p in (r.candidate_policy_id, r.parent_policy_id)]
-        if all(pair) and pair[0].information_set_digest != pair[1].information_set_digest:
+        pair = [
+            lookup.get((group, p)) for p in (r.candidate_policy_id, r.parent_policy_id)
+        ]
+        if (
+            all(pair)
+            and pair[0].information_set_digest != pair[1].information_set_digest
+        ):
             reasons.append("paired_information_sets_differ")
             break
     if reasons:
         return result
     scores = {key: score_observed(d, contract) for key, d in lookup.items()}
     result["paired_groups"] = len(groups)
-    result["over_budget_samples"] = [score["sample_id"] for score in scores.values() if score["within_budget"] is False]
+    result["over_budget_samples"] = [
+        score["sample_id"]
+        for score in scores.values()
+        if score["within_budget"] is False
+    ]
     within = [score["within_budget"] for score in scores.values()]
-    result["within_budget"] = False if False in within else None if None in within else True
+    result["within_budget"] = (
+        False if False in within else None if None in within else True
+    )
     if result["over_budget_samples"]:
         reasons.append("actual_shared_budget_limit_exceeded")
     values = {key: score["actual_net_utility"] for key, score in scores.items()}
@@ -447,13 +620,20 @@ def paired_adoption_gate(decisions, contract, registration=None):
         reasons.append("actual_effect_or_complete_cost_or_wall_time_missing")
     if reasons:
         return result
-    differences = np.array([values[g, r.candidate_policy_id] - values[g, r.parent_policy_id] for g in r.task_groups])
+    differences = np.array(
+        [
+            values[g, r.candidate_policy_id] - values[g, r.parent_policy_id]
+            for g in r.task_groups
+        ]
+    )
     sums = np.array([0.0])
     for difference in differences:
         sums = np.concatenate((sums + difference, sums - difference))
     observed = float(differences.mean())
     p = float(np.mean(sums >= differences.sum() - 1e-12))
-    result.update(paired_groups=len(groups), mean_net_gain=observed, one_sided_signflip_p=p)
+    result.update(
+        paired_groups=len(groups), mean_net_gain=observed, one_sided_signflip_p=p
+    )
     if observed < r.practical_gain:
         reasons.append("net_gain_below_practical_threshold")
     if p > r.alpha:

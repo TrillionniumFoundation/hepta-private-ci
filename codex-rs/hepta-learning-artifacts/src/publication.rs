@@ -26,6 +26,10 @@ use crate::validate_artifact_publication_v3;
 use crate::validate_registry_head_witness;
 use crate::verify_artifact_admission_v3;
 
+#[path = "publication_original.rs"]
+mod original_registry;
+pub(crate) use original_registry::digest_original_registry_intent;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactPublicationPhaseV1 {
     Prepared,
@@ -303,16 +307,23 @@ impl ArtifactPublicationTransactionV1 {
     pub fn from_snapshot(
         snapshot: ArtifactPublicationTransactionSnapshotV1,
     ) -> Result<Self, ArtifactPublicationError> {
-        verify_artifact_admission_v3(
-            &snapshot.intent.admission,
-            snapshot.intent.admission.withdrawal_head_digest,
-            snapshot.intent.admission.admitted_at,
-        )?;
         let expected_intent = digest_intent(
             &snapshot.intent.operation_id,
             &snapshot.intent.admission,
             snapshot.intent.expected_registry_predecessor_head,
         );
+        Self::from_snapshot_with_intent_digest(snapshot, expected_intent)
+    }
+
+    fn from_snapshot_with_intent_digest(
+        snapshot: ArtifactPublicationTransactionSnapshotV1,
+        expected_intent: Digest32,
+    ) -> Result<Self, ArtifactPublicationError> {
+        verify_artifact_admission_v3(
+            &snapshot.intent.admission,
+            snapshot.intent.admission.withdrawal_head_digest,
+            snapshot.intent.admission.admitted_at,
+        )?;
         if expected_intent != snapshot.intent.intent_digest {
             return Err(ArtifactPublicationError::SnapshotMismatch);
         }
@@ -398,7 +409,7 @@ fn validate_snapshot_shape(
     Ok(())
 }
 
-fn digest_intent(
+pub(crate) fn digest_intent(
     operation_id: &StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
     expected_registry_predecessor_head: Digest32,

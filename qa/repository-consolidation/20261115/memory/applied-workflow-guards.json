@@ -1,0 +1,114 @@
+{
+  "patch_sha256": "7e70d1dd5f32c3af814dd4976c71e8208c90cd8a1d4c666682fb23bfe09e410c",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-lockfile-regenerate.yml",
+      "jobs": [
+        "refresh-locks"
+      ],
+      "explicit_false_default": "regenerate_lockfiles",
+      "oid": "8eae3dc33836a44e16ba0f31af08e6c46d643662"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-budget-shadow.yml",
+      "jobs": [
+        "budget-mechanisms"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "0db4797f5449ec11ee1c9bec9332d3723a532561"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-current-relay.yml",
+      "jobs": [
+        "source-owner",
+        "target-worker"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "1aae9e6432ca408d32e1b4c025a160927d2a9586"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-multihost-relay.yml",
+      "jobs": [
+        "source-owner",
+        "target-worker"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "ba83cdf2a82b4d1f384db794305b4ad5e4e6817a"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-native-process.yml",
+      "jobs": [
+        "actual-default-daemon"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "d074269a7d4805054c9235b300e9cde136cff36d"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-population-shadow.yml",
+      "jobs": [
+        "memory-population-mechanisms"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "f863e80ef887f0c095d6e4985cfd2fe67065855b"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-repair-solver.yml",
+      "jobs": [
+        "actual-code-repair"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "ebb84e3bde8bd19db0984202f97a4cdba6db54ea"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-system-shadow.yml",
+      "jobs": [
+        "typed-memory-mechanisms"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "7d924d6a36d559208c8c4f7e77623e118d0e4e22"
+    },
+    {
+      "path": ".github/workflows/hepta-native-memory.yml",
+      "jobs": [
+        "native-source-model-boundary"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "a8462b9bd857342652c2750c75186b09df5ea0ea"
+    },
+    {
+      "path": ".github/workflows/hepta-parametric-catalog-shadow.yml",
+      "jobs": [
+        "metadata-admission"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "43e92913ed012f1cdac3e571278f180eb9b87f1b"
+    },
+    {
+      "path": ".github/workflows/hepta-parametric-memory-shadow.yml",
+      "jobs": [
+        "parametric-memory-confirmation"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "9eedac84a22fc385ad196abe9ef2622530aa6a68"
+    },
+    {
+      "path": ".github/workflows/hepta-parametric-next-shadow.yml",
+      "jobs": [
+        "memory-growth-and-admission"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "800dd59207f2a62f88e7c5b89b560fc6f45b6db5"
+    },
+    {
+      "path": ".github/workflows/hepta-shared-stem-bakeoff-shadow.yml",
+      "jobs": [
+        "evidence-contract",
+        "native-latent-cpu-smoke",
+        "real-checkpoint-text-bakeoff"
+      ],
+      "explicit_false_default": "run_research",
+      "oid": "e4dd26349a89bbadf9ba21a0945f2669f290680d"
+    }
+  ],
+  "note": "Read and applied reviewed patch; parsed trigger/permission/input guards verified; no workflow dispatched."
+}

@@ -1,0 +1,81 @@
+{
+ "schema_version": 1,
+ "reviewer": "/root/hcsn_continuous",
+ "recorded_at_utc": "2026-11-06T08:12:13Z",
+ "scope": "Read-only final source/README review; no new tests, training, source edits or production execution. Reviewer authored time module earlier; that portion is self-review.",
+ "prior_results": "Parent reported 194 native tests, 8 Python tests and bridge attempt-02 passed. Not rerun or re-certified here.",
+ "files": {
+  "time": "codex-rs/hepta-neuron/src/continuous_time.rs",
+  "candidate": "codex-rs/hepta-learning-artifacts/src/hcsn_candidate.rs",
+  "owner": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+  "graph": "qualification/hcsn_training/joint_graph.py",
+  "worker": "qualification/hcsn_training/worker.py",
+  "fixture": "qualification/hcsn_training/native_fixture.rs",
+  "circuit": "codex-rs/hepta-automation/src/neural_circuit.rs",
+  "outbox": "codex-rs/hepta-automation/src/taskflow_step.rs",
+  "driver": "codex-rs/hepta-automation/src/authorized_effect.rs",
+  "provider": "codex-rs/hepta-contracts/src/provider_effect.rs",
+  "host": "codex-rs/hepta-agentd/src/automation.rs",
+  "runtime": "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+  "readme": "qualification/hcsn_training/README.md"
+ },
+ "source_sha256": {
+  "time": "ae08bcbc9c0a54cd376aa46ce98e1d87a2eee453e1abaef7e651eab4bff83313",
+  "candidate": "6ed338bf71d1ece130f35ab7e318dc1dbaaba8adb9bc5c629ae01285c7548de6",
+  "readme": "fb91e9eef42030bdd3f6c1580ebcf0b986e7121697e00bffdbfbdc800aacf90f"
+ },
+ "findings": [
+  {
+   "subject": "Physical time",
+   "references": [
+    "time:HcsnTimeProfileV1::digest",
+    "time:plan_interval_from_start",
+    "time:plan_hcsn_batch_v1",
+    "time:HcsnClockCheckpointV1::restore"
+   ],
+   "conclusion": "Actual integer end-start drives intervals; micros convert to seconds. One real outer anchor binds a block. Restore checks retained digest and exact profile/clock/scope/generation/writer/model. Original sparse semantics stay unchanged; B has bounded aligned planning only."
+  },
+  {
+   "subject": "Shared BP and learning distinction",
+   "references": [
+    "graph:JointCellGraph.forward",
+    "worker:task_gradients",
+    "worker:propose",
+    "candidate:HcsnLearningRuleV1"
+   ],
+   "conclusion": "A Cells share one tensor graph, previous-boundary coupling and real MSE derivatives. Worker accepts only task_mse_bp_v1. BP, eligibility and NDU remain distinct. No B worker, exact nonlinear ODE, scientific benefit or NDU-gain claim."
+  },
+  {
+   "subject": "Candidate publication and recovery",
+   "references": [
+    "candidate:prepare_hcsn_publication_v1",
+    "candidate:PreparedHcsnPublicationV1::publish",
+    "owner:LearningArtifactOwnerService::publish",
+    "fixture:reopen",
+    "fixture:finish"
+   ],
+   "conclusion": "Native decoding binds actual bytes to pre-dispatch expected facts and manifest lineage, then delegates to fenced owner with current withdrawal checks. Fixture rejects old-model clock restore under candidate identity. Synthetic trust and explicit candidate context prove neither production adoption nor derivatives."
+  },
+  {
+   "subject": "Coarse control and production boundary",
+   "references": [
+    "circuit:NeuralCircuitCandidateV1::compile_taskflow",
+    "circuit:taskflow_node",
+    "driver:execute_authorized_taskflow_effect_async",
+    "driver:ProviderEffectTaskFlowDriver",
+    "provider:ProviderEffectAdapter",
+    "host:AgentdAutomationQueue::enqueue",
+    "runtime:main"
+   ],
+   "conclusion": "Authorized dispatch, durable attempts and lookup ports exist. No HCSN production adapter/registration or real HCSN production trust configuration is supplied. Agentd queue admission is not a training-process dispatcher; runtime reports effect dispatch unconfigured. This is next-layer integration, not merely a missing registration entry or reason to rewrite the framework.",
+   "remaining": "Host must bind durable operation/job identity, exact payload, provider-owned lookup, unknown-outcome recovery, trusted terminal observation and real final-use/artifact authority. Output-directory reservation alone is insufficient."
+  }
+ ],
+ "retry_caveat": "outbox:validate_step_node checks existence/nonterminal kind, not attempt <= node.max_attempts; common attempt cap is 1000000. max_attempts=1 alone cannot prove no duplicate training budget.",
+ "documentation_fixes_verified": [
+  "Control row: one final clock checkpoint per completed coarse block; unqualified at-most-once wording removed.",
+  "Entry: standalone worker CLI entry; no production-runtime implication.",
+  "Existing authorized driver/lookup ports acknowledged. Pure clock commit creates metadata; host owns durable fencing, job identity, lookup and persistence."
+ ],
+ "decision": "README accurately scopes an opt-in A engineering bridge, candidate-only native publication and remaining production/B/science gates. No new test evidence or production activation is asserted."
+}

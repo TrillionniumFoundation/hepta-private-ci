@@ -1,0 +1,28 @@
+{
+  "status": "failed_at_stage_02_pr",
+  "job_id": "1a1bb188227-13c47-99",
+  "exit_code": 1,
+  "timed_out": false,
+  "finished_unix_ms": 1794140533773,
+  "verified_stage_count": 1,
+  "stage_1": {
+    "pr": 5360,
+    "head": "6f348b68a93fe74d0dd01f5836d503b225a4676b",
+    "tree": "01dc63b0727283a50ea3c3960bce6fd86feb125f"
+  },
+  "stage_2": {
+    "head": "62323b65b8b1423aec439039c69112883546e859",
+    "tree": "68a5b5189289f5920596503a9cc57fb3b82ebf28",
+    "parent": "6f348b68a93fe74d0dd01f5836d503b225a4676b",
+    "ref_created": true,
+    "pr_verified": false
+  },
+  "failed_operation": "POST repos/TrillionniumFoundation/hepta-private-ci/pulls",
+  "error": "dial tcp 140.82.113.5:443: i/o timeout",
+  "pr_creation_replayed": false,
+  "complete_publication_receipt_observed": false,
+  "all_63_changed_files_final_readback_completed": false,
+  "stage_02_pr_uncertain_sha256": "bdcc7ed16401752acfe39fbe6908d0e24951f97da1b27c7c0aafd5c91597f9fa",
+  "monitoring_note": "Synchronous status/read MCP timed out; supported background read operations recovered original native SDK payloads, verified by their SHA256 and stream bytes_hex.",
+  "optional_commit_response_public_noreply_email": "present; original retained, excluded from requested transport publication map unless explicitly reviewed"
+}

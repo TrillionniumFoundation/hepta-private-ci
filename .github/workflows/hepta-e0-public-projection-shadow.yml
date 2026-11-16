@@ -54,7 +54,7 @@ jobs:
       - name: Execute real pinned CPU pretrained Encoder through Q24 projection
         run: |
           set -euo pipefail
-          OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python experiment/tools/hepta-neuron-experiments/public_e0_shadow.py --hf-checkout "$GITHUB_WORKSPACE/hf" --projection-checkout "$GITHUB_WORKSPACE/projection" --output "$RUNNER_TEMP/e0-public-shadow"
+          OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python experiment/tools/hepta-neuron-experiments/public_e0_shadow.py --hf-checkout "$GITHUB_WORKSPACE/hf" --projection-checkout "$GITHUB_WORKSPACE/projection" --feature-normalizer unit-l2-f32-v1 --output "$RUNNER_TEMP/e0-public-shadow"
       - name: Retain observed results and failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

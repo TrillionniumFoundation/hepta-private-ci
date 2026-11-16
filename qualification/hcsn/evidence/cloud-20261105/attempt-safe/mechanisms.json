@@ -1,0 +1,379 @@
+{
+  "schema": "hcsn-population-mechanisms-v1",
+  "status": "passed",
+  "scope": "deterministic population-law finite-horizon probes; no trained-model quality claim",
+  "source_files_sha256": {
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "config": {
+    "bins": 64,
+    "x_max": 2.5,
+    "dt": 0.02,
+    "sigma": 0.15,
+    "rest_margin": 0.8,
+    "reset_margin": 0.8,
+    "leak": 3.0,
+    "base_drift": 0.0,
+    "refractory": 0.24,
+    "recovery_tau": 0.6,
+    "recovery_strength": 0.2
+  },
+  "effective_refractory": 0.24,
+  "resting": {
+    "duration": 1.0,
+    "maximum_rate": 6.270541037352019e-29,
+    "noise_is_nonzero": true
+  },
+  "repeated_pulses": {
+    "peak_rates": [
+      11.6797766354611,
+      11.684483044108834
+    ],
+    "relative_peak_difference": 0.0004029536518229023,
+    "late_rate_maximum": 6.419135524818913e-29,
+    "final_recovery": 0.0010643779251735554
+  },
+  "refractory": {
+    "steps": 12,
+    "maximum_rate_before_release": 0.0,
+    "timing": "event at interval n end; release at n+m end; next possible flux in interval n+m+1"
+  },
+  "sustained": {
+    "duration": 12.0,
+    "last_window_mean_rate": 1.6461315139199555,
+    "last_window_peak_to_peak": 0.4984381003547178,
+    "without_recovery_mean_rate": 1.756036431559156,
+    "without_refractory_mean_rate": 2.6064838201055225
+  },
+  "coupling": {
+    "strength": 0.08,
+    "maximum_rate": 9.099693662395495,
+    "tail_mean_rate": [
+      1.7748515838117092,
+      1.7707379568535457
+    ],
+    "uncoupled_tail_mean_rate": [
+      1.646131513919955,
+      1.6566903535489832
+    ],
+    "transient_rate_correlation": 0.04336867609113706,
+    "interpretation": "legacy single-strength homogeneous probe; heterogeneous lagged correlations are reported in coupling_scan"
+  },
+  "coupling_scan": {
+    "status": "observational",
+    "seed": 20261105,
+    "steps": 800,
+    "dt": 0.02,
+    "duration": 16.0,
+    "tail_steps": 400,
+    "tail_time_interval": [
+      8.0,
+      16.0
+    ],
+    "tail_time_convention": "rates are interval averages; tail covers (start, end]",
+    "max_lag_steps": 50,
+    "max_lag_time": 1.0,
+    "lag_convention": "positive k compares rate_0[t] with rate_1[t+k]; unit 0 leads unit 1",
+    "initial_condition": {
+      "active": "linear centre deposition at each unit's rest_margin",
+      "refractory_mass": [
+        0.0,
+        0.0
+      ],
+      "recovery": [
+        0.0,
+        0.0
+      ],
+      "escaped_mass": [
+        0.0,
+        0.0
+      ]
+    },
+    "unit_configs": [
+      {
+        "bins": 64,
+        "x_max": 2.5,
+        "dt": 0.02,
+        "sigma": 0.15,
+        "rest_margin": 0.8,
+        "reset_margin": 0.8,
+        "leak": 3.0,
+        "base_drift": 0.0,
+        "refractory": 0.24,
+        "recovery_tau": 0.6,
+        "recovery_strength": 0.2
+      },
+      {
+        "bins": 64,
+        "x_max": 2.5,
+        "dt": 0.02,
+        "sigma": 0.1725,
+        "rest_margin": 0.8800000000000001,
+        "reset_margin": 0.8800000000000001,
+        "leak": 3.0,
+        "base_drift": 0.0,
+        "refractory": 0.24,
+        "recovery_tau": 0.6,
+        "recovery_strength": 0.2
+      }
+    ],
+    "tonic_drives": [
+      3.8,
+      4.0
+    ],
+    "drive_perturbation": {
+      "distribution": "independent Gaussian draws across units and steps",
+      "standard_deviation": 0.04,
+      "same_draws_across_strengths": true,
+      "unit_1_zero_drive_initial_steps": 20,
+      "drive_sha256": "3b6e41acb8902f31112e77983d3a3b81da19b4c8b19dfccab879947c3646242d"
+    },
+    "coupling_rule": "drive_i += strength * rate_other from the preceding step",
+    "finite_rate_cap_from_one_event_per_step": 50.0,
+    "records": [
+      {
+        "strength": 0.0,
+        "all_finite": true,
+        "numerically_valid": true,
+        "maximum_absolute_mass_error": 7.771561172376096e-15,
+        "maximum_escaped_mass": 1.2245028209148776e-109,
+        "maximum_rate_entire_run": [
+          9.136221359348497,
+          7.290009926135017
+        ],
+        "tail": {
+          "samples": 400,
+          "all_finite": true,
+          "std_ddof": 0,
+          "mean_rate": [
+            1.6655948213907756,
+            1.5982917524005902
+          ],
+          "std_rate": [
+            0.1724356220635801,
+            0.10923499586373706
+          ],
+          "peak_rate": [
+            2.184488246552931,
+            1.961421241190469
+          ],
+          "peak_to_peak_rate": [
+            1.0327670611754467,
+            0.6784955382340767
+          ],
+          "near_constant_std_threshold": [
+            2.1845882465529306e-06,
+            1.9615212411904685e-06
+          ],
+          "zero_lag_correlation": -0.26793923518191304,
+          "zero_lag_missing_reason": null,
+          "max_cross_correlation": 0.7858209706910663,
+          "max_cross_correlation_lag_steps": 41,
+          "max_cross_correlation_lag_time": 0.8200000000000001,
+          "max_cross_correlation_overlap": 359,
+          "max_absolute_cross_correlation": 0.7858209706910663,
+          "max_absolute_cross_correlation_lag_steps": 41,
+          "cross_correlation_missing_reason": null
+        },
+        "rate_trace_sha256": "e46b8a92f6f2fc045bc881011eceb3d97b7f1956466698a382033e68658340bc"
+      },
+      {
+        "strength": 0.08,
+        "all_finite": true,
+        "numerically_valid": true,
+        "maximum_absolute_mass_error": 7.549516567451064e-15,
+        "maximum_escaped_mass": 8.089302977792613e-118,
+        "maximum_rate_entire_run": [
+          9.136221359348497,
+          7.263197711168736
+        ],
+        "tail": {
+          "samples": 400,
+          "all_finite": true,
+          "std_ddof": 0,
+          "mean_rate": [
+            1.6941808898580006,
+            1.639014933744747
+          ],
+          "std_rate": [
+            0.723401082862061,
+            0.6479979280845038
+          ],
+          "peak_rate": [
+            3.546624468922666,
+            3.3094168049945365
+          ],
+          "peak_to_peak_rate": [
+            3.0673453397429555,
+            2.714990520996961
+          ],
+          "near_constant_std_threshold": [
+            3.5467244689226655e-06,
+            3.3095168049945363e-06
+          ],
+          "zero_lag_correlation": 0.6012019544094064,
+          "zero_lag_missing_reason": null,
+          "max_cross_correlation": 0.973116525132256,
+          "max_cross_correlation_lag_steps": 4,
+          "max_cross_correlation_lag_time": 0.08,
+          "max_cross_correlation_overlap": 396,
+          "max_absolute_cross_correlation": 0.973116525132256,
+          "max_absolute_cross_correlation_lag_steps": 4,
+          "cross_correlation_missing_reason": null
+        },
+        "rate_trace_sha256": "c8715886346f60fb8712e847408337766dace0910d1aef6514e202c9e58ca848"
+      },
+      {
+        "strength": 0.3,
+        "all_finite": true,
+        "numerically_valid": true,
+        "maximum_absolute_mass_error": 9.547918011776346e-15,
+        "maximum_escaped_mass": 3.3667155248834374e-125,
+        "maximum_rate_entire_run": [
+          21.047174161841305,
+          23.367462503598222
+        ],
+        "tail": {
+          "samples": 400,
+          "all_finite": true,
+          "std_ddof": 0,
+          "mean_rate": [
+            1.820893714629113,
+            1.834453526102497
+          ],
+          "std_rate": [
+            4.589127679230244,
+            4.9947638435846295
+          ],
+          "peak_rate": [
+            21.047174161841305,
+            23.081856554702
+          ],
+          "peak_to_peak_rate": [
+            21.046992653140972,
+            23.08183848316903
+          ],
+          "near_constant_std_threshold": [
+            2.1047274161841304e-05,
+            2.3081956554702e-05
+          ],
+          "zero_lag_correlation": 0.9844900260982927,
+          "zero_lag_missing_reason": null,
+          "max_cross_correlation": 0.9939407632537194,
+          "max_cross_correlation_lag_steps": -28,
+          "max_cross_correlation_lag_time": -0.56,
+          "max_cross_correlation_overlap": 372,
+          "max_absolute_cross_correlation": 0.9939407632537194,
+          "max_absolute_cross_correlation_lag_steps": -28,
+          "cross_correlation_missing_reason": null
+        },
+        "rate_trace_sha256": "5c903c08e5e7a977670839f0cc111f2e432b66e79931c49b78cd136f153387d9"
+      },
+      {
+        "strength": 0.8,
+        "all_finite": true,
+        "numerically_valid": true,
+        "maximum_absolute_mass_error": 7.438494264988549e-15,
+        "maximum_escaped_mass": 4.700812999495173e-128,
+        "maximum_rate_entire_run": [
+          35.060252504289316,
+          36.7954439550723
+        ],
+        "tail": {
+          "samples": 400,
+          "all_finite": true,
+          "std_ddof": 0,
+          "mean_rate": [
+            1.7500011230355506,
+            1.750000017997474
+          ],
+          "std_rate": [
+            6.046442892740829,
+            6.292306679687422
+          ],
+          "peak_rate": [
+            34.814707712403845,
+            36.7954439550723
+          ],
+          "peak_to_peak_rate": [
+            34.81470770303664,
+            36.79544395321926
+          ],
+          "near_constant_std_threshold": [
+            3.481480771240385e-05,
+            3.67955439550723e-05
+          ],
+          "zero_lag_correlation": 0.9978760519629862,
+          "zero_lag_missing_reason": null,
+          "max_cross_correlation": 0.9978760519629862,
+          "max_cross_correlation_lag_steps": 0,
+          "max_cross_correlation_lag_time": 0.0,
+          "max_cross_correlation_overlap": 400,
+          "max_absolute_cross_correlation": 0.9978760519629862,
+          "max_absolute_cross_correlation_lag_steps": 0,
+          "cross_correlation_missing_reason": null
+        },
+        "rate_trace_sha256": "0edec70e4a569f791bed7dca044623058ea63526abe287df5e465d37771096bc"
+      }
+    ],
+    "interpretation": "Descriptive finite-horizon correlations and amplitude observations, not a test of global stability or a phase transition. A finite rate is also constrained by the time grid and does not rule out harmful synchrony. Correlations describe population-rate cofluctuation, not paired microscopic spike coincidence. Maximum cross correlation selects over lags and can select periodic aliases; the maximizing lag is not a causal conduction delay. No significance claim is attached, and synchrony is not a pass/fail gate."
+  },
+  "mass": {
+    "maximum_absolute_conservation_error": 9.547918011776346e-15,
+    "maximum_escaped_mass": 1.2245028209148776e-109
+  },
+  "joint_grid_time_refinement": [
+    {
+      "bins": 48,
+      "dt": 0.04,
+      "dx_squared_over_dt": 0.062499999999999986,
+      "absorbed_mass": 0.5119737836728758,
+      "exact_absorbed_mass": 0.5061172417311559,
+      "absolute_error": 0.005856541941719917
+    },
+    {
+      "bins": 96,
+      "dt": 0.02,
+      "dx_squared_over_dt": 0.031249999999999993,
+      "absorbed_mass": 0.509095404867857,
+      "exact_absorbed_mass": 0.5061172417311559,
+      "absolute_error": 0.002978163136701073
+    },
+    {
+      "bins": 192,
+      "dt": 0.01,
+      "dx_squared_over_dt": 0.015624999999999997,
+      "absorbed_mass": 0.507620769732199,
+      "exact_absorbed_mass": 0.5061172417311559,
+      "absolute_error": 0.0015035280010431418
+    }
+  ],
+  "refinement_scope": "constant Brownian drift, refractory longer than observation; independent first-event CDF target",
+  "limits": [
+    "Fixed boundary only; time-varying drift is frozen during each step.",
+    "Refractory length is rounded up to a multiple of dt; reset occurs at step end.",
+    "Escaped upper-grid mass stays in a cemetery account; excessive escape invalidates a run.",
+    "Coupling correlations are descriptive finite-window statistics, not a no-synchrony guarantee or bifurcation test.",
+    "A finite-horizon pass is not proof of global stability, phase transition, bifurcation or task superiority."
+  ],
+  "checks": {
+    "quiet_rate_below_1e-8": true,
+    "pulse_peak_above_1": true,
+    "repeat_peak_relative_error_below_1_percent": true,
+    "late_quiet_rate_below_1e-8": true,
+    "no_event_before_refractory_release": true,
+    "sustained_finite_nonzero_rate": true,
+    "mass_error_below_1e-10": true,
+    "tested_coupling_finite_and_mass_conserving": true,
+    "coupling_scan_numerically_valid": true,
+    "joint_refinement_error_decreases": true
+  },
+  "elapsed_seconds": 8.65062818499996
+}

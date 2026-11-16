@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.learn.final-maintenance-source-binding.v1",
+  "status": "PREPARED_ONLY; no command has been dispatched by this preparation",
+  "pre_maintenance_source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "worktree": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "required_clean": true
+  },
+  "original_static_contract": {
+    "sha": "c8de8bd8a54552972d73d96be087d9e909c322dc",
+    "bytes": 7168,
+    "sha256": "141ef656bbc47bcea5fd274bfcae78efec57646dc8b4b6435e364e8f62f62541"
+  },
+  "original_checklist": {
+    "sha": "a1c46fa5c0280fecae492b44f7d60803d5d1435e",
+    "bytes": 3025,
+    "sha256": "547f0ba4499577ca60a1573cee77ab6585b547211f2363131a2103a3ca6c8a69"
+  },
+  "semantic_pins": [
+    {
+      "path": "AGENTS.md",
+      "blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "lines": [
+        62,
+        64,
+        66,
+        70
+      ],
+      "meaning": "Wait patiently for Rust commands; scoped fix and final fmt run from codex-rs. Do not kill Rust by PID. Do not re-run tests after fix or fmt."
+    },
+    {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "bytes": 7838,
+      "meaning": "working-directory is codex-rs; fix delegates to cargo clippy --fix --tests --allow-dirty; fmt delegates to python3 ../scripts/format.py on Unix."
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "bytes": 2030,
+      "meaning": "Unix adapter replaces the variadic argument placeholder with quoted positional arguments and execs sh; each supplied option/package remains an argument."
+    },
+    {
+      "path": "scripts/format.py",
+      "blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "bytes": 16599,
+      "functions": [
+        "changed_paths",
+        "rust_file_command",
+        "scoped_formatter_groups",
+        "main"
+      ],
+      "meaning": "--base resolves the exact commit and compares its tree to the current working tree, plus untracked nonignored files. Without --base, the revision is HEAD and already committed changes disappear from the scope. This is not a merge-base or three-dot comparison. Existing language/config-scope selection remains unchanged."
+    }
+  ],
+  "semantic_pin_check": {
+    "fixed_source_root_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "AGENTS_and_justfile_match": true,
+    "scripts_tree": "7d27a1e78117e64ed4d59c41394abb0b9b7f10c5",
+    "entire_scripts_tree_equal_reviewed_a671": true,
+    "execution_must_reread_exact_pins": true
+  },
+  "exact_baseline": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+  "prerequisite_validation": {
+    "requirement": "Finish all Root-required validation before maintenance, preserving each actual source-bound receipt. This binding creates no test request.",
+    "source_suite": {
+      "expected_methods": 443,
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "actual_terminal_receipt": null,
+      "status": "not observed by this preparation"
+    },
+    "default_native": {
+      "expected_cases": 201,
+      "expected_groups": 43,
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "actual_terminal_receipt": null,
+      "status": "not observed by this preparation"
+    },
+    "full_caller": {
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "actual_terminal_receipt": null,
+      "status": "not observed by this preparation"
+    },
+    "original_Root29": {
+      "expected_cases": 29,
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "actual_terminal_receipt": null,
+      "status": "not observed by this preparation"
+    },
+    "gate": "Root must inspect actual completed outcomes and explicitly freeze execution only after the required validation is complete; no pass or permission is inferred from prepared scripts."
+  },
+  "commands": [
+    {
+      "ordinal": 1,
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1/codex-rs",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      "expanded_recipe_prefix": [
+        "cargo",
+        "clippy",
+        "--fix",
+        "--tests",
+        "--allow-dirty"
+      ],
+      "role": "Scoped linter repairs; --tests selects test targets for Clippy, not a new native test run."
+    },
+    {
+      "ordinal": 2,
+      "cwd": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1/codex-rs",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "be8adcbb5e9925f72e05330b8fb30509cba4544b"
+      ],
+      "role": "Final formatting includes committed PR changes since the exact fixed baseline, as well as any real local edits from fix."
+    }
+  ],
+  "execution_recording": {
+    "contract_field": "c8de8bd8a54552972d73d96be087d9e909c322dc:recording (unchanged in full)",
+    "evidence_directory": null,
+    "actual_request_key": null,
+    "actual_outcomes": {
+      "fix": null,
+      "fmt": null
+    },
+    "post_maintenance_source": {
+      "sha": null,
+      "tree": null,
+      "working_tree_clean": null
+    },
+    "required": "Before fix, after actual fix terminal and before fmt, and after fmt, record actual HEAD, HEAD tree and porcelain bytes. Preserve complete actual changed-file postimages, original pins, modes, sizes, SHA256 and Git blob IDs, plus actual command stdout/stderr and direct terminal exits.",
+    "dirty_tree_rule": "A dirty working tree must not be described as its unchanged HEAD tree. Only actual reviewed postimage publication can establish a new source SHA/tree.",
+    "unknown_execution": "Do not proceed, replay or claim success while a command's actual terminal result is unknown.",
+    "scope": "No additional environment, budget, dependency, authority, process signal or alternate recipe is introduced."
+  },
+  "provenance": {
+    "prior_validation_remains_bound_to": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "prior_passes_transferred_to_modified_source": false,
+    "tests_invoked_or_scheduled_after_fix_or_fmt": 0,
+    "unchanged_source_requires_exact_bytes_and_tree_equality": true,
+    "actual_runs_by_preparation": 0,
+    "ordinary_acceptance": 0
+  }
+}

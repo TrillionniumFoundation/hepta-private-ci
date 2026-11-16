@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "-v",
+    "test_model_process.ModelProcessTests.test_child_receives_runtime_controls_without_parent_credentials",
+    "test_model_process.ModelProcessTests.test_timeout_terminates_descendant_and_retains_output_without_pipe_wait",
+    "test_model_process.ModelProcessTests.test_normal_child_exit_also_terminates_remaining_descendant",
+    "test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory",
+    "test_model_process.ModelProcessTests.test_wrong_parent_cannot_reach_target_script",
+    "test_model_process.ModelProcessTests.test_large_stdin_and_escaped_reader_do_not_delay_timeout"
+  ],
+  "cwd": "scripts/memory_cell_network",
+  "exit": 0,
+  "seconds": 1.3921767070005444,
+  "tests": 6,
+  "source_sha256": {
+    "scripts/memory_cell_network/model_process.py": "e25e1cd3f09e0fbadfb187d5739134410811d33c04eb8fe4c6ceabee9c9d1687",
+    "scripts/memory_cell_network/test_model_process.py": "5f8205734afc47e33ff2048d05fa00b8657ce9e22fc190cc7ad4b8dc5b975ca6"
+  },
+  "native_model_executed": false
+}

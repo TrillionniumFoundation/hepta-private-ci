@@ -1,0 +1,90 @@
+{
+  "actual_candidate_readonly_preflight": {
+    "exit": 2,
+    "manifest_published": false,
+    "reason": "POSTERIOR-POLICY.json absent"
+  },
+  "green": {
+    "errors": 0,
+    "failures": 0,
+    "process_exit": 0,
+    "skipped": 0,
+    "tests": 24
+  },
+  "green_initial_legacy_fixture": {
+    "errors": 1,
+    "process_exit": 1,
+    "tests": 24
+  },
+  "green_initial_misnamed_module": {
+    "errors": 1,
+    "process_exit": 1,
+    "tests": 21
+  },
+  "logs": {
+    "ACTUAL-PREFLIGHT.native.log": {
+      "bytes": 265,
+      "sha256": "6bb9016b835cda92157deedc1aa82ad436bee89a219170c0fda2f9f604f3fc53"
+    },
+    "GREEN-INITIAL-MISNAMED-MODULE.native.log": {
+      "bytes": 3924,
+      "sha256": "a320a8d2becf2216d0327fa9c7d4f525d25c5930d93e09a705623a2749abfd80"
+    },
+    "GREEN-INITIAL-SOURCE-CLOSURE-FIXTURE.native.log": {
+      "bytes": 5343,
+      "sha256": "15469078276a925b01a31cf1ebc9dcfeb5f960b4b3010c8e246a71557c41b244"
+    },
+    "GREEN.native.log": {
+      "bytes": 3931,
+      "sha256": "76d32d9407f1fc78ace09b0b9dc93936a0b7d0a06fb5708d84236117b43823a4"
+    },
+    "RED.native.log": {
+      "bytes": 7958,
+      "sha256": "e22371865c65037db8df8411dc6423743415a0fe05f572fa0718009d0056dbcd"
+    }
+  },
+  "native_environment": {
+    "host": "heptaruntime desktop",
+    "interpreter": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128"
+  },
+  "new_ci_not_automatically_inherited": true,
+  "no_original_job_restarted": true,
+  "no_training_performed": true,
+  "original_controller_result_exists": false,
+  "original_expected_fits": 6,
+  "original_independently_replayed_fits": 0,
+  "original_job_state": "finalizing/outcome unknown/terminal_publication_confirmed false",
+  "original_journal_sha256": "1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f",
+  "original_producer_results": 4,
+  "original_training_job": "1a1c74f3308-be2a-75",
+  "original_zero_byte_interrupted": 2,
+  "red": {
+    "errors": 0,
+    "failures": 8,
+    "process_exit": 1,
+    "tests": 14
+  },
+  "schema": "hcsn-c2-strict-prospective-manifest-admission-evidence-v1",
+  "source_blobs": {
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py": {
+      "bytes": 31003,
+      "git_blob_sha": "278550476b8639065a2408478b2fcec4d70b9957",
+      "sha256": "7fc1d293189da93d9bef703bdabf6079dbfac0a84a906bb17dd990f4becfaa91"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py": {
+      "bytes": 6820,
+      "git_blob_sha": "2067de64e4ce68b8d826b66da455316137fd68ac",
+      "sha256": "099ef9db99e89e60f152d8cff09e946e45ad906a05e7c09a4be32bcb578b73e1"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py": {
+      "bytes": 3006,
+      "git_blob_sha": "51eba7a98b5515ee22b576d3f3585df2b010c6f4",
+      "sha256": "2c52cceff0d466bc9835b51c664dd2e7c94ec28c27c088262138b21ea659556b"
+    }
+  },
+  "source_parent": "811690416e05084c208f3f312c50d860caf867dc",
+  "source_parent_pr": 6001,
+  "status": "HOLD_NO_GO"
+}

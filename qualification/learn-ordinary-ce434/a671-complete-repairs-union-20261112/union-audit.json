@@ -1,0 +1,302 @@
+{
+  "schema": "hepta.learn.complete-a671-repairs-true-union.v1",
+  "status": "prepared-source-only-no-validation-run",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "actual_base": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9"
+  },
+  "ordered_parents": [
+    {
+      "commit": "58bb796c285e47a049423390a3bdd44607e6c44b",
+      "tree": "46d1beee7755e7e000fa709ab90e1ffd3174b6a6",
+      "delta": [
+        {
+          "path": "CALLERS.toml",
+          "blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+          "bytes": 1619732,
+          "sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+          "blob": "a66b07c2f084692e51896dde2f18daf2f1fc4af7",
+          "bytes": 26029,
+          "sha256": "d4d6262729863bae4ea9cbbedae341826e0f1734db9a33e2a7eb5e9bf1a6dade"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+          "blob": "2be5923507a86c65555ce525b273d05a6d3243a2",
+          "bytes": 15086,
+          "sha256": "761c4ee65809f2c36fa8da6dd62d86b98cf2ddbdc39a992d7691ae1b4291184b"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/a671-provider-objective-preimage-20261112/source-audit.json",
+          "blob": "7af224d90dcec1ff31b82ffdbc5e4deecfbb8b03",
+          "bytes": 12959,
+          "sha256": "786c5b7e2ac810c5fc45859543a540dd9a22810749fd63f661d18d9d8f765f14"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/a671-repairs-union-20261112/authority-peer-review.json",
+          "blob": "cd160cdd03dbc3173a9d33d94976feb3d0ad685f",
+          "bytes": 7099,
+          "sha256": "9ac3fdfbf7042818c6245df108c04b1d95b67f1cb5b480b1755befc38555696f"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/a671-repairs-union-20261112/provider-peer-review.json",
+          "blob": "7775ebbac8fb94118e78cc94c49475e4a3d18d74",
+          "bytes": 3551,
+          "sha256": "8100c72a462b6a3b1ddd70dcc9322e2bc6c05c974c28c837138428f1eff7ce3f"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/a671-repairs-union-20261112/union-audit.json",
+          "blob": "ca86ce6950ab5065d8b681284c3048710810e93c",
+          "bytes": 8053,
+          "sha256": "3d977e1d5cde7b04a317610cdfd07e435d5c4828c8548fe42d7067f31f424256"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/authority-metadata-restoration-20261112/repair-audit.json",
+          "blob": "6ccee3a7f4342b2a136ed6bf5597122ee49c0add",
+          "bytes": 15455,
+          "sha256": "3ecae5d61303206f6448b74f380feaea98d4b6d3ec4f9d85bcd7f88c6af09c3d"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/authority-metadata-restoration-20261112/repair.patch",
+          "blob": "c824329e6245ba853ea948f0128c5ee27207415d",
+          "bytes": 392,
+          "sha256": "b9525fca4a46befea1f927338de9f98a197ab8863626d3c3129877429a7e390f"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/candidate-expiry-boundary-20261112/audit.json",
+          "blob": "8d2718304900c57edbd0ee15d1127e6317936600",
+          "bytes": 6954,
+          "sha256": "603f30fff1e56154027d27416a724d82cdf6c3f50544343ac8b369fd5700f15b"
+        }
+      ]
+    },
+    {
+      "commit": "6e7f8bf879afb1b6b3de88089d7103c252c68a5c",
+      "tree": "5a91c32026674dc2536bbe43f5e4e0cc9a9086e1",
+      "delta": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+          "blob": "4ca274451d2b6b778c186f4402576ec256d590af",
+          "status": "modified",
+          "bytes": 6638,
+          "sha256": "5b979a5a2b7c0e544212310396188db0fdf117c457093853ed9429bec004bfe5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+          "blob": "a170dd97b062dbc0838afc92c1ac93042ae3b64d",
+          "status": "modified",
+          "bytes": 8977,
+          "sha256": "8afca9f926450aa2850d2fe4b715be9237cee0df79ea6fb6d0997f1d17f5418b"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/original-frame-analysis.json",
+          "blob": "8d091331a6aa2b25fc5dfe08e3d78ba249e732f5",
+          "status": "added",
+          "bytes": 20860,
+          "sha256": "c291918724ea3c107049303ca57887a665f0d3ffdb2943460a9124ed2e9d441e"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/repair-audit.json",
+          "blob": "fd1a37c96a34f1a355cfd0bcf9fa113d4577dd09",
+          "status": "added",
+          "bytes": 32270,
+          "sha256": "2445dedb614faa24a1fad53a7ad629805b246f598334d51269cb7fa63f9fba88"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/repair.patch",
+          "blob": "e0571e476d4adb1b640eb0271a5290bcdcbd4d21",
+          "status": "added",
+          "bytes": 8683,
+          "sha256": "81db68c6a527bdeafced5990df0259666712df98711423b2d4bae8e15a4829a4"
+        }
+      ]
+    }
+  ],
+  "construction": {
+    "base_tree": "46d1beee7755e7e000fa709ab90e1ffd3174b6a6",
+    "overlapping_child_paths": [],
+    "retained_left_complete_blobs": true,
+    "added_right_complete_blobs": true,
+    "no_manual_source_resolution": true,
+    "no_complete_manifest_record_rewriting": true
+  },
+  "preserved_pins": [
+    {
+      "path": "CALLERS.toml",
+      "blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+      "bytes": 1619732,
+      "sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e"
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "bytes": 27362,
+      "sha256": "917566e873e93a169886e32f601ac581248e74523ebb0546ddca07b242dd847d"
+    },
+    {
+      "path": "AGENTS.md",
+      "blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+      "bytes": 34666,
+      "sha256": "c9dadbd57af416d9bd86d5d1b35f4d3c00651784a8331fbe9b3b4c616c214c08"
+    }
+  ],
+  "inventory": {
+    "boundaries": 736,
+    "protected_complete_records": 506,
+    "source_modules": 62,
+    "source_methods": 443,
+    "native_groups": 43,
+    "native_cases": 201,
+    "root_uid_cases": 29,
+    "all_original_423_source_and_190_native_cases_retained": true,
+    "whole_tracked_rust": 6777,
+    "manifest_source_roots_rust": 6655,
+    "source_roots": [
+      "codex-rs"
+    ],
+    "source_id_list_sha256": "c4da0f7a675adca571123f72136c3dbf19bbb1793052131ab38065bf23e3c9b1",
+    "native_tuple_order_sha256": "c0aebfa9efe5251bfab7cbc17bb777bf862f25ebac9f66e6118cfda301f9ed85",
+    "no_inventory_or_QA_changes_in_either_delta": true,
+    "no_rust_path_add_remove_rename": true,
+    "scoped_path_list": {
+      "blob": "f4998431db2cede056ac45e2b8c2dc1926e71095",
+      "sha256": "c548ca0923e16e5664fe5981e054de218a0074db02a1c8214136218f828921b7",
+      "unchanged_from_a757_through_a671_and_union": "All intervening diffs modify existing .rs only. Neither repair parent adds, removes or renames Rust paths."
+    },
+    "whole_tracked_rust_paths_joined_lf_sha256": "6276bcaaddf33d57b27641282943d1a150b563a98bfe6aef9dbe56ce9c4551c4",
+    "whole_tracked_rust_paths_count": 6777
+  },
+  "source_delta": {
+    "test_only_rust_paths": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+        "blob": "a66b07c2f084692e51896dde2f18daf2f1fc4af7"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "blob": "2be5923507a86c65555ce525b273d05a6d3243a2"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+        "blob": "4ca274451d2b6b778c186f4402576ec256d590af"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+        "blob": "a170dd97b062dbc0838afc92c1ac93042ae3b64d"
+      }
+    ],
+    "production_rust_changes": 0,
+    "manifest_change": "Only the exact original 179-byte authority footer restored by the left parent. Full 736/506 records remain unchanged.",
+    "new_or_removed_tests": 0
+  },
+  "stack_exact_replay": [
+    {
+      "file": "circuit_original_evaluation_panel_tests.rs",
+      "edits": 2,
+      "forward_full_bytes_equal": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "file": "circuit_original_evaluation_host_support_tests.rs",
+      "edits": 2,
+      "forward_full_bytes_equal": true,
+      "reverse_full_bytes_equal": true
+    }
+  ],
+  "actual_prior_results": {
+    "source": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "evidence_commit": "09408731efbdad70742a2ac9679f23ad4650042e",
+    "review_blob": "cce52f1ce24729da158e778a1dc8f3980e6b39bc",
+    "source_methods": 443,
+    "source_passed": 406,
+    "source_errors": 37,
+    "source_failures": 0,
+    "source_skipped": 0,
+    "native_cases": 201,
+    "native_passed": 184,
+    "native_failed": 17,
+    "native_timeout": 0,
+    "native_skipped": 0,
+    "new_metadata_cases_passed": 11,
+    "applicability": "These are actual results for a671 only. No result is transferred to this union or used to claim that any repair passes."
+  },
+  "validation": {
+    "Git_API_and_pure_V8_only": true,
+    "H_called": false,
+    "Python_or_Rust_executed": false,
+    "formatter_executed": false,
+    "source_QA_executed": false,
+    "native_executed": false,
+    "fullcaller_executed": false,
+    "new_budget_or_authority": false,
+    "ordinary_acceptance": 0
+  },
+  "limitations": [
+    "Stack carrier repair has not been compiled or measured after the changes; Box allocation can still require temporaries and the original gate must verify behavior.",
+    "Provider preimage and Candidate expiry fixes preserve the original mechanism and case inventory but have not been rerun on this union.",
+    "All prior failed evidence remains explicitly scoped to a671. Actual ordinary B authority, Qualified E-to-Version effects and ordinary acceptance remain unproved."
+  ],
+  "canonical_parent_checks": [
+    {
+      "which": "left",
+      "sha": "58bb796c285e47a049423390a3bdd44607e6c44b",
+      "match": {
+        "authorZone": "-0500",
+        "committerZone": "-0500",
+        "trailing_newline": 0
+      }
+    },
+    {
+      "which": "right",
+      "sha": "6e7f8bf879afb1b6b3de88089d7103c252c68a5c",
+      "match": {
+        "authorZone": "-0500",
+        "committerZone": "-0500",
+        "trailing_newline": 0
+      }
+    }
+  ],
+  "independent_reviews": [
+    {
+      "role": "Source peer",
+      "blob": "c07bbd2190172e7e38f6c635a3d9ee628b207175",
+      "bytes": 8359,
+      "sha256": "fd707493a0a72c822092d5b2e332ec205b2dcdb56ff14ecc56f7c498b475aeb5",
+      "status": "No blocking finding in the reviewed static scope; no compilation, H or new stack/pass claim"
+    },
+    {
+      "role": "Model targeted lint and canonical readback",
+      "blob": "a4dfe7df56bcfb60ff5cefab24e007afb1cfa64f",
+      "bytes": 4911,
+      "sha256": "bb25120621992ca0b016bd1d4c34ca5f2c443db1aa60acd870034b180cfffc85",
+      "status": "Static manual_async_fn check only; no lint execution or broader lint proof"
+    }
+  ]
+}

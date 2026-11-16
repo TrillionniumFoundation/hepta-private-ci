@@ -17,7 +17,13 @@ from time import perf_counter, process_time
 import numpy as np
 
 from .cached_preparation import PANELS, evaluate_cached_development
-from .crossed_design import canonical, decompose, design_cells, transform_inputs, validate_config
+from .crossed_design import (
+    canonical,
+    decompose,
+    design_cells,
+    transform_inputs,
+    validate_config,
+)
 from .crossed_training import _source
 from .crossed_training_fit import _write, model_digest
 from .models import Model, matched_hidden_dim
@@ -71,45 +77,99 @@ def gate(args):
     if not args.execution_receipt.is_file() or not (campaign / "RESULT.json").is_file():
         raise Incomplete("successful outer receipt and terminal RESULT are required")
     receipt = read(args.execution_receipt)
-    if receipt.get("status") != "EXITED" or type(receipt.get("exit_code")) is not int or receipt["exit_code"] != 0:
+    if (
+        receipt.get("status") != "EXITED"
+        or type(receipt.get("exit_code")) is not int
+        or receipt["exit_code"] != 0
+    ):
         raise Incomplete("outer process has not exited successfully")
     result = read(campaign / "RESULT.json")
     if result.get("status") != "COMPLETE":
         raise Incomplete("campaign is not COMPLETE; fit outcomes remain unopened")
-    if type(receipt.get("child_exit_code")) is not int or receipt["child_exit_code"] != 0:
+    if (
+        type(receipt.get("child_exit_code")) is not int
+        or receipt["child_exit_code"] != 0
+    ):
         raise Incomplete("training child has not exited successfully")
-    require(receipt.get("source_closure_unchanged") is True, "outer receipt observed changed source")
-    require(receipt.get("result_sha256") == digest(campaign / "RESULT.json"),
-            "terminal result bytes differ from outer receipt")
-    cfg, training, frozen = read(args.registered_config), read(args.training_freeze), read(args.replay_freeze)
-    attempt, started = read(campaign / "attempt.json"), read(campaign.parent / "EXECUTION_STARTED.json")
+    require(
+        receipt.get("source_closure_unchanged") is True,
+        "outer receipt observed changed source",
+    )
+    require(
+        receipt.get("result_sha256") == digest(campaign / "RESULT.json"),
+        "terminal result bytes differ from outer receipt",
+    )
+    cfg, training, frozen = (
+        read(args.registered_config),
+        read(args.training_freeze),
+        read(args.replay_freeze),
+    )
+    attempt, started = (
+        read(campaign / "attempt.json"),
+        read(campaign.parent / "EXECUTION_STARTED.json"),
+    )
     validate_config(cfg)
     config_hash = sha256(canonical(cfg).encode()).hexdigest()
     require(read(campaign / "config.json") == cfg, "executed configuration changed")
     for item in (training, frozen, attempt, started, receipt):
         require(item["config_sha256"] == config_hash, "configuration identity mismatch")
-    require(frozen["schema"] == "pred1-cached-replay-freeze-v1", "unsupported replay registration")
-    require(frozen["training_freeze_sha256"] == digest(args.training_freeze), "training freeze mismatch")
-    require(frozen["panels"] == {k: list(v) for k, v in PANELS.items()}, "registered horizon panels changed")
-    require(frozen["new_fits"] == 0 and frozen["outcomes_read_before_registration"] is False, "replay scope changed")
+    require(
+        frozen["schema"] == "pred1-cached-replay-freeze-v1",
+        "unsupported replay registration",
+    )
+    require(
+        frozen["training_freeze_sha256"] == digest(args.training_freeze),
+        "training freeze mismatch",
+    )
+    require(
+        frozen["panels"] == {k: list(v) for k, v in PANELS.items()},
+        "registered horizon panels changed",
+    )
+    require(
+        frozen["new_fits"] == 0
+        and frozen["outcomes_read_before_registration"] is False,
+        "replay scope changed",
+    )
     for item in (training, frozen, attempt, result):
         require(
-            item["confirmation_data_read"] is False and item["confirmation_samples_generated"] == 0,
+            item["confirmation_data_read"] is False
+            and item["confirmation_samples_generated"] == 0,
             "confirmation boundary changed",
         )
-    require(result["qualification"] == training["original_qualification"] == "HOLD_UNCHANGED", "qualification changed")
-    require(training["base_commit"] == cfg["base_commit"] == attempt["base_commit"], "base commit mismatch")
+    require(
+        result["qualification"]
+        == training["original_qualification"]
+        == "HOLD_UNCHANGED",
+        "qualification changed",
+    )
+    require(
+        training["base_commit"] == cfg["base_commit"] == attempt["base_commit"],
+        "base commit mismatch",
+    )
     for key in ("registration_commit", "execution_source_commit"):
-        require(receipt[key] == started[key] == frozen["training_" + key], "training publication identity mismatch")
+        require(
+            receipt[key] == started[key] == frozen["training_" + key],
+            "training publication identity mismatch",
+        )
     require(receipt["argv"] == started["argv"], "launch argv changed")
     argv = receipt["argv"]
-    require(Path(argv[argv.index("--output") + 1]).resolve() == campaign, "receipt belongs to another campaign")
-    require(digest(argv[argv.index("--config") + 1]) == config_hash, "launch configuration bytes changed")
+    require(
+        Path(argv[argv.index("--output") + 1]).resolve() == campaign,
+        "receipt belongs to another campaign",
+    )
+    require(
+        digest(argv[argv.index("--config") + 1]) == config_hash,
+        "launch configuration bytes changed",
+    )
     require(receipt["result_present"] is True, "outer process did not observe RESULT")
     require(set(receipt["logs"]) == {"stdout.log", "stderr.log"}, "outer logs missing")
     for name, metadata in receipt["logs"].items():
         path = campaign.parent / name
-        require(digest(path) == metadata["sha256"] and path.stat().st_size == metadata["bytes"], "outer log mismatch")
+        require(
+            digest(path) == metadata["sha256"]
+            and path.stat().st_size == metadata["bytes"],
+            "outer log mismatch",
+        )
     parse = datetime.fromisoformat
     require(
         parse(training["frozen_at_utc"])
@@ -118,20 +178,37 @@ def gate(args):
         <= parse(receipt["finished_at_utc"]),
         "invalid training chronology",
     )
-    require(parse(frozen["frozen_at_utc"]) <= datetime.now(timezone.utc), "replay registration is in the future")
+    require(
+        parse(frozen["frozen_at_utc"]) <= datetime.now(timezone.utc),
+        "replay registration is in the future",
+    )
     sources = source_hashes()
-    require(frozen["source_files"] == sources, "replay source changed after registration")
+    require(
+        frozen["source_files"] == sources, "replay source changed after registration"
+    )
     original = {
-        name: value for name, value in sources.items() if name not in ("cached_preparation.py", "cached_replay.py")
+        name: value
+        for name, value in sources.items()
+        if name not in ("cached_preparation.py", "cached_replay.py")
     }
     require(training["source_files"] == original, "training source manifest changed")
     for item in (attempt, started, receipt):
         require(item["source_sha256"] == original, "execution source identity mismatch")
-    require(receipt.get("source_sha256_after") == receipt.get("executed_source_sha256_after") == original,
-            "outer source readback differs from registered source")
+    require(
+        receipt.get("source_sha256_after")
+        == receipt.get("executed_source_sha256_after")
+        == original,
+        "outer source readback differs from registered source",
+    )
     for name, value in original.items():
-        require(digest(campaign / "source" / name) == value, "saved training source mismatch")
-    require(attempt["environment"]["numpy"] == np.__version__, "replay requires the training NumPy version")
+        require(
+            digest(campaign / "source" / name) == value,
+            "saved training source mismatch",
+        )
+    require(
+        attempt["environment"]["numpy"] == np.__version__,
+        "replay requires the training NumPy version",
+    )
     cells = design_cells(cfg)
     ids = {
         f"{v}-d{d}-i{i}-o{o}": dict(variant=v, data_seed=d, init_seed=i, order_seed=o)
@@ -152,10 +229,17 @@ def gate(args):
     )
     require(
         {p.name for p in (campaign / "fits").iterdir()}
-        == {name + suffix for name in ids for suffix in (".json", ".started.json", ".npz")},
+        == {
+            name + suffix
+            for name in ids
+            for suffix in (".json", ".started.json", ".npz")
+        },
         "fit files do not match exact grid",
     )
-    require(cfg["expanded_budget"] == 16 and cfg["expanded_deadline"] == 20, "expanded resource contract changed")
+    require(
+        cfg["expanded_budget"] == 16 and cfg["expanded_deadline"] == 20,
+        "expanded resource contract changed",
+    )
     return cfg, frozen, result, ids
 
 
@@ -165,25 +249,34 @@ def replay_checkpoint(campaign, name, identity, config, dev, hidden):
     directory = Path(campaign) / "fits"
     original = read(directory / (name + ".json"))
     require(
-        read(directory / (name + ".started.json")) == identity and {k: original[k] for k in identity} == identity,
+        read(directory / (name + ".started.json")) == identity
+        and {k: original[k] for k in identity} == identity,
         "fit identity mismatch",
     )
-    calls = math.ceil(config["train_episodes"] / config["batch_size"]) * config["epochs"]
+    calls = (
+        math.ceil(config["train_episodes"] / config["batch_size"]) * config["epochs"]
+    )
     require(
         original["status"] == "COMPLETE"
         and original["epochs_consumed"] == config["epochs"]
         and original["fit_step_calls_consumed"] == calls
-        and original["training_examples_consumed"] == config["epochs"] * config["train_episodes"],
+        and original["training_examples_consumed"]
+        == config["epochs"] * config["train_episodes"],
         "fit optimization budget mismatch",
     )
     checkpoint = directory / (name + ".npz")
     require(
-        original["checkpoint"] == checkpoint.name and original["checkpoint_sha256"] == digest(checkpoint),
+        original["checkpoint"] == checkpoint.name
+        and original["checkpoint_sha256"] == digest(checkpoint),
         "checkpoint byte identity mismatch",
     )
     model = Model.load(checkpoint)
     variant, seed = identity["variant"], identity["init_seed"]
-    kind = variant if variant in ("single_step", "gru", "diag_ssm", "dual_timescale") else "gru"
+    kind = (
+        variant
+        if variant in ("single_step", "gru", "diag_ssm", "dual_timescale")
+        else "gru"
+    )
     expected = Model(kind, INPUT_DIM, ACTION_DIM, 32, hidden[kind], seed)
     require(
         model.config == expected.config
@@ -194,7 +287,8 @@ def replay_checkpoint(campaign, name, identity, config, dev, hidden):
     require(
         model_digest(expected) == original["initial_parameter_sha256"]
         and model_digest(model) == original["selected_parameter_sha256"]
-        and model_digest(model, optimizer=True) == original["selected_optimizer_state_sha256"],
+        and model_digest(model, optimizer=True)
+        == original["selected_optimizer_state_sha256"],
         "checkpoint numerical identity mismatch",
     )
     require(
@@ -202,7 +296,10 @@ def replay_checkpoint(campaign, name, identity, config, dev, hidden):
         and 0 <= model.steps <= original["optimizer_steps_consumed"] <= calls,
         "checkpoint optimizer steps mismatch",
     )
-    validation = {"wall_seconds": perf_counter() - wall, "process_cpu_seconds": process_time() - cpu}
+    validation = {
+        "wall_seconds": perf_counter() - wall,
+        "process_cpu_seconds": process_time() - cpu,
+    }
     x, query, reset = transform_inputs(dev.x, dev.query, variant)
     visible = replace(dev, x=x, query=query)
     expanded = replace(
@@ -212,21 +309,34 @@ def replay_checkpoint(campaign, name, identity, config, dev, hidden):
     )
     panels, tariff = {}, PreparationTariff(**config["cost_profile"])
     require(
-        set(original["resource_panels"]) == {"original_resources", "expanded_resources"},
+        set(original["resource_panels"])
+        == {"original_resources", "expanded_resources"},
         "missing original resource panel",
     )
-    for label, dataset in (("original_resources", visible), ("expanded_resources", expanded)):
+    for label, dataset in (
+        ("original_resources", visible),
+        ("expanded_resources", expanded),
+    ):
         panels[label] = evaluate_cached_development(
-            model, dataset, tariff=tariff, reset=reset, mask_candidate_action=variant == "gru_no_action"
+            model,
+            dataset,
+            tariff=tariff,
+            reset=reset,
+            mask_candidate_action=variant == "gru_no_action",
         )
         current = panels[label]["arms"]["matched_cached_fixed1"]
         old = original["resource_panels"][label]["arms"]["fixed_1_cheap"]
-        require(all(current[key] == old[key] for key in current), "formal old-cheap episode/aggregate parity failed")
+        require(
+            all(current[key] == old[key] for key in current),
+            "formal old-cheap episode/aggregate parity failed",
+        )
         meters = panels[label]["policy_meters"]
         bridge = panels[label]["old_cheap_bridge"]
         # Legacy chooser's score count equals the already-verified Fixed1 choices;
         # its old meter calls this a reservation, so retain both explicit labels.
-        bridge["planning_candidate_rows"] = meters["matched_cached_fixed1"]["planning_candidate_rows"]
+        bridge["planning_candidate_rows"] = meters["matched_cached_fixed1"][
+            "planning_candidate_rows"
+        ]
         bridge["planning_count_scope"] = (
             "same legal scores as matched Fixed1, parity verified; boolean-mask traversal unpriced"
         )
@@ -246,7 +356,10 @@ def replay_checkpoint(campaign, name, identity, config, dev, hidden):
             "history_encodings",
             "planning_candidate_rows",
         ):
-            require(meters["matched_cached_fixed1"][key] == old_meter[key], "formal old-cheap operation count mismatch")
+            require(
+                meters["matched_cached_fixed1"][key] == old_meter[key],
+                "formal old-cheap operation count mismatch",
+            )
         panels[label]["formal_oldcheap_parity"] = True
     return {
         **identity,
@@ -269,9 +382,20 @@ def replay_checkpoint(campaign, name, identity, config, dev, hidden):
 def summarize(config, records):
     dims = tuple(len(config[k]) for k in ("data_seeds", "init_seeds", "order_seeds"))
     cells = design_cells(config)
-    lookup = {(r["variant"], r["data_seed"], r["init_seed"], r["order_seed"]): r for r in records}
-    require(len(lookup) == len(records) == len(cells) * len(config["variants"]), "incomplete or repeated replay grid")
-    metrics = ("expected_net_utility", "realized_net_utility", "complete_environment_cost", "stop_rate")
+    lookup = {
+        (r["variant"], r["data_seed"], r["init_seed"], r["order_seed"]): r
+        for r in records
+    }
+    require(
+        len(lookup) == len(records) == len(cells) * len(config["variants"]),
+        "incomplete or repeated replay grid",
+    )
+    metrics = (
+        "expected_net_utility",
+        "realized_net_utility",
+        "complete_environment_cost",
+        "stop_rate",
+    )
     result = {}
     for variant in config["variants"]:
         group = [lookup[(variant, *cell)] for cell in cells]
@@ -279,18 +403,25 @@ def summarize(config, records):
         for resource in ("original_resources", "expanded_resources"):
             arrays = {
                 arm: {
-                    metric: np.array([r["resource_panels"][resource]["arms"][arm][metric] for r in group]).reshape(dims)
+                    metric: np.array(
+                        [
+                            r["resource_panels"][resource]["arms"][arm][metric]
+                            for r in group
+                        ]
+                    ).reshape(dims)
                     for metric in metrics
                 }
                 for arm in PANELS
             }
             result[variant][resource] = {
                 "means": {
-                    arm: {metric: float(a.mean()) for metric, a in values.items()} for arm, values in arrays.items()
+                    arm: {metric: float(a.mean()) for metric, a in values.items()}
+                    for arm, values in arrays.items()
                 },
                 "paired_factor_cell_differences": {
                     arm + "_minus_matched_cached_fixed1": {
-                        metric: decompose(a - arrays["matched_cached_fixed1"][metric]) for metric, a in values.items()
+                        metric: decompose(a - arrays["matched_cached_fixed1"][metric])
+                        for metric, a in values.items()
                     }
                     for arm, values in arrays.items()
                     if arm != "matched_cached_fixed1"
@@ -302,9 +433,15 @@ def summarize(config, records):
 def run(args):
     wall, cpu = perf_counter(), process_time()
     config, frozen, result, ids = gate(args)
-    gate_meter = {"wall_seconds": perf_counter() - wall, "process_cpu_seconds": process_time() - cpu}
+    gate_meter = {
+        "wall_seconds": perf_counter() - wall,
+        "process_cpu_seconds": process_time() - cpu,
+    }
     output = args.output.resolve()
-    require(not output.is_relative_to(args.campaign.resolve()), "replay output must be outside the original campaign")
+    require(
+        not output.is_relative_to(args.campaign.resolve()),
+        "replay output must be outside the original campaign",
+    )
     output.mkdir(parents=True, exist_ok=False)
     (output / "fits").mkdir()
     _write(output / "REPLAY_FREEZE.json", frozen)
@@ -327,13 +464,16 @@ def run(args):
     try:
         for seed in config["data_seeds"]:
             start_wall, start_cpu = perf_counter(), process_time()
-            dev = generate_dataset(config["dev_episodes"], seed, "dev", config["history_length"])
+            dev = generate_dataset(
+                config["dev_episodes"], seed, "dev", config["history_length"]
+            )
             require(
                 dev.fingerprint() == result["datasets"][str(seed)]["dev_sha256"],
                 "regenerated development fingerprint mismatch",
             )
             require(
-                read(args.campaign / f"dataset-{seed}.json") == result["datasets"][str(seed)],
+                read(args.campaign / f"dataset-{seed}.json")
+                == result["datasets"][str(seed)],
                 "original dataset record mismatch",
             )
             datasets[seed] = dev
@@ -348,20 +488,37 @@ def run(args):
             )
         start_wall, start_cpu = perf_counter(), process_time()
         hidden = {
-            kind: matched_hidden_dim(kind, INPUT_DIM, ACTION_DIM, 32, config["target_parameters"])
+            kind: matched_hidden_dim(
+                kind, INPUT_DIM, ACTION_DIM, 32, config["target_parameters"]
+            )
             for kind in ("single_step", "gru", "diag_ssm", "dual_timescale")
         }
-        hidden_search = {"wall_seconds": perf_counter() - start_wall, "process_cpu_seconds": process_time() - start_cpu}
+        hidden_search = {
+            "wall_seconds": perf_counter() - start_wall,
+            "process_cpu_seconds": process_time() - start_cpu,
+        }
         for name, identity in ids.items():
             current = name
-            record = replay_checkpoint(args.campaign, name, identity, config, datasets[identity["data_seed"]], hidden)
+            record = replay_checkpoint(
+                args.campaign,
+                name,
+                identity,
+                config,
+                datasets[identity["data_seed"]],
+                hidden,
+            )
             _write(output / "fits" / (name + ".json"), record)
             for panel in record["resource_panels"].values():
                 for arm in panel["arms"].values():
-                    arm.pop("per_episode")  # Evidence is saved; aggregate memory stays bounded.
+                    arm.pop(
+                        "per_episode"
+                    )  # Evidence is saved; aggregate memory stays bounded.
             records.append(record)
             print(json.dumps({**identity, "status": "REPLAYED"}), flush=True)
-        require(source_hashes() == frozen["source_files"], "replay source changed during execution")
+        require(
+            source_hashes() == frozen["source_files"],
+            "replay source changed during execution",
+        )
         summary = summarize(config, records)
     except Exception as error:
         failure = {
@@ -373,7 +530,10 @@ def run(args):
         summary = None
     unchanged = source_hashes() == frozen["source_files"]
     if not unchanged and failure is None:
-        failure, summary = {"type": "SourceChanged", "message": "replay source changed"}, None
+        failure, summary = (
+            {"type": "SourceChanged", "message": "replay source changed"},
+            None,
+        )
     operation_keys = (
         "prediction_calls",
         "prediction_rows",
@@ -386,14 +546,20 @@ def run(args):
     for resource in ("original_resources", "expanded_resources"):
         operations[resource] = {
             arm: {
-                key: sum(r["resource_panels"][resource]["policy_meters"][arm][key] for r in records)
+                key: sum(
+                    r["resource_panels"][resource]["policy_meters"][arm][key]
+                    for r in records
+                )
                 for key in operation_keys
             }
             for arm in PANELS
         }
         bridges = [r["resource_panels"][resource]["old_cheap_bridge"] for r in records]
         operations[resource]["additional_oldcheap_bridge"] = {
-            key: sum(b[key] if key == "planning_candidate_rows" else b["meter"][key] for b in bridges)
+            key: sum(
+                b[key] if key == "planning_candidate_rows" else b["meter"][key]
+                for b in bridges
+            )
             for key in operation_keys
         }
     report = {
@@ -414,7 +580,10 @@ def run(args):
         "replay_freeze_sha256": digest(args.replay_freeze),
         "confirmation_data_read": False,
         "confirmation_samples_generated": 0,
-        "validation_meter": {"gate": gate_meter, "matched_hidden_search": hidden_search},
+        "validation_meter": {
+            "gate": gate_meter,
+            "matched_hidden_search": hidden_search,
+        },
         "meter": {
             "wall_seconds": perf_counter() - wall,
             "process_cpu_seconds": process_time() - cpu,
@@ -439,7 +608,14 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("campaign", "execution-receipt", "training-freeze", "registered-config", "replay-freeze", "output"):
+    for name in (
+        "campaign",
+        "execution-receipt",
+        "training-freeze",
+        "registered-config",
+        "replay-freeze",
+        "output",
+    ):
         parser.add_argument("--" + name, required=True, type=Path)
     try:
         report = run(parser.parse_args())
@@ -447,13 +623,25 @@ def main():
             canonical(
                 {
                     key: report[key]
-                    for key in ("status", "replayed_checkpoints", "expected_checkpoints", "qualification")
+                    for key in (
+                        "status",
+                        "replayed_checkpoints",
+                        "expected_checkpoints",
+                        "qualification",
+                    )
                 }
             )
         )
         return 0 if report["status"] == "COMPLETE" else 2
     except (Incomplete, ValueError, KeyError, OSError) as error:
-        print(canonical({"status": "INCOMPLETE" if isinstance(error, Incomplete) else "FAIL", "reason": str(error)}))
+        print(
+            canonical(
+                {
+                    "status": "INCOMPLETE" if isinstance(error, Incomplete) else "FAIL",
+                    "reason": str(error),
+                }
+            )
+        )
         return 2
 
 

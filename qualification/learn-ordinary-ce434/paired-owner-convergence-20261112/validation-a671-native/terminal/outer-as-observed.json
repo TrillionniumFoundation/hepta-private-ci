@@ -1,0 +1,70 @@
+{
+  "state": "failed",
+  "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "source_methods_expected": 443,
+  "native_cases_expected": 201,
+  "native_groups_expected": 43,
+  "steps": [
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "seconds": 2.812135495012626,
+      "bytes": 144,
+      "sha256": "6648d039353bae86c4069c7281fbfe87a042642fab18d39af857828a3520839d"
+    },
+    {
+      "name": "switch-clean-worktree-to-exact-source",
+      "exit_code": 0,
+      "seconds": 15.416814060881734,
+      "bytes": 106,
+      "sha256": "073dd6aba08767c3ae444313a0382006c1a64012ef2771c2e6fa658e2f8ebadf"
+    },
+    {
+      "name": "source-suite",
+      "exit_code": 1,
+      "seconds": 310.09494331409223,
+      "bytes": 129213,
+      "sha256": "95a9f8b5f26286230c6a30a4fc8320cb97c1813577fa037d693296b228ad10a0"
+    },
+    {
+      "name": "original-full-native",
+      "exit_code": 1,
+      "seconds": 708.4780296490062,
+      "bytes": 205146,
+      "sha256": "8e1bcf02b9018a3d39eeef46b33f45f3fae1ddf08510eabfd2b050a0a4f39e47"
+    },
+    {
+      "name": "caller-scanner-self-test",
+      "exit_code": 0,
+      "seconds": 0.18084277911111712,
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    }
+  ],
+  "native_result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json",
+  "formatter_executed": false,
+  "full_caller_executed": false,
+  "new_version_full_actual_E_coverage_claim": false,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "started_unix_ms": 1794493255661,
+  "tracked_rust_files": 6777,
+  "manifest_sha256": "361e7a05153f8205e8e5f3ab75dd68291757de54b7add2d7115cf61d9ad675da",
+  "native_runner_sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1",
+  "source_runner_sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+  "source_after": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_status_after": "",
+  "source_suite": {
+    "bytes": 89664,
+    "sha256": "10ad0500ea8854cb96c145ba4f043a6486f9ca11f02280428aeb589e16f110d8"
+  },
+  "native_result_file": {
+    "bytes": 51057,
+    "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+  }
+}

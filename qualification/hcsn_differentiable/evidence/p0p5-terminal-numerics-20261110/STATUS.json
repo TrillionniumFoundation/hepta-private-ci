@@ -1,0 +1,52 @@
+{
+  "C2_independent_terminal_audit": "not executed in this snapshot",
+  "P5": "benefit-gated",
+  "c2_active_count": 5,
+  "c2_observed_utc": "2026-11-10T22:45:40.491673+00:00",
+  "c2_producer_terminal_count": 1,
+  "confirmation_E_scope": "This campaign has not used E for model scoring. The historical full-data loader interpreted E schema, coordinates, label validity, clock and global gaps; historical feature/schema blindness is not claimed.",
+  "direct_FD_inconclusive": 576,
+  "direct_FD_resolved_disagreements": 6,
+  "finite_completed_named_passes": 49,
+  "finite_roster": 60,
+  "local_48_case_diagnostic": "separate FP64 scalar mechanism checks, not trained-model qualification",
+  "logrisk_primary_false": 6,
+  "maximum_ordinary_relative_error": {
+    "name": "hcsn-s307-lr0.001",
+    "original_result": {
+      "bytes": 19104,
+      "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-2.json",
+      "sha256": "2c36a8c244b622c78da4cb798cd31ecb6cd3c89a717d4ed77280ac58228286ef"
+    },
+    "quantity": "discounted_event_count",
+    "stage": "finite-best-2",
+    "value": 0.05070083410015618
+  },
+  "maximum_scaled_error": {
+    "name": "hcsn-s211-lr0.001",
+    "original_result": {
+      "bytes": 22671,
+      "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-1.json",
+      "sha256": "0bc26c2e650b16e7755127ba52c7eeb1ba0ded4859706308c577f1ad7424058d"
+    },
+    "quantity": "event_count",
+    "stage": "finite-best-1",
+    "value": 0.0085718039526671
+  },
+  "original_aggregate_absent": true,
+  "original_hard_wall_seconds": 10800,
+  "original_numerical_attempt_returncode": -9,
+  "original_numerical_attempt_status": "whole_budget_exhausted",
+  "original_stages": {
+    "attempt_artifacts_without_outer_completion": 1,
+    "completed_artifact_chain": 85,
+    "not_observed_to_have_started": 10
+  },
+  "postmortem_collection": "separate metadata-only task after all original numerical processes stopped",
+  "pressure_failures": 12,
+  "pressure_sentinels": 18,
+  "relative_error_is_not_the_general_gate": true,
+  "schema": "bounded-numerics-terminal-and-followup-v1",
+  "scientific_admission": "HOLD",
+  "whole_training_numerical_admission": "HOLD"
+}

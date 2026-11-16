@@ -11,6 +11,7 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use super::super::FinalUseAuthenticationProfile;
 use super::super::FinalUseBinding;
 use super::super::FinalUseError;
 use super::super::FinalUseFrontier;
@@ -126,6 +127,7 @@ impl RootFinalUseObserverV1 {
         let retained: RetainedUse<'_> = RetainedUse::authenticate(
             &self.signer_id,
             &self.issuer_keys,
+            FinalUseAuthenticationProfile::ClassicalV1,
             signed,
             expected,
             witness,

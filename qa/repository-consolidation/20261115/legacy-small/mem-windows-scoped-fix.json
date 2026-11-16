@@ -1,0 +1,44 @@
+{
+  "base": "adfdd213259f06447ee84230f0e4adff7c3c24bd",
+  "incoming": "c97586834214c8a0a610f860cc7ae261ce8cccde",
+  "preview_tree": "f2680e0a079628e906ccb730cfc1299f2e9e1056",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete 294-line Python and 89-line Windows workflow read; exact old-source controls, failure/interrupt handling, one original job deadline, source/lock/tool checks and scoped rewrite capture preserved. No remote mutation.",
+  "qualification": false,
+  "historical_driver_executed": false,
+  "python_ast_paths": [
+    ".github/scripts/mem_windows_scoped_fix.py"
+  ],
+  "bash_n_blocks": [],
+  "embedded_python_ast_blocks": 0,
+  "powershell_read_only_not_executed_or_parsed": [
+    "Record the one original job envelope",
+    "Run only the three scoped fixes",
+    "Retain observed source, locks and all rewrite proposals"
+  ],
+  "incoming_file_pins": {
+    ".github/scripts/mem_windows_scoped_fix.py": {
+      "bytes": 14469,
+      "sha256": "b6431c3fc5736f2420d42a4b1c29c5d80163a69778ecf5baad66a7f8b8d3f0b8",
+      "git_blob": "2d6726c3cdc3de43b77a7ff764935e3598b2169c"
+    },
+    ".github/workflows/hepta-mem-windows-scoped-fix.yml": {
+      "bytes": 3549,
+      "sha256": "0e306f2764b5cf2e4e22a9d335ae27f88ad006867e218141a311f560d2377f8c",
+      "git_blob": "eb8a22b09fb5988dcc05299115212f5b32ae10f8"
+    }
+  },
+  "final_changed_file_pins": {
+    ".github/scripts/mem_windows_scoped_fix.py": {
+      "bytes": 14469,
+      "sha256": "b6431c3fc5736f2420d42a4b1c29c5d80163a69778ecf5baad66a7f8b8d3f0b8",
+      "git_blob": "2d6726c3cdc3de43b77a7ff764935e3598b2169c"
+    },
+    ".github/workflows/hepta-mem-windows-scoped-fix.yml": {
+      "bytes": 3549,
+      "sha256": "0e306f2764b5cf2e4e22a9d335ae27f88ad006867e218141a311f560d2377f8c",
+      "git_blob": "eb8a22b09fb5988dcc05299115212f5b32ae10f8"
+    }
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "schema": "hcsn-p1-substep-fixed-grid-negative-control-v1",
+  "date_utc": "2026-11-12",
+  "parent_pr": 6085,
+  "parent_exact_head": "646a05089432cfcc7b32874fed7aa56263c542f5",
+  "host": "heptaruntime desktop",
+  "source_git_blob": "4f68cbd2b9b620e48a1aa85a9a6d04ff2313ace3",
+  "source_sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+  "test_source_sha256": "5a249774270d59a8755c145cfe3697cda29276b6f980adf31befd1c2ac35e0f0",
+  "test_git_blob": "39823c2f1d4d1864017fe2519f7cd9a0fdaeb0df",
+  "python": "3.12.3",
+  "torch": "2.8.0+cpu",
+  "dtype": "float64",
+  "cpu_quota_percent": 25,
+  "memory_max_bytes": 2147483648,
+  "threads": 1,
+  "physics": {
+    "drifts": [
+      -0.4,
+      0,
+      0.4
+    ],
+    "sigma": 0.35,
+    "absolute_reset": 1.7332530178673953,
+    "discount": 0.08,
+    "total_dt": 0.02,
+    "active_cells": 16,
+    "phase_cells": 8,
+    "refractory": 0.2,
+    "quadrature_order": 16
+  },
+  "definition": "fixed-grid max row TV between Q(T/n)^n and Q(T), T fixed at 0.02; NOT continuum-error estimate",
+  "observations": {
+    "-0.4": {
+      "2": {
+        "active_max_tv": 0.059586989670451763,
+        "argmax_row": 18,
+        "finite_nonnegative": true,
+        "mass_error": 1.3322676295501878e-15,
+        "max_tv": 0.32000000000000006,
+        "mean_active_tv": 0.04015314321776787,
+        "phase_max_tv": 0.32000000000000006
+      },
+      "4": {
+        "active_max_tv": 0.13643711672047443,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 1.2212453270876722e-15,
+        "max_tv": 0.3904000000000001,
+        "mean_active_tv": 0.09261854548849092,
+        "phase_max_tv": 0.3904000000000001
+      },
+      "8": {
+        "active_max_tv": 0.23059638544946842,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 4.551914400963142e-15,
+        "max_tv": 0.4173624800000001,
+        "mean_active_tv": 0.15813638667405816,
+        "phase_max_tv": 0.4173624800000001
+      },
+      "16": {
+        "active_max_tv": 0.3389176596023273,
+        "argmax_row": 20,
+        "finite_nonnegative": true,
+        "mass_error": 5.329070518200751e-15,
+        "max_tv": 0.4293670158683119,
+        "mean_active_tv": 0.2357295765359544,
+        "phase_max_tv": 0.4293670158683119
+      },
+      "32": {
+        "active_max_tv": 0.4537591507582755,
+        "argmax_row": 0,
+        "finite_nonnegative": true,
+        "mass_error": 1.4876988529977098e-14,
+        "max_tv": 0.4537591507582755,
+        "mean_active_tv": 0.32166208188044554,
+        "phase_max_tv": 0.435050247260592
+      }
+    },
+    "0.0": {
+      "2": {
+        "active_max_tv": 0.06013048597524063,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 2.220446049250313e-16,
+        "max_tv": 0.32000000000000006,
+        "mean_active_tv": 0.04070432964730524,
+        "phase_max_tv": 0.32000000000000006
+      },
+      "4": {
+        "active_max_tv": 0.137320878272242,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 7.771561172376096e-16,
+        "max_tv": 0.3904000000000001,
+        "mean_active_tv": 0.09353427562475973,
+        "phase_max_tv": 0.3904000000000001
+      },
+      "8": {
+        "active_max_tv": 0.23169776551002558,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 1.5543122344752192e-15,
+        "max_tv": 0.4173624800000001,
+        "mean_active_tv": 0.1592989892618748,
+        "phase_max_tv": 0.4173624800000001
+      },
+      "16": {
+        "active_max_tv": 0.34015690065226295,
+        "argmax_row": 18,
+        "finite_nonnegative": true,
+        "mass_error": 2.4424906541753444e-15,
+        "max_tv": 0.4293670158685942,
+        "mean_active_tv": 0.23705748852086828,
+        "phase_max_tv": 0.4293670158685942
+      },
+      "32": {
+        "active_max_tv": 0.45509011927489385,
+        "argmax_row": 0,
+        "finite_nonnegative": true,
+        "mass_error": 3.1086244689504383e-15,
+        "max_tv": 0.45509011927489385,
+        "mean_active_tv": 0.3231049726661955,
+        "phase_max_tv": 0.4350502472648283
+      }
+    },
+    "0.4": {
+      "2": {
+        "active_max_tv": 0.05958698966850451,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 1.4432899320127035e-15,
+        "max_tv": 0.32000000000000006,
+        "mean_active_tv": 0.04015429869202622,
+        "phase_max_tv": 0.32000000000000006
+      },
+      "4": {
+        "active_max_tv": 0.13643711726235958,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 1.4432899320127035e-15,
+        "max_tv": 0.3904000000000001,
+        "mean_active_tv": 0.09262178591801166,
+        "phase_max_tv": 0.3904000000000001
+      },
+      "8": {
+        "active_max_tv": 0.23059648419592751,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 2.6645352591003757e-15,
+        "max_tv": 0.4173624800000001,
+        "mean_active_tv": 0.15814644600780928,
+        "phase_max_tv": 0.4173624800000001
+      },
+      "16": {
+        "active_max_tv": 0.33891636259253277,
+        "argmax_row": 19,
+        "finite_nonnegative": true,
+        "mass_error": 7.216449660063518e-15,
+        "max_tv": 0.4293670158688596,
+        "mean_active_tv": 0.23574403250110887,
+        "phase_max_tv": 0.4293670158688596
+      },
+      "32": {
+        "active_max_tv": 0.453766778761726,
+        "argmax_row": 0,
+        "finite_nonnegative": true,
+        "mass_error": 1.2434497875801753e-14,
+        "max_tv": 0.453766778761726,
+        "mean_active_tv": 0.3216882923846335,
+        "phase_max_tv": 0.435050247268887
+      }
+    }
+  },
+  "red": {
+    "job_id": "1a1cdce8685-2564-13b5",
+    "exit_code": 1,
+    "expected_negative_control": true,
+    "hypothesis": "n32 max TV <= n2 max TV/2",
+    "native_logs_retained": true
+  },
+  "green": {
+    "job_id": "1a1cdcf113c-2564-13b8",
+    "exit_code": 0,
+    "tests_run": 3,
+    "tests_passed": 3,
+    "tests_failed": 0,
+    "tests_skipped": 0,
+    "native_logs_retained": true
+  },
+  "original_c2_job_resumed": false,
+  "original_c2_modified": false,
+  "trained_posterior_evaluated": false,
+  "continuum_value_qualified": false,
+  "scientific_admission": "HOLD_NO_GO",
+  "note": "This test is synthetic and only rejects the assumption that smaller substeps necessarily fix a reprojected finite-basis kernel. It does not uniquely isolate a physical solver defect or prove task losses."
+}

@@ -1,0 +1,35 @@
+{
+  "base": "41c99eb80087b4ad70eb4f987674775c3e654e20",
+  "incoming": "0e92c37a012733882ce4c120afc38b6757edb7cb",
+  "preview_tree": "96f790b8a95a72584fc296621eb3a5701ebdbd18",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete 338-line workflow and embedded capture read. Trigger and job fixed to historical branch, before SHA and single source parent/tree exact; original policy source and seven Fence action files checked by size/SHA/Git OID. Contents read and checkout credentials false. Captures explicitly exclude post-hook final result and never convert pre-post artifact to final qualification. No remote writes.",
+  "qualification": false,
+  "historical_workflow_executed": false,
+  "bash_n_blocks": [
+    "Retain and verify the exact Fence bundle before setup",
+    "Bind the original policy source and isolated harness parent",
+    "Determine comparison range",
+    "Test blob size policy",
+    "Check changed blob sizes",
+    "Retain source and action identities after the original checks"
+  ],
+  "embedded_python_ast": true,
+  "whitespace_only_changed_lines": 30,
+  "parsed_yaml_equal": true,
+  "incoming_file_pins": {
+    ".github/workflows/hepta-mem-fence013-qualification.yml": {
+      "bytes": 17930,
+      "sha256": "7174a2c51e265731df14838bc52ddde4986bbbcf8a1290fa769ba1eb6a68b91c",
+      "git_blob": "3e302bd517fcf58eafd314c65afdb864a7d82b06"
+    }
+  },
+  "final_changed_file_pins": {
+    ".github/workflows/hepta-mem-fence013-qualification.yml": {
+      "bytes": 17630,
+      "sha256": "b535f0ec59c39072aa559244861d917d28c4545030f5ee1cf6020cdbf1b5ab05",
+      "git_blob": "affcf9d581f679896302b99a509524f1765e9b20"
+    }
+  }
+}

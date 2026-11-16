@@ -1,0 +1,86 @@
+{
+  "schema": "new-resource-core-v2-independent-static-review-v1",
+  "status": "examined_A_to_E_no_additional_arithmetic_or_schema_blocker_complete_native_exit_gate_pending",
+  "scope": "Static source and already-published historical JSON schema only. No new C2 report/checkpoint/model/E, resource algorithm execution, software tests, or numerical oracle.",
+  "inputs": {
+    "arithmetic": {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-a-attempt-01/source/resource_arithmetic.py",
+      "bytes": 8406,
+      "sha256": "8a1befdf5803ecaf5f260057259ba0e482438b202ac9a7cd845fe81286833dbd"
+    },
+    "historical_metadata": {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-b-attempt-01/source/old_metadata.py",
+      "bytes": 11331,
+      "sha256": "158862164fae92e07323cc7da3ff7362ba32bd32c002a1134d2c42805b353c7f"
+    },
+    "auditor_admission": {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-c-attempt-01/source/audit_evidence.py",
+      "bytes": 11039,
+      "sha256": "43b3ce9c786f38bf402e65cce7da04e5aad1c684d03cfdef4b57ee82170431cb"
+    },
+    "candidate_accounting": {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-d-attempt-01/source/candidate_accounting.py",
+      "bytes": 14103,
+      "sha256": "081f983b59083f5b706802e1b92694716d5b206abbb7669ba78f935549e2d526"
+    },
+    "inherited_independent_evidence": {
+      "path": "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-e-attempt-01/source/historical_review.py",
+      "bytes": 4213,
+      "sha256": "3df4c6857c651e58c11a1c1a26bdf5cd827d231a8536aa2c15fc2d692be393ed"
+    }
+  },
+  "historical_report_members": {
+    "v1-RESULT.json": {
+      "bytes": 542491,
+      "sha256": "368494d90c42339c5b8d8e7afbed7592c4cb2ef52d52a4611a3e89d7fea59052"
+    },
+    "v2-RESULT.json": {
+      "bytes": 887134,
+      "sha256": "c90afba67ce09871e49c2a117cec3403a2b7fdec6528e600402557d6a7863094"
+    }
+  },
+  "checks": [
+    {
+      "topic": "A all opportunities and selection",
+      "finding": "Exactly six named candidates per arm; HCSN needs both complete three-seed groups before common-LR selection. Strict first max and three-of-three target median preserve missing/censored states. Sample SD is initialization variability on D."
+    },
+    {
+      "topic": "B historical copies/clocks",
+      "finding": "Frozen compact points are compared exactly and not rewritten. Original full process vs C1 two-clock interval and wrapper billing remain distinct; original startup/import/exit CPU omissions remain lower bounds."
+    },
+    {
+      "topic": "C archive/stages",
+      "finding": "VerifiedArchive.members includes MANIFEST, matching old launch members count. Thirteen fixed stages and six names are required; source/declared and measured wall/RSS/result hashes are checked. Recording-chain failure can retain only separately bound diagnostic replay."
+    },
+    {
+      "topic": "D continuation semantics",
+      "finding": "Frozen C2 phase_clock samples once; exact cumulative=parent+phase equations match source. Cumulative training budget uses original process plus complete continuation wrapper, as frozen audit_chain.py. Partial work remains charged; quality and independent adequacy separate."
+    },
+    {
+      "topic": "E original independent review",
+      "finding": "The new helper binds 36 passed subrecords of old overall-failed v1 and seven passed v2 C1 subrecords by exact original/child report SHA. Inspected original keys match source. It does not relabel v1 overall failure or rerun baseline adequacy."
+    }
+  ],
+  "findings": [
+    {
+      "id": "RES-BASELINE-01",
+      "initial": "B directly assigned producer adequacy to independent_adequate.",
+      "status": "closed_in_new_E_source_pending_final_manifest_rebinding",
+      "resolution": "Source-bound historical independent subrecords are now required; inherited origin and no reexecution are explicit."
+    },
+    {
+      "id": "RES-EXIT-01",
+      "status": "open_pending_new_gate",
+      "finding": "C consumes the old 1800s launch prefix receipt. It must also machine-bind complete core Popen-to-wait4 and separately complete native1950 terminal/source/argv/cost evidence before downstream admission; a prose promise is not a substitute. Root/numerics are defining that new input schema."
+    }
+  ],
+  "final_source_freeze_review_completed": false,
+  "source_v1_old24_tests_inherited": false,
+  "software_preparation_admission_only": true,
+  "scientific_admission": "HOLD",
+  "review_cost": {
+    "whole_OS_wall_seconds": null,
+    "CPU_seconds": null,
+    "scope": "Read-only tool inspections were not wrapped as a complete timed process; unknown, not zero."
+  }
+}

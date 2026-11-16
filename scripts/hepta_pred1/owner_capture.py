@@ -49,13 +49,17 @@ def discover_native(database, *, limit=64, after=None):
         f"SELECT {fields} FROM taskflow_effect_dispatch_attempts{where} "
         f"ORDER BY {keys} LIMIT ?"
     )
-    with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=5)) as db:
+    with closing(
+        sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=5)
+    ) as db:
         db.row_factory = sqlite3.Row
         if hasattr(db, "setlimit"):
             db.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, MAX_BYTES)
         db.execute("PRAGMA query_only = ON")
         db.execute("BEGIN")
-        rows = [dict(row) for row in db.execute(query, tuple(after or ()) + (limit + 1,))]
+        rows = [
+            dict(row) for row in db.execute(query, tuple(after or ()) + (limit + 1,))
+        ]
         db.rollback()
     for row in rows:
         _identity(row)
@@ -64,7 +68,9 @@ def discover_native(database, *, limit=64, after=None):
     _require(len(set(identities)) == len(identities), "duplicate native attempt key")
     return {
         "identities": page,
-        "next_after": [page[-1][key] for key in KEY_FIELDS] if len(rows) > limit else None,
+        "next_after": [page[-1][key] for key in KEY_FIELDS]
+        if len(rows) > limit
+        else None,
         "pagination_scope": "retrospective ordered keys; not a live change stream",
     }
 
@@ -129,7 +135,14 @@ def main():
         limit=args.limit,
         after=json.loads(args.after_json) if args.after_json else None,
     )
-    print(json.dumps({"manifest_sha256": result.digest, "records": result.payload["record_count"]}))
+    print(
+        json.dumps(
+            {
+                "manifest_sha256": result.digest,
+                "records": result.payload["record_count"],
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

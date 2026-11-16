@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "twelve Automation fixtures; no broad CI qualification",
+  "driver_sha": "4a5c8832d8e3417e6fd2a30a8bec540f4bbfaa65",
+  "baseline_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+  "fixture_candidate_sha": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+  "platform": "macOS-15.7.9-x86_64-i386-64bit-Mach-O",
+  "machine": "x86_64",
+  "started_at": "2026-11-10T07:02:58.056014+00:00",
+  "tests": [
+    "circuit_drain::tests::stopped_circuit_blocks_drain_after_reopen_until_original_work_settles",
+    "circuit_drain::tests::drain_observation_includes_runs_beyond_the_first_page",
+    "circuit_journal::tests::expired::expired_recovery_settles_after_the_lease_allowance_is_exhausted",
+    "circuit_journal::tests::expired::expired_recovery_rejects_live_stale_and_changed_original_requests",
+    "circuit_journal::tests::expired::recovery_owner_settles_multiple_receipts_without_a_new_lease",
+    "circuit_journal::tests::lease_churn_cannot_spend_pending_receipt_slots_across_reopen",
+    "circuit_journal::tests::stopped_polling_preserves_original_reconciliation_and_idempotent_retry",
+    "circuit_journal::tests::legacy::legacy_stopped_history_reserves_actual_pending_settlement_slots",
+    "circuit_learning_outbox::tests::full_queue_preserves_existing_operation_and_corrupt_history_is_rejected",
+    "circuit_learning_outbox::tests::completion_claim_and_ack_survive_reopen_without_releasing_delivery",
+    "circuit_learning_outbox::tests::unfinished_computation_cannot_enter_learning_queue",
+    "circuit_task_readback::tests::task_readback_never_initializes_missing_or_repairs_lost_history"
+  ],
+  "stages": [
+    {
+      "name": "baseline-canonical",
+      "interpretation": "PASS",
+      "source_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+      "source_tree": "b9879a77f0b7a7d8f766aaf2308b719e6bcaa29e",
+      "cargo_lock_sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+      "tmpdir": "/Users/runner/work/_temp/act2-fixture-redgreen/canonical-tmp",
+      "tmpdir_resolved": "/Users/runner/work/_temp/act2-fixture-redgreen/canonical-tmp",
+      "tmpdir_is_symlink": false,
+      "command_record": "baseline-canonical.json",
+      "passed": 12,
+      "failed": 0
+    },
+    {
+      "name": "baseline-alias",
+      "interpretation": "EXPECTED_INVALID_FAILURES",
+      "source_sha": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+      "source_tree": "b9879a77f0b7a7d8f766aaf2308b719e6bcaa29e",
+      "cargo_lock_sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+      "tmpdir": "/Users/runner/work/_temp/act2-fixture-redgreen/alias-tmp",
+      "tmpdir_resolved": "/Users/runner/work/_temp/act2-fixture-redgreen/canonical-tmp",
+      "tmpdir_is_symlink": true,
+      "command_record": "baseline-alias.json",
+      "passed": 0,
+      "failed": 12
+    },
+    {
+      "name": "candidate-alias",
+      "interpretation": "PASS",
+      "source_sha": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+      "source_tree": "c22da514311ad5c81a4af1376a4760573bc34419",
+      "cargo_lock_sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+      "tmpdir": "/Users/runner/work/_temp/act2-fixture-redgreen/alias-tmp",
+      "tmpdir_resolved": "/Users/runner/work/_temp/act2-fixture-redgreen/canonical-tmp",
+      "tmpdir_is_symlink": true,
+      "command_record": "candidate-alias.json",
+      "passed": 12,
+      "failed": 0
+    }
+  ],
+  "finished_at": "2026-11-10T07:25:07.032307+00:00",
+  "records": [
+    {
+      "path": "baseline-alias.json",
+      "bytes": 2837,
+      "sha256": "a904e036a1158b6cb77dd288ea9253b07572645d923781280ec2a2599d8ff346"
+    },
+    {
+      "path": "baseline-alias.json.fa257722bea04712a4db5910aa3ec421.log",
+      "bytes": 65463,
+      "sha256": "de29bc0f4c474fa94d4d6420b9ece558e93fe7111276df004b520c7da808c241"
+    },
+    {
+      "path": "baseline-alias.launcher.log",
+      "bytes": 68126,
+      "sha256": "e2c133841ac4270d84d195e0472965f14165230938f5a9fb447f3e59b299d8b7"
+    },
+    {
+      "path": "baseline-canonical.json",
+      "bytes": 2777,
+      "sha256": "8f0a7a50f87180fc0e46ecab7e825ad1dcf304491eec9d63ffaf548d711e8b5a"
+    },
+    {
+      "path": "baseline-canonical.json.2d59346ce5a34a1cbee57830a469c5f2.log",
+      "bytes": 98428,
+      "sha256": "54526a80ae235d2aa63ee1cf0a0fa7e4c0140bc55c94f7f0da7b1602691f0d60"
+    },
+    {
+      "path": "baseline-canonical.launcher.log",
+      "bytes": 101033,
+      "sha256": "b70ec878403c13fceb4ba21ba09eb43f5cb527cc45ac1230b4d81cf9b71dc4e2"
+    },
+    {
+      "path": "candidate-alias.json",
+      "bytes": 2779,
+      "sha256": "3259bec23c1dfc16d8a7097a662f13394e3142b7f5a76e6a0bf4783c283a452d"
+    },
+    {
+      "path": "candidate-alias.json.16b5158c3fbe4ab8964d0b82634b475e.log",
+      "bytes": 45256,
+      "sha256": "c21d46389c0deff1d281f07b0f6d0d853e329e5cef4fed65333014672a14fae7"
+    },
+    {
+      "path": "candidate-alias.launcher.log",
+      "bytes": 47863,
+      "sha256": "9be1ff64a6ce808689b40a5414e64a68ce8931b6a59d8dbb8731495e7f9fb644"
+    }
+  ]
+}

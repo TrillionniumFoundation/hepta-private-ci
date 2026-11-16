@@ -1,0 +1,45 @@
+test_actual_bind_program_accepts_only_exact_preview_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_actual_bind_program_accepts_only_exact_preview_bytes) ... ok
+test_cli_missing_contract_reports_hold_without_writing (test_program_manifest_freeze.ProgramManifestFreezeTests.test_cli_missing_contract_reports_hold_without_writing) ... ok
+test_manifest_create_once_not_overwritten (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_create_once_not_overwritten) ... ok
+test_manifest_rejects_duplicate_root_key (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_duplicate_root_key) ... ok
+test_manifest_rejects_manifest_symlink (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_manifest_symlink) ... ok
+test_manifest_rejects_missing_schema_and_extra_file (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_missing_schema_and_extra_file) ... ok
+test_manifest_rejects_nonfinite_metadata (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_nonfinite_metadata) ... ok
+test_manifest_rejects_source_symlink_to_matching_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_source_symlink_to_matching_bytes) ... ok
+test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) ... ok
+test_missing_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_missing_publisher_is_fail_closed) ... ok
+test_mutation_after_freeze_is_rejected_by_actual_runner (test_program_manifest_freeze.ProgramManifestFreezeTests.test_mutation_after_freeze_is_rejected_by_actual_runner) ... ok
+test_no_implicit_manifest_or_authorization (test_program_manifest_freeze.ProgramManifestFreezeTests.test_no_implicit_manifest_or_authorization) ... ok
+test_partial_candidate_has_no_publication (test_program_manifest_freeze.ProgramManifestFreezeTests.test_partial_candidate_has_no_publication) ... ok
+test_symlinked_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_symlinked_publisher_is_fail_closed) ... ok
+test_matching_durable_bytes_and_module_origin_enter_input_closure (test_program_source_closure.ProgramDependencyClosureTests.test_matching_durable_bytes_and_module_origin_enter_input_closure) ... ERROR
+test_mutated_recovery_durable_code_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_mutated_recovery_durable_code_must_fail_closed) ... ok
+test_no_recovery_durable_digest_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_no_recovery_durable_digest_must_fail_closed) ... ok
+test_shadowed_durable_import_must_fail_closed (test_program_source_closure.ProgramDependencyClosureTests.test_shadowed_durable_import_must_fail_closed) ... ok
+test_actual_torch_optimizer_rng_and_frozen_data_roundtrip (test_successor_wiring.SuccessorWiringTests.test_actual_torch_optimizer_rng_and_frozen_data_roundtrip) ... ok
+test_both_real_c2_entrypoints_wired (test_successor_wiring.SuccessorWiringTests.test_both_real_c2_entrypoints_wired) ... ok
+test_checkpoint_incomplete_semantic_roundtrip_never_publishes (test_successor_wiring.SuccessorWiringTests.test_checkpoint_incomplete_semantic_roundtrip_never_publishes) ... ok
+test_completed_producer_roster_remains_hold (test_successor_wiring.SuccessorWiringTests.test_completed_producer_roster_remains_hold) ... ok
+test_result_file_create_only_even_after_failure (test_successor_wiring.SuccessorWiringTests.test_result_file_create_only_even_after_failure) ... ok
+test_serialize_exception_never_creates_zero_final_checkpoint (test_successor_wiring.SuccessorWiringTests.test_serialize_exception_never_creates_zero_final_checkpoint) ... ok
+
+======================================================================
+ERROR: test_matching_durable_bytes_and_module_origin_enter_input_closure (test_program_source_closure.ProgramDependencyClosureTests.test_matching_durable_bytes_and_module_origin_enter_input_closure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py", line 65, in test_matching_durable_bytes_and_module_origin_enter_input_closure
+    sources = self.gate()
+              ^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py", line 48, in gate
+    return c2_runner.bind_program(self.manifest)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py", line 107, in bind_program
+    require(type(value) is dict and set(value) == {
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_boundary.py", line 19, in require
+    raise Ineligible(reason)
+c2_boundary.Ineligible: C2 program manifest has unreviewed or missing metadata
+
+----------------------------------------------------------------------
+Ran 24 tests in 7.733s
+
+FAILED (errors=1)

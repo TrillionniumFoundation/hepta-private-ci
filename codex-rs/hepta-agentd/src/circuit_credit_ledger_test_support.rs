@@ -25,13 +25,14 @@ fn identity(role: LearningEvidenceRoleV1) -> (&'static str, u8) {
         LearningEvidenceRoleV1::Generator => ("generator", 1),
         LearningEvidenceRoleV1::Observer => ("observer", 2),
         LearningEvidenceRoleV1::CreditAllocator => ("allocator", 3),
-        LearningEvidenceRoleV1::Evaluator
-        | LearningEvidenceRoleV1::UnlearningAuthority
-        | LearningEvidenceRoleV1::Selector => panic!("unused fixture role"),
+        LearningEvidenceRoleV1::Evaluator => ("evaluator", 4),
+        LearningEvidenceRoleV1::UnlearningAuthority | LearningEvidenceRoleV1::Selector => {
+            panic!("unused fixture role")
+        }
     }
 }
 
-fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
+pub(super) fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
     let (name, seed) = identity(role);
     let key = SigningKey::from_bytes(&[seed; 32]);
     TrustedLearningSignerV1 {
@@ -51,7 +52,7 @@ fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
     }
 }
 
-fn sign(
+pub(super) fn sign(
     writer: &LedgerWriter,
     role: LearningEvidenceRoleV1,
     payload: &[u8],
@@ -128,6 +129,7 @@ impl LedgerFixture {
                         LearningEvidenceRoleV1::Generator,
                         LearningEvidenceRoleV1::Observer,
                         LearningEvidenceRoleV1::CreditAllocator,
+                        LearningEvidenceRoleV1::Evaluator,
                     ]
                     .into_iter()
                     .map(trusted)

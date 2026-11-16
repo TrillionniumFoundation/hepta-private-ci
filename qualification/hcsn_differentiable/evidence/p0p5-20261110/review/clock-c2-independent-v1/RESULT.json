@@ -1,0 +1,152 @@
+{
+  "C2_proposal": {
+    "complete_execution_cost": {
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+        "-B",
+        "/workspace/scratch/c385a7439f8e/clock-c2-independent-review-v1/counterexamples.py"
+      ],
+      "native_training_performed": false,
+      "optimizer_steps_executed": 0,
+      "returncode": 0,
+      "schema": "independent-c2-counterexample-execution-v1",
+      "source_after": {
+        "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/c2_boundary.py": "9b6bd43ebde5317d62c55fbc37b5fb2309f89178d195c529598529caf1e99f4f",
+        "/workspace/scratch/c385a7439f8e/clock-c2-independent-review-v1/counterexamples.py": "bc785019477e1318412d7bf14ed236a75698ad450017b7bb9076ca7e91a57c04"
+      },
+      "source_before": {
+        "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/c2_boundary.py": "9b6bd43ebde5317d62c55fbc37b5fb2309f89178d195c529598529caf1e99f4f",
+        "/workspace/scratch/c385a7439f8e/clock-c2-independent-review-v1/counterexamples.py": "bc785019477e1318412d7bf14ed236a75698ad450017b7bb9076ca7e91a57c04"
+      },
+      "source_unchanged": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ae70cb6583adc176eb486e7ccd435c8c3a2a11c88c91db41f3df5d17c0c6b270",
+      "waited_child_cpu_seconds": 2.976492,
+      "whole_waited_process_wall_seconds": 3.3642368869986967
+    },
+    "counterexamples": {
+      "bytes": 1375,
+      "path": "/workspace/scratch/c385a7439f8e/clock-c2-independent-review-v1/COUNTEREXAMPLES.json",
+      "sha256": "1e20f69ed02476eca3b9812c81f2c770d9bd641f0f090b00d32407ed73dafd85"
+    },
+    "native_impact_observed": false,
+    "program": {
+      "bytes": 278414,
+      "crc_unique_safe_paths": true,
+      "members": 15,
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-c2-feasibility-20261110-v1.zip",
+      "sha256": "23fbe126fb13dc2aee5731919f174b0974abbb237d4e15c201cbf14c6cf05dbe"
+    },
+    "requires_independent_versioned_fix_before_admission": true,
+    "static_review": "three_reproduced_structural_guard_gaps"
+  },
+  "canonical_files_modified": false,
+  "future_producer": {
+    "changed_files": [
+      "proposals/localization-v3/continuation.py",
+      "proposals/localization-v3/test_continuation.py"
+    ],
+    "commit": "7d7fa1dff8ea8259b1bae0a9e1889183325693bf",
+    "historical_C1_source_replaced": false,
+    "owner_12_tests_rerun_by_this_reviewer": false,
+    "owner_manifest_members_checked": 15,
+    "owner_validation": {
+      "bytes": 3795,
+      "path": "/workspace/scratch/c385a7439f8e/continuation-clock-fix-validation-v1/SUMMARY.json",
+      "sha256": "d00004fdafc350492e59286c22037cd8180837bfc3a86fb9f0ad52188a0bda8e"
+    },
+    "static_review": "no_scope_blocker_found"
+  },
+  "historical_clock_adapter": {
+    "actual_native_supplement_verified_by_this_review": false,
+    "all_manifest_members_exact": 65,
+    "owner_preparation": {
+      "bytes": 16052,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/VALIDATION.json",
+      "sha256": "b331de24b72e73458ee9e73c76ae700efc99436a86cde9ca5845f5163f3bc85e"
+    },
+    "preserves_raw_later_cumulative_and_prior_failed_review": true,
+    "program": {
+      "bytes": 174435,
+      "crc_unique_safe_paths": true,
+      "members": 66,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-independent-reviewer-program-v2.zip",
+      "sha256": "6ede11014d33e219f6ebc109911ad50a8550bb585388b16b5c604a2d4cb54c51"
+    },
+    "static_review": "no_new_blocker_found"
+  },
+  "optimizer_steps_executed": 0,
+  "overall_repository_CI_claim": false,
+  "production_checkpoint_forward_executed": false,
+  "reviewed_input_identities": [
+    {
+      "bytes": 15837,
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-clock-fix/proposals/localization-v3/continuation.py",
+      "sha256": "be65ef28355959e08743e545cf4e958e8d9136e9978d8773dd992480418eee64"
+    },
+    {
+      "bytes": 19953,
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-clock-fix/proposals/localization-v3/test_continuation.py",
+      "sha256": "e2dfe9155fc5f1b166a2119672c59004666fc05a7a4ce4a763dded7013c871dc"
+    },
+    {
+      "bytes": 3611,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/clock_sampling.py",
+      "sha256": "65e03817dba19818bb9c175c0eb3f813ea0379433e559f802087ec0b1dd79a3d"
+    },
+    {
+      "bytes": 10526,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/subset_c1.py",
+      "sha256": "b40c035e762145689b07ab84583e7b73ae8700c671d2851776bf26f36d7551f3"
+    },
+    {
+      "bytes": 14943,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/run_c1_clock_supplement.py",
+      "sha256": "56f584c7399c6a786965393c1725afe81f2f1c488aac459d2426876eae0bb8ff"
+    },
+    {
+      "bytes": 15078,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/run_subset_review.py",
+      "sha256": "ba8469e4aa4f8068edb8e9e8ca7f635ce12710b3c0ca485acc9d9b2d54873f8f"
+    },
+    {
+      "bytes": 12037,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/subset_context.py",
+      "sha256": "0be6d9786b460070f88352f9dfe27cd12469c2c62e2f979f5c525b08af9c4c8f"
+    },
+    {
+      "bytes": 2576,
+      "path": "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/test_clock_sampling.py",
+      "sha256": "8c83cd3cabb37a25b30644a2898331cedee1e255083a28196a78e3daa4fa7086"
+    },
+    {
+      "bytes": 15066,
+      "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/c2_boundary.py",
+      "sha256": "9b6bd43ebde5317d62c55fbc37b5fb2309f89178d195c529598529caf1e99f4f"
+    },
+    {
+      "bytes": 10831,
+      "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/test_c2_boundary.py",
+      "sha256": "bdbd02fc0eb7903c2b94017b2f906de98773e5a50f1576431d313943fcff873d"
+    },
+    {
+      "bytes": 10860,
+      "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/FEASIBILITY.md",
+      "sha256": "a669b56254af5125fed1dc136f0bc1d387fcc668afd0acb19a63931568be8b7c"
+    },
+    {
+      "bytes": 1950,
+      "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/PROPOSED-C2-PLAN.json",
+      "sha256": "7799e7cd87fdc9e3a23d4863bf073a6479eb89918dd30e9ff9ed06fb7dc72fea"
+    },
+    {
+      "bytes": 1554,
+      "path": "/workspace/scratch/c385a7439f8e/c2-feasibility-v1/validation-attempt2/RESULT.json",
+      "sha256": "2fc62b7e271e2ae54840db7be87da1c420908137648409158d732d341decde5e"
+    }
+  ],
+  "schema": "independent-continuation-clock-and-C2-static-review-v1",
+  "scientific_admission": "HOLD",
+  "training_performed": false,
+  "whole_training_numerical_qualification_granted": false
+}

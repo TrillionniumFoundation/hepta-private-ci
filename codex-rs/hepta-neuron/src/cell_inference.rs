@@ -11,6 +11,7 @@ use crate::NeuronInferenceControlPort;
 use crate::NeuronModelError;
 use crate::NeuronModelPort;
 use crate::NeuronModelRequestV1;
+use crate::NeuronShadowConfigV1;
 use crate::cell::CellPreparationModeV1;
 use crate::cell::prepare_from_snapshot;
 use crate::cell_binding::semantic_request_digest;
@@ -81,8 +82,11 @@ pub fn infer_cell(
     let output = InferenceControlModelPort::new(control)
         .execute(&prepared.model_request)
         .map_err(CellExecutionError::Backend)?;
-    validate_model_output(&prepared.definition.runtime, &output)
-        .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
+    validate_model_output(
+        &NeuronShadowConfigV1::from(&prepared.definition.runtime),
+        &output,
+    )
+    .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
     Ok(InferredCellStepV1 {
         prepared,
         output,
@@ -148,8 +152,11 @@ pub fn infer_cell_with_clock(
         .queue_age_micros
         .checked_add(host_queue_age_micros)
         .ok_or(CellExecutionError::CapacityExceeded)?;
-    validate_model_output(&prepared.definition.runtime, &output)
-        .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
+    validate_model_output(
+        &NeuronShadowConfigV1::from(&prepared.definition.runtime),
+        &output,
+    )
+    .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
     Ok(InferredCellStepV1 {
         prepared,
         output,
@@ -216,8 +223,11 @@ pub fn recover_cell_inference(
         .queue_age_micros
         .checked_add(host_queue_age_micros)
         .ok_or(CellExecutionError::CapacityExceeded)?;
-    validate_model_output(&prepared.definition.runtime, &output)
-        .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
+    validate_model_output(
+        &NeuronShadowConfigV1::from(&prepared.definition.runtime),
+        &output,
+    )
+    .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
     Ok(InferredCellStepV1 {
         prepared,
         output,

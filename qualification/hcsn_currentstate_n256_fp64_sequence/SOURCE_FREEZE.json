@@ -1,0 +1,22 @@
+{
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-fp64-sequence.yml": "cdd266df39cf78937221a2bf854947362ac8b4f5040d437b5a43dc1dcf72f80a",
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/fp64_add_sub.py": "3f58cfac6c5cc150ecfe9a3cf1c9fcbe1c019c1972aa2395974b4d1b83b75ba4",
+    "qualification/hcsn_currentstate_n256_fp64_fma/fp64_fma.py": "bd313cad7abc05bf1449983db2eee593e47ca6d05921498516406ea313aa278f",
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/fp64_mul_div.py": "1b22b733e3a7b4fa12ea907ebfd4c7459ac30556aee13c936d6fa4567b09abcf",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": "4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917",
+    "qualification/hcsn_currentstate_n256_fp64_sequence/README.md": "754a391c6e4202ec31a6cab1be014600f4e9a448010055fd7e6ceb38a4cb3d53",
+    "qualification/hcsn_currentstate_n256_fp64_sequence/REQUEST.json": "887675659987462e01f029023758d0c55576b09b1f5679aae776a40ae075e2f7",
+    "qualification/hcsn_currentstate_n256_fp64_sequence/__init__.py": "54715a1ff1ee2bc14416069e05beb2899aecf420065b90cf60a40141bcfaaf68",
+    "qualification/hcsn_currentstate_n256_fp64_sequence/fp64_sequence.py": "c4a16fa46df9aa5d31348cff1ac7c5446216edb9f97ebbd6c2f0acb1e3ce4af5",
+    "qualification/hcsn_currentstate_n256_fp64_sequence/test_fp64_sequence.py": "b0f2cb50d7ec280b364c0675544034b1d3789d7427fa99080b92808b1be3c6e2",
+    "qualification/hcsn_currentstate_n256_fp64_sequence/verify_source.py": "20424e1cb57b4772fb7594383260502497244c4aa14286f07bd66ae40ac7ec8f"
+  },
+  "forbidden_source_tokens": [
+    "hcsn_currentstate_n256_sparse_dynamic_intent",
+    "hcsn_currentstate_n256_independent_oracle_intent",
+    "expm_multiply"
+  ],
+  "identity": "hcsn-n256-explicit-binary64-sequence-source-20261114-c06d-v1",
+  "scope": "source-only explicit finite binary64 register sequence"
+}

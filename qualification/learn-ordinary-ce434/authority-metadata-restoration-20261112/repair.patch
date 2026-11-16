@@ -1,0 +1,15 @@
+diff --git a/CALLERS.toml b/CALLERS.toml
+index dc445dd052620bb07ebd7b2eee9640d4d4172234..898948f9b75147f9d758a88bdebbb99fc2529d88 100644
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -11831,2 +11831,10 @@
+ ]
+ 
++[authority]
++runtime_authority = false
++production_caller = false
++production_writer = false
++external_effect = false
++self_issued_acceptance = false
++promotion = false
++release = false

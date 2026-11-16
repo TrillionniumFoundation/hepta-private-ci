@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--root",
+    "/workspace/scratch/078e4036190f/legacy-integration"
+  ],
+  "source_commit": "8ce85627f92ecd9ff6cc21afc75472302eb0bb9d",
+  "source_tree": "66551efbe5e23ed445b0012cc7c792e451ebca52",
+  "initial_worktree_clean": true,
+  "frozen_source_inputs_unchanged": true,
+  "inputs_sha256": "3c26b5935f05271d880d795c3131b8cd74181cae745f80ca107afa61f1455e92",
+  "manifest_sha256": "d922e5114a8043d8885bfc3a0be66a1d1834ad79e66d429044349664518287e1",
+  "exit_code": 0,
+  "elapsed_seconds": 895.953,
+  "stdout_bytes": 766301,
+  "stdout_sha256": "2e33135fe4d0cdf4066814f637c89d06349579b2df9330b56955e165df0a1fc4",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "authority_granted": false,
+  "native_execution_qualified": false,
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "checked_boundaries": 1644,
+  "protected_files": 818,
+  "rust_files_scanned": 7476,
+  "callers-memory-full-output.json.gz": {
+    "bytes": 59068,
+    "sha256": "91737b62d81b81106d787a2a7fffbe87a2a651205b8098a8387a5adc8db437bc"
+  },
+  "callers-memory-full-inputs.json.gz": {
+    "bytes": 351580,
+    "sha256": "278ff452ff6b421fe0efea7db416f9df1b2d77d8f18a90e138d359c616fc15af"
+  }
+}

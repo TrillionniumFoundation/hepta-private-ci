@@ -1,0 +1,291 @@
+{
+  "C2_cumulative_update_counts_not_since_observation_deltas": true,
+  "actual_native_job": "1a1c7a33e3f-be2a-17e",
+  "actual_stable_key": "hcsn-c2-native-delta-epoch-observer-c385-v4",
+  "cost_scope": "GNU overlaps its script prefix; RPC read latencies/three timeouts are control-plane only.",
+  "fits": [
+    {
+      "C2_cumulative_completed_updates_observed": 219,
+      "epoch": 64,
+      "name": "hcsn-s101-lr0.001",
+      "new_epoch_nodes_in_this_delta": 5,
+      "pid_exists": true,
+      "prior_terminal_identity_reverified": null,
+      "strict_best": {
+        "best": 0.25174405817147394,
+        "best_epoch": 64,
+        "plateau_anchor": 0.25174405817147394,
+        "stale_epochs": 0
+      },
+      "terminal": null
+    },
+    {
+      "C2_cumulative_completed_updates_observed": 218,
+      "epoch": 65,
+      "name": "hcsn-s101-lr0.003",
+      "new_epoch_nodes_in_this_delta": 5,
+      "pid_exists": true,
+      "prior_terminal_identity_reverified": null,
+      "strict_best": {
+        "best": 0.3793301616489862,
+        "best_epoch": 63,
+        "plateau_anchor": 0.3793301616489862,
+        "stale_epochs": 2
+      },
+      "terminal": null
+    },
+    {
+      "C2_cumulative_completed_updates_observed": 217,
+      "epoch": 64,
+      "name": "hcsn-s211-lr0.001",
+      "new_epoch_nodes_in_this_delta": 5,
+      "pid_exists": true,
+      "prior_terminal_identity_reverified": null,
+      "strict_best": {
+        "best": 0.2797005468225917,
+        "best_epoch": 63,
+        "plateau_anchor": 0.2797005468225917,
+        "stale_epochs": 1
+      },
+      "terminal": null
+    },
+    {
+      "C2_cumulative_completed_updates_observed": 36,
+      "epoch": 50,
+      "name": "hcsn-s211-lr0.003",
+      "new_epoch_nodes_in_this_delta": 0,
+      "pid_exists": false,
+      "prior_terminal_identity_reverified": [
+        {
+          "bytes": 360283,
+          "original": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/result.json",
+          "raw_bytes_retained_in_parent_archive": true,
+          "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+        },
+        {
+          "bytes": 3281,
+          "original": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/attempts/hcsn-s211-lr0.003/RESULT.json",
+          "raw_bytes_retained_in_parent_archive": true,
+          "sha256": "189da59739ac6337152cbc6c58e455087a30decaf50171c19a2c8b74e9629edc"
+        }
+      ],
+      "strict_best": {
+        "best": 0.3910932361454862,
+        "best_epoch": 40,
+        "plateau_anchor": 0.3910932361454862,
+        "stale_epochs": 10
+      },
+      "terminal": {
+        "best_checkpoint_sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c",
+        "best_epoch": 40,
+        "common_and_physical_weights_unchanged": true,
+        "cumulative_epochs_completed": 50,
+        "last_checkpoint_sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f",
+        "new_main_updates": 36,
+        "selected_development": {
+          "accuracy": 0.702272158237356,
+          "balanced_accuracy_present_classes": 0.39214199821693413,
+          "brier_half_sum": 0.23309423742507898,
+          "brier_mean_classes": 0.042380770440923456,
+          "confusion_matrix": [
+            [
+              5619,
+              0,
+              59,
+              2,
+              0,
+              640,
+              268,
+              6,
+              15,
+              0,
+              0
+            ],
+            [
+              37,
+              58,
+              0,
+              58,
+              0,
+              316,
+              8,
+              0,
+              154,
+              0,
+              0
+            ],
+            [
+              333,
+              8,
+              482,
+              77,
+              0,
+              78,
+              121,
+              4,
+              35,
+              2,
+              0
+            ],
+            [
+              3,
+              64,
+              185,
+              9554,
+              0,
+              0,
+              753,
+              236,
+              705,
+              0,
+              0
+            ],
+            [
+              119,
+              0,
+              2,
+              0,
+              0,
+              169,
+              7,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              348,
+              0,
+              181,
+              1,
+              0,
+              3879,
+              467,
+              0,
+              28,
+              87,
+              0
+            ],
+            [
+              190,
+              0,
+              26,
+              1106,
+              0,
+              8,
+              1279,
+              51,
+              594,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              22,
+              456,
+              1,
+              20,
+              211,
+              248,
+              64,
+              0,
+              0
+            ],
+            [
+              0,
+              11,
+              0,
+              571,
+              0,
+              4,
+              45,
+              0,
+              1314,
+              0,
+              0
+            ],
+            [
+              85,
+              0,
+              0,
+              1,
+              0,
+              70,
+              36,
+              0,
+              0,
+              6,
+              0
+            ],
+            [
+              26,
+              0,
+              0,
+              118,
+              0,
+              1,
+              73,
+              0,
+              143,
+              0,
+              0
+            ]
+          ],
+          "ece_15_equal_width_bins": 0.16305902501378883,
+          "events": 31952,
+          "macro_f1_11_classes": 0.3910932361454862,
+          "macro_f1_present_classes": 0.3910932361454862,
+          "nll": 1.0173874314444633
+        },
+        "source_and_parent_inputs_unchanged": true,
+        "status": "completed_development",
+        "stop_reason": "development_plateau",
+        "training_adequacy_established": true
+      }
+    },
+    {
+      "C2_cumulative_completed_updates_observed": 221,
+      "epoch": 64,
+      "name": "hcsn-s307-lr0.001",
+      "new_epoch_nodes_in_this_delta": 5,
+      "pid_exists": true,
+      "prior_terminal_identity_reverified": null,
+      "strict_best": {
+        "best": 0.23671566318169407,
+        "best_epoch": 64,
+        "plateau_anchor": 0.23671566318169407,
+        "stale_epochs": 0
+      },
+      "terminal": null
+    },
+    {
+      "C2_cumulative_completed_updates_observed": 218,
+      "epoch": 64,
+      "name": "hcsn-s307-lr0.003",
+      "new_epoch_nodes_in_this_delta": 5,
+      "pid_exists": true,
+      "prior_terminal_identity_reverified": null,
+      "strict_best": {
+        "best": 0.3498305888641129,
+        "best_epoch": 62,
+        "plateau_anchor": 0.3498305888641129,
+        "stale_epochs": 2
+      },
+      "terminal": null
+    }
+  ],
+  "observed_utc": "2026-11-10T22:45:40.491673+00:00",
+  "parent_archive": {
+    "bytes": 386227,
+    "path": "/workspace/scratch/c385a7439f8e/c2-epoch-observation-recovered-v3/hcsn-c2-epoch-observation-20261110-v3.zip",
+    "sha256": "8a52c3e6ebdfa289c348c726e8b4383b277bc81e912462c1c237515eca48cded"
+  },
+  "schema": "hcsn-c2-delta-observation-handoff-v4",
+  "scientific_and_numerical_admission": "HOLD",
+  "scope": "New complete epoch nodes + newly appearing terminal metadata only; prior terminal raw bytes retained and rehashed against immutable parent. Full events remain metadata snapshots. No model/trace arrays; no independent terminal audit.",
+  "source_and_parent_unchanged": true,
+  "training_restarts": 0,
+  "unexecuted_source_draft_preserved": "preparation/OBSERVER-draft-01.py in control ZIP",
+  "whole_process_cost_original": "GNU-TIME.txt"
+}

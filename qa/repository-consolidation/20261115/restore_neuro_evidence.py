@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from restore_raw_evidence import read_verified
+
 
 MANIFESTS = (
     "qualification/evaluated-current-read-20261112/source53-native-failure/"
@@ -25,9 +27,9 @@ def prepare(repo, manifest_name):
         if name.name != str(name) or name.is_absolute():
             raise ValueError("part must be a filename beside its manifest")
         path = manifest_path.parent / name
-        if path.is_symlink():
-            raise ValueError("evidence part must be a regular local file")
-        chunk = path.read_bytes()
+        chunk = read_verified(
+            repo, path.relative_to(repo), part["bytes"], part["sha256"]
+        )
         if part["offset"] != len(data) or part["bytes"] != len(chunk):
             raise ValueError(f"part length or offset mismatch: {path}")
         if hashlib.sha256(chunk).hexdigest() != part["sha256"]:

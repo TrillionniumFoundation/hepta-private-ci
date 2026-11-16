@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.reviewed-learning-root-coalescence.v1",
+  "before_parent": "3e27fdf99b0bae670663301ac711af5c30ce5200",
+  "incoming_root_parent": "bd9a22512f78794d31a0f5c9a8b8db4b5192eeee",
+  "merge_base": "b6a5e15aa4b05ddfe63c88cb870de85c19a87214",
+  "fresh_normal_preview_exit": 0,
+  "text_conflicts": [],
+  "manual_source_resolutions": [],
+  "new_hia_root_excluded": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+  "root_rust_delta": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/imagegen_extension.rs",
+      "sha256": "f78a07246ba1e37faeee224e8ec6c2eb18471aa521278b4ce3ddbe2d7ad015e8"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "sha256": "ca235b014109b21b39026d76813aa7a906d88ceed6b46dbfab1f76ebe0f887d3"
+    },
+    {
+      "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+      "sha256": "ec0d30eee52d82eff5078604a94d849e07062e8ebb2447c6a8d19413b356e22d"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "sha256": "253be8f4cb9f9eac68207baca1942c67294371b5e0ffa9d233cd6e46892a1a9e"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/workspace_roots.rs",
+      "sha256": "a4db3f43cdb7272f6c233f8f1df7d92536ecae4e4ecf04657b5bc4942f753914"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "sha256": "78b588f7632e3f4439c3e5b4807c3f2eaa11782a3c5f2d4e12814bb4107662ff"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system/support.rs",
+      "sha256": "0bfdff9e0671510f2be82ed296ad542cfc4012a003bdbf18ed3177cd5c62f914"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system_windows.rs",
+      "sha256": "aae2fb692e1316b7cd3154c5c0f2032d84f2f9e923b2ae0c53c5e38d5c6a1485"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_context_tests.rs",
+      "sha256": "38312db7d71d423a72d38b2e37d3cd4b8de96622fdbfd9df7f93c45c8228bf92"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-group-control.rs",
+      "sha256": "8cc8cf199cba3004c52aa156138f4b3d9c85b025b0b6d29b078d145940a674e7"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-group-replay.rs",
+      "sha256": "4936dd8d2cda927500d43b3280a799faddb8feb34c6c63d06a3be48f6d7877bd"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs",
+      "sha256": "5b4a6a5e6b42f28aaa5595e068d72e90e8b8da08d844fff9f5388b27533156b9"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "sha256": "8cec4ee59d4becaeece6fdbcb52089b7b2d86117abea7fd425eb17f37dd5860b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity.rs",
+      "sha256": "ba4836c8297c924659ee863547f1cbedde68227a65cc33f2c7c4b14dffb6c7a2"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity/real_time_credit.rs",
+      "sha256": "0a4fb85b22c97b3c247c8e96d28193666a9bdad64155a0d73e913ce231f1d864"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity/real_time_credit_tests.rs",
+      "sha256": "dca083bf8b0169c1b331c39612e49c040653aec1d09102b921dcd36ff876c032"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity/temporal_credit.rs",
+      "sha256": "d3f9f4cc733a65630971b6e1c878f37930540eb9d8a6c177af69725c0c57489f"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "cfe7688109197e9d0d53a9e3e87a4b1dd87eb6f69b1cdefab957ce209630f32b"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "sha256": "2f2ae2370196426ca08938fe6e1d898264ac01bb2d93a94c306b4fe358c95a9f"
+    }
+  ],
+  "changed_protected_paths": [],
+  "changed_declared_boundary_paths": [],
+  "unchanged_protected_source_sha256": "057e963b6d255d8a26c71d7563f359163803c7121992c61790d1d4d8653827b3",
+  "unchanged_callers_sha256": "d56159a3cbaac7d5bdea169d857b5091ae12773a1b17391b2addc4848c6b20e8",
+  "cargo_manifest_lock_module_inputs_changed": false,
+  "toml_manifests_parsed": 216,
+  "workflow_yaml_parsed": 16,
+  "reviewed_interactions": [
+    {
+      "area": "neuron temporal/real-time credit",
+      "finding": "Original temporal entry still passes minimum_sequence=1 and original discrete decay to the shared private kernel. Only the explicit real-time wrapper passes zero-based microsecond time and its own decay; the new values remain DENY_ALL and do not attest or adopt models. Both public exports remain present."
+    },
+    {
+      "area": "NDU offline bins",
+      "finding": "The two bounded ASCII tools retain full input digest and immutable context checks, use the existing recursive utility library, reject non-DENY_ALL receipts and declare production_owner_integrated=false. They do not replace Learning owner authority paths."
+    },
+    {
+      "area": "Windows fixtures and token repair",
+      "finding": "Refusal assertions explicitly select the legacy restricted-token backend. The dedicated-account token retains user/capability/proxy SIDs while excluding ambient logon/Everyone alternatives, and corresponding assertions are preserved. This candidate still requires actual Windows-native validation."
+    },
+    {
+      "area": "native fixture fixes",
+      "finding": "Poisoned observer Mutex remains a panic with explicit matching; no error is ignored. Persistent-uncertainty cleanup repeatedly observes only the original bounded shutdown until actual success, and retains worker.calls==1 plus is_closed assertions."
+    },
+    {
+      "area": "workflow helpers and lock diagnostics",
+      "finding": "Both daemon-learning and shared-framework helper preparation/verification include infer-worker-host and codex-cli. Lock failure remains failure; diagnostic text distinguishes unresolved resolution from observed lock drift. ACT2 formatting preserves branch triggers."
+    },
+    {
+      "area": "blob policy",
+      "finding": "The strict 512000-byte policy and exact existing CALLERS SHA pin are preserved alongside the root evidence allowlist additions."
+    }
+  ],
+  "prior_validation_scope": {
+    "primary_learning_merge": "1c20347f3d01c32201c6e2f8469437f55817b6c9",
+    "source_closure_tests": 1164,
+    "caller_cli": "passed on primary source, 7349 Rust files",
+    "native": "Learning dependency download failed before compilation; root native results remain scoped to their recorded original source and do not establish a combined pass."
+  },
+  "combined_validation": {
+    "source_review": "completed",
+    "toml_yaml": "passed",
+    "native_compile_test": "not yet executed on combined source",
+    "full_caller_and_source_closure": "separate combined-source run follows; no prior receipt is relabelled"
+  },
+  "reviewed_at": "2026-11-15T16:24:46.266949+00:00"
+}

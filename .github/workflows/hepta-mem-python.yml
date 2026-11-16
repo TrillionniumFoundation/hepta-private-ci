@@ -156,8 +156,25 @@ jobs:
           uname -a > "$records/host.txt"
           python --version >> "$records/host.txt"
           sudo apt-get update 2>&1 | tee "$records/package-update.log"
-          sudo apt-get install --yes --no-install-recommends bubblewrap 2>&1 | tee "$records/package-install.log"
+          sudo apt-get install --yes --no-install-recommends bubblewrap apparmor-profiles 2>&1 | tee "$records/package-install.log"
           bwrap --version >> "$records/host.txt"
+          dpkg-query -W bubblewrap apparmor apparmor-profiles > "$records/namespace-package-versions.txt"
+          # Ubuntu's packaged profile permits bwrap to construct namespaces and
+          # stacks a capability-denying profile on the executed child. Keep the
+          # system-wide user-namespace restriction and the strict launcher intact.
+          profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$profile"
+          test ! -L "$profile"
+          dpkg-query -S "$profile" > "$records/namespace-profile-owner.txt"
+          cp "$profile" "$records/bwrap-userns-restrict"
+          sha256sum "$profile" > "$records/namespace-profile-sha256.txt"
+          sysctl -n kernel.apparmor_restrict_unprivileged_userns > "$records/userns-restriction-before.txt"
+          sudo apparmor_parser --replace "$profile" 2>&1 | tee "$records/namespace-profile-load.log"
+          sysctl -n kernel.apparmor_restrict_unprivileged_userns > "$records/userns-restriction-after.txt"
+          cmp "$records/userns-restriction-before.txt" "$records/userns-restriction-after.txt"
+          sudo cat /sys/kernel/security/apparmor/profiles > "$records/apparmor-loaded-profiles.txt"
+          grep -Fx 'bwrap (enforce)' "$records/apparmor-loaded-profiles.txt"
+          grep -Fx 'unpriv_bwrap (enforce)' "$records/apparmor-loaded-profiles.txt"
       - name: Record read-only host policy and unchanged strict namespace probe
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 30 --minimum-tests 4 \

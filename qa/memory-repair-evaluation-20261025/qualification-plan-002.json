@@ -1,0 +1,106 @@
+{
+  "contracts_immutable": true,
+  "controls": [
+    "original all-skip falsegreen missingeachtool, and original21pass when provisioned",
+    "knownhistorical runner plus selectedworkflow21pass; both missingtool profiles refuse beforetests",
+    "emptyrunner0tests rejected",
+    "partial-suiterunner1passedtest rejected",
+    "source/candidate/workflow scope refusals",
+    "runtimehash refusal and sourceonly9fileexport"
+  ],
+  "corrections": [
+    "one more suite nesting level selects exactly1test in negative control",
+    "best-effort supervision cleanup/reap errors retained and prevent pass",
+    "parent CPU/attempt wall included, sourcebytes explicitly logical payload, not repeated reads",
+    "observer helper imports inside main for isolated script lint; remove unused harness json import",
+    "all fixture/test IDs, tool pins and positive runner bytes unchanged"
+  ],
+  "expected_codec_checks": 6,
+  "files": {
+    "CODEC_V2.md": {
+      "bytes": 7327,
+      "lines": 115,
+      "sha256": "9c6559247e28dda346dc49938cfbf43d418ab8498efb29956065ee127d12ca9b"
+    },
+    "README.md": {
+      "bytes": 5900,
+      "lines": 105,
+      "sha256": "18c7ac449404a7555b02361a230ac2027c63decbd883401268d45f8292b73b04"
+    },
+    "attempt_ledger.py": {
+      "bytes": 3779,
+      "lines": 57,
+      "sha256": "4d28cb85e6c5e0332111b56674851959e5b811bd219b77748181b0e15cec1f7b"
+    },
+    "bounded_process.py": {
+      "bytes": 3597,
+      "lines": 113,
+      "sha256": "462a4088e1d5f28cd6d4aac45b9463862b531d58885c0bbc119258718caf1b88"
+    },
+    "candidate_observer_v2.py": {
+      "bytes": 4719,
+      "lines": 106,
+      "sha256": "c77cd1cb40f575f69caa558a31fd7e32cb4d3852b1dd1dd856a368fbd851daf3"
+    },
+    "codec_contract_v2.json": {
+      "bytes": 6082,
+      "lines": 131,
+      "sha256": "12077c2c7559b4ba9b8000b0bf437e420a33f283fc66eea4deacbf1023dba30a"
+    },
+    "codec_executor_v2.py": {
+      "bytes": 9197,
+      "lines": 165,
+      "sha256": "cea083768edef2e1a05c13461108293573279da5072aa0262799d21e282a8949"
+    },
+    "process_meter_v2.py": {
+      "bytes": 3213,
+      "lines": 75,
+      "sha256": "55f983524ee8a32f191f99de28a4afef51b50b2a3e046d3d6bdcdcf485244542"
+    },
+    "ruff_contract.json": {
+      "bytes": 12212,
+      "lines": 182,
+      "sha256": "df2507680813e86d08b94877e6985476927b2bb76d5ec4bdb083ad5b3e86a8dc"
+    },
+    "ruff_executor.py": {
+      "bytes": 11497,
+      "lines": 287,
+      "sha256": "5ddde4b8d543072e85930161e877018dc8bcb1156045e1ee795b9c184421bf8e"
+    },
+    "ruff_judge.py": {
+      "bytes": 2596,
+      "lines": 84,
+      "sha256": "259380ca4b1f60a5b4729dd3d5c0efaa7b35fac60a688ee8604e00368520fc1b"
+    },
+    "runtime_profile.py": {
+      "bytes": 1883,
+      "lines": 36,
+      "sha256": "265ff1e77a166e8d32fd646f826428e99e0ca2ff2e1b41449cc1726f45676700"
+    },
+    "task_contract_v2.py": {
+      "bytes": 3206,
+      "lines": 74,
+      "sha256": "f7de1cd2211eb9e0fec8266ed37f509c1e6dc247ce1240ebdb68eca0ef16b62a"
+    },
+    "test_codec_executor_v2.py": {
+      "bytes": 7240,
+      "lines": 123,
+      "sha256": "946ad49e8e3fcecfee58cad71d8b1cf56df0f8412d26367dbf4bfe3a9bebd479"
+    },
+    "test_ruff_executor.py": {
+      "bytes": 9088,
+      "lines": 228,
+      "sha256": "1e0495719e92e801976e6044140991741f0c9b43ef061fc57b66434af5354045"
+    }
+  },
+  "frozen_utc": "2026-10-25T12:26:49.253055+00:00",
+  "max_added_disk_bytes": 31457280,
+  "max_planned_local_model_calls": 0,
+  "max_planned_qualification_cpu_seconds": 300,
+  "method_changes_after_freeze": "Any corrections must be separately recorded with all failed runs retained.",
+  "new_future_cases": 0,
+  "new_ruff_qualification": "existing9checks under new explicit controller profile, original76IDs unchanged",
+  "previous_run": "codec-qualification-001:5/6checks; partial-control selected8 notplanned1; externaljudge correctly refused8/21",
+  "runtime_profile": "controller-supplied exact hashes of current binaries, no new packages",
+  "schema": "hepta.memory-cell.codec-qualification-plan.v1"
+}

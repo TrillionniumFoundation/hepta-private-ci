@@ -1,0 +1,10 @@
+{
+  "schema": "read-only-verifier-wrapper-preflight-failure-v1",
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: '-B'",
+  "cause": "Wrapper treated argv[1] as source filename although the original argv contains python -B script.py. Failure while constructing prehash map, before subprocess start.",
+  "verifier_started": false,
+  "complete_process_wall_seconds": null,
+  "process_CPU_seconds": null,
+  "original_evidence_modified": false,
+  "recorded_utc": "2026-11-10T20:41:04.585913+00:00"
+}

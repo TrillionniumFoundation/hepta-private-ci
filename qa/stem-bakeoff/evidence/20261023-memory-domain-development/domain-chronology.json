@@ -1,0 +1,133 @@
+{
+  "all_cases_remain_known_finite_development": true,
+  "cases": [
+    {
+      "classification": "strict_chronological_historical_pair",
+      "direct_parent": true,
+      "failed_run_completed_updated_at": "2026-10-23T10:42:41Z",
+      "failed_run_id": 39940937789,
+      "failure_test_exit_at": "2026-10-23T10:42:39.5383986Z",
+      "failure_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39940937789",
+      "fix_commit": "455e16648ce7069400f5a8e679e4fd0c1a1da613",
+      "fix_committed_at": "2026-10-23T10:44:42Z",
+      "fix_predates_hosted_failure_completion": false,
+      "fix_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/455e16648ce7069400f5a8e679e4fd0c1a1da613",
+      "id": "covariance-diagnostics",
+      "repair_id": "order",
+      "success_completed_updated_at": "2026-10-23T10:45:24Z",
+      "success_created_at": "2026-10-23T10:44:48Z",
+      "success_run_id": 39941261138,
+      "success_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39941261138"
+    },
+    {
+      "classification": "paired_historical_only",
+      "direct_parent": true,
+      "failed_run_completed_updated_at": "2026-10-23T09:41:12Z",
+      "failed_run_id": 39933602967,
+      "failure_test_exit_at": "2026-10-23T09:41:09.8413213Z",
+      "failure_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39933602967",
+      "fix_commit": "e9ecf9c50877b58879e1b3d61a766cf512466d5f",
+      "fix_committed_at": "2026-10-23T09:40:56Z",
+      "fix_predates_hosted_failure_completion": true,
+      "fix_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e9ecf9c50877b58879e1b3d61a766cf512466d5f",
+      "id": "bound-fixture-evidence",
+      "repair_id": "bind",
+      "success_completed_updated_at": "2026-10-23T09:41:38Z",
+      "success_created_at": "2026-10-23T09:41:04Z",
+      "success_run_id": 39933639749,
+      "success_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39933639749"
+    },
+    {
+      "classification": "paired_historical_only",
+      "direct_parent": true,
+      "failed_run_completed_updated_at": "2026-10-23T10:50:23Z",
+      "failed_run_id": 39941741478,
+      "failure_test_exit_at": "2026-10-23T10:50:20.7549244Z",
+      "failure_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39941741478",
+      "fix_commit": "8ab132fce55be881a1410639d4db96e4eee8b1b1",
+      "fix_committed_at": "2026-10-23T10:49:36Z",
+      "fix_predates_hosted_failure_completion": true,
+      "fix_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8ab132fce55be881a1410639d4db96e4eee8b1b1",
+      "id": "exception-order",
+      "repair_id": "assert",
+      "success_completed_updated_at": "2026-10-23T10:50:31Z",
+      "success_created_at": "2026-10-23T10:49:42Z",
+      "success_run_id": 39941825953,
+      "success_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39941825953"
+    }
+  ],
+  "domain_source_data_partitions_protocol_modified": false,
+  "inputs": {
+    "all-runs.json": {
+      "bytes": 102294,
+      "sha256": "b069d01ad11c3ddde056f03deb9d16bfa45f90b32a924d6b648e1da6cbcd7dfe"
+    },
+    "commit-455e16648ce7069400f5a8e679e4fd0c1a1da613.json": {
+      "bytes": 6845,
+      "sha256": "fb1a74da82cb5f758adb43084506dcc212983bf636f2f760f3913b3a0e543b2e"
+    },
+    "commit-8ab132fce55be881a1410639d4db96e4eee8b1b1.json": {
+      "bytes": 5457,
+      "sha256": "fd12ea6270a5c74061739bfb2f0317e9802afb9bb44f49ab9d2864f1bd44b2de"
+    },
+    "commit-e9ecf9c50877b58879e1b3d61a766cf512466d5f.json": {
+      "bytes": 7150,
+      "sha256": "4258cfb3da9a9ff2114cc901f1162bda614f1231209b84456556f1d69910e1fd"
+    },
+    "jobs-39933602967.json": {
+      "bytes": 1813,
+      "sha256": "f582465a7b769452258fad7f0cc061067e02fb3be821aaf96f15aec6bff35b48"
+    },
+    "jobs-39933639749.json": {
+      "bytes": 1813,
+      "sha256": "bfe1839c0764025f7eeb21ea0114954c7bc2910727a4de7d2a65569b3c80fcf4"
+    },
+    "jobs-39940937789.json": {
+      "bytes": 1813,
+      "sha256": "9b997207858d9b51a3d9a48c0be788e15794bc6907092887e7e328bded3b45c3"
+    },
+    "jobs-39941261138.json": {
+      "bytes": 1813,
+      "sha256": "9100a5ad7ffb38fe55590316441429db4d52011351cd07417156fce8c7c4aca4"
+    },
+    "jobs-39941741478.json": {
+      "bytes": 1813,
+      "sha256": "fe228de08b1dda2de2a0a825067fe6a97babd32b67e580fedbfb2f8d73baba98"
+    },
+    "jobs-39941825953.json": {
+      "bytes": 1813,
+      "sha256": "cd66f7ee37bc111899b459890c9348bf5eb267e046e54432d980c8da689362e8"
+    },
+    "manifest.json": {
+      "bytes": 3364,
+      "sha256": "a007c3dc56f75794f8b5858a505df4faac932fcdc2e3b809fe3db448c695dafc"
+    },
+    "run-39933602967.log": {
+      "bytes": 33248,
+      "sha256": "e5d31dcc96e2ccbf8dfb5050198762d6ab2e47238ffe4b1cceb7a9ee1a59c5cd"
+    },
+    "run-39933639749.log": {
+      "bytes": 34678,
+      "sha256": "5b481dd06098aaa18f8e611f57b2498f9d20e4b4b6ada24d76fe6557368141d9"
+    },
+    "run-39940937789.log": {
+      "bytes": 38587,
+      "sha256": "a0f723ac785c915cf766d0a018266de1c60cadb2d5ad764b439ef7ee39d42717"
+    },
+    "run-39941261138.log": {
+      "bytes": 37753,
+      "sha256": "a9b3696ca8e30fbaaf9457359295e9d935e8ba93c4c6d3e49fa611fbcdf3974b"
+    },
+    "run-39941741478.log": {
+      "bytes": 34353,
+      "sha256": "37b81a845e0929d1de44a44cc65dd7be72bf4a42dbadfd254f01939566d12980"
+    },
+    "run-39941825953.log": {
+      "bytes": 41222,
+      "sha256": "ab78fafca14043f2a1b2eaee0eb3bc2fcf7d74753e0f1ce24b77bd40711d9fd2"
+    }
+  },
+  "quality_results_consulted": false,
+  "schema": "hepta.domain-input-chronology-audit.v1",
+  "timestamp_order_is_not_proof_of_developer_awareness": true
+}
