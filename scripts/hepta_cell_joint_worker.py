@@ -95,12 +95,35 @@ def load_candidate(path):
         ("cells", "scripts/hepta_cells/hia_component.py"),
         ("hia", "tools/cell_bridge_native.py"),
         ("hia", "examples/hia_cell_bridge/continuation.hepta"),
+        ("hia", "pyproject.toml"),
         ("artifacts", "native/build.json"),
         ("artifacts", "inputs.json"),
     }
     required.update(
+        ("cells", "scripts/" + name)
+        for name in (
+            "hepta_cell_campaign_worker.py",
+            "runtime_stdio.py",
+            "runtime_process_contract.py",
+            "runtime_process_bridge.py",
+            "qualify_runtime_process_bridge.py",
+            "qualify_runtime_campaign.py",
+            "refreeze_joint_worker.py",
+            "package_hia_cell_candidate.py",
+        )
+    )
+    required.update(
+        ("hia", "docs/" + name)
+        for name in (
+            "HIA_CORE_LOWERING_ABI.json",
+            "HIA_CORE_EMITTER_ABI.json",
+            "HIA_BYTE_WRAPPER_ABI.json",
+            "HIA_MACHINE_OBJECT_ABI.json",
+        )
+    )
+    required.update(
         ("hia", str(p.relative_to(roots["hia"])))
-        for p in (roots["hia"] / "hepta").glob("*.py")
+        for p in (roots["hia"] / "hepta").rglob("*.py")
     )
     observed = set()
     for item in value["files"]:
