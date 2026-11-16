@@ -242,13 +242,20 @@ impl PairFleet {
         // with only that metadata removed, as for an ordinary release binary.
         #[cfg(target_os = "linux")]
         let fixture_binary = {
+            use std::os::unix::fs::PermissionsExt;
+
             let copy = temp.path().join("paired-process-fixture");
             let original_bytes = std::fs::copy(&fixture_binary, &copy)?;
+            let original_permissions = std::fs::metadata(&copy)?.permissions();
+            let mut strip_permissions = original_permissions.clone();
+            strip_permissions.set_mode(original_permissions.mode() | 0o200);
+            std::fs::set_permissions(&copy, strip_permissions)?;
             let output = std::process::Command::new("strip")
                 .arg("-S")
                 .arg(&copy)
                 .output()
                 .context("strip Linux fixture debug metadata")?;
+            std::fs::set_permissions(&copy, original_permissions)?;
             anyhow::ensure!(
                 output.status.success(),
                 "fixture strip failed: {}",
