@@ -1,0 +1,10 @@
+[
+  {
+    "assertions": "    assert subject([2, 3]) == {\"count\": 2, \"total\": 5}",
+    "domain": "numeric",
+    "family": "protocol-warmup-excluded",
+    "fixture_id": "warmup-sum",
+    "input": "Write a test for subject(values), which returns count and sum. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. Test template: def test_contract():\n    pass\nSubject:\ndef summarize(values):\n    return {\"count\": len(values), \"total\": sum(values)}\n",
+    "split": "train"
+  }
+]

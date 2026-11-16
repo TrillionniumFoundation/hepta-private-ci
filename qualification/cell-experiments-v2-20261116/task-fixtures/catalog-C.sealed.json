@@ -1,0 +1,98 @@
+{
+  "fixtures": [
+    {
+      "controls": [
+        {
+          "id": "always-zero",
+          "kind": "constant",
+          "value": 0
+        },
+        {
+          "id": "always-thirteen",
+          "kind": "constant",
+          "value": 13
+        }
+      ],
+      "entry": "strict_int",
+      "fixture_id": "C-budget-integer",
+      "function": "strict_int",
+      "globals": {},
+      "nodes": [
+        "strict_int"
+      ],
+      "source": {
+        "archive_name": "chain_host_budget_feasibility.py.txt",
+        "git_blob": "17d84340d227291e867516b711b99f1ae018cfa7",
+        "path": "scripts/ci/host_budget_feasibility.py",
+        "repository": "TrillionniumFoundation/Trillionnium-Chain",
+        "revision": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+        "sha256": "e060c15251b17d3995cd872f51232b8172670e878172d5d5c85a7527c6c66130"
+      },
+      "subject_source": "def strict_int(value, label, minimum=0):\n    if type(value) is not int or value < minimum:\n        raise ValueError(label + \": expected nonnegative integer\")\n    return value\n"
+    },
+    {
+      "controls": [
+        {
+          "id": "inverted-match",
+          "kind": "toggle"
+        },
+        {
+          "id": "always-true",
+          "kind": "constant",
+          "value": true
+        }
+      ],
+      "entry": "direct",
+      "fixture_id": "C-research-schema",
+      "function": "is_research",
+      "globals": {
+        "SCHEMA": "llm-runtime-parent-step-input-v4"
+      },
+      "nodes": [
+        "is_research"
+      ],
+      "source": {
+        "archive_name": "chain_llm_answer_eos_task_research_v4.py.txt",
+        "git_blob": "1c304731176937b225efc65d16d392817617806a",
+        "path": "scripts/llm_answer_eos_task_research_v4.py",
+        "repository": "TrillionniumFoundation/Trillionnium-Chain",
+        "revision": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+        "sha256": "029a95bcf86864bed51765f22745a463c13c37115d58039e6befbc2489f953a9"
+      },
+      "subject_source": "def is_research(value):\n    return type(value) is dict and value.get('schema') == SCHEMA\n"
+    },
+    {
+      "controls": [
+        {
+          "id": "missing-to-zero",
+          "kind": "constant",
+          "value": 0
+        },
+        {
+          "id": "available-to-none",
+          "kind": "constant",
+          "value": null
+        }
+      ],
+      "entry": "direct",
+      "fixture_id": "C-rss-observation",
+      "function": "read_gnu_time_peak_rss",
+      "globals": {
+        "GNU_TIME_USAGE_LIMIT": 16384
+      },
+      "nodes": [
+        "read_gnu_time_peak_rss"
+      ],
+      "source": {
+        "archive_name": "chain_qualification_runtime.py.txt",
+        "git_blob": "7865f55cb80523b04ae623c38f05fc7567ee71e8",
+        "path": "scripts/qualification_runtime.py",
+        "repository": "TrillionniumFoundation/Trillionnium-Chain",
+        "revision": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+        "sha256": "cff43eeccc06d7ca8e8cbc533bc04d599ac043af9835efcaff7e324d16f2d5b4"
+      },
+      "subject_source": "def read_gnu_time_peak_rss(usage):\n    \"\"\"Return recorded GNU time RSS, or None when its measurement is unavailable.\n\n    Killing the whole subprocess group can kill GNU time before it writes a\n    summary. Missing, empty or malformed output must not hide the child's actual\n    exit status or timeout. Zero is returned only when the file records zero.\n    \"\"\"\n    try:\n        lines = read_bounded(usage, GNU_TIME_USAGE_LIMIT).decode('utf-8').splitlines()\n        if not lines:\n            return None\n        values = lines[-1].split()\n        if (len(values) != 3 or not re.fullmatch(r'[0-9]+', values[0])\n                or any(not re.fullmatch(r'[0-9]+(?:\\.[0-9]+)?', value)\n                       for value in values[1:])):\n            return None\n        return int(values[0])\n    except (OSError, UnicodeError, ValueError):\n        return None\n"
+    }
+  ],
+  "schema": "hepta.repo-function-fixtures.v1"
+}

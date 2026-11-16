@@ -1,0 +1,26 @@
+[
+  {
+    "assertions": "    assert subject(0, 0) == 0\n    assert subject(13, 13) == 13",
+    "domain": "numeric",
+    "family": "repo-contract:C-budget-integer",
+    "fixture_id": "C-budget-integer",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(value, minimum) validates a nonnegative integer at or above the minimum and returns the same integer. Cover zero and a positive exact-boundary value.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef strict_int(value, label, minimum=0):\n    if type(value) is not int or value < minimum:\n        raise ValueError(label + \": expected nonnegative integer\")\n    return value\n",
+    "split": "confirmation"
+  },
+  {
+    "assertions": "    assert subject({\"schema\": \"llm-runtime-parent-step-input-v4\"}) is True\n    assert subject({\"schema\": \"different\"}) is False\n    assert subject(\"llm-runtime-parent-step-input-v4\") is False",
+    "domain": "structured",
+    "family": "repo-contract:C-research-schema",
+    "fixture_id": "C-research-schema",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(value) is true exactly for dicts whose schema is llm-runtime-parent-step-input-v4. Cover a matching dict, a different schema and a non-dict.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef is_research(value):\n    return type(value) is dict and value.get('schema') == SCHEMA\n",
+    "split": "confirmation"
+  },
+  {
+    "assertions": "    assert subject('0 0.01 0.02\\n') == 0\n    assert subject('status\\n1024 0.10 0.20\\n') == 1024\n    assert subject('') is None",
+    "domain": "numeric",
+    "family": "repo-contract:C-rss-observation",
+    "fixture_id": "C-rss-observation",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nsubject(text) parses the last GNU time usage line. The reviewed file-reader dependency supplies the given UTF-8 text, with no filesystem access. Distinguish measured zero, a positive RSS and unavailable empty output.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef read_gnu_time_peak_rss(usage):\n    \"\"\"Return recorded GNU time RSS, or None when its measurement is unavailable.\n\n    Killing the whole subprocess group can kill GNU time before it writes a\n    summary. Missing, empty or malformed output must not hide the child's actual\n    exit status or timeout. Zero is returned only when the file records zero.\n    \"\"\"\n    try:\n        lines = read_bounded(usage, GNU_TIME_USAGE_LIMIT).decode('utf-8').splitlines()\n        if not lines:\n            return None\n        values = lines[-1].split()\n        if (len(values) != 3 or not re.fullmatch(r'[0-9]+', values[0])\n                or any(not re.fullmatch(r'[0-9]+(?:\\.[0-9]+)?', value)\n                       for value in values[1:])):\n            return None\n        return int(values[0])\n    except (OSError, UnicodeError, ValueError):\n        return None\n",
+    "split": "confirmation"
+  }
+]
