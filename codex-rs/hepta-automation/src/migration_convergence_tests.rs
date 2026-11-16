@@ -3,10 +3,13 @@ use sqlx::migrate::Migrate;
 
 async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
     let directory = tempfile::tempdir().expect("SQLite fixture directory");
-    let path = directory.path().join("historical.sqlite3");
+    let root = directory
+        .path()
+        .canonicalize()
+        .expect("canonical SQLite fixture directory");
+    let path = root.join("historical.sqlite3");
     let pool = SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(directory.path().to_path_buf())
-            .expect("SQLite fixture directory must be absolute"),
+        AbsolutePathBuf::try_from(root).expect("SQLite fixture directory must be absolute"),
     )
     .open_durable_evidence_pool(&path)
     .await
