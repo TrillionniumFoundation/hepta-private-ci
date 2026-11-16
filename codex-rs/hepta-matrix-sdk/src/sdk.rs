@@ -35,6 +35,9 @@ use crate::MatrixSidecarConfigError;
 use crate::MatrixTransportError;
 use crate::sync::MatrixSyncComposer;
 
+#[path = "startup_deadline.rs"]
+mod startup;
+
 const MATRIX_ROOM_MESSAGE_EVENT_TYPE: &str = "m.room.message";
 const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 // A Matrix companion must either reach its homeserver quickly or return to
@@ -42,6 +45,10 @@ const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 // startup paths may otherwise consume several transport attempts and their
 // individual timeouts before matrixd can bind its control socket.
 const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
+// Local store KDFs and migrations share one startup deadline with authentication
+// and fresh-client fallback. Each authentication request keeps its shorter bound.
+const MATRIX_STARTUP_TIMEOUT: std::time::Duration =
+    std::time::Duration::from_secs(/*secs*/ 20);
 const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
 
 pub struct MatrixSdkClient {
@@ -59,20 +66,23 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
     ) -> Result<Self, MatrixSdkError> {
         verify_session_identity(&config, &session)?;
-        let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config, store_passphrase),
+        let startup_deadline = tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT;
+        let sidecar = startup::build_until(
+            layout,
+            config,
+            store_passphrase,
+            startup_deadline,
+            "restore.build.timeout",
+        )
+        .await?;
+        startup::request_until(
+            startup_deadline,
+            sidecar.client.restore_session(session.clone()),
         )
         .await
-        .map_err(|error| MatrixSdkError::initialization("restore.build.timeout", error))??;
-        sidecar
-            .client
-            .restore_session(session.clone())
-            .await
-            .map_err(|_| MatrixSdkError::Authentication)?;
+        .map_err(|_| MatrixSdkError::Authentication)?;
         persist_session(sidecar.paths.session(), &session)?;
-        sidecar.verify_authenticated_identity()?;
-        sidecar.enable_event_cache()?;
+        startup::finish(&sidecar, startup_deadline)?;
         Ok(sidecar)
     }
 
@@ -83,12 +93,33 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
-        let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config, store_passphrase),
+        Self::login_password_until(
+            layout,
+            config,
+            password,
+            store_passphrase,
+            device_display_name,
+            tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT,
         )
         .await
-        .map_err(|error| MatrixSdkError::initialization("login_password.build.timeout", error))??;
+    }
+
+    async fn login_password_until(
+        layout: &HeptaAgentLayout,
+        config: MatrixSidecarConfig,
+        password: &str,
+        store_passphrase: Option<&str>,
+        device_display_name: Option<&str>,
+        startup_deadline: tokio::time::Instant,
+    ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+        let sidecar = startup::build_until(
+            layout,
+            config,
+            store_passphrase,
+            startup_deadline,
+            "login_password.build.timeout",
+        )
+        .await?;
         let mut login = sidecar
             .client
             .matrix_auth()
@@ -102,15 +133,13 @@ impl MatrixSdkClient {
         // SDK's own three-attempt policy (whose individual timeout defaults
         // to 30s).  Bound the whole startup login so an offline replacement
         // returns to Supervisor instead of occupying the health window.
-        let response = tokio::time::timeout(MATRIX_STARTUP_REQUEST_TIMEOUT, login.send())
+        let response = startup::request_until(startup_deadline, login.send())
             .await
-            .map_err(|_| MatrixSdkError::Authentication)?
             .map_err(|_| MatrixSdkError::Authentication)?;
         let session = MatrixSession::from(&response);
         verify_session_identity(&sidecar.config, &session)?;
         persist_session(sidecar.paths.session(), &session)?;
-        sidecar.verify_authenticated_identity()?;
-        sidecar.enable_event_cache()?;
+        startup::finish(&sidecar, startup_deadline)?;
         Ok((sidecar, session))
     }
 
@@ -126,48 +155,55 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
-        let sidecar = tokio::time::timeout(
-            MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config.clone(), store_passphrase),
+        let startup_deadline = tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT;
+        let sidecar = startup::build_until(
+            layout,
+            config.clone(),
+            store_passphrase,
+            startup_deadline,
+            "login_or_restore.build.timeout",
         )
-        .await
-        .map_err(|error| {
-            MatrixSdkError::initialization("login_or_restore.build.timeout", error)
-        })??;
+        .await?;
 
         let restore_failure = if let Some(session) = load_session(sidecar.paths.session())? {
             verify_session_identity(&sidecar.config, &session)?;
-            let restore = tokio::time::timeout(
-                MATRIX_STARTUP_REQUEST_TIMEOUT,
+            let restore = startup::request_until(
+                startup_deadline,
                 sidecar.client.restore_session(session.clone()),
             )
             .await;
             match restore {
-                Ok(Ok(())) => {
-                    sidecar.verify_authenticated_identity()?;
-                    sidecar.enable_event_cache()?;
+                Ok(()) => {
+                    startup::finish(&sidecar, startup_deadline)?;
                     return Ok((sidecar, session));
                 }
-                Ok(Err(error)) => Some(MatrixSdkError::initialization(
-                    "login_or_restore.restore_session",
-                    error,
-                )),
-                Err(error) => Some(MatrixSdkError::initialization(
-                    "login_or_restore.restore_session.timeout",
-                    error,
-                )),
+                Err(startup::RequestFailure::Request(error)) => Some(
+                    MatrixSdkError::initialization("login_or_restore.restore_session", error),
+                ),
+                Err(startup::RequestFailure::Timeout(error)) => {
+                    Some(MatrixSdkError::initialization(
+                        "login_or_restore.restore_session.timeout",
+                        error,
+                    ))
+                }
+                Err(startup::RequestFailure::Expired) => {
+                    Some(MatrixSdkError::initialization_rejected(
+                        "login_or_restore.restore_session.timeout",
+                    ))
+                }
             }
         } else {
             None
         };
 
         drop(sidecar);
-        Self::login_password(
+        Self::login_password_until(
             layout,
             config,
             password,
             store_passphrase,
             device_display_name,
+            startup_deadline,
         )
         .await
         .map_err(|fallback| match restore_failure {
@@ -626,11 +662,9 @@ fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<()
             .sync_all()
             .map_err(|error| MatrixSdkError::initialization("session.sync", error))?;
         drop(output);
-        std::fs::rename(&temporary, path)
-            .map_err(|error| MatrixSdkError::initialization("session.rename", error))?;
-        std::fs::File::open(parent)
-            .and_then(|directory| directory.sync_all())
-            .map_err(|error| MatrixSdkError::initialization("session.sync_directory", error))?;
+        codex_utils_path::publish_synced_file(&temporary, path).map_err(|error| {
+            MatrixSdkError::initialization("session.publish_synced_file", error)
+        })?;
         Ok(())
     })();
     if result.is_err() {
@@ -747,3 +781,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "startup_deadline_tests.rs"]
+mod startup_deadline_tests;

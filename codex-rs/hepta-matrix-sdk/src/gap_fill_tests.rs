@@ -614,3 +614,6 @@ fn invalid_plan_cannot_start_or_manufacture_zero_length_completion() {
         ));
     }
 }
+
+#[path = "gap_fill_metadata_tests.rs"]
+mod metadata_tests;

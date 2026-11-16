@@ -1,5 +1,8 @@
 //! Path normalization, symlink resolution, and atomic writes shared across Codex crates.
 
+mod durable_publish;
+pub use durable_publish::publish_synced_file;
+
 pub(crate) mod env;
 pub use env::is_wsl;
 

@@ -344,6 +344,13 @@ impl MatrixdControlServer {
         state: Arc<MatrixdControlState>,
         cancellation: CancellationToken,
     ) -> Result<Self, MatrixdControlError> {
+        if cfg!(not(unix)) {
+            return Err(std::io::Error::new(
+                ErrorKind::Unsupported,
+                "matrixd owner control requires peer-user authentication unavailable on this platform",
+            )
+            .into());
+        }
         prepare_socket(&socket_path).await?;
         let listener = UnixListener::bind(&socket_path).await?;
         set_owner_only(&socket_path).await?;
@@ -556,7 +563,7 @@ mod tests {
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
     #[derive(Default)]
-    struct FakeTransport {
+    pub(super) struct FakeTransport {
         cancellations: Mutex<Vec<(String, String)>>,
         resolutions: Mutex<Vec<(RequestId, PendingApprovalKind, LocalApprovalDecision)>>,
     }
@@ -662,7 +669,7 @@ mod tests {
         })
     }
 
-    async fn state(
+    pub(super) async fn state(
         temp: &TempDir,
         fake: Arc<FakeTransport>,
     ) -> TestResult<(Arc<MatrixdControlState>, Arc<MatrixdConnectionState>)> {
@@ -990,3 +997,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(all(test, not(unix)))]
+#[path = "control_platform_tests.rs"]
+mod platform_tests;
