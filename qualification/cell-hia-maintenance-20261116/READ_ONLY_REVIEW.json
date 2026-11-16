@@ -1,0 +1,79 @@
+{
+  "actual_runtime_transport_verified": false,
+  "cells": {
+    "memory": {
+      "A_retention": {
+        "candidate": 6,
+        "frozen": 2
+      },
+      "B_successes": {
+        "candidate": 6,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "C_successes": 2,
+      "cold_exact": true,
+      "cold_whole_child_cpu_seconds": 1.088471,
+      "cold_whole_wall_ns": 376702072,
+      "component_call_p95_ms": 2.6083078,
+      "component_call_p99_ms": 3.9598000400000095,
+      "decision": "NoUpdate",
+      "denominator": 8,
+      "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+      "logical_parameter_work": 66852,
+      "native_completed": 265,
+      "native_wall_ns": 12155777,
+      "training_cpu_seconds": 0.00764667699999988,
+      "training_updates": 16,
+      "training_wall_seconds": 0.007646343001397327,
+      "unresolved": 0
+    },
+    "predictor": {
+      "A_retention": {
+        "candidate": 2,
+        "frozen": 2
+      },
+      "B_successes": {
+        "candidate": 2,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "C_successes": 2,
+      "cold_exact": true,
+      "cold_whole_child_cpu_seconds": 0.999279,
+      "cold_whole_wall_ns": 277187195,
+      "component_call_p95_ms": 2.6508445999999997,
+      "component_call_p99_ms": 3.6966294799999995,
+      "decision": "NoUpdate",
+      "denominator": 8,
+      "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+      "logical_parameter_work": 117670,
+      "native_completed": 457,
+      "native_wall_ns": 18695295,
+      "training_cpu_seconds": 0.007633057000000054,
+      "training_updates": 16,
+      "training_wall_seconds": 0.007632541004568338,
+      "unresolved": 0
+    }
+  },
+  "compile_calls": 208,
+  "energy_joules": null,
+  "native_image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
+  "native_transport_sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b",
+  "parent_cpu_seconds": 1.7731633320000002,
+  "peak_rss_bytes": null,
+  "plan_sha256": "29cc56ef6adf1d6170c51def1d9201bff8a392e80f9831cc8eb91ddb89acccc7",
+  "result_sha256": "2b9c15ef25e0ac9e5d1c7f64d557718e8bd0804b6e93886403edcadd26f79134",
+  "root": "/workspace/scratch/724fb6d14866/evidence/maintenance-recovery-001/run001",
+  "schema": "hepta.controlled-maintenance-readonly-review.v1",
+  "scope": "retained originals consistency only; no model/native reexecution, producer authentication or real-task benefit claim",
+  "source_modules": 17,
+  "status": "READ_ONLY_CONSISTENCY_PASS",
+  "verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+  "version_manifests": 6,
+  "wall_seconds": 3.358155546011403
+}

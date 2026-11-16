@@ -1,0 +1,146 @@
+{
+  "code_frozen": true,
+  "native_build_record": "/workspace/scratch/724fb6d14866/hia-loader-evidence/final-native-controls/build/build.json",
+  "native_build_record_sha256": "6f48b408d7bb3f85bb747048de4199e4cd54068c81f738b610adffaffd7ebe38",
+  "native_loader_sha256": "b65ad0be0f573dca5070b3e27d73abede1c1228e335d21c57d853855f1bc0c8b",
+  "panels": {
+    "A": [
+      {
+        "id": "fixture_A_0",
+        "source": "def fixture_A_0(x)\n    return x + 3\n"
+      },
+      {
+        "id": "fixture_A_1",
+        "source": "def fixture_A_1(x):\n    return (x + 4\n"
+      },
+      {
+        "id": "fixture_A_2",
+        "source": "def fixture_A_2(x):\n    return \"tag_5\n"
+      },
+      {
+        "id": "fixture_A_3",
+        "source": "def fixture_A_3(x):\nreturn x + 6\n"
+      },
+      {
+        "id": "fixture_A_4",
+        "source": "def fixture_A_4(x)\n    return x + 7\n"
+      },
+      {
+        "id": "fixture_A_5",
+        "source": "def fixture_A_5(x):\n    return (x + 8\n"
+      },
+      {
+        "id": "fixture_A_6",
+        "source": "def fixture_A_6(x):\n    return \"tag_9\n"
+      },
+      {
+        "id": "fixture_A_7",
+        "source": "def fixture_A_7(x):\nreturn x + 10\n"
+      }
+    ],
+    "B": [
+      {
+        "id": "fixture_B_0",
+        "source": "def fixture_B_0(x)\n    return x + 103\n"
+      },
+      {
+        "id": "fixture_B_1",
+        "source": "def fixture_B_1(x):\n    return (x + 104\n"
+      },
+      {
+        "id": "fixture_B_2",
+        "source": "def fixture_B_2(x):\n    return \"tag_105\n"
+      },
+      {
+        "id": "fixture_B_3",
+        "source": "def fixture_B_3(x):\nreturn x + 106\n"
+      },
+      {
+        "id": "fixture_B_4",
+        "source": "def fixture_B_4(x)\n    return x + 107\n"
+      },
+      {
+        "id": "fixture_B_5",
+        "source": "def fixture_B_5(x):\n    return (x + 108\n"
+      },
+      {
+        "id": "fixture_B_6",
+        "source": "def fixture_B_6(x):\n    return \"tag_109\n"
+      },
+      {
+        "id": "fixture_B_7",
+        "source": "def fixture_B_7(x):\nreturn x + 110\n"
+      }
+    ],
+    "C": [
+      {
+        "id": "fixture_C_0",
+        "source": "def fixture_C_0(x)\n    return x + 203\n"
+      },
+      {
+        "id": "fixture_C_1",
+        "source": "def fixture_C_1(x):\n    return (x + 204\n"
+      },
+      {
+        "id": "fixture_C_2",
+        "source": "def fixture_C_2(x):\n    return \"tag_205\n"
+      },
+      {
+        "id": "fixture_C_3",
+        "source": "def fixture_C_3(x):\nreturn x + 206\n"
+      },
+      {
+        "id": "fixture_C_4",
+        "source": "def fixture_C_4(x)\n    return x + 207\n"
+      },
+      {
+        "id": "fixture_C_5",
+        "source": "def fixture_C_5(x):\n    return (x + 208\n"
+      },
+      {
+        "id": "fixture_C_6",
+        "source": "def fixture_C_6(x):\n    return \"tag_209\n"
+      },
+      {
+        "id": "fixture_C_7",
+        "source": "def fixture_C_7(x):\nreturn x + 210\n"
+      }
+    ]
+  },
+  "protocol": {
+    "decision": "B candidate strictly exceeds frozen/no_learning/deterministic and A retention not worse than frozen",
+    "hidden_dim": 4,
+    "independent_real_task_confirmation": false,
+    "learning_rate": 0.003,
+    "new_hyperparameter_search": false,
+    "optimizer": "Adam",
+    "seed": 7641,
+    "updates_per_cell": 16,
+    "wall_budget_seconds": 120
+  },
+  "read_only_verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+  "recorded_utc": "2026-11-16T02:58:39.492402+00:00",
+  "runtime_pins": null,
+  "schema": "hepta.controlled-maintenance-final-freeze.v1",
+  "scope": "local owner plus actual native HIA continuation; no real runtime transport claim",
+  "source_base": "bb34e07389ad75d3b4629b63b0af0ee46f9b9594",
+  "source_sha256": {
+    "hepta_cells/__init__.py": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1",
+    "hepta_cells/bundle.py": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0",
+    "hepta_cells/cfc.py": "d3a44b901e78f075357dc5342ec5cb22ffd8dc0633bfcd49eb9dca2b26fef77e",
+    "hepta_cells/component_types.py": "91ce97c55c0cf307c2b947b78f36794b5e326eceea7ee73197369b98e9e078d8",
+    "hepta_cells/hia_component.py": "432ef83961b4fe28bec7777b80d11bf0ea59fc777264e1dedd2f1ef6912c3ebf",
+    "hepta_cells/lifecycle.py": "2dd08e6b00e2031b786c5d03939a48833fbb8c6b1b926360342bd5bc19111a49",
+    "hepta_cells/maintenance_cycle.py": "d8e815591e225c48a385937671e9a485c4035d45e0a10ff6b1dc50728867b1d5",
+    "hepta_cells/maintenance_execution.py": "0e725a0b96058d2c410ae26e47c8650aa9a9ad29dfa69927345f5ef78871967c",
+    "hepta_cells/maintenance_serving.py": "be938cf3f113b65c875715401433ab174c046c7a16619a4bbfa68c4e3143f4cf",
+    "hepta_cells/maintenance_tasks.py": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f",
+    "hepta_cells/owner_control.py": "f24debdb68479cd126ae102bfbace53c54f95f75b73228bfc4cbbe38c8557130",
+    "hepta_cells/population.py": "ca0abcef8b77bc7cc2bd4fbff1c3c121ae2b6e861951da3d12d6aa4b058e5260",
+    "hepta_cells/population_owner.py": "732ac3ec26913f7b3a4cda01814e170cd185b7b95fffab03415e0036ba988580",
+    "hepta_cells/temporal.py": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9",
+    "hepta_cells/temporal_component.py": "45bbaa4c54d2b16627eec8610fe1c39bba5c2d7fcda680ce7970c6f16b6ce0bc",
+    "hepta_pred1/__init__.py": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0",
+    "hepta_pred1/models.py": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7"
+  }
+}

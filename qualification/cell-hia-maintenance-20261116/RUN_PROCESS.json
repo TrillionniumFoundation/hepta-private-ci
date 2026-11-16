@@ -1,0 +1,23 @@
+{
+  "actual_runtime_transport": false,
+  "child_peak_rss_kib": 63288,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "hepta_cells.maintenance_cycle",
+    "/workspace/scratch/724fb6d14866/evidence/maintenance-recovery-001/run001",
+    "--native-build-record",
+    "/workspace/scratch/724fb6d14866/hia-loader-evidence/final-native-controls/build/build.json"
+  ],
+  "cwd": "/workspace/scratch/724fb6d14866/cell-learning",
+  "finished_utc": "2026-11-16T02:59:03.104091+00:00",
+  "peak_rss_scope": "Linux wait4 child ru_maxrss; maximum child process, not summed simultaneous aggregate",
+  "returncode": 0,
+  "schema": "hepta.controlled-maintenance-launch.v1",
+  "source_unchanged": true,
+  "started_utc": "2026-11-16T02:58:59.543995+00:00",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "ccbddcc72b8541a9364265b1c251e8bfaa069978f617dd0cfa7c31ea39ff6cf4",
+  "whole_child_cpu_seconds": 4.786317,
+  "whole_process_wall_seconds": 3.5601035650033737
+}

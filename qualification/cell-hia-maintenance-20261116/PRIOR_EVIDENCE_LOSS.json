@@ -1,0 +1,91 @@
+{
+  "cause": "environment restart cleared tmpfs; code persisted, raw artifacts did not",
+  "new_run_policy": "same fixtures, seed, one fixed optimizer schedule and strict original selection rule; new retained evidence is a consistency rerun, not an independent real-task confirmation",
+  "previous_observed_raw_lost_outcomes": {
+    "B_deterministic_successes": 8,
+    "B_memory_candidate_successes": 6,
+    "B_predictor_candidate_successes": 2,
+    "decisions": {
+      "memory": "NoUpdate",
+      "predictor": "NoUpdate"
+    },
+    "denominator": 8,
+    "selected_C_successes": {
+      "memory": 2,
+      "predictor": 2
+    }
+  },
+  "provenance": "prior tool observations and session report; historical numbers are not newly verified raw evidence",
+  "recorded_utc": "2026-11-16T02:57:43.563532+00:00",
+  "reported_only_totals": {
+    "compile_calls": 677,
+    "training_updates": 112,
+    "wall_seconds": 4.539809592999518
+  },
+  "runs": [
+    {
+      "current_qualification_credit": false,
+      "evidence_status": "previous_observed_raw_lost",
+      "mode": "python_pilot",
+      "original_path_present": false,
+      "originals_available": false,
+      "path": "/dev/shm/hepta-maintenance-724f-run001",
+      "reconstructed": false,
+      "reported_compile_calls": 208,
+      "reported_parent_cpu_seconds": 0.60163281,
+      "reported_terminal_record_sha256": "f90c61b46e468a096157ca7aa244727c65812065bb9fdc1b309f9d4dbc36cca8",
+      "reported_training_updates": 32,
+      "reported_wall_seconds": 0.8670886239997344
+    },
+    {
+      "current_qualification_credit": false,
+      "evidence_status": "previous_observed_raw_lost",
+      "mode": "native_failed_attempt",
+      "original_path_present": false,
+      "originals_available": false,
+      "path": "/dev/shm/hepta-maintenance-native-724f-run001",
+      "reconstructed": false,
+      "reported_compile_calls": 53,
+      "reported_failure": "DiagnosticComponent tuple in bounded JSON; converted diagnostic rules to list; no learning tuning",
+      "reported_parent_cpu_seconds": null,
+      "reported_terminal_record_sha256": "36a9579c16481025a981c369647ca04f047276b74c51c926bbd680e73bba65c0",
+      "reported_training_updates": 16,
+      "reported_wall_seconds": 0.36948998099251185
+    },
+    {
+      "current_qualification_credit": false,
+      "evidence_status": "previous_observed_raw_lost",
+      "mode": "native_old_loader",
+      "original_path_present": false,
+      "originals_available": false,
+      "path": "/dev/shm/hepta-maintenance-native-724f-run002",
+      "reconstructed": false,
+      "reported_compile_calls": 208,
+      "reported_native_completions": {
+        "memory": 265,
+        "predictor": 457
+      },
+      "reported_parent_cpu_seconds": 1.4095628869999999,
+      "reported_plan_sha256": "6c87bcc0d5e1990da7466daa5412a6f8ce0cb6cd310def55f1efbe1c69276ee6",
+      "reported_terminal_record_sha256": "c978df38760e6d47f74f7c6f32351fd414df60705d0a22ecd81e410dc1462d6a",
+      "reported_training_updates": 32,
+      "reported_wall_seconds": 1.925040557005559
+    },
+    {
+      "current_qualification_credit": false,
+      "evidence_status": "previous_observed_raw_lost",
+      "mode": "python_regression",
+      "original_path_present": false,
+      "originals_available": false,
+      "path": "/dev/shm/hepta-maintenance-python-724f-regression001",
+      "reconstructed": false,
+      "reported_compile_calls": 208,
+      "reported_parent_cpu_seconds": 0.8359319679999999,
+      "reported_terminal_record_sha256": "5cd47415f8f64ebd6637076228d656a7fd79bdf6a8d5e5bc05c041f6f9448383",
+      "reported_training_updates": 32,
+      "reported_wall_seconds": 1.3781904310017126
+    }
+  ],
+  "schema": "hepta.maintenance-evidence-loss.v1",
+  "scope": "controlled maintenance learning lane only"
+}
