@@ -321,11 +321,7 @@ impl Frame {
         seal(
             &mut frame.bytes,
             FrameKind::Template,
-            [
-                variables.len(),
-                placeholder_count,
-                template.segments.len(),
-            ],
+            [variables.len(), placeholder_count, template.segments.len()],
         );
         frame
     }
