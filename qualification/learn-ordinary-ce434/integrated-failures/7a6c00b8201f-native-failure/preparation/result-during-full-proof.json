@@ -1,0 +1,96 @@
+{
+  "state": "native-and-full-callers-starting",
+  "fixed_input_sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+  "fixed_input_tree": "2aa9a592262d5197cdd96e79128dc18a30332ebd",
+  "initial_connection_merge": "8129481a876f22a3a8bc57155e2b2755338393e2",
+  "final_next_use_merge": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+  "expected_native_cases": 109,
+  "expected_owner_groups": 21,
+  "expected_source_controls": 230,
+  "expected_parser_controls": 16,
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "exit_code": 0,
+      "seconds": 1.9034164489712566,
+      "log_bytes": 144,
+      "log_sha256": "28f74e16d98cc88545811e247b4354ca893a72ea5844af66ed5886e3256a2ec3"
+    },
+    {
+      "name": "create-worktree",
+      "exit_code": 0,
+      "seconds": 1.562583092134446,
+      "log_bytes": 1634,
+      "log_sha256": "76b405722b07d23f1f6952e293b119f8bf40b8bd17b76edf818acdadf95011c2"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 6.833480336004868,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck-working",
+      "exit_code": 0,
+      "seconds": 0.012813159031793475,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "merge-canonical",
+      "exit_code": 0,
+      "seconds": 4.827341067837551,
+      "log_bytes": 16922,
+      "log_sha256": "e811a2b4c5ffe1a62b12a6b829da8f399ec5ce110916dd9734b941cb7f63617d"
+    },
+    {
+      "name": "diffcheck-full-committed",
+      "exit_code": 0,
+      "seconds": 0.043030581902712584,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-closure",
+      "exit_code": 0,
+      "seconds": 94.51636440493166,
+      "log_bytes": 51665,
+      "log_sha256": "c1c3339c56efb8d49652777739f4452bd262cf214192d14c1776abf099ec6263"
+    },
+    {
+      "name": "parser-controls",
+      "exit_code": 0,
+      "seconds": 0.3454492101445794,
+      "log_bytes": 3123,
+      "log_sha256": "db36f5aa654a3da1e42aa866715c6015df437bd835713a05597c8eae241cc0b4"
+    },
+    {
+      "name": "caller-selftest",
+      "exit_code": 0,
+      "seconds": 0.08532692096196115,
+      "log_bytes": 48,
+      "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "name": "push-fixed",
+      "exit_code": 0,
+      "seconds": 4.758439491037279,
+      "log_bytes": 708,
+      "log_sha256": "629cff938ba6a8d08edf198625dbf5497a9ab51fac8de4f5ec367ac77d6db1f5"
+    }
+  ],
+  "new_isolated_qualification": true,
+  "prior_private_qualifications": "Not reclassified by this job; prior original evidence and unresolved actions remain separate.",
+  "native_runner_invoked": true,
+  "native_tests_executed": null,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "source_sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+  "source_tree": "2aa9a592262d5197cdd96e79128dc18a30332ebd",
+  "native_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8",
+  "caller_proof_original_full": true
+}

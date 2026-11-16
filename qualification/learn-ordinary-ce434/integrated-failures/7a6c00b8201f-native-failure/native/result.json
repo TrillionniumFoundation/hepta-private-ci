@@ -1,0 +1,197 @@
+{
+  "source_sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+  "source_tree": "2aa9a592262d5197cdd96e79128dc18a30332ebd",
+  "canonical_tmpdir": "/tmp/hlca-d_rpo1zw",
+  "v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "state": "failed",
+  "steps": [
+    {
+      "name": "helper-build",
+      "exit_code": 0,
+      "seconds": 271.5947640771046,
+      "log_sha256": "4aafc543d93921043ca5163629589b80cbacb223565ce2161ff3d4a3178fbe15",
+      "log_bytes": 216
+    },
+    {
+      "name": "helper-verify",
+      "exit_code": 0,
+      "seconds": 0.20013424986973405,
+      "log_sha256": "67b6692241e70faafc7ae4c1d3af521a1c7c87a724daade0f61734c8c7f57270",
+      "log_bytes": 1192
+    },
+    {
+      "name": "focused-native",
+      "exit_code": 100,
+      "seconds": 994.5475165809039,
+      "log_sha256": "9631a6b82a98d9e286863888767ddd3656abbbe3315a57ff5a2f783455e4975d",
+      "log_bytes": 152152
+    },
+    {
+      "name": "focused-junit",
+      "exit_code": 1,
+      "seconds": 0.06973632797598839,
+      "log_sha256": "ed03c83dc5002ea2e2572c6944344ee845dcd8c4974f2cc015d00949348f88b8",
+      "log_bytes": 22035
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "native_tests_executed": null,
+  "native_test_evidence": "not established; command invocation or compilation is not a test pass",
+  "failed_coverage": {
+    "total_cases": 109,
+    "raw_junit_sha256": "75d563cd4e8bf55eed20cf400f090368452c13022a49939edafe1729556dfbc4",
+    "failed_or_skipped": [
+      {
+        "package": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "diagnostics": [
+          "Error: OwnerUnavailable(\"original learning evidence owner\")"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore",
+        "diagnostics": [
+          "thread 'neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore' (2004188) panicked at hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:376:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Ok(\n<    Completed(\n<        [\n<            97,\n<            99,\n<            116,\n<            117,\n<            97,\n<            108,\n<            45,\n<            114,\n<            101,\n<            116,\n<            97,\n<            105,\n<            110,\n<            101,\n<            100,\n<            45,\n<            101,\n<            120,\n<            101,\n<            99,\n<            117,\n<            116,\n<            105,\n<            111,\n<            110,\n<        ],\n<    ),\n>Err(\n>    Indeterminate,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch' (2010650) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5:\nassertion failed: matches!(client.readback().await,\n    Err(OriginalCircuitSelectionCommandErrorV1::Missing))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody' (2011141) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:399:5:\nassertion failed: matches!(client.readback().await,\n    Err(OriginalCircuitSelectionCommandErrorV1::Missing))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly",
+        "diagnostics": [
+          "Error: actual Selection before lost ACK"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches' (2011837) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:225:5:\nassertion failed: matches!(client.readback().await,\n    Err(OriginalCircuitSelectionCommandErrorV1::Missing))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch",
+        "diagnostics": [
+          "Error: original Selector completion is uncertain; read the same operation"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature",
+        "diagnostics": [
+          "Error: original published Circuit read capability: original read transport: DeadlineElapsed\n\nCaused by:\n    0: original read transport: DeadlineElapsed\n    1: DeadlineElapsed"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read",
+        "diagnostics": [
+          "Error: original read transport: DeadlineElapsed\n\nCaused by:\n    DeadlineElapsed"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects",
+        "diagnostics": [
+          "Error: the malformed response was actually sent"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+        "diagnostics": [
+          "Error: original read transport: DeadlineElapsed\n\nCaused by:\n    DeadlineElapsed"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature' (2014324) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5:\nassertion failed: matches!(selector.readback_remote(remote_selection(&f.config.decision, &live,\n    &trainer)).await,\n    Err(OriginalCircuitSelectionReceiptErrorV1::Owner(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing))))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-intelligence-eval",
+        "name": "product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original",
+        "diagnostics": [
+          "thread 'product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original' (2018529) panicked at hepta-intelligence-eval/src/product_execution_holdout_current_tests.rs:313:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Err(\n     Evaluation(\n         Holdout(\n<            Store(\n<                Indeterminate,\n<            ),\n>            Indeterminate,\n         ),\n     ),\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      }
+    ]
+  },
+  "native_exit_code": 100,
+  "collection_exit_code": 1,
+  "source_after": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+  "source_status_after": "",
+  "execution_log_file": "focused-native.json.da15b6fdd1884a32a9f4d301dc06dd29.log",
+  "execution_log_bytes": 129513,
+  "execution_log_sha256": "971795ce0588c93d53a3346bd699269214c132c3a1f9ac34bfd0c7c8855a6910"
+}

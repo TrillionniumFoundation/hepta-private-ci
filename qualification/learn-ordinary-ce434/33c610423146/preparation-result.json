@@ -1,0 +1,85 @@
+{
+  "base_source": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "lane_source": "a293dc8b4ce43e0ce432c4ce4552f3ba7d746000",
+  "peer_source": "d02af206770255fb0a9c5e44bfe01484b408c2b9",
+  "state": "focused-completed",
+  "steps": [
+    {
+      "name": "fetch-lane",
+      "exit_code": 0,
+      "seconds": 5.083445558091626,
+      "log_bytes": 144,
+      "log_sha256": "8747b03c32d50177b772e5222e35b78c7e334de1bd3cc86477121426c3528f28"
+    },
+    {
+      "name": "fetch-peer",
+      "exit_code": 0,
+      "seconds": 4.504716285038739,
+      "log_bytes": 144,
+      "log_sha256": "bad17e00b6ca5d5bbccbee1aee9157d035a8184d2ea17b456d097da024fdd175"
+    },
+    {
+      "name": "peer-ancestry",
+      "exit_code": 0,
+      "seconds": 0.003778809914365411,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fast-forward-lane",
+      "exit_code": 0,
+      "seconds": 0.04830828099511564,
+      "log_bytes": 168,
+      "log_sha256": "de54beb7400b144b145049a5b207929bfa1ba541c11dc5a22720780492b194b1"
+    },
+    {
+      "name": "merge-peer",
+      "exit_code": 0,
+      "seconds": 0.1129777729511261,
+      "log_bytes": 240,
+      "log_sha256": "b4e2ca990d467cfa7542e5d1b551e2ade94ba66f976b8d7dd702f0472121a9ad"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 0.4704536898061633,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck",
+      "exit_code": 0,
+      "seconds": 0.01328873890452087,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-closure",
+      "exit_code": 0,
+      "seconds": 46.95144511805847,
+      "log_bytes": 28706,
+      "log_sha256": "2897450402dd8876b96a12b6ef325aeedf2dc8d8873d6380199032ceb8ff4c64"
+    },
+    {
+      "name": "parser-controls",
+      "exit_code": 0,
+      "seconds": 0.12115905992686749,
+      "log_bytes": 2327,
+      "log_sha256": "63d5959d936fe53476c49f9cc368644705bb90c0bf194a99ba3d275558ee0161"
+    },
+    {
+      "name": "push-candidate",
+      "exit_code": 0,
+      "seconds": 5.456557569094002,
+      "log_bytes": 443,
+      "log_sha256": "934066ab26e2bec0b262fb897ea92c01b04dc3a8cf98f1956bb49b3d874f78c0"
+    }
+  ],
+  "source_sha": "33c610423146597a3d1102efe77f09507477673e",
+  "source_tree": "5d7cea0336f4eca767967a8938734c92ed81ff43",
+  "actual_merge": "33c610423146597a3d1102efe77f09507477673e",
+  "focused_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/owner-fixture-focus-33c610423146-v1",
+  "focused_exit_code": 0,
+  "source_after": "33c610423146597a3d1102efe77f09507477673e",
+  "source_status_after": ""
+}

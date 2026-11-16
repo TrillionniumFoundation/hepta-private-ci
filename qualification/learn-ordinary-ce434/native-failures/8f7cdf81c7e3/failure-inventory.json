@@ -1,0 +1,89 @@
+{
+  "source_sha": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "execution_sha256": "73d860213a9d11c0da8e40cef4507bb89b61c6ebe804759f51c27791e119aaf3",
+  "log_sha256": "51fcaa5d47dbd6a7f8d23ada46d9cd2a2e786bfbb868b9707a695b8df2d3fb9a",
+  "log_bytes": 949114,
+  "junit_sha256": "0512c776341f6ef914ce7d771daaec78579c630d3f4d491a355079ecee90881d",
+  "junit_bytes": 323777,
+  "cases": 1330,
+  "failed": [
+    {
+      "package": "codex-hepta-agentd",
+      "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore",
+      "diagnostics": [
+        "Error: original model material: evaluation: learning iteration: InvalidTimestamp\n\nCaused by:\n    0: evaluation: learning iteration: InvalidTimestamp\n    1: learning iteration: InvalidTimestamp\n    2: InvalidTimestamp"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack",
+      "diagnostics": [
+        "thread 'neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack' (1272506) panicked at hepta-agentd/src/cell_q24_training_model_lane_tests.rs:215:13:\nassertion failed: matches!(f.commit(&mut model),\n    Err(StageError::ModelProposal(ProposalError::CommitUncertain)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence",
+      "diagnostics": [
+        "thread 'neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence' (1272510) panicked at hepta-agentd/src/cell_q24_training_model_lane_tests.rs:147:5:\nassertion failed: matches!(f.read(&mut model),\n    Err(StageError::ModelProposal(ProposalError::Store(ProductEvaluationExecutionStoreErrorV1::Missing))))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature",
+      "diagnostics": [
+        "Error: original Training evidence owner: OwnerUnavailable(\"original learning evidence owner\")\n\nCaused by:\n    OwnerUnavailable(\"original learning evidence owner\")"
+      ]
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use",
+      "diagnostics": [
+        "Error: original predecessor evidence owner: OwnerUnavailable(\"original learning evidence owner\")\n\nCaused by:\n    OwnerUnavailable(\"original learning evidence owner\")"
+      ]
+    }
+  ],
+  "raw_junit_skips": [],
+  "retained_73": {
+    "required": 1305,
+    "missing_or_duplicate": [],
+    "failed_or_skipped": [],
+    "all_passed": true
+  },
+  "new_owner_groups": {
+    "next_use_observer": {
+      "required": 6,
+      "missing_or_duplicate": [],
+      "failed_or_skipped": [
+        [
+          "codex-hepta-agentd",
+          "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use"
+        ]
+      ],
+      "passed": 5
+    },
+    "material_observers": {
+      "required": 6,
+      "missing_or_duplicate": [],
+      "failed_or_skipped": [],
+      "passed": 6
+    },
+    "original_selector": {
+      "required": 5,
+      "missing_or_duplicate": [],
+      "failed_or_skipped": [
+        [
+          "codex-hepta-agentd",
+          "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature"
+        ]
+      ],
+      "passed": 4
+    }
+  },
+  "native_overall": "failed",
+  "ordinary_full_chain": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  }
+}
