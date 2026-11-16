@@ -141,6 +141,14 @@ jobs:
         with:
           tool: just@1.51.0
 
+      - name: Install repository-pinned Python formatter runner
+        if: always() && steps.checkout.outcome == 'success'
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+      - name: Install repository DotSlash formatter runner
+        if: always() && steps.checkout.outcome == 'success'
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - name: Apply repository formatting and require unchanged source
         id: clean
         if: always() && steps.checkout.outcome == 'success'

@@ -323,13 +323,15 @@ class OriginalObserverCoverageTests(unittest.TestCase):
                 "-p",
                 "codex-hepta-agentd",
                 "-p",
-                "codex-hepta-learning-ledger",
-                "-p",
                 "codex-hepta-learning-artifacts",
                 "-p",
                 "codex-hepta-intelligence-eval",
                 "-p",
+                "codex-hepta-contracts",
+                "-p",
                 "codex-hepta-neuron",
+                "-p",
+                "codex-hepta-learning-ledger",
             ],
         )
         ordinary = [
