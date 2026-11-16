@@ -1,0 +1,94 @@
+{
+  "schema": "hcsn-source-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "original_campaign_source": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "source_branch": "codex/hcsn-regeneration-causal-20261106",
+  "remote_source_head": "65bf6680c77338d89cd933e2d0d032b88a3e5078",
+  "commits": [
+    {
+      "local_sha": "742d5ef84e6012b7f1f659327b42ed332517b909",
+      "remote_sha": "ee09912d0d1335fb50a4b070819f0039408081ae",
+      "tree_sha": "0514788b4f6ff6bf10671cc56bfbd37c9c38a53e",
+      "message": "Add fixed-generator regenerative value reference"
+    },
+    {
+      "local_sha": "17c5dee5474ad8645b3daa9da79c661352260d0b",
+      "remote_sha": "a4472fe1ee41301f52c37730d24d1e59f87add03",
+      "tree_sha": "22d5337d58483e72f676f1ffa42f582b329ae665",
+      "message": "Add independent regenerative density and PDE audit oracles"
+    },
+    {
+      "local_sha": "a7bc3fa403493e6bbc415638a3a9a5eafa81a75d",
+      "remote_sha": "16eeb0c492647c08e26a6a5abc34270c9dc78ce3",
+      "tree_sha": "4352914a4064787c931d5302cae1108b34764e27",
+      "message": "Add remaining-time regenerative successor and finite-result guards"
+    },
+    {
+      "local_sha": "ba4d32f465040f817f2ef9090c3e24739b2e8bce",
+      "remote_sha": "17f8a9e631de4d6928fa538015f91ec15d5bf545",
+      "tree_sha": "7e63513b70e4f58c89e077b9725b920c75a6adc9",
+      "message": "Complete independent refinement and derivative audit runner"
+    },
+    {
+      "local_sha": "a7cb2749a12b74220897a8ccb289dfe10ca0e7fe",
+      "remote_sha": "6e177d7ff0d3ff8a2eb5ec0680632667a2743c46",
+      "tree_sha": "d45768724420e978b6ea2d2115c7f72aec81a0f1",
+      "message": "Separate ready-time flow from immutable streaming observations"
+    },
+    {
+      "local_sha": "c503886e81c2047abbc95f23c4122a16ec886679",
+      "remote_sha": "22258d73db3d3bf58a4ea6c44342f6255a9dc4c0",
+      "tree_sha": "2586f64bf284af33d59a781fa0ed8138ee106da1",
+      "message": "Add matched four-arm analysis with cumulative attempt costs"
+    },
+    {
+      "local_sha": "d80ad11d82b8082229c1cc086ee7ef02c569735b",
+      "remote_sha": "772b366c987c6e324a6c60264f3bbb35173d42b6",
+      "tree_sha": "04e4108868643e25914e63416f26ec0a8674e198",
+      "message": "Require a closed raw attempt ledger before causal gain qualification"
+    },
+    {
+      "local_sha": "c5a4d9ff2226659566ef5a7f38be0b4b3506997c",
+      "remote_sha": "65bf6680c77338d89cd933e2d0d032b88a3e5078",
+      "tree_sha": "adfff2ad63f77db94d62be6390eca3b9e5cf170e",
+      "message": "Add scoped CPU reference gate and prospective experiment contracts"
+    }
+  ],
+  "every_remote_tree_matches_corresponding_local_tree": true,
+  "remote_branch_readback_matches": true,
+  "event_stream_remote_contents_equal_tested_source": true,
+  "receipt_sha256": {
+    "final-combined-tests-v2.json": "c0c4d1eb55a6576092c8771348c8ff0b83f282019c11b8c1d1cfdaa9a71ef306",
+    "audit_final_v4.json": "8e81d3f082bfb74641280b0d1c42e788f113b42d5631490a920811f550c57c54",
+    "source_separation.json": "8a82158a611356274d7292d71ff2882021527a9c8f3d584e1baa4c5f54c60c8a",
+    "final-format.json": "6403f7f3a9cca3de396822d179ecd42e4b7e0a253e7298ca46fb5728c8314014"
+  },
+  "tested_source_sha256": {
+    "qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn_causal/__init__.py": "d4898f27e9cec67e13457937d5eef8d0c958fd6b1212e8cf6ec18ea15a8519ac",
+    "qualification/hcsn_causal/checks.py": "081844e4d311a1a3ae59d9c3457c701c15e2b0861e06edf65e55f3b4c278d345",
+    "qualification/hcsn_causal/comparison.py": "35b334433be96622c7702fb61b222f812fc8e467ffe3686771872366c68bc13f",
+    "qualification/hcsn_causal/event_stream.py": "84ee237ce90f3a96b7bdf4ca93faff034e06a570041933c00f06599b343118c7",
+    "qualification/hcsn_causal/inventory.py": "19e808e8bfc3771805dfdff0ca4a8d26fee09bb9e960c235479bd2535f9f53ee",
+    "qualification/hcsn_causal/test_comparison.py": "3caa274b7fca94d6b83c78697b419031e9ff427f534ff4737d00875022866bd1",
+    "qualification/hcsn_causal/test_event_stream.py": "3a24ac256d88033de9659e2e263062a984000965989e5d5bfd42664a398150a0",
+    "qualification/hcsn_causal/test_inventory.py": "3f403d648f0baadcb5e7f6b59235a078fe1561d57f76efef3aa5002d13eef32f",
+    "qualification/hcsn_regenerative/__init__.py": "133f20d47b4146591d160e498819b910e8217bb852a3bff9deeaeee06b3a4319",
+    "qualification/hcsn_regenerative/audit.py": "0fc55cc51ebdc741f11641785ae4609bb46f6298a20bfe3b291e640237548d8c",
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/run_audit.py": "f2bd3042eae70e6e41229045dd4e5d2c3d2455d3534efb490e8cf083f25542e5",
+    "qualification/hcsn_regenerative/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn_regenerative/tests/test_audit.py": "e4b8c644c90866a999afdfceaeb4294eb686ce5473d72726b6962daf3c5b8e82",
+    "qualification/hcsn_regenerative/tests/test_process.py": "f1cb36d7e037af664be27e501f2b2de1607cb826689c672e7668c24433b41710"
+  },
+  "claims": {
+    "new_training_campaigns": 0,
+    "all_six_decisive_goals_completed": false,
+    "scientific_gain_established": false,
+    "source_local_unit_methods_passed": 68,
+    "source_local_audit_checks_passed": 91
+  }
+}
