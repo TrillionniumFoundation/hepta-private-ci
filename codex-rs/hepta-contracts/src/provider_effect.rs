@@ -18,6 +18,9 @@ use crate::RequestBindingId;
 use crate::Sha256Digest;
 use crate::stable_id::parse_prefixed_sha256_id;
 
+#[path = "provider_effect_taskflow_key_v2.rs"]
+mod taskflow_key_v2;
+
 pub const PROVIDER_EFFECT_SCHEMA_VERSION: u32 = 1;
 
 /// A pending intent that predates the coordinator call has no local witness
@@ -726,8 +729,8 @@ fn validate_journal_contents(
             let source = sources[index];
             // An uncertainty marker is stored out-of-band from the ACK
             // sequence.  Treat a status-sourced ACK as following that marker
-            // so the accepted -> completed operation-id rebinding used by
-            // reconciliation remains valid during replay validation.
+            // so replay enforces the same status-only recovery boundary.
+            // Uncertainty never releases an already observed operation ID.
             if uncertainty_present && source == ProviderEffectAckSource::StatusLookup {
                 quarantined_before = true;
             }
@@ -1130,12 +1133,13 @@ fn validate_ack_transition(
     let Some(previous) = observations.last() else {
         return Ok(());
     };
-    if previous.state().is_terminal() {
+    if previous.state().is_terminal()
+        || previous.provider_operation_id_sha256 != next.provider_operation_id_sha256
+    {
         return Err(ProviderEffectBindingError::AckConflict);
     }
-    // A status lookup after an explicit unknown observation is allowed to
-    // bind the provider's authoritative operation identity.  It does not,
-    // however, relax the state machine: an already accepted operation may
+    // A status lookup after an explicit unknown observation must preserve
+    // the provider operation identity already observed. An accepted operation may
     // only remain accepted or advance to completed.  In particular,
     // accepted -> rejected must stay fail-closed because the earlier
     // admission proves that the provider may already have applied it.
@@ -1148,9 +1152,6 @@ fn validate_ack_transition(
             | (ProviderEffectAckStatus::Accepted, ProviderEffectAckStatus::Completed) => Ok(()),
             _ => Err(ProviderEffectBindingError::AckConflict),
         };
-    }
-    if previous.provider_operation_id_sha256 != next.provider_operation_id_sha256 {
-        return Err(ProviderEffectBindingError::AckConflict);
     }
     match (previous.status, next.status) {
         (ProviderEffectAckStatus::Accepted, ProviderEffectAckStatus::Completed) => Ok(()),
@@ -1245,6 +1246,24 @@ pub trait ProviderEffectAdapter: Send + Sync {
         intent: &'a ProviderEffectIntent,
     ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
         self.lookup(&intent.key)
+    }
+
+    /// Reconcile one durable occurrence with the exact wire bytes retained by
+    /// the caller's outbox/attempt owner.
+    ///
+    /// Existing adapters keep their intent-bound lookup unchanged. Adapters
+    /// whose remote identity is derived from the original wire representation
+    /// (for example, a content-addressed packet) may override this method and
+    /// recompute that identity without persisting a second operation ledger.
+    /// `None` is reserved for legacy durable rows that predate payload retention;
+    /// an adapter that requires exact bytes must fail closed as Unknown rather
+    /// than redispatching.
+    fn lookup_for_reconciliation<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+        _wire_payload: Option<&'a [u8]>,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        self.lookup_for_intent(intent)
     }
 }
 
@@ -1584,6 +1603,14 @@ fn digest_parts<'a>(parts: impl IntoIterator<Item = &'a str>) -> String {
 }
 
 #[cfg(test)]
+#[path = "provider_effect_operation_binding_tests.rs"]
+mod operation_binding_tests;
+
+#[cfg(test)]
+#[path = "provider_effect_reconciliation_tests.rs"]
+mod reconciliation_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::PROVIDER_EVIDENCE_SCHEMA_VERSION;
@@ -1900,7 +1927,7 @@ mod tests {
         let completed = ProviderEffectAck::new(
             key.clone(),
             intent.payload_sha256.clone(),
-            Sha256Digest::for_bytes(b"operation-2"),
+            Sha256Digest::for_bytes(b"operation-1"),
             ProviderEffectAckStatus::Completed,
         );
         let mut journal = ProviderEffectJournal::default();
@@ -1940,7 +1967,7 @@ mod tests {
         let accepted_after_unknown = ProviderEffectStatusObservation::new(
             key.clone(),
             intent.payload_sha256.clone(),
-            Sha256Digest::for_bytes(b"operation-after-unknown"),
+            Sha256Digest::for_bytes(b"operation-before-unknown"),
             ProviderEffectAckStatus::Accepted,
         );
         let mut journal = ProviderEffectJournal::default();

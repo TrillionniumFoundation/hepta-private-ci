@@ -28,6 +28,7 @@ zeroize = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
 codex-utils-path = { workspace = true }
+codex-utils-windows-private-state = { workspace = true }
 
 [dev-dependencies]
 codex-utils-cargo-bin = { workspace = true }
