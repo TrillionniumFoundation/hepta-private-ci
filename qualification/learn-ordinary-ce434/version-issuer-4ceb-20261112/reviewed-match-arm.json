@@ -1,0 +1,7 @@
+{
+  "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+  "function": "fn new(",
+  "before": "RetainedVersionOriginV1::Recovered => RetainedVersionFinalUseOutcomeV1::Published as u8",
+  "after": "RetainedVersionOriginV1::Recovered => {\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\n                }",
+  "reason": "rustfmt adds only expression arm braces; full original variant and outcome expression preserved"
+}

@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "source_sha": "4ceb2fa080c52e5d23ee3a7428c65515418745fd",
+  "source_tree": "0c1d60e30f9b5f2ccfce799caeca437a10d471bb",
+  "source_qualification": {
+    "state": "passed",
+    "source_sha": "4ceb2fa080c52e5d23ee3a7428c65515418745fd",
+    "source_tree": "0c1d60e30f9b5f2ccfce799caeca437a10d471bb",
+    "scope": "exact fixed source Python controls; no formatter, native, full caller proof or ordinary task execution",
+    "tracked_rust_files_present": 6638,
+    "boundaries": 483,
+    "protected_rows": 373,
+    "source_inventory": 319,
+    "steps": [
+      {
+        "name": "source-closure",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "qa/b4-no-bypass",
+          "-p",
+          "*source_closure.py",
+          "-v"
+        ],
+        "returncode": 0,
+        "timed_out": false,
+        "output_limit_exceeded": false,
+        "log_bytes": 71928,
+        "log_sha256": "a807e9cc783d029e0042373a9371a35bd1348147e2f0135537490e2638d5873a",
+        "observed_passed_tests": 319,
+        "observed_failed_tests": 0,
+        "expected_tests": 319,
+        "actual_reported_test_counts": [
+          "319"
+        ],
+        "passed": true,
+        "raw_sha256": "a807e9cc783d029e0042373a9371a35bd1348147e2f0135537490e2638d5873a",
+        "raw_bytes": 71928
+      },
+      {
+        "name": "observer-parser",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_hepta_c_observer_coverage.py",
+          "-v"
+        ],
+        "returncode": 0,
+        "timed_out": false,
+        "output_limit_exceeded": false,
+        "log_bytes": 3123,
+        "log_sha256": "02816e130196483f7dc3b7c82901e5857e71032b18451b138b9c06c0026228f6",
+        "observed_passed_tests": 16,
+        "observed_failed_tests": 0,
+        "expected_tests": 16,
+        "actual_reported_test_counts": [
+          "16"
+        ],
+        "passed": true,
+        "raw_sha256": "02816e130196483f7dc3b7c82901e5857e71032b18451b138b9c06c0026228f6",
+        "raw_bytes": 3123
+      },
+      {
+        "name": "caller-self-test",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "scripts/verify_hepta_callers.py",
+          "self-test"
+        ],
+        "returncode": 0,
+        "timed_out": false,
+        "output_limit_exceeded": false,
+        "log_bytes": 48,
+        "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "observed_passed_tests": 0,
+        "observed_failed_tests": 0,
+        "expected_tests": null,
+        "actual_reported_test_counts": [],
+        "passed": true,
+        "raw_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "raw_bytes": 48
+      }
+    ],
+    "native_tests_executed": 0,
+    "full_caller_proof_executed": false,
+    "acceptance": {
+      "positive_adoption": 0,
+      "no_update_or_fallback": 0,
+      "daemon_and_root_cold_restart": 0
+    },
+    "source_after": "4ceb2fa080c52e5d23ee3a7428c65515418745fd",
+    "source_tree_after": "0c1d60e30f9b5f2ccfce799caeca437a10d471bb",
+    "source_status_after": ""
+  },
+  "source_guard_changes": {
+    "protected_rows_visited": 10,
+    "changed_marker_slots": 9,
+    "qa_mutation_literals": 6,
+    "boundaries": 483,
+    "complete_protected_rows": 373,
+    "non_marker_metadata_unchanged": true,
+    "rust_and_original_verifier_unchanged": true
+  },
+  "native_qualification": {
+    "state": "admitted_not_qualified",
+    "expected_cases": 150,
+    "expected_groups": 32,
+    "job_id": "1a1ce2e60c3-2564-152c",
+    "typed_request": {
+      "key": "learn-ce434-fixed-4ceb-original-full-native150-v1",
+      "bytes": 16048,
+      "sha256": "2196e5b95a54cec373b43a41f3d769a5cc140ef43a1fcf58f88e4527790b7350",
+      "script_sha256": "f78ed9b97c7ea9cfcafc0f6606a95978910cb9603a6f064221309ed41d0be2e4",
+      "runner_sha256": "c5353043ac9352a3977ef2945e1aaedbe92ab3026cf09472cc4d7844b127baef"
+    },
+    "root_fixtures_not_executed": 22
+  },
+  "full_caller_proof": {
+    "state": "admitted_not_qualified",
+    "job_id": "1a1ce313268-2564-154b",
+    "typed_request": {
+      "key": "learn-ce434-fixed-4ceb-original-full-caller-v1",
+      "bytes": 3475,
+      "sha256": "b4558e43e8f1b08f2a4c81a3eadeef242603173d14bb922bc0d8f45902dbc18a",
+      "blob": "6c658752c6e65f6dca5d0ce64924a50de09eacab"
+    }
+  },
+  "old_7832_full_caller": {
+    "state": "terminal_unavailable_after_executor_replacement",
+    "last_confirmed_state": "running",
+    "pass": false,
+    "old_directory_missing": true
+  },
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/caller-self-test.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/caller-self-test.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/caller-self-test.driver.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/observer-parser.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/observer-parser.driver.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 3123,
+      "sha256": "02816e130196483f7dc3b7c82901e5857e71032b18451b138b9c06c0026228f6"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/source-closure.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/source-closure.driver.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 71928,
+      "sha256": "a807e9cc783d029e0042373a9371a35bd1348147e2f0135537490e2638d5873a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/result.json",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 3047,
+      "sha256": "d9cf554b6ed278bd730137946750b1d5e7ef8f51a911e1f393aadc5f824c5b4c"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/observer-parser.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 3123,
+      "sha256": "02816e130196483f7dc3b7c82901e5857e71032b18451b138b9c06c0026228f6"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualification-local-4ceb-source-v1/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-4ceb-source-v1/source-closure.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 71928,
+      "sha256": "a807e9cc783d029e0042373a9371a35bd1348147e2f0135537490e2638d5873a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/qualify_4ceb_source_v1.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_4ceb_source_v1.py",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 4011,
+      "sha256": "c0de4c9ff46511ef71523f9f979ad2b07fb848e86c5308ce58d2a1db795f02ae"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer_24057_guard_patch.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer_24057_guard_patch.py",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 7766,
+      "sha256": "f0cd4ae289eecdfbfd5fc165261a5b380fde39f4d9ebdc7ab5f89e40cef2a7e5"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer_24057_qa_sync.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer_24057_qa_sync.py",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 2715,
+      "sha256": "f4ef872f9cbf04c15e5173e512b8ace5e5034fbaa58b4e7c9a302e65a13af707"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer-24057-guard-markers.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer-24057-guard-markers.json",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 2640,
+      "sha256": "d6823e8d440f100e0c954ed42b7798faaa246d98b8dc56d6096174461ccf6d0f"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer-24057-qa-markers.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer-24057-qa-markers.json",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 2360,
+      "sha256": "ee926817fbe6616d32fc48470bf40766fbc49a75f9c773a4e4d4c9685bcc51b4"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer-24057-local-guard-postimages.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer-24057-local-guard-postimages.json",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 923,
+      "sha256": "749fec56c84a2e0aa23142dc4f6b0f4d784ec29d7411ba0c501f2ef56c04c3ed"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer-24057-guards-local-v2/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer-24057-guards-local-v2/result.json",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 655,
+      "sha256": "998d5e5ce55a4792c910cafdd98ad145dd29f4d5d43a319980722746661f8ade"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/local/issuer-24057-guards-local-v2/source.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/issuer-24057-guards-local-v2/source.log",
+      "kind": "complete original local source result or scoped guard work/audit",
+      "bytes": 2033,
+      "sha256": "b158f9f6fe7ea519971b4a55ad60c57bcc029b9ae0be2725f6ddc68d847bfde7"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-24057/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/version-issuer-24057-source-v1/source-closure.log",
+      "kind": "complete original 319-method failed log; FAILED(errors=98), including subtests",
+      "bytes": 288807,
+      "sha256": "ef21d8a716a0905319577eb0f979d115d21ffce8c8c43f4121edfcf823a5488e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-24057/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/version-issuer-24057-source-v1/result.json",
+      "kind": "complete original failed qualification result",
+      "bytes": 2880,
+      "sha256": "f194b6badfe2269ca56381d0ecf1002c770397fc98122b87114a4b1f39636c2b"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-24057/observer-parser.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/version-issuer-24057-source-v1/observer-parser.log",
+      "kind": "complete original parser/self-test log",
+      "bytes": 3123,
+      "sha256": "0e6073890178f19c07825a6778376005c1ad5694577e9400617f5646cfc8a233"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-24057/caller-self-test.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/version-issuer-24057-source-v1/caller-self-test.log",
+      "kind": "complete original parser/self-test log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-24057/result-original-sdk.json",
+      "original_path": "H operation 7f7dffb0adb3c8eb26bbc6973f5f578248a728186fa3d12ab925bad2c54f118a",
+      "kind": "complete original SDK payload",
+      "bytes": 4182,
+      "sha256": "3c2f72854f2758a3e6de5f16b6ee86aa49e0361a6601cbec9ada1af3c986ab0e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-24057/log-chunks.json",
+      "original_path": null,
+      "kind": "original bounded read chunk metadata; exact complete log retained",
+      "bytes": 1915,
+      "sha256": "cddfe82ab58937302fd78533d48f53e943ac56d5cd581330197d600dae44f511"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-guard-v1/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/version-issuer-24057-guards-v1/result.json",
+      "kind": "original failed guard repair result; no source mutation was committed",
+      "bytes": 1126,
+      "sha256": "baec7c16e9070909f784013b47b6d90b018c0712eaf5444371c544eee5cb3c34"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-guard-v1/patch-protected-spans.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/version-issuer-24057-guards-v1/patch-protected-spans.log",
+      "kind": "original failed guard repair result; no source mutation was committed",
+      "bytes": 774,
+      "sha256": "c47368dc7eca28f646351e228ed0a092d11004809e80580135284cab794ff9b9"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/previous-guard-v1/typed-request.json",
+      "original_path": "Git blob ea52b6296e0763f2f06c04de31209f3c300042d4",
+      "kind": "frozen exact original failed repair request",
+      "bytes": 16393,
+      "sha256": "43b5f8ce22dd5dfb17383813213a5ca99114a6f95b231932623b663f1ca2bad4"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/native150/typed-request.json",
+      "original_path": "Git blob 3fc6b44f2ec5ef6952d1624f334696013712e9e3",
+      "kind": "exact fixed source native request; admission is not pass",
+      "bytes": 16048,
+      "sha256": "2196e5b95a54cec373b43a41f3d769a5cc140ef43a1fcf58f88e4527790b7350"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/full-caller/typed-request.json",
+      "original_path": "Git blob 6c658752c6e65f6dca5d0ce64924a50de09eacab",
+      "kind": "exact original unmodified verifier request; admission is not pass",
+      "bytes": 3475,
+      "sha256": "b4558e43e8f1b08f2a4c81a3eadeef242603173d14bb922bc0d8f45902dbc18a"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/native150/preparation-original-sdk.json",
+      "original_path": "H operation 57c51f743c6a0d5cfdafe8338ea75e8b332b5190586a7935032efe2a3c6128d0",
+      "kind": "original running preparation observation",
+      "bytes": 1773,
+      "sha256": "f3fb2a17ec010d2dcb37893fcdce3864d454928538add52c243fd013e5a4efe5"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/version-issuer-4ceb-20261112/reviewed-match-arm.json",
+      "original_path": null,
+      "kind": "specific full original match arm retained with formatter braces; no generic brace elision",
+      "bytes": 458,
+      "sha256": "b74d409a11b2b459994383f9dab7722951a8327abd95b6e74ec6da7fb6124526"
+    }
+  ]
+}

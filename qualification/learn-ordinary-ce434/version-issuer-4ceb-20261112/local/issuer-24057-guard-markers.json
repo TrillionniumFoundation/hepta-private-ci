@@ -1,0 +1,56 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+    "function": null,
+    "before": "enum OriginalVersionIssuerAccessV1 { Available, ReadbackOnly }",
+    "after": "enum OriginalVersionIssuerAccessV1 {\n    Available,\n    ReadbackOnly,\n}"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+    "function": "fn into_original_retained_version_issuer(",
+    "before": "self.protected_root.as_ref()",
+    "after": "self\n            .protected_root\n            .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+    "function": "fn into_original_retained_version_issuer(",
+    "before": "self.stream.try_lock()",
+    "after": "self\n                .stream\n                .try_lock()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+    "function": "fn claim_original_final_use(",
+    "before": "state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?",
+    "after": "state\n            .final_use_issuer\n            .take()\n            .ok_or(Error::ReadbackRequired)?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+    "function": "fn new(",
+    "before": "RetainedVersionOriginV1::Recovered => RetainedVersionFinalUseOutcomeV1::Published as u8",
+    "after": "RetainedVersionOriginV1::Recovered => {\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\n                }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn prepare_original(",
+    "before": "self.read_original(state)",
+    "after": "self\n            .read_original(state)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn publish_original_final_use(",
+    "before": "task.install_original(published, cut, intent)",
+    "after": "task\n                .install_original(published, cut, intent)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn publish_original_final_use(",
+    "before": "self.read_original(&state)",
+    "after": "self\n                .read_original(&state)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn publish_original_final_use(",
+    "before": "self.final_use_outcome.store(RetainedVersionFinalUseOutcomeV1::Published as u8, Ordering::Release)",
+    "after": "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )"
+  }
+]
