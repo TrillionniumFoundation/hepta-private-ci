@@ -1,0 +1,941 @@
+{
+  "adoption_gate_saturation": {
+    "B_denominator": 8,
+    "benefit_adoption_possible_on_this_fixture": false,
+    "current_threshold_changed": false,
+    "deterministic_B_successes": 8,
+    "maximum_candidate_successes": 8,
+    "next_benefit_experiment": "Before observing B/C, preregister discriminating real tasks and complete-cost standards; do not weaken the current threshold after outcomes.",
+    "selection_requires_strictly_greater": true
+  },
+  "all_six_research_goals_completed": false,
+  "ci": {
+    "fixed_workflow_sha256": "8baff3839a0cf3b3a0bf8317853f5bd80a97bfe3b5cf45a75b13e36ec6219fdc",
+    "initial_run": {
+      "conclusion": "failure",
+      "original_artifact": {
+        "bytes": 43013,
+        "path": "CI_RUN_43797077251.json",
+        "root": "qualification_directory",
+        "sha256": "a136ac996d8538ec92ac306f1bca5ef3968020f484a6c6f7af3d0d7662cc343d"
+      },
+      "reason": "native unittest could not import tools without an explicit HIA PYTHONPATH",
+      "run_id": 43797077251,
+      "source_head": "12cd0514c7936955e090af88a35ee1237def2b7c",
+      "subsequent_qualification_steps": "skipped; no qualification credit",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43797077251"
+    },
+    "manual_actual_runtime_pass_is_not_ci_pass": true,
+    "rerun_result": null,
+    "runtime_and_hia_followup": {
+      "concrete_failure_observed": false,
+      "hia_pr_902_status": "PENDING",
+      "json_artifact": {
+        "bytes": 7135,
+        "path": "CI_FOLLOWUP_RUNTIME132_HIA902.json",
+        "root": "qualification_directory",
+        "sha256": "d187e76083083685e4e90b3132e7bfbdd84bd091656536150ef838be2cf4f2ab"
+      },
+      "observed_at_utc": "2026-11-16T03:44:45Z",
+      "overall": "PENDING_BOTH_RUNS",
+      "qualification_note": "A running job with successful earlier steps is not a completed CI pass. HIA source success qualifies that job only. No job/step failure is visible in this snapshot.",
+      "readable_artifact": {
+        "bytes": 3097,
+        "path": "CI_FOLLOWUP_RUNTIME132_HIA902.md",
+        "root": "qualification_directory",
+        "sha256": "b100f92fce1572f1ec8b09ae4f90ef802e18b053e92ab0615bf25bc4427f9fff"
+      },
+      "runtime_pr_132_status": "PENDING",
+      "snapshot_is_terminal_ci_pass": false
+    },
+    "status": "pending_at_publication",
+    "workflow_fixes": [
+      "Run HIA native controls in HIA working directory with explicit PYTHONPATH=.",
+      "Review campaign via independent exact snapshot with only two strictly empty WAL omissions."
+    ]
+  },
+  "cost_measurement_policy": {
+    "actual_runtime_numeric_threads": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "actual_vs_local_speedup_claim": false,
+    "all_runtime_preparation_and_prior_attempt_costs_aggregated": false,
+    "combine_lanes_as_one_experiment": false,
+    "compare_joint004_vs_maintenance_as_same_budget_speed_test": false,
+    "component_quantile_scope": "Invocation only; excludes owner admission/settlement and compile.",
+    "joint004_threads": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "joint_cold_quantile_scope": "10 samples; empirical nearest-rank, not production guarantee.",
+    "rss_scope": "Maximum single child high-water mark, not simultaneous aggregate.",
+    "shared_build_counted_as_new_maintenance_compile": false,
+    "unknown_is_zero": false,
+    "unmeasured": [
+      "energy_joules",
+      "simultaneous_aggregate_peak_rss",
+      "hardware_queue_occupancy",
+      "full_switch_cost",
+      "full_migration_cost",
+      "business_effect_loss_or_duplication",
+      "longitudinal_adaptation_speed"
+    ]
+  },
+  "documentation_status": "actual_runtime_limited_pass_ci_pending_at_publication",
+  "final_use_capability_boundary_qualified": false,
+  "full_cost_qualified": false,
+  "history_exclusions": [
+    {
+      "candidate_sha256": "617e8daee4a26bd45525a32e0bb0e87929beed1978055eb1ce30114cf878d957",
+      "combine_cost_with_joint004": false,
+      "credit_to_joint004_or_actual_runtime": false,
+      "originals_retained": true,
+      "reason": "Local candidate before later operator configuration correction.",
+      "result": {
+        "bytes": 1710,
+        "path": "final-joint-003/RESULT.json",
+        "sha256": "af341beb08a90c4f7885c176e9c41f79eb67bdeab551b9e75227c1c76c7216fb"
+      },
+      "run": "final-joint-003",
+      "status": "superseded"
+    },
+    {
+      "current_qualification_credit": false,
+      "independent_sample_credit": false,
+      "record": {
+        "bytes": 3779,
+        "path": "maintenance-recovery-001/PRIOR_EVIDENCE_LOSS.json",
+        "sha256": "63d1cd28d52a4dc72d4f8dd57041ab68ead575b9f64f60c89149ef42fa9f3911"
+      },
+      "run": "previous_tmpfs_maintenance_runs",
+      "status": "previous_observed_raw_lost"
+    },
+    {
+      "current_speedup_evidence_credit": false,
+      "run": "prior_code_optimization_observations",
+      "status": "not_adopted_raw_lost"
+    }
+  ],
+  "independent_real_task_learning_benefit": false,
+  "lanes": {
+    "actual_runtime": {
+      "actual_process_starts": 3,
+      "actual_runtime_transport_verified": true,
+      "adoptions": 0,
+      "all_cold_stdout_byte_identical": true,
+      "authority_profile": "administrator_configured_operator_process_owner",
+      "build_relocation_chain": {
+        "campaign_copy": {
+          "bytes": 6909,
+          "path": "worker/lane-v4-state/maintenance/campaign/native/build.json",
+          "root": "actual-runtime-v4",
+          "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+        },
+        "original": {
+          "bytes": 6673,
+          "path": "worker/lane-v4-state/maintenance/ORIGINAL_BUILD.json",
+          "root": "actual-runtime-v4",
+          "sha256": "609794911213bdf455c6fffbc44f2b3400709eddd3189c690842607ede0c71d4"
+        },
+        "relocated": {
+          "bytes": 6909,
+          "path": "worker/lane-v4-state/maintenance/RELOCATED_BUILD.json",
+          "root": "actual-runtime-v4",
+          "sha256": "19dff0a062f1259c25cd36ddd1f0bd9270b5a454dc2b216707d8ef32c55b0d6b"
+        },
+        "source_compiler_image_identity_preserved": true
+      },
+      "campaign_artifact": {
+        "bytes": 13280,
+        "path": "worker/lane-v4-state/maintenance/campaign/RESULT.json",
+        "root": "actual-runtime-v4",
+        "sha256": "8df6f398955f44c56f4515b6d2ed9e0209e7bd0a90e6723a2e0be66aceb89dd0"
+      },
+      "campaign_status": "PASS_CONTROLLED_FIXTURE_TWO_COMPLETE_NOUPDATES",
+      "cells": {
+        "memory": {
+          "A_retention": {
+            "candidate": 6,
+            "frozen": 2
+          },
+          "B_successes": {
+            "candidate": 6,
+            "deterministic": 8,
+            "frozen": 2,
+            "no_learning": 2,
+            "no_memory": 2
+          },
+          "C_successes": 2,
+          "cold_exact": true,
+          "cold_whole_child_cpu_seconds": 0.13050299999999998,
+          "cold_whole_wall_ns": 135445277,
+          "component_call_p95_ms": 2.08005,
+          "component_call_p99_ms": 2.4374727600000012,
+          "decision": "NoUpdate",
+          "denominator": 8,
+          "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+          "logical_parameter_work": 66852,
+          "native_completed": 265,
+          "native_wall_ns": 5007518,
+          "training_cpu_seconds": 0.00463540300000001,
+          "training_updates": 16,
+          "training_wall_seconds": 0.00463505694642663,
+          "unresolved": 0
+        },
+        "predictor": {
+          "A_retention": {
+            "candidate": 2,
+            "frozen": 2
+          },
+          "B_successes": {
+            "candidate": 2,
+            "deterministic": 8,
+            "frozen": 2,
+            "no_learning": 2,
+            "no_memory": 2
+          },
+          "C_successes": 2,
+          "cold_exact": true,
+          "cold_whole_child_cpu_seconds": 0.11091399999999998,
+          "cold_whole_wall_ns": 114144259,
+          "component_call_p95_ms": 2.08564,
+          "component_call_p99_ms": 2.4509328399999997,
+          "decision": "NoUpdate",
+          "denominator": 8,
+          "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+          "logical_parameter_work": 117670,
+          "native_completed": 457,
+          "native_wall_ns": 8383868,
+          "training_cpu_seconds": 0.004767874000000005,
+          "training_updates": 16,
+          "training_wall_seconds": 0.004767721053212881,
+          "unresolved": 0
+        }
+      },
+      "cold_process_start_calls": 0,
+      "compile_calls": 208,
+      "complete_no_updates": 2,
+      "config_artifact": {
+        "bytes": 758,
+        "path": "controller/runtime-config-v2.json",
+        "root": "actual-runtime-v4",
+        "sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5"
+      },
+      "config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
+      "controller_cold_restarts": 3,
+      "controller_fresh_process_observation_status": "PASS_THREE_ORIGINAL_JOBS_NO_SECOND_START",
+      "controller_platform": "Darwin arm64",
+      "cost": {
+        "aggregate_peak_rss_bytes": null,
+        "all_lane_process_cpu_seconds": null,
+        "campaign_parent_cpu_seconds": 0.8922138770000001,
+        "campaign_wall_seconds": 2.3223239798098803,
+        "energy_joules": null,
+        "hardware_queue_occupancy": null,
+        "lane_wall_seconds": 9.056936291,
+        "model_cold_child_cpu_seconds": {
+          "memory": 0.13050299999999998,
+          "predictor": 0.11091399999999998
+        },
+        "native_image_recompiled_in_campaign": false,
+        "postprocessing_wall_seconds": 0.3936648060043808,
+        "prior_native_compile_wall_ns": 210931281,
+        "runtime_cargo_build_wall_seconds": 157.996383792,
+        "scope": "Lane excludes runtime build, dependency preparation and earlier failed attempts; campaign is nested within lane, not additive; cold child CPU is not all child CPU."
+      },
+      "execution_boundary": "existing operator account; no OS process sandbox claim",
+      "final_use_capability_boundary_qualified": false,
+      "independent_real_task_benefit": false,
+      "jobs": [
+        {
+          "cold_artifact": {
+            "bytes": 677356,
+            "path": "controller/lane-v4/observe-cold.json",
+            "root": "actual-runtime-v4",
+            "sha256": "883a498bbe261fad594b75a1559e55bb477e6cf7c4027e27d4141ea4fb66de35"
+          },
+          "cold_calls": {
+            "process_read": 1,
+            "process_status": 2
+          },
+          "cold_output_byte_identical": true,
+          "first_artifact": {
+            "bytes": 680276,
+            "path": "controller/lane-v4/observe-first.json",
+            "root": "actual-runtime-v4",
+            "sha256": "31ca2500c058327e4a297c2b2ab0473e3b5bcae0a94a7a83d728baec0fe9e881"
+          },
+          "first_calls": {
+            "process_read": 1,
+            "process_start": 1,
+            "process_status": 2
+          },
+          "job_id": "1a1e25ced5b-509a-1",
+          "label": "observe",
+          "stdout_sha256": "c7c09aad6a932f8f2bc65633b6b7d4fe0d223ff66bfe936c14fff64e65b1cda8"
+        },
+        {
+          "cold_artifact": {
+            "bytes": 677635,
+            "path": "controller/lane-v4/predict-cold.json",
+            "root": "actual-runtime-v4",
+            "sha256": "7784b56fe05d9c70ca3ff4aa7d8fd395c7ab091b7b473c60e6395735d5328850"
+          },
+          "cold_calls": {
+            "process_read": 1,
+            "process_status": 2
+          },
+          "cold_output_byte_identical": true,
+          "first_artifact": {
+            "bytes": 680526,
+            "path": "controller/lane-v4/predict-first.json",
+            "root": "actual-runtime-v4",
+            "sha256": "bb2167a3474f1b9221d79ca8a32cdd7cf75be45c05b0da016cbe29df4695b661"
+          },
+          "first_calls": {
+            "process_read": 1,
+            "process_start": 1,
+            "process_status": 2
+          },
+          "job_id": "1a1e25cf66a-510d-1",
+          "label": "predict",
+          "stdout_sha256": "edfb0d8bbcab6aefcfe898a71b2f38994aca3725acdb97e8740eb8100b047979"
+        },
+        {
+          "cold_artifact": {
+            "bytes": 737646,
+            "path": "controller/lane-v4/campaign-cold.json",
+            "root": "actual-runtime-v4",
+            "sha256": "641c08aebf33945cbb1d69b070af2ce535a85a80e40c9f49ed7c908e977123f0"
+          },
+          "cold_calls": {
+            "process_read": 1,
+            "process_status": 2
+          },
+          "cold_output_byte_identical": true,
+          "first_artifact": {
+            "bytes": 743685,
+            "path": "controller/lane-v4/campaign-first.json",
+            "root": "actual-runtime-v4",
+            "sha256": "082f368fe3cdbed91d6984c3a3a82f3f43c81e1440622de20b4b1337267f03cd"
+          },
+          "first_calls": {
+            "process_read": 1,
+            "process_start": 1,
+            "process_status": 6
+          },
+          "job_id": "1a1e25cff37-5147-1",
+          "label": "campaign",
+          "stdout_sha256": "c896971124e830b7679e49a4adac08c7147f982a35621115b9805684fcc132d7"
+        }
+      ],
+      "mac_build": {
+        "binary_bytes": 17830320,
+        "binary_identity_matches_actual_stdio_protocol": true,
+        "binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+        "build_artifact": {
+          "bytes": 6283,
+          "path": "ACTUAL_RUNTIME_BUILD.json",
+          "root": "qualification_directory",
+          "sha256": "90f73f4c611f177e2fc94227f8845b5308df9370502ffc1896b65c939207389d"
+        },
+        "cargo_build_wall_seconds": 157.996383792,
+        "hermetic_build_reproducibility_qualified": false,
+        "source_clean": true,
+        "source_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+        "source_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a",
+        "status": "PASS_ORIGINAL_BUILD_RECEIPT_AND_LOGS_REVIEWED"
+      },
+      "native_continuations_completed": 722,
+      "ordinary_daemon_adoption": false,
+      "origin_local_candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b",
+      "outer_readonly_record_review": {
+        "artifact": {
+          "bytes": 5557,
+          "path": "RUNTIME_RECORD_REVIEW.json",
+          "root": "qualification_directory",
+          "sha256": "c59041a2f2601aeb6f2ff2d66565eb5d56f191f748a2f93755d64a896b88391f"
+        },
+        "execution_counts": {
+          "checkpoint": 0,
+          "model": 0,
+          "native": 0,
+          "runtime": 0,
+          "sqlite_connections": 0
+        },
+        "helper_source_commit": "12cd0514c7936955e090af88a35ee1237def2b7c",
+        "helper_source_files_matched": 3,
+        "original_files": 321,
+        "original_inventory_sha256": "21fb09dc80249b833fba3c66e157b44765e4577c4d6cbbd87cf0663808e532b6",
+        "originals_unchanged": true,
+        "private_key_or_token_pattern_hits": 0,
+        "scope": "Independent read-only consistency review of retained runtime observations, not execution or expanded qualification.",
+        "secret_scan_artifact": {
+          "bytes": 1476,
+          "path": "RUNTIME_SECRET_SCAN.json",
+          "root": "qualification_directory",
+          "sha256": "d5d78c52abdbd88ff57d1e8e20f469f93ff428a3c1941cc568f829e27688f8f8"
+        },
+        "secret_scan_scope": "Known byte patterns in the two retained authorized evidence archives only; no guarantee beyond the recorded patterns.",
+        "sessions_verified": 6,
+        "status": "READ_ONLY_RECORD_REVIEW_PASS",
+        "verifier_artifact": {
+          "bytes": 33973,
+          "path": "verify_runtime_records.py",
+          "root": "qualification_directory",
+          "sha256": "a03860c1f4d2d6ee6d230e969028828cda325c173868d153be62b2ebb6989133"
+        }
+      },
+      "per_version_manifest_sha256": [
+        "31d5552ec8ba9c86516969635b3b367a5de76dba167fedbf7761ed3c3db36354",
+        "6197993b1a576c276a8d01279ce138199ea6ea1fa08e1eb9c36e2f9313007c02",
+        "7e9fd4ef859849537c035ae86b35d28466faee9c86dfa9710a91756dbf291e13",
+        "817ef8f39d6c0bdcf737e5e7b746840b1cb0457f6caafabd1bf1c7cb1a1072a5",
+        "d3a9412970a806cc43498b78e2eff8ef41245db3bea63df07ff4bd52a92932a5",
+        "d839e40088c8a8d43501b1dba0d84e6bab924defa77931330e4928869922f842"
+      ],
+      "per_version_pins_and_protocol_consistency_status": "PASS",
+      "pins_artifact": {
+        "bytes": 688,
+        "path": "ACTUAL_RUNTIME_PINS.json",
+        "root": "qualification_directory",
+        "sha256": "7a442c480bde586cd479c253acfa231f96e8e04f9af029754761bedfdbcb6a62"
+      },
+      "plan_sha256": "60912d50bf67cabff4609f7b4e9174b671020d08bdfd852457d9b820002a6282",
+      "postprocessing": {
+        "copied_files": 61,
+        "omitted_files": [
+          {
+            "bytes": 0,
+            "path": "memory/owner.sqlite-wal",
+            "reason": "explicitly permitted zero-byte WAL; no database frame discarded",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "bytes": 0,
+            "path": "predictor/owner.sqlite-wal",
+            "reason": "explicitly permitted zero-byte WAL; no database frame discarded",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "original_verifier_sha256": "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5",
+        "postprocessor_alone_proves_transport": false,
+        "postprocessor_sha256": "c1ee0250d546d8926f9837fefd68a815ee18b1d434658e967c17ea97bc66bb96",
+        "preserved_shm_files": [
+          "memory/owner.sqlite-shm",
+          "predictor/owner.sqlite-shm"
+        ],
+        "retained_initial_empty_wal_refusal": {
+          "receipt": {
+            "bytes": 553,
+            "path": "worker/campaign-readonly-v4-receipt.json",
+            "root": "actual-runtime-v4",
+            "sha256": "8b17a3cfc3ec39bf267ec4c771c12cf272916fe2acef5dc30e9c96aa7b4c04b2"
+          },
+          "stderr": {
+            "bytes": 1509,
+            "path": "worker/campaign-readonly-v4.stderr",
+            "root": "actual-runtime-v4",
+            "sha256": "67843ed06f25b570f437563946b0d18706d429c4f8a03c790b2b89414221a016"
+          }
+        },
+        "retrained_or_reexecuted_model": false,
+        "snapshot_unchanged": true,
+        "source_unchanged": true,
+        "status": "READ_ONLY_SNAPSHOT_CONSISTENCY_PASS",
+        "wall_seconds": 0.3936648060043808
+      },
+      "prior_worker_readonly_review": {
+        "bytes": 2868,
+        "path": "worker/campaign-readonly-v4b.json",
+        "root": "actual-runtime-v4",
+        "sha256": "5d621b4b0c57a67a73896889e7ca811901f4d4600b2c0a85fdec19bb84b2da82"
+      },
+      "published_prs": [
+        {
+          "number": 902,
+          "repository": "TrillionniumFoundation/Hepta",
+          "url": "https://github.com/TrillionniumFoundation/Hepta/pull/902"
+        },
+        {
+          "number": 6399,
+          "repository": "TrillionniumFoundation/hepta-private-ci",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6399"
+        },
+        {
+          "number": 6400,
+          "repository": "TrillionniumFoundation/hepta-private-ci",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6400"
+        },
+        {
+          "number": 132,
+          "repository": "TrillionniumFoundation/hepta-runtime",
+          "url": "https://github.com/TrillionniumFoundation/hepta-runtime/pull/132"
+        }
+      ],
+      "raw_archives": [
+        {
+          "bytes": 1012192,
+          "path": "actual-runtime-v4-controller-evidence.tar.gz",
+          "root": "qualification_directory",
+          "sha256": "1fbe62e63c22efd220fee2b62e5a8306e578f706bff201350f185eee89d52252"
+        },
+        {
+          "bytes": 983404,
+          "path": "actual-runtime-v4-worker-evidence.tar.gz",
+          "root": "qualification_directory",
+          "sha256": "a1dec072ac89676af62b6e37b676b3ff5958a806793e0c239a59d264292c374a"
+        }
+      ],
+      "raw_originals_read": true,
+      "raw_root": "runtime-bridge/evidence/actual-runtime-v4",
+      "readonly_campaign_review": {
+        "bytes": 142839,
+        "path": "RUNTIME_CAMPAIGN_REVIEW.json",
+        "root": "qualification_directory",
+        "sha256": "40d9499c1ddd1efa38b47f3f84e0ec57aed7ea680b71e072fb3a045674a724a5"
+      },
+      "runtime_bound_candidate_original": {
+        "bytes": 46522,
+        "path": "ACTUAL_RUNTIME_CANDIDATE.json",
+        "root": "qualification_directory",
+        "sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469"
+      },
+      "runtime_bound_candidate_sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+      "runtime_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+      "runtime_identity": {
+        "binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+        "config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
+        "controller_device": {
+          "hostname_sha256": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+          "machine": "arm64",
+          "python": "3.9.6",
+          "python_sha256": "c5a13e37785524fbc0384539d3c99aa4f888cb7c89e13e0bf0018436378b13bc",
+          "release": "25.6.0",
+          "system": "Darwin"
+        },
+        "execution_boundary": "existing operator account; no OS process sandbox claim",
+        "source_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+        "source_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a"
+      },
+      "source_binding": {
+        "common_cell_execution_source_head": "12cd0514c7936955e090af88a35ee1237def2b7c",
+        "exact_executed_modules": 17,
+        "execution_closure_unchanged": true,
+        "helper_source_artifact": {
+          "bytes": 1501,
+          "path": "RUNTIME_HELPER_SOURCE_RECEIPTS.json",
+          "root": "qualification_directory",
+          "sha256": "51168b6d707a1779b0f7be46abc24404c0a9bc2434e6fe8058e97ac43629ff79"
+        },
+        "helper_source_sha256": {
+          "runtime_process_bridge.py": "25ec3fcec67af03ebc19f3e6b500c9f0cd8f6feb1c260f54f40b3b8e128131f4",
+          "runtime_process_contract.py": "05a8d5fae86d20810df4dda5dd64ffa63645a30e723fe16b96fc469e1714a542",
+          "runtime_stdio.py": "cccbd3796b59ba6b89b4030dbcb16a626f378ec477520765a859e040c3ebcfda"
+        }
+      },
+      "status": "PASS_LIMITED_OPERATOR_RUNTIME_AND_CONTROLLED_FIXTURE",
+      "target_alias": "ai395",
+      "training_updates": 32,
+      "worker_artifact": {
+        "bytes": 12065,
+        "path": "ACTUAL_RUNTIME_RESULT.json",
+        "root": "qualification_directory",
+        "sha256": "d004bee0ba3e1201e71f270c6737bc6452f85fbb7228b28414225e0b9b88ac87"
+      },
+      "worker_numeric_profile": {
+        "dtype": "numpy.float64",
+        "machine": "x86_64",
+        "numpy": "2.3.5",
+        "numpy_backend_sha256": "61052ef771d926665ca135b1840662516f058d5c98843aa429ef2abdd7f46a04",
+        "numpy_vendor_libraries": {
+          "libgfortran-040039e1-0352e75f.so.5.0.0": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980",
+          "libquadmath-96973f99-934c22de.so.0.0.0": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6",
+          "libscipy_openblas64_-fdde5778.so": "ee2039cf13a45e1e89f04d0cea9585657d93ffaa425594e1935161013fdf4e12"
+        },
+        "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+        "python_binary_sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+        "python_cache_tag": "cpython-314",
+        "threads": {
+          "MKL_NUM_THREADS": "1",
+          "NUMEXPR_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        }
+      },
+      "worker_status": "PASS_OBSERVE_AND_PREDICT"
+    },
+    "controls_v2": {
+      "evidence": [
+        {
+          "bytes": 5383,
+          "path": "final-controls-v2/RESULT.json",
+          "sha256": "fe75eafa00c6712f14321e5cb6e5fff65638cb88edf244158fe10b69922d07ee"
+        },
+        {
+          "bytes": 8617,
+          "path": "final-controls-v2/unittest.log",
+          "sha256": "e956f524067e0d5657b057bcd58ea270519dcada6cdd9909b8660cf7d33bef86"
+        }
+      ],
+      "exit_code": 0,
+      "native_runtime_qualified": false,
+      "scope": "48 actual lifecycle and bounded transport fixture controls; no native runtime claim",
+      "status": "pass",
+      "tests": 48,
+      "wall_ns": 971092182
+    },
+    "local_joint_004": {
+      "candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b",
+      "claims": {
+        "full_cost_qualified": false,
+        "independent_learning_benefit": false,
+        "native_hia_real_cell_local_bridge": true,
+        "native_runtime_qualified": false,
+        "ordinary_daemon_adoption": false,
+        "production_ready": false
+      },
+      "cost": {
+        "child_cpu_seconds": 3.770918,
+        "child_peak_rss_kib": 34792,
+        "cold_process_p95_ns": 256089617,
+        "cold_process_p99_ns": 256089617,
+        "cold_process_samples": 10,
+        "compile_wall_ns": 210931281,
+        "energy_joules": null,
+        "max_inflight": 1,
+        "parent_cpu_ns": 563164592,
+        "quantile_scope": "empirical nearest-rank of this small fixture only",
+        "wall_ns": 4236000388
+      },
+      "evidence": [
+        {
+          "bytes": 1710,
+          "path": "final-joint-004/RESULT.json",
+          "sha256": "5457eaa5189beffd5dfc11e451be2c7faa9f2f9847a59c368ea00e91234c998f"
+        },
+        {
+          "bytes": 45674,
+          "path": "final-joint-004/candidate.json",
+          "sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b"
+        },
+        {
+          "bytes": 6673,
+          "path": "final-joint-004/native/build.json",
+          "sha256": "609794911213bdf455c6fffbc44f2b3400709eddd3189c690842607ede0c71d4"
+        }
+      ],
+      "intent_status_by_database": {
+        "hard-death.sqlite": {
+          "pending": 1
+        },
+        "owner.sqlite": {
+          "committed": 6
+        },
+        "reply-loss.sqlite": {
+          "committed": 1
+        },
+        "unknown.sqlite": {
+          "pending": 1
+        }
+      },
+      "models": {
+        "MEM": {
+          "action_dim": 1,
+          "hidden_dim": 4,
+          "input_dim": 3,
+          "kind": "gru",
+          "output_dim": 2,
+          "seed": 41
+        },
+        "PRED": {
+          "action_dim": 1,
+          "hidden_dim": 4,
+          "input_dim": 3,
+          "kind": "gru",
+          "output_dim": 2,
+          "seed": 41
+        }
+      },
+      "passed_checks": [
+        "MEM:native-to-real-gru",
+        "MEM:exact-cold-replay",
+        "MEM:new-cold-inference",
+        "MEM:changed-request-refused",
+        "PRED:native-to-real-gru",
+        "PRED:exact-cold-replay",
+        "PRED:new-cold-inference",
+        "PRED:changed-request-refused",
+        "retained-result-before-caught-reply-error",
+        "cold-hia-resume-original-result",
+        "concurrent-readback-one-terminal",
+        "late-result-preserved-after-cancel-request",
+        "hard-process-death-retains-result-and-unknown-cost-reservation",
+        "unknown-no-auto-replay",
+        "cancellation-not-completion",
+        "changed-native-image-binding-refused"
+      ],
+      "pending_scope": "Two intentional fault requests remain pending: retained result with unknown original cost, and missing exact result; no invented settlement or automatic replay.",
+      "status": "local_native_hia_real_gru_fixture_pass"
+    },
+    "local_maintenance": {
+      "actual_runtime_transport": false,
+      "adopted_new_task_benefit": false,
+      "adoptions": 0,
+      "aggregate_peak_rss_bytes": null,
+      "archive_sha256": "f895b5e5aff58143ec5b493a026bcf5d906e52300443c22a2db06abaef87a9c8",
+      "cells": {
+        "memory": {
+          "A_retention": {
+            "candidate": 6,
+            "frozen": 2
+          },
+          "B_successes": {
+            "candidate": 6,
+            "deterministic": 8,
+            "frozen": 2,
+            "no_learning": 2,
+            "no_memory": 2
+          },
+          "C_successes": 2,
+          "cold_exact": true,
+          "cold_whole_child_cpu_seconds": 1.088471,
+          "cold_whole_wall_ns": 376702072,
+          "component_call_p95_ms": 2.6083078,
+          "component_call_p99_ms": 3.9598000400000095,
+          "decision": "NoUpdate",
+          "denominator": 8,
+          "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+          "logical_parameter_work": 66852,
+          "native_completed": 265,
+          "native_wall_ns": 12155777,
+          "training_cpu_seconds": 0.00764667699999988,
+          "training_updates": 16,
+          "training_wall_seconds": 0.007646343001397327,
+          "unresolved": 0
+        },
+        "predictor": {
+          "A_retention": {
+            "candidate": 2,
+            "frozen": 2
+          },
+          "B_successes": {
+            "candidate": 2,
+            "deterministic": 8,
+            "frozen": 2,
+            "no_learning": 2,
+            "no_memory": 2
+          },
+          "C_successes": 2,
+          "cold_exact": true,
+          "cold_whole_child_cpu_seconds": 0.999279,
+          "cold_whole_wall_ns": 277187195,
+          "component_call_p95_ms": 2.6508445999999997,
+          "component_call_p99_ms": 3.6966294799999995,
+          "decision": "NoUpdate",
+          "denominator": 8,
+          "latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+          "logical_parameter_work": 117670,
+          "native_completed": 457,
+          "native_wall_ns": 18695295,
+          "training_cpu_seconds": 0.007633057000000054,
+          "training_updates": 16,
+          "training_wall_seconds": 0.007632541004568338,
+          "unresolved": 0
+        }
+      },
+      "child_peak_rss_kib": 63288,
+      "compile_calls": 208,
+      "complete_no_updates": 2,
+      "energy_joules": null,
+      "evidence": [
+        {
+          "bytes": 2865,
+          "path": "maintenance-recovery-001/READ_ONLY_REVIEW.json",
+          "sha256": "27fbe635dce87b751df7c43b9e2be8bc1998437efd3e00da78bbeceffb516ccf"
+        },
+        {
+          "bytes": 13271,
+          "path": "maintenance-recovery-001/run001/RESULT.json",
+          "sha256": "2b9c15ef25e0ac9e5d1c7f64d557718e8bd0804b6e93886403edcadd26f79134"
+        },
+        {
+          "bytes": 1064,
+          "path": "maintenance-recovery-001/RUN_PROCESS.json",
+          "sha256": "f7ff41b08680026387fdbdfa022476bd49e6813d9ccf3fcd310f43ac4e511730"
+        },
+        {
+          "bytes": 517,
+          "path": "maintenance-recovery-001/ARCHIVE.json",
+          "sha256": "944e06cd1300b9ac4cb1d9594ed0394f599a8abb74ed0e3e67de365fdb2b4d3d"
+        }
+      ],
+      "exact_common_executed_modules_with_joint004": 17,
+      "longitudinal_retained_benefit": false,
+      "native_continuations_completed": 722,
+      "no_update_attempts": 2,
+      "no_update_reason": "Candidate did not strictly exceed every frozen/no_learning/deterministic baseline; original retention rule unchanged.",
+      "numeric_threads": {
+        "MKL_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null
+      },
+      "parent_cpu_seconds": 1.7731633320000002,
+      "plan_sha256": "29cc56ef6adf1d6170c51def1d9201bff8a392e80f9831cc8eb91ddb89acccc7",
+      "prior_shared_compile_wall_ns": 207677312,
+      "repository_raw_archive": "../cell-hia-maintenance-20261116/raw-evidence.tar.gz",
+      "repository_report": "../cell-hia-maintenance-20261116/README.md",
+      "runtime_pins": null,
+      "same_model_data_candidate_or_execution_as_joint004": false,
+      "status": "controlled_fixture_two_complete_no_updates",
+      "training_updates": 32,
+      "wall_seconds": 3.358155546011403,
+      "whole_child_cpu_seconds": 4.786317,
+      "whole_process_wall_seconds": 3.5601035650033737
+    }
+  },
+  "next_gate_required_conditions": [
+    "Freeze exact source/compiler/runtime binary/config/device/numeric/model/data/plan and parent-child version graph before observations.",
+    "Retain actual runtime protocol matched to per-version pins; metadata alone never proves transport.",
+    "Predeclare real replayable task families, nonleaking A/B/C and old-capability sets, environment changes and failure/restart points.",
+    "Include ordinary tool agent, same Cells no learning, learning with fixed topology, no cross-session experience, deterministic supervision, and full candidate with faults.",
+    "Control total capacity, data, inference budget, training budget and evaluation opportunities for head/topology/kernel/scheduler comparisons.",
+    "Account for every attempt, NoUpdate, training, validation, compilation, background inference, switch, migration, recovery and unresolved business effect.",
+    "Show output-preserving adopted code cost reduction, independently evaluated adopted parameter gain on C, and qualified state/effect custody migration in the same runtime.",
+    "Retain adopted gains across multiple task rounds and cold restarts with preregistered uncertainty analysis and full-cost limits."
+  ],
+  "ordinary_daemon_adoption": false,
+  "production_ready": false,
+  "published_prs": [
+    {
+      "number": 902,
+      "repository": "TrillionniumFoundation/Hepta",
+      "url": "https://github.com/TrillionniumFoundation/Hepta/pull/902"
+    },
+    {
+      "number": 6399,
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6399"
+    },
+    {
+      "number": 6400,
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6400"
+    },
+    {
+      "number": 132,
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "url": "https://github.com/TrillionniumFoundation/hepta-runtime/pull/132"
+    }
+  ],
+  "recorded_utc": "2026-11-16T03:24:11.126500+00:00",
+  "research_limits": [
+    "A/B/C each contain 8 programs from the same four syntax templates; distinct names/constants are not independent real-task distributions.",
+    "Success is CPython compile only; no execution, semantic correctness or repository test-suite guarantee.",
+    "Frozen and no_learning intentionally coincide in this first round.",
+    "No_memory resets hidden state between intra-task observations; it is not cross-session experience ablation.",
+    "Actual compute differs between Cells and deterministic controls; parameter-work is not hardware FLOPs or matched compute.",
+    "Two complete NoUpdate outcomes show local gate completion, not adopted gain.",
+    "Cold same-state inference does not establish longitudinal capability retention.",
+    "Operator authority does not qualify FinalUse or ordinary daemon adoption.",
+    "Local fault fixtures deliberately retain two pending requests; do not claim global zero pending.",
+    "Deterministic B is already 8/8 and admission requires strictly greater, so this fixture cannot grant benefit adoption to any candidate; the next real-task/cost protocol must be preregistered before viewing B/C."
+  ],
+  "root_completion_requirements": [
+    "Publish the fixed workflow and retain the next complete CI run; its status remains pending_at_publication until actually observed.",
+    "Keep actual-runtime limited PASS separate from CI, ordinary daemon, FinalUse, independent real-task benefit and completion of all six research goals.",
+    "Before a new benefit experiment observes B/C, preregister discriminating real tasks, fixed budgets and complete-cost admission; do not weaken this fixture gate."
+  ],
+  "schema": "hepta.joint-workstream-gates.v1",
+  "source_selection": {
+    "actual_runtime_candidate_sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+    "cell_base_in_original_manifest": "bb34e07389ad75d3b4629b63b0af0ee46f9b9594",
+    "cell_source_binding": "Baseline plus exact changed/new source SHA256 list. The executed Cell source head differs from the historical baseline and from the final evidence/publication head; later postprocessing, reviews and documentation do not change the pinned execution closure.",
+    "executed_cell_source_commit": "12cd0514c7936955e090af88a35ee1237def2b7c",
+    "executed_cell_source_head": "12cd0514c7936955e090af88a35ee1237def2b7c",
+    "hia_bridge_commit": "8ba46fc7a112fc220cdcbbd48dc5d24fda76a738",
+    "hia_hosted_compiler_commit": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "hia_source_sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a",
+    "later_evidence_commits_change_execution_closure": false,
+    "native_image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
+    "runtime_binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
+    "runtime_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+    "runtime_config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
+    "runtime_source_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a",
+    "selected_local_candidate_files": 243,
+    "selected_local_candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b"
+  },
+  "updated_utc": "2026-11-16T03:49:53.741811Z",
+  "workstreams": [
+    {
+      "bounded_engineering_gate_passed": true,
+      "fully_qualified": false,
+      "id": "P0_common_minimum",
+      "remaining": "Fixed workflow rerun pending at publication; new tasks/devices/versions require new freeze and evidence; no inherited production qualification.",
+      "status": "PASS_SCOPED_RUNTIME_CANDIDATE_IDENTITY_CHAIN"
+    },
+    {
+      "bounded_engineering_gate_passed": true,
+      "fully_qualified": false,
+      "id": "P0_real_cell_hia_bridge",
+      "remaining": "Ordinary daemon, FinalUse and arbitrary external business-effect boundaries remain unqualified; separate local fault lane is not fused into this execution.",
+      "status": "PASS_SCOPED_ACTUAL_OPERATOR_RUNTIME_HIA_GRU"
+    },
+    {
+      "bounded_engineering_gate_passed": true,
+      "fully_qualified": false,
+      "id": "P0_mem_pred_learning",
+      "remaining": "Actual Adopt and independent C benefit, old capability retention, multiple rounds and cold restart retention; saturated deterministic baseline prevents adoption in this fixture.",
+      "status": "PASS_ACTUAL_RUNTIME_FIXTURE_TWO_COMPLETE_NOUPDATES"
+    },
+    {
+      "fully_qualified": false,
+      "id": "P1_three_update_classes",
+      "remaining": "Three complete same-runtime examples with actual code/parameter adoption, qualified migration and complete cost.",
+      "status": "partial_owner_lifecycle",
+      "updates": {
+        "code_optimization": {
+          "adopted": false,
+          "current_reproducible_speedup_evidence": false,
+          "prior_originals": "lost_not_credited"
+        },
+        "parameter_learning": {
+          "actual_runtime_adoptions": 0,
+          "actual_runtime_candidates": 2,
+          "actual_runtime_complete_no_updates": 2,
+          "adopted": 0,
+          "complete_no_updates": 2,
+          "local_candidates": 2,
+          "separate_local_and_runtime_runs_not_independent_real_task_samples": true
+        },
+        "state_migration": {
+          "arbitrary_topology": false,
+          "cross_owner_custody": false,
+          "inflight_external_effect_transfer": false,
+          "local_controls_passed": true,
+          "scope": "Same SQLite owner and partition; pure components; no pending intents; exact current checkpoint; compatible readout with same recurrent kernel/config/episode."
+        }
+      }
+    },
+    {
+      "fully_qualified": false,
+      "id": "P1_longitudinal_plasticity_differentiation",
+      "remaining": "Controlled capacity/data/inference/training/evaluation opportunities over real task families and multiple rounds.",
+      "status": "not_qualified"
+    },
+    {
+      "fully_qualified": false,
+      "id": "P1_full_cost_and_recovery",
+      "remaining": "Energy, simultaneous memory, queues, adaptation trajectory, full compile/switch/migration/validation costs and business effects.",
+      "status": "PARTIAL_ACTUAL_RUNTIME_COST_AND_COLD_OBSERVATION_WITH_LOCAL_FAULT_CONTROLS"
+    }
+  ]
+}
