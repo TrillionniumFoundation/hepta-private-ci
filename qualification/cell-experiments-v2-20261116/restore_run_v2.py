@@ -21,6 +21,12 @@ import export_run_v2 as policy
 
 sys.dont_write_bytecode = True
 
+COLD_DRIVER = """import json,sys
+from pathlib import Path
+from cell_experiments.study_v2_support import cold
+print(json.dumps(cold(Path(sys.argv[1]),sys.argv[2]),sort_keys=True))
+"""
+
 
 def check_identity(path, expected):
     actual = policy.identity(path)
@@ -178,16 +184,10 @@ def probe_adapters(output):
             != request["warm_output_digest"]
         ):
             raise ValueError("original warm B output binding differs")
-        command = [
-            sys.executable,
-            "-m",
-            "cell_experiments.study_v2",
-            "cold",
-            "--root",
-            str(output / "run"),
-            "--name",
-            name,
-        ]
+        # The CLI's stage meter would create cold-<name>.json inside restored
+        # originals, where that historical receipt already exists. Use the same
+        # frozen cold function directly and retain replay logs only below.
+        command = [sys.executable, "-c", COLD_DRIVER, str(output / "run"), name]
         before = time.perf_counter()
         directory = output / "RESTORE_PROBES" / name
         directory.mkdir(parents=True, exist_ok=False)
@@ -206,6 +206,7 @@ def probe_adapters(output):
                 directory / "PROCESS.json",
                 {
                     "status": "TIMEOUT",
+                    "argv": command,
                     "stdout": str(failure.stdout or ""),
                     "stderr": str(failure.stderr or ""),
                     "wall_seconds": time.perf_counter() - before,
@@ -216,6 +217,7 @@ def probe_adapters(output):
             directory / "PROCESS.json",
             {
                 "returncode": process.returncode,
+                "argv": command,
                 "stdout": process.stdout,
                 "stderr": process.stderr,
                 "wall_seconds": time.perf_counter() - before,
@@ -257,6 +259,8 @@ def probe_adapters(output):
             "optimizer_resumed": False,
             "adoption_performed": False,
             "portable_owner_recovery_verified": False,
+            "cold_entrypoint": "cell_experiments.study_v2_support.cold",
+            "original_stage_resource_receipts_preserved": True,
         }
         policy.write_new(directory / "RESULT.json", result)
         results[name] = result
