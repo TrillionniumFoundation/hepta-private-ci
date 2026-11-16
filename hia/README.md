@@ -8,9 +8,49 @@ original decoded logs and API metadata support this result. The two full
 artifact ZIPs have **not** been independently downloaded or audited.
 
 These results belong to that exact qualification revision and tree
-`e96ac49ec70c97b7e5bd1938b060be65f094cb70`. This documentation successor has no
-new exact-head CI result. Whole-product, default-release, complete workspace,
-platform, performance and retirement qualification remain false.
+`e96ac49ec70c97b7e5bd1938b060be65f094cb70`. They do not qualify later revisions.
+Whole-product, default-release, complete workspace, platform, performance and
+retirement qualification remain false.
+
+## Subsequent revision evidence
+
+Codex revision `2ab2266db6ae013f39f44e36cb062fbebb46b7c7` completed both
+[push run 43816434217](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43816434217)
+and
+[PR run 43816440180](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43816440180),
+attempt 1. Each current job completed 104 API steps, and each separate exact74d1
+job completed 54. The PR actually checked out merge
+`98f1cbc1930276a38cc5c93ca54158fb6d1267b3`, with the same source tree
+`22737e49aa026118115e0a7a97ae4956d421eb65`. These native results preserve their
+own logs and reports; they do not replace the 48324e evidence below. The general
+[blocking workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43816440014)
+failed. Source repairs in `8590718e50b8c2991e249988fe4467db989b22ba` and every
+successor require their own checks.
+
+Separately, Hepta revision `474aa8ccb94c1186afb8e4be4fd1217c43be4390` passed
+[push run 43813432186](https://github.com/TrillionniumFoundation/Hepta/actions/runs/43813432186),
+attempt 1, including the original source/native gates and the new selected
+artifact export. Its
+[PR run 43813438642](https://github.com/TrillionniumFoundation/Hepta/actions/runs/43813438642)
+failed the original ordinary-caller timeout assertion: 5.8470409960000325
+seconds against the unchanged 5-second bound. The PR had the same source tree,
+with a different merge commit. This failure remains an open qualification
+condition.
+
+Selected push artifact `14204797010` was independently received in full:
+12,806,029 bytes, SHA256
+`09734e5d7a3d7005c3fef6e4ec924a77bb2272874d9c62f5f7ccc7a7adaa0a05`.
+The data-only receiver verified all 464 member byte sequences, modes and hashes;
+the 2,593-file current source tree; 960 cold-source identity records; 13 complete
+compilation packets with their inputs, outputs and produced images; 38 phase
+reports and archive manifests; and 17 reference families. Its complete result
+has SHA256
+`3579cff0f9b9d6b2930bb8a8bc6c710e726f832d845ea33738e621db8ee2aeb4`.
+No delivered program was executed during this receiving step. The original
+large artifact and omitted phase archive payloads remain outside independent
+custody. This receipt is specific to the successful push and does not override
+the PR failure, qualify product execution, or authorize A/B or retirement.
+Codex retains compiler pin `0de5657a80f96b138525ac7ee9ce11712a83a10d`.
 
 ## Names and current callers
 
@@ -102,8 +142,10 @@ callbacks, AsRef/value Drop faults, 100 raw private DTO frames, UUID public
 harnesses, policy consumers and installed patch/CLI behaviors remain in the
 workflow. Original metadata files under `history/` are unchanged.
 
-All fifteen capability groups remain unclosed: thirteen are pending and two
-retain `partial_opt_in_caller`. Required platforms and host combinations,
+All fifteen capability groups recorded in `migration.json` remain unclosed:
+thirteen are pending and two retain `partial_opt_in_caller`. This registry is
+not a complete inventory of the shared project. Required platforms and host
+combinations,
 complete workspace and product behavior, integrated performance, default
 migration and independent artifact custody still need their own evidence.
 Legacy removal requires a separately reviewed proposal after those conditions
