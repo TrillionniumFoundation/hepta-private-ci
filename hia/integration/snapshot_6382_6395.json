@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.hia.premerge-input.v1",
+  "owners": {
+    "prefix17": {
+      "pr": 6382,
+      "head": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "toolchain_sha": "5d3f86159a86b86f9e8cfdd38cbd6cebb47b6252",
+      "toolchain": {
+        "schema": "codex.hia.toolchain.v1",
+        "repository": "https://github.com/TrillionniumFoundation/Hepta",
+        "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "target": "x86_64-unknown-linux-gnu",
+        "borrowed_buffer_capacity": 1048576,
+        "modules": [
+          "seek_sequence",
+          "utf8_boundaries",
+          "utf8_prefix",
+          "metric_tag",
+          "markdown_location",
+          "ascii_json_fragment",
+          "uuid_matches",
+          "template_parser",
+          "template_render",
+          "template_index",
+          "prefix_match",
+          "prefix_admission",
+          "policy_summary",
+          "network_domains",
+          "allowed_prefixes",
+          "command_dispatch",
+          "network_host"
+        ],
+        "entry_profiles": {
+          "prefix_admission": "u64-pair-to-u64-v1"
+        }
+      }
+    },
+    "render19": {
+      "pr": 6395,
+      "head": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "toolchain_sha": "44901bf34ec919083608673666ce80a16855dbe7",
+      "toolchain": {
+        "schema": "codex.hia.toolchain.v1",
+        "repository": "https://github.com/TrillionniumFoundation/Hepta",
+        "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "target": "x86_64-unknown-linux-gnu",
+        "borrowed_buffer_capacity": 1048576,
+        "modules": [
+          "seek_sequence",
+          "utf8_boundaries",
+          "utf8_prefix",
+          "metric_tag",
+          "markdown_location",
+          "ascii_json_fragment",
+          "truncate",
+          "token_budget",
+          "source_file",
+          "file_update",
+          "parser",
+          "patch_effects",
+          "unified_diff",
+          "patch_summary",
+          "patch_application",
+          "patch_standalone",
+          "uuid_find",
+          "template_parse",
+          "template_render"
+        ],
+        "entry_profiles": {
+          "token_budget": "u64-pair-to-u64-v1"
+        }
+      }
+    }
+  },
+  "path_blobs": {
+    ".github/workflows/codex-hia-native.yml": {
+      "prefix17": "46f58cf481ab5512580cbb644b1342bf9212ef71",
+      "render19": "0645d5ba23431c473cf2add69c28788c7b3d5a0f"
+    },
+    "hia/toolchain.json": {
+      "prefix17": "5d3f86159a86b86f9e8cfdd38cbd6cebb47b6252",
+      "render19": "44901bf34ec919083608673666ce80a16855dbe7"
+    },
+    "hia/tests/test_installed_codex.py": {
+      "prefix17": "86c17842804d0f4ccfb9ba657347e089f7f7fa91",
+      "render19": "7bf95c906be74d1796762b584da320c3467c90e3"
+    },
+    "hia/README.md": {
+      "prefix17": "f6c2b401d971500f0ad59d715c53756a9cc5cef5",
+      "render19": "fe65efde72c34243ecc4aedca7418f77262decb5"
+    },
+    "hia/migration.json": {
+      "prefix17": "744e300723906d8c50829e8c1d6b27585f8ba5ae",
+      "render19": "bafd8b4bf107284112345142ae2f83453faa098f"
+    },
+    "hia/verification.json": {
+      "prefix17": "d5e6e76a8832c1105111b1aedbf62dc7f412d71b",
+      "render19": "645b5e9deb01ae762c3ee4605601a91965481ee4"
+    },
+    "hia/template_render.hepta": {
+      "prefix17": "3d5c82c372c29d2c2191f1ccba94d44047c9e5be",
+      "render19": "cab8c72fab3e99c3aedd6247252f89e69721cc3a"
+    }
+  }
+}
