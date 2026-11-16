@@ -915,6 +915,522 @@
       "validation": {
         "current": "hia/verification.json#template_render_increment"
       }
+    },
+    {
+      "id": "template_index",
+      "hia_source": "hia/template_index.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template placeholder ordering/deduplication through HIAIndexBuilder",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_index",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA owns the AVL tree, byte comparison, duplicate detection, canonical traversal, lookup, usage marks and smallest-unused selection.",
+        "Stable IDs allow Rust to own strings and expose the original Clone/Debug/Eq/ordered iterator behavior without a second Rust ordered set."
+      ],
+      "tests": [
+        "hia/tests/native_template_placeholders.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_index_abi.py",
+        "codex-rs/utils/template/src/hia_native_index_tests.rs"
+      ],
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "template_index"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production",
+      "current_scope": "The v9 render frame keeps its original ranges; old Index query ABI is retained only in cfg(test)."
+    },
+    {
+      "id": "uuid_matches",
+      "hia_source": "hia/uuid_matches.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "find_uuids",
+      "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_uuid_matches",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": 36,
+        "workspace_bytes": 1,
+        "workspace": "Byte 0 is the final-window flag, 0 or 1.",
+        "success_return": "High 16 bits are match (1), exhausted (2), or more (3); low 16 bits are consumed bytes.",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_effect": "Errors and non-matches leave both mutable buffers unchanged."
+      },
+      "behavior": [
+        "Select leftmost non-overlapping matches of the original ASCII UUID pattern, without word-boundary requirements.",
+        "Preserve the exact matched 36 bytes and their case, including matches spanning borrowed windows.",
+        "No existing repository production caller is claimed; the public function and its feature-selected implementation are tested."
+      ],
+      "tests": [
+        "hia/tests/test_native_uuid_caller.py",
+        "hia/tests/native_uuid_caller.rs",
+        "hia/tests/test_uuid_abi.py",
+        "codex-rs/utils/string/src/uuid_tests.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "uuid_matches"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "retained_oracle_only"
+    },
+    {
+      "id": "template_parser",
+      "hia_source": "hia/template_parser.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template::parse",
+      "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_parser",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA recognizes delimiter and four-brace escape precedence, decodes UTF-8, applies Rust Unicode whitespace trimming and preserves byte-offset parse errors.",
+        "Returned literal/placeholder spans refer to the original source. Native index insertion decides placeholder uniqueness and canonical order."
+      ],
+      "tests": [
+        "hia/tests/native_template_parser.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_parser_abi.py",
+        "codex-rs/utils/template/src/parser_native_tests.rs"
+      ],
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "template_parser"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "retained_oracle_only"
+    },
+    {
+      "id": "prefix_match",
+      "hia_source": "hia/prefix_match.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_match",
+        "source_wire": "u64 command_count, pattern_count; pattern_count groups of u64 alternative_count then u64 byte_length and bytes per alternative; min(command_count, pattern_count) length-prefixed command strings. All integers little-endian.",
+        "source_contract": "At least one pattern group; exactly one first-group alternative; later groups may have zero alternatives. Entire frame must be structurally valid and have no trailing bytes before matching.",
+        "output_wire": "u64 pattern_count for a match or zero for no match, little-endian",
+        "success_return": 8,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_precedence": "Short output before source validation.",
+        "workspace": "Unused; never read or written; null with zero length accepted.",
+        "error_effect": "Output unchanged; source/workspace never modified. Success writes only output bytes 0..8.",
+        "source_schema": "hepta.hia.program.v9",
+        "word_operations": "Native buffer.load.u64.le and buffer.store.u64.le after explicit complete-frame/capacity validation; byte-exact 0..7 tail.",
+        "preflight_module": "prefix_admission",
+        "preflight_scope": "The public Rust adapter passes counts to HIA before frame sizing/allocation. HIA 0 is NoMatch, 1 requires complete framing, and every other result is an error. The raw prefix_match frame contract remains unchanged and still validates its entire supplied frame before any match result.",
+        "frame_storage": "Checked complete-frame capacity <=512 uses stack storage; larger frames retain reserved Vec append. Both use the same encoder and one existing full-frame HIA call."
+      },
+      "tests": [
+        "hia/tests/test_prefix_match_abi.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/native_execpolicy_caller.rs",
+        "hia/tests/test_installed_execpolicy.py",
+        "hia/tests/test_prefix_admission_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_execpolicy_allocations.py",
+        "hia/tests/native_execpolicy_allocations.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "prefix_match"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "prefix_admission",
+      "hia_source": "hia/prefix_admission.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix count admission",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_admission",
+        "source_schema": "hepta.hia.program.v8",
+        "exports": [
+          "f0"
+        ],
+        "entry_profile": "u64-pair-to-u64-v1",
+        "arguments": [
+          "command_count:u64",
+          "pattern_count:u64"
+        ],
+        "return_type": "u64",
+        "invalid_pattern_count": 4294967295,
+        "insufficient_command_count": 0,
+        "need_complete_frame": 1,
+        "precedence": "pattern_count == 0 is invalid before the command-count comparison.",
+        "side_effects": "No buffers, string reads, allocations or pointer inputs.",
+        "rust_dispatch": "0 returns None, 1 continues to checked framing, every other status panics; Rust does not compare either count for matching or any string."
+      },
+      "behavior": "HIA owns the count decision before the adapter sizes or copies a pattern. Empty and short commands avoid the full-frame copy; admitted commands retain the complete validated prefix_match frame and byte comparisons. This helper belongs to the existing prefix algorithm and is not another complete owner migration.",
+      "tests": [
+        "hia/tests/test_prefix_admission_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/test_native_execpolicy_allocations.py",
+        "hia/tests/native_execpolicy_allocations.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "prefix_admission"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "policy_summary",
+      "hia_source": "hia/policy_summary.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Evaluation::from_matches / Evaluation::is_match / CLI result reduction",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_policy_summary",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "input": "LE u64 count followed by count pairs of LE u64 kind and decision; exact length 8 + 16 * count.",
+        "kind": {
+          "prefix": 0,
+          "heuristics": 1
+        },
+        "decision": {
+          "allow": 0,
+          "prompt": 1,
+          "forbidden": 2
+        },
+        "output": "24 bytes: LE u64 present, strictest decision, explicit-match flag; empty vector returns 0,0,0.",
+        "success": 24,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "error_contract": "Output capacity first; validate the entire exact frame and all tags before writing; errors write nothing. Source and workspace never change; success preserves output beyond 24 bytes."
+      },
+      "behavior": {
+        "complete_pure_reduction": "Current RuleMatch vector to presence, strictest Allow/Prompt/Forbidden decision and whether any explicit PrefixRuleMatch exists.",
+        "production_callers": [
+          "Evaluation::from_matches",
+          "Evaluation::is_match",
+          "ExecPolicyCheckCommand JSON summary"
+        ],
+        "rust_retains": "Rule traversal; callbacks; iterator/as_ref/drop/panic effects; full RuleMatch metadata/order/owned strings; serialization and checked transport. Public mutable vectors are summarized afresh, without a cached is_match result.",
+        "whole_policy_or_core_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_policy_summary_abi.py",
+        "hia/tests/test_native_policy_summary.py",
+        "hia/tests/native_policy_summary.rs",
+        "hia/tests/native_policy_summary_allocations.rs",
+        "hia/tests/native_policy_summary_failures.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "policy_summary"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "network_domains",
+      "hia_source": "hia/network_domains.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::compiled_network_domains / upsert_domain",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_network_domains",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "SELECT": "LE u64 mode=0,count<=64, followed by exactly count decision bytes (Allow=0,Prompt=1,Forbidden=2). Output requires 8+count and returns LE u64 selected_count plus increasing u8 batch positions; workspace unchanged.",
+        "REDUCE": "LE u64 mode=1,M original_count,N selected_count; exactly N records of LE u64 original_index, decision, host_length plus raw bytes. N<=M, increasing indices<M, decisions 0/2 and exact end required.",
+        "REDUCE_output": "Capacity>=16+8*N; LE u64 allowed_count,denied_count, then winning original indices, Allow followed by Forbidden, increasing within each group.",
+        "REDUCE_workspace": "Capacity>=N; writes exactly N flags (0 superseded,1 Allow,2 Forbidden). Success preserves unused output/workspace bytes.",
+        "success": 0,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "short_workspace": 4294967293,
+        "error_contract": "Minimum output eight first; SELECT exact header/capacity then all tags; REDUCE complete frame then both capacities. All failures write neither output nor workspace; source is always unchanged. Raw host bytes need not be UTF-8."
+      },
+      "behavior": {
+        "complete_algorithm": "Policy::compiled_network_domains: exact raw-host last non-Prompt winner and ordered Allow/Forbidden vectors.",
+        "hia_owns": "SELECT excludes Prompt; REDUCE compares host bytes, chooses last winners and emits original rule indices in per-decision order.",
+        "rust_retains": "Decision encoding, checked framing/capacity, structural output validation and owned final String clones. No Rust host equality, normalization, sorting or policy deduplication.",
+        "ignored_fields": "Prompt hosts and every justification/protocol stay outside transport; raw from_parts hosts remain byte-exact.",
+        "error_scope": "Malformed status/count/index/order/decision outputs panic with no Rust or empty-list fallback. Structurally valid but semantically wrong callee output is not proven correct by these guards; the real HIA/original-owner differential supplies semantic evidence.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_network_domains_abi.py",
+        "hia/tests/test_native_network_domains.py",
+        "hia/tests/native_network_domains.rs",
+        "hia/tests/native_network_domains_allocations.rs",
+        "hia/tests/native_network_domains_failures.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "network_domains"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "allowed_prefixes",
+      "hia_source": "hia/allowed_prefixes.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::get_allowed_prefixes / render_pattern_token",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_allowed_prefixes",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "ADMIT": "Exact LE u64 mode=0,decision (Allow=0,Prompt=1,Forbidden=2). Output eight bytes: one iff Allow, otherwise zero; workspace unchanged.",
+        "PLAN": "LE u64 mode=1,N, then N prefix frames. Each has token_count>=1, then token kind (Single=0,Alts=1), alternative_count and repeated byte_length/raw bytes. First token must be Single; Single has one alternative, Alts may have zero. Exact end required.",
+        "PLAN_output": "Three LE u64 words: rendered serialized byte count R, workspace 24*N+8+R, and output capacity 8+8*N. Workspace unchanged.",
+        "RUN": "Mode=2 with the same complete selected prefix frame. Workspace contains N+1 rendered offsets, two N-index arrays and R rendered bytes. Stable bottom-up merge sort compares token bytes lexicographically, then vector length; dedup emits the earliest equal rendered-vector index.",
+        "RUN_output": "Capacity>=8+8*N: unique count U then U selected-frame indices; writes exactly 8+8*U. Workspace requires 24*N+8+R.",
+        "success": 0,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "short_workspace": 4294967293,
+        "unrepresentable_layout": 4294967292,
+        "error_contract": "Minimum output eight first; complete exact validation and checked layout before matching capacities; RUN output capacity before workspace. Errors preserve output/workspace; source always unchanged, unused successful capacity unchanged. Raw ABI bytes need not be UTF-8.",
+        "empty_input": "N=0 still performs PLAN/RUN: R=0, workspace eight and output eight bytes. Public owner requires no heap allocation."
+      },
+      "behavior": {
+        "complete_algorithm": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication.",
+        "hia_owns": "ADMIT decides Allow; PLAN sizes the rendered representation; RUN renders Single/Alts tokens, stably mergesorts vector indices and chooses unique rendered vectors.",
+        "rust_retains": "Original rule iteration, as_any callbacks/downcasts, decision encoding, checked transport and structural output/UTF-8 validation, then owned result Strings. No Rust token rendering, sorting or deduplication.",
+        "effect_order": "Each admitted prefix is encoded before the next callback. Non-PrefixRule, Prompt and Forbidden patterns are not inspected; callback/panic prefixes, shared-Arc inputs and independent owned outputs are preserved.",
+        "rendering": "Single bytes are unchanged; Alts render exactly [ plus alternatives joined by | plus ]. Empty alternatives and delimiter-containing strings can collide; equality and ordering are on complete rendered vectors.",
+        "error_scope": "Invalid native status or structural output panics with no Rust algorithm or empty-list fallback. Structurally valid wrong semantic results require the actual HIA/original-owner differential.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_allowed_prefixes_abi.py",
+        "hia/tests/test_native_allowed_prefixes.py",
+        "hia/tests/native_allowed_prefixes.rs",
+        "hia/tests/native_allowed_prefixes_allocations.rs",
+        "hia/tests/native_allowed_prefixes_failures.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "allowed_prefixes"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "command_dispatch",
+      "hia_source": "hia/command_dispatch.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::matches_for_command / check_matches / match_with_heuristics",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_command_dispatch",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "source": "LE u64 version=1 and event tag, 160-byte continuation state, exact event payload. Nine event tags BEGIN through HEURISTIC_READY.",
+        "state": "Magic, phase, flags, command/rule/path counters and indices, resource bits, checked sequence and zero reserved words; no global state.",
+        "path_records": "Rust Path::components discriminant and raw Normal OsStr encoded bytes; HIA owns component/length/byte equality. Linux native profile only, no raw-path parser or UTF-8 normalization.",
+        "output": "Exactly 200 bytes: 160-byte next state, append disposition, cleanup mask, action, operand and zero reserved word.",
+        "success": 0,
+        "invalid_frame_or_state": 4294967295,
+        "short_output": 4294967294,
+        "validation": "Validate full source/state/event/component frame before checking output>=200, then before any output write. Reserved words, phase/action facts, booleans, indices, sequence overflow and exact frame end are checked. Errors do not write. Each accepted event increments sequence once; BEGIN starts at1.",
+        "workspace": "Untouched on every call; source, output and workspace are live disjoint ranges for the synchronous call.",
+        "transport": "512-byte stack frame with checked Vec spill; no native error becomes an unmatched result."
+      },
+      "behavior": {
+        "hia_owns": "Exact/host/fallback routing; ordered rule ordinals, all-path admission and component equality, first equal-path stop, match retention/annotation, cleanup scheduling and fallback invocation decision.",
+        "rust_retains": "Real containers/lookups, arbitrary Rule::matches and heuristic callbacks, owned results, original OS path services, Path::components encoding and check_multiple iterator/AsRef/Drop effects.",
+        "ordering": "Any exact Some suppresses host/fallback, but selected bucket callbacks stay exhaustive and ordered. Missing and present-empty buckets remain distinct. Fallback clones the original command before callback.",
+        "metadata": "Host PrefixRuleMatch gets the resolved program; HeuristicsRuleMatch metadata is retained. Returned owned objects remain independent.",
+        "failure": "Invalid statuses/state/structural replies panic without Rust fallback. Already performed callback effects cannot be rolled back; semantically wrong but structurally valid replies require the real HIA/original differential.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_command_dispatch_abi.py",
+        "hia/tests/test_native_command_dispatch.py",
+        "hia/tests/native_command_dispatch.rs",
+        "hia/tests/native_command_dispatch_effects.rs",
+        "hia/tests/native_command_dispatch_allocations.rs",
+        "hia/tests/native_command_dispatch_failures.rs",
+        "hia/tests/native_command_dispatch_performance.rs",
+        "hia/tests/command_dispatch_fixtures.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "command_dispatch"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "network_host",
+      "hia_source": "hia/network_host.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "normalize_network_rule_host",
+      "implementation_status": "source_composed_opt_in_production_caller_runtime_unverified",
+      "qualification_status": "joint29_not_executed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_network_host",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "source": "Complete borrowed raw UTF-8 bytes, without a length prefix or input copy.",
+        "control": "Exactly 32 read-only workspace bytes: LE u64 version=1, mode, expected_length, reserved=0.",
+        "plan": "mode=0 requires expected_length=0; success writes 16 bytes containing LE u64 semantic_tag and result_byte_length.",
+        "run": "mode=1 requires 0<expected_length<=source_length, repeats complete validation/normalization and requires semantic success plus the exact planned length before writing the normalized bytes.",
+        "semantic_tags": {
+          "0": "success",
+          "1": "empty host",
+          "2": "scheme or path punctuation",
+          "3": "missing closing bracket",
+          "4": "unsupported bracket suffix",
+          "5": "wildcard",
+          "6": "internal Unicode whitespace"
+        },
+        "success": 0,
+        "invalid_frame_or_utf8_or_run": 4294967295,
+        "short_output": 4294967294,
+        "validation": "Validate control, mode/length and complete UTF-8 input before publishing; PLAN needs 16 output bytes, RUN needs the exact normalized length. Native errors write no output. Successful calls write only the used prefix. Source and control stay unchanged.",
+        "transport": "Rust borrows the input, uses a 16-byte stack plan, validates tag/length/status and unchanged 32-byte control, allocates the returned String, and preserves original error-object construction. A native contract failure panics; no fallback or no-match conversion.",
+        "target": "Existing opt-in Linux x86-64 GNU profile; buffers must remain live and disjoint for each synchronous call."
+      },
+      "behavior": {
+        "hia_owns": "The complete normalize_network_rule_host algorithm: Unicode trim, empty/scheme/path precedence, bracket and port handling, trim_end_matches dot followed by trim, ASCII lowercasing, wildcard-before-whitespace error precedence and normalized byte output.",
+        "rust_retains": "Owned String/error allocation, original public callers/parser validation and policy/file effects. No IP parser, DNS, IDNA, Unicode case folding, port-range validation or general network I/O is introduced.",
+        "compatibility": "Original permissive inputs remain permissive: a:abc, :123, multiple colons, bracketed non-IP strings, NUL and large numeric ports. Unsupported-suffix errors include the exact original raw string.",
+        "public_paths": [
+          "Policy::add_network_rule",
+          "PolicyParser::parse(network_rule)",
+          "blocking_append_network_rule"
+        ],
+        "effect_order": "Invalid normalization does not push a policy rule or create the append directory/file. Earlier parser protocol/decision/justification rejection remains earlier; direct and parsed calls retain their existing distinct precedence.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_network_host_abi.py",
+        "hia/tests/test_native_network_host.py",
+        "hia/tests/native_network_host.rs",
+        "hia/tests/native_network_host_allocations.rs",
+        "hia/tests/native_network_host_failures.rs",
+        "hia/tests/native_network_host_performance.rs",
+        "hia/tests/network_host_fixtures.rs",
+        "hia/tests/network_host_predecessor16.py"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "network_host"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "source_composed_not_built_or_tested",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     }
   ],
   "capabilities": [

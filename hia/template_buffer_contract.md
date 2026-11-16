@@ -1,3 +1,24 @@
+# Current Index contract and retained v8 template history
+
+The Index sections below remain the active contract for `template_index`.
+The streaming parser and render-policy sections are retained historical v8
+documentation, not the current parse/render wire contract. Current v9
+parse and render are specified by `template_parse_buffer_contract.json`
+and `template_render_buffer_contract.json`; their transport layouts must
+not be interchanged with the historical sections below.
+
+The current Rust parse adapter passes native-selected, validated original
+source ranges to the Index Builder. HIA selects unique names and their
+order; `finish()` moves owned strings by native node ID into a vector.
+Templates keep that vector, not a live index. The v9 renderer serializes
+its exact iterator; the old Index query wrappers are retained for tests.
+This composition does not claim indexed v9 variable lookup or transfer
+the former renderer's performance qualification.
+
+---
+
+## Retained original document
+
 # Template native component contract
 
 The template implementation uses three HIA components: a streaming parser, a render

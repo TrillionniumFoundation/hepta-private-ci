@@ -5,7 +5,7 @@ from pathlib import Path
 from template_parse_oracle import admission as parse_admission
 
 MODULE, SYMBOL = "template_render", "codex_hia_template_render"
-CONTRACT_SHA = "7fd49d58237c372d1d875463acf0582a28a32e27317a4eac6f290598fd5f54b5"
+CONTRACT_SHA = "2ad593ca2d76c7ed8eb9ef3b47d52a70fcd3ea3f77bc1ef25b595bdff440fe94"
 sha, require = parse_admission.sha, parse_admission.require
 
 

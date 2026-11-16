@@ -27,10 +27,10 @@ def main():
         raise RuntimeError("a real Rust oracle compiler is required")
     root = Path(__file__).resolve().parents[2]
     source = root / "codex-rs/utils/template/src/lib.rs"
-    adapter = source.with_name("hia_native.rs")
-    hia = root / "hia/template_parser.hepta"
+    adapter = source.with_name("hia_native_parse.rs")
+    hia = root / "hia/template_parse.hepta"
     harness = args.harness.resolve() if args.harness else Path(__file__).with_name("native_template_parser.rs")
-    archive = args.library_dir.resolve() / "libcodex_hia_template_parser.a"
+    archive = args.library_dir.resolve() / "libcodex_hia_template_parse.a"
     report = {
         "status": "running", "source_sha256": digest(source),
         "adapter_sha256": digest(adapter), "hia_sha256": digest(hia),
@@ -38,7 +38,8 @@ def main():
         "render_archive_sha256": digest(archive.with_name("libcodex_hia_template_render.a")),
         "render_hia_sha256": digest(root / "hia/template_render.hepta"),
         "render_adapter_sha256": digest(source.with_name("hia_native_render.rs")),
-        "render_abi_adapter_sha256": digest(source.with_name("hia_render_abi.rs")),
+        "render_contract_sha256": digest(root / "hia/template_render_buffer_contract.json"),
+        "parse_contract_sha256": digest(root / "hia/template_parse_buffer_contract.json"),
         "index_archive_sha256": digest(archive.with_name("libcodex_hia_template_index.a")),
         "index_hia_sha256": digest(root / "hia/template_index.hepta"),
         "index_adapter_sha256": digest(source.with_name("hia_native_index.rs")),
@@ -57,7 +58,7 @@ def main():
                  "-C", "opt-level=1", str(source), "-o", str(work / "libreference.rlib")],
                 [rustc, "--edition=2024", "--crate-type=rlib", "--crate-name=template_native",
                  "-C", "opt-level=1", "--cfg", 'feature="hia-native"', str(source),
-                 "-L", f"native={archive.parent}", "-l", "static=codex_hia_template_parser",
+                 "-L", f"native={archive.parent}", "-l", "static=codex_hia_template_parse",
                  "-l", "static=codex_hia_template_render",
                  "-l", "static=codex_hia_template_index",
                  "-o", str(work / "libnative.rlib")],
@@ -75,7 +76,7 @@ def main():
                     raise RuntimeError(f"template differential command failed: {result.stderr}")
             symbols = subprocess.run(["nm", "--defined-only", str(work / "comparison")],
                                      capture_output=True, text=True, check=True, timeout=30).stdout
-            for symbol in ("codex_hia_template_parser", "codex_hia_template_render",
+            for symbol in ("codex_hia_template_parse", "codex_hia_template_render",
                            "codex_hia_template_index"):
                 if not re.search(r"\bT " + symbol + "$", symbols, re.MULTILINE):
                     raise RuntimeError(f"test executable lacks native symbol: {symbol}")

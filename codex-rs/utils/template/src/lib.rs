@@ -15,10 +15,20 @@ mod hia_native_parse;
 mod hia_native_render;
 // END HIA TEMPLATE RENDER MODULE
 
+// BEGIN HIA TEMPLATE INDEX MODULES
+#[cfg(feature = "hia-native")]
+mod hia_native_index;
+#[cfg(feature = "hia-native")]
+mod hia_native_placeholders;
+// END HIA TEMPLATE INDEX MODULES
+
 // BEGIN HIA TEMPLATE RENDER MAP IMPORT GUARD
 #[cfg(not(feature = "hia-native"))]
 // END HIA TEMPLATE RENDER MAP IMPORT GUARD
 use std::collections::BTreeMap;
+// BEGIN HIA TEMPLATE PLACEHOLDER SET IMPORT GUARD
+#[cfg(not(feature = "hia-native"))]
+// END HIA TEMPLATE PLACEHOLDER SET IMPORT GUARD
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
@@ -127,6 +137,13 @@ enum Segment {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Template {
+    // BEGIN HIA TEMPLATE NATIVE PLACEHOLDER STORAGE
+    #[cfg(feature = "hia-native")]
+    placeholders: hia_native_placeholders::Placeholders,
+    // END HIA TEMPLATE NATIVE PLACEHOLDER STORAGE
+    // BEGIN HIA TEMPLATE ORIGINAL PLACEHOLDER STORAGE GUARD
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA TEMPLATE ORIGINAL PLACEHOLDER STORAGE GUARD
     placeholders: BTreeSet<String>,
     segments: Vec<Segment>,
 }
@@ -487,3 +504,13 @@ mod tests {
         );
     }
 }
+
+// BEGIN HIA TEMPLATE PRESERVED OWNER TESTS
+#[cfg(test)]
+#[path = "parser_native_tests.rs"]
+mod parser_native_tests;
+
+#[cfg(test)]
+#[path = "render_native_tests.rs"]
+mod render_native_tests;
+// END HIA TEMPLATE PRESERVED OWNER TESTS

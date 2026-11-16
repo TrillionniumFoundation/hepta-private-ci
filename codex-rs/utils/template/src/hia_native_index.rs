@@ -9,13 +9,18 @@ const HEADER: usize = 128;
 const NODE: usize = 64;
 const RESULT: usize = 32;
 const ORDER_PAGE: usize = 1024;
+#[cfg(test)]
 const QUERY_WINDOW: usize = 4096;
 
 const INSERT: u64 = 0;
 const ORDERED: u64 = 1;
+#[cfg(test)]
 const FIND: u64 = 2;
+#[cfg(test)]
 const FIND_AND_MARK: u64 = 3;
+#[cfg(test)]
 const CONTINUE_QUERY: u64 = 4;
+#[cfg(test)]
 const FIRST_UNUSED: u64 = 5;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -39,6 +44,7 @@ struct Reply {
     c: u64,
 }
 
+#[cfg(test)]
 enum Query {
     Find,
     FindAndMark,
@@ -136,14 +142,17 @@ impl Index {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn find(&mut self, keys: &[u8], query: &str) -> Option<usize> {
         self.query(keys, query, Query::Find)
     }
 
+    #[cfg(test)]
     pub(super) fn find_and_mark(&mut self, keys: &[u8], query: &str) -> Option<usize> {
         self.query(keys, query, Query::FindAndMark)
     }
 
+    #[cfg(test)]
     pub(super) fn first_unused(&mut self) -> Option<usize> {
         self.command([FIRST_UNUSED, 0, 0, 0]);
         let reply = self.stable_reply(&[]);
@@ -163,6 +172,7 @@ impl Index {
         }
     }
 
+    #[cfg(test)]
     fn query(&mut self, keys: &[u8], query: &str, mode: Query) -> Option<usize> {
         let mut command = match mode {
             Query::Find => FIND,

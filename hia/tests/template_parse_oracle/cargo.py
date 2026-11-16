@@ -153,7 +153,8 @@ def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
     expected_features = ["hia-native"] if native else []
     require(chosen[OWNER]["unit"]["features"] == tests[0]["features"] == auxiliary[0]["features"]
             == expected_features, "real owner/test/build-script feature dispatch differs")
-    expected_links = ["static=codex_hia_template_parse", "static=codex_hia_template_render"] if native else []
+    expected_links = ["static=codex_hia_template_parse", "static=codex_hia_template_render",
+                      "static=codex_hia_template_index"] if native else []
     require(builds[0]["linked_libs"] == expected_links, "real Cargo native linkage differs")
     require({p.name for p in stage.iterdir()} == set(files), "staged graph has missing or extra files")
     return {"direct": chosen, "files": files, "units": units, "owner_test": tests[0],
