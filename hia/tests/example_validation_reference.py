@@ -61,3 +61,62 @@ def encode_observation(result: Result) -> dict:
         "unmatched_positive_indices": list(result.unmatched_positive_indices),
         "call_trace": [[phase, index] for phase, index in result.call_trace],
     }
+
+
+@dataclass(frozen=True)
+class PendingValidation:
+    """One parser-owned pending validation, with an opaque Rust-owned location.
+
+    Rule construction, shlex/Starlark parsing, error rendering, and actual
+    Policy::matches_for_command_with_options are intentionally not modelled.
+    The callback provided to validate_pending must represent the isolated
+    policy built from this validation's rules and the builder's current host
+    executable table, not a precomputed or memoized match bitset.
+    """
+
+    negative_examples: Sequence[Sequence[str]]
+    positive_examples: Sequence[Sequence[str]]
+    location: str | None = None
+
+
+@dataclass(frozen=True)
+class PendingResult:
+    """Cross-validation error selection; Rust owns the rendered error payload."""
+
+    error: ErrorKind
+    failing_validation_index: int | None
+    local_result: Result | None
+    attached_location: str | None
+    call_trace: tuple[tuple[int, str, int], ...]
+
+
+def validate_pending(
+    validations: Sequence[PendingValidation],
+    start: int,
+    matches_for_validation: Callable[[int, Sequence[str]], bool],
+) -> PendingResult:
+    """Model PolicyBuilder::validate_pending_examples_from(start).
+
+    Every pending entry has its own policy. Within each entry, negatives run
+    before positives; the first entry reporting an error stops later entries.
+    Locations attach only to returned errors. There is no eager evaluation,
+    memoization, parallelism or speculative cross-entry rule callback.
+
+    An invalid start is rejected instead of Python slicing's silent clamping
+    or negative-index behavior (the Rust slice would panic on invalid bounds).
+    """
+    if not isinstance(start, int) or isinstance(start, bool) or not 0 <= start <= len(validations):
+        raise IndexError("pending validation start is outside the slice")
+
+    trace: list[tuple[int, str, int]] = []
+    for group_index in range(start, len(validations)):
+        group = validations[group_index]
+        local = validate(
+            group.negative_examples,
+            group.positive_examples,
+            lambda command: matches_for_validation(group_index, command),
+        )
+        trace.extend((group_index, phase, index) for phase, index in local.call_trace)
+        if local.error != ErrorKind.NONE:
+            return PendingResult(local.error, group_index, local, group.location, tuple(trace))
+    return PendingResult(ErrorKind.NONE, None, None, None, tuple(trace))
