@@ -1,0 +1,38 @@
+{
+  "reviewed_at_utc": "2026-11-06T10:08:38.569211+00:00",
+  "mode": "read-only independent source review; no source edits or tests by reviewer",
+  "source_file": "/workspace/scratch/7ee3ec79bc34/full-source/codex-rs/hepta-automation/tests/automation.rs",
+  "source_sha256": "dfe35fbccd527f1a03d47aeddbbe2c7489d2498fe11b57ee4182aa5794265bca",
+  "reviewed_diff_sha256": "fe48ae0b6a1cf093302d94a756e4da3d9daf74fee9292117d73f5ffddcbffeca",
+  "diff_file": "/workspace/scratch/7ee3ec79bc34/fixture-repair-reviewed.diff",
+  "change_size": {
+    "insertions": 32,
+    "deletions": 0
+  },
+  "result": "no new blocker found",
+  "basis": [
+    {
+      "path": "codex-rs/hepta-automation/migrations/0001_automation.sql",
+      "sha256": "ba539cbafb9836f5f3b7ea54886378ad06a36bda663c6c89d8d63ab2f0e68cb9"
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0017_kernel_operation_dedupe.sql",
+      "sha256": "7e45ec9876fa96a7aa15ae97bc14aff66e603fe8ec631db636dd6cfed8467749"
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql",
+      "sha256": "3f8855f356a401e5295020444477901db38e8e4d812c8aab663d4eb0e7dfadf1"
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0019_converged_owner_schema.sql",
+      "sha256": "5425c4b604eff93df993160a7ef4dd5b194ae233d3c505949ac3d2512d014680"
+    }
+  ],
+  "reasoning": [
+    "The 0018 timer lifecycle owns the drain trigger that references dispatch_outcomes. Dropping its owning table first removes that trigger before the old dispatch table is removed, allowing the later ALTER TABLE schema validation.",
+    "The 0017 destination dedupe table and its attached immutability triggers are post-v1 objects and must be absent from the synthesized v1 fixture.",
+    "The added sqlite_schema catalog assertion exactly matches the three tables, two named indexes and two immutable metadata triggers introduced by 0001, excluding only the SQLx migration ledger and SQLite internal objects.",
+    "The original one-transaction rewind, v1 migration ledger row, real AutomationStore::open/SQLx upgrade, and post-upgrade causal outcome assertions are preserved. Production migration files are unchanged by the reviewed diff."
+  ],
+  "limits": "This is a source review of the recorded diff. The implementer/root own scoped execution and final hosted validation."
+}

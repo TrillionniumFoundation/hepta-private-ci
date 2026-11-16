@@ -1,0 +1,115 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "elapsed_seconds": 91.634,
+      "execution_source_digests": [
+        "adb1768628db55dec208fa89043e6e7e120988ffaad7152758204043c6beeff3"
+      ],
+      "log": "/workspace/scratch/7ee3ec79bc34/supervisor-audit-attempt1.log",
+      "log_sha256": "d47e294df4cf68abd5d92402d052492507ac27b6a022db3b739436a946867d2c",
+      "passed_count": 10,
+      "retained_case_directories": [
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-ecjwh_ju",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-ag4nt2ls",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-r458kmvp",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-kys5iqtz",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-okrin81k",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-9nhvd1xm",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-qmy3bokb",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-4bwdp11y",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-g3sh_u3x",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-9a0tr9hm",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-83fq2_op"
+      ],
+      "status": "failed_fixture_wait",
+      "test_count": 11
+    },
+    {
+      "attempt": 2,
+      "elapsed_seconds": 22.367,
+      "execution_source_digests": [
+        "e4b16a76a5dc33b050ef245c2e47d05e0e3dccafc28cf77b82d799b81b50b55d"
+      ],
+      "log": "/workspace/scratch/7ee3ec79bc34/supervisor-audit-attempt2.log",
+      "log_sha256": "02e79c9a56b839037023e556848c295a26c2672aee699773e2bee80213a92685",
+      "passed_count": 11,
+      "retained_case_directories": [
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-3ij6e5v8",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-5e7_q0t5",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-pzo9etu4",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-238gsop5",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-yzhdldtj",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-_27fz4kp",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-n1bvl9df",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-9z73wjw7",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-3kty404i",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-mjj91etp",
+        "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-tsolbpnu"
+      ],
+      "status": "passed",
+      "test_count": 11
+    }
+  ],
+  "detailed_evidence": {
+    "path": "/workspace/scratch/7ee3ec79bc34/supervisor-audit-detailed.json",
+    "sha256": "d15c5756ca1b1167a2d14b5693c7b2c7261d1ec5c1bc34e5c0c7693b8aabad8f"
+  },
+  "final_source_sha256": {
+    "/workspace/scratch/7ee3ec79bc34/hepta-hcsn/qualification/hcsn_training/supervisor.py": "ba7adfaef032a8a0b7cb64fa209148fd6e686cd8c1616f121aa8f72e2d0a67fd",
+    "/workspace/scratch/7ee3ec79bc34/hepta-hcsn/qualification/hcsn_training/supervisor_store.py": "6a09ee1861d554032f16ebc7fc4479c68054c145ee1840f956d370a323c8b99c",
+    "/workspace/scratch/7ee3ec79bc34/hepta-hcsn/qualification/hcsn_training/test_supervisor.py": "799453b0f09a90176b97bdbbe18bd28a47d46560ab7277b02c8c67f3dcbdb0d6"
+  },
+  "first_attempt_failure": {
+    "actual_child_cpu_seconds": 20.299581999999997,
+    "actual_failed_terminal_wall_seconds": 30.3269334659999,
+    "cause": "Global cache bypass forced installed Torch/Python source recompilation. The correct failed terminal arrived just after the fixture wait deadline.",
+    "fixture_wait_seconds": 30,
+    "repair": "Restrict source-only import loader to qualification.*; retain installed runtime caches. No loss/gradient/worker math behavior changed.",
+    "retained_case_directory": "/workspace/scratch/7ee3ec79bc34/supervisor-test-attempts/hcsn-supervisor-qmy3bokb",
+    "test": "test_empty_reservation_missing_job_and_failed_worker_never_relaunch"
+  },
+  "generated_at_utc": "2026-11-06T09:40:26.879432+00:00",
+  "resolved_defects": [
+    "Retained pre-start and reservation-racing cancellation can no longer be lost; first payload binding and cancel registration are serialized.",
+    "Worker self-announces its process incarnation before training and has independent alarm/CPU/file/core limits that survive runner death.",
+    "Explicit authorized cancellation can stop a verifiable orphan using a pidfd and exact incarnation/command line; status never performs control writes or signals.",
+    "Every handoff digest and count is checked against diagnostics, retained dispatch, and actual output bytes, including previously skipped runtime, graph, and gradient identities.",
+    "Nonblocking descriptor open precedes regular-file checks, so FIFOs cannot indefinitely block receipt/source reads.",
+    "Pinned repository modules execute source instead of unpinned timestamp-valid .pyc files; installed runtime caches remain in use.",
+    "Cancellation scans and execution-source hashing have explicit count/byte bounds; JSON numeric overflow is rejected.",
+    "Lifecycle fixtures retain all job stores, logs, failures, cancellations and unknown outcomes instead of deleting their evidence."
+  ],
+  "schema_version": 1,
+  "scope": "Independent Linux supervisor engineering audit; bounded local CPU fixtures only; no CUDA or scientific campaign.",
+  "status": "passed",
+  "stopped_after_root_gate": {
+    "additional_tests": false,
+    "auditor_fmt_fix_commit": false,
+    "source_changes": false
+  },
+  "test_boundaries": {
+    "test_cancel_only_after_owned_worker_termination": "Real owned worker is cancelled only after confirmed child termination; cancellation identity and terminal receipt replay remain stable.",
+    "test_cancel_serializes_with_reservation_setup": "Concurrent cancellation cannot fall into the reservation setup gap; first binding is serialized and its cancellation remains effective.",
+    "test_cli_ignores_timestamp_valid_bytecode_from_checkout": "A deliberately stale timestamp-valid supervisor_store.pyc cannot replace the checked repository source.",
+    "test_completed_orphan_outputs_are_preserved_without_claiming_success": "A worker completing while its runner is stopped leaves complete candidate/handoff bytes; after runner death, neither Cancel nor Start fabricates success or relaunches.",
+    "test_concurrent_same_key_launches_one_worker": "Three concurrent starts with the same immutable key/payload reserve one job and produce one reusable terminal result.",
+    "test_dead_runner_stays_unknown_until_explicit_orphan_cancel": "An orphan is Unknown; read-only status adds no control records or signals; an explicit retained Cancel uses pidfd and confirms stopping; live worker CPU limit is 300 seconds.",
+    "test_empty_reservation_missing_job_and_failed_worker_never_relaunch": "Missing/partial setup remains Unknown; an invalid NDU loss fails in the real worker and its failed receipt is reused, with no automatic launch.",
+    "test_every_handoff_digest_and_count_matches_diagnostics": "All 11 handoff digest slots and seven count slots are corrupted one at a time and independently rejected against retained request/diagnostics/output bytes.",
+    "test_nonregular_reads_and_nonfinite_json_fail_within_bound": "FIFO input is rejected before blocking open/read; JSON numeric overflow to infinity is rejected.",
+    "test_prestart_cancel_binds_payload_and_status_is_read_only": "A retained early cancel blocks a conflicting payload before job creation, cancels the matching later start before runner launch, and status is strictly observational.",
+    "test_real_worker_lost_reply_reuse_cold_status_and_tamper": "Real success survives discarded launch reply and cold queries; duplicate start reuses identity, conflicting payload is Unknown, and receipt tampering makes status Unknown without relaunch."
+  },
+  "unknown_boundaries": [
+    "Missing, incomplete, conflicting or corrupted durable identity is Unknown, never evidence that a job was absent and never automatic authority to relaunch.",
+    "Running requires both live recorded worker and runner incarnations. A live worker with a missing/dead controller remains Unknown until an explicit authorized Cancel replay or owner reconciliation.",
+    "Status is strictly read-only. It cannot write a lock, cancellation marker, reconciliation record, terminal receipt or send a signal.",
+    "Unavailable pidfd facilities, mismatched incarnation or worker command line, unreadable identity, or unconfirmed stop stay Unknown; caller-supplied PIDs are never accepted.",
+    "If completion/failed output may already exist, orphan stopping preserves it and remains Unknown instead of reporting training success or an unqualified cancellation.",
+    "Complete outputs without the owned runner terminal receipt remain Unknown even if byte identities validate; the independent owner must reconcile them.",
+    "The store is a trusted private Linux single-host authority. Source is captured per reservation and independently checked by the owner; installed package binaries are not attested by version tuples.",
+    "Per-worker 300-second wall/CPU and file/source/receipt bounds are implemented. No aggregate host concurrency, exact RSS, physical-energy or scientific-quality claim is made."
+  ],
+  "working_tree_base": "21f99f78e6a176233e711ce5ad233cec0166b8d6"
+}
