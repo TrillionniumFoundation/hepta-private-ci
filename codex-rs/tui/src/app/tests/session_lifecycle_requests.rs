@@ -384,7 +384,9 @@ fn spawn_approved_task_tool_call(
 
 #[tokio::test]
 async fn external_transport_registers_dynamic_tools_and_finds_task_mentions() -> Result<()> {
-    let (app, _codex_home) = make_history_test_app().await?;
+    let (mut app, _codex_home) = make_history_test_app().await?;
+    let sqlite_home = app.config.sqlite.home().canonicalize()?;
+    app.config.sqlite = SqliteConfig::new_for_testing(sqlite_home.try_into()?);
     let (mut app_server, requests, proxy) = start_recording_app_server(
         &app.config,
         /*blocked_thread_list*/ None,
@@ -965,7 +967,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     .await;
 
     let event = tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-        .await?
+        .await
+        .wrap_err("dynamic tool fixture: list_threads_completion")?
         .expect("dynamic tool completion event");
     let AppEvent::DynamicToolCallCompleted {
         request_id,
@@ -999,7 +1002,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
             tokio::task::yield_now().await;
         }
     })
-    .await?;
+    .await
+    .wrap_err("dynamic tool fixture: forwarded_response_observed")?;
     assert_eq!(completed["success"], true);
 
     app.handle_app_server_event(
@@ -1021,7 +1025,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     .await;
     let AppEvent::DynamicToolCallCompleted { response, .. } =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic tool fixture: set_thread_title_completion")?
             .expect("dynamic mutation completion event")
     else {
         panic!("expected a dynamic mutation completion event")
@@ -1129,7 +1134,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     );
     let registration =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic tool fixture: background_task_registration")?
             .expect("background task registration event");
     let AppEvent::DynamicToolThreadStarted {
         thread_id: created_thread_id,
@@ -1158,7 +1164,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     assert!(app_server.task_tools_available(created_thread_id));
     let AppEvent::DynamicToolCallCompleted { response, .. } =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic tool fixture: background_task_completion")?
             .expect("background task creation completion")
     else {
         panic!("expected a background task completion event")
@@ -1217,7 +1224,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
         task_tools_available,
         registered,
     } = tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-        .await?
+        .await
+        .wrap_err("dynamic tool fixture: followup_task_registration")?
         .expect("follow-up task registration event")
     else {
         panic!("expected follow-up task registration before its next turn")
@@ -1236,7 +1244,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     .await?;
     let AppEvent::DynamicToolCallCompleted { response, .. } =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic tool fixture: followup_task_completion")?
             .expect("follow-up task completion")
     else {
         panic!("expected a follow-up task completion event")
@@ -1269,7 +1278,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
             tokio::task::yield_now().await;
         }
     })
-    .await?;
+    .await
+    .wrap_err("dynamic tool fixture: shutdown_cancellation_response")?;
     assert_eq!(cancelled["success"], false);
     assert!(app.dynamic_tool_tasks.is_empty());
 
@@ -2663,6 +2673,8 @@ fn session_lifecycle_avoids_redundant_subagent_metadata_reads() -> Result<()> {
                 app.config.codex_home = codex_home.path().to_path_buf().abs();
                 app.config.sqlite =
                     codex_state::SqliteConfig::new_for_testing(codex_home.path().abs());
+                let sqlite_home = app.config.sqlite.home().canonicalize()?;
+                app.config.sqlite = SqliteConfig::new_for_testing(sqlite_home.try_into()?);
                 let root_timestamp = "2026-01-01T00-00-00";
                 let root_thread_id = ThreadId::from_string(
                     &create_fake_rollout(
