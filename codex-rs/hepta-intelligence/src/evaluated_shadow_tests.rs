@@ -459,7 +459,6 @@ fn ledger_conflict_and_capacity_cannot_report_learning_recorded() {
     assert_eq!(ledger.snapshot().unwrap(), snapshot);
     drop(ledger);
     assert_eq!(closed_ledger_bytes(&path), before);
-
 }
 
 #[test]

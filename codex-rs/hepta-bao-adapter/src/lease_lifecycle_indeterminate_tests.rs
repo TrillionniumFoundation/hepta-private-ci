@@ -13,7 +13,8 @@ fn active_fixture() -> (
 ) {
     let directory = tempfile::tempdir().unwrap();
     let mut registry =
-        DurableLeaseRegistryV1::open(directory.path().join("owner").join("lease-registry.json")).unwrap();
+        DurableLeaseRegistryV1::open(directory.path().join("owner").join("lease-registry.json"))
+            .unwrap();
     let lease = SecretLeaseMetadataV1 {
         lease_id: "lease:db:1".into(),
         secret_reference_id: "database:readonly".into(),
@@ -71,7 +72,13 @@ fn post_rename_failure_cannot_reactivate_a_revoked_lease_or_serve_stale_fast_pat
     assert!(registry.requires_reopen());
     let published = std::fs::read(&path).unwrap();
     assert_ne!(published, before);
-    assert!(!directory.path().join("owner").join("lease-registry.json.next").exists());
+    assert!(
+        !directory
+            .path()
+            .join("owner")
+            .join("lease-registry.json.next")
+            .exists()
+    );
 
     // The actual rename happened: a fresh owner sees the new complete snapshot.
     revoked.state = SecretLeaseStateV1::Revoked;
@@ -136,7 +143,13 @@ fn pre_rename_failure_keeps_current_state_available_and_can_retry() {
     assert_eq!(registry.lease("lease:db:1").unwrap(), Some(&lease));
     assert_eq!(registry.operation("op:new").unwrap(), None);
     let staged: StoredRegistryV1 = serde_json::from_slice(
-        &std::fs::read(directory.path().join("owner").join("lease-registry.json.next")).unwrap(),
+        &std::fs::read(
+            directory
+                .path()
+                .join("owner")
+                .join("lease-registry.json.next"),
+        )
+        .unwrap(),
     )
     .unwrap();
     let retried = registry.prepare_issue("op:new".into(), [6; 32]).unwrap();

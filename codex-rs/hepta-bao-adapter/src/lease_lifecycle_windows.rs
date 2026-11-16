@@ -8,9 +8,9 @@ use std::path::Path;
 
 use codex_utils_path::PrivateFileAccess;
 
+use super::LeaseRegistryErrorV1;
 #[cfg(test)]
 use super::PersistFailure;
-use super::LeaseRegistryErrorV1;
 use super::StoredRegistryV1;
 
 pub(super) struct RetainedRegistry {
