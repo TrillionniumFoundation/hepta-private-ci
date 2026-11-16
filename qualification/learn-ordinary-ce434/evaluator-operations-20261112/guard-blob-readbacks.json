@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "worktree": "/workspace/scratch/ce434f960ee9/learn-evaluator-budget-v2",
+    "parent": "6d2f0a0ec68b5b1e4be1946120b9fe4915462014",
+    "base_tree": "1836b313e7be07fcf0cf8b41436a701e8a85f275",
+    "expected_tree": "e3ae0edc749f0f840d932dcadc078b61d77329b7",
+    "entries": [
+      {
+        "path": "CALLERS.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "12304275dadff3f52e7b931c55fb1b4c2fec3377",
+        "sha256": "508073b2a847fd4ef217fa93df6147b4ca6672e0272ce3971af91b9ffb874f2c",
+        "size": 1036644
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5e700c20d3744562bcbf224605bbc6a2743fec69",
+        "sha256": "57e60af39042102b35ba25afd3b1c4dadda955deacb7f7382d5bd8bdbbabbc68",
+        "size": 11468
+      },
+      {
+        "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ab123571779b1e78e3b02f85a3b2f3608c9b5e39",
+        "sha256": "d2d54115c88a66916b05b5787a57ee97044250418293352aab71137399764403",
+        "size": 7574
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c2d8bc18b05ecd1878449605b125430f6e7eb97c",
+        "sha256": "2b7f06dc70895172d645c3fc96e48c5e2530c1282ad78b159e8c8fc3adeac462",
+        "size": 9193
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "54ecf61cf13749067974fe28dbaf2a3bd1a115ec",
+        "sha256": "f00fcfe19491d66aa22675b1b7c6c5efcdb0ff72c076984f08df001775d29103",
+        "size": 15144
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "397751a76e5b1104e18c144a9e3150a15d9f5b4c",
+        "sha256": "3924953d71b6e715daca5bf71ec0f6fc8311a3aacdf7aa32ffeb34f8e2eeb238",
+        "size": 12999
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c1b35606604c81a4edf59ec41d04ae2839a02957",
+        "sha256": "a99d66b7601f846150bd7f4dd404d1121206b1623981f09be48853b306fc6c49",
+        "size": 14807
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c5a25db4eea151de3d158d123db0d15d583ad597",
+        "sha256": "7d48c7c25a0c9e359971a7cde7737fcb354e4c209b8a705137a15fa19e94966c",
+        "size": 12655
+      },
+      {
+        "path": "scripts/hepta_c_observer_coverage.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "557565ed3d382c34de0617dfb1493210d5764f11",
+        "sha256": "22c6a6a1c3ebb71b267cd1640cee892fef22d23156d400f1b1f15a97fb32ca84",
+        "size": 29517
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca2d90a9436fd3b00b36d407b23c08a803ac75fc",
+        "sha256": "d6193139ab3ec4865f34a313a70829a95b43bff516aabf92cc750aa3f9d7ef0f",
+        "size": 8783
+      }
+    ]
+  },
+  "verified_blobs": {
+    "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py": "5e700c20d3744562bcbf224605bbc6a2743fec69",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py": "c2d8bc18b05ecd1878449605b125430f6e7eb97c",
+    "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py": "ab123571779b1e78e3b02f85a3b2f3608c9b5e39",
+    "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py": "54ecf61cf13749067974fe28dbaf2a3bd1a115ec",
+    "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py": "397751a76e5b1104e18c144a9e3150a15d9f5b4c",
+    "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py": "c1b35606604c81a4edf59ec41d04ae2839a02957",
+    "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py": "c5a25db4eea151de3d158d123db0d15d583ad597",
+    "scripts/hepta_c_observer_coverage.py": "557565ed3d382c34de0617dfb1493210d5764f11",
+    "qa/b4-no-bypass/test_original_evaluation_operation_source_closure.py": "ca2d90a9436fd3b00b36d407b23c08a803ac75fc",
+    "CALLERS.toml": "12304275dadff3f52e7b931c55fb1b4c2fec3377"
+  }
+}
