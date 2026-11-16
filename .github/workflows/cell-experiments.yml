@@ -1,0 +1,74 @@
+name: Cell experiments engineering integrity
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/cell_experiments/**'
+      - 'scripts/hepta_cells/**'
+      - '.github/workflows/cell-experiments.yml'
+  push:
+    paths:
+      - 'scripts/cell_experiments/**'
+      - 'scripts/hepta_cells/**'
+      - '.github/workflows/cell-experiments.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cell-experiments-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engineering-integrity:
+    name: Engineering integrity (Python 3.12; no learning qualification)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      HF_DATASETS_OFFLINE: '1'
+    steps:
+      - name: Check out reviewed code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.12'
+      - name: Install the numerical test dependency in an isolated environment
+        run: |
+          python -m venv "$RUNNER_TEMP/cell-integrity-venv"
+          "$RUNNER_TEMP/cell-integrity-venv/bin/python" -m pip install \
+            --disable-pip-version-check --only-binary=:all: numpy==2.3.5
+      - name: Run every experiment integrity test
+        run: |
+          for module in data coding_sft campaign adoption composition interaction; do
+            test -f "scripts/cell_experiments/test_${module}.py"
+          done
+          # Discovery also includes test_sequence.py and later test modules.
+          # The top-level directory preserves package-relative imports.
+          "$RUNNER_TEMP/cell-integrity-venv/bin/python" -m unittest discover \
+            --start-directory scripts/cell_experiments \
+            --top-level-directory scripts --pattern 'test_*.py' --verbose
+      - name: Record the scope of this check
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ## Engineering integrity only
+
+          Test outcomes are recorded in the test step above. This job checks
+          numerical updates, record integrity, budgets, and control flow using
+          authored fixtures and mocked model/process ports. It installs NumPy;
+          it does not run the language-model training campaign or download weights.
+
+          Scientific learning and independent-confirmation gates remain BLOCKED.
+          No native CellOwner adoption, external-teacher trajectory evidence,
+          HEPLCP FinalUse, production eligibility, or settlement is established.
+          EOF
