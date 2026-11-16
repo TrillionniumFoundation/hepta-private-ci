@@ -1,0 +1,955 @@
+{
+  "all_ast_equal": true,
+  "c_semantic_content_read": false,
+  "changed_files": 25,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-files",
+        "--",
+        "scripts/cell_experiments/__init__.py",
+        "scripts/cell_experiments/adapter_mix_v2.py",
+        "scripts/cell_experiments/adoption.py",
+        "scripts/cell_experiments/campaign.py",
+        "scripts/cell_experiments/chat_protocol.py",
+        "scripts/cell_experiments/circuit_study_v2.py",
+        "scripts/cell_experiments/circuit_task_bindings_v2.py",
+        "scripts/cell_experiments/circuit_task_readout_v2.py",
+        "scripts/cell_experiments/circuit_v2.py",
+        "scripts/cell_experiments/coding_sft.py",
+        "scripts/cell_experiments/composition.py",
+        "scripts/cell_experiments/composition_core.py",
+        "scripts/cell_experiments/data.py",
+        "scripts/cell_experiments/data_builder.py",
+        "scripts/cell_experiments/interaction.py",
+        "scripts/cell_experiments/interaction_campaign.py",
+        "scripts/cell_experiments/repo_execution.py",
+        "scripts/cell_experiments/repo_interaction_v2.py",
+        "scripts/cell_experiments/repo_tasks.py",
+        "scripts/cell_experiments/run_study_v2.py",
+        "scripts/cell_experiments/sequence.py",
+        "scripts/cell_experiments/stage_resources_v2.py",
+        "scripts/cell_experiments/study_v2.py",
+        "scripts/cell_experiments/study_v2_confirm.py",
+        "scripts/cell_experiments/study_v2_evidence.py",
+        "scripts/cell_experiments/study_v2_reporting.py",
+        "scripts/cell_experiments/study_v2_support.py",
+        "scripts/cell_experiments/test_adapter_mix_v2.py",
+        "scripts/cell_experiments/test_adoption.py",
+        "scripts/cell_experiments/test_campaign.py",
+        "scripts/cell_experiments/test_chat_protocol.py",
+        "scripts/cell_experiments/test_circuit_task_readout_v2.py",
+        "scripts/cell_experiments/test_circuit_v2.py",
+        "scripts/cell_experiments/test_coding_sft.py",
+        "scripts/cell_experiments/test_composition.py",
+        "scripts/cell_experiments/test_composition_core.py",
+        "scripts/cell_experiments/test_data.py",
+        "scripts/cell_experiments/test_interaction.py",
+        "scripts/cell_experiments/test_interaction_campaign.py",
+        "scripts/cell_experiments/test_repo_execution.py",
+        "scripts/cell_experiments/test_repo_interaction_v2.py",
+        "scripts/cell_experiments/test_sequence.py",
+        "scripts/cell_experiments/test_study_v2.py",
+        "scripts/cell_experiments/test_study_v2_confirm.py"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.0071790830115787685
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--",
+        "scripts/cell_experiments/__init__.py",
+        "scripts/cell_experiments/adapter_mix_v2.py",
+        "scripts/cell_experiments/adoption.py",
+        "scripts/cell_experiments/campaign.py",
+        "scripts/cell_experiments/chat_protocol.py",
+        "scripts/cell_experiments/circuit_study_v2.py",
+        "scripts/cell_experiments/circuit_task_bindings_v2.py",
+        "scripts/cell_experiments/circuit_task_readout_v2.py",
+        "scripts/cell_experiments/circuit_v2.py",
+        "scripts/cell_experiments/coding_sft.py",
+        "scripts/cell_experiments/composition.py",
+        "scripts/cell_experiments/composition_core.py",
+        "scripts/cell_experiments/data.py",
+        "scripts/cell_experiments/data_builder.py",
+        "scripts/cell_experiments/interaction.py",
+        "scripts/cell_experiments/interaction_campaign.py",
+        "scripts/cell_experiments/repo_execution.py",
+        "scripts/cell_experiments/repo_interaction_v2.py",
+        "scripts/cell_experiments/repo_tasks.py",
+        "scripts/cell_experiments/run_study_v2.py",
+        "scripts/cell_experiments/sequence.py",
+        "scripts/cell_experiments/stage_resources_v2.py",
+        "scripts/cell_experiments/study_v2.py",
+        "scripts/cell_experiments/study_v2_confirm.py",
+        "scripts/cell_experiments/study_v2_evidence.py",
+        "scripts/cell_experiments/study_v2_reporting.py",
+        "scripts/cell_experiments/study_v2_support.py",
+        "scripts/cell_experiments/test_adapter_mix_v2.py",
+        "scripts/cell_experiments/test_adoption.py",
+        "scripts/cell_experiments/test_campaign.py",
+        "scripts/cell_experiments/test_chat_protocol.py",
+        "scripts/cell_experiments/test_circuit_task_readout_v2.py",
+        "scripts/cell_experiments/test_circuit_v2.py",
+        "scripts/cell_experiments/test_coding_sft.py",
+        "scripts/cell_experiments/test_composition.py",
+        "scripts/cell_experiments/test_composition_core.py",
+        "scripts/cell_experiments/test_data.py",
+        "scripts/cell_experiments/test_interaction.py",
+        "scripts/cell_experiments/test_interaction_campaign.py",
+        "scripts/cell_experiments/test_repo_execution.py",
+        "scripts/cell_experiments/test_repo_interaction_v2.py",
+        "scripts/cell_experiments/test_sequence.py",
+        "scripts/cell_experiments/test_study_v2.py",
+        "scripts/cell_experiments/test_study_v2_confirm.py"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.03110058297170326
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "scripts/cell_experiments/__init__.py\nscripts/cell_experiments/adapter_mix_v2.py\nscripts/cell_experiments/adoption.py\nscripts/cell_experiments/campaign.py\nscripts/cell_experiments/chat_protocol.py\nscripts/cell_experiments/circuit_study_v2.py\nscripts/cell_experiments/circuit_task_bindings_v2.py\nscripts/cell_experiments/circuit_task_readout_v2.py\nscripts/cell_experiments/circuit_v2.py\nscripts/cell_experiments/coding_sft.py\nscripts/cell_experiments/composition.py\nscripts/cell_experiments/composition_core.py\nscripts/cell_experiments/data.py\nscripts/cell_experiments/data_builder.py\nscripts/cell_experiments/interaction.py\nscripts/cell_experiments/interaction_campaign.py\nscripts/cell_experiments/repo_execution.py\nscripts/cell_experiments/repo_interaction_v2.py\nscripts/cell_experiments/repo_tasks.py\nscripts/cell_experiments/run_study_v2.py\nscripts/cell_experiments/sequence.py\nscripts/cell_experiments/stage_resources_v2.py\nscripts/cell_experiments/study_v2.py\nscripts/cell_experiments/study_v2_confirm.py\nscripts/cell_experiments/study_v2_evidence.py\nscripts/cell_experiments/study_v2_reporting.py\nscripts/cell_experiments/study_v2_support.py\nscripts/cell_experiments/test_adapter_mix_v2.py\nscripts/cell_experiments/test_adoption.py\nscripts/cell_experiments/test_campaign.py\nscripts/cell_experiments/test_chat_protocol.py\nscripts/cell_experiments/test_circuit_task_readout_v2.py\nscripts/cell_experiments/test_circuit_v2.py\nscripts/cell_experiments/test_coding_sft.py\nscripts/cell_experiments/test_composition.py\nscripts/cell_experiments/test_composition_core.py\nscripts/cell_experiments/test_data.py\nscripts/cell_experiments/test_interaction.py\nscripts/cell_experiments/test_interaction_campaign.py\nscripts/cell_experiments/test_repo_execution.py\nscripts/cell_experiments/test_repo_interaction_v2.py\nscripts/cell_experiments/test_sequence.py\nscripts/cell_experiments/test_study_v2.py\nscripts/cell_experiments/test_study_v2_confirm.py\n",
+      "wall_seconds": 0.0131073750089854
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a/codex-rs",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 2.023826625023503
+    }
+  ],
+  "completed_at_ns": 1794838348868731000,
+  "formatted_archive": {
+    "bytes": 141200,
+    "path": "/workspace/scratch/0c078af77c37/v2-source-formatted.zip",
+    "sha256": "d2529aa63b1a078156a3b0e0b579ccd4ebaba4c4159897bbfb988a8a222a1f0e"
+  },
+  "formatter_base": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+  "formatter_files": {
+    "justfile": {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "mode": "100644",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/format.py": {
+      "bytes": 16599,
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "mode": "100644",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "mode": "100644",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/pyproject.toml": {
+      "bytes": 177,
+      "git_blob": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+      "mode": "100644",
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+    },
+    "scripts/uv.lock": {
+      "bytes": 6220,
+      "git_blob": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "mode": "100644",
+      "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+    }
+  },
+  "idempotency_key": "hepta-e1e6-v2-mac-actual-format-20261116-0c078a-01",
+  "local_verification": {
+    "checked_against": "BEFORE_FORMAT.json",
+    "completed_at_ns": 1794838449608012777,
+    "files": 44,
+    "python_ast_equivalence": true,
+    "source_inventory": {
+      "scripts/cell_experiments/__init__.py": {
+        "after_sha256": "2e67b225cd36fa27d71ee9da202418be16037287581438e20ce0a3b5d3b518d6",
+        "ast_equal": true,
+        "ast_sha256": "92fef429ce7ad3db30752299ea05c35853f8b1285ae74501905d0174b3cc3fff",
+        "before_sha256": "2e67b225cd36fa27d71ee9da202418be16037287581438e20ce0a3b5d3b518d6"
+      },
+      "scripts/cell_experiments/adapter_mix_v2.py": {
+        "after_sha256": "325caacb86a0abe5b1ac66e9a6999cdff960f200ea787d706941e9d020eb9100",
+        "ast_equal": true,
+        "ast_sha256": "185d3ba4a3699484f7cdb7e4da8e8c7c7d25f1065f67d761c3510b94d921f131",
+        "before_sha256": "008c040986f5602b76fcc8dd64d56e6f9b24e8e3bd8cf011452efb69c9df2114"
+      },
+      "scripts/cell_experiments/adoption.py": {
+        "after_sha256": "d3b91bf960cc66086f4026c9024c738a584f0777ff4bbfe62e09291122d7cdf7",
+        "ast_equal": true,
+        "ast_sha256": "226b36b34c235bab8aa99f6dd6199524baec0e317babcdbfb43212c0dd2a56c8",
+        "before_sha256": "d3b91bf960cc66086f4026c9024c738a584f0777ff4bbfe62e09291122d7cdf7"
+      },
+      "scripts/cell_experiments/campaign.py": {
+        "after_sha256": "9d54c9bafafa960cc5441810fea75cbf2ca41de56aab39ce7a706d20385072ae",
+        "ast_equal": true,
+        "ast_sha256": "675e99b4a0f21d43c68458c75ee57a43194e1bb5218dfdf9cc08fd72fc3cabe1",
+        "before_sha256": "9d54c9bafafa960cc5441810fea75cbf2ca41de56aab39ce7a706d20385072ae"
+      },
+      "scripts/cell_experiments/chat_protocol.py": {
+        "after_sha256": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+        "ast_equal": true,
+        "ast_sha256": "cae8e7d63071755f3415fb8dab108225a219b4a7fd29703b6964d4631cf6ade5",
+        "before_sha256": "9c9e588b0c66a0a2fc141b7129f426a5651398654ad00afe0490d1fa998b2943"
+      },
+      "scripts/cell_experiments/circuit_study_v2.py": {
+        "after_sha256": "e2c5ac63e25fe820edccf774885e913a6b5838ecace9b82d93dc6fce380c66b3",
+        "ast_equal": true,
+        "ast_sha256": "656594083af40cc7ad5bd27eda0059e45a7986e5101b5b954c00d9cf92e224f7",
+        "before_sha256": "2aa31c3e5b5c8369189621babf3dfb2707a5ba9592db33ec23f1f4efc9b8ee4c"
+      },
+      "scripts/cell_experiments/circuit_task_bindings_v2.py": {
+        "after_sha256": "30fc1277db9ebb3986ad386969e0f1cfaafa8889c0e5ef06ce32b782e91da721",
+        "ast_equal": true,
+        "ast_sha256": "b786294e4b170a70f17339de2a89702d143def76c2394a891d3ab5e6ac4d8de5",
+        "before_sha256": "9352630a66a90af430eada0d51e02a180e99369fdf615dac36204d0ddd415d95"
+      },
+      "scripts/cell_experiments/circuit_task_readout_v2.py": {
+        "after_sha256": "20312e28ddb8adc0e4af88e8a3998ee1b5a3492e6692a0f6d756b6d18f1a5605",
+        "ast_equal": true,
+        "ast_sha256": "2c798b7f53c6991ee743a92daefff9d14108cd42d6500aaadadea4abda8dbc54",
+        "before_sha256": "c803d4dd06afa76dff9870f8ee7ed2d51935861a7e4cf8e7bd1d840af16c296b"
+      },
+      "scripts/cell_experiments/circuit_v2.py": {
+        "after_sha256": "f13f7e0ba50aa12ab68e2e7b48bd0dfaaa788b0378c1620179e1eb99113b5514",
+        "ast_equal": true,
+        "ast_sha256": "8a39d1e691f33aa97e09f80f779a680c96bb6e5f1a94ffffdd17acb2a1d40c93",
+        "before_sha256": "0a18f0602da0cbaafcded81b48a14dd702b0467d1a4e123aef36638e40236370"
+      },
+      "scripts/cell_experiments/coding_sft.py": {
+        "after_sha256": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+        "ast_equal": true,
+        "ast_sha256": "baf7404f0207a4fae7d87c987310903322089137b2ba6eee6bf2612762223fdf",
+        "before_sha256": "bcd4351c705e7d7966056517456c55cee43dd361a057322675274f23fbdef13b"
+      },
+      "scripts/cell_experiments/composition.py": {
+        "after_sha256": "fbe3d7002872fccfc2b6ecb654f10695a9f2a98cf1502a1f1884126e1cb88b8f",
+        "ast_equal": true,
+        "ast_sha256": "ba3afda7754fc9c1289b4ed7314c39463aa6e8d000d8b3157367b1252b94e391",
+        "before_sha256": "fbe3d7002872fccfc2b6ecb654f10695a9f2a98cf1502a1f1884126e1cb88b8f"
+      },
+      "scripts/cell_experiments/composition_core.py": {
+        "after_sha256": "98370c35240c505f882800c8244dd3b7bc2a0c6c279bbe35c7d693811b9c92bc",
+        "ast_equal": true,
+        "ast_sha256": "2b861bf269b967d7b4f4ee2db6b1eeb82f21d29c5114d94378c7072969973910",
+        "before_sha256": "98370c35240c505f882800c8244dd3b7bc2a0c6c279bbe35c7d693811b9c92bc"
+      },
+      "scripts/cell_experiments/data.py": {
+        "after_sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+        "ast_equal": true,
+        "ast_sha256": "70637a6de254304ea4d675af7c9e215992606e534da299fa1f5be26a12a44728",
+        "before_sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09"
+      },
+      "scripts/cell_experiments/data_builder.py": {
+        "after_sha256": "6d40912ff91df04ba59c43e450a974967c6e2d117da8576633cbcc6e7cbbb57b",
+        "ast_equal": true,
+        "ast_sha256": "943931f894f3ffdaa1c0ee1a5fc5d388c81484eaf18fc64b516bac9fb85e8155",
+        "before_sha256": "6d40912ff91df04ba59c43e450a974967c6e2d117da8576633cbcc6e7cbbb57b"
+      },
+      "scripts/cell_experiments/interaction.py": {
+        "after_sha256": "125f19a02673a115f6e25e1285e7ee9f40fe27ec9ae5bfeffa7b558160439556",
+        "ast_equal": true,
+        "ast_sha256": "de3407c6b3f8fbff8fa724fe8ad32b658713360c692291916a4633abde9f140c",
+        "before_sha256": "125f19a02673a115f6e25e1285e7ee9f40fe27ec9ae5bfeffa7b558160439556"
+      },
+      "scripts/cell_experiments/interaction_campaign.py": {
+        "after_sha256": "fbae77975f330805a0ce677908de2ac4cad9a5a8b1c401af12600511b71fe4b8",
+        "ast_equal": true,
+        "ast_sha256": "3daf06b646657223d5cd3ac71863bf373494182c77dd2e268e51e7aef4d880bb",
+        "before_sha256": "fbae77975f330805a0ce677908de2ac4cad9a5a8b1c401af12600511b71fe4b8"
+      },
+      "scripts/cell_experiments/repo_execution.py": {
+        "after_sha256": "ee37e28567944ab542a21926f66957cf663c0ec7e7ceab62a4c30da5fce4282b",
+        "ast_equal": true,
+        "ast_sha256": "16b4f263257fbd313e67fe57403a79daba5d4954076f4e5857ef983e206668fa",
+        "before_sha256": "59b2ec222830688282568278939aa49ab3f90efd4d1213a73c791f027bd3744d"
+      },
+      "scripts/cell_experiments/repo_interaction_v2.py": {
+        "after_sha256": "26513f13b1bfc9d88ff40ea9234a3222f930a18117f8f966cb9dbbaec0180ae3",
+        "ast_equal": true,
+        "ast_sha256": "2b0b9afdf0b28de936f6b2b17160eaf75ee8cbc355665bbbda520b42b437b12f",
+        "before_sha256": "1f032176148a8ce752ca86402f29000bc4046c73140f19a86343c7c6c2a12093"
+      },
+      "scripts/cell_experiments/repo_tasks.py": {
+        "after_sha256": "428e04fbfa4a2cc78ecd50d3b119426d82d1cbbbdec1ab7c2286460a38e1cf66",
+        "ast_equal": true,
+        "ast_sha256": "11767b0deed2c3dbff79737da729d31aa8a7c447168d0936efd134f53360deca",
+        "before_sha256": "a3202f8ec2013e8be0ff643a6f8cedf4ffc8476f88e067ef40ae6093cde522a3"
+      },
+      "scripts/cell_experiments/run_study_v2.py": {
+        "after_sha256": "0f2fe6fe45a27a4aa54450e4f67bc8e5ec66d686cefe9dbfc16e220cd02db237",
+        "ast_equal": true,
+        "ast_sha256": "25bcb079330fcfa48412e8c519d7fe2bfe1ff402915ee01d46f243405b90ce4f",
+        "before_sha256": "aeca7df28d72797d5054c842e18c911614a516722a450f53d7d0bbec09db9d2a"
+      },
+      "scripts/cell_experiments/sequence.py": {
+        "after_sha256": "63d3ea056aa7f343acc37a36f158ceed7df26c4c71924fd984d0c2256dbb52a9",
+        "ast_equal": true,
+        "ast_sha256": "f99d25b790eb05054db35afb990e33efb8294a8298eaa2bfdd7cbd70d1579008",
+        "before_sha256": "63d3ea056aa7f343acc37a36f158ceed7df26c4c71924fd984d0c2256dbb52a9"
+      },
+      "scripts/cell_experiments/stage_resources_v2.py": {
+        "after_sha256": "486ace04b180516aa3c60cda7b83c16162a805770eed2166abb02eca06bfcc6f",
+        "ast_equal": true,
+        "ast_sha256": "ac8564a260cd51c0558256e3f38c29e2f7499bd964fc060193c6c559bc822434",
+        "before_sha256": "b84b6b6924bfef1276c76743a88ed8e813c54bce47611cd7316b3d5ff7b4f587"
+      },
+      "scripts/cell_experiments/study_v2.py": {
+        "after_sha256": "33b32cfa76c66b7d59b8049491168753cac63dd5cf78feecde92632748749f6d",
+        "ast_equal": true,
+        "ast_sha256": "758d7f5ab1b5f8efeec6265938cc7aa686ce85a233a3618dc274e383924d2f1e",
+        "before_sha256": "7c5fbf38f8d4e403bbf6c00f71e11890438e1df00278b9f5c3929e0fbb931821"
+      },
+      "scripts/cell_experiments/study_v2_confirm.py": {
+        "after_sha256": "7bc9dce5853cccee17fca96d72715ac62d87a8f7970ca61c28a5c0bd5a97ceb6",
+        "ast_equal": true,
+        "ast_sha256": "05bb7219a6a5813c8087bac9f34dc16fa66082dda81b8bad40a7f60bd24abd80",
+        "before_sha256": "32d5cda8532a5fa935aafd2b0a299dcbb693eee9461ce563ffcbd72fd1eefdf1"
+      },
+      "scripts/cell_experiments/study_v2_evidence.py": {
+        "after_sha256": "5e7b460722c148067a17166a684d18ded06eeea5dc3f5a2b47981c2bea074720",
+        "ast_equal": true,
+        "ast_sha256": "aa157cc45fa5bbaa2e29f9b04d39801ce6220640406a5493554952405a238d3c",
+        "before_sha256": "befca11d5a5078ea02da298a315a776872bbe4102628c021a3cc8f1f03e104ff"
+      },
+      "scripts/cell_experiments/study_v2_reporting.py": {
+        "after_sha256": "9f0cbc6989939679e1e3c76484a8e1ed53837ce126fcf13493e6ed06064e76b6",
+        "ast_equal": true,
+        "ast_sha256": "f4db314ea088c09d55f8b31eda605eeb52bb8e49e05280579a6b17973951205d",
+        "before_sha256": "372a04b27a863779e008d1423e70197a9e3d2521c3553f77c74ff39648a67125"
+      },
+      "scripts/cell_experiments/study_v2_support.py": {
+        "after_sha256": "74bbf8fef8c19fbb9a8968f49ba7596e3238646968f7be711d924c05b4807a64",
+        "ast_equal": true,
+        "ast_sha256": "60e626634e7db911292c9cc5a3cc26452483cfd061bdf6a9531b4b521dea2dbf",
+        "before_sha256": "955f83aacd35a3b028c55451d613ade3e88f2b74f0d285028927ac17af15fa88"
+      },
+      "scripts/cell_experiments/test_adapter_mix_v2.py": {
+        "after_sha256": "55117fddd9506d1ae68968292aaaeba95a925f4f4a0d6b9073751f7f6b95b086",
+        "ast_equal": true,
+        "ast_sha256": "ec7165b81125c80e6722c535d44d8a9a1ecf3d89c8c78d358de4dfddaee2810d",
+        "before_sha256": "874bd86b4444a69b8d9340cc46a1b897ae90b157a91bcc18200201be67f46223"
+      },
+      "scripts/cell_experiments/test_adoption.py": {
+        "after_sha256": "b2c2be9761dc064a5debb16a9ff8828b2092c0a8ea527cf6905679055c65edea",
+        "ast_equal": true,
+        "ast_sha256": "c57c046655d024cd0ce7b7dcb24bd698d078b6da6fa2d7e085fb774a8d2e6aa2",
+        "before_sha256": "b2c2be9761dc064a5debb16a9ff8828b2092c0a8ea527cf6905679055c65edea"
+      },
+      "scripts/cell_experiments/test_campaign.py": {
+        "after_sha256": "3a179a2dc5b57e55c7d44e0dcfd739055c1e7011ac33c0afb15c18c6c86099ec",
+        "ast_equal": true,
+        "ast_sha256": "9d6dcda341a82d25486fc0bf121847c761232a9e6862a8759c8372278fba5914",
+        "before_sha256": "3a179a2dc5b57e55c7d44e0dcfd739055c1e7011ac33c0afb15c18c6c86099ec"
+      },
+      "scripts/cell_experiments/test_chat_protocol.py": {
+        "after_sha256": "19c93cf74ed88c5b0e368b413aba107f358f9c75062c83f78cedcbafedff3340",
+        "ast_equal": true,
+        "ast_sha256": "e1abd16bd9b3b428ce32f79888b46a954f558890ab4f68f6ead9abfd6628ed12",
+        "before_sha256": "1adf5d6cf3bdb452bcaa74a3407b05b7f2d767503722d499a51e9bcc688137e1"
+      },
+      "scripts/cell_experiments/test_circuit_task_readout_v2.py": {
+        "after_sha256": "1bde4ed31dbe9620cc16974b3be3c285b1e2c472b756704eb4bf0948a7327cd9",
+        "ast_equal": true,
+        "ast_sha256": "7115e3dce93d03c99a387a76f8576264877c35de096623468d28ff12141d08e3",
+        "before_sha256": "3c339555365d5a43113bfdb99a988f5d7bd38aa34db0f72c7a8857b3d34b1470"
+      },
+      "scripts/cell_experiments/test_circuit_v2.py": {
+        "after_sha256": "de7d6cd8ead8736ff827289611240d6651a9c22cc79f2c6625dce69201421b0e",
+        "ast_equal": true,
+        "ast_sha256": "c027e8ae574f12aca1af7c72f222a0bb6d4025bffc2f31e48edc1b035ee7d900",
+        "before_sha256": "d8986cc434fae2d90977f999f6b4d30e212b3210f3d303610e8ff57a156910ac"
+      },
+      "scripts/cell_experiments/test_coding_sft.py": {
+        "after_sha256": "9c42f212b54d913007c980158d733f4d41cf32b126caac021b49cae048611d16",
+        "ast_equal": true,
+        "ast_sha256": "491e0d1c5a16f8e2c3fb772b3f31d59c3da65aad16d37b26dbc2875cc0405dac",
+        "before_sha256": "9c42f212b54d913007c980158d733f4d41cf32b126caac021b49cae048611d16"
+      },
+      "scripts/cell_experiments/test_composition.py": {
+        "after_sha256": "c1f7931cb590b842eea69d702f39e62d85af4521ea7e9db80d01493b40b39d98",
+        "ast_equal": true,
+        "ast_sha256": "82131e24929066534f2335fed52dbd84810c26bf0e319df61841ece91427f49a",
+        "before_sha256": "c1f7931cb590b842eea69d702f39e62d85af4521ea7e9db80d01493b40b39d98"
+      },
+      "scripts/cell_experiments/test_composition_core.py": {
+        "after_sha256": "d8931ab80ca6d29a52b6460ef3d822e73a2bf7864f58c9eb7fe2a0e95507edb5",
+        "ast_equal": true,
+        "ast_sha256": "0ac8ac2922e3240ebba4ce6233bd7505fdf97b7584b1d38ce4cf33507982446c",
+        "before_sha256": "d8931ab80ca6d29a52b6460ef3d822e73a2bf7864f58c9eb7fe2a0e95507edb5"
+      },
+      "scripts/cell_experiments/test_data.py": {
+        "after_sha256": "782b2b6cd922f56e3f44c4983c7ab43522a6b822c808f596b1ff7d057f0640c0",
+        "ast_equal": true,
+        "ast_sha256": "7d7162cecd789d483ba2e52730f6efb04adb1d0e6512331fbc233b29389bc03d",
+        "before_sha256": "782b2b6cd922f56e3f44c4983c7ab43522a6b822c808f596b1ff7d057f0640c0"
+      },
+      "scripts/cell_experiments/test_interaction.py": {
+        "after_sha256": "1b481f92f3c4631361a5781e2ebc7454621bad726c0aae26160b0f16945258af",
+        "ast_equal": true,
+        "ast_sha256": "73508d8b61eef8a441e7f944a68b746ca00eb42909e814f0ad6534183b2d8862",
+        "before_sha256": "1b481f92f3c4631361a5781e2ebc7454621bad726c0aae26160b0f16945258af"
+      },
+      "scripts/cell_experiments/test_interaction_campaign.py": {
+        "after_sha256": "534c2ac21df6af74d34522891cf29c718f76e165068465d71faff90a65f8cb42",
+        "ast_equal": true,
+        "ast_sha256": "c6c2bc49a58aeeab14df9a848c37899735b052b413800e675ae7a8b1f46b4974",
+        "before_sha256": "534c2ac21df6af74d34522891cf29c718f76e165068465d71faff90a65f8cb42"
+      },
+      "scripts/cell_experiments/test_repo_execution.py": {
+        "after_sha256": "f15e1db7d54457b7bc9d9b999811d7c8e4381df6e3b68725b73f9d76219a576d",
+        "ast_equal": true,
+        "ast_sha256": "7af80f351cf92080d49de2f454411845e0635a1ff893aec2d20923753d0c2a22",
+        "before_sha256": "7ec0ba10a500ef92a4145bd559d0ec66d4c7acf7bc9efd8a014a44dcc8cb75d1"
+      },
+      "scripts/cell_experiments/test_repo_interaction_v2.py": {
+        "after_sha256": "70cfcba0d0b608f642c8ef9f2e77bd624926d39b32f6a62ec2da4c926f21c2a7",
+        "ast_equal": true,
+        "ast_sha256": "72a13e5716d96316178cf3f2a1232898efd622d9a8d4a24ab68d03f17f5cc3f2",
+        "before_sha256": "b88d85f0394d74e3441b26f41e5577e6bf85438c4d088e87ef71000fbb90f9df"
+      },
+      "scripts/cell_experiments/test_sequence.py": {
+        "after_sha256": "1a507108057fe7bc90329a554df8948c154e30b8f35b96d7fb9037b4201a4699",
+        "ast_equal": true,
+        "ast_sha256": "c46a4015b79f2474bb2dea561c4f25c8dbcca878252bf0ca2b2e8fa6061bd452",
+        "before_sha256": "1a507108057fe7bc90329a554df8948c154e30b8f35b96d7fb9037b4201a4699"
+      },
+      "scripts/cell_experiments/test_study_v2.py": {
+        "after_sha256": "4dcb54c3333b18b94a4ace802f3acedcec1e21e0862c4e428fdf75bc4c766080",
+        "ast_equal": true,
+        "ast_sha256": "f581a6c976b83afc3cd8a6d06f73adf9b962238d814eecd0dc351a25862c2715",
+        "before_sha256": "28a4fcb8a339d3a6965f0f3e61cb8165113bd1ed2dba3bfd7a02957b33e27d14"
+      },
+      "scripts/cell_experiments/test_study_v2_confirm.py": {
+        "after_sha256": "67236682d11b0428a30c44107d8415d64cc3dfe904364cd152cd2eeab4dd14ca",
+        "ast_equal": true,
+        "ast_sha256": "922a265d5b819f41425ca53b5ea45ba523f9fef82b01c5b58796f1297da98e56",
+        "before_sha256": "f7347f810987c9ca337919339c6ce5bcc236ef6fdafa91beb40c95e51805f485"
+      }
+    }
+  },
+  "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "python_files": 44,
+  "qualified_originals_modified": false,
+  "remote_receipt_sha256": "25cb0459692fc78657a8259d55ad08beebb68531d6470f248f4e127ec987c429",
+  "runtime_job": {
+    "host": "mac",
+    "id": "1a1e4b3baa3-392-37af",
+    "idempotency_key": "hepta-e1e6-v2-mac-actual-format-20261116-0c078a-01",
+    "request_digest": "7bc23a3bef575be9cf8196c8c17a4c712652005df4c6b6464528559ce672c3ee",
+    "status": {
+      "at_unix_ms": 1794838348888,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1e4b3baa3-392-37af",
+      "launch_nonce": "17439a4e7f4170f79495a272b754c6de",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 411,
+          "stored": 411
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"all_ast_equal\": true, \"changed_files\": 25, \"format_receipt_sha256\": \"25cb0459692fc78657a8259d55ad08beebb68531d6470f248f4e127ec987c429\", \"python_files\": 44, \"status\": \"COMPLETE\", \"wall_seconds\": 2.237980665988289, \"zip_bytes\": 141200, \"zip_path\": \"/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a/formatted-v2.zip\", \"zip_sha256\": \"d2529aa63b1a078156a3b0e0b579ccd4ebaba4c4159897bbfb988a8a222a1f0e\"}\n"
+  },
+  "schema": "hepta.source-format.v2",
+  "source_inventory": {
+    "scripts/cell_experiments/__init__.py": {
+      "after_ast_sha256": "67c2f58d3b9d194ca005c6e5bc5ad436475bac7bfca20647469a676983e05a90",
+      "after_bytes": 78,
+      "after_sha256": "2e67b225cd36fa27d71ee9da202418be16037287581438e20ce0a3b5d3b518d6",
+      "ast_equal": true,
+      "before_ast_sha256": "67c2f58d3b9d194ca005c6e5bc5ad436475bac7bfca20647469a676983e05a90",
+      "before_bytes": 78,
+      "before_sha256": "2e67b225cd36fa27d71ee9da202418be16037287581438e20ce0a3b5d3b518d6"
+    },
+    "scripts/cell_experiments/adapter_mix_v2.py": {
+      "after_ast_sha256": "b5685b72b095354ce508114edb519cf5c7254a807f8e9c3f5babc0837285f4bc",
+      "after_bytes": 5064,
+      "after_sha256": "325caacb86a0abe5b1ac66e9a6999cdff960f200ea787d706941e9d020eb9100",
+      "ast_equal": true,
+      "before_ast_sha256": "b5685b72b095354ce508114edb519cf5c7254a807f8e9c3f5babc0837285f4bc",
+      "before_bytes": 4777,
+      "before_sha256": "008c040986f5602b76fcc8dd64d56e6f9b24e8e3bd8cf011452efb69c9df2114"
+    },
+    "scripts/cell_experiments/adoption.py": {
+      "after_ast_sha256": "bd0fdd629553acdc028caf4a374d281a72cc03db196d71717084b86c1fd6e9c0",
+      "after_bytes": 23469,
+      "after_sha256": "d3b91bf960cc66086f4026c9024c738a584f0777ff4bbfe62e09291122d7cdf7",
+      "ast_equal": true,
+      "before_ast_sha256": "bd0fdd629553acdc028caf4a374d281a72cc03db196d71717084b86c1fd6e9c0",
+      "before_bytes": 23469,
+      "before_sha256": "d3b91bf960cc66086f4026c9024c738a584f0777ff4bbfe62e09291122d7cdf7"
+    },
+    "scripts/cell_experiments/campaign.py": {
+      "after_ast_sha256": "ecc1b6a20b526144988de9e552280da2a13bde600d56ee8d6e708c438b3b1c95",
+      "after_bytes": 19792,
+      "after_sha256": "9d54c9bafafa960cc5441810fea75cbf2ca41de56aab39ce7a706d20385072ae",
+      "ast_equal": true,
+      "before_ast_sha256": "ecc1b6a20b526144988de9e552280da2a13bde600d56ee8d6e708c438b3b1c95",
+      "before_bytes": 19792,
+      "before_sha256": "9d54c9bafafa960cc5441810fea75cbf2ca41de56aab39ce7a706d20385072ae"
+    },
+    "scripts/cell_experiments/chat_protocol.py": {
+      "after_ast_sha256": "2deb103268f979807ab9cedca97562957caa99eee7c1b6807aaa3a8c22cd2236",
+      "after_bytes": 7842,
+      "after_sha256": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+      "ast_equal": true,
+      "before_ast_sha256": "2deb103268f979807ab9cedca97562957caa99eee7c1b6807aaa3a8c22cd2236",
+      "before_bytes": 7667,
+      "before_sha256": "9c9e588b0c66a0a2fc141b7129f426a5651398654ad00afe0490d1fa998b2943"
+    },
+    "scripts/cell_experiments/circuit_study_v2.py": {
+      "after_ast_sha256": "da2351115ce076648aea7f75e070f9e813308f436c47fcde0089878d94b624ca",
+      "after_bytes": 13010,
+      "after_sha256": "e2c5ac63e25fe820edccf774885e913a6b5838ecace9b82d93dc6fce380c66b3",
+      "ast_equal": true,
+      "before_ast_sha256": "da2351115ce076648aea7f75e070f9e813308f436c47fcde0089878d94b624ca",
+      "before_bytes": 11382,
+      "before_sha256": "2aa31c3e5b5c8369189621babf3dfb2707a5ba9592db33ec23f1f4efc9b8ee4c"
+    },
+    "scripts/cell_experiments/circuit_task_bindings_v2.py": {
+      "after_ast_sha256": "fa3091778a0e2a364fc21afeb07b9acb2f7fb1e235c63279fe580e7abb7d0b76",
+      "after_bytes": 10280,
+      "after_sha256": "30fc1277db9ebb3986ad386969e0f1cfaafa8889c0e5ef06ce32b782e91da721",
+      "ast_equal": true,
+      "before_ast_sha256": "fa3091778a0e2a364fc21afeb07b9acb2f7fb1e235c63279fe580e7abb7d0b76",
+      "before_bytes": 7688,
+      "before_sha256": "9352630a66a90af430eada0d51e02a180e99369fdf615dac36204d0ddd415d95"
+    },
+    "scripts/cell_experiments/circuit_task_readout_v2.py": {
+      "after_ast_sha256": "7cbe716f1a7de55ce2a31bc97f04edac83cb557b5be80bb56ee281f3eb1ab6a8",
+      "after_bytes": 10155,
+      "after_sha256": "20312e28ddb8adc0e4af88e8a3998ee1b5a3492e6692a0f6d756b6d18f1a5605",
+      "ast_equal": true,
+      "before_ast_sha256": "7cbe716f1a7de55ce2a31bc97f04edac83cb557b5be80bb56ee281f3eb1ab6a8",
+      "before_bytes": 8690,
+      "before_sha256": "c803d4dd06afa76dff9870f8ee7ed2d51935861a7e4cf8e7bd1d840af16c296b"
+    },
+    "scripts/cell_experiments/circuit_v2.py": {
+      "after_ast_sha256": "9c26fc15a78163cbaa15615fd8671fdcd4851a1b2b0cd110ba3f8951ef3f3757",
+      "after_bytes": 15362,
+      "after_sha256": "f13f7e0ba50aa12ab68e2e7b48bd0dfaaa788b0378c1620179e1eb99113b5514",
+      "ast_equal": true,
+      "before_ast_sha256": "9c26fc15a78163cbaa15615fd8671fdcd4851a1b2b0cd110ba3f8951ef3f3757",
+      "before_bytes": 13922,
+      "before_sha256": "0a18f0602da0cbaafcded81b48a14dd702b0467d1a4e123aef36638e40236370"
+    },
+    "scripts/cell_experiments/coding_sft.py": {
+      "after_ast_sha256": "7ce71d327d7425e0c6bd170dc9f548507959989535c33c958a0e946bd40f2f32",
+      "after_bytes": 23511,
+      "after_sha256": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+      "ast_equal": true,
+      "before_ast_sha256": "7ce71d327d7425e0c6bd170dc9f548507959989535c33c958a0e946bd40f2f32",
+      "before_bytes": 23125,
+      "before_sha256": "bcd4351c705e7d7966056517456c55cee43dd361a057322675274f23fbdef13b"
+    },
+    "scripts/cell_experiments/composition.py": {
+      "after_ast_sha256": "cf976a8d695d0f255579583fc63f488ce7c9145480228bd369c6346b4dde5fc2",
+      "after_bytes": 26210,
+      "after_sha256": "fbe3d7002872fccfc2b6ecb654f10695a9f2a98cf1502a1f1884126e1cb88b8f",
+      "ast_equal": true,
+      "before_ast_sha256": "cf976a8d695d0f255579583fc63f488ce7c9145480228bd369c6346b4dde5fc2",
+      "before_bytes": 26210,
+      "before_sha256": "fbe3d7002872fccfc2b6ecb654f10695a9f2a98cf1502a1f1884126e1cb88b8f"
+    },
+    "scripts/cell_experiments/composition_core.py": {
+      "after_ast_sha256": "6c95ed197dd5a3cf933447abd9044742a81c9349e5f6ab1a8daf9345d06c82ed",
+      "after_bytes": 13388,
+      "after_sha256": "98370c35240c505f882800c8244dd3b7bc2a0c6c279bbe35c7d693811b9c92bc",
+      "ast_equal": true,
+      "before_ast_sha256": "6c95ed197dd5a3cf933447abd9044742a81c9349e5f6ab1a8daf9345d06c82ed",
+      "before_bytes": 13388,
+      "before_sha256": "98370c35240c505f882800c8244dd3b7bc2a0c6c279bbe35c7d693811b9c92bc"
+    },
+    "scripts/cell_experiments/data.py": {
+      "after_ast_sha256": "95dee64b085d2c9dd31e653d064c19b3657be6603cd56e4ae38acb9f162f08e5",
+      "after_bytes": 16163,
+      "after_sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+      "ast_equal": true,
+      "before_ast_sha256": "95dee64b085d2c9dd31e653d064c19b3657be6603cd56e4ae38acb9f162f08e5",
+      "before_bytes": 16163,
+      "before_sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09"
+    },
+    "scripts/cell_experiments/data_builder.py": {
+      "after_ast_sha256": "e22437a5e83954fdfb62be12a394dd1727925dd409987f621ebe8cc230acdff3",
+      "after_bytes": 12771,
+      "after_sha256": "6d40912ff91df04ba59c43e450a974967c6e2d117da8576633cbcc6e7cbbb57b",
+      "ast_equal": true,
+      "before_ast_sha256": "e22437a5e83954fdfb62be12a394dd1727925dd409987f621ebe8cc230acdff3",
+      "before_bytes": 12771,
+      "before_sha256": "6d40912ff91df04ba59c43e450a974967c6e2d117da8576633cbcc6e7cbbb57b"
+    },
+    "scripts/cell_experiments/interaction.py": {
+      "after_ast_sha256": "28b1622e4d00bb4cd6cd87783f2e2798abe66ecddac40e4eed1bd594c4832283",
+      "after_bytes": 16456,
+      "after_sha256": "125f19a02673a115f6e25e1285e7ee9f40fe27ec9ae5bfeffa7b558160439556",
+      "ast_equal": true,
+      "before_ast_sha256": "28b1622e4d00bb4cd6cd87783f2e2798abe66ecddac40e4eed1bd594c4832283",
+      "before_bytes": 16456,
+      "before_sha256": "125f19a02673a115f6e25e1285e7ee9f40fe27ec9ae5bfeffa7b558160439556"
+    },
+    "scripts/cell_experiments/interaction_campaign.py": {
+      "after_ast_sha256": "6377a2af02a975bcf1b74558e90e589fdf1b2c0f040e3c464795b51ba7b6906f",
+      "after_bytes": 12275,
+      "after_sha256": "fbae77975f330805a0ce677908de2ac4cad9a5a8b1c401af12600511b71fe4b8",
+      "ast_equal": true,
+      "before_ast_sha256": "6377a2af02a975bcf1b74558e90e589fdf1b2c0f040e3c464795b51ba7b6906f",
+      "before_bytes": 12275,
+      "before_sha256": "fbae77975f330805a0ce677908de2ac4cad9a5a8b1c401af12600511b71fe4b8"
+    },
+    "scripts/cell_experiments/repo_execution.py": {
+      "after_ast_sha256": "020a3323391faab7f45d41fbe5268128c08edc0b8575e3874044d4dc181214e9",
+      "after_bytes": 14218,
+      "after_sha256": "ee37e28567944ab542a21926f66957cf663c0ec7e7ceab62a4c30da5fce4282b",
+      "ast_equal": true,
+      "before_ast_sha256": "020a3323391faab7f45d41fbe5268128c08edc0b8575e3874044d4dc181214e9",
+      "before_bytes": 13006,
+      "before_sha256": "59b2ec222830688282568278939aa49ab3f90efd4d1213a73c791f027bd3744d"
+    },
+    "scripts/cell_experiments/repo_interaction_v2.py": {
+      "after_ast_sha256": "3df1b716f0d8671bc7f7acebc62158f8fd02332b9f7b7d787fe41292665f8abc",
+      "after_bytes": 9323,
+      "after_sha256": "26513f13b1bfc9d88ff40ea9234a3222f930a18117f8f966cb9dbbaec0180ae3",
+      "ast_equal": true,
+      "before_ast_sha256": "3df1b716f0d8671bc7f7acebc62158f8fd02332b9f7b7d787fe41292665f8abc",
+      "before_bytes": 7697,
+      "before_sha256": "1f032176148a8ce752ca86402f29000bc4046c73140f19a86343c7c6c2a12093"
+    },
+    "scripts/cell_experiments/repo_tasks.py": {
+      "after_ast_sha256": "b6c8702ceeee019ed38d1d94dc08bd132207aa540f78e9e1ded4facf571cceb3",
+      "after_bytes": 10715,
+      "after_sha256": "428e04fbfa4a2cc78ecd50d3b119426d82d1cbbbdec1ab7c2286460a38e1cf66",
+      "ast_equal": true,
+      "before_ast_sha256": "b6c8702ceeee019ed38d1d94dc08bd132207aa540f78e9e1ded4facf571cceb3",
+      "before_bytes": 8404,
+      "before_sha256": "a3202f8ec2013e8be0ff643a6f8cedf4ffc8476f88e067ef40ae6093cde522a3"
+    },
+    "scripts/cell_experiments/run_study_v2.py": {
+      "after_ast_sha256": "270deb9f5cb8b48a1ff93e09456b1eaddeb4618c154133e20dedf1b7b4c5143f",
+      "after_bytes": 6822,
+      "after_sha256": "0f2fe6fe45a27a4aa54450e4f67bc8e5ec66d686cefe9dbfc16e220cd02db237",
+      "ast_equal": true,
+      "before_ast_sha256": "270deb9f5cb8b48a1ff93e09456b1eaddeb4618c154133e20dedf1b7b4c5143f",
+      "before_bytes": 5871,
+      "before_sha256": "aeca7df28d72797d5054c842e18c911614a516722a450f53d7d0bbec09db9d2a"
+    },
+    "scripts/cell_experiments/sequence.py": {
+      "after_ast_sha256": "a181c1fe961920ea15ccaf4e407e1a619c33a73efd635a057d9b9944ae2b9337",
+      "after_bytes": 7937,
+      "after_sha256": "63d3ea056aa7f343acc37a36f158ceed7df26c4c71924fd984d0c2256dbb52a9",
+      "ast_equal": true,
+      "before_ast_sha256": "a181c1fe961920ea15ccaf4e407e1a619c33a73efd635a057d9b9944ae2b9337",
+      "before_bytes": 7937,
+      "before_sha256": "63d3ea056aa7f343acc37a36f158ceed7df26c4c71924fd984d0c2256dbb52a9"
+    },
+    "scripts/cell_experiments/stage_resources_v2.py": {
+      "after_ast_sha256": "8b091b756540fc6f9803aaafadf419eaa9b350617e739b2c3c7cd1606110ac6f",
+      "after_bytes": 2321,
+      "after_sha256": "486ace04b180516aa3c60cda7b83c16162a805770eed2166abb02eca06bfcc6f",
+      "ast_equal": true,
+      "before_ast_sha256": "8b091b756540fc6f9803aaafadf419eaa9b350617e739b2c3c7cd1606110ac6f",
+      "before_bytes": 2058,
+      "before_sha256": "b84b6b6924bfef1276c76743a88ed8e813c54bce47611cd7316b3d5ff7b4f587"
+    },
+    "scripts/cell_experiments/study_v2.py": {
+      "after_ast_sha256": "8f7b23f0adc807efe47209a29fdeea82253ad733abceb3e67876820d6b83c82a",
+      "after_bytes": 12596,
+      "after_sha256": "33b32cfa76c66b7d59b8049491168753cac63dd5cf78feecde92632748749f6d",
+      "ast_equal": true,
+      "before_ast_sha256": "8f7b23f0adc807efe47209a29fdeea82253ad733abceb3e67876820d6b83c82a",
+      "before_bytes": 10792,
+      "before_sha256": "7c5fbf38f8d4e403bbf6c00f71e11890438e1df00278b9f5c3929e0fbb931821"
+    },
+    "scripts/cell_experiments/study_v2_confirm.py": {
+      "after_ast_sha256": "9d7a6befe4f3ec7da466536846f8d5b290714383929f0c8d6eed2e55cf740456",
+      "after_bytes": 14103,
+      "after_sha256": "7bc9dce5853cccee17fca96d72715ac62d87a8f7970ca61c28a5c0bd5a97ceb6",
+      "ast_equal": true,
+      "before_ast_sha256": "9d7a6befe4f3ec7da466536846f8d5b290714383929f0c8d6eed2e55cf740456",
+      "before_bytes": 12306,
+      "before_sha256": "32d5cda8532a5fa935aafd2b0a299dcbb693eee9461ce563ffcbd72fd1eefdf1"
+    },
+    "scripts/cell_experiments/study_v2_evidence.py": {
+      "after_ast_sha256": "ecc38f6068d03873994cc0b65743157f4835a6b4c0455a1b5f76dd1ab6472a96",
+      "after_bytes": 12224,
+      "after_sha256": "5e7b460722c148067a17166a684d18ded06eeea5dc3f5a2b47981c2bea074720",
+      "ast_equal": true,
+      "before_ast_sha256": "ecc38f6068d03873994cc0b65743157f4835a6b4c0455a1b5f76dd1ab6472a96",
+      "before_bytes": 10840,
+      "before_sha256": "befca11d5a5078ea02da298a315a776872bbe4102628c021a3cc8f1f03e104ff"
+    },
+    "scripts/cell_experiments/study_v2_reporting.py": {
+      "after_ast_sha256": "4a7bd8093dc8d23e04c67e2ba6dd3c35c3523d27f86aee504efe71600bb41125",
+      "after_bytes": 5498,
+      "after_sha256": "9f0cbc6989939679e1e3c76484a8e1ed53837ce126fcf13493e6ed06064e76b6",
+      "ast_equal": true,
+      "before_ast_sha256": "4a7bd8093dc8d23e04c67e2ba6dd3c35c3523d27f86aee504efe71600bb41125",
+      "before_bytes": 4877,
+      "before_sha256": "372a04b27a863779e008d1423e70197a9e3d2521c3553f77c74ff39648a67125"
+    },
+    "scripts/cell_experiments/study_v2_support.py": {
+      "after_ast_sha256": "04c76c20ae30cb598497622dcbb6d204c1067f2d02811cdf3e59fc2c6576c5e8",
+      "after_bytes": 9720,
+      "after_sha256": "74bbf8fef8c19fbb9a8968f49ba7596e3238646968f7be711d924c05b4807a64",
+      "ast_equal": true,
+      "before_ast_sha256": "04c76c20ae30cb598497622dcbb6d204c1067f2d02811cdf3e59fc2c6576c5e8",
+      "before_bytes": 8313,
+      "before_sha256": "955f83aacd35a3b028c55451d613ade3e88f2b74f0d285028927ac17af15fa88"
+    },
+    "scripts/cell_experiments/test_adapter_mix_v2.py": {
+      "after_ast_sha256": "894d985758cc3a82500c61929d50d85cbd7713e19ade7f7921bd9d8b1548a44b",
+      "after_bytes": 1177,
+      "after_sha256": "55117fddd9506d1ae68968292aaaeba95a925f4f4a0d6b9073751f7f6b95b086",
+      "ast_equal": true,
+      "before_ast_sha256": "894d985758cc3a82500c61929d50d85cbd7713e19ade7f7921bd9d8b1548a44b",
+      "before_bytes": 1005,
+      "before_sha256": "874bd86b4444a69b8d9340cc46a1b897ae90b157a91bcc18200201be67f46223"
+    },
+    "scripts/cell_experiments/test_adoption.py": {
+      "after_ast_sha256": "9bfe87c1a1732ec5a20867ed75ab18864370bd2b6e096acad77c02541607466f",
+      "after_bytes": 11046,
+      "after_sha256": "b2c2be9761dc064a5debb16a9ff8828b2092c0a8ea527cf6905679055c65edea",
+      "ast_equal": true,
+      "before_ast_sha256": "9bfe87c1a1732ec5a20867ed75ab18864370bd2b6e096acad77c02541607466f",
+      "before_bytes": 11046,
+      "before_sha256": "b2c2be9761dc064a5debb16a9ff8828b2092c0a8ea527cf6905679055c65edea"
+    },
+    "scripts/cell_experiments/test_campaign.py": {
+      "after_ast_sha256": "538ab45b2a3be4427790c707db908edc20e207794f134af8ed51bf94c7556141",
+      "after_bytes": 2579,
+      "after_sha256": "3a179a2dc5b57e55c7d44e0dcfd739055c1e7011ac33c0afb15c18c6c86099ec",
+      "ast_equal": true,
+      "before_ast_sha256": "538ab45b2a3be4427790c707db908edc20e207794f134af8ed51bf94c7556141",
+      "before_bytes": 2579,
+      "before_sha256": "3a179a2dc5b57e55c7d44e0dcfd739055c1e7011ac33c0afb15c18c6c86099ec"
+    },
+    "scripts/cell_experiments/test_chat_protocol.py": {
+      "after_ast_sha256": "c412c40f529e0e83f85cacca38ab2838397d288ab7f9479d55e63b9a271c7d9c",
+      "after_bytes": 14099,
+      "after_sha256": "19c93cf74ed88c5b0e368b413aba107f358f9c75062c83f78cedcbafedff3340",
+      "ast_equal": true,
+      "before_ast_sha256": "c412c40f529e0e83f85cacca38ab2838397d288ab7f9479d55e63b9a271c7d9c",
+      "before_bytes": 11591,
+      "before_sha256": "1adf5d6cf3bdb452bcaa74a3407b05b7f2d767503722d499a51e9bcc688137e1"
+    },
+    "scripts/cell_experiments/test_circuit_task_readout_v2.py": {
+      "after_ast_sha256": "ee39de5f9d0e434c9df3530c12b583168c8c991b11188696c1cfc6f446ebcc83",
+      "after_bytes": 14682,
+      "after_sha256": "1bde4ed31dbe9620cc16974b3be3c285b1e2c472b756704eb4bf0948a7327cd9",
+      "ast_equal": true,
+      "before_ast_sha256": "ee39de5f9d0e434c9df3530c12b583168c8c991b11188696c1cfc6f446ebcc83",
+      "before_bytes": 10703,
+      "before_sha256": "3c339555365d5a43113bfdb99a988f5d7bd38aa34db0f72c7a8857b3d34b1470"
+    },
+    "scripts/cell_experiments/test_circuit_v2.py": {
+      "after_ast_sha256": "15ee0504dfabaa12f4a97e86882121bd4d7dfa6de2aefed67e7807edfc6e0d32",
+      "after_bytes": 9232,
+      "after_sha256": "de7d6cd8ead8736ff827289611240d6651a9c22cc79f2c6625dce69201421b0e",
+      "ast_equal": true,
+      "before_ast_sha256": "15ee0504dfabaa12f4a97e86882121bd4d7dfa6de2aefed67e7807edfc6e0d32",
+      "before_bytes": 8403,
+      "before_sha256": "d8986cc434fae2d90977f999f6b4d30e212b3210f3d303610e8ff57a156910ac"
+    },
+    "scripts/cell_experiments/test_coding_sft.py": {
+      "after_ast_sha256": "5b8fb9e45553a31e3857dba6d5e5d59bde6ac8885069f90725699fe17c9cae30",
+      "after_bytes": 3078,
+      "after_sha256": "9c42f212b54d913007c980158d733f4d41cf32b126caac021b49cae048611d16",
+      "ast_equal": true,
+      "before_ast_sha256": "5b8fb9e45553a31e3857dba6d5e5d59bde6ac8885069f90725699fe17c9cae30",
+      "before_bytes": 3078,
+      "before_sha256": "9c42f212b54d913007c980158d733f4d41cf32b126caac021b49cae048611d16"
+    },
+    "scripts/cell_experiments/test_composition.py": {
+      "after_ast_sha256": "cdac15416d74d554954de6c019ee580881cda51f59bd5559246f28920b2ec3c3",
+      "after_bytes": 13665,
+      "after_sha256": "c1f7931cb590b842eea69d702f39e62d85af4521ea7e9db80d01493b40b39d98",
+      "ast_equal": true,
+      "before_ast_sha256": "cdac15416d74d554954de6c019ee580881cda51f59bd5559246f28920b2ec3c3",
+      "before_bytes": 13665,
+      "before_sha256": "c1f7931cb590b842eea69d702f39e62d85af4521ea7e9db80d01493b40b39d98"
+    },
+    "scripts/cell_experiments/test_composition_core.py": {
+      "after_ast_sha256": "c25b11e021d16bd7d55fb434974689484f9afe02d7475b1af8be22f8bb800cfa",
+      "after_bytes": 6577,
+      "after_sha256": "d8931ab80ca6d29a52b6460ef3d822e73a2bf7864f58c9eb7fe2a0e95507edb5",
+      "ast_equal": true,
+      "before_ast_sha256": "c25b11e021d16bd7d55fb434974689484f9afe02d7475b1af8be22f8bb800cfa",
+      "before_bytes": 6577,
+      "before_sha256": "d8931ab80ca6d29a52b6460ef3d822e73a2bf7864f58c9eb7fe2a0e95507edb5"
+    },
+    "scripts/cell_experiments/test_data.py": {
+      "after_ast_sha256": "f186b1931dea754a655d76030405d2d84be775a7ba65b9dfbdce18291c0ca424",
+      "after_bytes": 7198,
+      "after_sha256": "782b2b6cd922f56e3f44c4983c7ab43522a6b822c808f596b1ff7d057f0640c0",
+      "ast_equal": true,
+      "before_ast_sha256": "f186b1931dea754a655d76030405d2d84be775a7ba65b9dfbdce18291c0ca424",
+      "before_bytes": 7198,
+      "before_sha256": "782b2b6cd922f56e3f44c4983c7ab43522a6b822c808f596b1ff7d057f0640c0"
+    },
+    "scripts/cell_experiments/test_interaction.py": {
+      "after_ast_sha256": "bf16951817b3713ba6ec2f06ffc30d26ae8a35f830691b5f51b63197a7cd04be",
+      "after_bytes": 7434,
+      "after_sha256": "1b481f92f3c4631361a5781e2ebc7454621bad726c0aae26160b0f16945258af",
+      "ast_equal": true,
+      "before_ast_sha256": "bf16951817b3713ba6ec2f06ffc30d26ae8a35f830691b5f51b63197a7cd04be",
+      "before_bytes": 7434,
+      "before_sha256": "1b481f92f3c4631361a5781e2ebc7454621bad726c0aae26160b0f16945258af"
+    },
+    "scripts/cell_experiments/test_interaction_campaign.py": {
+      "after_ast_sha256": "f69d485c26ceee32ef8977d6ccc0fd4635e3ae2487ae1321343e6e359830daa5",
+      "after_bytes": 5775,
+      "after_sha256": "534c2ac21df6af74d34522891cf29c718f76e165068465d71faff90a65f8cb42",
+      "ast_equal": true,
+      "before_ast_sha256": "f69d485c26ceee32ef8977d6ccc0fd4635e3ae2487ae1321343e6e359830daa5",
+      "before_bytes": 5775,
+      "before_sha256": "534c2ac21df6af74d34522891cf29c718f76e165068465d71faff90a65f8cb42"
+    },
+    "scripts/cell_experiments/test_repo_execution.py": {
+      "after_ast_sha256": "485d45337bef36d7c2e16e4ff5c10c48fae7238f10e2d91f8fa9a6f07dfb7e11",
+      "after_bytes": 6161,
+      "after_sha256": "f15e1db7d54457b7bc9d9b999811d7c8e4381df6e3b68725b73f9d76219a576d",
+      "ast_equal": true,
+      "before_ast_sha256": "485d45337bef36d7c2e16e4ff5c10c48fae7238f10e2d91f8fa9a6f07dfb7e11",
+      "before_bytes": 5525,
+      "before_sha256": "7ec0ba10a500ef92a4145bd559d0ec66d4c7acf7bc9efd8a014a44dcc8cb75d1"
+    },
+    "scripts/cell_experiments/test_repo_interaction_v2.py": {
+      "after_ast_sha256": "4277b2b77abc5a239c68ba9e5c51add91ee4d898cffd039e21181839f99a0af9",
+      "after_bytes": 3350,
+      "after_sha256": "70cfcba0d0b608f642c8ef9f2e77bd624926d39b32f6a62ec2da4c926f21c2a7",
+      "ast_equal": true,
+      "before_ast_sha256": "4277b2b77abc5a239c68ba9e5c51add91ee4d898cffd039e21181839f99a0af9",
+      "before_bytes": 2867,
+      "before_sha256": "b88d85f0394d74e3441b26f41e5577e6bf85438c4d088e87ef71000fbb90f9df"
+    },
+    "scripts/cell_experiments/test_sequence.py": {
+      "after_ast_sha256": "ea304b0f9163c6e71ec31205289d2c7f9d25bef3f71015a63eea9366e8c8f839",
+      "after_bytes": 2263,
+      "after_sha256": "1a507108057fe7bc90329a554df8948c154e30b8f35b96d7fb9037b4201a4699",
+      "ast_equal": true,
+      "before_ast_sha256": "ea304b0f9163c6e71ec31205289d2c7f9d25bef3f71015a63eea9366e8c8f839",
+      "before_bytes": 2263,
+      "before_sha256": "1a507108057fe7bc90329a554df8948c154e30b8f35b96d7fb9037b4201a4699"
+    },
+    "scripts/cell_experiments/test_study_v2.py": {
+      "after_ast_sha256": "b6e9576c2a6db1635953a1b7289c74443c14cfa23f1cb1e87a5a06169bb60388",
+      "after_bytes": 6488,
+      "after_sha256": "4dcb54c3333b18b94a4ace802f3acedcec1e21e0862c4e428fdf75bc4c766080",
+      "ast_equal": true,
+      "before_ast_sha256": "b6e9576c2a6db1635953a1b7289c74443c14cfa23f1cb1e87a5a06169bb60388",
+      "before_bytes": 4861,
+      "before_sha256": "28a4fcb8a339d3a6965f0f3e61cb8165113bd1ed2dba3bfd7a02957b33e27d14"
+    },
+    "scripts/cell_experiments/test_study_v2_confirm.py": {
+      "after_ast_sha256": "018b3dd167deae053d54e49c6abf0b316ece158d31c09f9aae700e935e5d6222",
+      "after_bytes": 7875,
+      "after_sha256": "67236682d11b0428a30c44107d8415d64cc3dfe904364cd152cd2eeab4dd14ca",
+      "ast_equal": true,
+      "before_ast_sha256": "018b3dd167deae053d54e49c6abf0b316ece158d31c09f9aae700e935e5d6222",
+      "before_bytes": 6588,
+      "before_sha256": "f7347f810987c9ca337919339c6ce5bcc236ef6fdafa91beb40c95e51805f485"
+    }
+  },
+  "source_zip_bytes": 369131,
+  "source_zip_sha256": "97499149c21569a76a2afd344bbb6528f78076ace948d44b037462ec417bc34f",
+  "staged_python_paths": [
+    "scripts/cell_experiments/__init__.py",
+    "scripts/cell_experiments/adapter_mix_v2.py",
+    "scripts/cell_experiments/adoption.py",
+    "scripts/cell_experiments/campaign.py",
+    "scripts/cell_experiments/chat_protocol.py",
+    "scripts/cell_experiments/circuit_study_v2.py",
+    "scripts/cell_experiments/circuit_task_bindings_v2.py",
+    "scripts/cell_experiments/circuit_task_readout_v2.py",
+    "scripts/cell_experiments/circuit_v2.py",
+    "scripts/cell_experiments/coding_sft.py",
+    "scripts/cell_experiments/composition.py",
+    "scripts/cell_experiments/composition_core.py",
+    "scripts/cell_experiments/data.py",
+    "scripts/cell_experiments/data_builder.py",
+    "scripts/cell_experiments/interaction.py",
+    "scripts/cell_experiments/interaction_campaign.py",
+    "scripts/cell_experiments/repo_execution.py",
+    "scripts/cell_experiments/repo_interaction_v2.py",
+    "scripts/cell_experiments/repo_tasks.py",
+    "scripts/cell_experiments/run_study_v2.py",
+    "scripts/cell_experiments/sequence.py",
+    "scripts/cell_experiments/stage_resources_v2.py",
+    "scripts/cell_experiments/study_v2.py",
+    "scripts/cell_experiments/study_v2_confirm.py",
+    "scripts/cell_experiments/study_v2_evidence.py",
+    "scripts/cell_experiments/study_v2_reporting.py",
+    "scripts/cell_experiments/study_v2_support.py",
+    "scripts/cell_experiments/test_adapter_mix_v2.py",
+    "scripts/cell_experiments/test_adoption.py",
+    "scripts/cell_experiments/test_campaign.py",
+    "scripts/cell_experiments/test_chat_protocol.py",
+    "scripts/cell_experiments/test_circuit_task_readout_v2.py",
+    "scripts/cell_experiments/test_circuit_v2.py",
+    "scripts/cell_experiments/test_coding_sft.py",
+    "scripts/cell_experiments/test_composition.py",
+    "scripts/cell_experiments/test_composition_core.py",
+    "scripts/cell_experiments/test_data.py",
+    "scripts/cell_experiments/test_interaction.py",
+    "scripts/cell_experiments/test_interaction_campaign.py",
+    "scripts/cell_experiments/test_repo_execution.py",
+    "scripts/cell_experiments/test_repo_interaction_v2.py",
+    "scripts/cell_experiments/test_sequence.py",
+    "scripts/cell_experiments/test_study_v2.py",
+    "scripts/cell_experiments/test_study_v2_confirm.py"
+  ],
+  "started_at_ns": 1794838346630777000,
+  "status": "COMPLETE",
+  "tests_run_after_format": false,
+  "wall_seconds": 2.237980665988289
+}

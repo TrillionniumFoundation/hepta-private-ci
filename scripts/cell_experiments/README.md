@@ -168,3 +168,5 @@ Retain `independent_experiment_status=BLOCKED`,
 `production_eligible=false`, and `full_cost_known=false` wherever emitted. A
 successful CI run never replaces an experiment receipt or establishes learning
 benefit, native adoption, external-teacher evidence, FinalUse, or settlement.
+
+Second development round: [repository contract experiments](README_V2.md).

@@ -5,11 +5,13 @@ on:
     paths:
       - 'scripts/cell_experiments/**'
       - 'scripts/hepta_cells/**'
+      - 'qualification/cell-experiments-v2-20261116/task-fixtures/**'
       - '.github/workflows/cell-experiments.yml'
   push:
     paths:
       - 'scripts/cell_experiments/**'
       - 'scripts/hepta_cells/**'
+      - 'qualification/cell-experiments-v2-20261116/task-fixtures/**'
       - '.github/workflows/cell-experiments.yml'
   workflow_dispatch:
 
@@ -65,7 +67,9 @@ jobs:
 
           Test outcomes are recorded in the test step above. This job checks
           numerical updates, record integrity, budgets, and control flow using
-          authored fixtures and mocked model/process ports. It installs NumPy;
+          authored fixtures and mocked model/process ports. The repository
+          contract tests also execute reviewed function subsets and check
+          whether candidate assertions reject incorrect outputs. It installs NumPy;
           it does not run the language-model training campaign or download weights.
 
           Scientific learning and independent-confirmation gates remain BLOCKED.
