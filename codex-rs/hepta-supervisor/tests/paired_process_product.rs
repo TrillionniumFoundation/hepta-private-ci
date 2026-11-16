@@ -235,6 +235,8 @@ impl PairFleet {
         );
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         let fixture_binary = std::env::current_exe()?;
+        #[cfg(target_os = "macos")]
+        let fixture_binary = fixture_binary.canonicalize()?;
         // Linux embeds the full integration harness's DWARF in this file.
         // Catalog installation and each real release resolution still verify
         // every executable byte; debug metadata is irrelevant to the fixture.
