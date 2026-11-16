@@ -109,6 +109,7 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> TestRe
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("owner");
     std::fs::create_dir(&root)?;
+    let root = root.canonicalize()?;
     let (_directory, pool) = historical_pool(displaced).await?;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
