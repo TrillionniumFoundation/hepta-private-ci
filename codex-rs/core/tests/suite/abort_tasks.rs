@@ -209,7 +209,12 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .await
         .expect("resume the suspended root on a replacement runtime");
     assert_eq!(
-        resumed.codex.config_snapshot().await.environments.environments,
+        resumed
+            .codex
+            .config_snapshot()
+            .await
+            .environments
+            .environments,
         original_environments,
     );
     assert_eq!(
