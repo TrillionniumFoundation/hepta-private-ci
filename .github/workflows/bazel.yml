@@ -116,6 +116,8 @@ jobs:
               -//codex-rs/cli:cli-sandbox_network_proxy-test
               -//codex-rs/core:core-all-test
               -//codex-rs/core:core-all-wine-exec-test
+              -//codex-rs/app-server:app-server-all-test
+              -//codex-rs/app-server:app-server-all-wine-exec-test
             )
           fi
 
@@ -178,18 +180,18 @@ jobs:
             //codex-rs/linux-sandbox:linux-sandbox-all-test \
             //codex-rs/cli:cli-sandbox_network_proxy-test
 
-      - name: Run native Core integration with host namespace support
+      - name: Run native Core and app-server integration with host namespace support
         if: ${{ !cancelled() && runner.os == 'Linux' }}
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
         run: |
-          # Core integration tests require host namespaces on every Linux ABI.
+          # Core and app-server integration require host namespaces on every Linux ABI.
           # The Wine variant additionally requires x86_64 GNU, as declared by
           # WINE_TEST_TARGET_COMPATIBLE_WITH in the Wine runtime rule.
-          core_targets=(//codex-rs/core:core-all-test)
+          native_targets=(//codex-rs/core:core-all-test //codex-rs/app-server:app-server-all-test)
           if [[ "${{ matrix.target }}" == "x86_64-unknown-linux-gnu" ]]; then
-            core_targets+=(//codex-rs/core:core-all-wine-exec-test)
+            native_targets+=(//codex-rs/core:core-all-wine-exec-test //codex-rs/app-server:app-server-all-wine-exec-test)
           fi
           ./.github/scripts/run-bazel-ci.sh \
             --print-failed-action-summary \
@@ -203,7 +205,7 @@ jobs:
             --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
             --build_metadata=TAG_job=native-core-integration-tests \
             -- \
-            "${core_targets[@]}"
+            "${native_targets[@]}"
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()

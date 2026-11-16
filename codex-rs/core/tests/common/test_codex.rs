@@ -532,11 +532,22 @@ impl TestCodexBuilder {
         &mut self,
         server: &wiremock::MockServer,
     ) -> anyhow::Result<TestCodex> {
+        self.build_with_remote_and_local_env_at_uri(&server.uri())
+            .await
+    }
+
+    /// Uses a streaming fixture endpoint while retaining both configured execution environments.
+    ///
+    /// Resolve the URI before prepare_config grants its endpoint-bound mock metadata permit.
+    pub async fn build_with_remote_and_local_env_at_uri(
+        &mut self,
+        server_uri: &str,
+    ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
             None => Arc::new(new_private_codex_home()?),
         };
-        let base_url = format!("{}/v1", server.uri());
+        let base_url = format!("{server_uri}/v1");
         let test_env = test_env().await?;
         Box::pin(self.build_with_home_and_base_url(
             base_url, home, /*resume_from*/ None, test_env,
