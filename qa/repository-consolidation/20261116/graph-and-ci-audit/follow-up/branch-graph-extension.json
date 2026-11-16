@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "candidate": "ca414120a713eaa0ecb9d5a75c21b9edf5c922fe",
+  "base_archive_manifest": "../graph-audit-manifest.json",
+  "base_graph_member": "graph-package-source/complete-parent-graph.tsv",
+  "base_graph_bytes": 6482059,
+  "base_graph_sha256": "4d60790986b73125a54de27aae7ee50e13f9d72b4ece5f9983c8dcbf746d63f8",
+  "base_graph_commits": 76814,
+  "additional_parent_rows": [
+    {
+      "sha": "095fb1d50cc9ac7e53ea5027cf3cfdd2c86b2feb",
+      "parents": ["b653e0934b808be2f4159474d3b1229f1eb4831a"]
+    },
+    {
+      "sha": "1c6c698add22c7c7ec6bc48cf4523db9c11d9ebf",
+      "parents": [
+        "5fed9dcb99feb6c3037e61eec0cc91c0db22dae2",
+        "859b5e8d717b3f87e135b0f77043bb12d1881e4e"
+      ]
+    },
+    {
+      "sha": "33c9a5b4e9a86b4045810c2543c53bfdeb845b41",
+      "parents": [
+        "ea98dddce68112ec038c784199347852ba581108",
+        "a37933f6f9402cc0978f9e5ea0857d04ef41dbef"
+      ]
+    },
+    {
+      "sha": "5fed9dcb99feb6c3037e61eec0cc91c0db22dae2",
+      "parents": ["a70540b51842034678171fc2278e7b3ecfcf022d"]
+    },
+    {
+      "sha": "a70540b51842034678171fc2278e7b3ecfcf022d",
+      "parents": ["095fb1d50cc9ac7e53ea5027cf3cfdd2c86b2feb"]
+    },
+    {
+      "sha": "b653e0934b808be2f4159474d3b1229f1eb4831a",
+      "parents": ["23a7b1bceda59d792762833920e0e16ed2b8ea5f"]
+    },
+    {
+      "sha": "ca414120a713eaa0ecb9d5a75c21b9edf5c922fe",
+      "parents": [
+        "33c9a5b4e9a86b4045810c2543c53bfdeb845b41",
+        "3ef15580c3b0f5d872df2a3da887ae535e2c8f0d"
+      ]
+    },
+    {
+      "sha": "ea98dddce68112ec038c784199347852ba581108",
+      "parents": [
+        "f4988c1534eba2b1343c443c82e281d1807c6d6e",
+        "4b967004619a1dca3dcfb768ad42784a869aeddb"
+      ]
+    },
+    {
+      "sha": "f4988c1534eba2b1343c443c82e281d1807c6d6e",
+      "parents": [
+        "f72c26e481f55c71eb05716ef3e679cecc2999bf",
+        "f1a66c1453bfd2f13ab88c8068a728b4d7a1e538"
+      ]
+    },
+    {
+      "sha": "f72c26e481f55c71eb05716ef3e679cecc2999bf",
+      "parents": [
+        "1c6c698add22c7c7ec6bc48cf4523db9c11d9ebf",
+        "05d04b05dda85f2ee29500754149b90ece785981"
+      ]
+    }
+  ],
+  "additional_commit_count": 10,
+  "walk_roots": ["ca414120a713eaa0ecb9d5a75c21b9edf5c922fe"],
+  "reconstructed_candidate_commits": 40117,
+  "candidate_parent_graph_original_order_sha256": "14da267c03b526a31720a20bb5e9e3d204820d87033dbd28ebe4c8785a501ca4",
+  "candidate_parent_graph_canonical_sha256": "c2669973c6fe5641d4ad3c7103d6edbdfd233ad6a537ca308cf5f14d214de30e",
+  "canonical_encoding": "Sort commit SHA strings ascending; for each emit SHA + one space + parent SHAs in original order separated by spaces + newline.",
+  "original_snapshot_member": "branches_snapshot.json",
+  "original_snapshot_sha256": "9fcf9424d9408a37acccd5ec50f52b82c23474bea024a78972712ccd7592a381",
+  "reconstructed_retained_original_non_hia_heads": 1733,
+  "note": "This extends the immutable audit graph with candidate objects. It does not assert those objects were already published through a remote ref."
+}
