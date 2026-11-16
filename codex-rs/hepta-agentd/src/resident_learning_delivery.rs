@@ -180,13 +180,16 @@ async fn prepare_enrollment(
             .await
             .map_err(|_| Error::WrongScope)?;
         state
-            .attach_circuit_learning_sources(vec![request.source_run_id.clone()])
+            .attach_circuit_learning_delivery(
+                vec![request.source_run_id.clone()],
+                crate::learning_iteration::CircuitLearningSourceV1::OriginalObjective,
+            )
             .map_err(|_| Error::WrongScope)?;
         let host = state
             .objective_runtime
             .get()
             .ok_or(Error::OwnerUnavailable("original Objective source owner"))?;
-        host.reconcile_learning_outbox(store, Some(&request.source_run_id))
+        host.reconcile_learning_outbox(store, Some(&request.source_run_id), state)
             .await
             .map_err(|_| Error::CommitUncertain)?;
         state

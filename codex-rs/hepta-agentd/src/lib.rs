@@ -790,7 +790,7 @@ pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
 pub(crate) use cell_composed_q24::project_original_q24_dataset_v1;
 pub use cell_q24_backend::CellQ24BackendFilesV1;
 pub use cell_q24_backend::load_cell_q24_backend_v1;
-pub use cell_q24_dataset::CellQ24DatasetErrorV1;
+pub use cell_q24_dataset::CellQ24DatasetErrorV1 as OriginalCellQ24DatasetErrorV1;
 pub use cell_q24_dataset::CellQ24DatasetReaderV1;
 pub use cell_q24_dataset::CellQ24DatasetRuleV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetV1;

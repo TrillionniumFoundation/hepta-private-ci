@@ -1,6 +1,7 @@
 //! The original external public API and a closed internal Trainer source.
 
 use super::*;
+use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
 
 /// Borrow the original owners for this read. No provider, attestor, arbitrary
 /// receipt, caller clock or replacement trust is accepted. The full recovered

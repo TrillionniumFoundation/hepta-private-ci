@@ -118,7 +118,7 @@ impl OriginalCircuitModelVersionHostV1 {
             )?;
         task.require_completed_a(&inputs.completed)?;
         let artifacts = ModelVersionArtifactOwner::new(
-            Arc::clone(&inputs.authorities.artifacts),
+            Arc::clone(inputs.authorities.artifacts.writer()?),
             checkpoint,
             inputs.selection.signed.clone(),
             inputs.selection.verifier.clone(),

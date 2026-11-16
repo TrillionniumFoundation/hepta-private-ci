@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.rmcp.existing-base-reconciliation.v1",
+  "checked_at_utc": "2026-11-11 00:58:43 UTC",
+  "baseline_commit": "1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89",
+  "decision": "NO_ADDITIONAL_SOURCE_CHANGE_FOR_TYPED_METADATA_AND_REDIRECT_DIAGNOSTIC",
+  "shared_worktree_modified": false,
+  "new_jobs_started": 0,
+  "native_tests_run": 0,
+  "native_result": "UNKNOWN",
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/auth_status.rs",
+      "preserve_blob": "dafa9ce7d6e40779181ed18a82ed14a93749790b",
+      "preserve_sha256": "35473108b46eac45fa35e2d1b5c0f160c772283536b8e0ccd2ff19aa2886c2da",
+      "bytes": 32011,
+      "superseded_old_postimage": "1df1928443fa925d2dbbba437c295a63cd5739d6"
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "preserve_blob": "36d4f1d1272cb99b72a79ef8c9076ebc35246ff9",
+      "preserve_sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2",
+      "bytes": 24899,
+      "superseded_old_postimage": "8e1aad0586e84b4db15dcf143cb015e16b76c270"
+    }
+  ],
+  "verification": {
+    "exact_ref_blobs_read": true,
+    "git_blob_hashes_recomputed": true,
+    "current_worktree_bytes_match_both_exact_base_blobs": true,
+    "old_postimages_read_from": "/workspace/scratch/c2fccbdb195e/rmcp-narrow-fix-c763/after",
+    "full_file_diffs_reviewed": true
+  },
+  "already_implemented": [
+    "Preserves NoAuthorizationSupport as Ok(None), direct HttpError/UrlError passthrough, and other non-source-bearing original errors.",
+    "Wraps source-bearing SDK errors with typed AuthError::MetadataError using anyhow context, retaining the original typed cause and source chain.",
+    "Matches only AuthError::DiscoveryRequestFailed with the complete source Display prefix OAuth request exceeded, suffix redirects, and a parsed usize limit; adds compatible OAuth discovery exceeded diagnostic without changing rejection or SDK limit.",
+    "Redirect-cycle integration test retains typed MetadataError and original bounded-discovery diagnostic assertions and additionally requires the error chain to contain original typed DiscoveryRequestFailed."
+  ],
+  "preserved_bounds": {
+    "redirect_test_timeout_seconds": 5,
+    "max_metadata_redirect_requests": 100,
+    "expected_redirect_request_range": "2..=100",
+    "resource_headers_excluded_from_authorization_requests": true,
+    "issuer_and_cross_origin_assertions_unchanged_by_diff": true
+  },
+  "upstream_sdk": {
+    "version": "3.9.0",
+    "cargo_lock_checksum": "d24a7e92f4bcaa36b97fa93c4fa7ca8f3e669eced949345b3462dba333c7f909",
+    "source_url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.9.0/crates/rmcp/src/transport/auth.rs",
+    "git_blob": "3d7816b540786a404ddde753a159de8ddc78385a",
+    "actual_private_variant_display": "OAuth request exceeded {0} redirects",
+    "source_flow": "discovery_get returns boxed OAuthHttpError::TooManyRedirects(MAX_OAUTH_REDIRECTS); discovery_failed stores that original box in AuthError::DiscoveryRequestFailed.source"
+  },
+  "do_not_apply": "Old c763 narrow patch or overwrite with old postimages: this removes the newer diagnostic normalization and typed-cause regression assertion.",
+  "validation_next": "Use the existing 5 auth_status library test filters and separate mcp_2026_oauth_discovery integration redirect-cycle filter on the final exact candidate; the latter automatically includes the added typed-cause assertion. This review performed source/hash checks only."
+}

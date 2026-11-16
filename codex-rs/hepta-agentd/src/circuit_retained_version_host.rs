@@ -170,7 +170,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;
         task.require_completed_a(&inputs.completed)?;
         let artifacts = RetainedVersionArtifactOwnerV1::new(
-            Arc::clone(&inputs.authorities.artifacts),
+            Arc::clone(inputs.authorities.artifacts.writer()?),
             artifact_checkpoint,
             inputs.selection.signed.clone(),
             inputs.selection.verifier.clone(),

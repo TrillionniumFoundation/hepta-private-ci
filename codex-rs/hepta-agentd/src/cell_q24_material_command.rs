@@ -62,7 +62,7 @@ pub enum OriginalCellQ24MaterialCommandErrorV1 {
     #[error("original Material owner: {0}")]
     Material(#[from] OriginalCellQ24MaterialReceiptErrorV1),
     #[error("original Material source policy: {0}")]
-    Dataset(#[from] crate::CellQ24DatasetErrorV1),
+    Dataset(#[from] crate::OriginalCellQ24DatasetErrorV1),
     #[error("original Material iteration: {0}")]
     Iteration(#[from] LearningIterationError),
     #[error("original Material evidence: {0}")]

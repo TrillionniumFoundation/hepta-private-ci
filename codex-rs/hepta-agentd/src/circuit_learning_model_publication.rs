@@ -306,6 +306,7 @@ fn load_original_selection(
 ) -> Result<AgentdSelectedGenerationV1, Error> {
     let artifacts = authorities
         .artifacts
+        .writer()?
         .lock()
         .map_err(|_| Error::Binding("original Artifact owner lock"))?;
     Ok(AgentdSelectedGenerationV1::load(

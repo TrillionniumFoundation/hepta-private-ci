@@ -281,7 +281,7 @@ fn load_original_selection(
     authorities: &AgentdGenerationUpdateAuthoritiesV1,
     selection: OriginalCircuitRetainedPublicationSelectionV1,
 ) -> Result<AgentdSelectedGenerationV1, OriginalCircuitRetainedPublicationErrorV1> {
-    let artifacts = authorities.artifacts.lock().map_err(|_| {
+    let artifacts = authorities.artifacts.writer()?.lock().map_err(|_| {
         OriginalCircuitRetainedPublicationErrorV1::Binding("original artifact owner lock")
     })?;
     Ok(AgentdSelectedGenerationV1::load(

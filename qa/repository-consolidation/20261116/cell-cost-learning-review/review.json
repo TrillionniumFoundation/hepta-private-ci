@@ -1,0 +1,301 @@
+{
+  "schema": "hepta.repository-consolidation.semantic-merge-review.v1",
+  "reviewed_at": "2026-11-16T07:05:41.725582+00:00",
+  "base_commit": "e70b7b81581cc13dc0c312553cbea8cce5eef22c",
+  "incoming_commit": "8cdf7d8f520c78310e9e4c23c3316f3fe418c0c8",
+  "incoming_branch": "codex/cell-p0-learn-convergence-20261111-c2fc",
+  "ort_merge_tree": "928e82206aacd638843a3f37f8e4e92dba56c3b6",
+  "resolution": "unmodified normal ort merge; reviewed three Rust and three Python changes; all added qualification artifacts preserved byte for byte from incoming",
+  "changed_paths": [
+    {
+      "path": "codex-rs/ext/git-attribution/src/git_attribution_tests.rs",
+      "status": "M",
+      "before_blob": "b5d3e4213146d563535f5e0ba37d849e70868527",
+      "after_blob": "68dd972eee069fbb8f2f26a4c210840305f195aa"
+    },
+    {
+      "path": "codex-rs/ext/git-attribution/src/policy.rs",
+      "status": "M",
+      "before_blob": "cf607d64d6d6543281e1b88db7a80f63a1bd27ee",
+      "after_blob": "d9a8b63234fc670a90db9233fdfca17479a315e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs",
+      "status": "M",
+      "before_blob": "73d001bd4812836802e8203b03e2b95207bd80a3",
+      "after_blob": "64b9a3b2b61da1a9f47acac5d3e182fd6f95f7ba"
+    },
+    {
+      "path": "qualification/cell-cost-coverage-20261111-c2fc/README.md",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "ec67fedb2bed804a04d85351307df0089865f85c"
+    },
+    {
+      "path": "qualification/cell-cost-coverage-20261111-c2fc/cost-coverage.patch",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "137df13e4021f8ebaa5d290c36a330e291330304"
+    },
+    {
+      "path": "qualification/cell-cost-coverage-20261111-c2fc/maintenance.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "388c5f7f47104b88bd22c5d68f3339e4709eeca6"
+    },
+    {
+      "path": "qualification/cell-cost-coverage-20261111-c2fc/manifest.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "33767a6696182605754334e402556f64598ac19f"
+    },
+    {
+      "path": "qualification/cell-cost-coverage-20261111-c2fc/pre-fix-recovered.log",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "92728e32820b453b2bff5565646658d7d45c2ffc"
+    },
+    {
+      "path": "qualification/cell-cost-coverage-20261111-c2fc/research-post-fix-recovered.log",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "9fce235065de21a27ca83fd9b347b51b248dcf2f"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/CTRL_GAP_RECOVERY_STATUS.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "276d1a4f8c06e1a37812529494d75f7189fa14d1"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/INPUTS_AND_BOUNDARIES.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "c4f1f9a3ecdc525c1689444896c8c1b1613b2aaf"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/NATIVE_DRIVER.md",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "a4466f008dbb60b233469a4bc53f51993d2e36d0"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/NATIVE_DRIVER_REFERENCE.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "5d02cb744c4df2f83d6293587764d2e4586799ca"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/NATIVE_DRIVER_STATIC_REVIEW.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "8c82c80466ce2fa9f473b6c5f2db3eab49d1c85e"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/P1_ADOPTION_MATRIX.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "006048b7f2ff0f70c2953a25459ae808ab766c50"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/P1_ADOPTION_MATRIX_COMPACT.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "2bfc29d748d5ddba41df3bb4b4ef6b1f5b055d41"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/README.md",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "4fce6ca95f793b37fb90608fd5e1db1119c2d53e"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/RMCP_5875_BASE_RECONCILIATION.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "c76d8a950d5c60fc059042c6669822a8818a4335"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/UNIFIED_EXEC_READONLY_AUDIT.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "188735651bfc88fffe6e574e4d27db62de7b65fd"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/prior-assembly-failure-analysis.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "78e3cf5c7ad4130dda6c98baf13a2b312624c85e"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/prior-assembly-source-unittest.log",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "253633dcf9a3a20a631748d2e35f358fcf49aa1b"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/prior-assembly-validation-result.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "fda7d94aec06032d24506470f4dea4a43f4178cd"
+    },
+    {
+      "path": "qualification/cell-p0-common-20261111-c2fc/run_native_candidate.py",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "4d077f78c9877715b2ab7259832038f7aac00a7b"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/README.md",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "7a15d8b1ba61d881ed78b2d31526ee195997a715"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/baseline-result.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "66516f51af995769bac6cab7ef21396406ba0640"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/baseline-source.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "1c3f67277dd67b929117c03d1a38f091dab51514"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/baseline.log.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "f590144adebf66109bc2d88c7f919361a1c99798"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/fmt-only.diff.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "9027e394aec39c40b9402cd759fe7ee2772ba813"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/fmt-result.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "23bb0cdee4ad0495505173de64371ec69a1e4d30"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/fmt.log.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "86e43ea3218b5890302b754bbf8927f94e79f7ee"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/manifest.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "4f9d3e6a96e6ca137083b7a57ecf01219b7d469d"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/production-budget-result.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "01343fbf0316f8e640c399f36e189d2257acca53"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/production-budget-source.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "81cd0524cb3ae5b60affefc07643d8ae3d1ccf1d"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/production-budget.log.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "2fd02ef1d5869b9d8a06f021f558be7ed0a8a912"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/production-budget.patch.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "12f3b99ef093b4c08a24eccd2eeda4d5300b7c5b"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/slow-response-diagnostic.patch.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "6cb356928cef740e8d79f44ec3f0439e53b049bf"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/slow-response-original-budget-result.json",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "e815aad994fb342efbfb58c3f0d0530bd2974ba4"
+    },
+    {
+      "path": "qualification/git-attribution-deadline-20261111-c2fc/slow-response-original-budget.log.gz",
+      "status": "A",
+      "before_blob": "0000000000000000000000000000000000000000",
+      "after_blob": "4dd0aa52a71a4c7ac32086f444b2160c24479287"
+    },
+    {
+      "path": "scripts/hepta_cell_research_gate.py",
+      "status": "M",
+      "before_blob": "727c1abf011d8b55915df7902a12628679742fcf",
+      "after_blob": "8313c8ae0144143c98ce02307b9912662e70a9a4"
+    },
+    {
+      "path": "scripts/hepta_cell_research_units.py",
+      "status": "M",
+      "before_blob": "c3ef50e4401c7ebecdfa26023ecfef207cf4283b",
+      "after_blob": "1ba9f522c9be66a3eb4a3634a7b1b6d0d73f62b5"
+    },
+    {
+      "path": "scripts/test_hepta_cell_research_units.py",
+      "status": "M",
+      "before_blob": "913e891ac095733b65e86fdab5bee3415c5f8c2e",
+      "after_blob": "157dc9fc1ca90d295954de0ee5c3a28ede0e2925"
+    }
+  ],
+  "added_evidence_paths": 35,
+  "all_added_evidence_exact_incoming": true,
+  "new_hia_root_absent_from_both_parents": true,
+  "behavior_review": [
+    "Production attribution timeout remains 5 seconds. Tests now use that exact production timeout instead of a test-only 500ms value; worst-case test timeout increases by 4.5 seconds without changing product latency policy.",
+    "Authentication refresh regression delays the stale response 600ms, longer than the old test-only budget, and checks the returned policy generation equals the live authentication generation.",
+    "Learning recovery fixture verifies an already durable claim cannot be claimed again after owner loss; no production recovery implementation or admission policy changes.",
+    "Research cost reporting leaves affected arm and campaign totals unknown when any planned attempt is missing or any cost category has unknown coverage; measured numeric subtotals remain available separately.",
+    "Existing cost/authority blockers and comparison suppression remain in force. Complete-coverage and legacy schema behavior are covered by the retained behavioral tests."
+  ],
+  "validation": {
+    "python_command": "python3 -B -m unittest discover -s qa-source/scripts -p test_hepta_cell_*.py -v",
+    "python_test_count": 64,
+    "python_failures": 0,
+    "python_skips": 0,
+    "python_seconds": 7.803,
+    "python_source_blobs": {
+      "scripts/test_hepta_cell_joint_config.py": "d3aee0d2ba0a51183659eac78e42ad93895c6f4c",
+      "scripts/hepta_cell_joint_config.py": "0a5d4f44a8f4a31b6a2b4b351949037ecbad0073",
+      "scripts/test_hepta_cell_research_gate.py": "4b551e49e56f01b8b9926e1a0e4a65922f0b95d0",
+      "scripts/hepta_cell_research_gate.py": "8313c8ae0144143c98ce02307b9912662e70a9a4",
+      "scripts/hepta_cell_research_units.py": "1ba9f522c9be66a3eb4a3634a7b1b6d0d73f62b5",
+      "scripts/hepta_cell_research_foundation.py": "09a44b06c0450c8f6ebf70de018bacab183edb3d",
+      "scripts/test_hepta_cell_research_units.py": "157dc9fc1ca90d295954de0ee5c3a28ede0e2925"
+    },
+    "changed_python_ast_parse": "pass",
+    "source_diff_check": "pass",
+    "rust_native_status": "pending exact combined tree on ROG; no native Rust or workspace qualification claimed by this record",
+    "rust_source_blobs": {
+      "codex-rs/ext/git-attribution/src/git_attribution_tests.rs": "68dd972eee069fbb8f2f26a4c210840305f195aa",
+      "codex-rs/ext/git-attribution/src/policy.rs": "d9a8b63234fc670a90db9233fdfca17479a315e5",
+      "codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs": "64b9a3b2b61da1a9f47acac5d3e182fd6f95f7ba"
+    },
+    "required_rust_commands": [
+      "just test -p codex-git-attribution",
+      "just test -p codex-hepta-agentd actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only",
+      "just fmt",
+      "just fix -p codex-git-attribution -p codex-hepta-agentd"
+    ],
+    "historical_receipts": "retained evidence belongs to its original recorded source and is not evidence for this merged tree"
+  },
+  "main_merge_performed": false,
+  "branch_retirement_performed": false,
+  "whole_repository_qualified": false
+}

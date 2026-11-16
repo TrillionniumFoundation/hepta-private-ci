@@ -23,13 +23,13 @@ use codex_hepta_types::Digest32;
 use super::super::wire as evidence_wire;
 use super::OriginalCellQ24MaterialEvidenceErrorV1;
 use crate::AgentdRootAuthorityPeer;
-use crate::CellQ24DatasetErrorV1;
 use crate::CellQ24TrainingErrorV1;
 use crate::LearningIterationEvidencePeerV1;
 use crate::LearningIterationRuntimeErrorV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24DatasetV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
+use crate::cell_q24_dataset::CellQ24DatasetErrorV1;
 use crate::root_observation_stream::RootObservationStream;
 
 #[path = "cell_q24_material_source_connection.rs"]

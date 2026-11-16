@@ -28,7 +28,6 @@ use codex_hepta_types::Digest32;
 use ed25519_dalek::SigningKey;
 
 use crate::AgentdIdentity;
-use crate::CellQ24DatasetErrorV1;
 use crate::CellQ24DatasetReaderV1;
 use crate::CellQ24DatasetRuleV1;
 use crate::CircuitTaskSourceReadbackV1;
@@ -36,6 +35,7 @@ use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24DatasetV1;
 #[cfg(target_os = "linux")]
 use crate::OriginalCircuitOnPolicyPanelPolicyV2;
+use crate::cell_q24_dataset::CellQ24DatasetErrorV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
