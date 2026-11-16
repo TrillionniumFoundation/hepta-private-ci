@@ -10,7 +10,7 @@
   },
   "all_six_research_goals_completed": false,
   "ci": {
-    "fixed_workflow_sha256": "8baff3839a0cf3b3a0bf8317853f5bd80a97bfe3b5cf45a75b13e36ec6219fdc",
+    "fixed_workflow_sha256": "97e0655210c7cf339ced8fe46039ab37417a26c5ec7476004fd83bde223c40c1",
     "initial_run": {
       "conclusion": "failure",
       "original_artifact": {
@@ -52,7 +52,67 @@
     "workflow_fixes": [
       "Run HIA native controls in HIA working directory with explicit PYTHONPATH=.",
       "Review campaign via independent exact snapshot with only two strictly empty WAL omissions."
-    ]
+    ],
+    "previous_fixed_workflow_sha256": "8baff3839a0cf3b3a0bf8317853f5bd80a97bfe3b5cf45a75b13e36ec6219fdc",
+    "second_run": {
+      "schema": "hepta.joint-ci-failure.v1",
+      "source_head": "c2774c6d1118dfd2745ac52b4069c8f254624c29",
+      "runtime_source": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
+      "run_id": 43800566412,
+      "job_id": 133079561941,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43800566412",
+      "status": "failure",
+      "passed_steps": [
+        "Native continuation and sealed image controls",
+        "Build exact runtime and retain source and binary identities",
+        "Lifecycle and process bridge controls",
+        "Freeze and run actual HIA and GRU cold processes"
+      ],
+      "controls": 48,
+      "local_checks": 16,
+      "local_candidate_sha256": "a59ec5258d462223e701cf049e3002c89502af774c738d22c0e1a29cb63f6e02",
+      "failed_step": "Actual runtime entry and cold original-job observation",
+      "failure_before_actual_runtime_submission": true,
+      "error": "disposable SSH setup failed: runner@127.0.0.1: Permission denied (publickey)",
+      "diagnosis_status": "confirmed_by_original_sshd_log",
+      "subsequent_campaign_review": "skipped",
+      "artifact": {
+        "id": 14195394653,
+        "bytes": 1204204,
+        "sha256": "8d36e0cff0ef3147245deeb322aea0b363af2d328d520e1c6c570e168ef2a505",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43800566412/artifacts/14195394653"
+      },
+      "log_git_blob": "21ae8cf3004e883ca3a063e417bb5fbd539fee01",
+      "actual_mac_candidate_unchanged": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+      "qualification_credit_for_actual_runtime": false,
+      "confirmed_cause": "Authentication refused: bad ownership or modes for directory /tmp",
+      "corrective_scope": "Allocate the private SSH fixture directory under the actual account home without weakening authentication or changing the upload tree."
+    },
+    "next_runtime_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "actual_mac_candidate_and_original_evidence_mutated": false,
+    "ssh_fix": {
+      "qualifier_sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e",
+      "freezer_sha256": "cb01522ac2381f84b38146f8debb6db874c6cfa3d4e0c3a067834dc7bc88d15e",
+      "handoff": "ssh-fixture-repair/FINAL_HANDOFF.json",
+      "just_fmt": "PASS",
+      "strict_modes_and_publickey_auth_retained": true,
+      "linux_execution_result": null,
+      "scope": "New CI candidate only; no inherited actual Mac qualification."
+    },
+    "hia_workflow": {
+      "run_id": 43794923319,
+      "conclusion": "success",
+      "source_and_native_jobs": "success"
+    },
+    "runtime_ledger_refresh": {
+      "head": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+      "authenticated_generation": "PASS",
+      "changed_scalars": 3,
+      "qualification_rows_unchanged": true,
+      "qualified_tools": 0,
+      "open_tools": 229,
+      "full_workflow_status": "pending_at_publication"
+    }
   },
   "cost_measurement_policy": {
     "actual_runtime_numeric_threads": {
@@ -88,7 +148,7 @@
       "longitudinal_adaptation_speed"
     ]
   },
-  "documentation_status": "actual_runtime_limited_pass_ci_pending_at_publication",
+  "documentation_status": "actual_runtime_limited_pass_new_ci_candidate_pending_at_publication",
   "final_use_capability_boundary_qualified": false,
   "full_cost_qualified": false,
   "history_exclusions": [
@@ -864,14 +924,17 @@
     "hia_bridge_commit": "8ba46fc7a112fc220cdcbbd48dc5d24fda76a738",
     "hia_hosted_compiler_commit": "f33d8da316de8fdf27b504371f1a5310997ff548",
     "hia_source_sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a",
-    "later_evidence_commits_change_execution_closure": false,
     "native_image_sha256": "cbb27c677e12008afee0c8228570b5cc3cdc2a873e923e3062dd35c56eebc8eb",
     "runtime_binary_sha256": "a8cfa33fe6c69175a9653197fb7094a572d623fe2b934e7926da28e35301f2bf",
     "runtime_commit": "5f7f03a1f22905789371ce0e181a1a0f013beca9",
     "runtime_config_sha256": "96eaab9f5b76aef9ac5fcac6b32ca1be663e7a0d55e999dad89899c35317f9e5",
     "runtime_source_tree": "7e5e3864aa303a8bc7c3a8d2262a46c76efa6e4a",
     "selected_local_candidate_files": 243,
-    "selected_local_candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b"
+    "selected_local_candidate_sha256": "3efd003d699eeb0333601e714b450fc0590f29cfe013ff8ae3f62b2b32d3665b",
+    "c277_evidence_changes_execution_closure": false,
+    "actual_mac_executed_cell_source_commit": "12cd0514c7936955e090af88a35ee1237def2b7c",
+    "next_ci_runtime_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "next_ci_candidate_requires_own_freeze_and_observations": true
   },
   "updated_utc": "2026-11-16T03:49:53.741811Z",
   "workstreams": [

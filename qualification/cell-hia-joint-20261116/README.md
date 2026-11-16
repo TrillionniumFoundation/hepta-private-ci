@@ -127,11 +127,19 @@ python -B "$CELL_ROOT/scripts/verify_hepta_maintenance_cycle.py" "$EVIDENCE_ROOT
 
 ### CI 与发布状态
 
-[初次 Actions run 43797077251](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43797077251) 为 **failure**：native control unittest 缺少显式 HIA `PYTHONPATH`，无法导入 `tools`，其后 runtime 构建、执行及学习资格步骤均 skipped，不计通过；[原始 CI 记录](CI_RUN_43797077251.json)保留。workflow 已修复 HIA 工作目录/import path，并将空 WAL 情形改为独立只读后处理。修复后完整重跑在发布时为 **`pending_at_publication`**，不得填写假 PASS。
+[首次 run 43797077251](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43797077251) 为 **failure**：native control unittest 缺少显式 HIA PYTHONPATH，无法导入 tools，之后 runtime 与学习步骤全部 skipped。[原始记录](CI_RUN_43797077251.json)保留，未计通过。
 
-另据 `2026-11-16T03:44:45Z` 的[Runtime / HIA CI 快照](CI_FOLLOWUP_RUNTIME132_HIA902.md)及[原始记录](CI_FOLLOWUP_RUNTIME132_HIA902.json)，Runtime #132 和 HIA #902 均为 **PENDING**，当时没有观察到失败步骤；HIA source 单个 job 的 success 不代表 native job 或整个 workflow 已通过。此时间点快照不能替代后续终态。
+[第二次 run 43800566412](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43800566412)，Cell head c2774c6，已通过 native 控制、固定 runtime release 构建、48 项控制测试及 16 项本地 HIA/GRU 检查；它在一次性 SSH fixture 的 /usr/bin/true 预检失败，实际 runtime transport=false，sessions=[]，后续 campaign 检查 skipped。[原始整段日志](CI_RUN_43800566412.log)和[失败记录](CI_RUN_43800566412.json)均保留。原 daemon 记录明确为 Authentication refused: bad ownership or modes for directory /tmp。
 
-关联 PR：[Hepta #902](https://github.com/TrillionniumFoundation/Hepta/pull/902)、[Cell #6399](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6399)、[Cell #6400](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6400)、[Runtime #132](https://github.com/TrillionniumFoundation/hepta-runtime/pull/132)。PR 存在、实际 lane 的限定 PASS 与 CI 通过是三个不同状态。
+[最小修复及格式回执](ssh-fixture-repair/FINAL_HANDOFF.json)只新增 pwd import，并将私有目录放在 pwd.getpwuid(os.getuid()).pw_dir 下。StrictModes、公钥认证、host-key 校验、CI 准入和上传范围均保持；私钥仍在证据上传树之外。真实 c277 sparse checkout 中执行 just fmt 成功，两处 Python 改动格式化前后字节不变。本地语法/格式审查不冒充 Linux SSH 成功。
+
+runtime 原 [run 43795217971](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971)随后因 cfg 删除造成的派生源码指纹漂移失败。原 CLI 使用原始认证输入完成 restore/generate/check-mapping、29 项测试与 authenticated check；新 ledger 仅有 3 个源码指纹标量变化，229 个工具的资格整行和门禁均未变。修复已在 [Runtime PR132](https://github.com/TrillionniumFoundation/hepta-runtime/pull/132) 的 73b5c33d5762eefc0554a86750094350f18ae6a0 提交，完整新 workflow 尚待观察。
+
+后续联合 CI 的 freezer 与 workflow 均固定该 runtime 新提交；这将产生**新的 CI 候选**，不得把旧 2a8e8759… 实际 Mac 运行重标为新源码运行。下文旧结果仍对应 Cell 执行源码 12cd0514…、runtime 5f7f03a…，原 manifest、模型、设备、成本与结果均未修改。修复后新 CI 在本次证据发布时为 **pending_at_publication**，其 Linux SSH/runtime/campaign 结果必须由新 run 自己给出。
+
+[HIA run 43794923319](https://github.com/TrillionniumFoundation/Hepta/actions/runs/43794923319)已终态 SUCCESS，source/native 两作业均成功。c277 的 stem routes 和 v8-canary 也已成功；这些通过不替代联合 runtime gate。
+
+关联 Draft PR：[Hepta #902](https://github.com/TrillionniumFoundation/Hepta/pull/902)、[Cell #6399](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6399)、[Cell #6400](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6400)、[Runtime #132](https://github.com/TrillionniumFoundation/hepta-runtime/pull/132)。PR 存在、具体候选的限定 PASS 与全部 CI 通过分别记录。
 
 ## 5. 下一关：固定预算比较的必要条件
 
