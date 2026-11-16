@@ -9,6 +9,7 @@ on:
       - 'scripts/qualify_runtime_campaign.py'
       - 'scripts/package_hia_cell_candidate.py'
       - 'scripts/verify_hepta_maintenance_cycle.py'
+      - 'scripts/review_hepta_maintenance_snapshot.py'
       - 'scripts/qualify_hia_cell_joint.py'
       - 'scripts/runtime_process_bridge.py'
       - 'scripts/runtime_stdio.py'
@@ -56,9 +57,12 @@ jobs:
           sudo apt-get install -y openssh-server
           rustup toolchain install 1.95.0 --profile minimal
       - name: Native continuation and sealed image controls
+        working-directory: hia
+        env:
+          PYTHONPATH: .
         run: |
           mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
-          python -B hia/tools/qualify_cell_bridge_continuation.py --output "$RUNNER_TEMP/cell-joint-evidence/native-controls"
+          python -B tools/qualify_cell_bridge_continuation.py --output "$RUNNER_TEMP/cell-joint-evidence/native-controls"
       - name: Build exact runtime and retain source and binary identities
         working-directory: runtime
         run: |
@@ -88,7 +92,7 @@ jobs:
       - name: Independently check retained maintenance records
         working-directory: cells
         run: |
-          python -B scripts/verify_hepta_maintenance_cycle.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-worker/campaign" > "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-readonly-review.json"
+          python -B scripts/review_hepta_maintenance_snapshot.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-worker/campaign" --snapshot-dir "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/review-snapshot" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-readonly-review.json"
       - name: Retain original evidence including failures
         if: always()
         uses: actions/upload-artifact@v4
