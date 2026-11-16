@@ -136,10 +136,10 @@ jobs:
                   "sha256": "9d69c10558f7d50ff0b8641a8137565552fac7c8fe4841cd11a1e93526b79ca7"
               },
               "codex-rs/windows-sandbox-rs/src/acl_tests.rs": {
-                  "bytes": 22351,
+                  "bytes": 22487,
                   "mode": "100644",
-                  "oid": "3aeddd56c0e11213e184b76b64bf7af5f3cb6497",
-                  "sha256": "6026798aaa570e50676f99eb903e519a3df426ad521a95c38c6aebec2470001e"
+                  "oid": "838d88a55086dc94d1d39ee233eaa17fc551b1d6",
+                  "sha256": "9097e67b7f199231bd11067b73ca5a7f2e58c246f50568de28d67d6873a79e1b"
               },
               "codex-rs/windows-sandbox-rs/src/legacy_admission.rs": {
                   "bytes": 1417,
@@ -398,7 +398,7 @@ jobs:
               return {"head": actual_head, "sources": identities, "index_worktree_clean": True}
 
 
-          def command(name, argv, cwd=ROOT):
+          def command(name, argv, cwd=ROOT, require_success=True):
               started = time.monotonic()
               with (OUT / (name + ".stdout")).open("wb") as stdout, \
                       (OUT / (name + ".stderr")).open("wb") as stderr:
@@ -407,7 +407,8 @@ jobs:
               record = {"name": name, "argv": argv, "cwd": str(cwd),
                         "exit_code": result.returncode, "seconds": time.monotonic() - started}
               write_json(OUT / (name + ".command.json"), record)
-              require(result.returncode == 0, "Normal command failed: " + name)
+              if require_success:
+                  require(result.returncode == 0, "Normal command failed: " + name)
               return record
 
 
@@ -514,22 +515,41 @@ jobs:
                                                    ["cargo", "+1.96.0", "fmt", "--package",
                                                     "codex-windows-sandbox", "--", "--check"],
                                                    ROOT / "codex-rs"))
-                  state["commands"].append(command("windows-seventeen",
-                                                   ["just", "test", "--locked", "-p", "codex-windows-sandbox",
-                                                    "--lib", "-E", "test(/^acl::tests::/) | test(/^token::tests::/)", "--test-threads", "1",
-                                                    "--no-tests", "fail", "--retries", "0",
-                                                    "--status-level", "pass", "--final-status-level", "fail"]))
-                  verify_acl_results()
-                  state["commands"].append(command("probe-six",
-                                                   [sys.executable, "-B", "-m", "unittest",
-                                                    "experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests",
-                                                    "-v"]))
-                  verify_probe_python_results()
-                  state["commands"].append(command("native-probe",
-                                                   [sys.executable, "-B",
-                                                    "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py",
-                                                    "--expected-head", HEAD, "--output-dir", str(PROBE_OUT)]))
-                  verify_native_refusal()
+                  method_failures = []
+                  state["method_failures"] = method_failures
+
+                  def observe_methods(name, argv, verify):
+                      require(source_snapshot() == before, "Source drift before " + name)
+                      record = command(name, argv, require_success=False)
+                      state["commands"].append(record)
+                      if record["exit_code"] != 0:
+                          method_failures.append("Normal command failed: " + name)
+                      try:
+                          verify()
+                      except Exception as exc:
+                          method_failures.append(name + ": " + type(exc).__name__ + ": " + str(exc))
+                      require(source_snapshot() == before, "Source drift after " + name)
+
+                  # Retain every independent observation, then fail the job if any
+                  # original command or exact result check failed. No retry, skip,
+                  # or changed permission oracle is introduced by this collection.
+                  observe_methods("windows-seventeen",
+                                  ["just", "test", "--locked", "-p", "codex-windows-sandbox",
+                                   "--lib", "-E", "test(/^acl::tests::/) | test(/^token::tests::/)", "--test-threads", "1",
+                                   "--no-tests", "fail", "--retries", "0",
+                                   "--status-level", "pass", "--final-status-level", "fail"],
+                                  verify_acl_results)
+                  observe_methods("probe-six",
+                                  [sys.executable, "-B", "-m", "unittest",
+                                   "experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests",
+                                   "-v"],
+                                  verify_probe_python_results)
+                  observe_methods("native-probe",
+                                  [sys.executable, "-B",
+                                   "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py",
+                                   "--expected-head", HEAD, "--output-dir", str(PROBE_OUT)],
+                                  verify_native_refusal)
+                  require(not method_failures, "; ".join(method_failures))
                   state["status"] = "PASS"
               except Exception as exc:
                   state["status"] = "FAIL"

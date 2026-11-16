@@ -224,7 +224,12 @@ fn native_file_and_directory_denies_retain_full_masks_and_are_idempotent() -> Re
         (
             DenyAceKind::Write,
             "write",
-            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+            FILE_WRITE_DATA
+                | FILE_APPEND_DATA
+                | FILE_WRITE_EA
+                | FILE_WRITE_ATTRIBUTES
+                | DELETE
+                | FILE_DELETE_CHILD,
         ),
     ] {
         for directory in [false, true] {
