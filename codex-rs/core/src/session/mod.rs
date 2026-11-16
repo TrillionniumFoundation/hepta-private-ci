@@ -233,6 +233,7 @@ mod rollout_reconstruction;
 #[allow(clippy::module_inception)]
 pub(crate) mod session;
 pub(crate) mod step_context;
+mod terminal_events;
 mod thread_settings;
 pub(crate) mod time_reminder;
 mod token_budget;
@@ -388,6 +389,8 @@ use codex_utils_stream_parser::ProposedPlanSegment;
 pub(crate) struct SessionIo {
     pub(crate) tx_sub: Sender<Submission>,
     pub(crate) rx_event: Receiver<Event>,
+    pub(crate) terminal_publications: terminal_events::TerminalPublications,
+    pub(crate) event_delivery: terminal_events::PublicEventDelivery,
     // Last known status of the agent.
     pub(crate) agent_status: watch::Receiver<AgentStatus>,
     // Shared future for the background submission loop completion so multiple
@@ -815,6 +818,8 @@ impl Session {
         let io = SessionIo {
             tx_sub,
             rx_event,
+            terminal_publications: session.terminal_publications.clone(),
+            event_delivery: Default::default(),
             agent_status: agent_status_rx,
             session_loop_termination: session_loop_termination_from_handle(session_loop_handle),
         };
@@ -939,12 +944,13 @@ impl SessionIo {
     }
 
     pub(crate) async fn next_event(&self) -> CodexResult<Event> {
-        let event = self
-            .rx_event
-            .recv()
+        self.event_delivery
+            .next(
+                &self.rx_event,
+                &self.terminal_publications,
+                self.session_loop_termination.clone(),
+            )
             .await
-            .map_err(|_| CodexErr::InternalAgentDied)?;
-        Ok(event)
     }
 
     pub(crate) async fn agent_status(&self) -> AgentStatus {
@@ -2172,6 +2178,16 @@ impl Session {
 
     /// Persist the event to rollout and send it to clients.
     pub(crate) async fn send_event(&self, turn_context: &TurnContext, msg: EventMsg) {
+        self.send_event_with_completion(turn_context, msg, /*completion*/ None)
+            .await;
+    }
+
+    pub(crate) async fn send_event_with_completion(
+        &self,
+        turn_context: &TurnContext,
+        msg: EventMsg,
+        completion: Option<Arc<crate::state::StartTransitionCompletion>>,
+    ) {
         let legacy_source = msg.clone();
         if let EventMsg::Error(error) = &legacy_source
             && error
@@ -2195,7 +2211,8 @@ impl Session {
             id: turn_context.sub_id.clone(),
             msg,
         };
-        self.send_event_raw(event).await;
+        self.send_event_raw_with_persistence(event, /*persist*/ true, completion)
+            .await;
         self.maybe_notify_parent_of_terminal_turn(turn_context, &legacy_source)
             .await;
         self.maybe_mirror_event_text_to_realtime(&legacy_source)
@@ -2435,8 +2452,10 @@ impl Session {
     }
 
     pub(crate) async fn send_event_raw(&self, event: Event) {
-        self.send_event_raw_with_persistence(event, /*persist*/ true)
-            .await;
+        self.send_event_raw_with_persistence(
+            event, /*persist*/ true, /*completion*/ None,
+        )
+        .await;
     }
 
     /// Delivers an event without creating a local rollout for a thread that has not materialized.
@@ -2449,10 +2468,16 @@ impl Session {
                 true
             }
         };
-        self.send_event_raw_with_persistence(event, persist).await;
+        self.send_event_raw_with_persistence(event, persist, /*completion*/ None)
+            .await;
     }
 
-    async fn send_event_raw_with_persistence(&self, event: Event, persist: bool) {
+    async fn send_event_raw_with_persistence(
+        &self,
+        event: Event,
+        persist: bool,
+        completion: Option<Arc<crate::state::StartTransitionCompletion>>,
+    ) {
         self.services.mcp_runtime.observe_event(&event.msg);
         // Persist the event into rollout storage; the store applies its persistence policy.
         if persist {
@@ -2462,15 +2487,29 @@ impl Session {
         self.services
             .rollout_thread_trace
             .record_protocol_event(&event.msg);
-        self.deliver_event_raw(event).await;
+        self.deliver_event_raw_with_completion(event, completion)
+            .await;
     }
 
     async fn deliver_event_raw(&self, event: Event) {
+        self.deliver_event_raw_with_completion(event, /*completion*/ None)
+            .await;
+    }
+
+    async fn deliver_event_raw_with_completion(
+        &self,
+        event: Event,
+        completion: Option<Arc<crate::state::StartTransitionCompletion>>,
+    ) {
         // Record the last known agent status.
         if let Some(status) = agent_status_from_event(&event.msg) {
             self.agent_status.send_replace(status);
         }
-        if let Err(e) = self.tx_event.send(event).await {
+        if let Err(e) = self
+            .terminal_publications
+            .deliver(&self.tx_event, event, completion)
+            .await
+        {
             debug!("dropping event because channel is closed: {e}");
         }
     }
