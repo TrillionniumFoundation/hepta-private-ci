@@ -29,19 +29,34 @@
     "run_id": 43801996435,
     "status": "in_progress",
     "conclusion": null,
-    "snapshot_utc": "2026-11-16T04:48:30Z",
+    "snapshot_utc": "2026-11-16T05:01:32Z",
+    "original_failure_gate": "Frozen REA local mapping checks",
+    "exact_head_original_failure_gate_now": "success",
+    "exact_head_mapping_completed_at": "2026-11-16T04:58:32Z",
     "jobs": [
       {
         "id": 133084178667,
-        "current_step": "Test in isolated processes",
-        "frozen_mapping_step": "pending"
+        "status": "in_progress",
+        "current_step": "Test without remote filesystem in isolated processes",
+        "isolated_rust_tests": "success",
+        "file_safety": "success",
+        "frozen_mapping_step": "success",
+        "rea_qualification_regressions": "success",
+        "control_plane_regression": "success",
+        "x230_regressions": "success",
+        "unbounded_ingress_regressions": "success"
       },
       {
         "id": 133084178817,
-        "current_step": "Test in isolated processes",
+        "status": "in_progress",
+        "current_step": "Test without remote filesystem in isolated processes",
+        "isolated_rust_tests": "success",
         "frozen_mapping_step": "pending"
       }
-    ]
+    ],
+    "all_runtime_workflow_checks_passed": false,
+    "failed_steps_at_snapshot": [],
+    "original_snapshot": "runtime-status/FINAL_GATE_SNAPSHOT.json"
   },
   "retained_evidence_review": "PASS",
   "runtime_config": {
@@ -182,5 +197,6 @@
     "old_mac_candidate_separate": true,
     "lost_originals_receive_current_evidence_credit": false,
     "historical_pending_at_publication_records_preserved": true
-  }
+  },
+  "updated_after_direct_api_observation_utc": "2026-11-16T05:01:32Z"
 }

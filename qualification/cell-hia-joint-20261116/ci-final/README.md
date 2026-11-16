@@ -135,7 +135,7 @@ cfg 改动改变源码摘要，旧自动生成 ledger 因此正确失败。用�
 | [联合 43802821002，f8](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43802821002) | SUCCESS，实际 runtime、冷读、campaign 与独立 review 全通过 |
 | [runtime 43795217971，5f](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43795217971) | FAILED：旧 ledger mapping；此前 exact-head 2,633 Rust、9 filecap、29 ledger 测试通过 |
 | [runtime hygiene 43801996390，73b](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43801996390) | SUCCESS |
-| [runtime 完整 43801996435，73b](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43801996435) | 04:48:30 UTC 快照仍 in_progress；两个 job 在 isolated tests；mapping 尚 pending，不能写全绿 |
+| [runtime 完整 43801996435，73b](https://github.com/TrillionniumFoundation/hepta-runtime/actions/runs/43801996435) | 精确源码 job 的 Rust tests、file safety、Frozen REA mapping（04:58:32 UTC 完成）、REA／Control-plane／X230／Unbounded ingress 回归已 SUCCESS；05:01:32 UTC 两 job 均在无 remote filesystem 测试，merge mapping 和完整 workflow 尚 pending |
 
 较新状态见 FINAL_STATUS 和 runtime-status 快照。旧失败不会被后来的成功覆盖。原失败日志及 ledger 生成记录见 [prior-ci-originals.tar.gz](prior-ci-originals.tar.gz)、[逐文件摘要](PRIOR_CI_ARCHIVE.json)。
 

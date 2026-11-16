@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.runtime-pr132-mapping-gate-snapshot.v1",
+  "observed_at_utc": "2026-11-16 05:01:32 UTC",
+  "run": {
+    "id": 43801996435,
+    "head": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "status": "in_progress",
+    "conclusion": null
+  },
+  "jobs": [
+    {
+      "id": 133084178667,
+      "name": "Rust exact-head validation",
+      "status": "in_progress",
+      "conclusion": null,
+      "active": [
+        "Test without remote filesystem in isolated processes"
+      ],
+      "mapping": {
+        "name": "Frozen REA local mapping checks",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-11-16T04:58:32Z",
+        "completed_at": "2026-11-16T04:58:32Z"
+      },
+      "failed": []
+    },
+    {
+      "id": 133084178817,
+      "name": "Rust prospective-merge validation",
+      "status": "in_progress",
+      "conclusion": null,
+      "active": [
+        "Test without remote filesystem in isolated processes"
+      ],
+      "mapping": {
+        "name": "Frozen REA local mapping checks",
+        "status": "pending",
+        "conclusion": null,
+        "number": 16,
+        "started_at": null,
+        "completed_at": null
+      },
+      "failed": []
+    }
+  ],
+  "repository_for_published_blobs": "TrillionniumFoundation/hepta-private-ci",
+  "tree_entries": [
+    {
+      "path": "gate-run.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "39f6ec552dd2cbd6134f74034223cc4be2cd6188"
+    },
+    {
+      "path": "gate-jobs.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94751577390330172ecabb48b97d980c017eb177"
+    }
+  ],
+  "files": [
+    {
+      "path": "gate-run.json",
+      "bytes": 14591,
+      "sha256": "51af244240eb47af417aa3ae48a0fd457b31d7ebbd8f7755a2eaab7123ac354e"
+    },
+    {
+      "path": "gate-jobs.json",
+      "bytes": 9928,
+      "sha256": "3ece29daf42b14f07f2d88d2cee650d366800b2d5a5289b6e71bb9a7993a9842"
+    }
+  ],
+  "hygiene": {
+    "run_id": 43801996390,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "qualification": "The exact-head Frozen REA local mapping check is now observed SUCCESS. The full runtime workflow and prospective-merge mapping gate remain pending. No new failure is observed.",
+  "watch_closed_after_requested_material_milestone": true,
+  "ci_reruns": false,
+  "ref_or_commit_mutations": false,
+  "old_failure_logs_preserved": true,
+  "workflow_job_timeout_minutes": 150,
+  "previous_successful_nextest_step_seconds": {
+    "prospective_merge": 1761,
+    "exact_head": 2183
+  }
+}
