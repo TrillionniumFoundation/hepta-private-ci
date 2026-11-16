@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.cell.ci-ssh-fixture-fix-handoff.v1",
+  "status": "PATCH_READY_AWAIT_LINUX_CI",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "c2774c6d1118dfd2745ac52b4069c8f254624c29",
+  "original_run": {
+    "run_id": 43800566412,
+    "job_id": 133079561941,
+    "artifact_id": 14195394653,
+    "archive_bytes": 1204204,
+    "archive_sha256": "8d36e0cff0ef3147245deeb322aea0b363af2d328d520e1c6c570e168ef2a505",
+    "status": "FAIL",
+    "actual_runtime_transport": false,
+    "runtime_sessions": 0,
+    "candidate_sha256": "a59ec5258d462223e701cf049e3002c89502af774c738d22c0e1a29cb63f6e02"
+  },
+  "confirmed_cause": "Authentication refused: bad ownership or modes for directory /tmp",
+  "fix": "Allocate the disposable SSH private directory directly beneath pwd.getpwuid(os.getuid()).pw_dir; retain mode 0700 and the existing helper.",
+  "qualifier": {
+    "path": "scripts/qualify_runtime_process_bridge.py",
+    "original_sha256": "2836b98ef349ae119bc4a2543ceb5f272c4d8d787e1afb75d82fb4af6f81bae3",
+    "proposed_sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e",
+    "proposed_blob_sha": "bf8588998f9ebc827822430c46ed4d2cf2a3a06a"
+  },
+  "evidence_blobs": [
+    {
+      "path": "sshd.log",
+      "blob_sha": "fa3145a3f991d35842ddc73f05cc45ed9f76f289",
+      "sha256": "a4a04c085ee2c65a3c987a07d0c968b6522ef19d15edef81cc6faf141515d48a"
+    },
+    {
+      "path": "ssh-setup.json",
+      "blob_sha": "ec568b4d3001150cf1d3fd1bdc364ac598c970ef",
+      "sha256": "0926f073532dfae4da13a68afc110986c7dc367740b1deb78f7c91491b9ec210"
+    },
+    {
+      "path": "qualifier-home-fix.diff",
+      "blob_sha": "9c17cb6a4f3c4f1a7c3d81a13145ed03f5c931d6",
+      "sha256": "3d4eac7dc5f58ef55e75919fc2eae882dabbd3952966ba3aedfb7f8c1a87cf4c"
+    },
+    {
+      "path": "PATCH_REVIEW.json",
+      "blob_sha": "981f0f8508e3076a4217bf8b97adcee5f0cd5a99",
+      "sha256": "cd587d5770ec1dd428372fdd85e623572e99c92a8aa09da9801c2c97f5ea0c6a"
+    },
+    {
+      "path": "FORMAT_RECEIPT.json",
+      "blob_sha": "4408b31b64be4044a6d5b2c0024c0743987afe03",
+      "sha256": "71b92eac89143cfb287233f44c7dc1585ff4eacecd4bacc5815ab38d2c746d9e"
+    }
+  ],
+  "format": {
+    "status": "PASS",
+    "receipt_sha256": "71b92eac89143cfb287233f44c7dc1585ff4eacecd4bacc5815ab38d2c746d9e",
+    "receipt_blob_sha": "4408b31b64be4044a6d5b2c0024c0743987afe03",
+    "argv": [
+      "uv",
+      "tool",
+      "run",
+      "--from",
+      "rust-just==1.59.0",
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/724fb6d14866/ssh-fixture-fix-c277/cells/codex-rs",
+    "elapsed_seconds": 7.867067195000118,
+    "exit_code": 0,
+    "format_script_sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "freezer_after_sha256": "cb01522ac2381f84b38146f8debb6db874c6cfa3d4e0c3a067834dc7bc88d15e",
+    "freezer_before_sha256": "cb01522ac2381f84b38146f8debb6db874c6cfa3d4e0c3a067834dc7bc88d15e",
+    "git_status": " M scripts/qualify_hia_cell_joint.py\n M scripts/qualify_runtime_process_bridge.py\n",
+    "head": "c2774c6d1118dfd2745ac52b4069c8f254624c29",
+    "qualifier_after_sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e",
+    "qualifier_before_sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e",
+    "real_git_checkout": true,
+    "runtime_pin": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "schema": "hepta.cell.ssh-fixture-format.v1",
+    "scripts_uv_lock_sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+    "sparse_checkout": true,
+    "stderr": "",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "independent_review": {
+    "agent": "/root/hia_bridge_audit/loader_review",
+    "finding": "No concrete blocker; complete text differs only by the pwd import, explicit mkdtemp dir argument, and the associated comments.",
+    "candidate_sha256": "f5d49fa141cd8b1771b062c14d9c5222528b1289baa46988d93d468e3c8fa85e"
+  },
+  "preserved": {
+    "frozen_helper_sha256": "6c4ee53e052e8125cb925f42bc21be08eea44172eefaa8b1abb33fdfb5676a92",
+    "strict_modes": true,
+    "public_key_only_authentication": true,
+    "ci_guard": true,
+    "workflow_upload_tree": true,
+    "previous_actual_candidate_sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469"
+  },
+  "execution_limits": {
+    "runtime_execution": false,
+    "model_execution": false,
+    "sshd_execution": false,
+    "private_keys_created": false,
+    "branch_updates": false,
+    "tests_rerun_after_fmt": false
+  },
+  "locations": {
+    "cloud_checkout": "/workspace/scratch/724fb6d14866/ssh-fixture-fix-c277/cells",
+    "cloud_evidence": "/workspace/scratch/724fb6d14866/ssh-fixture-fix-c277/evidence",
+    "mac_originals": "/Users/qianqi/hepta-cell-joint-runtime-724fb6-v1/joint-ci-failure-c277"
+  },
+  "next_gate": "Apply the qualifier blob to the parent's pending Cell candidate, keeping original failure and actual-candidate evidence, then execute the existing disposable Linux Actions workflow."
+}
