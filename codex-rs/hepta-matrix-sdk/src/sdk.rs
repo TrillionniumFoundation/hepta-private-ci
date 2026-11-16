@@ -330,13 +330,10 @@ impl MatrixSdkClient {
     }
 
     fn enable_event_cache(&self) -> Result<(), MatrixSdkError> {
-        self.client
-            .event_cache()
-            .subscribe()
-            .map_err(|_| {
-                let _ = writeln!(std::io::stderr().lock(), "[matrix-init] event_cache");
-                MatrixSdkError::Initialization
-            })
+        self.client.event_cache().subscribe().map_err(|_| {
+            let _ = writeln!(std::io::stderr().lock(), "[matrix-init] event_cache");
+            MatrixSdkError::Initialization
+        })
     }
 
     fn verify_authenticated_identity(&self) -> Result<(), MatrixSdkError> {
