@@ -293,7 +293,7 @@ class OriginalModelRootClosureTests(unittest.TestCase):
             "common.original_training.as_ref() != Some(&self.training)",
             "common.records.get(..3) != Some(self.records.as_slice())",
             "auth::require_clock(self.started, fresh)?",
-            'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            &common,\n            fresh,\n        )?',
+            'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?',
         ):
             self.rejects(OPERATION, "fn close(", marker)
         self.rejects(OPERATION, "fn authenticate_result(",

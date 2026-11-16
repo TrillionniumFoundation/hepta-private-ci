@@ -132,7 +132,7 @@ pub(super) struct PositiveFixture {
 }
 
 impl PositiveFixture {
-    pub(super) async fn ready() -> anyhow::Result<Self> {
+    pub(super) async fn ready() -> anyhow::Result<Box<Self>> {
         Self::ready_with_profile(
             d("explicit-positive-independent-evaluation-profile"),
             now()?,
@@ -143,7 +143,7 @@ impl PositiveFixture {
     async fn ready_with_profile(
         evaluation_profile: Digest32,
         trust_time: u64,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<Box<Self>> {
         let admission = support::admission("positive-source-envelope-request").await?;
         Self::ready_with_admission(admission, evaluation_profile, trust_time).await
     }
@@ -152,7 +152,7 @@ impl PositiveFixture {
         mut a: support::Admission,
         evaluation_profile: Digest32,
         trust_time: u64,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<Box<Self>> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
         let (baseline, bundle, definition_a) = support::model(&root)?;
@@ -407,7 +407,9 @@ impl PositiveFixture {
             evaluation.original_signature()?,
             *config.execution_evidence.attestation()
         );
-        Ok(Self {
+        // Keep the complete fixture heap-owned across nested async constructors.
+        // Moving its owners between by-value return slots exhausts the test stack.
+        Ok(Box::new(Self {
             root,
             config,
             session,
@@ -431,7 +433,7 @@ impl PositiveFixture {
             source_paths,
             _source_home: source_home,
             _directory: directory,
-        })
+        }))
     }
 
     pub(super) fn peers(&self, training: SignedLearningEvidenceV1) -> anyhow::Result<Peers> {
@@ -595,7 +597,7 @@ impl PositiveFixture {
         Ok(())
     }
 
-    pub(super) async fn finish(mut self) -> anyhow::Result<()> {
+    pub(super) async fn finish(mut self: Box<Self>) -> anyhow::Result<()> {
         self.session.stop().await?;
         drop(self.stage);
         let [first, second] = self.source_threads;

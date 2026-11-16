@@ -101,22 +101,23 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
     def test_full_original_prefix_brackets_work_and_failure_keeps_the_lane_fenced(self):
         for marker in (
             "owners.require_live_deadline()?", "owners.training_prefix(supplied)?",
-            "owners.operation.try_lock()", "if lane.failed", "lane.failed = true",
+            "owners.operation.try_take()?", "if lane.state()?.failed", "lane.state_mut()?.failed = true",
             "common.read_prefix(&owners.common, &training_cut).await?",
             'common\n            .original_dataset\n            .as_ref()\n            .ok_or(Error::CommitUncertain)?\n            .clone()',
             'common\n            .original_training\n            .as_ref()\n            .ok_or(Error::CommitUncertain)?\n            .clone()',
             "common.records[..3].to_vec()",
-            "auth::verify_prefix(&owners.common.material, &training_cut, &common, fresh)?",
+            "auth::verify_prefix(&owners.common.material, &training_cut, common, fresh)?",
         ):
             self.rejects(OP, "fn begin(", marker)
-        self.rejects(OP, "fn begin(", "lane.failed = true", "lane.failed = false")
+        self.rejects(OP, "fn begin(", "lane.state_mut()?.failed = true",
+                     "lane.state_mut()?.failed = false")
         for marker in (
             'common\n            .read_prefix(&self.owners.common, &self.training_cut)\n            .await?',
             "common.original_dataset.as_ref() != Some(&self.dataset)",
             "common.original_training.as_ref() != Some(&self.training)",
             "common.records.get(..3) != Some(self.records.as_slice())",
             "auth::require_clock(self.started, fresh)?",
-            'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            &common,\n            fresh,\n        )?',
+            'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?',
         ):
             self.rejects(OP, "fn close(", marker)
 

@@ -26,7 +26,7 @@ enum TrainingPeer {
 
 struct PanelFixture {
     panel: Panel,
-    original: PositiveFixture,
+    original: Box<PositiveFixture>,
     primary_b: BFixture,
     retention_b: BFixture,
     primary: PanelMemberFixture,

@@ -17,7 +17,7 @@ use source::BFixture;
 use source::ObservationMode;
 
 async fn preregistered() -> anyhow::Result<(
-    PositiveFixture,
+    Box<PositiveFixture>,
     BFixture,
     BFixture,
     crate::OriginalCellEvaluationPanelRegistrationV1,

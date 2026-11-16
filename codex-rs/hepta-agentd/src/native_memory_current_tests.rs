@@ -8,11 +8,12 @@ use crate::native_memory_current_test_support::fixture;
 use crate::native_memory_current_test_support::id;
 
 #[tokio::test]
-async fn current_context_uses_actual_owners_and_exact_query_without_reclaiming() {
-    let f = fixture().await;
-    let query = f.query("read-current");
+async fn current_context_uses_actual_owners_and_exact_query_without_reclaiming()
+-> anyhow::Result<()> {
+    let f = fixture().await?;
+    let query = f.query("read-current")?;
     let prepared = f.host.prepare_read("run.current", query.clone()).unwrap();
-    let signed = f.sign(prepared.binding().clone(), "read-current");
+    let signed = f.sign(prepared.binding().clone(), "read-current")?;
     let mut context = prepared.authorize(&signed).unwrap();
     let frontier = f.authority.frontier().unwrap();
     let first = context.current().unwrap();
@@ -29,10 +30,10 @@ async fn current_context_uses_actual_owners_and_exact_query_without_reclaiming()
         f.objective.record.snapshot.objective_digest
     );
     assert_ne!(first.ndu_snapshot_digest, digest("first"));
-    assert_eq!(context.binding().unwrap().run_id(), &id("run.current"));
+    assert_eq!(context.binding().unwrap().run_id(), &id("run.current")?);
     context.validate_query(&query).unwrap();
     let mut changed = query.clone();
-    changed.request_id = id("different-request");
+    changed.request_id = id("different-request")?;
     assert!(context.validate_query(&changed).is_err());
     changed = query.clone();
     changed.deadline_unix_ms -= 1;
@@ -44,38 +45,41 @@ async fn current_context_uses_actual_owners_and_exact_query_without_reclaiming()
     assert!(replay.authorize(&signed).is_err());
     assert!(
         f.host
-            .prepare_read("unknown-run", f.query("unknown"))
+            .prepare_read("unknown-run", f.query("unknown")?)
             .is_err()
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn prepared_read_refuses_intervening_ndu_change_before_spending_grant() {
-    let f = fixture().await;
-    let prepared = f.prepare("before-selection");
-    let signed = f.sign(prepared.binding().clone(), "before-selection");
-    f.select("second", "switch-selected");
+async fn prepared_read_refuses_intervening_ndu_change_before_spending_grant() -> anyhow::Result<()>
+{
+    let f = fixture().await?;
+    let prepared = f.prepare("before-selection")?;
+    let signed = f.sign(prepared.binding().clone(), "before-selection")?;
+    f.select("second", "switch-selected")?;
     let frontier = f.authority.frontier().unwrap();
     assert!(prepared.authorize(&signed).is_err());
     assert_eq!(f.authority.frontier().unwrap(), frontier);
-    let prepared = f.prepare("after-selection");
-    let signed = f.sign(prepared.binding().clone(), "after-selection");
+    let prepared = f.prepare("after-selection")?;
+    let signed = f.sign(prepared.binding().clone(), "after-selection")?;
     let mut context = prepared.authorize(&signed).unwrap();
     context.current().unwrap();
-    f.select("first", "switch-back");
+    f.select("first", "switch-back")?;
     assert!(context.current().is_err());
+    Ok(())
 }
 
 #[tokio::test]
-async fn objective_lifecycle_and_trust_revoke_an_existing_current_context() {
+async fn objective_lifecycle_and_trust_revoke_an_existing_current_context() -> anyhow::Result<()> {
     for revoke_trust in [false, true] {
-        let f = fixture().await;
-        let prepared = f.prepare("before-objective-change");
-        let signed = f.sign(prepared.binding().clone(), "before-objective-change");
+        let f = fixture().await?;
+        let prepared = f.prepare("before-objective-change")?;
+        let signed = f.sign(prepared.binding().clone(), "before-objective-change")?;
         let mut context = prepared.authorize(&signed).unwrap();
         context.current().unwrap();
         if revoke_trust {
-            f.objective.trust(/*epoch*/ 1, /*revoked*/ true);
+            f.objective.trust(/*epoch*/ 1, /*revoked*/ true)?;
         } else {
             f.objective
                 .state
@@ -93,31 +97,34 @@ async fn objective_lifecycle_and_trust_revoke_an_existing_current_context() {
         }
         assert!(context.current().is_err());
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn grant_revocation_and_authenticated_clock_expiry_refuse_current_use() {
+async fn grant_revocation_and_authenticated_clock_expiry_refuse_current_use() -> anyhow::Result<()>
+{
     for revoke in [false, true] {
-        let f = fixture().await;
-        let prepared = f.prepare("revocable-read");
-        let signed = f.sign(prepared.binding().clone(), "revocable-read");
+        let f = fixture().await?;
+        let prepared = f.prepare("revocable-read")?;
+        let signed = f.sign(prepared.binding().clone(), "revocable-read")?;
         let mut context = prepared.authorize(&signed).unwrap();
         context.current().unwrap();
         if revoke {
-            f.feed(/*revision*/ 3, &["revocable-read"]);
+            f.feed(/*revision*/ 3, &["revocable-read"])?;
         } else {
             f.wall.0.fetch_add(61_000, Ordering::SeqCst);
         }
         assert!(context.current().is_err());
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn clock_continuity_loss_and_runtime_shutdown_fence_existing_handles() {
+async fn clock_continuity_loss_and_runtime_shutdown_fence_existing_handles() -> anyhow::Result<()> {
     for change_domain in [false, true] {
-        let f = fixture().await;
-        let prepared = f.prepare("clock-bound-read");
-        let signed = f.sign(prepared.binding().clone(), "clock-bound-read");
+        let f = fixture().await?;
+        let prepared = f.prepare("clock-bound-read")?;
+        let signed = f.sign(prepared.binding().clone(), "clock-bound-read")?;
         let mut context = prepared.authorize(&signed).unwrap();
         f.tick.0.lock().unwrap().monotonic_micros = 2;
         context.current().unwrap();
@@ -132,14 +139,15 @@ async fn clock_continuity_loss_and_runtime_shutdown_fence_existing_handles() {
         assert!(context.current().is_err());
         assert!(
             f.host
-                .prepare_read("run.current", f.query("after-closure"))
+                .prepare_read("run.current", f.query("after-closure")?)
                 .is_err()
         );
     }
-    let f = fixture().await;
-    let prepared = f.prepare("shutdown-read");
-    let signed = f.sign(prepared.binding().clone(), "shutdown-read");
+    let f = fixture().await?;
+    let prepared = f.prepare("shutdown-read")?;
+    let signed = f.sign(prepared.binding().clone(), "shutdown-read")?;
     let mut context = prepared.authorize(&signed).unwrap();
     f.host.cancellation.cancel();
     assert!(context.current().is_err());
+    Ok(())
 }

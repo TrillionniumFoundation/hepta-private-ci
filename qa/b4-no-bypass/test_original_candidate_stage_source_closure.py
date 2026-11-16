@@ -191,7 +191,7 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
                 "common.original_training.as_ref() != Some(&self.training)",
                 "common.records.get(..3) != Some(self.records.as_slice())",
                 "auth::require_clock(self.started, fresh)?",
-                'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            &common,\n            fresh,\n        )?',
+                'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?',
             )),
             ("fn authenticate_prefix(", (
                 "auth::require_clock(self.started, observed)?",
@@ -222,8 +222,9 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
             READBACK, "fn read_candidate_in_operation(", "lane.failed = true",
             "lane.failed = false",
         )
-        self.rejects(OPERATION, "fn begin(", "if lane.failed")
-        self.rejects(OPERATION, "fn begin(", "lane.failed = true", "lane.failed = false")
+        self.rejects(OPERATION, "fn begin(", "if lane.state()?.failed")
+        self.rejects(OPERATION, "fn begin(", "lane.state_mut()?.failed = true",
+                     "lane.state_mut()?.failed = false")
         for marker in ("tokio::time::timeout_at(self.end.into()", "self.require_live_deadline()?"):
             for function in ("fn validate_recovery<'a>", "fn execute_stage<'a>", "fn receipt_attestation<'a>"):
                 self.rejects(CORE, function, marker)

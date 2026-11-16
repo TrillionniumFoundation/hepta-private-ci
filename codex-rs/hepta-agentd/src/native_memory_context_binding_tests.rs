@@ -8,21 +8,20 @@ use crate::native_memory_shadow_namespace::tests::files;
 use crate::native_memory_shadow_namespace::tests::profile;
 use crate::native_memory_test_support::fixture;
 
-fn proof(run: &str, version: &[u8]) -> NativeMemoryContextBindingV1 {
-    NativeMemoryContextBindingV1::from_checked_owners(
-        StableId::new(run).unwrap(),
+fn proof(run: &str, version: &[u8]) -> anyhow::Result<NativeMemoryContextBindingV1> {
+    Ok(NativeMemoryContextBindingV1::from_checked_owners(
+        StableId::new(run)?,
         Digest32::of_bytes(version),
         Digest32::of_bytes(b"controlled NDU proof"),
         Digest32::of_bytes(b"controlled clock domain"),
-    )
-    .unwrap()
+    )?)
 }
 
 #[tokio::test]
-async fn recovery_requires_same_run_and_checked_owner_version() {
+async fn recovery_requires_same_run_and_checked_owner_version() -> anyhow::Result<()> {
     let mut f = fixture().await;
     f.config.output_width = 5;
-    let enrolled = proof("run:one", b"version one");
+    let enrolled = proof("run:one", b"version one")?;
     let subject = StableId::new("subject:proof-fixture").unwrap();
     let objective = Digest32::of_bytes(b"same objective content");
     let context = NativeMemoryJournalContext {
@@ -63,8 +62,8 @@ async fn recovery_requires_same_run_and_checked_owner_version() {
     let journal = std::fs::read(f.temp.path().join("shadow-journal")).unwrap();
     let witness = std::fs::read(f.temp.path().join("shadow-witness")).unwrap();
     for changed in [
-        proof("run:two", b"version one"),
-        proof("run:one", b"version two"),
+        proof("run:two", b"version one")?,
+        proof("run:one", b"version two")?,
     ] {
         assert!(
             open_runtime(
@@ -100,6 +99,7 @@ async fn recovery_requires_same_run_and_checked_owner_version() {
     .unwrap();
     assert_eq!(recovered_namespace, namespace);
     assert_eq!(recovered.current_anchor().unwrap(), anchor);
+    Ok(())
 }
 
 struct Context {
@@ -116,7 +116,7 @@ impl NativeMemoryContextAuthorityV1 for Context {
 }
 
 #[tokio::test]
-async fn proof_replacement_refuses_before_source_admission_and_decoder() {
+async fn proof_replacement_refuses_before_source_admission_and_decoder() -> anyhow::Result<()> {
     let mut f = fixture().await;
     f.config.output_width = 5;
     let context = Context {
@@ -128,7 +128,7 @@ async fn proof_replacement_refuses_before_source_admission_and_decoder() {
             body_generation: None,
             modulator_digest: None,
         },
-        proof: proof("run:one", b"incarnation one"),
+        proof: proof("run:one", b"incarnation one")?,
     };
     let owner = AgentdNativeMemoryShadowOwner::open(
         binding(&f),
@@ -138,7 +138,7 @@ async fn proof_replacement_refuses_before_source_admission_and_decoder() {
     )
     .await
     .unwrap();
-    owner.state.lock().unwrap().context.proof = proof("run:one", b"incarnation two");
+    owner.state.lock().unwrap().context.proof = proof("run:one", b"incarnation two")?;
     let mut query = f.admission.query().clone();
     query.request_id = StableId::new("request:proof-replaced").unwrap();
     assert!(owner.read(query.clone()).await.is_err());
@@ -154,4 +154,5 @@ async fn proof_replacement_refuses_before_source_admission_and_decoder() {
         .admit_memory_cell(&f.access, &query, &f.claim)
         .await
         .unwrap();
+    Ok(())
 }

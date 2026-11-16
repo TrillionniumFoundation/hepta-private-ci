@@ -35,6 +35,43 @@ class CodespellCustodyTests(unittest.TestCase):
         other.write_bytes(b"Ordinary maintenance guide.\n")
         self.assertEqual(codespell_custody.verified_skip(self.root), f"./{self.path}")
 
+    def test_binary_archive_shard_requires_matching_unchanged_bytes(self):
+        binary_path = (
+            "qualification/memory-cell-mem6/run-001/raw-transfer/"
+            "complete-20261111-ed353/missing-000049879392.part"
+        )
+        payload = b"\x00\xffOriginal binary archive shard.\n"
+        source = self.root / binary_path
+        source.parent.mkdir(parents=True)
+        source.write_bytes(payload)
+        self.manifest["files"][binary_path] = hashlib.sha256(payload).hexdigest()
+        self.write_manifest()
+        self.assertEqual(
+            codespell_custody.verified_skip(self.root),
+            ",".join(f"./{path}" for path in sorted((self.path, binary_path))),
+        )
+        source.write_bytes(payload + b"Changed.")
+        with self.assertRaisesRegex(ValueError, "digest mismatch"):
+            codespell_custody.verified_skip(self.root)
+
+    def test_binary_archive_exemption_does_not_cover_neighboring_paths(self):
+        prefix = (
+            "qualification/memory-cell-mem6/run-001/raw-transfer/"
+            "complete-20261111-ed353/"
+        )
+        for suffix in (
+            "missing-000049879393.part",
+            "missing-000049879392.part.py",
+            "missing-*.part",
+            "missing-000049879392.part/../README.md",
+            "../complete-20261111-ed353/missing-000049879392.part",
+        ):
+            with self.subTest(suffix=suffix):
+                self.manifest["files"] = {prefix + suffix: "0" * 64}
+                self.write_manifest()
+                with self.assertRaisesRegex(ValueError, "exact repository path"):
+                    codespell_custody.verified_skip(self.root)
+
     def test_changed_original_is_rejected(self):
         (self.root / self.path).write_bytes(self.payload + b"Changed.\n")
         with self.assertRaisesRegex(ValueError, "digest mismatch"):

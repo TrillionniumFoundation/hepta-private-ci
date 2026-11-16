@@ -5,9 +5,9 @@
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use tokio::sync::MutexGuard;
 
 use super::super::auth;
+use super::super::state_slot::OriginalStateLease;
 use super::Error;
 use super::OriginalCellQ24CandidateStageOwnersV1 as Owners;
 use crate::OriginalCellEvaluationCommandReceiptV1;
@@ -31,7 +31,7 @@ pub(super) struct OperationLane {
 
 pub(super) struct CandidateOriginalOperation<'a> {
     owners: &'a Owners,
-    lane: MutexGuard<'a, OperationLane>,
+    lane: OriginalStateLease<'a, OperationLane>,
     pub(super) supplied: LearningIterationSnapshotV1,
     pub(super) training_cut: LearningIterationSnapshotV1,
     pub(super) dataset: OriginalCellQ24MaterialCommandReceiptV1,
@@ -64,17 +64,14 @@ impl<'a> CandidateOriginalOperation<'a> {
         let started = auth::now()?;
         owners.require_live_deadline()?;
         let training_cut = owners.training_prefix(supplied)?;
-        let mut lane = owners.operation.try_lock().map_err(|_| Error::QueueFull)?;
-        if lane.failed {
+        let mut lane = owners.operation.try_take()?;
+        if lane.state()?.failed {
             return Err(Error::CommitUncertain);
         }
         // No error, cancelled await or dropped evidence can reopen this lane.
-        lane.failed = true;
-        let mut common = owners
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        lane.state_mut()?.failed = true;
+        let mut common_lease = owners.common.continuation.try_take()?;
+        let common = common_lease.state_mut()?;
         common.read_prefix(&owners.common, &training_cut).await?;
         let dataset = common
             .original_dataset
@@ -89,7 +86,7 @@ impl<'a> CandidateOriginalOperation<'a> {
         let records = common.records[..3].to_vec();
         let fresh = auth::require_material(&owners.common.material, owners.common.initial_binding)?;
         auth::require_clock(started, fresh)?;
-        auth::verify_prefix(&owners.common.material, &training_cut, &common, fresh)?;
+        auth::verify_prefix(&owners.common.material, &training_cut, common, fresh)?;
         Ok(Self {
             owners,
             lane,
@@ -110,12 +107,8 @@ impl<'a> CandidateOriginalOperation<'a> {
     }
 
     pub(super) async fn close(self) -> Result<ClosedCandidateOriginalOperation<'a>, Error> {
-        let mut common = self
-            .owners
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let mut common_lease = self.owners.common.continuation.try_take()?;
+        let common = common_lease.state_mut()?;
         common
             .read_prefix(&self.owners.common, &self.training_cut)
             .await?;
@@ -133,10 +126,10 @@ impl<'a> CandidateOriginalOperation<'a> {
         auth::verify_prefix(
             &self.owners.common.material,
             &self.training_cut,
-            &common,
+            common,
             fresh,
         )?;
-        drop(common);
+        drop(common_lease);
         Ok(ClosedCandidateOriginalOperation(self))
     }
 
@@ -172,7 +165,7 @@ impl<'a> ClosedCandidateOriginalOperation<'a> {
             material.attestation(),
             fresh,
         )?;
-        self.0.lane.failed = false;
+        self.0.lane.state_mut()?.failed = false;
         Ok(material)
     }
 
@@ -379,7 +372,7 @@ impl OriginalCandidateOperationEvidence<'_> {
     > {
         self.operation.0.require_owner(owners)?;
         let signatures = self.authenticate_result(snapshot, observed)?;
-        self.operation.0.lane.failed = false;
+        self.operation.0.lane.state_mut()?.failed = false;
         Ok((signatures, self.model))
     }
 

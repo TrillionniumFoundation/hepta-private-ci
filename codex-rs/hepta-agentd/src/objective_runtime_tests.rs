@@ -119,12 +119,12 @@ pub(crate) fn current_host_with(
 
 #[cfg(unix)]
 #[tokio::test]
-async fn current_read_survives_unrelated_durable_run_admission() {
+async fn current_read_survives_unrelated_durable_run_admission() -> anyhow::Result<()> {
     use crate::state::objective_current_tests::ClockCase;
     use crate::state::objective_current_tests::fixture;
     use ed25519_dalek::Signer;
 
-    let f = fixture(ClockCase::Current).await;
+    let f = fixture(ClockCase::Current).await?;
     let proof = f.state.checked_current_objective("run.current").unwrap();
     let mut other = f.record.clone();
     other.snapshot.run_id = id("run.other");
@@ -150,6 +150,7 @@ async fn current_read_survives_unrelated_durable_run_admission() {
     f.state.start_current_run_start_record(&other).unwrap();
     f.state.revalidate_current_objective(&proof).unwrap();
     assert_eq!(f.state.active_run_count().unwrap(), 2);
+    Ok(())
 }
 
 #[test]

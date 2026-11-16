@@ -12,11 +12,11 @@ use super::SessionSlot;
 use crate::native_memory_current_test_support::fixture;
 
 #[tokio::test]
-async fn busy_claim_returns_the_same_prepared_identity_after_release() {
-    let fixture = fixture().await;
+async fn busy_claim_returns_the_same_prepared_identity_after_release() -> anyhow::Result<()> {
+    let fixture = fixture().await?;
     let cancellation = CancellationToken::new();
     let slot = SessionSlot::new(cancellation.clone());
-    let prepared = fixture.prepare("lease-normal");
+    let prepared = fixture.prepare("lease-normal")?;
     let binding = prepared.binding().clone();
     let mut lease = slot.claim().unwrap();
     lease.prepared = Some(("enrollment".into(), prepared));
@@ -38,21 +38,22 @@ async fn busy_claim_returns_the_same_prepared_identity_after_release() {
         ),
         (false, Some(("enrollment", &binding)), false, false),
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn actual_authority_error_returns_consumed_session() {
-    let fixture = fixture().await;
+async fn actual_authority_error_returns_consumed_session() -> anyhow::Result<()> {
+    let fixture = fixture().await?;
     let cancellation = CancellationToken::new();
     let slot = SessionSlot::new(cancellation.clone());
-    slot.claim().unwrap().prepared = Some(("enrollment".into(), fixture.prepare("lease-error")));
+    slot.claim().unwrap().prepared = Some(("enrollment".into(), fixture.prepare("lease-error")?));
     let result = {
         let mut lease = slot.claim().unwrap();
         lease.attempted = true;
         let (_, prepared) = lease.prepared.take().unwrap();
-        let grant = fixture.sign(prepared.binding().clone(), "lease-error-grant");
+        let grant = fixture.sign(prepared.binding().clone(), "lease-error-grant")?;
         // Real owner revocation remains available while the session is owned.
-        fixture.feed(/*revision*/ 3, &["lease-error-grant"]);
+        fixture.feed(/*revision*/ 3, &["lease-error-grant"])?;
         prepared.authorize(&grant)
     };
     assert!(
@@ -72,14 +73,15 @@ async fn actual_authority_error_returns_consumed_session() {
         ),
         (true, true, true, false),
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn cancelling_pending_work_returns_consumed_session() {
-    let fixture = fixture().await;
+async fn cancelling_pending_work_returns_consumed_session() -> anyhow::Result<()> {
+    let fixture = fixture().await?;
     let cancellation = CancellationToken::new();
     let slot = Arc::new(SessionSlot::new(cancellation.clone()));
-    slot.claim().unwrap().prepared = Some(("enrollment".into(), fixture.prepare("lease-cancel")));
+    slot.claim().unwrap().prepared = Some(("enrollment".into(), fixture.prepare("lease-cancel")?));
     let (entered_tx, entered_rx) = oneshot::channel();
     let owned = Arc::clone(&slot);
     let task = tokio::spawn(async move {
@@ -97,7 +99,7 @@ async fn cancelling_pending_work_returns_consumed_session() {
         slot.claim().err().as_deref(),
         Some("current session is busy")
     );
-    fixture.feed(/*revision*/ 3, &[]);
+    fixture.feed(/*revision*/ 3, &[])?;
     task.abort();
     assert!(task.await.unwrap_err().is_cancelled());
     let returned = slot.claim().unwrap();
@@ -110,6 +112,7 @@ async fn cancelling_pending_work_returns_consumed_session() {
         ),
         (true, true, true, false),
     );
+    Ok(())
 }
 
 fn poison(slot: &SessionSlot) {
@@ -159,14 +162,14 @@ fn poisoned_return_preserves_spent_state_and_closes_runtime() {
 }
 
 #[tokio::test]
-async fn occupied_return_preserves_incumbent_and_closes_runtime() {
-    let fixture = fixture().await;
+async fn occupied_return_preserves_incumbent_and_closes_runtime() -> anyhow::Result<()> {
+    let fixture = fixture().await?;
     let cancellation = CancellationToken::new();
     let slot = SessionSlot::new(cancellation.clone());
     let mut lease = slot.claim().unwrap();
     lease.attempted = true;
     *slot.slot.lock().unwrap() = Some(Session {
-        prepared: Some(("incumbent".into(), fixture.prepare("lease-incumbent"))),
+        prepared: Some(("incumbent".into(), fixture.prepare("lease-incumbent")?)),
         ..Session::default()
     });
     drop(lease);
@@ -181,4 +184,5 @@ async fn occupied_return_preserves_incumbent_and_closes_runtime() {
         (false, Some("incumbent"), true),
     );
     assert!(slot.claim().is_err());
+    Ok(())
 }

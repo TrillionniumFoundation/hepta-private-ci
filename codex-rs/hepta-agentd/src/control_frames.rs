@@ -37,7 +37,13 @@ pub(super) async fn write_frame(
     }
     timeout(IO_TIMEOUT, async {
         writer.write_all(bytes).await?;
-        writer.shutdown().await
+        // A peer can read the complete frame and close before this half-close.
+        // Only the shutdown syscall may report that already-closed connection;
+        // a failed or partial write must still propagate.
+        match writer.shutdown().await {
+            Err(error) if error.kind() == std::io::ErrorKind::NotConnected => Ok(()),
+            result => result,
+        }
     })
     .await
     .map_err(|_| AgentdError::Protocol("agentd control response frame timed out".into()))??;

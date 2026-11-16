@@ -47,8 +47,8 @@ use crate::native_memory_subject_digest_v1;
 use crate::state::objective_current_tests::ClockCase;
 use crate::state::objective_current_tests::CurrentFixture;
 
-pub(crate) fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+pub(crate) fn id(value: &str) -> anyhow::Result<StableId> {
+    Ok(StableId::new(value)?)
 }
 pub(crate) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -66,7 +66,9 @@ impl AuthorityClock for WallClock {
 pub(crate) struct TickClock(pub(crate) Mutex<NativeMemoryClockObservationV1>);
 impl NativeMemoryTickClockV1 for TickClock {
     fn observe(&self) -> Result<NativeMemoryClockObservationV1, NativeMemoryError> {
-        Ok(*self.0.lock().unwrap())
+        self.0.lock().map(|observation| *observation).map_err(|_| {
+            NativeMemoryError::Rejected("fixture tick clock lock poisoned".to_string())
+        })
     }
 }
 
@@ -83,16 +85,18 @@ pub(crate) struct CurrentMemoryFixture {
     _authority: tempfile::TempDir,
 }
 
-pub(crate) async fn fixture() -> CurrentMemoryFixture {
-    let objective = crate::state::objective_current_tests::fixture(ClockCase::Current).await;
+pub(crate) async fn fixture() -> anyhow::Result<CurrentMemoryFixture> {
+    let objective = crate::state::objective_current_tests::fixture(ClockCase::Current).await?;
     fixture_with_objective(objective)
 }
 
-pub(crate) fn fixture_with_objective(objective: CurrentFixture) -> CurrentMemoryFixture {
-    let store = tempfile::tempdir().unwrap();
-    let authority_dir = tempfile::tempdir().unwrap();
+pub(crate) fn fixture_with_objective(
+    objective: CurrentFixture,
+) -> anyhow::Result<CurrentMemoryFixture> {
+    let store = tempfile::tempdir()?;
+    let authority_dir = tempfile::tempdir()?;
     for path in [store.path(), authority_dir.path()] {
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
     }
     let signing = SigningKey::from_bytes(&[94; 32]);
     let authority = FinalUseAuthority::open_state_dir(
@@ -104,40 +108,39 @@ pub(crate) fn fixture_with_objective(objective: CurrentFixture) -> CurrentMemory
             revision: 1,
             revoked_grant_ids: Default::default(),
         },
-    )
-    .unwrap();
+    )?;
     let policy = NduProductionPolicyV1 {
         utility_profile: UtilityProfile {
-            profile_id: id("current-policy"),
+            profile_id: id("current-policy")?,
             axis_registry_digest: digest("current-axes"),
             normalization_manifest_digest: digest("current-normalization"),
-            dimensions: vec![(id("success"), AxisDirection::Maximize)],
+            dimensions: vec![(id("success")?, AxisDirection::Maximize)],
             risk_ceilings: vec![],
             resource_ceilings: vec![],
             required_organs: RequiredOrganSet {
-                organ_ids: vec![id("planner")],
+                organ_ids: vec![id("planner")?],
             },
         },
         evaluation_policy: EvaluationPolicyV1 {
-            policy_id: id("current-evaluation"),
+            policy_id: id("current-evaluation")?,
             utility_rules: vec![AxisAggregationRule {
-                axis: id("success"),
+                axis: id("success")?,
                 operator: AggregationOperator::Sum,
             }],
             risk_rules: vec![],
             resource_rules: vec![],
             uncertainty_rules: vec![AxisAggregationRule {
-                axis: id("success"),
+                axis: id("success")?,
                 operator: AggregationOperator::Maximum,
             }],
             pareto_absolute_tolerances: vec![AxisValue {
-                axis: id("success"),
+                axis: id("success")?,
                 value: FixedQ32::ZERO,
             }],
         },
         scalarization: None,
     };
-    let now = crate::authbus_ingress::now_ms().unwrap();
+    let now = crate::authbus_ingress::now_ms()?;
     let wall = Arc::new(WallClock(AtomicU64::new(now)));
     let tick = Arc::new(TickClock(Mutex::new(NativeMemoryClockObservationV1 {
         domain: digest("test-only-clock-continuity"),
@@ -147,33 +150,30 @@ pub(crate) fn fixture_with_objective(objective: CurrentFixture) -> CurrentMemory
         store.path(),
         authority.clone(),
         NduOwnerContextV1 {
-            principal_id: id(objective.state.identity().agent_id.as_str()),
-            owner_id: id("utility.ndu"),
+            principal_id: id(objective.state.identity().agent_id.as_str())?,
+            owner_id: id("utility.ndu")?,
             host_generation: objective
                 .state
                 .identity()
                 .spawn_generation
                 .checked_add(1)
-                .unwrap(),
+                .ok_or_else(|| anyhow::anyhow!("fixture host generation overflow"))?,
             principal_scope_digest: digest("current-principal-scope"),
             fence_digest: digest("current-ndu-fence"),
             revocation_frontier_digest: digest("current-revocation-frontier"),
         },
         policy,
-    )
-    .unwrap()
+    )?
     .with_current_reads(
         FinalUseRevocationFeedVerifier::new(
             "current-feed".into(),
             SigningKey::from_bytes(&[95; 32]).verifying_key().to_bytes(),
-        )
-        .unwrap(),
+        )?,
         wall.clone(),
     );
     let ndu = Arc::new(Mutex::new(owner));
     let host =
-        AgentdNativeMemoryContextHostV1::attach(&objective.state, Arc::clone(&ndu), tick.clone())
-            .unwrap();
+        AgentdNativeMemoryContextHostV1::attach(&objective.state, Arc::clone(&ndu), tick.clone())?;
     let f = CurrentMemoryFixture {
         objective,
         ndu,
@@ -192,35 +192,37 @@ pub(crate) fn fixture_with_objective(objective: CurrentFixture) -> CurrentMemory
                 kind: NduProjectionKindV1::Preference,
                 identity_digest: digest(&format!("append-{label}")),
                 objective_digest: f.objective.record.snapshot.objective_digest,
-                subject_digest: f.subject(),
+                subject_digest: f.subject()?,
                 projection_digest: digest(label),
             },
             &format!("append-{label}"),
-        );
+        )?;
     }
-    f.select("first", "select-first");
-    f.feed(/*revision*/ 2, &[]);
-    f
+    f.select("first", "select-first")?;
+    f.feed(/*revision*/ 2, &[])?;
+    Ok(f)
 }
 
 impl CurrentMemoryFixture {
-    pub(crate) fn query(&self, label: &str) -> MemoryCellQueryV1 {
-        MemoryCellQueryV1 {
-            request_id: id(label),
+    pub(crate) fn query(&self, label: &str) -> anyhow::Result<MemoryCellQueryV1> {
+        Ok(MemoryCellQueryV1 {
+            request_id: id(label)?,
             key: MemoryCellKeyV1 {
                 role: MemoryCellRoleV1::Procedural,
                 entity: "project".into(),
                 relation: "repair".into(),
             },
-            deadline_unix_ms: crate::authbus_ingress::now_ms().unwrap() + 30_000,
-        }
+            deadline_unix_ms: crate::authbus_ingress::now_ms()? + 30_000,
+        })
     }
-    pub(crate) fn prepare(&self, label: &str) -> AgentdNativeMemoryPreparedReadV1 {
-        self.host
-            .prepare_read("run.current", self.query(label))
-            .unwrap()
+    pub(crate) fn prepare(&self, label: &str) -> anyhow::Result<AgentdNativeMemoryPreparedReadV1> {
+        Ok(self.host.prepare_read("run.current", self.query(label)?)?)
     }
-    pub(crate) fn sign(&self, binding: FinalUseBinding, label: &str) -> SignedFinalUseGrant {
+    pub(crate) fn sign(
+        &self,
+        binding: FinalUseBinding,
+        label: &str,
+    ) -> anyhow::Result<SignedFinalUseGrant> {
         let now = self.wall.0.load(Ordering::SeqCst);
         let mut nonce = [0; 32];
         nonce[..8].copy_from_slice(&self.nonce.fetch_add(1, Ordering::SeqCst).to_be_bytes());
@@ -236,31 +238,41 @@ impl CurrentMemoryFixture {
         };
         let signature = self
             .signing
-            .sign(&grant.signing_bytes().unwrap())
+            .sign(&grant.signing_bytes()?)
             .to_bytes()
             .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        Ok(SignedFinalUseGrant { grant, signature })
     }
-    pub(crate) fn subject(&self) -> Digest32 {
-        native_memory_subject_digest_v1(&id(self.objective.state.identity().agent_id.as_str()))
+    pub(crate) fn subject(&self) -> anyhow::Result<Digest32> {
+        Ok(native_memory_subject_digest_v1(&id(self
+            .objective
+            .state
+            .identity()
+            .agent_id
+            .as_str())?))
     }
-    pub(crate) fn mutate(&self, mutation: NduOwnerMutationV1, label: &str) {
-        let mut owner = self.ndu.lock().unwrap();
-        let signed = self.sign(owner.final_use_binding(&mutation).unwrap(), label);
-        owner.apply_mutation(&signed, mutation).unwrap();
+    pub(crate) fn mutate(&self, mutation: NduOwnerMutationV1, label: &str) -> anyhow::Result<()> {
+        let mut owner = self
+            .ndu
+            .lock()
+            .map_err(|_| anyhow::anyhow!("fixture NDU owner lock poisoned"))?;
+        let signed = self.sign(owner.final_use_binding(&mutation)?, label)?;
+        owner.apply_mutation(&signed, mutation)?;
+        Ok(())
     }
-    pub(crate) fn select(&self, projection: &str, label: &str) {
+    pub(crate) fn select(&self, projection: &str, label: &str) -> anyhow::Result<()> {
         self.mutate(
             NduOwnerMutationV1::SelectProjection {
                 identity_digest: digest(label),
                 objective_digest: self.objective.record.snapshot.objective_digest,
-                subject_digest: self.subject(),
+                subject_digest: self.subject()?,
                 projection_digest: digest(projection),
             },
             label,
-        );
+        )?;
+        Ok(())
     }
-    pub(crate) fn feed(&self, revision: u64, revoked: &[&str]) {
+    pub(crate) fn feed(&self, revision: u64, revoked: &[&str]) -> anyhow::Result<()> {
         let now = self.wall.0.load(Ordering::SeqCst);
         let update = FinalUseRevocationUpdate::new(
             "current-feed".into(),
@@ -273,13 +285,13 @@ impl CurrentMemoryFixture {
             now + 120_000,
         );
         let signature = SigningKey::from_bytes(&[95; 32])
-            .sign(&update.signing_bytes().unwrap())
+            .sign(&update.signing_bytes()?)
             .to_bytes()
             .to_vec();
         self.ndu
             .lock()
-            .unwrap()
-            .apply_read_revocation_update(&SignedFinalUseRevocationUpdate { update, signature })
-            .unwrap();
+            .map_err(|_| anyhow::anyhow!("fixture NDU owner lock poisoned"))?
+            .apply_read_revocation_update(&SignedFinalUseRevocationUpdate { update, signature })?;
+        Ok(())
     }
 }

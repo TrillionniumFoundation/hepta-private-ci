@@ -110,11 +110,8 @@ impl Owners {
         }
         require_published_selection(&publication, &selection)?;
         let (observer, readiness) = {
-            let mut common: tokio::sync::MutexGuard<'_, Continuation> = self
-                .common
-                .continuation
-                .try_lock()
-                .map_err(|_| Error::QueueFull)?;
+            let mut common_lease = self.common.continuation.try_take()?;
+            let common: &mut Continuation = common_lease.state_mut()?;
             common.take_candidate_next_use_channels(&operation.dataset, &operation.training)?
         };
         let origin = if action == Action::Readback {

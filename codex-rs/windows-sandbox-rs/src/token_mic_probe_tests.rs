@@ -1,11 +1,13 @@
 //! MIC counterexample regression coupled to public production admission refusal.
 //! The original isolation oracle still fails; this does not qualify a sandbox.
 
+use super::probe_support::Impersonation;
 use super::probe_support::*;
 use super::*;
 use anyhow::Context;
 use codex_protocol::models::PermissionProfile;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use pretty_assertions::assert_eq;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::Path;

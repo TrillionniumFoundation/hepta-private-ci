@@ -194,11 +194,8 @@ impl Owners {
             return Err(Error::CommitUncertain);
         }
         if lane.selector.is_none() && lane.version.is_none() {
-            let mut common: tokio::sync::MutexGuard<'_, Continuation> = self
-                .common
-                .continuation
-                .try_lock()
-                .map_err(|_| Error::QueueFull)?;
+            let mut common_lease = self.common.continuation.try_take()?;
+            let common: &mut Continuation = common_lease.state_mut()?;
             let (selector, version) = common
                 .take_candidate_selection_channels(&operation.dataset, &operation.training)?;
             // Both are the original peer objects. Late binding never creates

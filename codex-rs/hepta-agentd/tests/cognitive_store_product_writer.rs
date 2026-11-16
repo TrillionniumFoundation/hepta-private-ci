@@ -110,7 +110,9 @@ async fn agentd_product_host_persists_queued_intent_and_fences_release()
     let release = host.writer().release().await;
     assert!(matches!(
         release,
-        Err(ProductionWriterError::Local(LocalLeaseOutboxError::IllegalTransition(ref reason)))
+        Err(codex_hepta_cognitive_store::ProductionWriterError::Local(
+            codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(ref reason)
+        ))
             if reason.contains("occurrence:product-writer:1")
     ));
     assert_eq!(

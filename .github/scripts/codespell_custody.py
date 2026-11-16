@@ -18,6 +18,12 @@ MANIFEST = ".github/codespell-custody.json"
 SCHEMA = "hepta.codespell-custody.v1"
 MAX_MANIFEST_BYTES = 1024 * 1024
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
+BINARY_ARCHIVE_PATHS = frozenset(
+    {
+        "qualification/memory-cell-mem6/run-001/raw-transfer/"
+        "complete-20261111-ed353/missing-000049879392.part"
+    }
+)
 
 
 def unique_object(pairs):
@@ -79,7 +85,10 @@ def parse_manifest(raw):
     for path, expected in entries.items():
         if (
             not isinstance(path, str)
-            or not re.fullmatch(r"library-recovery/[A-Za-z0-9._/-]+", path)
+            or (
+                not re.fullmatch(r"library-recovery/[A-Za-z0-9._/-]+", path)
+                and path not in BINARY_ARCHIVE_PATHS
+            )
             or str(PurePosixPath(path)) != path
             or any(part in {".", ".."} for part in path.split("/"))
             or len(PurePosixPath(path).parts) < 3

@@ -227,8 +227,10 @@ async fn wait_for_python_repl_ready_via_probe(
     let probe_window = tokio::time::Duration::from_millis(if cfg!(windows) { 750 } else { 250 });
 
     while tokio::time::Instant::now() < deadline {
+        // The terminal may echo input before Python is ready. Keep the full
+        // marker out of that echo and construct it only in the interpreter.
         writer
-            .send(format!("print('{marker}'){newline}").into_bytes())
+            .send(format!("print('__codex_pty_' + 'ready__'){newline}").into_bytes())
             .await?;
 
         let probe_deadline = tokio::time::Instant::now() + probe_window;

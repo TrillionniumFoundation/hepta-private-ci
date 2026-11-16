@@ -33,7 +33,8 @@ use crate::native_memory_test_support;
 use crate::native_memory_types::query_features;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick() {
+async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick()
+-> anyhow::Result<()> {
     enum Change {
         Selection,
         ReadGrantRevoked,
@@ -44,7 +45,7 @@ async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick
         Change::ReadGrantRevoked,
         Change::GrantExpired,
     ] {
-        let current = native_memory_current_test_support::fixture().await;
+        let current = native_memory_current_test_support::fixture().await?;
         let temp = tempfile::tempdir().unwrap();
         let owner = current.objective.state.identity().agent_id.clone();
         let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).unwrap();
@@ -105,7 +106,7 @@ async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick
         )
         .await;
         source.config.output_width = 5;
-        let mut query = current.query("guarded-current-read");
+        let mut query = current.query("guarded-current-read")?;
         query.key = source.admission.query().key.clone();
         let admission = Arc::new(
             source
@@ -118,7 +119,7 @@ async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick
             .host
             .prepare_read("run.current", query.clone())
             .unwrap();
-        let signed = current.sign(prepared.binding().clone(), "guarded-current-read");
+        let signed = current.sign(prepared.binding().clone(), "guarded-current-read")?;
         let mut context = prepared.authorize(&signed).unwrap();
         let observed = context.current().unwrap();
         let binding = context.binding().cloned();
@@ -188,9 +189,9 @@ async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick
             .unwrap()
             .expect("real source verifier must reach the barrier");
         match change {
-            Change::Selection => current.select("second", "switch-during-source-validation"),
+            Change::Selection => current.select("second", "switch-during-source-validation")?,
             Change::ReadGrantRevoked => {
-                current.feed(/*revision*/ 3, &["guarded-current-read"])
+                current.feed(/*revision*/ 3, &["guarded-current-read"])?
             }
             Change::GrantExpired => {
                 current.wall.0.fetch_add(61_000, Ordering::SeqCst);
@@ -237,4 +238,5 @@ async fn ndu_change_during_source_revalidation_stops_decoder_and_successful_tick
             Err(MemoryCellSourceError::Replay)
         ));
     }
+    Ok(())
 }

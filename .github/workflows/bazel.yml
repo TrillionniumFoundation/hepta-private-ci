@@ -184,8 +184,13 @@ jobs:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
         run: |
-          # Core integration targets already declare no-sandbox because their
-          # subprocess tests create host namespaces. Keep both variants required.
+          # Core integration tests require host namespaces on every Linux ABI.
+          # The Wine variant additionally requires x86_64 GNU, as declared by
+          # WINE_TEST_TARGET_COMPATIBLE_WITH in the Wine runtime rule.
+          core_targets=(//codex-rs/core:core-all-test)
+          if [[ "${{ matrix.target }}" == "x86_64-unknown-linux-gnu" ]]; then
+            core_targets+=(//codex-rs/core:core-all-wine-exec-test)
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             --print-failed-action-summary \
             --print-failed-test-logs \
@@ -198,8 +203,7 @@ jobs:
             --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
             --build_metadata=TAG_job=native-core-integration-tests \
             -- \
-            //codex-rs/core:core-all-test \
-            //codex-rs/core:core-all-wine-exec-test
+            "${core_targets[@]}"
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()

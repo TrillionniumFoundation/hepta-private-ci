@@ -112,7 +112,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         let snapshot = &operation.training_cut;
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
         let expected_bundle = coordinator.candidate().ok_or(Error::WrongScope)?;
-        let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut lane_lease = self.candidate.try_take()?;
+        let lane = lane_lease.state_mut()?;
         if lane.failed {
             return Err(Error::CommitUncertain);
         }

@@ -5,20 +5,19 @@ use codex_hepta_types::Digest32;
 use std::time::Duration;
 use std::time::Instant;
 
-fn prepared_worker(temp: &tempfile::TempDir) -> crate::NativeMemoryModelConfigV1 {
+fn prepared_worker(temp: &tempfile::TempDir) -> anyhow::Result<crate::NativeMemoryModelConfigV1> {
     let mut c = config(temp.path());
     let python = std::process::Command::new("python3")
         .args(["-c", "import sys; print(sys.executable)"])
-        .output()
-        .unwrap();
+        .output()?;
     assert!(python.status.success());
-    c.python = String::from_utf8(python.stdout).unwrap().trim().into();
+    c.python = String::from_utf8(python.stdout)?.trim().into();
     for path in [
         "scripts/memory_cell_native",
         "scripts/memory_cell_network",
         "receipts",
     ] {
-        std::fs::create_dir_all(temp.path().join(path)).unwrap();
+        std::fs::create_dir_all(temp.path().join(path))?;
     }
     let worker = b"import time\ntime.sleep(30)\n";
     let launcher = b"import runpy,sys\nrunpy.run_path(sys.argv[-1],run_name='__main__')\n";
@@ -26,23 +25,21 @@ fn prepared_worker(temp: &tempfile::TempDir) -> crate::NativeMemoryModelConfigV1
         temp.path()
             .join("scripts/memory_cell_native/native_worker.py"),
         worker,
-    )
-    .unwrap();
+    )?;
     std::fs::write(
         temp.path()
             .join("scripts/memory_cell_network/model_child.py"),
         launcher,
-    )
-    .unwrap();
+    )?;
     c.pins.worker_sha256 = Digest32::of_bytes(worker).to_string();
     c.pins.launcher_sha256 = Digest32::of_bytes(launcher).to_string();
-    c
+    Ok(c)
 }
 
 #[tokio::test]
-async fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() {
+async fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() -> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 100;
     // A 64 KiB payload can fit entirely in a Unix pipe without blocking.
     let input = vec![b'x'; 2 * 1024 * 1024];
@@ -63,12 +60,13 @@ async fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() {
         "unexpected child process receipt: {report}"
     );
     assert!(directory.join("stderr.log").is_file());
+    Ok(())
 }
 
 #[tokio::test]
-async fn native_memory_daemon_lifetime_cancels_child_and_keeps_failure() {
+async fn native_memory_daemon_lifetime_cancels_child_and_keeps_failure() -> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let c = prepared_worker(&temp);
+    let c = prepared_worker(&temp)?;
     let cancellation = tokio_util::sync::CancellationToken::new();
     let other = cancellation.clone();
     let cancel = std::thread::spawn(move || {
@@ -86,15 +84,16 @@ async fn native_memory_daemon_lifetime_cancels_child_and_keeps_failure() {
     let report: serde_json::Value =
         serde_json::from_slice(&std::fs::read(directory.join("process.json")).unwrap()).unwrap();
     assert!(report["owner_cancelled"] == true);
+    Ok(())
 }
 
-fn replace_worker(c: &mut crate::NativeMemoryModelConfigV1, source: &[u8]) {
+fn replace_worker(c: &mut crate::NativeMemoryModelConfigV1, source: &[u8]) -> std::io::Result<()> {
     std::fs::write(
         c.repo.join("scripts/memory_cell_native/native_worker.py"),
         source,
-    )
-    .unwrap();
+    )?;
     c.pins.worker_sha256 = Digest32::of_bytes(source).to_string();
+    Ok(())
 }
 
 fn receipt_directory(c: &crate::NativeMemoryModelConfigV1, input: &[u8]) -> std::path::PathBuf {
@@ -103,9 +102,10 @@ fn receipt_directory(c: &crate::NativeMemoryModelConfigV1, input: &[u8]) -> std:
 }
 
 #[tokio::test]
-async fn native_memory_real_launcher_delivers_eof_and_returns_successful_worker_bytes() {
+async fn native_memory_real_launcher_delivers_eof_and_returns_successful_worker_bytes()
+-> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 3000;
     let actual_launcher =
         codex_utils_cargo_bin::find_resource!("../../scripts/memory_cell_network/model_child.py")
@@ -120,7 +120,7 @@ async fn native_memory_real_launcher_delivers_eof_and_returns_successful_worker_
     replace_worker(
         &mut c,
         b"import sys\nvalue = sys.stdin.buffer.read()\nsys.stdout.buffer.write(value)\n",
-    );
+    )?;
     let input = b"complete input followed by EOF".to_vec();
     let directory = receipt_directory(&c, &input);
     let output = execute(
@@ -137,12 +137,13 @@ async fn native_memory_real_launcher_delivers_eof_and_returns_successful_worker_
     assert_eq!(report["exit_code"], 0);
     assert_eq!(report["timed_out"], false);
     assert_eq!(report["process_group_error"], serde_json::Value::Null);
+    Ok(())
 }
 
 #[tokio::test]
-async fn native_memory_does_not_inherit_ambient_secret_or_python_path() {
+async fn native_memory_does_not_inherit_ambient_secret_or_python_path() -> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 3000;
     replace_worker(
         &mut c,
@@ -150,7 +151,7 @@ async fn native_memory_does_not_inherit_ambient_secret_or_python_path() {
 sys.stdin.buffer.read()
 print(json.dumps({'environment': dict(os.environ)}), flush=True)
 "#,
-    );
+    )?;
     let input = b"environment fixture".to_vec();
     let directory = receipt_directory(&c, &input);
     let environment = [
@@ -199,6 +200,7 @@ print(json.dumps({'environment': dict(os.environ)}), flush=True)
             0o600
         );
     }
+    Ok(())
 }
 
 async fn assert_descendant_stopped(pid: i32) {
@@ -227,9 +229,9 @@ async fn assert_descendant_stopped(pid: i32) {
 }
 
 #[tokio::test]
-async fn native_memory_timeout_closes_grandchild_pipes_and_kills_group() {
+async fn native_memory_timeout_closes_grandchild_pipes_and_kills_group() -> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 500;
     replace_worker(
         &mut c,
@@ -238,7 +240,7 @@ child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])
 print(child.pid, flush=True)
 time.sleep(30)
 "#,
-    );
+    )?;
     let input = b"grandchild pipe timeout".to_vec();
     let directory = receipt_directory(&c, &input);
     let started = Instant::now();
@@ -257,12 +259,13 @@ time.sleep(30)
         serde_json::from_slice(&std::fs::read(directory.join("process.json")).unwrap()).unwrap();
     assert_eq!(report["timed_out"], true);
     assert_descendant_stopped(pid).await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn native_memory_direct_exit_cannot_leave_a_descendant_holding_pipes() {
+async fn native_memory_direct_exit_cannot_leave_a_descendant_holding_pipes() -> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 500;
     replace_worker(
         &mut c,
@@ -270,7 +273,7 @@ async fn native_memory_direct_exit_cannot_leave_a_descendant_holding_pipes() {
 child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])
 print(child.pid, flush=True)
 "#,
-    );
+    )?;
     let input = b"direct exit inherited pipes".to_vec();
     let directory = receipt_directory(&c, &input);
     let started = Instant::now();
@@ -286,19 +289,21 @@ print(child.pid, flush=True)
         .parse()
         .unwrap();
     assert_descendant_stopped(pid).await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn native_memory_completed_child_cannot_leave_a_background_descendant() {
+async fn native_memory_completed_child_cannot_leave_a_background_descendant() -> anyhow::Result<()>
+{
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 3000;
     replace_worker(&mut c, br#"import subprocess,sys
 sys.stdin.buffer.read()
 child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'],
                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 print(child.pid, flush=True)
-"#);
+"#)?;
     let input = b"completed child cleanup".to_vec();
     let directory = receipt_directory(&c, &input);
     assert!(
@@ -316,17 +321,19 @@ print(child.pid, flush=True)
     assert_eq!(report["exit_code"], 0);
     assert_eq!(report["timed_out"], false);
     assert_descendant_stopped(pid).await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn native_memory_output_flood_stops_at_bound_without_waiting_for_timeout() {
+async fn native_memory_output_flood_stops_at_bound_without_waiting_for_timeout()
+-> anyhow::Result<()> {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp)?;
     c.timeout_millis = 10_000;
     replace_worker(
         &mut c,
         b"import os\nwhile True: os.write(1, b'x' * 65536)\n",
-    );
+    )?;
     let input = b"output bound fixture".to_vec();
     let directory = receipt_directory(&c, &input);
     let started = Instant::now();
@@ -351,4 +358,5 @@ async fn native_memory_output_flood_stops_at_bound_without_waiting_for_timeout()
             .unwrap()
             .contains("exceeds bound")
     );
+    Ok(())
 }

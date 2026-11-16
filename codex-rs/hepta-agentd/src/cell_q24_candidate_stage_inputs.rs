@@ -6,6 +6,7 @@ use std::time::Instant;
 use tokio::sync::Mutex;
 
 use super::super::auth;
+use super::super::state_slot::OriginalStateSlot;
 use super::AdoptionLane;
 use super::CandidateLane;
 use super::Error;
@@ -170,11 +171,11 @@ pub(super) fn bind(
         common,
         protocol,
         baseline,
-        candidate: Mutex::new(CandidateLane::new(candidate)),
-        evaluation: Mutex::new(EvaluationLane::new(evaluator)),
+        candidate: OriginalStateSlot::new(CandidateLane::new(candidate)),
+        evaluation: OriginalStateSlot::new(EvaluationLane::new(evaluator)),
         model: Mutex::new(ModelLane::new(model)),
         adoption: Mutex::new(AdoptionLane::default()),
-        operation: Mutex::new(OperationLane::default()),
+        operation: OriginalStateSlot::new(OperationLane::default()),
         end,
     })
 }

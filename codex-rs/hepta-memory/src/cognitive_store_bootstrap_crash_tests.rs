@@ -187,7 +187,10 @@ async fn exercise_crash(generation: Generation, test_name: &str) {
         None => TempDir::new().expect("parent temp directory"),
     };
     let _layout = layout(&temp, &owner);
-    let root = temp.path().to_path_buf();
+    let root = temp
+        .path()
+        .canonicalize()
+        .expect("canonical parent temp directory");
     // Opt-in qualification evidence survives both success and assertion failure.
     let _cleanup = if evidence_root.is_some() {
         let _ = temp.keep();

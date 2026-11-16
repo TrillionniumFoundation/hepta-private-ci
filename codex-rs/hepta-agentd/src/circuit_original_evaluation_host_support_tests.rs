@@ -20,7 +20,7 @@ use codex_hepta_types::Generation;
 
 pub(super) struct HostFixture {
     pub(super) host: Option<Arc<OriginalCellEvaluationHostV1>>,
-    pub(super) original: PositiveFixture,
+    pub(super) original: Box<PositiveFixture>,
     pub(super) primary_b: BFixture,
     pub(super) retention_b: BFixture,
     primary: PanelMemberFixture,

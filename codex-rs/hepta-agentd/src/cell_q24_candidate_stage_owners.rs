@@ -23,6 +23,7 @@ use super::Origin;
 use super::OriginalCellQ24NoUpdatePeerStreamV1;
 use super::OriginalCellQ24NoUpdateStageOwnersV1;
 use super::OriginalCellQ24NoUpdateStageStreamsV1;
+use super::state_slot::OriginalStateSlot;
 use crate::LearningIterationOwnerFutureV1;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::LoadedCellQ24ModelV1;
@@ -66,11 +67,11 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     common: OriginalCellQ24NoUpdateStageOwnersV1,
     protocol: OriginalCellEvaluationPanelRegistrationV1,
     baseline: Arc<LoadedCellQ24ModelV1>,
-    candidate: Mutex<CandidateLane>,
-    evaluation: Mutex<EvaluationLane>,
+    candidate: OriginalStateSlot<CandidateLane>,
+    evaluation: OriginalStateSlot<EvaluationLane>,
     model: Mutex<ModelLane>,
     adoption: Mutex<AdoptionLane>,
-    operation: Mutex<OperationLane>,
+    operation: OriginalStateSlot<OperationLane>,
     end: Instant,
 }
 
@@ -320,11 +321,11 @@ pub(crate) fn fixture_from_original_clients(
         common,
         protocol,
         baseline,
-        candidate: Mutex::new(CandidateLane::new(initial)),
-        evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
+        candidate: OriginalStateSlot::new(CandidateLane::new(initial)),
+        evaluation: OriginalStateSlot::new(EvaluationLane::fixture_unavailable()),
         model: Mutex::new(ModelLane::fixture_unavailable()),
         adoption: Mutex::new(AdoptionLane::default()),
-        operation: Mutex::new(OperationLane::default()),
+        operation: OriginalStateSlot::new(OperationLane::default()),
         end,
     };
     owners.require_initial(

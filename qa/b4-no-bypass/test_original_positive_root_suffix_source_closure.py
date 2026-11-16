@@ -3,6 +3,7 @@
 The fixed Model proof contains five receipts and four original role signatures.
 Selection and NextUse extend that proof through distinct original owners.
 """
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -29,19 +30,94 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 
 
+# Explicit ownership migration, separate from the pinned formatter-only map.
+# Every other historical authorization, effect-order and visibility guard stays.
+_ORIGINAL_STATE_SLOT_MARKERS = {
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs": {
+        "candidate: Mutex<CandidateLane>":
+            "candidate: OriginalStateSlot<CandidateLane>",
+        "evaluation: Mutex<EvaluationLane>":
+            "evaluation: OriginalStateSlot<EvaluationLane>",
+        "operation: Mutex<OperationLane>":
+            "operation: OriginalStateSlot<OperationLane>",
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs": {
+        "lane: MutexGuard<'a, OperationLane>":
+            "lane: OriginalStateLease<'a, OperationLane>",
+        "owners.operation.try_lock()":
+            "let mut lane = owners.operation.try_take()?;",
+        "if lane.failed":
+            "if lane.state()?.failed",
+        "lane.failed = true":
+            "lane.state_mut()?.failed = true",
+        "owners\n            .common\n            .continuation\n            .try_lock()":
+            "let mut common_lease = owners.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;",
+        "auth::verify_prefix(&owners.common.material, &training_cut, &common, fresh)?":
+            "auth::verify_prefix(&owners.common.material, &training_cut, common, fresh)?",
+        "self\n            .owners\n            .common\n            .continuation\n            .try_lock()":
+            "let mut common_lease = self.owners.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;",
+        "auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            &common,\n            fresh,\n        )?":
+            "auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?",
+        "drop(common)":
+            "drop(common_lease)",
+        "self.0.lane.failed = false":
+            "self.0.lane.state_mut()?.failed = false",
+        "self.operation.0.lane.failed = false":
+            "self.operation.0.lane.state_mut()?.failed = false",
+        "let mut common":
+            "let mut common_lease",
+        "owners.common.continuation.try_lock()":
+            "let mut common_lease = owners.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;",
+        "self.owners.common.continuation.try_lock()":
+            "let mut common_lease = self.owners.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?;",
+        "auth::verify_prefix(&self.owners.common.material, &self.training_cut, &common, fresh)?":
+            "auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?",
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs": {
+        "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self\n                .common\n                .continuation\n                .try_lock()\n                .map_err(|_| Error::QueueFull)?;":
+            "let mut common_lease = self.common.continuation.try_take()?;\n            let common: &mut Continuation = common_lease.state_mut()?;",
+        "let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;":
+            "let mut common_lease = self.common.continuation.try_take()?;\n            let common: &mut Continuation = common_lease.state_mut()?;",
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs": {
+        "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self\n                .common\n                .continuation\n                .try_lock()\n                .map_err(|_| Error::QueueFull)?;":
+            "let mut common_lease = self.common.continuation.try_take()?;\n            let common: &mut Continuation = common_lease.state_mut()?;",
+        "let mut common = self.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;":
+            "let mut common_lease = self.common.continuation.try_take()?;\n            let common: &mut Continuation = common_lease.state_mut()?;",
+    },
+}
+
+
+def original_state_slot_guards(row):
+    replacements = _ORIGINAL_STATE_SLOT_MARKERS.get(row["path"], {})
+
+    def project(value):
+        if isinstance(value, str):
+            return replacements.get(value, value)
+        if isinstance(value, list):
+            return [project(item) for item in value]
+        if isinstance(value, dict):
+            return {key: project(item) for key, item in value.items()}
+        return value
+
+    return project(row)
+
+
 class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.contract = json.loads((ROOT / CONTRACT_PATH).read_text())
+        contract_bytes = (ROOT / CONTRACT_PATH).read_bytes()
+        if hashlib.sha256(contract_bytes).hexdigest() != (
+            "ac2f3d9e8ab1f290fd5894deddbeda977231600ff885cb551a1f7b96764f849e"
+        ):
+            raise AssertionError("historical positive-root contract changed")
+        cls.contract = json.loads(contract_bytes)
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         def explicit_original_types(value):
             if isinstance(value, str):
                 return value.replace(
                     "let closed = CandidateOriginalOperation::close(operation)",
                     "let closed: ClosedCandidateOriginalOperation<'_> = CandidateOriginalOperation::close(operation)",
-                ).replace(
-                    "let mut common = self.common.continuation.try_lock()",
-                    "let mut common: tokio::sync::MutexGuard<'_, Continuation> = self.common.continuation.try_lock()",
                 )
             if isinstance(value, list):
                 return [explicit_original_types(item) for item in value]
@@ -51,7 +127,8 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
         for collection in ("rows", "mutations"):
             for index, row in enumerate(cls.contract[collection]):
                 if row["path"].endswith(("cell_q24_candidate_stage_adoption.rs", "cell_q24_candidate_stage_next_use.rs")):
-                    cls.contract[collection][index] = explicit_original_types(row)
+                    row = explicit_original_types(row)
+                cls.contract[collection][index] = original_state_slot_guards(row)
         cls.contract["rows"] = [align_protected_record(row, cls.manifest["protected_file"])
                                 for row in cls.contract["rows"]]
 

@@ -192,7 +192,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        let mut lane = self.evaluation.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut lane_lease = self.evaluation.try_take()?;
+        let lane = lane_lease.state_mut()?;
         if lane.failed {
             return Err(Error::CommitUncertain);
         }

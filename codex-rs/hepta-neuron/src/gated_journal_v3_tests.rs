@@ -18,6 +18,17 @@ fn checked<T, E: fmt::Debug>(value: Result<T, E>) -> T {
     value.unwrap_or_else(|error| panic!("V3 shadow fixture failed: {error:?}"))
 }
 
+// Read the actual bytes through the original locked descriptor and restore its
+// position. A second handle cannot read an exclusively locked range on Windows.
+fn live_journal_bytes(journal: &mut GatedSparseJournalV3) -> Vec<u8> {
+    let position = checked(journal.file.stream_position());
+    checked(journal.file.rewind());
+    let mut bytes = Vec::new();
+    checked(journal.file.read_to_end(&mut bytes));
+    checked(journal.file.seek(SeekFrom::Start(position)));
+    bytes
+}
+
 fn config() -> GatedSparseConfigV3 {
     GatedSparseConfigV3 {
         base: PopulationSparseConfigV2 {
@@ -275,7 +286,7 @@ fn conflicting_retries_and_missing_sequences_cannot_write() {
         16,
     ));
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
-    let before = checked(fs::read(&fixture.file));
+    let before = live_journal_bytes(&mut journal);
     let mut altered = tick(1);
     altered.temporal_drive_q24[0] = -Q;
     assert_eq!(
@@ -288,7 +299,7 @@ fn conflicting_retries_and_missing_sequences_cannot_write() {
             GatedSparseErrorV3::Mechanism(crate::population_v2::PopulationSparseError::Sequence)
         ))
     );
-    assert_eq!(checked(fs::read(&fixture.file)), before);
+    assert_eq!(live_journal_bytes(&mut journal), before);
 }
 
 #[test]
@@ -362,7 +373,7 @@ fn bounded_digest_only_history_reconstructs_exact_old_receipt_after_later_ticks(
         checked(journal.retained_history_digest_bytes()),
         256 * std::mem::size_of::<Digest32>()
     );
-    let before = checked(fs::read(&fixture.file));
+    let before = live_journal_bytes(&mut journal);
     let earliest = checked(journal.commit(Digest32::ZERO, &tick(1)));
     let second = checked(journal.commit(earliest.checkpoint_after, &tick(2)));
     assert_eq!(Some(second), original_receipt);
@@ -372,7 +383,7 @@ fn bounded_digest_only_history_reconstructs_exact_old_receipt_after_later_ticks(
             .checkpoint_digest,
         predecessor
     );
-    assert_eq!(checked(fs::read(&fixture.file)), before);
+    assert_eq!(live_journal_bytes(&mut journal), before);
     drop(journal);
 }
 
@@ -380,9 +391,15 @@ fn bounded_digest_only_history_reconstructs_exact_old_receipt_after_later_ticks(
 fn historical_idempotent_read_refuses_corrupted_frame_and_poisoned_owner() {
     let (fixture, _ack2, ack3, _) = committed_fixture();
     let mut journal = checked(fixture.open_anchored(ack3));
-    let mut bytes = checked(fs::read(&fixture.file));
+    let mut bytes = live_journal_bytes(&mut journal);
     bytes[HEADER_BYTES + 16] ^= 1;
-    checked(fs::write(&fixture.file, &bytes));
+    // Inject the same physical corruption through the retained owner handle;
+    // the exclusive lock and original owner remain live throughout the test.
+    let position = checked(journal.file.stream_position());
+    checked(journal.file.rewind());
+    checked(journal.file.write_all(&bytes));
+    checked(journal.file.sync_all());
+    checked(journal.file.seek(SeekFrom::Start(position)));
     assert_eq!(
         journal.commit(Digest32::ZERO, &tick(1)).err(),
         Some(GatedJournalErrorV3::Corrupt),

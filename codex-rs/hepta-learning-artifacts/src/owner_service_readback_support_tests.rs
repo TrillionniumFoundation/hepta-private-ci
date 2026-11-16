@@ -1,6 +1,8 @@
 //! Actual original artifact files and signatures for read-only recovery tests.
 
 use std::collections::BTreeMap;
+use std::fs::OpenOptions;
+use std::fs::TryLockError;
 use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -145,10 +147,26 @@ impl OriginalPublicationReadbackFixture {
                 if path.is_dir() {
                     visit(root, &path, out);
                 } else {
-                    out.insert(
-                        path.strip_prefix(root).fixture("owned path").to_owned(),
-                        fs::read(&path).fixture("original bytes"),
-                    );
+                    let relative = path.strip_prefix(root).fixture("owned path").to_owned();
+                    let bytes = if relative == Path::new("writer/owner.lock") {
+                        // The original owner keeps this empty fence exclusively locked.
+                        // Verify its exact bytes through its length without reopening it
+                        // for a read forbidden by Windows' mandatory byte-range lock.
+                        assert_eq!(fs::metadata(&path).fixture("original fence").len(), 0);
+                        let contender = OpenOptions::new()
+                            .read(true)
+                            .write(true)
+                            .open(&path)
+                            .fixture("original fence contender");
+                        assert!(matches!(
+                            contender.try_lock(),
+                            Err(TryLockError::WouldBlock)
+                        ));
+                        Vec::new()
+                    } else {
+                        fs::read(&path).fixture("original bytes")
+                    };
+                    out.insert(relative, bytes);
                 }
             }
         }

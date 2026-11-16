@@ -6,7 +6,7 @@ use super::*;
 pub(crate) async fn original_evaluation_source(
     root: &Path,
     bundle: Digest32,
-    input: CircuitTaskSourceInputV1,
+    mut input: CircuitTaskSourceInputV1,
     record: codex_hepta_learning_ledger::RunStartRecordV1,
     selected_index: usize,
 ) -> anyhow::Result<(
@@ -24,8 +24,21 @@ pub(crate) async fn original_evaluation_source(
         definition.candidates[0].activation_index;
     definition.candidates[0].activation_index = selected_activation;
     let selected = definition.candidates[selected_index].candidate_id.clone();
+    // The original ledger canonicalizes candidate IDs before signing and storage.
+    // Execute the actual Cell with its definition and masks in that same order.
+    definition
+        .candidates
+        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+    input
+        .candidates
+        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
     let (mut circuit, mut bindings) = configuration();
     bindings[0].cell = definition.clone();
+    // Routes share the Cell's candidate order; move each complete route so
+    // its outcome and selected edges stay attached to the same candidate ID.
+    bindings[0]
+        .routes
+        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(bundle.to_string()).map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;

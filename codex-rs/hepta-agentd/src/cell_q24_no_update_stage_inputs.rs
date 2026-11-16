@@ -8,13 +8,13 @@ use std::time::Instant;
 
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
-use tokio::sync::Mutex;
 
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24NoUpdateStageOwnersV1;
 use super::auth;
 use super::state::Continuation;
+use super::state_slot::OriginalStateSlot;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationEvidencePeerV1;
 use crate::OriginalCellQ24MaterialCommandClientV1;
@@ -214,7 +214,7 @@ pub(super) fn bind(
         initial_binding,
         origin,
         end,
-        continuation: Mutex::new(Continuation::new(
+        continuation: OriginalStateSlot::new(Continuation::new(
             experience, dataset, trainer, selector, version, next_use, completion,
         )),
         root: None,
