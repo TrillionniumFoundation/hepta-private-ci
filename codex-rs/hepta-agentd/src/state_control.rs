@@ -79,10 +79,8 @@ impl AgentdState {
         };
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
-        // Automation remains an explicitly optional plane and therefore does
-        // not gate core Agent readiness. The required cognitive owner is
-        // represented by critical_stores_ready, which is frozen only after
-        // owner-local startup completes under the generation fence.
+        // Automation remains optional. Required-owner readiness is distinct
+        // from physical cognitive availability at owner-backed admission.
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
@@ -254,7 +252,7 @@ impl AgentdState {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -284,12 +282,13 @@ impl AgentdState {
                 )
                 .await;
                 self.refresh_generation()?;
+                let cognitive_available = self.cognitive_is_available()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,
-                        runtime.critical_stores_ready,
+                        runtime.critical_stores_ready && cognitive_available,
                         runtime.revocation_ready,
                         runtime.required_ports_ready,
                         runtime.admission_open,
@@ -338,7 +337,7 @@ impl AgentdState {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -367,12 +366,13 @@ impl AgentdState {
                 )
                 .await;
                 self.refresh_generation()?;
+                let cognitive_available = self.cognitive_is_available()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,
-                        runtime.critical_stores_ready,
+                        runtime.critical_stores_ready && cognitive_available,
                         runtime.revocation_ready,
                         runtime.required_ports_ready,
                         runtime.admission_open,
@@ -436,7 +436,12 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::RunStart { snapshot } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                require_run_admission_ready(
+                    lifecycle,
+                    app_server_ready,
+                    fenced,
+                    self.cognitive_is_available()?,
+                )?;
                 require_current_run_identity(
                     &self.identity,
                     current_generation,
@@ -455,7 +460,12 @@ impl AgentdState {
                 expected_revision,
                 attachment,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                require_run_admission_ready(
+                    lifecycle,
+                    app_server_ready,
+                    fenced,
+                    self.cognitive_is_available()?,
+                )?;
                 require_current_run_identity(
                     &self.identity,
                     current_generation,
@@ -478,7 +488,12 @@ impl AgentdState {
                 run_id,
                 expected_revision,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                require_run_admission_ready(
+                    lifecycle,
+                    app_server_ready,
+                    fenced,
+                    self.cognitive_is_available()?,
+                )?;
                 let receipt = self
                     .runs
                     .lock()
@@ -551,7 +566,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -574,7 +589,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -599,7 +614,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -641,7 +656,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -691,7 +706,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -714,7 +729,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -736,7 +751,7 @@ impl AgentdState {
                 require_automation_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -760,7 +775,7 @@ impl AgentdState {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -854,7 +869,7 @@ impl AgentdState {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -918,7 +933,7 @@ impl AgentdState {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -958,7 +973,7 @@ impl AgentdState {
                 require_cognitive_control_ready(
                     lifecycle,
                     app_server_ready,
-                    critical_stores_ready,
+                    critical_stores_ready && self.cognitive_is_available()?,
                     revocation_ready,
                     required_ports_ready,
                     admission_open,
@@ -1044,7 +1059,7 @@ impl AgentdState {
     ) -> Result<AgentdResponse, AgentdError> {
         match error {
             CognitiveStoreError::Unavailable(_) | CognitiveStoreError::Corrupt(_) => {
-                self.cognitive.lock().map_err(poisoned_state)?.take();
+                self.mark_cognitive_unavailable()?;
                 self.response_with_payload(
                     request_id,
                     current_generation,
@@ -1227,8 +1242,9 @@ fn require_run_admission_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
     fenced: bool,
+    cognitive_available: bool,
 ) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced && cognitive_available {
         Ok(())
     } else {
         Err(AgentdError::Protocol(

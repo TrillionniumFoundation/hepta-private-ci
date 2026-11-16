@@ -26,6 +26,7 @@ use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
+use crate::config::CognitiveOwnerRequirement;
 
 #[path = "state_control.rs"]
 mod control;
@@ -56,6 +57,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    cognitive_owner_requirement: CognitiveOwnerRequirement,
     runs: Mutex<AgentRunCoordinator>,
     app_server_drain: AppServerDrainHandle,
     pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
@@ -153,10 +155,19 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            cognitive_owner_requirement: CognitiveOwnerRequirement::Required,
             runs: Mutex::new(run_coordinator),
             app_server_drain: AppServerDrainHandle::new(),
             prompt_pipeline,
         })
+    }
+
+    pub(crate) fn with_cognitive_owner_requirement(
+        mut self,
+        requirement: CognitiveOwnerRequirement,
+    ) -> Self {
+        self.cognitive_owner_requirement = requirement;
+        self
     }
 
     pub(crate) fn attach_plasticity_runtime(
@@ -184,6 +195,20 @@ impl AgentdState {
             ));
         }
         *cognitive = Some(store);
+        Ok(())
+    }
+
+    fn cognitive_is_available(&self) -> Result<bool, AgentdError> {
+        Ok(self.cognitive.lock().map_err(poisoned_state)?.is_some())
+    }
+
+    fn mark_cognitive_unavailable(&self) -> Result<(), AgentdError> {
+        self.cognitive.lock().map_err(poisoned_state)?.take();
+        if self.cognitive_owner_requirement == CognitiveOwnerRequirement::Required {
+            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+            runtime.critical_stores_ready = false;
+            runtime.admission_open = false;
+        }
         Ok(())
     }
 
@@ -364,6 +389,7 @@ impl AgentdState {
     #[cfg(feature = "qualification-cognitive-write")]
     pub(crate) fn qualification_turn_authority(&self) -> Result<u64, AgentdError> {
         self.refresh_generation()?;
+        let cognitive_available = self.cognitive_is_available()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         if runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
@@ -372,6 +398,7 @@ impl AgentdState {
             || !runtime.required_ports_ready
             || !runtime.admission_open
             || runtime.fenced
+            || !cognitive_available
         {
             return Err(AgentdError::GenerationFenced(
                 "agentd qualification writer is unavailable until the running App Server is ready"
@@ -386,7 +413,8 @@ impl AgentdState {
     /// current zero-authority revocation baseline is sufficient here; any
     /// effect-authorized composition must replace it before opening admission.
     pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
-        let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+        let critical_stores_ready = self.cognitive_is_available()?
+            || self.cognitive_owner_requirement == CognitiveOwnerRequirement::OptionalOrdinary;
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.critical_stores_ready = critical_stores_ready;
         runtime.revocation_ready = true;
@@ -507,6 +535,7 @@ impl AgentdState {
 
     pub(crate) fn automation_admission_ready(&self) -> Result<bool, AgentdError> {
         self.refresh_generation()?;
+        let cognitive_available = self.cognitive_is_available()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
@@ -514,7 +543,8 @@ impl AgentdState {
             && runtime.revocation_ready
             && runtime.required_ports_ready
             && runtime.admission_open
-            && !runtime.fenced)
+            && !runtime.fenced
+            && cognitive_available)
     }
 
     /// Plasticity proposal admission is available only on the live Running
@@ -522,10 +552,12 @@ impl AgentdState {
     /// proposal owner with the same lifecycle boundary as other Agentd work.
     pub(crate) fn plasticity_admission_ready(&self) -> Result<bool, AgentdError> {
         self.refresh_generation()?;
+        let cognitive_available = self.cognitive_is_available()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
-            && !runtime.fenced)
+            && !runtime.fenced
+            && cognitive_available)
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
