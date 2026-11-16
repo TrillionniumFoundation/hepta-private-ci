@@ -1,0 +1,119 @@
+{
+  "read": {
+    "audit_recorded": true,
+    "job_id": "1a1e4cd7a25-392-37e5",
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "eof": true,
+      "next_offset": 718,
+      "offset": 0,
+      "size": 718,
+      "text": "{\"directory\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01\", \"directory_mode\": \"0o555\", \"files\": {\"export_run_v2.py\": {\"bytes\": 15611, \"git_blob\": \"962995a2842d3e9b223825851e6f5aab04dad795\", \"mode\": \"0o444\", \"sha256\": \"6e5cddb74338de64bf648337fa0e204f4ca3f7cafa8bb9e05dbc6c321a936821\"}, \"restore_run_v2.py\": {\"bytes\": 15985, \"git_blob\": \"1da29780f43fdfeef1eff24c935744118fc43f9e\", \"mode\": \"0o444\", \"sha256\": \"385a53a5c286365d800a6c3559d275768a802ba181e4cc80e1b224d6fecfe6d0\"}}, \"receipt_path\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01/TOOL_IDENTITIES.json\", \"receipt_sha256\": \"fa0a58578e2e538c3313597e61a3a912644336c3672aeea407d9641cbd7d3aea\", \"status\": \"COMPLETE\"}\n"
+    }
+  },
+  "remote_receipt": {
+    "create_only": true,
+    "created_at_ns": 1794840035252968400,
+    "directory": "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01",
+    "export_or_restore_performed": false,
+    "files": {
+      "export_run_v2.py": {
+        "bytes": 15611,
+        "git_blob": "962995a2842d3e9b223825851e6f5aab04dad795",
+        "mode": "0o444",
+        "sha256": "6e5cddb74338de64bf648337fa0e204f4ca3f7cafa8bb9e05dbc6c321a936821"
+      },
+      "restore_run_v2.py": {
+        "bytes": 15985,
+        "git_blob": "1da29780f43fdfeef1eff24c935744118fc43f9e",
+        "mode": "0o444",
+        "sha256": "385a53a5c286365d800a6c3559d275768a802ba181e4cc80e1b224d6fecfe6d0"
+      }
+    },
+    "host": "ai395",
+    "mac_format_receipt_sha256": "d33220be14708f557df2ca08e458883099488a531826dce71b09476c3f426cf4",
+    "read_only_files": true,
+    "run_or_c_content_read": false,
+    "schema": "hepta.archive-tools.upload.v2",
+    "source_git_commit": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+    "source_package_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+    "status": "COMPLETE"
+  },
+  "remote_receipt_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/archive-tools-v2-01/TOOL_IDENTITIES.json",
+  "remote_receipt_sha256": "fa0a58578e2e538c3313597e61a3a912644336c3672aeea407d9641cbd7d3aea",
+  "start": {
+    "audit_recorded": true,
+    "job": {
+      "args": [
+        "-"
+      ],
+      "created_unix_ms": 1794840033829,
+      "cwd": null,
+      "env_keys": [],
+      "executable": "/usr/bin/python3",
+      "execution_mode": "operator",
+      "host": "ai395",
+      "id": "1a1e4cd7a25-392-37e5",
+      "idempotency_key": "hepta-e1e6-v2-archive-tools-upload-20261116-0c078a-01",
+      "launch_error": null,
+      "launch_state": "launched",
+      "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1e4cd7a25-392-37e5",
+      "request_digest": "5e97412cc796ab5e32405ce539625e7014c1d2737157e182c0c590ec9431d172",
+      "request_fingerprint": 6815988221631442000,
+      "ssh_target": "ai395-lan",
+      "system_jobctl": false,
+      "unit": "hepta-runtime-job-1a1e4cd7a25-392-37e5"
+    },
+    "launch": {
+      "backend": "systemd",
+      "launcher_pid": null,
+      "ok": true,
+      "unit": "hepta-runtime-job-1a1e4cd7a25-392-37e5"
+    },
+    "local_record_pending": false,
+    "reused": false
+  },
+  "status": {
+    "at_unix_ms": 1794840035291,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1e4cd7a25-392-37e5",
+    "launch_nonce": "98ccb4a7f85c1f21182debc7715a6c28",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 718,
+        "stored": 718
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

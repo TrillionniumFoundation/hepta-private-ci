@@ -1,0 +1,1503 @@
+{
+  "schema": "hepta.repository-study.source-publication.v2",
+  "source_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+  "base_commit": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+  "base_tree": "0a7680a0c9c3bc051cd265276ad25f6044cda7f0",
+  "base_branch": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+  "python_files": 44,
+  "plan_path": "/workspace/scratch/0c078af77c37/v2_publication_plan.json",
+  "blobs": {
+    "scripts/cell_experiments/data.py": "1f32cb00fb815ced989580a31dd8d39424d3e1e8",
+    "scripts/cell_experiments/chat_protocol.py": "dfb0d33ed6e1aa48e55f81641a4c63f87e207aee",
+    "scripts/cell_experiments/coding_sft.py": "8ccaaf2443a6aa2893500aad89a70d83a7b1dbb7",
+    "scripts/cell_experiments/test_chat_protocol.py": "a91ae3963f0fd4f619a2096a14a05ef1da18067f",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/HEPTA_SOURCE_INDEX.json": "d6871a7f207ddbaecfa823b48ecb2f363c9c1670",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/catalog-open-pre-multistep.json": "daa6b5dca577d8b6aee647501b50f263a11f6a1d",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/licenses/chain.txt": "e840ea92bc6f4d42cfba4f94ac5893ab8b2e3144",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/licenses/hepta.txt": "4606e72e042564097e8780d66c1d4dcb611869bd",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_host_budget_feasibility.py.txt": "17d84340d227291e867516b711b99f1ae018cfa7",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_llm_answer_eos_task_research_v4.py.txt": "1c304731176937b225efc65d16d392817617806a",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_qualification_runtime.py.txt": "7865f55cb80523b04ae623c38f05fc7567ee71e8",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_bundle.py.txt": "9f0b4270f49a45a568f18379e10a8268f6a18de6",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_cord_evidence.py.txt": "86e7a2e0f8a9731038a439d8e5708a78ee86854e",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_deterministic.py.txt": "ddcb9121d3ac13719d65594f65782dc6d778bcca",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_maintenance_tasks.py.txt": "4cd596d9060a4463a31abff7b670279a5c9f8e34",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_readout_credit.py.txt": "a22964afd10da4a9659453e03e3bbfbdb00e1b02",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_semantic.py.txt": "167d4ba88349b7a6826e1f6f7082c2f5f6555609",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_stem_credit_support.py.txt": "6adbde56c1cb50b4c595b70c8870697135c4260c",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_stem_plastic_study.py.txt": "a31cd6b37321fc892bfc3d9a850303f4f93cf851",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_temporal.py.txt": "dac7f13b43f110bb3ccc3b6eb5563903b940695a",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/sources/warmup.py.txt": "a02fbdcd2d0ef3062c4a5e3408f702f1a00fdea1",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/catalog.json": "030941ac4bbb962c606bcc35998992f58c41fa38",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/catalog-C.sealed.json": "5a4c3d2a3aa5e90a4e5876a56b6e7e02a9268d9c",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/specs-open.json": "d853b052a1108ac975d18e8717d8fc87199e7a48",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/specs-confirmation.json": "7a1356fcb03f16e5f447fd85f24746963d9fdcc3",
+    "qualification/cell-experiments-v2-20261116/task-fixtures/specs-warmup.json": "4a1f1ed5cb681571b079f838f50de0a643d77cab",
+    "scripts/cell_experiments/repo_execution.py": "f6b4b82f6aac21875c27813762a7d03dc1a0b125",
+    "scripts/cell_experiments/repo_tasks.py": "46c2dc2b6772a4fe7b3e92e4ae2e405b72562d16",
+    "scripts/cell_experiments/test_repo_execution.py": "e57f7a6eaaf5bc9324ada5391c385e1e1106b196",
+    "scripts/cell_experiments/repo_interaction_v2.py": "6b7712e1879bac41b6ce533fd999521a7659e6d3",
+    "scripts/cell_experiments/test_repo_interaction_v2.py": "18a42c8990d0e921651de54cf0dbb6b670e4ef47",
+    "scripts/cell_experiments/adapter_mix_v2.py": "d34b8323a06e8c520505ab85b825005f0b82ff75",
+    "scripts/cell_experiments/test_adapter_mix_v2.py": "55ab92ca9a4e2459dff6e0b6195a5217f5a81820",
+    "scripts/cell_experiments/circuit_v2.py": "63e3da539ccbded0920000fecb3a7dce799b99ea",
+    "scripts/cell_experiments/circuit_study_v2.py": "8b9a41aa4116a1098f67509fbc44f99ac7d3fa70",
+    "scripts/cell_experiments/test_circuit_v2.py": "b289959f53975138aa6e76180ea0f1a9fad0afe1",
+    "scripts/cell_experiments/circuit_task_bindings_v2.py": "3fa0bc82805b5acbbbdb2ea2775c3ce949fe6108",
+    "scripts/cell_experiments/circuit_task_readout_v2.py": "1c11b926b4d3037f1275179befab827e62273097",
+    "scripts/cell_experiments/test_circuit_task_readout_v2.py": "ed5431ce0870ead0d87d46747504b13c748e5589",
+    "scripts/cell_experiments/study_v2.py": "9e55d53f105201f05f0a615ffd0b47cc28d92dbf",
+    "scripts/cell_experiments/stage_resources_v2.py": "7964a0a0f146b3707879c75e5eb62ea62aa3b294",
+    "scripts/cell_experiments/study_v2_evidence.py": "1545a727ecaa74d374ad28b4369762569328b967",
+    "scripts/cell_experiments/study_v2_reporting.py": "f3391ddf9a49a74aee05c9b7a322b040589a532b",
+    "scripts/cell_experiments/study_v2_support.py": "85a62561c1df2f75b32313f385788ae64b6e71f1",
+    "scripts/cell_experiments/run_study_v2.py": "02e4ccce86e7abc962b6c25e743d77a8e838bfe0",
+    "scripts/cell_experiments/study_v2_confirm.py": "a17a70125027cc243a569ec241758a39a6df2803",
+    "scripts/cell_experiments/test_study_v2.py": "e866a2ed757988d21b5c493c236bbe2bc952aa35",
+    "scripts/cell_experiments/test_study_v2_confirm.py": "c4f31e7c2ec7d6df64e16278c2c9d76417407b3a",
+    "scripts/cell_experiments/README.md": "60dc63e15c53a500aa1893096b857d52ed6164b3",
+    "scripts/cell_experiments/README_V2.md": "7b9f57b29e14b79e7d852c3a218de8089c980d79",
+    ".github/workflows/cell-experiments.yml": "07f233486b5f00f1b54ae3bcf65c5e0ea79ae6a6",
+    "qualification/cell-experiments-v2-20261116/SOURCE_FREEZE.json": "a83cfb5fad315944fd8fb403be6cafec18184574",
+    "qualification/cell-experiments-v2-20261116/FORMAT.json": "e8a48acb4a86db1dba272dbab87a3ad6791ceaf9",
+    "qualification/cell-experiments-v2-20261116/BEFORE_FORMAT.json": "67c0758e45b624220af9b4f4a73d2b4c031e0e0c",
+    "qualification/cell-experiments-v2-20261116/FORMAT_WORKSPACE_PREPARATION.json": "e8d71716c030b1ef7e1f4669e6449562556f871a",
+    "qualification/cell-experiments-v2-20261116/prepare_formatter_workspace.py": "b11b7e1dd04dcbdeb0aa41bad151fdff541b8500"
+  },
+  "stages": [
+    {
+      "stage": 1,
+      "name": "native-protocol",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s01",
+      "parent_commit": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "base_tree": "0a7680a0c9c3bc051cd265276ad25f6044cda7f0",
+      "base_branch": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+      "changed_lines": 300,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/data.py",
+        "scripts/cell_experiments/chat_protocol.py",
+        "scripts/cell_experiments/coding_sft.py"
+      ],
+      "tree": "a5280e375df15fcb18cfc13224ed20e77606ef2c",
+      "commit": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+      "branch_created": true,
+      "branch_result": {
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s01"
+      },
+      "pr": 6417,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6417",
+      "pr_result": {
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6417",
+        "number": 6417,
+        "state": "open",
+        "merged": false,
+        "mergeable": false,
+        "draft": true,
+        "body": "## 问题与变化\n\n旧版的自定义文本分隔不能保证训练前缀等于模型实际生成前缀。本阶段使用固定 tokenizer 的聊天模板，按每个受监督 assistant 轮次构造训练例，保持用户、工具观察与学生失败尝试的 loss mask；按原记录轮换目标轮次，避免多动作记录得到额外权重。旧版协议仍可读取。\n\n## 分层范围\n\n这是 v2 源码栈第 1/17 层，基于 #6416；本层修改 300 行，文件：\n\n- `scripts/cell_experiments/data.py`\n- `scripts/cell_experiments/chat_protocol.py`\n- `scripts/cell_experiments/coding_sft.py`\n\n## 验证与边界\n\n完整冻结候选在格式化前通过 85 个专用完整性测试；格式化前后 44 个 Python 文件的 AST 相同。原生 tokenizer 预检已验证 JSON、Unicode、前导空白和两轮精确前缀；全部 A 训练样例及两次失败尝试的合成预算检查通过。本层的针对性测试在下一层提交，完整研究配置和源码冻结回执在第 17 层。这里不把完整候选的 85 项测试计作本层 CI 结果。\n\n这组 PR 只发布研究源码和固定任务材料，实际运行的权重、输出和结果将单独保留。任务由同一控制方编写与划分，C 不是独立托管的数据。去中心化生产系统、真实用户增长和基础模型能力结论仍为 **BLOCKED**；完整系统成本尚不确定。所有阶段为 Draft，不自动合并。",
+        "title": "[E1–E6 v2 01/17] 对齐轨迹 SFT 与实际生成前缀",
+        "base": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+        "base_sha": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+        "head": "codex/cell-experiments-v2-20261116-0c078a-s01",
+        "head_sha": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+        "head_repo_id": 1320694176,
+        "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "merge_commit_sha": null,
+        "user": {
+          "login": "ProfHepta",
+          "name": "ProfHepta",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+          "id": 102159240
+        },
+        "requested_reviewers": null,
+        "requested_team_reviewers": null,
+        "diff": null,
+        "comments": null,
+        "created_at": "2026-11-16T14:28:37Z",
+        "updated_at": "2026-11-16T14:28:37Z",
+        "closed_at": null,
+        "merged_at": null,
+        "commits": 1,
+        "changed_files": 3,
+        "additions": 292,
+        "deletions": 8,
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6417",
+        "display_title": "[E1–E6 v2 01/17] 对齐轨迹 SFT 与实际生成前缀"
+      }
+    },
+    {
+      "stage": 2,
+      "name": "native-protocol-tests",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s02",
+      "parent_commit": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+      "base_tree": "a5280e375df15fcb18cfc13224ed20e77606ef2c",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s01",
+      "changed_lines": 359,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/test_chat_protocol.py"
+      ],
+      "tree": "b1f148d8e254555b116d31ad42eb857c30375b6d",
+      "commit": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+      "branch_created": true,
+      "pr": 6418,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6418",
+      "pr_snapshot": {
+        "number": 6418,
+        "head_sha": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+        "base_sha": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+        "draft": true,
+        "changed_files": 1,
+        "additions": 359,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:29:51Z"
+      }
+    },
+    {
+      "stage": 3,
+      "name": "pinned-source-fixtures",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s03",
+      "parent_commit": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+      "base_tree": "b1f148d8e254555b116d31ad42eb857c30375b6d",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s02",
+      "changed_lines": 4149,
+      "mechanical_materialization": true,
+      "paths": [
+        "qualification/cell-experiments-v2-20261116/task-fixtures/HEPTA_SOURCE_INDEX.json",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/catalog-open-pre-multistep.json",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/licenses/chain.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/licenses/hepta.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_host_budget_feasibility.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_llm_answer_eos_task_research_v4.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_qualification_runtime.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_bundle.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_cord_evidence.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_deterministic.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_maintenance_tasks.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_readout_credit.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_semantic.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_stem_credit_support.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_stem_plastic_study.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_temporal.py.txt",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/sources/warmup.py.txt"
+      ],
+      "tree": "10ff530ffbf92be603d3080f21ede0aa5ab2130d",
+      "commit": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+      "branch_created": true,
+      "pr": 6419,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6419",
+      "pr_snapshot": {
+        "number": 6419,
+        "head_sha": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+        "base_sha": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+        "draft": true,
+        "changed_files": 17,
+        "additions": 4149,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:29:57Z"
+      }
+    },
+    {
+      "stage": 4,
+      "name": "frozen-task-catalogs",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s04",
+      "parent_commit": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+      "base_tree": "10ff530ffbf92be603d3080f21ede0aa5ab2130d",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s03",
+      "changed_lines": 577,
+      "mechanical_materialization": false,
+      "paths": [
+        "qualification/cell-experiments-v2-20261116/task-fixtures/catalog.json",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/catalog-C.sealed.json",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/specs-open.json",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/specs-confirmation.json",
+        "qualification/cell-experiments-v2-20261116/task-fixtures/specs-warmup.json"
+      ],
+      "tree": "836be589d130efdca6f4d684389ed72eac1ee73e",
+      "commit": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+      "branch_created": true,
+      "pr": 6420,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6420",
+      "pr_snapshot": {
+        "number": 6420,
+        "head_sha": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+        "base_sha": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+        "draft": true,
+        "changed_files": 5,
+        "additions": 577,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:30:03Z"
+      }
+    },
+    {
+      "stage": 5,
+      "name": "repository-executor",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s05",
+      "parent_commit": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+      "base_tree": "836be589d130efdca6f4d684389ed72eac1ee73e",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s04",
+      "changed_lines": 390,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/repo_execution.py"
+      ],
+      "tree": "d98d2d52920bb8c68544590dd98c1a591c55d202",
+      "commit": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+      "branch_created": true,
+      "pr": 6421,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6421",
+      "pr_snapshot": {
+        "number": 6421,
+        "head_sha": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+        "base_sha": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+        "draft": true,
+        "changed_files": 1,
+        "additions": 390,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:30:09Z"
+      }
+    },
+    {
+      "stage": 6,
+      "name": "task-builder-tests",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s06",
+      "parent_commit": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+      "base_tree": "d98d2d52920bb8c68544590dd98c1a591c55d202",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s05",
+      "changed_lines": 432,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/repo_tasks.py",
+        "scripts/cell_experiments/test_repo_execution.py"
+      ],
+      "tree": "ab91b5233709bb6043994419b11a7d0e9b42666a",
+      "commit": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+      "branch_created": true,
+      "pr": 6422,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6422",
+      "pr_snapshot": {
+        "number": 6422,
+        "head_sha": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+        "base_sha": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 432,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:30:17Z"
+      }
+    },
+    {
+      "stage": 7,
+      "name": "interaction-and-composition",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s07",
+      "parent_commit": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+      "base_tree": "ab91b5233709bb6043994419b11a7d0e9b42666a",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s06",
+      "changed_lines": 484,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/repo_interaction_v2.py",
+        "scripts/cell_experiments/test_repo_interaction_v2.py",
+        "scripts/cell_experiments/adapter_mix_v2.py",
+        "scripts/cell_experiments/test_adapter_mix_v2.py"
+      ],
+      "tree": "60db2e51b43983926bec01a836b67d0624e99400",
+      "commit": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+      "branch_created": true,
+      "pr": 6423,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6423",
+      "pr_snapshot": {
+        "number": 6423,
+        "head_sha": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+        "base_sha": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+        "draft": true,
+        "changed_files": 4,
+        "additions": 484,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:30:25Z"
+      }
+    },
+    {
+      "stage": 8,
+      "name": "matched-circuit-kernels",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s08",
+      "parent_commit": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+      "base_tree": "60db2e51b43983926bec01a836b67d0624e99400",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s07",
+      "changed_lines": 378,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/circuit_v2.py"
+      ],
+      "tree": "5d723e5287c7b0373e4c28dfbdb54875f333a49e",
+      "commit": "c3cf56498c45259493a909548448919afa414a7c",
+      "branch_created": true,
+      "pr": 6424,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6424",
+      "pr_snapshot": {
+        "number": 6424,
+        "head_sha": "c3cf56498c45259493a909548448919afa414a7c",
+        "base_sha": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+        "draft": true,
+        "changed_files": 1,
+        "additions": 378,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:30:31Z"
+      }
+    },
+    {
+      "stage": 9,
+      "name": "circuit-study-tests",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s09",
+      "parent_commit": "c3cf56498c45259493a909548448919afa414a7c",
+      "base_tree": "5d723e5287c7b0373e4c28dfbdb54875f333a49e",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s08",
+      "changed_lines": 543,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/circuit_study_v2.py",
+        "scripts/cell_experiments/test_circuit_v2.py"
+      ],
+      "tree": "6840a31f10ce6228952c959467f22c06957016c1",
+      "commit": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+      "branch_created": true,
+      "pr": 6425,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6425",
+      "pr_snapshot": {
+        "number": 6425,
+        "head_sha": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+        "base_sha": "c3cf56498c45259493a909548448919afa414a7c",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 543,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:30:54Z"
+      }
+    },
+    {
+      "stage": 10,
+      "name": "task-outcome-bindings",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s10",
+      "parent_commit": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+      "base_tree": "6840a31f10ce6228952c959467f22c06957016c1",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s09",
+      "changed_lines": 519,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/circuit_task_bindings_v2.py",
+        "scripts/cell_experiments/circuit_task_readout_v2.py"
+      ],
+      "tree": "62a7ce498d936ef654520d5e9151729f2210b873",
+      "commit": "e21376decc668982988bdc61641294b366cec5c8",
+      "branch_created": true,
+      "pr": 6426,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6426",
+      "pr_snapshot": {
+        "number": 6426,
+        "head_sha": "e21376decc668982988bdc61641294b366cec5c8",
+        "base_sha": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 519,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:31:00Z"
+      }
+    },
+    {
+      "stage": 11,
+      "name": "task-outcome-binding-tests",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s11",
+      "parent_commit": "e21376decc668982988bdc61641294b366cec5c8",
+      "base_tree": "62a7ce498d936ef654520d5e9151729f2210b873",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s10",
+      "changed_lines": 400,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/test_circuit_task_readout_v2.py"
+      ],
+      "tree": "7f956b8f98c858ec2428298b86336f9866e7813f",
+      "commit": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+      "branch_created": true,
+      "pr": 6427,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6427",
+      "pr_snapshot": {
+        "number": 6427,
+        "head_sha": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+        "base_sha": "e21376decc668982988bdc61641294b366cec5c8",
+        "draft": true,
+        "changed_files": 1,
+        "additions": 400,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:31:06Z"
+      }
+    },
+    {
+      "stage": 12,
+      "name": "frozen-study-stages",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s12",
+      "parent_commit": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+      "base_tree": "7f956b8f98c858ec2428298b86336f9866e7813f",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s11",
+      "changed_lines": 460,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/study_v2.py",
+        "scripts/cell_experiments/stage_resources_v2.py"
+      ],
+      "tree": "0a845294d56e2a6c91603f78c6d120cf8201708b",
+      "commit": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+      "branch_created": true,
+      "pr": 6428,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6428",
+      "pr_snapshot": {
+        "number": 6428,
+        "head_sha": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+        "base_sha": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 460,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:31:12Z"
+      }
+    },
+    {
+      "stage": 13,
+      "name": "study-evidence-reporting",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s13",
+      "parent_commit": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+      "base_tree": "0a845294d56e2a6c91603f78c6d120cf8201708b",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s12",
+      "changed_lines": 432,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/study_v2_evidence.py",
+        "scripts/cell_experiments/study_v2_reporting.py"
+      ],
+      "tree": "ab16f7183bad874feafb519a862851290b75df17",
+      "commit": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+      "branch_created": true,
+      "pr": 6429,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6429",
+      "pr_snapshot": {
+        "number": 6429,
+        "head_sha": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+        "base_sha": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 432,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:31:17Z"
+      }
+    },
+    {
+      "stage": 14,
+      "name": "cold-growth-sequence",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s14",
+      "parent_commit": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+      "base_tree": "ab16f7183bad874feafb519a862851290b75df17",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s13",
+      "changed_lines": 430,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/study_v2_support.py",
+        "scripts/cell_experiments/run_study_v2.py"
+      ],
+      "tree": "c684ea9b53aaf87685a7800f9bf8c89473ee8d3c",
+      "commit": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+      "branch_created": true,
+      "pr": 6430,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6430",
+      "pr_snapshot": {
+        "number": 6430,
+        "head_sha": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+        "base_sha": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 430,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:31:48Z"
+      }
+    },
+    {
+      "stage": 15,
+      "name": "confirmation-coordinator",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s15",
+      "parent_commit": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+      "base_tree": "c684ea9b53aaf87685a7800f9bf8c89473ee8d3c",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s14",
+      "changed_lines": 381,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/study_v2_confirm.py"
+      ],
+      "tree": "66688f7062cb78f325f403c77a546f6d4e65af5a",
+      "commit": "02dda520dba03f6639005f16bcded2476524068d",
+      "branch_created": true,
+      "pr": 6431,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6431",
+      "pr_snapshot": {
+        "number": 6431,
+        "head_sha": "02dda520dba03f6639005f16bcded2476524068d",
+        "base_sha": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+        "draft": true,
+        "changed_files": 1,
+        "additions": 381,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:31:55Z"
+      }
+    },
+    {
+      "stage": 16,
+      "name": "study-integration-tests",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s16",
+      "parent_commit": "02dda520dba03f6639005f16bcded2476524068d",
+      "base_tree": "66688f7062cb78f325f403c77a546f6d4e65af5a",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s15",
+      "changed_lines": 366,
+      "mechanical_materialization": false,
+      "paths": [
+        "scripts/cell_experiments/test_study_v2.py",
+        "scripts/cell_experiments/test_study_v2_confirm.py"
+      ],
+      "tree": "24fadd19e0a16fc942796918015d66d7152f1038",
+      "commit": "2a620b20befadb6e450c4546786685fc716e114a",
+      "branch_created": true,
+      "pr": 6432,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6432",
+      "pr_snapshot": {
+        "number": 6432,
+        "head_sha": "2a620b20befadb6e450c4546786685fc716e114a",
+        "base_sha": "02dda520dba03f6639005f16bcded2476524068d",
+        "draft": true,
+        "changed_files": 2,
+        "additions": 366,
+        "deletions": 0,
+        "created_at": "2026-11-16T14:32:01Z"
+      }
+    },
+    {
+      "stage": 17,
+      "name": "documentation-source-freeze",
+      "branch": "codex/cell-experiments-v2-20261116-0c078a-s17",
+      "parent_commit": "2a620b20befadb6e450c4546786685fc716e114a",
+      "base_tree": "24fadd19e0a16fc942796918015d66d7152f1038",
+      "base_branch": "codex/cell-experiments-v2-20261116-0c078a-s16",
+      "changed_lines": 1546,
+      "mechanical_materialization": true,
+      "paths": [
+        "scripts/cell_experiments/README.md",
+        "scripts/cell_experiments/README_V2.md",
+        ".github/workflows/cell-experiments.yml",
+        "qualification/cell-experiments-v2-20261116/SOURCE_FREEZE.json",
+        "qualification/cell-experiments-v2-20261116/FORMAT.json",
+        "qualification/cell-experiments-v2-20261116/BEFORE_FORMAT.json",
+        "qualification/cell-experiments-v2-20261116/FORMAT_WORKSPACE_PREPARATION.json",
+        "qualification/cell-experiments-v2-20261116/prepare_formatter_workspace.py"
+      ],
+      "tree": "8c6b8a46841b23db776618deeea3d001603ea310",
+      "commit": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+      "branch_created": true,
+      "pr": 6433,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6433",
+      "pr_snapshot": {
+        "number": 6433,
+        "head_sha": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+        "base_sha": "2a620b20befadb6e450c4546786685fc716e114a",
+        "draft": true,
+        "changed_files": 8,
+        "additions": 1545,
+        "deletions": 1,
+        "created_at": "2026-11-16T14:32:08Z"
+      }
+    }
+  ],
+  "publication_channel": "GitHub connector after owned Mac local Git read timed out",
+  "independent_scientific_qualification": "BLOCKED",
+  "shared_controller_custody": true,
+  "published_model_results": false,
+  "final_commit": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+  "final_tree": "8c6b8a46841b23db776618deeea3d001603ea310",
+  "final_branch": "codex/cell-experiments-v2-20261116-0c078a-s17",
+  "verification": {
+    "python_git_blobs": {
+      "count": 44,
+      "matched": true,
+      "source_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1"
+    },
+    "published_file_git_blobs": {
+      "count": 56,
+      "matched": true
+    },
+    "branch_refs": {
+      "count": 17,
+      "matched": true
+    },
+    "single_parent_dag": {
+      "count": 17,
+      "matched": true
+    },
+    "frozen_package_python_modified_after_freeze": false,
+    "frozen_sha256_inventory": {
+      "count": 44,
+      "matched": true
+    },
+    "base_ref_unchanged": {
+      "ref": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+      "sha": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "matched": true
+    }
+  },
+  "ci_latest": {
+    "observed_at_utc": "2026-11-16 14:43:12 UTC",
+    "head": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+    "checks": [
+      {
+        "job_id": 133366847136,
+        "name": "Codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133366847136",
+        "started_at": "2026-11-16T14:33:43Z",
+        "completed_at": "2026-11-16T14:34:26Z"
+      },
+      {
+        "job_id": 133366846908,
+        "name": "Blob size policy / Blob size policy",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133366846908",
+        "started_at": "2026-11-16T14:37:25Z",
+        "completed_at": "2026-11-16T14:40:33Z"
+      },
+      {
+        "job_id": 133366844622,
+        "name": "Engineering integrity (Python 3.12; no learning qualification)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751042/job/133366844622",
+        "started_at": "2026-11-16T14:39:22Z",
+        "completed_at": "2026-11-16T14:39:46Z"
+      },
+      {
+        "job_id": 133366800639,
+        "name": "Engineering integrity (Python 3.12; no learning qualification)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886739433/job/133366800639",
+        "started_at": "2026-11-16T14:40:16Z",
+        "completed_at": "2026-11-16T14:40:45Z"
+      }
+    ],
+    "integrity_tests_run": 85,
+    "full_repository_ci_all_green": false,
+    "scope_note": "Dedicated source integrity, blob policy and Codespell only; root separately records broader repository failures.",
+    "integrity_test_seconds": 4.693
+  },
+  "ci_verified_same_python_source": {
+    "head": "2a620b20befadb6e450c4546786685fc716e114a",
+    "run_id": 43886717116,
+    "job_id": 133366723421,
+    "status": "completed",
+    "conclusion": "success",
+    "tests_run": 85,
+    "seconds": 5.125,
+    "final_head_status": "success",
+    "source_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1"
+  },
+  "qualification_receipt_publication": "Prepared for archive-tools metadata layer; final source head and frozen source identity remain unchanged.",
+  "publication_plan": {
+    "schema": "hepta.repository-study.source-publication-plan.v2",
+    "source_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+    "base_commit": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+    "base_tree": "0a7680a0c9c3bc051cd265276ad25f6044cda7f0",
+    "base_branch": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+    "python_files": 44,
+    "changed_python_files": 26,
+    "stages": [
+      {
+        "stage": 1,
+        "name": "native-protocol",
+        "purpose": "Align native chat training with inference; rotate supervised turns within original record groups.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s01",
+        "changed_lines": 300,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/data.py",
+            "bytes": 16163,
+            "sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+            "git_blob": "1f32cb00fb815ced989580a31dd8d39424d3e1e8",
+            "additions": 6,
+            "deletions": 1
+          },
+          {
+            "path": "scripts/cell_experiments/chat_protocol.py",
+            "bytes": 7842,
+            "sha256": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+            "git_blob": "dfb0d33ed6e1aa48e55f81641a4c63f87e207aee",
+            "additions": 196,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/coding_sft.py",
+            "bytes": 23511,
+            "sha256": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+            "git_blob": "8ccaaf2443a6aa2893500aad89a70d83a7b1dbb7",
+            "additions": 90,
+            "deletions": 7
+          }
+        ]
+      },
+      {
+        "stage": 2,
+        "name": "native-protocol-tests",
+        "purpose": "Cover actual generation-prefix boundaries, masking, empty attempts, and exact terminal-target deduplication.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s02",
+        "changed_lines": 359,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/test_chat_protocol.py",
+            "bytes": 14099,
+            "sha256": "19c93cf74ed88c5b0e368b413aba107f358f9c75062c83f78cedcbafedff3340",
+            "git_blob": "a91ae3963f0fd4f619a2096a14a05ef1da18067f",
+            "additions": 359,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 3,
+        "name": "pinned-source-fixtures",
+        "purpose": "Retain pinned repository originals, licenses, source identities and the historical catalog snapshot; copied bytes are a mechanical publication exception.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s03",
+        "changed_lines": 4149,
+        "mechanical_materialization": true,
+        "files": [
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/HEPTA_SOURCE_INDEX.json",
+            "bytes": 3262,
+            "sha256": "db0aa52ef320ca9592963160589cc2d06967b2075c3cf48bd053145e2e35271e",
+            "git_blob": "d6871a7f207ddbaecfa823b48ecb2f363c9c1670",
+            "additions": 1,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/catalog-open-pre-multistep.json",
+            "bytes": 13198,
+            "sha256": "0d8c68bdfcffd0c657fad281fd4eaac8d5cd456094a1a53f60ae7a8adbfe7a47",
+            "git_blob": "daa6b5dca577d8b6aee647501b50f263a11f6a1d",
+            "additions": 345,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/licenses/chain.txt",
+            "bytes": 1082,
+            "sha256": "bcf4436d6bc9926a7dc66035a9253097ecc6b654b588c3268dedf4927e7fa759",
+            "git_blob": "e840ea92bc6f4d42cfba4f94ac5893ab8b2e3144",
+            "additions": 21,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/licenses/hepta.txt",
+            "bytes": 10926,
+            "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+            "git_blob": "4606e72e042564097e8780d66c1d4dcb611869bd",
+            "additions": 201,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_host_budget_feasibility.py.txt",
+            "bytes": 5463,
+            "sha256": "e060c15251b17d3995cd872f51232b8172670e878172d5d5c85a7527c6c66130",
+            "git_blob": "17d84340d227291e867516b711b99f1ae018cfa7",
+            "additions": 115,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_llm_answer_eos_task_research_v4.py.txt",
+            "bytes": 3554,
+            "sha256": "029a95bcf86864bed51765f22745a463c13c37115d58039e6befbc2489f953a9",
+            "git_blob": "1c304731176937b225efc65d16d392817617806a",
+            "additions": 71,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/chain_qualification_runtime.py.txt",
+            "bytes": 6121,
+            "sha256": "cff43eeccc06d7ca8e8cbc533bc04d599ac043af9835efcaff7e324d16f2d5b4",
+            "git_blob": "7865f55cb80523b04ae623c38f05fc7567ee71e8",
+            "additions": 131,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_bundle.py.txt",
+            "bytes": 6940,
+            "sha256": "b9f2cf4c7a5ae5595fb7fcea0ce4a84db5a626bfb24864756194afe21b29cce0",
+            "git_blob": "9f0b4270f49a45a568f18379e10a8268f6a18de6",
+            "additions": 193,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_cord_evidence.py.txt",
+            "bytes": 17970,
+            "sha256": "26748a799145be9d123b509d1bad39ae1ad6e5150590f645d0524a4d4f485798",
+            "git_blob": "86e7a2e0f8a9731038a439d8e5708a78ee86854e",
+            "additions": 448,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_deterministic.py.txt",
+            "bytes": 10750,
+            "sha256": "73a4a199c8bf290c52b54bbb79d915a5123b2813d3fbefa3bca70920dafac1d4",
+            "git_blob": "ddcb9121d3ac13719d65594f65782dc6d778bcca",
+            "additions": 320,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_maintenance_tasks.py.txt",
+            "bytes": 4925,
+            "sha256": "a0864453eeeb7be71f889125c46a6656122f19d75a882944d8d2a2ecaef3fa0f",
+            "git_blob": "4cd596d9060a4463a31abff7b670279a5c9f8e34",
+            "additions": 163,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_readout_credit.py.txt",
+            "bytes": 16474,
+            "sha256": "febfee8e1f7d9aaf50912cddb279eea0e1e8512bf2421a85efbc1fc56b589c26",
+            "git_blob": "a22964afd10da4a9659453e03e3bbfbdb00e1b02",
+            "additions": 434,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_semantic.py.txt",
+            "bytes": 24227,
+            "sha256": "134dcbd903cea0d1bbeae28e13209d7d65a047dd6614f7c6136fd9adf617ca5c",
+            "git_blob": "167d4ba88349b7a6826e1f6f7082c2f5f6555609",
+            "additions": 636,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_stem_credit_support.py.txt",
+            "bytes": 5873,
+            "sha256": "4a596d3bcb0e1d4de2dbbe9df0737df7dd32933be84e001540b8414cad9d5bc3",
+            "git_blob": "6adbde56c1cb50b4c595b70c8870697135c4260c",
+            "additions": 170,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_stem_plastic_study.py.txt",
+            "bytes": 20360,
+            "sha256": "af92a300b9881da421c985b4a5c05ed6edf68cd7f08e64576589413af60f3144",
+            "git_blob": "a31cd6b37321fc892bfc3d9a850303f4f93cf851",
+            "additions": 494,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/hepta_temporal.py.txt",
+            "bytes": 16540,
+            "sha256": "188e148257ffd83c7c844fba4cd80b6e2b511cada904834947944129fd09ddf9",
+            "git_blob": "dac7f13b43f110bb3ccc3b6eb5563903b940695a",
+            "additions": 404,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/sources/warmup.py.txt",
+            "bytes": 79,
+            "sha256": "e2263ce5d65c8d7e3ce1a5f57432c4cb7eda0f80a228024a9e24d097c214d082",
+            "git_blob": "a02fbdcd2d0ef3062c4a5e3408f702f1a00fdea1",
+            "additions": 2,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 4,
+        "name": "frozen-task-catalogs",
+        "purpose": "Publish frozen function-contract catalogs and authored task specs; C remains shared-controller development data, not independent custody.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s04",
+        "changed_lines": 577,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/catalog.json",
+            "bytes": 13761,
+            "sha256": "d57dc0c7cc8e3b54aabbc473b5e9ced596d48afa556a182e9e18b1eb085e5040",
+            "git_blob": "030941ac4bbb962c606bcc35998992f58c41fa38",
+            "additions": 369,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/catalog-C.sealed.json",
+            "bytes": 3964,
+            "sha256": "0a24e531367fbca187c4750cf7068f37e1e0228c96e4a6a2b282dd9c3ab57bcb",
+            "git_blob": "5a4c3d2a3aa5e90a4e5876a56b6e7e02a9268d9c",
+            "additions": 98,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/specs-open.json",
+            "bytes": 10886,
+            "sha256": "638f7de158275c1625fc179dc595e38166451b40a379dd10f11a1f9412941354",
+            "git_blob": "d853b052a1108ac975d18e8717d8fc87199e7a48",
+            "additions": 74,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/specs-confirmation.json",
+            "bytes": 4103,
+            "sha256": "d1b834a7ae7792ab529e1e49af65a5c8877008ab4770ab0a55234e461d3a7627",
+            "git_blob": "7a1356fcb03f16e5f447fd85f24746963d9fdcc3",
+            "additions": 26,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/task-fixtures/specs-warmup.json",
+            "bytes": 546,
+            "sha256": "43375b4d5541f4410e5f3a9605344a2e61ee4c8b0f949c5893096612b4a2db5b",
+            "git_blob": "4a1f1ed5cb681571b079f838f50de0a643d77cab",
+            "additions": 10,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 5,
+        "name": "repository-executor",
+        "purpose": "Execute bounded assertion edits against pinned function subsets and declared incorrect-output controls.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s05",
+        "changed_lines": 390,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/repo_execution.py",
+            "bytes": 14218,
+            "sha256": "ee37e28567944ab542a21926f66957cf663c0ec7e7ceab62a4c30da5fce4282b",
+            "git_blob": "f6b4b82f6aac21875c27813762a7d03dc1a0b125",
+            "additions": 390,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 6,
+        "name": "task-builder-tests",
+        "purpose": "Build source-bound authored reference trajectories and test real semantic acceptance.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s06",
+        "changed_lines": 432,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/repo_tasks.py",
+            "bytes": 10715,
+            "sha256": "428e04fbfa4a2cc78ecd50d3b119426d82d1cbbbdec1ab7c2286460a38e1cf66",
+            "git_blob": "46c2dc2b6772a4fe7b3e92e4ae2e405b72562d16",
+            "additions": 279,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/test_repo_execution.py",
+            "bytes": 6161,
+            "sha256": "f15e1db7d54457b7bc9d9b999811d7c8e4381df6e3b68725b73f9d76219a576d",
+            "git_blob": "e57f7a6eaaf5bc9324ada5391c385e1e1106b196",
+            "additions": 153,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 7,
+        "name": "interaction-and-composition",
+        "purpose": "Retain student retries and observed feedback; materialize exact same-base adapter delta composition with disclosed rank.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s07",
+        "changed_lines": 484,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/repo_interaction_v2.py",
+            "bytes": 9323,
+            "sha256": "26513f13b1bfc9d88ff40ea9234a3222f930a18117f8f966cb9dbbaec0180ae3",
+            "git_blob": "6b7712e1879bac41b6ce533fd999521a7659e6d3",
+            "additions": 244,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/test_repo_interaction_v2.py",
+            "bytes": 3350,
+            "sha256": "70cfcba0d0b608f642c8ef9f2e77bd624926d39b32f6a62ec2da4c926f21c2a7",
+            "git_blob": "18a42c8990d0e921651de54cf0dbb6b670e4ef47",
+            "additions": 90,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/adapter_mix_v2.py",
+            "bytes": 5064,
+            "sha256": "325caacb86a0abe5b1ac66e9a6999cdff960f200ea787d706941e9d020eb9100",
+            "git_blob": "d34b8323a06e8c520505ab85b825005f0b82ff75",
+            "additions": 119,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/test_adapter_mix_v2.py",
+            "bytes": 1177,
+            "sha256": "55117fddd9506d1ae68968292aaaeba95a925f4f4a0d6b9073751f7f6b95b086",
+            "git_blob": "55ab92ca9a4e2459dff6e0b6195a5217f5a81820",
+            "additions": 31,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 8,
+        "name": "matched-circuit-kernels",
+        "purpose": "Provide equal active-parameter and kernel-operation controls for two-Cell paths.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s08",
+        "changed_lines": 378,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/circuit_v2.py",
+            "bytes": 15362,
+            "sha256": "f13f7e0ba50aa12ab68e2e7b48bd0dfaaa788b0378c1620179e1eb99113b5514",
+            "git_blob": "63e3da539ccbded0920000fecb3a7dce799b99ea",
+            "additions": 378,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 9,
+        "name": "circuit-study-tests",
+        "purpose": "Freeze sparse path selection, enforce provenance grouping and exercise cell/edge ablations and budget accounting.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s09",
+        "changed_lines": 543,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/circuit_study_v2.py",
+            "bytes": 13010,
+            "sha256": "e2c5ac63e25fe820edccf774885e913a6b5838ecace9b82d93dc6fce380c66b3",
+            "git_blob": "8b9a41aa4116a1098f67509fbc44f99ac7d3fa70",
+            "additions": 328,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/test_circuit_v2.py",
+            "bytes": 9232,
+            "sha256": "de7d6cd8ead8736ff827289611240d6651a9c22cc79f2c6625dce69201421b0e",
+            "git_blob": "b289959f53975138aa6e76180ea0f1a9fad0afe1",
+            "additions": 215,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 10,
+        "name": "task-outcome-bindings",
+        "purpose": "Join frozen routes to exact cached first-attempt model and semantic-execution receipts without inventing calls or sample counts.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s10",
+        "changed_lines": 519,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/circuit_task_bindings_v2.py",
+            "bytes": 10280,
+            "sha256": "30fc1277db9ebb3986ad386969e0f1cfaafa8889c0e5ef06ce32b782e91da721",
+            "git_blob": "3fa0bc82805b5acbbbdb2ea2775c3ce949fe6108",
+            "additions": 259,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/circuit_task_readout_v2.py",
+            "bytes": 10155,
+            "sha256": "20312e28ddb8adc0e4af88e8a3998ee1b5a3492e6692a0f6d756b6d18f1a5605",
+            "git_blob": "1c11b926b4d3037f1275179befab827e62273097",
+            "additions": 260,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 11,
+        "name": "task-outcome-binding-tests",
+        "purpose": "Test model/input/semantic joins, preserved upstream costs and first-attempt business outcome readout.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s11",
+        "changed_lines": 400,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/test_circuit_task_readout_v2.py",
+            "bytes": 14682,
+            "sha256": "1bde4ed31dbe9620cc16974b3be3c285b1e2c472b756704eb4bf0948a7327cd9",
+            "git_blob": "ed5431ce0870ead0d87d46747504b13c748e5589",
+            "additions": 400,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 12,
+        "name": "frozen-study-stages",
+        "purpose": "Freeze the repository study and retain per-stage resource evidence before training and selection.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s12",
+        "changed_lines": 460,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/study_v2.py",
+            "bytes": 12596,
+            "sha256": "33b32cfa76c66b7d59b8049491168753cac63dd5cf78feecde92632748749f6d",
+            "git_blob": "9e55d53f105201f05f0a615ffd0b47cc28d92dbf",
+            "additions": 397,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/stage_resources_v2.py",
+            "bytes": 2321,
+            "sha256": "486ace04b180516aa3c60cda7b83c16162a805770eed2166abb02eca06bfcc6f",
+            "git_blob": "7964a0a0f146b3707879c75e5eb62ea62aa3b294",
+            "additions": 63,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 13,
+        "name": "study-evidence-reporting",
+        "purpose": "Verify retained observations, model and plan identities and report E1-E3/E6 comparisons.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s13",
+        "changed_lines": 432,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/study_v2_evidence.py",
+            "bytes": 12224,
+            "sha256": "5e7b460722c148067a17166a684d18ded06eeea5dc3f5a2b47981c2bea074720",
+            "git_blob": "1545a727ecaa74d374ad28b4369762569328b967",
+            "additions": 307,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/study_v2_reporting.py",
+            "bytes": 5498,
+            "sha256": "9f0cbc6989939679e1e3c76484a8e1ed53837ce126fcf13493e6ed06064e76b6",
+            "git_blob": "f3391ddf9a49a74aee05c9b7a322b040589a532b",
+            "additions": 125,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 14,
+        "name": "cold-growth-sequence",
+        "purpose": "Execute cold adapter probes, source-growth diagnostics and bounded sequential/parallel orchestration with retained failures.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s14",
+        "changed_lines": 430,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/study_v2_support.py",
+            "bytes": 9720,
+            "sha256": "74bbf8fef8c19fbb9a8968f49ba7596e3238646968f7be711d924c05b4807a64",
+            "git_blob": "85a62561c1df2f75b32313f385788ae64b6e71f1",
+            "additions": 251,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/run_study_v2.py",
+            "bytes": 6822,
+            "sha256": "0f2fe6fe45a27a4aa54450e4f67bc8e5ec66d686cefe9dbfc16e220cd02db237",
+            "git_blob": "02e4ccce86e7abc962b6c25e743d77a8e838bfe0",
+            "additions": 179,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 15,
+        "name": "confirmation-coordinator",
+        "purpose": "Require the external B selection digest before C use; bind cached routing readout and actual E6 execution to frozen choices.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s15",
+        "changed_lines": 381,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/study_v2_confirm.py",
+            "bytes": 14103,
+            "sha256": "7bc9dce5853cccee17fca96d72715ac62d87a8f7970ca61c28a5c0bd5a97ceb6",
+            "git_blob": "a17a70125027cc243a569ec241758a39a6df2803",
+            "additions": 381,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 16,
+        "name": "study-integration-tests",
+        "purpose": "Check real function-contract receipt integration, B choice binding, cold recovery boundaries and C admission mechanics.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s16",
+        "changed_lines": 366,
+        "mechanical_materialization": false,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/test_study_v2.py",
+            "bytes": 6488,
+            "sha256": "4dcb54c3333b18b94a4ace802f3acedcec1e21e0862c4e428fdf75bc4c766080",
+            "git_blob": "e866a2ed757988d21b5c493c236bbe2bc952aa35",
+            "additions": 178,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/test_study_v2_confirm.py",
+            "bytes": 7875,
+            "sha256": "67236682d11b0428a30c44107d8415d64cc3dfe904364cd152cd2eeab4dd14ca",
+            "git_blob": "c4f31e7c2ec7d6df64e16278c2c9d76417407b3a",
+            "additions": 188,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "stage": 17,
+        "name": "documentation-source-freeze",
+        "purpose": "Document the development scope, enable integrity CI and preserve the exact 44-file source freeze and mechanical formatter receipts.",
+        "branch": "codex/cell-experiments-v2-20261116-0c078a-s17",
+        "changed_lines": 1546,
+        "mechanical_materialization": true,
+        "files": [
+          {
+            "path": "scripts/cell_experiments/README.md",
+            "bytes": 11985,
+            "sha256": "6813a7adc7d319d39b89a72f0a6c566ee65d1c080fdf4bb61def3a4e275c7345",
+            "git_blob": "60dc63e15c53a500aa1893096b857d52ed6164b3",
+            "additions": 2,
+            "deletions": 0
+          },
+          {
+            "path": "scripts/cell_experiments/README_V2.md",
+            "bytes": 7375,
+            "sha256": "ff4d22b938f30a6e4bbbbde63cc0a9c096ea37ff3ffb89e25189512c9713a60e",
+            "git_blob": "7b9f57b29e14b79e7d852c3a218de8089c980d79",
+            "additions": 118,
+            "deletions": 0
+          },
+          {
+            "path": ".github/workflows/cell-experiments.yml",
+            "bytes": 3135,
+            "sha256": "c8bfed0d2111d26edc35ace35068cb661670784e6ef032b0ce564571a3121ec6",
+            "git_blob": "07f233486b5f00f1b54ae3bcf65c5e0ea79ae6a6",
+            "additions": 5,
+            "deletions": 1
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/SOURCE_FREEZE.json",
+            "bytes": 4663,
+            "sha256": "743d4d8de745460d3295b912ceb7204868f623e1bad2e82fbc43c83cdab8c11b",
+            "git_blob": "a83cfb5fad315944fd8fb403be6cafec18184574",
+            "additions": 1,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/FORMAT.json",
+            "bytes": 52735,
+            "sha256": "f1c7b184154c2451635c51fff57d9d7b3f725ba6788e734781d9941a847c440b",
+            "git_blob": "e8a48acb4a86db1dba272dbab87a3ad6791ceaf9",
+            "additions": 955,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/BEFORE_FORMAT.json",
+            "bytes": 10400,
+            "sha256": "5b9ed30f485fec592c840c021a80a220e28ac7f11a5121e2caeadf0b6383cf26",
+            "git_blob": "67c0758e45b624220af9b4f4a73d2b4c031e0e0c",
+            "additions": 184,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/FORMAT_WORKSPACE_PREPARATION.json",
+            "bytes": 9453,
+            "sha256": "aa4c3b1aa8c5d127ac71f8546e4f74bed09648c21f190f5ed93daf6af33bd547",
+            "git_blob": "e8d71716c030b1ef7e1f4669e6449562556f871a",
+            "additions": 211,
+            "deletions": 0
+          },
+          {
+            "path": "qualification/cell-experiments-v2-20261116/prepare_formatter_workspace.py",
+            "bytes": 4194,
+            "sha256": "c382413fd31b97a3d9ab9be80900717daaeae2974257b7d2f6ec5d915a6bebec",
+            "git_blob": "b11b7e1dd04dcbdeb0aa41bad151fdff541b8500",
+            "additions": 69,
+            "deletions": 0
+          }
+        ]
+      }
+    ],
+    "independent_scientific_qualification": "BLOCKED",
+    "shared_controller_custody": true,
+    "publication_reads_C_as_bytes_only": true,
+    "models_or_actual_run_results_published_here": false
+  },
+  "final_checks_observed_at_utc": "2026-11-16 14:43:12 UTC",
+  "final_scoped_checks": [
+    {
+      "job_id": 133366847136,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133366847136",
+      "started_at": "2026-11-16T14:33:43Z",
+      "completed_at": "2026-11-16T14:34:26Z"
+    },
+    {
+      "job_id": 133366846908,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133366846908",
+      "started_at": "2026-11-16T14:37:25Z",
+      "completed_at": "2026-11-16T14:40:33Z"
+    },
+    {
+      "job_id": 133366844622,
+      "name": "Engineering integrity (Python 3.12; no learning qualification)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751042/job/133366844622",
+      "started_at": "2026-11-16T14:39:22Z",
+      "completed_at": "2026-11-16T14:39:46Z"
+    },
+    {
+      "job_id": 133366800639,
+      "name": "Engineering integrity (Python 3.12; no learning qualification)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886739433/job/133366800639",
+      "started_at": "2026-11-16T14:40:16Z",
+      "completed_at": "2026-11-16T14:40:45Z"
+    }
+  ],
+  "ci_latest_note": "Exact final source head passed the dedicated 85-test integrity job, blob policy and Codespell. Earlier snapshots and logs remain historical; broader repository CI is not claimed all-green.",
+  "complete_source_published": true,
+  "full_repository_ci_status": "Not required for this source publication; no claim of all-green CI.",
+  "no_existing_refs_updated": true,
+  "no_merges_performed": true,
+  "no_force_pushes_performed": true,
+  "initial_publication_receipt_sha256": "06651ebe4bca7dac18098251df60434be1cec52db8d9364f1fe6da299ff3381d",
+  "ci_initial_snapshot": {
+    "final_checks_observed_at_utc": "2026-11-16 14:38:21 UTC",
+    "final_scoped_checks": [
+      {
+        "job_id": 133366847136,
+        "name": "Codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133366847136",
+        "started_at": "2026-11-16T14:33:43Z",
+        "completed_at": "2026-11-16T14:34:26Z"
+      },
+      {
+        "job_id": 133366846908,
+        "name": "Blob size policy / Blob size policy",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751098/job/133366846908",
+        "started_at": "2026-11-16T14:37:25Z",
+        "completed_at": null
+      },
+      {
+        "job_id": 133366844622,
+        "name": "Engineering integrity (Python 3.12; no learning qualification)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751042/job/133366844622",
+        "started_at": "2026-11-16T14:32:13Z",
+        "completed_at": null
+      },
+      {
+        "job_id": 133366800639,
+        "name": "Engineering integrity (Python 3.12; no learning qualification)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886739433/job/133366800639",
+        "started_at": "2026-11-16T14:32:09Z",
+        "completed_at": null
+      }
+    ],
+    "ci_latest": [
+      {
+        "run_id": 43886751075,
+        "name": "Hepta architecture convergence",
+        "status": "queued",
+        "conclusion": null,
+        "event": "pull_request",
+        "jobs": [
+          {
+            "id": 133366845236,
+            "name": "Architecture convergence (source-head)",
+            "status": "queued",
+            "conclusion": null,
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751075/job/133366845236"
+          },
+          {
+            "id": 133366845632,
+            "name": "Architecture convergence (base-merge)",
+            "status": "queued",
+            "conclusion": null,
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751075/job/133366845632"
+          }
+        ]
+      },
+      {
+        "run_id": 43886751104,
+        "name": "v8-canary",
+        "status": "queued",
+        "conclusion": null,
+        "event": "pull_request",
+        "jobs": [
+          {
+            "id": 133366845631,
+            "name": "metadata",
+            "status": "queued",
+            "conclusion": null,
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751104/job/133366845631"
+          }
+        ]
+      },
+      {
+        "run_id": 43886751042,
+        "name": "Cell experiments engineering integrity",
+        "status": "queued",
+        "conclusion": null,
+        "event": "pull_request",
+        "jobs": [
+          {
+            "id": 133366844622,
+            "name": "Engineering integrity (Python 3.12; no learning qualification)",
+            "status": "queued",
+            "conclusion": null,
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886751042/job/133366844622"
+          }
+        ]
+      },
+      {
+        "run_id": 43886739433,
+        "name": "Cell experiments engineering integrity",
+        "status": "queued",
+        "conclusion": null,
+        "event": "push",
+        "jobs": [
+          {
+            "id": 133366800639,
+            "name": "Engineering integrity (Python 3.12; no learning qualification)",
+            "status": "queued",
+            "conclusion": null,
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43886739433/job/133366800639"
+          }
+        ]
+      }
+    ],
+    "ci_latest_note": "Final-head Codespell passed; blob policy running and both integrity runs queued at observation. Stage16, containing the exact same 44 Python Git blobs and task fixtures, passed 85 integrity tests."
+  }
+}

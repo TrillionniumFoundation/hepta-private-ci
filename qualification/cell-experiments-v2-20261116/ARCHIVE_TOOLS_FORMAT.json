@@ -1,0 +1,194 @@
+{
+  "all_ast_equal": true,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--",
+        "qualification/cell-experiments-v2-20261116/export_run_v2.py",
+        "qualification/cell-experiments-v2-20261116/restore_run_v2.py",
+        "qualification/cell-experiments-v2-20261116/test_archive_tools_v2.py"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.021890834032092243
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a/codex-rs",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.44471462501678616
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ruff 0.15.13\n",
+      "wall_seconds": 0.012154957978054881
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--config",
+        "scripts/pyproject.toml",
+        "qualification/cell-experiments-v2-20261116/export_run_v2.py",
+        "qualification/cell-experiments-v2-20261116/restore_run_v2.py",
+        "qualification/cell-experiments-v2-20261116/test_archive_tools_v2.py"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "3 files reformatted\n",
+      "wall_seconds": 0.018598207971081138
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--",
+        "qualification/cell-experiments-v2-20261116/export_run_v2.py",
+        "qualification/cell-experiments-v2-20261116/restore_run_v2.py",
+        "qualification/cell-experiments-v2-20261116/test_archive_tools_v2.py"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.013061042001936585
+    }
+  ],
+  "completed_at_ns": 1794839939407652000,
+  "helper_files": {
+    "export_run_v2.py": {
+      "after": {
+        "bytes": 15611,
+        "git_blob": "962995a2842d3e9b223825851e6f5aab04dad795",
+        "sha256": "6e5cddb74338de64bf648337fa0e204f4ca3f7cafa8bb9e05dbc6c321a936821"
+      },
+      "ast_equal": true,
+      "ast_sha256": "247103d73c7b0264272f339a942b9b0ccd833977eed61ea730bd3ac0bd055ba7",
+      "before": {
+        "bytes": 13924,
+        "git_blob": "22431debca6479cc525c55591b72a3839d426928",
+        "sha256": "cf547be2cc6a0176c33cdc426962d4be1bae9fedd6a817d4c92016c5e2beadf8"
+      }
+    },
+    "restore_run_v2.py": {
+      "after": {
+        "bytes": 15985,
+        "git_blob": "1da29780f43fdfeef1eff24c935744118fc43f9e",
+        "sha256": "385a53a5c286365d800a6c3559d275768a802ba181e4cc80e1b224d6fecfe6d0"
+      },
+      "ast_equal": true,
+      "ast_sha256": "203c07a008a2b98e825aeb646ae7aa4ae53128e5992618d20be193b65bca5c15",
+      "before": {
+        "bytes": 14243,
+        "git_blob": "a60d8cc1420f3e34350434c9d9ec701bbb084f1f",
+        "sha256": "86e2f4e4685b3e3abdf530da5e8a9b385f4c00c467d09ff53082602803ba74d1"
+      }
+    },
+    "test_archive_tools_v2.py": {
+      "after": {
+        "bytes": 3624,
+        "git_blob": "a2eaf45b4c0eccf4bc3a6985e1c025f5064383b2",
+        "sha256": "eb93c9c5ba09554809e3c5cc66d6a1d1fddbb376f4a370661c3ed4e472ab88aa"
+      },
+      "ast_equal": true,
+      "ast_sha256": "78bedc36c7e81909085b493ff441ec9590fd4473914559e35b425f9c4abec35d",
+      "before": {
+        "bytes": 3197,
+        "git_blob": "be887e5b2024a290fbc925a3412c4194d128bde5",
+        "sha256": "c7cd277004735eb8e1662403cd16fae15ded184b112452285f05c60d3d560d5f"
+      }
+    }
+  },
+  "initial_create_only_upload_failed_before_write": {
+    "export_run_v2.py": {
+      "content": [
+        {
+          "text": "remote helper on hepta-mac-local failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'qualification'",
+          "type": "text"
+        }
+      ],
+      "isError": true,
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      }
+    }
+  },
+  "remote_receipt_sha256": "d33220be14708f557df2ca08e458883099488a531826dce71b09476c3f426cf4",
+  "run_or_c_content_modified": false,
+  "run_or_c_content_read": false,
+  "runtime_job": {
+    "read": {
+      "audit_recorded": true,
+      "job_id": "1a1e4cc063c-392-37e4",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 923,
+        "offset": 0,
+        "size": 923,
+        "text": "{\"all_ast_equal\": true, \"helper_files\": {\"export_run_v2.py\": {\"bytes\": 15611, \"git_blob\": \"962995a2842d3e9b223825851e6f5aab04dad795\", \"sha256\": \"6e5cddb74338de64bf648337fa0e204f4ca3f7cafa8bb9e05dbc6c321a936821\"}, \"restore_run_v2.py\": {\"bytes\": 15985, \"git_blob\": \"1da29780f43fdfeef1eff24c935744118fc43f9e\", \"sha256\": \"385a53a5c286365d800a6c3559d275768a802ba181e4cc80e1b224d6fecfe6d0\"}, \"test_archive_tools_v2.py\": {\"bytes\": 3624, \"git_blob\": \"a2eaf45b4c0eccf4bc3a6985e1c025f5064383b2\", \"sha256\": \"eb93c9c5ba09554809e3c5cc66d6a1d1fddbb376f4a370661c3ed4e472ab88aa\"}}, \"receipt_path\": \"/Users/qianqi/work/hepta-cell-experiments-v2-20261116-0c078a/qualification/cell-experiments-v2-20261116/ARCHIVE_TOOLS_FORMAT.remote.json\", \"receipt_sha256\": \"d33220be14708f557df2ca08e458883099488a531826dce71b09476c3f426cf4\", \"source_package_digest\": \"fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1\", \"status\": \"COMPLETE\"}\n"
+      }
+    },
+    "start": {
+      "content": [
+        {
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-\"\n    ],\n    \"created_unix_ms\": 1794839938620,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/opt/homebrew/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1e4cc063c-392-37e4\",\n    \"idempotency_key\": \"hepta-e1e6-v2-archive-helpers-format-20261116-0c078a-01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1e4cc063c-392-37e4\",\n    \"request_digest\": \"627f8986edf96da9982ba433946998f104a8b643b22f6a4445c8d29a232dc238\",\n    \"request_fingerprint\": 7097542750370360745,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1e4cc063c-392-37e4\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 6315,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1e4cc063c-392-37e4\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "structuredContent": null
+    },
+    "status": {
+      "content": [
+        {
+          "text": "{\n  \"at_unix_ms\": 1794839939441,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1e4cc063c-392-37e4\",\n  \"launch_nonce\": \"0f15f5dce256dccf435e60c7fbd3e5bb\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 923,\n      \"stored\": 923\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}",
+          "type": "text"
+        }
+      ],
+      "isError": false,
+      "structuredContent": null
+    }
+  },
+  "schema": "hepta.archive-tool-format.v2",
+  "source_git_commit": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+  "source_package_bytes_unchanged": true,
+  "source_package_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+  "source_package_files": 44,
+  "started_at_ns": 1794839938889673000,
+  "status": "COMPLETE",
+  "tests_rerun_after_format": false,
+  "wall_seconds": 0.5179828749969602
+}
