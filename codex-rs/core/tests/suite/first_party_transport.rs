@@ -116,6 +116,8 @@ async fn ordinary_loopback_provider_still_strips_internal_metadata() -> Result<(
     let requests = mount_sse_sequence(&server, vec![sse(vec![ev_completed("ordinary")])]).await;
     let test = test_codex()
         .with_config(|config| {
+            // Exercise the ordinary endpoint without the generic mock metadata permit.
+            config.model_provider.mock_internal_chat_metadata = None;
             config
                 .features
                 .enable(Feature::ContentItemKinds)
