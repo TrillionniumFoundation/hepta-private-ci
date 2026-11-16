@@ -1,0 +1,144 @@
+{
+  "actual_run_or_C_read": false,
+  "format_receipt": "DIAGNOSTIC_FORMAT.json",
+  "no_model_or_verifier_calls": true,
+  "planned_command": {
+    "args": [
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/diagnostics-tools-v2-01/diagnose_run_v2.py",
+      "--root",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01",
+      "--logs",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01-receipts",
+      "--source",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/candidate-v2-01",
+      "--output",
+      "/home/qq/hepta-cell-experiments-20261116-0c078a/posthoc-v2-01"
+    ],
+    "env": {
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "2",
+      "OMP_NUM_THREADS": "2",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "host": "ai395",
+    "idempotency_key": "hepta-e1e6-v2-posthoc-diagnostic-execute-20261116-0c078a-01",
+    "timeout_seconds": 300
+  },
+  "root_must_authorize_after_terminal": true,
+  "schema": "hepta.posthoc-diagnostic.preparation.v2",
+  "status": "PREPARED_NOT_EXECUTED",
+  "upload_job": {
+    "read": {
+      "audit_recorded": true,
+      "job_id": "1a1e4e1baa8-392-3805",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 497,
+        "offset": 0,
+        "size": 497,
+        "text": "{\"file\": {\"bytes\": 15973, \"git_blob\": \"d4f20656bd68b5ccedd4ff9883b56536440fbde6\", \"mode\": \"0444\", \"sha256\": \"cd5357a32ccec90d4a355e3ba7d10d4c0daeaeca82ce7f0fde25b2edd61e990f\"}, \"path\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/diagnostics-tools-v2-01/diagnose_run_v2.py\", \"receipt_path\": \"/home/qq/hepta-cell-experiments-20261116-0c078a/diagnostics-tools-v2-01/TOOL_IDENTITY.json\", \"receipt_sha256\": \"4b5c6386a265e7567c9bdfd6b9669c897f334ab0b053a34f9c13a60405db4074\", \"status\": \"COMPLETE\"}\n"
+      }
+    },
+    "start": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-"
+        ],
+        "created_unix_ms": 1794841361064,
+        "cwd": null,
+        "env_keys": [],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "ai395",
+        "id": "1a1e4e1baa8-392-3805",
+        "idempotency_key": "hepta-e1e6-v2-diagnostic-tool-upload-20261116-0c078a-01",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1e4e1baa8-392-3805",
+        "request_digest": "9d0ab5f79bc78a01cbac40c888c66f34126a9f0332f8c96059d939bfa0218916",
+        "request_fingerprint": 11316057088796887000,
+        "ssh_target": "ai395-lan",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1e4e1baa8-392-3805"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1e4e1baa8-392-3805"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "status": {
+      "at_unix_ms": 1794841362384,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1e4e1baa8-392-3805",
+      "launch_nonce": "11ee65f4be3c8b4269408a3ed7aa599a",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 497,
+          "stored": 497
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "upload_receipt": {
+    "create_only": true,
+    "created_at_ns": 1794841362345246500,
+    "diagnostic_executed": false,
+    "file": {
+      "bytes": 15973,
+      "git_blob": "d4f20656bd68b5ccedd4ff9883b56536440fbde6",
+      "mode": "0444",
+      "sha256": "cd5357a32ccec90d4a355e3ba7d10d4c0daeaeca82ce7f0fde25b2edd61e990f"
+    },
+    "format_receipt_sha256": "5c8026c629c75f2a7f10e8dc57871a7113fa37458a2f01fc4dadf1544064b43f",
+    "host": "ai395",
+    "new_model_calls": 0,
+    "new_verifier_calls": 0,
+    "path": "/home/qq/hepta-cell-experiments-20261116-0c078a/diagnostics-tools-v2-01/diagnose_run_v2.py",
+    "run_or_C_data_read": false,
+    "schema": "hepta.posthoc-diagnostic.upload.v2",
+    "source_package_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+    "status": "COMPLETE"
+  },
+  "upload_receipt_sha256": "4b5c6386a265e7567c9bdfd6b9669c897f334ab0b053a34f9c13a60405db4074"
+}
