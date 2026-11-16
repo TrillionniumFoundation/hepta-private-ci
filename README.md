@@ -13,6 +13,8 @@ This repository contains Hepta's control, runtime and organ integration code, to
 
 The guides distinguish target designs from current native implementations. Documentation closure does not establish runtime readiness, device qualification or release approval; those require the corresponding exact-candidate execution evidence.
 
+The readiness index describes coding-entry contracts and evidence boundaries. Documentation readiness does not imply source implementation, runtime activation, production authority, independent acceptance, or release.
+
 ## Verify the development documentation
 
 Run from the repository root:
