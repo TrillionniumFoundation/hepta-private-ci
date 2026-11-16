@@ -1,5 +1,5 @@
 {
-  "schema": "intelligence-source-union-evidence-map-v1",
+  "schema": "intelligence-source-union-evidence-map-v2",
   "archive_original_count": 64,
   "standalone_original_count": 8,
   "gzip_mtime": 0,
@@ -65,36 +65,39 @@
       "original_bytes": 500000,
       "original_sha256": "849809c96d9b8b14b82a5db7fdb372dd825fc2e8a637a6d4d798d666a2770b55",
       "original_git_blob": "de3496442ea31c226052023d4610c71295033776",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.part-000",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "849809c96d9b8b14b82a5db7fdb372dd825fc2e8a637a6d4d798d666a2770b55",
-      "stored_git_blob": "de3496442ea31c226052023d4610c71295033776"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz",
+      "archive_offset": 0
     },
     {
       "original_logical_path": "proof.tar.gz.part-001",
       "original_bytes": 500000,
       "original_sha256": "7f1189bcf3dfc15c7524429257e9e7355a42ee2d8034953f98246763d43195ba",
       "original_git_blob": "9e77f785226b69c4f15a62e1498b037c03e5047f",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.part-001",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "7f1189bcf3dfc15c7524429257e9e7355a42ee2d8034953f98246763d43195ba",
-      "stored_git_blob": "9e77f785226b69c4f15a62e1498b037c03e5047f"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz",
+      "archive_offset": 500000
     },
     {
       "original_logical_path": "proof.tar.gz.part-002",
       "original_bytes": 305554,
       "original_sha256": "06462752f24bb2692a755f95e08af1b88a8cdb534fd113314f043a0095107764",
       "original_git_blob": "6e81e0f4a027757e08527e1ba224b9efe3bc6968",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz.part-002",
-      "storage": "original-binary-part",
-      "stored_bytes": 305554,
-      "stored_sha256": "06462752f24bb2692a755f95e08af1b88a8cdb534fd113314f043a0095107764",
-      "stored_git_blob": "6e81e0f4a027757e08527e1ba224b9efe3bc6968"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/intelligence-source-union/proof.tar.gz",
+      "archive_offset": 1000000
     }
   ],
   "native_scope": "Exact a705+v12 final10+intelligence10 composite candidate; Linux package93/93, no Windows or complete ca77 qualification.",
   "source_union_preserves_incoming_ancestry": false,
-  "additional_branch_heads_covered": 0
+  "additional_branch_heads_covered": 0,
+  "previous_index": {
+    "source_commit": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+    "git_blob": "333a0acec9ead469fb0c0ef52d33e71327f10462",
+    "sha256": "cac8c084773f4a2250b5fcedd752e944f028e57252ed14c37945d8745450f5f1",
+    "bytes": 5446
+  }
 }

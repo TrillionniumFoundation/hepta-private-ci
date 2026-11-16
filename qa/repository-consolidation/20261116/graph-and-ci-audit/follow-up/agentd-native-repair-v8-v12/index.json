@@ -1,5 +1,5 @@
 {
-  "schema": "agentd-native-repair-evidence-map-v1",
+  "schema": "agentd-native-repair-evidence-map-v2",
   "source_base": "a70540b51842034678171fc2278e7b3ecfcf022d",
   "source_scope": "Each historical stage keeps its original input manifests. Only the v12 candidate and its five recorded commands passed; this is not qualification of all Agentd or the repository.",
   "original_count": 29,
@@ -34,22 +34,20 @@
       "original_bytes": 500000,
       "original_sha256": "1aa3c092f427d38d651e9e2d214fd318a47c7e7067a8cdcb7ae7f17690aef4e5",
       "original_git_blob": "38af86b5ddcf842ef3ee4a3f82aac1d137cf4e75",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz.part-000",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "1aa3c092f427d38d651e9e2d214fd318a47c7e7067a8cdcb7ae7f17690aef4e5",
-      "stored_git_blob": "38af86b5ddcf842ef3ee4a3f82aac1d137cf4e75"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz",
+      "archive_offset": 0
     },
     {
       "original_logical_path": "v8/proof.tar.gz.part-001",
       "original_bytes": 226417,
       "original_sha256": "7ba7da6e8a88ba2e7e5397a829dfbe7a354954fcd2bbd6037c9bb87735f89fe0",
       "original_git_blob": "5a50362d78a31d843aff70c165c8d6fdc3a1cc6f",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz.part-001",
-      "storage": "original-binary-part",
-      "stored_bytes": 226417,
-      "stored_sha256": "7ba7da6e8a88ba2e7e5397a829dfbe7a354954fcd2bbd6037c9bb87735f89fe0",
-      "stored_git_blob": "5a50362d78a31d843aff70c165c8d6fdc3a1cc6f"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v8/proof.tar.gz",
+      "archive_offset": 500000
     },
     {
       "original_logical_path": "v9/publication-index.json",
@@ -78,33 +76,30 @@
       "original_bytes": 500000,
       "original_sha256": "4c79772db8454ff7aeba326c4bf30b2b48b1639915ee4d934e1a16e2a5fe39d9",
       "original_git_blob": "5a88b793787bd3fb4ace97c69a0e4e79a3c1e0b0",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.part-000",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "4c79772db8454ff7aeba326c4bf30b2b48b1639915ee4d934e1a16e2a5fe39d9",
-      "stored_git_blob": "5a88b793787bd3fb4ace97c69a0e4e79a3c1e0b0"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz",
+      "archive_offset": 0
     },
     {
       "original_logical_path": "v9/proof.tar.gz.part-001",
       "original_bytes": 500000,
       "original_sha256": "4eceef0e201d7df2831addd050c85c5d1647e41353dd94164d9869d99a0001e9",
       "original_git_blob": "3122aab24f533b1834cd6e70b3d6359780aff600",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.part-001",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "4eceef0e201d7df2831addd050c85c5d1647e41353dd94164d9869d99a0001e9",
-      "stored_git_blob": "3122aab24f533b1834cd6e70b3d6359780aff600"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz",
+      "archive_offset": 500000
     },
     {
       "original_logical_path": "v9/proof.tar.gz.part-002",
       "original_bytes": 107624,
       "original_sha256": "fe50d4a776c48159dd4c9a9b32c01480ea25723565bbec4d5b2427ed7922a642",
       "original_git_blob": "2803b5f87c90cc3632a409792dd6eb3620419720",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz.part-002",
-      "storage": "original-binary-part",
-      "stored_bytes": 107624,
-      "stored_sha256": "fe50d4a776c48159dd4c9a9b32c01480ea25723565bbec4d5b2427ed7922a642",
-      "stored_git_blob": "2803b5f87c90cc3632a409792dd6eb3620419720"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v9/proof.tar.gz",
+      "archive_offset": 1000000
     },
     {
       "original_logical_path": "v10/publication-index.json",
@@ -133,33 +128,30 @@
       "original_bytes": 500000,
       "original_sha256": "d45de3b82f492c920fe688060017afca9e9fd5d4da156e36e6492c4c73becbb3",
       "original_git_blob": "db16d934b87f603a78c0fc799b577a12cfd72b9b",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.part-000",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "d45de3b82f492c920fe688060017afca9e9fd5d4da156e36e6492c4c73becbb3",
-      "stored_git_blob": "db16d934b87f603a78c0fc799b577a12cfd72b9b"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz",
+      "archive_offset": 0
     },
     {
       "original_logical_path": "v10/proof.tar.gz.part-001",
       "original_bytes": 500000,
       "original_sha256": "5097c58183adeb66bb03939f63a56cf2c7d6c4155e35d90fb9e084707c103041",
       "original_git_blob": "3e3b6f398354f8c754c6920a6b84c0802556f2d6",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.part-001",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "5097c58183adeb66bb03939f63a56cf2c7d6c4155e35d90fb9e084707c103041",
-      "stored_git_blob": "3e3b6f398354f8c754c6920a6b84c0802556f2d6"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz",
+      "archive_offset": 500000
     },
     {
       "original_logical_path": "v10/proof.tar.gz.part-002",
       "original_bytes": 99814,
       "original_sha256": "82333ff2a6392cadf500c448c3c9e4dfdd3d648cdcea2a86c7de0c61d74e7152",
       "original_git_blob": "5b96f3b74bd30635e1d1c0c50ede16a3becf8285",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz.part-002",
-      "storage": "original-binary-part",
-      "stored_bytes": 99814,
-      "stored_sha256": "82333ff2a6392cadf500c448c3c9e4dfdd3d648cdcea2a86c7de0c61d74e7152",
-      "stored_git_blob": "5b96f3b74bd30635e1d1c0c50ede16a3becf8285"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v10/proof.tar.gz",
+      "archive_offset": 1000000
     },
     {
       "original_logical_path": "v11-failure/publication-index.json",
@@ -188,33 +180,30 @@
       "original_bytes": 500000,
       "original_sha256": "290961d7c0158e31dc74b53e7abdc11a125300e8ffb48621995099a01a323cbd",
       "original_git_blob": "d05a882034776997594d969735d76bb84655bee6",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.part-000",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "290961d7c0158e31dc74b53e7abdc11a125300e8ffb48621995099a01a323cbd",
-      "stored_git_blob": "d05a882034776997594d969735d76bb84655bee6"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz",
+      "archive_offset": 0
     },
     {
       "original_logical_path": "v11-failure/proof.tar.gz.part-001",
       "original_bytes": 500000,
       "original_sha256": "e90b03a918d035ae62effa689d72ceeefcbe3745cab71e0b251253823e0bee64",
       "original_git_blob": "a3d035be15358ac39a4252d4563337ba814e7df7",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.part-001",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "e90b03a918d035ae62effa689d72ceeefcbe3745cab71e0b251253823e0bee64",
-      "stored_git_blob": "a3d035be15358ac39a4252d4563337ba814e7df7"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz",
+      "archive_offset": 500000
     },
     {
       "original_logical_path": "v11-failure/proof.tar.gz.part-002",
       "original_bytes": 333132,
       "original_sha256": "9f45101f1867aa9011c3d1426eab42d54b3beaa8df4aa72e102f2d88257ba813",
       "original_git_blob": "4b06d6629f503fe472862cc6d597173952df5318",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz.part-002",
-      "storage": "original-binary-part",
-      "stored_bytes": 333132,
-      "stored_sha256": "9f45101f1867aa9011c3d1426eab42d54b3beaa8df4aa72e102f2d88257ba813",
-      "stored_git_blob": "4b06d6629f503fe472862cc6d597173952df5318"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v11-failure/proof.tar.gz",
+      "archive_offset": 1000000
     },
     {
       "original_logical_path": "v12/publication-index.json",
@@ -243,33 +232,30 @@
       "original_bytes": 500000,
       "original_sha256": "813c0e5f357cbbb1a4d15ca3b18ad3006f7b7b8ca384af3f9975eea9ac477d34",
       "original_git_blob": "0a27ff1cf4bbbbf9b2f61e5747cf148a64ca82b4",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.part-000",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "813c0e5f357cbbb1a4d15ca3b18ad3006f7b7b8ca384af3f9975eea9ac477d34",
-      "stored_git_blob": "0a27ff1cf4bbbbf9b2f61e5747cf148a64ca82b4"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz",
+      "archive_offset": 0
     },
     {
       "original_logical_path": "v12/proof.tar.gz.part-001",
       "original_bytes": 500000,
       "original_sha256": "0c0a9cb9a7fd1800cfc7d5e3cd6f2148f22ed2751b5d9898c7a6523dac40fe7c",
       "original_git_blob": "1ad32cda5ffd370f4bf0d482ed906d1dfce3f665",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.part-001",
-      "storage": "original-binary-part",
-      "stored_bytes": 500000,
-      "stored_sha256": "0c0a9cb9a7fd1800cfc7d5e3cd6f2148f22ed2751b5d9898c7a6523dac40fe7c",
-      "stored_git_blob": "1ad32cda5ffd370f4bf0d482ed906d1dfce3f665"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz",
+      "archive_offset": 500000
     },
     {
       "original_logical_path": "v12/proof.tar.gz.part-002",
       "original_bytes": 244534,
       "original_sha256": "8e3f65b43d808df3490b930ae7c6f688f5d50e34e08597666190158f2a3174e7",
       "original_git_blob": "fb74ad83011f9a1c19a9232b3ecfc56ca9cb6383",
-      "stored_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz.part-002",
-      "storage": "original-binary-part",
-      "stored_bytes": 244534,
-      "stored_sha256": "8e3f65b43d808df3490b930ae7c6f688f5d50e34e08597666190158f2a3174e7",
-      "stored_git_blob": "fb74ad83011f9a1c19a9232b3ecfc56ca9cb6383"
+      "storage": "gzip-stream-slice-v1",
+      "storage_index": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/compressed-evidence-storage-v1/storage-index.json",
+      "archive_path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/agentd-native-repair-v8-v12/v12/proof.tar.gz",
+      "archive_offset": 1000000
     },
     {
       "original_logical_path": "v12/desktop-receipt.json",
@@ -326,5 +312,11 @@
       "stored_sha256": "cc47016f3f8390c7e7c387a209e88cf48d17702237e497c8e019701fc90dde00",
       "stored_git_blob": "a02bcd611795554ebf6e6af56b0a990fa377519c"
     }
-  ]
+  ],
+  "previous_index": {
+    "source_commit": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+    "git_blob": "e794b6bda7cdf9a63e2051ecdff75eff1d3164e1",
+    "sha256": "c882b8e675fca83635dae399cf27a89afc76c501352fed814af69ab46d34d2a6",
+    "bytes": 18964
+  }
 }
