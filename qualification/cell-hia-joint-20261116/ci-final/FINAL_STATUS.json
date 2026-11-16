@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.cell.joint-final-status.v1",
+  "source_head": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+  "source_tree": "5d81c485091a73b1d438a15c59c35ec2db27bc8f",
+  "audit_branch": "codex/cell-hia-ci-evidence-20261116-724f",
+  "raw_evidence_commit": "c48ca0c9973355a044f34a519197ce91e5af3475",
+  "raw_evidence_tree": "02c760e25b58a3480f776a13437172aa82d1adf3",
+  "audit_scope": "Evidence and review only; tested source and PR6400 head remain f8.",
+  "candidate_sha256": "b54097ee0d2dc4af3fbdbe46e4e268adad8b381041ab5e164e15c741553e6fe6",
+  "runtime_source": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+  "joint_ci": {
+    "run_id": 43802821002,
+    "job_id": 133086779524,
+    "status": "completed",
+    "conclusion": "success",
+    "completed_at": "2026-11-16T04:23:05Z"
+  },
+  "hia_ci": {
+    "run_id": 43794923319,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "runtime_hygiene_ci": {
+    "run_id": 43801996390,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "runtime_full_ci": {
+    "run_id": 43801996435,
+    "status": "in_progress",
+    "conclusion": null,
+    "snapshot_utc": "2026-11-16T04:48:30Z",
+    "jobs": [
+      {
+        "id": 133084178667,
+        "current_step": "Test in isolated processes",
+        "frozen_mapping_step": "pending"
+      },
+      {
+        "id": 133084178817,
+        "current_step": "Test in isolated processes",
+        "frozen_mapping_step": "pending"
+      }
+    ]
+  },
+  "retained_evidence_review": "PASS",
+  "runtime_config": {
+    "classification": "RECONSTRUCTED_FROM_FROZEN_GENERATOR_AND_RETAINED_INPUTS",
+    "original_config_archived": false,
+    "reconstruction_attempts": 1,
+    "reconstructed_bytes": 1082,
+    "sha256": "3cd6f5979ca0fbf9b94803da50918a18b2175553c9e9024bf537f77a2029ef30",
+    "proof": "config-reconstruction/CONFIG_RECONSTRUCTION_PROOF.json"
+  },
+  "learning": {
+    "memory": {
+      "decision": "NoUpdate",
+      "B_successes": {
+        "candidate": 6,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "A_retention": {
+        "candidate": 6,
+        "frozen": 2
+      },
+      "C_successes": 2,
+      "C_denominator": 8,
+      "local_no_update_complete": true,
+      "cold_exact": true,
+      "validated_training_updates": 16,
+      "reason": "candidate failed one or more predeclared baseline/retention gates",
+      "component_call_p95_ms": 2.700179399999999,
+      "component_call_p99_ms": 3.3094013600000003
+    },
+    "predictor": {
+      "decision": "NoUpdate",
+      "B_successes": {
+        "candidate": 2,
+        "deterministic": 8,
+        "frozen": 2,
+        "no_learning": 2,
+        "no_memory": 2
+      },
+      "A_retention": {
+        "candidate": 2,
+        "frozen": 2
+      },
+      "C_successes": 2,
+      "C_denominator": 8,
+      "local_no_update_complete": true,
+      "cold_exact": true,
+      "validated_training_updates": 16,
+      "reason": "candidate failed one or more predeclared baseline/retention gates",
+      "component_call_p95_ms": 2.7062763999999997,
+      "component_call_p99_ms": 3.17637528
+    }
+  },
+  "actual_runtime": {
+    "original_jobs": 2,
+    "fresh_controller_observations": 2,
+    "second_process_start_calls": 0,
+    "terminal_objects_and_output_exact": true,
+    "campaign_native_completions": 722,
+    "campaign_compile_calls": 208,
+    "campaign_adam_updates": 32,
+    "campaign_no_update": 2,
+    "campaign_adopt": 0,
+    "campaign_unresolved": 0
+  },
+  "costs": {
+    "campaign_cost_scope": "outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
+    "campaign_parent_cpu_seconds": 2.2638494820000004,
+    "campaign_runtime_wall_seconds": 5.784267657999976,
+    "campaign_wall_seconds": 3.203571780000061,
+    "cells": {
+      "memory": {
+        "cold_model_child_cpu_seconds": 0.24101199999999998,
+        "cold_model_child_wall_ns": 243339907,
+        "cold_model_child_wall_seconds": 0.243339907,
+        "component_call_p95_ms": 2.700179399999999,
+        "component_call_p99_ms": 3.3094013600000003,
+        "component_latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "sources": {
+          "cold_model_child": "runtime-joint/campaign-worker/campaign/memory/COLD_PROCESS.json",
+          "component_latencies": "runtime-joint/campaign-readonly-review.json#/review/cells/memory",
+          "training": "runtime-joint/campaign-worker/campaign/RESULT.json#/cells/memory/training"
+        },
+        "training_measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "training_parent_process_cpu_seconds": 0.012652225000000017,
+        "training_wall_seconds": 0.012651231999939228
+      },
+      "predictor": {
+        "cold_model_child_cpu_seconds": 0.211673,
+        "cold_model_child_wall_ns": 213358384,
+        "cold_model_child_wall_seconds": 0.213358384,
+        "component_call_p95_ms": 2.7062763999999997,
+        "component_call_p99_ms": 3.17637528,
+        "component_latency_scope": "component invocation only; excludes owner admission/settlement and task compile",
+        "sources": {
+          "cold_model_child": "runtime-joint/campaign-worker/campaign/predictor/COLD_PROCESS.json",
+          "component_latencies": "runtime-joint/campaign-readonly-review.json#/review/cells/predictor",
+          "training": "runtime-joint/campaign-worker/campaign/RESULT.json#/cells/predictor/training"
+        },
+        "training_measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "training_parent_process_cpu_seconds": 0.01273505500000005,
+        "training_wall_seconds": 0.012733164999986002
+      }
+    },
+    "energy_joules": null,
+    "peak_rss_bytes": null,
+    "runtime_qualifier_wall_seconds": 10.20682456499992
+  },
+  "gates": {
+    "common_candidate": "controlled_runtime_candidate_executed_and_reviewed",
+    "real_bridge": "actual_operator_runtime_entry_and_native_hia_python_gru_complete",
+    "mem_pred_learning": "two_complete_no_update_C_and_cold_recovery",
+    "adopted_new_task_benefit": false,
+    "multiround_retained_benefit": false,
+    "code_optimization_adopted_with_complete_cost_reduction": false,
+    "compatible_idle_readout_migration": "local_control_verified_only",
+    "arbitrary_split_or_inflight_external_effect_migration": false,
+    "capacity_compute_evaluation_matched_long_term_comparison": false,
+    "complete_physical_and_system_cost": false,
+    "ordinary_tool_agent_superiority": false,
+    "ordinary_daemon_qualification": false,
+    "final_use_boundary_qualified": false,
+    "os_process_sandbox_qualified": false,
+    "runtime_binary_build_provenance_verified": false
+  },
+  "limits": {
+    "task_family": "held-out generated instances of four syntax templates; compile-only criterion",
+    "no_memory_control": "intra-task hidden-state reset, not cross-session experience removal",
+    "baseline_saturated": "deterministic baseline 8/8; unchanged strict improvement gate cannot demonstrate adoption benefit on this fixture",
+    "local_fault_controls_intentionally_pending": 2,
+    "outer_timing_windows_nested_do_not_sum": true,
+    "component_latencies_exclude_owner_admission_settlement_and_compile": true,
+    "physical_energy_and_campaign_peak_rss_measured": false,
+    "old_mac_candidate_sha256": "2a8e8759c7e1941f184fde2463a13a9d39dfa9edcf00c8a5ae475ad81dd3b469",
+    "old_mac_candidate_separate": true,
+    "lost_originals_receive_current_evidence_credit": false,
+    "historical_pending_at_publication_records_preserved": true
+  }
+}
