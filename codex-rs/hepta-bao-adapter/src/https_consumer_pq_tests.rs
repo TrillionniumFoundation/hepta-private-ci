@@ -85,11 +85,23 @@ async fn pq_time_and_settlement_cross_the_existing_bao_product_path() {
         .await
         .unwrap();
     assert_eq!(receipt.secret_sha256, request.expected_secret_sha256);
-    let quota = authbus.read().quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 0, 1));
     drop(authbus);
-    let database = db.path().canonicalize().unwrap().join("authbus-authority.sqlite");
-    let checkpoint = checkpoint.path().canonicalize().unwrap().join("authbus-authority-checkpoint.json");
+    let database = db
+        .path()
+        .canonicalize()
+        .unwrap()
+        .join("authbus-authority.sqlite");
+    let checkpoint = checkpoint
+        .path()
+        .canonicalize()
+        .unwrap()
+        .join("authbus-authority-checkpoint.json");
     assert!(matches!(
         AuthBusAuthorityOwner::open(&database, checkpoint.clone(), "bao-product-owner").await,
         Err(AuthBusAuthorityError::CryptoProfileMismatch)
@@ -98,7 +110,8 @@ async fn pq_time_and_settlement_cross_the_existing_bao_product_path() {
         .await
         .unwrap();
     assert_eq!(
-        recovered.read()
+        recovered
+            .read()
             .quota_snapshot(&admission.quota_key)
             .await
             .unwrap(),

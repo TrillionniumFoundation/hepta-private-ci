@@ -1,8 +1,6 @@
 //! Platform I/O preserves original path checks and explicit held-owner inputs.
 
 use super::FinalUseError;
-#[cfg(not(windows))]
-pub(super) use std::fs::File as Directory;
 #[cfg(windows)]
 pub(super) use super::windows_io::Directory;
 #[cfg(windows)]
@@ -17,6 +15,8 @@ pub(super) use super::windows_io::replace_claims;
 pub(super) use super::windows_io::replace_state;
 #[cfg(windows)]
 pub(super) use super::windows_io::validate_windows_prewrite;
+#[cfg(not(windows))]
+pub(super) use std::fs::File as Directory;
 use std::fs::File;
 use std::io::Read;
 #[cfg(not(windows))]

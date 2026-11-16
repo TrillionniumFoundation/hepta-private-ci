@@ -614,7 +614,8 @@ async fn authbus_host(
             AuthBusAuthorityOwner::bootstrap_new(&database, checkpoint, "bao-product-owner").await?
         }
         AuthBusAlgorithm::MlDsa65V2 => {
-            AuthBusAuthorityOwner::bootstrap_new_pq(&database, checkpoint, "bao-product-owner").await?
+            AuthBusAuthorityOwner::bootstrap_new_pq(&database, checkpoint, "bao-product-owner")
+                .await?
         }
     };
     let admin = owner.admin();
@@ -685,7 +686,9 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .unwrap()
         .as_millis() as u64;
     let (_db, _checkpoint, authbus, mut evidence, admission) =
-        authbus_host(&client, &request, now, AuthBusAlgorithm::Ed25519V1).await.unwrap();
+        authbus_host(&client, &request, now, AuthBusAlgorithm::Ed25519V1)
+            .await
+            .unwrap();
     let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
     let effects = authbus.effects();
 
@@ -705,7 +708,11 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .await
         .unwrap();
     assert_eq!(receipt.secret_sha256, request.expected_secret_sha256);
-    let quota = authbus.read().quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 0, 1));
     task.await.unwrap().unwrap();
 }
@@ -730,7 +737,9 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
         .unwrap()
         .as_millis() as u64;
     let (_db, _checkpoint, authbus, mut evidence, admission) =
-        authbus_host(&client, &request, now, AuthBusAlgorithm::Ed25519V1).await.unwrap();
+        authbus_host(&client, &request, now, AuthBusAlgorithm::Ed25519V1)
+            .await
+            .unwrap();
     let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
     let effects = authbus.effects();
 
@@ -752,7 +761,11 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
             ..
         })
     ));
-    let quota = authbus.read().quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
     task.abort();
     let _ = task.await;
