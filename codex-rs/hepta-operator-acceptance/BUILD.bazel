@@ -25,7 +25,6 @@ rust_library(
 
 rust_test(
     name = "hepta-operator-acceptance-tests-bin",
-    tags = ["manual"],
     crate = ":hepta-operator-acceptance-lib",
     rustc_flags = select({
         "@platforms//os:windows": [
@@ -34,6 +33,7 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    tags = ["manual"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
