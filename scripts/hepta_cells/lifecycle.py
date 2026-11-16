@@ -14,6 +14,7 @@ import time
 from typing import Callable
 
 from .population_owner import PopulationPolicy
+from .owner_control import OwnerControl
 
 from .component_types import (
     Budget as Budget,
@@ -36,7 +37,7 @@ from .component_types import (
 )
 
 
-class CellOwner:
+class CellOwner(OwnerControl):
     """SQLite state/journal owner for experiments; host callbacks are trusted.
 
     Budget reservations survive interruption. Readback and qualification ports
@@ -86,6 +87,12 @@ class CellOwner:
                 digest TEXT PRIMARY KEY, partition TEXT NOT NULL, snapshot TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS owner_settings(
                 singleton INTEGER PRIMARY KEY CHECK(singleton=1), limits TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS cancellations(
+                partition TEXT NOT NULL, request TEXT NOT NULL, identity TEXT NOT NULL,
+                PRIMARY KEY(partition,request));
+            CREATE TABLE IF NOT EXISTS migrations(
+                partition TEXT NOT NULL, operation TEXT NOT NULL, fingerprint TEXT NOT NULL,
+                receipt TEXT NOT NULL, PRIMARY KEY(partition,operation));
         """)
         self._begin()
         try:
@@ -711,34 +718,8 @@ class CellOwner:
         return checkpoint
 
     def adopt(self, partition, component, qualification: Qualification):
-        if type(qualification) is not Qualification:
-            raise CellError("host qualification must be a canonical Qualification")
-        expected = (
-            qualification.source_identity,
-            qualification.candidate_identity,
-            qualification.evaluation_digest,
-        )
-        for value in expected:
-            _hex(value)
-        # Freeze caller values before invoking the trusted host callback.
-        checked = Qualification(*expected)
-        identity = self._identity(component)
-        if (
-            expected[1] != identity.digest
-            or self.qualify is None
-            or self.qualify(checked) is not True
-        ):
-            raise CellError("host qualification did not admit this candidate")
-        returned = (
-            checked.source_identity,
-            checked.candidate_identity,
-            checked.evaluation_digest,
-        )
-        for value in returned:
-            _hex(value)
-        if returned != expected or self._identity(component).digest != expected[1]:
-            raise CellError("qualification or candidate changed during host validation")
-        return self._transition(partition, component, identity, expected[0], "adopt")
+        identity, source = self._qualified_identity(component, qualification)
+        return self._transition(partition, component, identity, source, "adopt")
 
     def reset(self, partition, component, expected_identity):
         identity = self._identity(component)
