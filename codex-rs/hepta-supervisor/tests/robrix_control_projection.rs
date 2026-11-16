@@ -12,7 +12,6 @@ use codex_hepta_supervisor::SUPERVISORD_SCHEMA_FILE;
 use codex_hepta_supervisor::generated_robrix_control_artifacts;
 use codex_hepta_supervisor::verify_robrix_control_corpus;
 use codex_hepta_supervisor::write_robrix_control_projection;
-use codex_utils_cargo_bin::find_resource;
 use jsonschema::Keyword;
 use jsonschema::ValidationError;
 use jsonschema::paths::LazyLocation;
@@ -350,7 +349,18 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    let manifest = find_resource!("fixtures/robrix-control-v2/manifest.json")?;
+    let manifest = if option_env!("BAZEL_PACKAGE").is_some() {
+        std::env::var_os("CODEX_TEST_ROBRIX_MANIFEST")
+            .map(std::path::PathBuf::from)
+            .context("Bazel should provide the Robrix fixture manifest")?
+    } else {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("fixtures/robrix-control-v2/manifest.json")
+    };
+    // Normalize the declared input file before enumerating its source directory.
+    let manifest = manifest
+        .canonicalize()
+        .context("canonicalize Robrix fixture manifest")?;
     let root = manifest
         .parent()
         .context("Robrix manifest should have a parent directory")?;

@@ -66,7 +66,7 @@ exec_test_bin() {
     exec "${test_bin}" "$@"
   fi
 }
-
+__RUNFILE_ENV_DIRECT_EXEC__
 libtest_args=("$@")
 if [[ ${#libtest_args[@]} -eq 0 && -n "${TESTBRIDGE_TEST_ONLY:-}" ]]; then
   libtest_args+=("${TESTBRIDGE_TEST_ONLY}")

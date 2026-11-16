@@ -32,6 +32,7 @@ use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordControlFence;
 use codex_hepta_supervisor::SupervisordMutation;
 use codex_hepta_supervisor::SupervisordMutationAccepted;
+use codex_utils_cargo_bin::cargo_bin;
 use core_test_support::responses;
 
 const CHILD_MODE_ENV: &str = "HEPTA_TEST_SUPERVISORD_CHILD";
@@ -85,7 +86,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let sources = root.join("release-sources");
     std::fs::create_dir(&sources)?;
-    let agentd = PathBuf::from(env!("CARGO_BIN_EXE_codex-hepta-agentd"));
+    let agentd = cargo_bin("codex-hepta-agentd")?;
     let source_v1 = agentd_wrapper(&sources, "agentd-v1", &agentd)?;
     let source_v2 = agentd_wrapper(&sources, "agentd-v2", &agentd)?;
     let release_v1 = ReleaseId::parse("agentd-v1")?;

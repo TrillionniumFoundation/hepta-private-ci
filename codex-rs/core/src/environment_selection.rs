@@ -1230,6 +1230,9 @@ url = "ws://127.0.0.1:8765"
             .with_writer(MockWriter::new(buffer))
             .finish();
         let _subscriber_guard = tracing::subscriber::set_default(subscriber);
+        // Keep callsite interest aggregation on the registered-subscriber path
+        // when parallel tests encounter shared spans without this subscriber.
+        let _callsite_guard = tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
 
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1263,6 +1266,7 @@ url = "ws://127.0.0.1:8765"
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
             async move { environments.snapshot().await }
+                .with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
