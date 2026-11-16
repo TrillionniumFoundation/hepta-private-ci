@@ -217,8 +217,31 @@ impl<'a> Reader<'a> {
             .map_err(|_| Error::Binding("material identifier"))?;
         StableId::new(value).map_err(|_| Error::Binding("material identifier"))
     }
+    // HPEXEV01 IDs use u16 lengths; Product and decision commitments use u32.
+    pub(super) fn id_u16(&mut self) -> Result<StableId, Error> {
+        let length = usize::from(u16::from_be_bytes(
+            self.take(/*count*/ 2)?
+                .try_into()
+                .map_err(|_| Error::Binding("material integer"))?,
+        ));
+        if !(1..=128).contains(&length) {
+            return Err(Error::Binding("bounded original execution identifier"));
+        }
+        let value = std::str::from_utf8(self.take(length)?)
+            .map_err(|_| Error::Binding("material identifier"))?;
+        StableId::new(value).map_err(|_| Error::Binding("material identifier"))
+    }
     pub(super) fn ids(&mut self) -> Result<Vec<StableId>, Error> {
         (0..self.count(1024)?).map(|_| self.id()).collect()
+    }
+    // Product qualification v4 uses a u64 vector count; decision v1 uses u32.
+    // Check the full wire value before iterating or narrowing it.
+    pub(super) fn ids_u64(&mut self) -> Result<Vec<StableId>, Error> {
+        let count = self.u64()?;
+        if count > 1024 {
+            return Err(Error::Binding("bounded original material count"));
+        }
+        (0..count).map(|_| self.id()).collect()
     }
     pub(super) fn principal(&mut self) -> Result<AuthenticatedPrincipalV1, Error> {
         Ok(AuthenticatedPrincipalV1 {
@@ -238,3 +261,7 @@ impl<'a> Reader<'a> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_model_material_codec_tests.rs"]
+mod tests;

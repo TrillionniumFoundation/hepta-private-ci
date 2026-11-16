@@ -269,7 +269,24 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
         let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
         let before = cohort.bytes()?;
         if mutation == "expired-window" {
-            cohort.at = cohort.original_config().training_evidence.expires_at;
+            let expires_at = cohort.original_config().training_evidence.expires_at;
+            let expired_at = expires_at
+                .checked_add(/*rhs*/ 1)
+                .ok_or_else(|| anyhow::anyhow!("original training evidence expiry successor"))?;
+            assert!(
+                expired_at
+                    < cohort
+                        .original_config()
+                        .training
+                        .request
+                        .envelope
+                        .expiry_unix_seconds
+            );
+            // The shared signed-evidence contract includes its expiry endpoint.
+            cohort.at = expires_at;
+            assert!(cohort.current().is_ok());
+            assert_eq!(cohort.bytes()?, before);
+            cohort.at = expired_at;
         } else {
             let mut signed = if mutation == "freeze-renewal" {
                 cohort.original_config().freeze_evidence.clone()

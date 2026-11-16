@@ -372,10 +372,10 @@ pub(crate) fn decode_registry_snapshot_bytes(
     {
         return Err(ArtifactStorageError::InvalidReceipt);
     }
-    if bytes.len() != expected.encoded_bytes || Digest32::of_bytes(&bytes) != expected.file_digest {
+    if bytes.len() != expected.encoded_bytes || Digest32::of_bytes(bytes) != expected.file_digest {
         return Err(ArtifactStorageError::Corrupt);
     }
-    let text = std::str::from_utf8(&bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
+    let text = std::str::from_utf8(bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
     let mut lines = text.lines();
     if lines.next() != Some(MAGIC)
         || lines.next() != Some(expected.binding.to_string().as_str())

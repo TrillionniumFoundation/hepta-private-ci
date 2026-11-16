@@ -172,7 +172,6 @@ pub use host::OriginalCellEvaluationHostV1;
 pub(crate) use host::TrainingOperation;
 pub(crate) use host::TrainingRead;
 
-pub(crate) use host::OriginalCellEvaluationModelInputV1;
 pub use host::OriginalCellEvaluationModelMaterialClientV1;
 pub use host::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use host::OriginalCellEvaluationModelMaterialV1;
