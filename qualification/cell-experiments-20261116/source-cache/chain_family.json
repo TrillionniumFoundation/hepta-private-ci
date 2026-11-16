@@ -1,0 +1,162 @@
+{
+  "adapter": {
+    "alpha": [
+      8,
+      1
+    ],
+    "artifact_format": "safetensors-named-factor-tensors-v1",
+    "bias": "none",
+    "dropout": false,
+    "expression": "x-Wt-plus-alpha-over-rank-times-x-At-Bt-v1",
+    "layers": "all-30",
+    "rank": 4,
+    "targets": [
+      "q_proj",
+      "v_proj"
+    ],
+    "trainable_parameter_count": 230400,
+    "use_dora": false,
+    "use_rslora": false
+  },
+  "architecture": {
+    "attention_heads": 9,
+    "bias": false,
+    "context": 8192,
+    "hidden": 576,
+    "intermediate": 1536,
+    "kv_heads": 3,
+    "layers": 30,
+    "rms_epsilon": [
+      1,
+      100000
+    ],
+    "rope_theta": [
+      100000,
+      1
+    ],
+    "schema": "pon-decoder-rms-rope-gqa-swiglu-v1",
+    "tied_embeddings": true,
+    "vocabulary": 49152
+  },
+  "artifact_max_bytes": 2097152,
+  "authenticated_inference_accepted": false,
+  "changes_chainwork": false,
+  "consensus_authority": false,
+  "evaluation": {
+    "calibration_selection_and_strongest_evaluation_gain_both_reported": true,
+    "current_fixture": {
+      "calibration_tasks": 4,
+      "evaluation_source_groups": 2,
+      "evaluation_tasks": 4,
+      "independent": false,
+      "llm_quality_qualification": false,
+      "prospective": false,
+      "scope": "operator-controlled-small-public-fixture-pilot",
+      "seeds": [
+        7
+      ],
+      "training_steps": 10,
+      "training_tasks": 12
+    },
+    "full_task_bytes_plan_and_actual_records_required": true,
+    "gain": "candidate-score-minus-strongest-evaluation-control-score",
+    "mandatory_control_failure": "explicit-abort-no-adoption-no-reward",
+    "metric": "equal-source-group-exact-output-bytes-accuracy-v1",
+    "missing_or_self_reported_cost_is_not_resource_qualification": true,
+    "nonpositive_gain_adoption": false,
+    "nonpositive_gain_reward": false,
+    "nonpositive_gain_score": 0,
+    "positive_gain_required": true
+  },
+  "id": "smollm2-135m-cpu-dev-v1",
+  "independent_accepted": false,
+  "material_pins": {
+    "complete_material_and_tokenizer_behavior_check_required": true,
+    "derivation": "exact-bfloat16-values-converted-to-float32-no-quantization-v1",
+    "derived_storage_dtype": "float32",
+    "files": {
+      "README.md": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "4f97533ad95b1b2fea15fbc075c01b94578ebdd7c8138888fa43fa3abd530dc4",
+        "size": 6772
+      },
+      "config.json": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+        "size": 861
+      },
+      "generation_config.json": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013",
+        "size": 132
+      },
+      "model.safetensors": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+        "size": 269060552
+      },
+      "special_tokens_map.json": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52",
+        "size": 655
+      },
+      "tokenizer.json": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+        "size": 2104556
+      },
+      "tokenizer_config.json": {
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df",
+        "size": 3764
+      }
+    },
+    "fp32_backbone_index_root": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+    "parameter_count": 134515008,
+    "source_storage_dtype": "bfloat16",
+    "tokenizer_files_root": "a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93"
+  },
+  "native_runtime_qualification": false,
+  "numeric_profile": {
+    "accumulation_dtype": "float32",
+    "attention_implementation": "eager",
+    "backend": "cpu",
+    "batch_max": 1,
+    "bos_token_id": 1,
+    "decode_clean_up_tokenization_spaces": false,
+    "decode_skip_special_tokens": true,
+    "dropout": false,
+    "eos_token_id": 2,
+    "floating_functional_equivalence_accepted": false,
+    "generation": "greedy-lowest-token-id-tie-fixed-count-v1",
+    "gpu_qualification_inherited": false,
+    "input_tokens_max": 128,
+    "matmul_precision": "highest",
+    "output_tokens_max": 16,
+    "pad_token_id": 2,
+    "padding": "left-with-explicit-mask",
+    "quantization": "none",
+    "storage_dtype": "float32",
+    "tf32": false,
+    "truncation": "reject"
+  },
+  "production_activation": false,
+  "prospective_accepted": false,
+  "public_network_ready": false,
+  "public_reward_eligible": false,
+  "reference": {
+    "gated": false,
+    "license": "Apache-2.0",
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "source_is_public": true
+  },
+  "required_controls": [
+    "current-backbone",
+    "fresh-budget-matched-lora",
+    "budget-matched-full-tune",
+    "randomized-rank-matched-lora"
+  ],
+  "schema": "pon-public-smollm2-decoder-lora-family-v1",
+  "version": 1
+}
