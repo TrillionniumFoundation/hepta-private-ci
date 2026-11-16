@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "9385535e683b97058fedeee490c6ff921652f793",
+    "dirty": false,
+    "parents": [
+      "32a19ec3b1894c3afc41eb978edaefb213d9eeed"
+    ],
+    "tree": "7450903545bb0c20b3ef44dfe93a0c85d2fdb709"
+  },
+  "base_sha": "32a19ec3b1894c3afc41eb978edaefb213d9eeed",
+  "before": {
+    "commit": "9385535e683b97058fedeee490c6ff921652f793",
+    "dirty": false,
+    "parents": [
+      "32a19ec3b1894c3afc41eb978edaefb213d9eeed"
+    ],
+    "tree": "7450903545bb0c20b3ef44dfe93a0c85d2fdb709"
+  },
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "ndu_real_runtime.test_episodic_memory",
+    "ndu_real_runtime.test_episodic_retrieval",
+    "ndu_real_runtime.test_episodic_qualification",
+    "ndu_real_runtime.test_revocation_qualification"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 3.3473442599997725,
+  "exit_code": 0,
+  "finished_at": "2026-11-10T14:36:59.058368+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 4890,
+  "log_file": "campaign-tests-bound.json.545fa6a0fe0d4ec0b11b832f71e6127c.log",
+  "log_sha256": "0de7b8dac81bc3fcd86f51a6bfae55ef572af8d796aeeebf75ac292d27eca81a",
+  "minimum_tests": 24,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 24,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9385535e683b97058fedeee490c6ff921652f793",
+  "started_at": "2026-11-10T14:36:55.709951+00:00",
+  "status": "passed",
+  "tested_sha": "9385535e683b97058fedeee490c6ff921652f793",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/73df58fb9a78/integrity-check"
+}
