@@ -64,13 +64,18 @@ impl MatrixSdkClient {
             Self::build(layout, config, store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|_| {
+            let _ = writeln!(std::io::stderr().lock(), "[matrix-init] build_timeout");
+            MatrixSdkError::Initialization
+        })??;
         sidecar
             .client
             .restore_session(session.clone())
             .await
             .map_err(|_| MatrixSdkError::Authentication)?;
-        persist_session(sidecar.paths.session(), &session)?;
+        persist_session(sidecar.paths.session(), &session).inspect_err(|_| {
+            let _ = writeln!(std::io::stderr().lock(), "[matrix-init] persist_session");
+        })?;
         sidecar.verify_authenticated_identity()?;
         sidecar.enable_event_cache()?;
         Ok(sidecar)
@@ -170,7 +175,10 @@ impl MatrixSdkClient {
             .handle_refresh_tokens()
             .build()
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                let _ = writeln!(std::io::stderr().lock(), "[matrix-init] client_builder");
+                MatrixSdkError::Initialization
+            })?;
         // The SDK's own sync token is only an optimization for its normal
         // sync loop.  Hepta persists the authoritative cursor in its durable
         // inbox store and always supplies that cursor explicitly.  Clear a
@@ -181,7 +189,10 @@ impl MatrixSdkClient {
             .state_store()
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                let _ = writeln!(std::io::stderr().lock(), "[matrix-init] sync_token");
+                MatrixSdkError::Initialization
+            })?;
         let save_session_path = paths.session().to_path_buf();
         let reload_session_path = paths.session().to_path_buf();
         client
@@ -207,7 +218,10 @@ impl MatrixSdkClient {
                     })
                 }),
             )
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                let _ = writeln!(std::io::stderr().lock(), "[matrix-init] callbacks");
+                MatrixSdkError::Initialization
+            })?;
         verify_homeserver(&config, &client)?;
         Ok(Self {
             client,
@@ -319,7 +333,10 @@ impl MatrixSdkClient {
         self.client
             .event_cache()
             .subscribe()
-            .map_err(|_| MatrixSdkError::Initialization)
+            .map_err(|_| {
+                let _ = writeln!(std::io::stderr().lock(), "[matrix-init] event_cache");
+                MatrixSdkError::Initialization
+            })
     }
 
     fn verify_authenticated_identity(&self) -> Result<(), MatrixSdkError> {
