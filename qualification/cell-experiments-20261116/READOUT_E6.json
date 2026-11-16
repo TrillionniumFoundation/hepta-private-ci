@@ -1,0 +1,628 @@
+{
+  "all_receipt_consistency_checks_passed": true,
+  "arms": {
+    "final_answer": {
+      "B": {
+        "declared_control_authenticated": false,
+        "observed_rows": 12,
+        "reference_kind": "deterministic_reference_not_language_model",
+        "scores": {
+          "candidate": 0.5,
+          "parent": 0.0,
+          "reference": 1.0
+        },
+        "source_groups": 1,
+        "success_counts": {
+          "candidate": 2,
+          "parent": 0,
+          "reference": 4
+        },
+        "tasks_per_model": 4
+      },
+      "C": {
+        "all_failure_reasons": [
+          "invalid_json",
+          "invalid_json",
+          "invalid_json"
+        ],
+        "all_output_token_caps_reached": true,
+        "attempts": 3,
+        "generate_decode_seconds": 5.639198092976585,
+        "input_tokens": 236,
+        "output_tokens": 144,
+        "success_is_not_required_for_complete_NO_UPDATE": true,
+        "successes": 0,
+        "unique_task_ids": [
+          "repo-maintenance-11",
+          "repo-maintenance-12",
+          "repo-maintenance-13"
+        ]
+      },
+      "E6_wall_seconds": 12.283775837859139,
+      "all_consistency_checks_passed": true,
+      "candidate_model_digest": "f455b1934f1fa55e6fec73a5880fdde29d24b73b3c839975a29c1f681a8ba35d",
+      "checks": {
+        "B_complete": true,
+        "B_group_scores": true,
+        "B_raw_model_digest_and_score": true,
+        "C_binding_and_independent_parse_failure": true,
+        "C_receipts_exact": true,
+        "cold_distinct_child": true,
+        "cold_exact_inference_fields": true,
+        "cold_same_input": true,
+        "cold_stdout_result_equal": true,
+        "durable_journal_exact": true,
+        "external_receipts_equal": true,
+        "false_qualifications": true,
+        "manifest_lineage": true,
+        "plan_binding": true,
+        "steps_receipt_match": true,
+        "train_subset_digest": true,
+        "training_before_B_before_C": true,
+        "whole_request_binding": true,
+        "wrapper_stream_hashes": true
+      },
+      "cold": {
+        "answer_sha256": "c1145e7e9c18a652a7ffb35fc47fd6fa753015fe90399bc217c0beeb7f3b2dcd",
+        "exact_answer_utf8_bytes_equal": true,
+        "generate_decode_seconds": 1.8013914891052991,
+        "parent_pid": 2777482,
+        "pid": 2777508,
+        "returncode": 0,
+        "same_input_sha256": "3c1ad8075c9b5e3e4ef1f1db5ff2c11581e30eadaf803e4d48ca64cd0db62e15",
+        "scope": "new process, same last-C inference input; no additional independent task",
+        "selected_and_loaded_model_digest": "ae9aa240316a4af47361efcd5ee56473375440a8c6242cb5b3b5b44064f8b582",
+        "wall_seconds": 4.456904476042837
+      },
+      "decision_file_status_explanation": "INCOMPLETE is the durable pre-C checkpoint; RESULT and SQLite both contain the completed NO_UPDATE state.",
+      "evidence_binding": "d89e0a8ceafc148b9884194661ad80434ff1e65c2623662f42aa7ad07afe7187",
+      "evidence_scope": "engineering",
+      "independent_e6_gaps": [
+        "original B provenance/execution authentication unavailable",
+        "source separation and dataset time order are not independently authenticated",
+        "trainer/evaluator controller independence is not authenticated",
+        "prospective unexposed C is not authenticated",
+        "C includes curated or development-exposed records"
+      ],
+      "independent_e6_status": "BLOCKED",
+      "initial_decision_file_status": "INCOMPLETE",
+      "model_decision": "NO_UPDATE",
+      "parameter_after": "e726aab0edd6112483c3beb42d7bcdc6422025bb0ccaf039c493e9cb3ec27d14",
+      "parameter_before": "e61465489a62c7f31bb1bd7ba84797bef4468d2741534ad32723d49c3a2694e3",
+      "parameter_change_receipt": true,
+      "parameter_digests_differ": true,
+      "plan_digest": "3c34270a851a955732c5e0a0bcbe365e325c358cb3df9a30de9fb829bba2f5cf",
+      "selected_manifest_adapter_directory": null,
+      "selected_model_digest": "ae9aa240316a4af47361efcd5ee56473375440a8c6242cb5b3b5b44064f8b582",
+      "selected_parent": true,
+      "status": "NO_UPDATE",
+      "trainable_parameters": 230400,
+      "training_cost": {
+        "complete": false,
+        "cpu_seconds": 50.935597936,
+        "energy_joules": null,
+        "input_tokens_consumed": 1821,
+        "padded_training_token_positions": 8192,
+        "peak_rss_scope": "entire_process_including_prior_arms",
+        "process_peak_rss_bytes": 1593151488,
+        "scope": "verification/load/preprocessing/train/save; excludes imports and final receipt write",
+        "supervised_tokens": 219,
+        "wall_seconds": 25.951235871994868
+      },
+      "training_steps": 32,
+      "wrapper_processes": {
+        "02-train-final_answer": {
+          "exit_code": 0,
+          "status": "COMPLETE",
+          "wall_seconds": 28.672778527950868
+        },
+        "04-B-final_answer": {
+          "exit_code": 0,
+          "status": "COMPLETE",
+          "wall_seconds": 11.962756561115384
+        },
+        "11-E6-final_answer": {
+          "exit_code": 0,
+          "status": "COMPLETE",
+          "wall_seconds": 12.989413218107074
+        }
+      }
+    },
+    "trajectory": {
+      "B": {
+        "declared_control_authenticated": false,
+        "observed_rows": 12,
+        "reference_kind": "deterministic_reference_not_language_model",
+        "scores": {
+          "candidate": 0.0,
+          "parent": 0.0,
+          "reference": 1.0
+        },
+        "source_groups": 1,
+        "success_counts": {
+          "candidate": 0,
+          "parent": 0,
+          "reference": 4
+        },
+        "tasks_per_model": 4
+      },
+      "C": {
+        "all_failure_reasons": [
+          "invalid_json",
+          "invalid_json",
+          "invalid_json"
+        ],
+        "all_output_token_caps_reached": true,
+        "attempts": 3,
+        "generate_decode_seconds": 5.636357033858076,
+        "input_tokens": 236,
+        "output_tokens": 144,
+        "success_is_not_required_for_complete_NO_UPDATE": true,
+        "successes": 0,
+        "unique_task_ids": [
+          "repo-maintenance-11",
+          "repo-maintenance-12",
+          "repo-maintenance-13"
+        ]
+      },
+      "E6_wall_seconds": 12.28161674295552,
+      "all_consistency_checks_passed": true,
+      "candidate_model_digest": "68c545fba6efff788c2e1843c239602576b133ae270561d2bfc73887454263f9",
+      "checks": {
+        "B_complete": true,
+        "B_group_scores": true,
+        "B_raw_model_digest_and_score": true,
+        "C_binding_and_independent_parse_failure": true,
+        "C_receipts_exact": true,
+        "cold_distinct_child": true,
+        "cold_exact_inference_fields": true,
+        "cold_same_input": true,
+        "cold_stdout_result_equal": true,
+        "durable_journal_exact": true,
+        "external_receipts_equal": true,
+        "false_qualifications": true,
+        "manifest_lineage": true,
+        "plan_binding": true,
+        "steps_receipt_match": true,
+        "train_subset_digest": true,
+        "training_before_B_before_C": true,
+        "whole_request_binding": true,
+        "wrapper_stream_hashes": true
+      },
+      "cold": {
+        "answer_sha256": "c1145e7e9c18a652a7ffb35fc47fd6fa753015fe90399bc217c0beeb7f3b2dcd",
+        "exact_answer_utf8_bytes_equal": true,
+        "generate_decode_seconds": 1.8288167270366102,
+        "parent_pid": 2777483,
+        "pid": 2777509,
+        "returncode": 0,
+        "same_input_sha256": "3c1ad8075c9b5e3e4ef1f1db5ff2c11581e30eadaf803e4d48ca64cd0db62e15",
+        "scope": "new process, same last-C inference input; no additional independent task",
+        "selected_and_loaded_model_digest": "ae9aa240316a4af47361efcd5ee56473375440a8c6242cb5b3b5b44064f8b582",
+        "wall_seconds": 4.456844722153619
+      },
+      "decision_file_status_explanation": "INCOMPLETE is the durable pre-C checkpoint; RESULT and SQLite both contain the completed NO_UPDATE state.",
+      "evidence_binding": "5062b5f309edd5a7892dbcaeacfb7dd38b96d4d67d9e4fcc2790f89eaabab055",
+      "evidence_scope": "engineering",
+      "independent_e6_gaps": [
+        "original B provenance/execution authentication unavailable",
+        "source separation and dataset time order are not independently authenticated",
+        "trainer/evaluator controller independence is not authenticated",
+        "prospective unexposed C is not authenticated",
+        "C includes curated or development-exposed records"
+      ],
+      "independent_e6_status": "BLOCKED",
+      "initial_decision_file_status": "INCOMPLETE",
+      "model_decision": "NO_UPDATE",
+      "parameter_after": "852ac9506449b0bcdec15893835b72a7df884db5ca0b521bb8c20647875a5196",
+      "parameter_before": "e61465489a62c7f31bb1bd7ba84797bef4468d2741534ad32723d49c3a2694e3",
+      "parameter_change_receipt": true,
+      "parameter_digests_differ": true,
+      "plan_digest": "14b287191f5b4ce1ccb81e6dcf7f04747595836c991bec572f368ad9ea26e818",
+      "selected_manifest_adapter_directory": null,
+      "selected_model_digest": "ae9aa240316a4af47361efcd5ee56473375440a8c6242cb5b3b5b44064f8b582",
+      "selected_parent": true,
+      "status": "NO_UPDATE",
+      "trainable_parameters": 230400,
+      "training_cost": {
+        "complete": false,
+        "cpu_seconds": 50.727673338,
+        "energy_joules": null,
+        "input_tokens_consumed": 2847,
+        "padded_training_token_positions": 8192,
+        "peak_rss_scope": "entire_process_including_prior_arms",
+        "process_peak_rss_bytes": 1580748800,
+        "scope": "verification/load/preprocessing/train/save; excludes imports and final receipt write",
+        "supervised_tokens": 609,
+        "wall_seconds": 25.78100255713798
+      },
+      "training_steps": 32,
+      "wrapper_processes": {
+        "02-train-trajectory": {
+          "exit_code": 0,
+          "status": "COMPLETE",
+          "wall_seconds": 28.522311622975394
+        },
+        "04-B-trajectory": {
+          "exit_code": 0,
+          "status": "COMPLETE",
+          "wall_seconds": 15.74239059095271
+        },
+        "11-E6-trajectory": {
+          "exit_code": 0,
+          "status": "COMPLETE",
+          "wall_seconds": 12.988991043064743
+        }
+      }
+    }
+  },
+  "audit_scope": "Read-only consistency audit of retained execution originals, frozen source, model manifests, semantic receipts and SQLite selection journals; no model execution or repository tests rerun.",
+  "chain_base": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+  "ci": {
+    "api_observation": "Read-only GitHub REST workflow-run and jobs resources; no run dispatch, mutation, cancellation or rerun.",
+    "conclusion": null,
+    "created_at": "2026-11-16T09:06:51Z",
+    "event": "pull_request",
+    "head_sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+    "job_completed_at": null,
+    "job_conclusion": null,
+    "job_id": 133195457560,
+    "job_labels": [
+      "ubuntu-24.04"
+    ],
+    "job_runner_id": 0,
+    "job_runner_name": "",
+    "job_started_at": "2026-11-16T09:06:52Z",
+    "job_status": "queued",
+    "job_steps": [],
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43836836220/job/133195457560",
+    "observed_at_utc": "2026-11-16T09:14:38.940Z",
+    "path": ".github/workflows/cell-experiments.yml",
+    "run_attempt": 1,
+    "run_id": 43836836220,
+    "scope": "Engineering integrity only; does not execute the real model training campaign. Pending CI is not counted as passed.",
+    "status": "queued",
+    "terminal_observed": false,
+    "updated_at": "2026-11-16T09:06:51Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43836836220",
+    "workflow": "Cell experiments engineering integrity"
+  },
+  "cost_limitations": [
+    "Training cost.complete and E6 costs_complete remain false; energy_joules is null.",
+    "Training CPU seconds cover only that training process; training wall excludes imports and the final receipt write.",
+    "Generation elapsed_seconds covers generation/decode and excludes model loading and input tokenization.",
+    "E6 wall includes C and child recovery; cold wall includes its child lifecycle and overlaps E6 wall, so they must not be summed.",
+    "B/C/cold CPU accounting, energy, monetary cost and a complete end-to-end useful-work denominator are absent.",
+    "Parallel arms overlap in wall time; their elapsed durations are not campaign elapsed time.",
+    "Peak RSS is a process high-water mark, not marginal memory attributable to training."
+  ],
+  "dataset": {
+    "C_exposure": "development",
+    "C_origin_kind": "curated_development",
+    "C_source_groups": 1,
+    "C_training_authorized": false,
+    "C_unique_tasks": 3,
+    "counts": {
+      "confirmation": 3,
+      "selection": 4,
+      "train": 7
+    },
+    "external_teacher_runs": 0,
+    "independent_confirmation_sources": 0,
+    "scope": "New authored maintenance tasks on real repository artifacts; not autonomous code repair",
+    "time_ordered": false
+  },
+  "engineering_outcome": "TWO_COMPLETE_NO_UPDATE_RECOVERY_FLOWS",
+  "evidence": [
+    {
+      "bytes": 34954,
+      "path": "results/E6/final_answer/REQUEST.json",
+      "sha256": "e1aca4bf41f579660ac3521cb315719782f519d8b792a489e1a07b2c7f80528a"
+    },
+    {
+      "bytes": 1807,
+      "path": "results/E6/final_answer/DECISION.json",
+      "sha256": "c6674487e23c1520d9276d2a77a8c7fc4aff072f8b87204160d00d44afcd6a1e"
+    },
+    {
+      "bytes": 7274,
+      "path": "results/E6/final_answer/RESULT.json",
+      "sha256": "ab590b09dd1877f22a7568fd1fa16997255dffb0b9933cd34d5f0e14a5069bce"
+    },
+    {
+      "bytes": 4593,
+      "path": "results/E6/final_answer/C_RECEIPTS.json",
+      "sha256": "1d299f8adefe8acdb925571183a34992b5ad70eeb97daa3ad53812f5ba363ebe"
+    },
+    {
+      "bytes": 4013,
+      "path": "results/E6/final_answer/COLD_REQUEST.json",
+      "sha256": "b28f96ef4dd346fa5da14721a85dd4f95256c3a9d2d0856837e426ed49c0e4e2"
+    },
+    {
+      "bytes": 902,
+      "path": "results/E6/final_answer/COLD_PROCESS.json",
+      "sha256": "a91532b089441a63b19e3778701eb5ea73f59dd0d4e4ab9440acdad3f0eaa9fc"
+    },
+    {
+      "bytes": 16384,
+      "path": "results/E6/final_answer/selection.sqlite",
+      "sha256": "94bedd267d5dbb0ff5acd00f43d2e48d29872bcd1bf5e9aaf56801ffc2057094"
+    },
+    {
+      "bytes": 1821,
+      "path": "results/models/final_answer/manifest.json",
+      "sha256": "744a71bfa1872c30c0d32b2ae15dcde402aa23264e34e2c1daaa66cc09b56a35"
+    },
+    {
+      "bytes": 2240,
+      "path": "results/models/final_answer/training.json",
+      "sha256": "7a0429e5e9d304a90b06f7e913d79e0b6b6747098748dded47d418d142f0eb58"
+    },
+    {
+      "bytes": 19072,
+      "path": "results/models/final_answer/B.json",
+      "sha256": "f89a0f28a89f98785568ead7b161e30a2e462e54dc3f1c92764d56640c1dcef2"
+    },
+    {
+      "bytes": 3750,
+      "path": "results/models/final_answer/STEPS.jsonl",
+      "sha256": "462de664590d61a11c65aa9810088e87ffe4132a4d943a9eff08ee7cbaebadee"
+    },
+    {
+      "bytes": 355,
+      "path": "execution-logs/02-train-final_answer/RESULT.json",
+      "sha256": "6c9f1d5c4b9c23b438ddfd10829f464e7e6137b0f40e7594c13842f8927e6f8f"
+    },
+    {
+      "bytes": 569,
+      "path": "execution-logs/02-train-final_answer/stdout.txt",
+      "sha256": "8c93dd4fb743d2bfee11d5bfdc1cc8cbf10a41dcf511a2779129369ea745c201"
+    },
+    {
+      "bytes": 50,
+      "path": "execution-logs/02-train-final_answer/stderr.txt",
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    {
+      "bytes": 351,
+      "path": "execution-logs/04-B-final_answer/RESULT.json",
+      "sha256": "9fc677abd1aa49d613388a0f8328e888150cbe5dde587d024e7b4e539ca7093f"
+    },
+    {
+      "bytes": 94,
+      "path": "execution-logs/04-B-final_answer/stdout.txt",
+      "sha256": "e32b5fc9c8bfae4922ea191db950eb6a14dc2989b0ddc022de18ce0f63c985ef"
+    },
+    {
+      "bytes": 50,
+      "path": "execution-logs/04-B-final_answer/stderr.txt",
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    {
+      "bytes": 352,
+      "path": "execution-logs/11-E6-final_answer/RESULT.json",
+      "sha256": "76e9423430d0823884348c5fdbf7433417ada76afdcce1b55d65e0c447862814"
+    },
+    {
+      "bytes": 120,
+      "path": "execution-logs/11-E6-final_answer/stdout.txt",
+      "sha256": "a05d88e3ec52a9802c91f14b4022229ce728ef136874210a1c941ce6503768a6"
+    },
+    {
+      "bytes": 50,
+      "path": "execution-logs/11-E6-final_answer/stderr.txt",
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    {
+      "bytes": 35431,
+      "path": "results/E6/trajectory/REQUEST.json",
+      "sha256": "80b28ddf5d90e9ab20e2e2150b9ee81e31d518922f56e46330ce750279024bd4"
+    },
+    {
+      "bytes": 1807,
+      "path": "results/E6/trajectory/DECISION.json",
+      "sha256": "01fe4408cffa57fbdea37eff43d86cb52d93df4a90831f88a58f35020b815515"
+    },
+    {
+      "bytes": 7272,
+      "path": "results/E6/trajectory/RESULT.json",
+      "sha256": "08017998343c45b7daa48ec14cbcbb1a94c2c6b3bc003f9150286c9a12b6bd2f"
+    },
+    {
+      "bytes": 4592,
+      "path": "results/E6/trajectory/C_RECEIPTS.json",
+      "sha256": "a911ea863bcbf7e77f0c7cee1458f51ebeea1775b6d8a728c1b0f0977d726e95"
+    },
+    {
+      "bytes": 4009,
+      "path": "results/E6/trajectory/COLD_REQUEST.json",
+      "sha256": "b3ef3647bca2af7795f77c2eb633684b162a5e92bb506c4bca25dba9173a9292"
+    },
+    {
+      "bytes": 902,
+      "path": "results/E6/trajectory/COLD_PROCESS.json",
+      "sha256": "5e6a03c25b62d3fb25a7bea4c5e755da7df311542a80c129032e2432fd343062"
+    },
+    {
+      "bytes": 16384,
+      "path": "results/E6/trajectory/selection.sqlite",
+      "sha256": "8f518795e5bd66d0ed8b23fccf0ed3f1bb6d099180ee6ad9f9835ce6911c08f6"
+    },
+    {
+      "bytes": 1813,
+      "path": "results/models/trajectory/manifest.json",
+      "sha256": "42fe5fbe5b2752968d0799d3a9f0d2254884c6c470032cf21315e237a0eaac2b"
+    },
+    {
+      "bytes": 2238,
+      "path": "results/models/trajectory/training.json",
+      "sha256": "97beda266fd03dfed1d8ab04a849840c04f838119d934f54548218a9eb900308"
+    },
+    {
+      "bytes": 19563,
+      "path": "results/models/trajectory/B.json",
+      "sha256": "91263a578e6b3d2b9cea1f501e29a442a9ee8d9fbd443f98cbd97f8e489db54e"
+    },
+    {
+      "bytes": 3767,
+      "path": "results/models/trajectory/STEPS.jsonl",
+      "sha256": "b1ba052973d8d4d62014775c7a7378439def5c024de7fa1ba71b6e77ed9140c0"
+    },
+    {
+      "bytes": 353,
+      "path": "execution-logs/02-train-trajectory/RESULT.json",
+      "sha256": "0d7b7135b4604b04611d71a2de84cf2617eb679df10539a163e4d0a904c3e0f1"
+    },
+    {
+      "bytes": 566,
+      "path": "execution-logs/02-train-trajectory/stdout.txt",
+      "sha256": "a4fee62bc7726d7f268dd2555715a5431a29c7b1db1bb3037268ad5919a4fbe7"
+    },
+    {
+      "bytes": 50,
+      "path": "execution-logs/02-train-trajectory/stderr.txt",
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    {
+      "bytes": 348,
+      "path": "execution-logs/04-B-trajectory/RESULT.json",
+      "sha256": "75ac3065a177c3cb2d5eea6a737fa810e5ca6bb3987605c192e2d55ef02b0fa7"
+    },
+    {
+      "bytes": 92,
+      "path": "execution-logs/04-B-trajectory/stdout.txt",
+      "sha256": "ac76cab3211b745a832d459c67c9d24d1971ccdd280630dce9cfba586f91f4c0"
+    },
+    {
+      "bytes": 50,
+      "path": "execution-logs/04-B-trajectory/stderr.txt",
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    {
+      "bytes": 350,
+      "path": "execution-logs/11-E6-trajectory/RESULT.json",
+      "sha256": "4943e656183aaf68b08084b17ce035755924aad5da66dd5eedf3ed7d19b58a3a"
+    },
+    {
+      "bytes": 118,
+      "path": "execution-logs/11-E6-trajectory/stdout.txt",
+      "sha256": "178a3e984541d793bd0f7e3ea66b874b35de505af35d7833f5afa29cc7353c71"
+    },
+    {
+      "bytes": 50,
+      "path": "execution-logs/11-E6-trajectory/stderr.txt",
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    {
+      "bytes": 101212,
+      "path": "INVENTORY.json",
+      "sha256": "762f0d0bae8dd019564756fc95d59e5ed31b7a6ed96f1b2a5162166c8d15a0f8"
+    },
+    {
+      "bytes": 2091,
+      "path": "SOURCE_FREEZE.json",
+      "sha256": "7b27c500836df59844f2cea1af9bf53c0f35cbc1ff79ed5edde12972ac9d16bc"
+    },
+    {
+      "bytes": 744,
+      "path": "FORMAT.json",
+      "sha256": "a2855282b7f84713407b6b9133dfda5eda13eb468fe003f053ed52028fee0f7e"
+    },
+    {
+      "bytes": 1359,
+      "path": "development-data-v1/manifest.json",
+      "sha256": "11210ed51b85c921993f9c83433d28aad42dd3689b06e6d5a30607b3c81bb8eb"
+    },
+    {
+      "bytes": 386,
+      "path": "execution-logs/RESULT.json",
+      "sha256": "eac646197d9d5bce576e9ebb1cd76875816315dac5df3eb4e50009116c5c6129"
+    },
+    {
+      "bytes": 1259,
+      "path": "results/parent.json",
+      "sha256": "c5402bf8339c2779a89870c6173ecf6579833118ce7c31f36eede13228430dff"
+    }
+  ],
+  "findings": [
+    "Both completed E6 operations retained the original parent; no candidate was actually adopted.",
+    "Each selected parent failed all three C tasks as invalid JSON. The same three C tasks occur in both arms and must not be counted as six independent tasks.",
+    "Both fresh child processes reproduced the exact last-C answer bytes, token counts and selected model digest; reproducing failure is process/model identity evidence, not successful task use.",
+    "Both candidates have 32-step training logs and distinct before/after parameter digests, but no independent useful-learning proof follows from parameter changes or lower training loss.",
+    "The selected model is the unadapted parent, so the actual cold process run does not verify adopted candidate LoRA restoration.",
+    "Default independent mode is blocked; the explicit engineering scope never grants scientific, native runtime, production or chain settlement qualification.",
+    "The perfect deterministic B reference makes ADOPTED unreachable under the frozen strict-greater rule; this is a conservative engineering NoUpdate result, not validation of a successful adoption path.",
+    "Final source CI was still queued at the latest read-only observation; no terminal test outcome is asserted."
+  ],
+  "inventory_verification": {
+    "checks": [
+      "exact byte length",
+      "SHA-256",
+      "Git blob SHA-1"
+    ],
+    "inventory_entries": 498,
+    "limitation": "Base/tokenizer files and seven pairs of adapter/optimizer artifacts are not present locally. Runtime material rehashes are supported by the frozen implementation plus captured successful receipts; this audit did not independently reload or rehash those missing material bytes.",
+    "mismatches": [],
+    "missing": [
+      "results/base/config.json",
+      "results/base/generation_config.json",
+      "results/base/material-manifest.json",
+      "results/base/model.safetensors",
+      "results/base/special_tokens_map.json",
+      "results/base/tokenizer.json",
+      "results/base/tokenizer_config.json",
+      "results/models/boolean_specialist/adapter_model.safetensors",
+      "results/models/boolean_specialist/optimizer.pt",
+      "results/models/e2_controlled/adapter_model.safetensors",
+      "results/models/e2_controlled/optimizer.pt",
+      "results/models/e2_demonstration/adapter_model.safetensors",
+      "results/models/e2_demonstration/optimizer.pt",
+      "results/models/e2_shadow/adapter_model.safetensors",
+      "results/models/e2_shadow/optimizer.pt",
+      "results/models/final_answer/adapter_model.safetensors",
+      "results/models/final_answer/optimizer.pt",
+      "results/models/numeric_specialist/adapter_model.safetensors",
+      "results/models/numeric_specialist/optimizer.pt",
+      "results/models/trajectory/adapter_model.safetensors",
+      "results/models/trajectory/optimizer.pt"
+    ],
+    "missing_count": 21,
+    "retained_originals_rehashed": 477
+  },
+  "learning_benefit_proven": false,
+  "model_identity": {
+    "base_model_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "model_revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac"
+  },
+  "native_adoption": false,
+  "observed_at_utc": "2026-11-16T09:14:20.935362+00:00",
+  "original_model_bytes_independently_rehashed_locally": false,
+  "qualifications": {
+    "hepta_final_use_accepted": false,
+    "independent_control_authenticated": false,
+    "native_learning_join_status": "MISSING_ORIGINAL_NATIVE_MATERIALS",
+    "ordinary_daemon_qualification": false,
+    "production_activation": false,
+    "proof_of_useful_work_qualified": false,
+    "settlement_verified": false
+  },
+  "schema": "hepta.cell-experiments.e6-evidence-readout.v1",
+  "scientific_e6_status": "BLOCKED",
+  "source_base": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+  "source_behavior": {
+    "authentication_authority_implemented": false,
+    "default_evidence_scope": "independent",
+    "default_independent_status": "BLOCKED",
+    "default_scope_verified_by": "Static inspection of adoption.validate and adoption.execute; no new test or rerun performed.",
+    "engineering_explicitly_required_to_proceed": true,
+    "new_process_recovery_scope": "Fresh OS child loads the durably selected parent manifest and replays the same last-C input. No additional independent task, candidate adoption, ordinary daemon restart, recurrent state recovery, native CellOwner, HEPLCP FinalUse or settlement is established.",
+    "selection_ceiling_limitation": "The deterministic reference scores 1.0 on B; binary mean scores cannot exceed 1.0. Under this frozen configuration ADOPTED is unreachable, so actual execution exercises only the conservative NO_UPDATE branch.",
+    "selection_rule": "Parameter change is required and candidate B score must strictly exceed the strongest baseline plus minimum_gain.",
+    "time_order_annotation": "RESULT.declared_time_ordered is null because the frozen E6 plan does not carry time_ordered. The dataset admission explicitly records false; this is not evidence of prospective task separation."
+  },
+  "source_digest": "5b0267cafe466ca382734604ee08a48748c3d9b5023c2d39645f79d36b8dec24",
+  "source_head": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+  "source_matches_freeze": true
+}

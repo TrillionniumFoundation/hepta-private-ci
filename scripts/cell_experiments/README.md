@@ -96,24 +96,25 @@ cost differences must be reported together. The experiment does not qualify
 graph necessity or emergent organization.
 
 E5 requests 1, 4, 16, and 64 source groups under fixed-total and fixed-per-source
-budgets. With the two A source files, size 1 is admissible; 4, 16, and 64 must
-each remain `BLOCKED` for insufficient sources. That is an admission expectation,
-not a claim that the size-1 run has completed. There is no size-2 arm in this
+budgets. In run-v1, size 1 completed under both modes; 4, 16, and 64 each
+remained `BLOCKED` because only two A source files were available. There is no size-2 arm in this
 plan. These observations cannot form a user-growth, distributed-concurrency,
 or scaling curve, and repeated sample exposure does not add sources.
 
-## Planned result locations
+## First development result and evidence locations
 
-No terminal campaign result or score has been read into this README. The paths
-below are publication targets, **not claims that artifacts have been uploaded**.
-Verified immutable links and outcomes must be filled in after evidence submission.
+The frozen run-v1 campaign completed with seven actual LoRA training runs,
+11 numerical candidates, all declared ablations, and two keep-parent decisions.
+Independent scientific qualification remains BLOCKED. The
+[result scorecard](../../qualification/cell-experiments-20261116/SCORECARD.md)
+reports the actual success denominators and the limits of each experiment.
 
-The planned repository artifact root is
+The repository artifact root is
 `qualification/cell-experiments-20261116/results/`.
-Execution logs will be published separately under
+Execution logs use
 `qualification/cell-experiments-20261116/execution-logs/`.
 
-| Evidence | Expected path relative to `results/` |
+| Evidence | Original path relative to `results/` |
 | --- | --- |
 | Campaign identity and frozen training plans | `CAMPAIGN.json`, `parent.json`, `plans/`, `COMPOSITION_PLAN.json` |
 | Actual model training; E1 original B outputs | `models/<arm>/manifest.json`, `models/<arm>/training.json`; `models/final_answer/B.json`, `models/trajectory/B.json` |
@@ -124,14 +125,17 @@ Execution logs will be published separately under
 | Each composition attempt and selected C/ablation record | `composition/<attempt>/STARTED.json`, `RESULT.json`, `PARAMETERS.json`, `C_EVALUATION.json` within that attempt directory |
 | E6 selection and process recovery | `E6/<arm>/DECISION.json`, `C_RECEIPTS.json`, `COLD_REQUEST.json`, `COLD_PROCESS.json`, `RESULT.json` within that arm directory |
 
-The execution-log root is expected to contain `EXECUTION_PLAN.json`, terminal
+The execution-log root contains `EXECUTION_PLAN.json`, terminal
 `RESULT.json`, and each stage's `STARTED.json`, `RESULT.json`, `stdout.txt`, and
 `stderr.txt`. A nonzero process exit, missing terminal receipt, or incomplete
 stage must remain visible rather than being converted into a successful score.
 
-Large base-model weights will not be committed to Git. Raw receipts and
-optimizer/checkpoint material are planned for a separately retained data
-archive. Model manifests retain their original relative paths; reconstructing
+Selected originals are readable at these paths; the complete originals are
+retained in the evidence archives. The public base weight is pinned by revision
+and SHA256. Raw receipts, tokenizer/configuration, and all seven adapters and
+optimizer states are archived; see the
+[restore guide](../../qualification/cell-experiments-20261116/RESTORE.md).
+Model manifests retain their original relative paths; reconstructing
 a runnable artifact root requires the exact pinned base/tokenizer materials
 and archived trained artifacts at those paths, with all byte hashes checked.
 Repository JSON files alone are not a self-contained model or a successful

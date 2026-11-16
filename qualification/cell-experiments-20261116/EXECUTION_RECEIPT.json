@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.cell-experiments.runtime-observation.v1",
+  "actual_campaign_job": "1a1e391654e-392-3435",
+  "terminal": {
+    "at_unix_ms": 1794819670048,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1e391654e-392-3435",
+    "launch_nonce": "7dc792ed956b049bea6b077c61d60e54",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 10160,
+        "stored": 10160
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "export_job": "1a1e398157e-392-344f",
+  "base_metadata_export_original_job": "1a1e3a6c350-392-346c",
+  "base_metadata_export_reconciled_without_relaunch": true,
+  "source_publication_failure": "Traceback (most recent call last):\n  File \"/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a/.task-publish/publish_cell_stages.py\", line 42, in <module>\n    tree = git(['write-tree'])\n  File \"/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a/.task-publish/publish_cell_stages.py\", line 19, in git\n    result = subprocess.run(['git', '-C', str(root)] + args, env=env, input=content,\n                            capture_output=True, timeout=timeout)\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 556, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 1220, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 2153, in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 1267, in _check_timeout\n    raise TimeoutExpired(\n    ...<2 lines>...\n            stderr=b''.join(stderr_seq) if stderr_seq else None)\nsubprocess.TimeoutExpired: Command '['git', '-C', '/Users/qianqi/work/hepta-cell-experiments-20261116-0c078a', 'write-tree']' timed out after 90 seconds\n",
+  "source_publication_channel": "GitHub connector after local write-tree timeout and no remote refs",
+  "checkpoint_parts": 29
+}
