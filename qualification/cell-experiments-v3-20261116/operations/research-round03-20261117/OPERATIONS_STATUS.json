@@ -1,0 +1,392 @@
+{
+  "schema": "hepta.round03.operations-status.v1",
+  "kind": "DOCUMENTED_ENGINEERING_STATUS_SNAPSHOT",
+  "is_actual_run_receipt": false,
+  "is_execution_freeze": false,
+  "actual_prepare_status": "NOT_RUN",
+  "actual_COMPARISON_created_by_this_delivery": false,
+  "freeze_creation_rule": "Only successful round03_cli prepare, after the current numerical gate and backend smoke, creates COMPARISON.json.",
+  "engineering": {
+    "integrated_cpu": {
+      "status": "PASSED",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_seconds": 16.512,
+      "runner_wall_seconds": 16.799757118002162,
+      "exit_code": 0,
+      "scope": "CPU protocol, real business verifier, lifecycle and accounting; scripted providers/optimizer fixtures",
+      "excluded_modules": [
+        "test_onpolicy_tensor",
+        "test_shared_pool_v4"
+      ]
+    },
+    "report_reader_targeted_regression": {
+      "status": "PASSED",
+      "tests": 1,
+      "suite_seconds": 0.002,
+      "exit_code": 0,
+      "scope": "Injected OSError read failure; no model execution",
+      "original_37_repeated_after_patch": false
+    },
+    "final_source_python_files": 27,
+    "core64_unchanged": true,
+    "previous_tiny_cpu_Qwen2_PEFT_warm_start": {
+      "status": "PASSED",
+      "tests": 1,
+      "scope": "Real tiny CPU tensor/adapter continuity; earlier source01 receipt, not current full backend or task-benefit evidence",
+      "evidence_key": "tensor_attempt_02",
+      "earlier_failed_import_preserved": true
+    },
+    "source04_independent_lifecycle": {
+      "status": "PASSED",
+      "tests": 11,
+      "scope": "8 lifecycle plus 3 cache/admission-order tests; dependency seams, no tensors allocated",
+      "actual_GPU_memory_release": "NOT_MEASURED",
+      "parameter_count_review": "INTERFACE_ONLY",
+      "corrected_reviewer_import_failure_preserved": true
+    },
+    "entrypoint_source_review": "NO_ADDITIONAL_CONCRETE_DEFECT_FOUND_IN_REQUESTED_SCOPE",
+    "source_evidence_alignment": {
+      "python_files": 27,
+      "changed_after_37_test_snapshot": [
+        "round03_report.py"
+      ],
+      "added_after_37_test_snapshot": [
+        "test_round03_report.py"
+      ],
+      "targeted_regression_matches_current_files": true,
+      "original_37_snapshot_remains_intact": true
+    }
+  },
+  "not_run": [
+    "current_shared_pool_A_B_A_numerical_test",
+    "default_backend_smoke",
+    "formal_prepare_and_COMPARISON",
+    "round03_GPU_training",
+    "round03_primary_cold_model_evaluation",
+    "round03_formal_Circuit_model_run"
+  ],
+  "experiments": {
+    "E1": {
+      "status": "NO_NEW_QUALIFYING_EVIDENCE",
+      "scope": "Existing Run02 controls retained; no new unseen-source or future-task evidence"
+    },
+    "E2": {
+      "status": "ENGINEERING_VALIDATED_RUNTIME_NOT_RUN",
+      "scope": "Current-student collection/correction and two-round weight warm-start protocol"
+    },
+    "E3": {
+      "status": "NO_NEW_CONFIRMED_TEACHERS",
+      "scope": "Three old adapters are not three newly authenticated external teachers"
+    },
+    "E4": {
+      "status": "ENGINEERING_VALIDATED_RUNTIME_NOT_RUN",
+      "scope": "A-only six-graph search, four arms and fresh edge/Cell interventions; no model-run benefit claim"
+    },
+    "E5": {
+      "status": "NO_NEW_AUTHENTICATED_USER_OR_SOURCE_EVIDENCE",
+      "scope": "No growth curve inferred from replay, seeds, branches or adapter versions"
+    },
+    "E6": {
+      "status": "ENTRYPOINTS_PRESENT_RUNTIME_NOT_RUN",
+      "scope": "Exposed A/B primary/cold reload only; no new C or adoption"
+    }
+  },
+  "planned_E2": {
+    "panel": "Old Run02 exposed A6; B3 remains exposed selection",
+    "common_initial": "Old Run02 final_answer adapter",
+    "modes": [
+      "teacher",
+      "shadow",
+      "controlled"
+    ],
+    "rounds": 2,
+    "steps_per_round": 64,
+    "maximum_attempts": 2,
+    "shadow_collection_maximum_attempts": 1,
+    "weight_initialization": "previous_candidate_adapter",
+    "optimizer_initialization": "fresh_AdamW_each_round",
+    "optimizer_resume": false,
+    "retention": "latest_round_only",
+    "all_raw_rounds_retained": true,
+    "teacher_meaning": "Verified authored A reference; no new external teacher model calls"
+  },
+  "planned_E4": {
+    "cells": {
+      "F": "old final_answer",
+      "T": "old trajectory",
+      "C": "old controlled_correction"
+    },
+    "shared_base": true,
+    "candidate_graphs": [
+      "ff_both",
+      "tf_both",
+      "cf_both",
+      "tf_answer",
+      "tf_feedback",
+      "tf_none"
+    ],
+    "training_panel": "old_A",
+    "evaluation_panels": [
+      "old_A",
+      "old_B"
+    ],
+    "arms": [
+      "single",
+      "fixed",
+      "random_sparse",
+      "learned_sparse"
+    ],
+    "edge_interventions": [
+      "answer",
+      "feedback"
+    ],
+    "cell_interventions": [
+      "F",
+      "T",
+      "C"
+    ],
+    "route_under_intervention": "Same pre-action frozen route; no retraining or substitution",
+    "output_selection": "earliest_business_success_else_last_surviving",
+    "budget": {
+      "model_calls": 2,
+      "max_input_tokens_per_call": 4096,
+      "max_output_tokens_per_call": 384,
+      "max_relay_bytes": 2048
+    },
+    "actual_cost_matching_claim": false,
+    "actual_active_parameter_evidence": "REQUIRED_AT_RUNTIME_NOT_YET_ESTABLISHED"
+  },
+  "operations": {
+    "entrypoint": "scripts/cell_experiments/online_v4/round03_cli.py",
+    "jobs": [
+      "prepare",
+      "e2-teacher",
+      "eval-teacher-primary",
+      "eval-teacher-cold",
+      "e2-shadow",
+      "eval-shadow-primary",
+      "eval-shadow-cold",
+      "e2-controlled",
+      "eval-controlled-primary",
+      "eval-controlled-cold",
+      "circuit",
+      "report"
+    ],
+    "module_root_semantics": "Absolute existing directory containing online_v4",
+    "worker_serialization_scope": "Same run directory only; nonblocking POSIX flock",
+    "global_cross_run_GPU_lock": false,
+    "resource_observation_is_reservation": false,
+    "automatic_retry": false,
+    "same_job_identity_rerun_allowed": false,
+    "worker_deadline_seconds": {
+      "e2_or_eval": 3600,
+      "circuit": 7200
+    },
+    "cold_scope": "Different observed PID; same candidate/comparison/panel/source; compare actual request and answer observations; no optimizer-state recovery"
+  },
+  "cost_accounting": {
+    "overall_status": "INCOMPLETE",
+    "main_scope": "E2 loop collection/post-update A plus Circuit search, arms and all interventions",
+    "extra_primary_cold_evaluations": "Separate paid operations; extra_exposed_evaluation_costs not included in main totals",
+    "E2_verifier_subset": "student_verifier_calls only",
+    "reference_verifier_calls": null,
+    "all_verifier_calls": null,
+    "full_system_cost_known": false,
+    "missing_or_failed_cost": "Unknown/null; never inferred as zero",
+    "training_and_inference_tokens_separate": true,
+    "nested_wall_CPU_scopes_additive": false,
+    "shared_pool_initialization": "Read separately from circuit/POOL.json",
+    "actual_empty_directory_readout": {
+      "status": "EXECUTED_FILE_READ_ONLY",
+      "missing_artifacts": 25,
+      "result": "INCOMPLETE",
+      "all_cost_totals": null,
+      "represents_actual_experiment": false
+    }
+  },
+  "sources": {
+    "retained_panel_counts": {
+      "A": 6,
+      "B": 3
+    },
+    "origin_kind": "curated_development",
+    "exposure": "development",
+    "original_event_times_preserved": true,
+    "issue_150": {
+      "source_id": "github:TrillionniumFoundation/Trillionnium-Chain:issue:150",
+      "original_event_at": "2026-09-13T09:30:33Z",
+      "status": "HISTORICAL_REQUIREMENT_METADATA_ONLY",
+      "assignment": "unassigned",
+      "original_visible_agent_trajectory_available": false,
+      "training_record_ready": false,
+      "same_account_and_project": true,
+      "future_C": false
+    }
+  },
+  "increments": {
+    "independent_samples": 0,
+    "confirmed_external_teachers": 0,
+    "authenticated_users": 0,
+    "future_C_tasks": 0,
+    "native_adoption": 0,
+    "round03_GPU_training_jobs": 0
+  },
+  "unknown_population_metrics": {
+    "authenticated_human_population": null,
+    "statistical_effective_sample_size": null
+  },
+  "claims": {
+    "scientific_confirmation_qualified": false,
+    "proof_of_useful_work_eligible": false,
+    "native_cell_or_HIA_execution_established": false,
+    "decentralized_training_established": false,
+    "foundation_model_capability_established": false,
+    "production_adoption": false
+  },
+  "blockers": {
+    "H_transport": {
+      "status": "DISCONNECTED",
+      "HTTP_status": 404,
+      "current_code": "tunnel_client_not_seen",
+      "retained_observed_code": "tunnel_client_not_connected",
+      "approval_rejection": false
+    },
+    "format_gate": {
+      "status": "NO_EXECUTION_RECEIPT_TRANSPORT_BLOCKED",
+      "command": "just fmt",
+      "cwd": "codex-rs",
+      "host": "mac",
+      "idempotency_key": "round03-final-fmt-20261117-01",
+      "session_id": null,
+      "execution_status": "UNKNOWN",
+      "passed": false,
+      "required_after_integration": true
+    }
+  },
+  "draft_publication": {
+    "status": "PENDING_ROOT",
+    "url": null,
+    "published_by_document_author": false,
+    "code_stage_plan_count": 10,
+    "maximum_code_lines_per_stage": 497,
+    "documentation_and_evidence_staged_separately": true
+  },
+  "retained_base": {
+    "commit": "43cc04442373a1ee7e8bad7942f329a1530b83dc",
+    "tree": "d97c1e1dab32817bad486cbe93eac027f59f6760",
+    "changed": false
+  },
+  "document_actions": {
+    "new_model_runs": 0,
+    "new_remote_calls": 0,
+    "new_independent_tests": 0
+  },
+  "recorded_at_utc": "2026-11-17T11:04:21.263275+00:00",
+  "evidence_origin_root": "/dev/shm/hepta-e1e6-next-20261117-0c078a",
+  "evidence_bindings": [
+    {
+      "role": "integrated_cpu",
+      "origin_relative_path": "integration-01/evidence/INTEGRATED_TESTS_01.json",
+      "sha256": "19223af6c86369ac7c36f2602d142c6a7dd83a370498ee6885437b3c572979e4",
+      "bytes": 11721
+    },
+    {
+      "role": "targeted_reader_regression",
+      "origin_relative_path": "integration-01/evidence/REPORT_READER_TEST_01.json",
+      "sha256": "fa5b2492bfa08c29674e4e5cebb345b5a84afa468345a8fbbab29ef55258e36e",
+      "bytes": 1398
+    },
+    {
+      "role": "empty_directory_readout",
+      "origin_relative_path": "integration-01/evidence/BLOCKED_COST_REPORT.json",
+      "sha256": "ee20dc9c737e35f3f26ef62f195428e3305affef6b0442349914015d1cedfe5e",
+      "bytes": 5839
+    },
+    {
+      "role": "transport_format",
+      "origin_relative_path": "integration-01/evidence/TRANSPORT_NATIVE_FORMAT.json",
+      "sha256": "dd1eba6cd7826d80d5aabe1ac69134bead9500a4b60efe880044f3b4860148a7",
+      "bytes": 4300
+    },
+    {
+      "role": "core64_identity",
+      "origin_relative_path": "integration-01/evidence/CORE64_EXPECTED.json",
+      "sha256": "70dc90254e12960281493851e97a13bd57828bf85e54d94b74ac9dbd54e13711",
+      "bytes": 5769
+    },
+    {
+      "role": "previous_tiny_cpu",
+      "origin_relative_path": "onpolicy/source-01/ENGINEERING_VALIDATION.json",
+      "sha256": "7264aea7b6e9c1860fe53ed9c5fe7748f08a799589192514f83346fd5cf061b4",
+      "bytes": 15061
+    },
+    {
+      "role": "source04_engineering",
+      "origin_relative_path": "onpolicy/source-04/ENGINEERING_VALIDATION.json",
+      "sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "bytes": 25738
+    },
+    {
+      "role": "source04_independent_tests",
+      "origin_relative_path": "circuit/review02/REVISION_TESTS_SOURCE04_ATTEMPT02.json",
+      "sha256": "a0a6d67cb22fd770dfbba6ab024caa2a7d9d7f85dad3d7fb4af360d866b3d9ea",
+      "bytes": 5084
+    },
+    {
+      "role": "source04_independent_review",
+      "origin_relative_path": "circuit/review02/REVIEW_SOURCE04.json",
+      "sha256": "66ce2b4b7f0ad6e902356ca48d6975c5f95f69a1187d4c9ee01f65a84f37ea8d",
+      "bytes": 3530
+    },
+    {
+      "role": "entrypoint_review",
+      "origin_relative_path": "circuit/review02/ROUND03_REVIEW.json",
+      "sha256": "eca223ae6cff01134f1db93fd342ce35b416c0de04be0b0dd0e1fcc0d8326078",
+      "bytes": 3146
+    },
+    {
+      "role": "source_intake",
+      "origin_relative_path": "sources/SOURCE_INTAKE_03.json",
+      "sha256": "77ed04e3b194a750442cfabe4bfd4a4097c2ef32fc1b5fc4fb7225bff2b5e577",
+      "bytes": 11900
+    },
+    {
+      "role": "source_count_review",
+      "origin_relative_path": "sources/SOURCE_INTEGRATION_REVIEW_03.json",
+      "sha256": "3394b8b27c41b483fc87a4afdd19bc76ed198e20ffbff50b2c5d15567d835651",
+      "bytes": 13878
+    }
+  ],
+  "current_source_inventory": {
+    "__init__.py": "3679f874457cf6dc790ef73248025855ed5da982e5609ab8f6f8c9a99fa19d96",
+    "circuit_contract.py": "35f3ad7a89f18de39c17173a2ed59bf81b9c2a79a15fc9644c9a4677d9009893",
+    "circuit_router.py": "d63456d4b5fe104f5f75297783ad18cf0aa78c77741353cdf93f6649a3b48bdb",
+    "circuit_runtime.py": "91f61fafc96425fc1d6cb3b5cdb049ed8ac84fcae145ad8ddd573d5ca9dd096d",
+    "circuit_study.py": "1f9e52a6ee716171468e8018277f712e95ca4e55db890683457540c0d7d7b127",
+    "onpolicy_backend.py": "fc3e4c66f36f352e89359a406c8c8d8ff1a8f607b1930e2d00f9b802aa1db566",
+    "onpolicy_contract.py": "e79cf7f17d06cf57451415b51c54d596536bfb018113c67a9da70ef1bf194a10",
+    "onpolicy_feedback.py": "c04307a1cc384a1045f95b3388a24d0d7fd0dfc965de072298370114ca92a1d2",
+    "onpolicy_loop.py": "fd0d9706838736bffe8e5980b272ebe3dd918f6a7e4c5a20a7dcd0777a3a13c2",
+    "onpolicy_rollout.py": "957ca60ad66dc578da405734a6060068a4d551af5a157642942810eafa8797b7",
+    "onpolicy_train.py": "64db149bee43242e68703a30ce090c3c2a3eb38f3d0347ac8c152d63898255f8",
+    "reporting_v4.py": "3cec672653806d7559d0f428b3f66bdba9947320469b64b3551d869973c3b430",
+    "round03_cli.py": "9fe7c44c9882f74b66174978da190984f8a6e48d633cd7bffcb141ec0d8b5fff",
+    "round03_jobs.py": "bd45e297b2e14fbefad4ca7847079b59e4ecb82632218f1ec44aafc257b425ef",
+    "round03_plan.py": "3768b4de5b8a29d6696b8658f19fdeaf3183e72dc279355de7a7f38bff4dabc5",
+    "round03_report.py": "af1849bcdf62be71aad0af3c50729eeeca54d431372777f792a62e7e94daec7a",
+    "shared_pool_v4.py": "02c3c7311a8b2834523b2995b831b90e6d9ff6495702418eadf59a5ba17594fc",
+    "test_circuit_router.py": "451b97c9a65b357513de53cdd99a47d91f8a1bcea7323156c895873611efff85",
+    "test_circuit_runtime.py": "e19ec01285f547dd0a58ae9fb10c54540f7a0c2783554e12547e7096262a9ba8",
+    "test_onpolicy_cache.py": "a13104521f1837ff81739ca3707ab9a4af10d89a7387a4c3b590d6387a69b43a",
+    "test_onpolicy_flow.py": "fa0e03074f7c2218626811c8ca3dac62425a95a05fda9b1b5203ee4792c0978c",
+    "test_onpolicy_tensor.py": "e2455b5d219a2da5175406324c3abd16b71dc2c6c749a4b3229d38cf8d32f998",
+    "test_reporting_v4.py": "621e400f69dfde45c56cdbb2d983a2112fd4408f47dcff9b5a2c108128a22914",
+    "test_round03_plan.py": "50a5b87a8ed81b3cf71fee30aacbe01b55564fe19166f272cdbfd9159a9b1025",
+    "test_round03_report.py": "6f1837809f105e0cd82502f6d4cec3ab287a3358774cfbc414ba5bb08df64d9a",
+    "test_shared_pool_cleanup.py": "5fee971d8affb9c084b016bfc620340469f7b1387c1458540b1d0f2355776e54",
+    "test_shared_pool_v4.py": "9540460b1f11b7993bf376ea430d91090cdee25a8aec840e0246ce2c289ad58b"
+  }
+}
