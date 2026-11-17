@@ -1,0 +1,20 @@
+--- qwen_research_diagnostic_v1.py
++++ research-diagnostic-v1-source-02/qwen_research_diagnostic_v1.py
+@@ -705,7 +705,7 @@
+     require(sys.dont_write_bytecode and sys.flags.isolated, "use Python -I -B")
+     reader = Reader(WORKSPACE)
+     output = reader.path(args.output)
+-    require(output == WORKSPACE / "research-diagnostic-01", "fixed diagnostic output required")
++    require(output == WORKSPACE / "research-diagnostic-02", "fixed diagnostic output required")
+     output.mkdir(exist_ok=False)
+     try:
+         freeze = sealed(reader.read(args.freeze, args.freeze_sha256))
+@@ -713,7 +713,7 @@
+         source_sha = reader.hash(Path(__file__).absolute())["sha256"]
+         validate_rules(rules, source_sha)
+         run = reader.path(freeze["output"])
+-        require(run == WORKSPACE / "research-sft-01" and args.freeze == run / "FREEZE.json"
++        require(run == WORKSPACE / "research-sft-02" and args.freeze == run / "FREEZE.json"
+                 and freeze.get("schema") == "hepta.research-sft-freeze.v1"
+                 and freeze.get("status") == "REFERENCE_ADMITTED"
+                 and freeze.get("diagnostic_freeze") == {

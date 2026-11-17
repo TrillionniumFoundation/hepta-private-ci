@@ -1,0 +1,38 @@
+--- archive_qwen_research_v1_02.py
++++ operations/archive_qwen_research_v1_03.py
+@@ -16,7 +16,7 @@
+ import zipfile
+ 
+ PART, LIMIT = 322560, 512000
+-DEV, DIAG = "research-sft-01", "research-diagnostic-01"
++DEV, DIAG = "research-sft-02", "research-diagnostic-02"
+ HELPERS = {
+     "qwen_development_io_v3.py": "4116cfc058cfbec9bdca4845e409d0c1c2071d9da9faa4b56f9d8aa6df5a2060",
+     "qwen_development_inputs_v3.py": "6bd1b2d71857c5b541ca63ce815cbb05660b75284fc7065e5766e43d910fea20",
+@@ -147,14 +147,14 @@
+     require(len(rows) == 2 and {row.get("role") for row in rows} == {"research", "postrun"},
+             "both research and postrun writer observations required")
+     retained, outcomes = [index_path], []
+-    wrapper = bounded(root, "operations/launch_qwen_research_owned_v1.py")
+-    require(checksum(wrapper) == "4f647ae7e7cc5f5f0d04b597db10f0a68b946ecff04821651a16633bfe02eab0",
++    wrapper = bounded(root, "operations/launch_qwen_research_owned_v1_02.py")
++    require(checksum(wrapper) == "205a72dbe8adab915c8f7c9225a3d4effb0f399f80ba167cd5786213aa7eda00",
+             "reviewed owned launcher differs")
+     retained.append(wrapper)
+     for row in rows:
+         role = row["role"]
+         output = DEV if role == "research" else DIAG
+-        owned = "owned-research-sft-01" if role == "research" else "owned-research-diagnostic-01"
++        owned = "owned-research-sft-02" if role == "research" else "owned-research-diagnostic-02"
+         source = bounded(root, "research-sft-v1-source/run_research_sft_v1.py") if role == "research" else postrun
+         require(row["output_directory"] == output and row["owned_directory"] == owned
+                 and bounded(root, row["source_path"]) == source
+@@ -255,7 +255,7 @@
+     sources = [bounded(root, name) for name in (DEV, DIAG) if bounded(root, name).exists()]
+     sources.extend([postrun, own])
+     sources.extend(bounded(root, name) for name in ("research-sft-v1-source",
+-        "research-diagnostic-v1-source", "candidate-qwen-03", "probe-qwen-parent-03"))
++        "research-diagnostic-v1-source-02", "candidate-qwen-03", "probe-qwen-parent-03"))
+     original = bounded(root, "operations/archive_qwen_final_v3.py")
+     require(checksum(original) == "7bcd81d5bc8cae58c03a80c62e5c39f858a5996c1df1768ac4252a2d58fb80d1",
+             "original reused archive utility source differs")
