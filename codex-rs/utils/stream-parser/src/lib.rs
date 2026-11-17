@@ -10,6 +10,10 @@ mod stream_text;
 mod tagged_line_parser;
 mod utf8_stream;
 
+#[cfg(test)]
+#[path = "citation_additional_tests.rs"]
+mod citation_additional_tests;
+
 pub use assistant_text::AssistantTextChunk;
 pub use assistant_text::AssistantTextStreamParser;
 pub use citation::CitationStreamParser;
