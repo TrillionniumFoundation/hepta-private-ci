@@ -4,7 +4,6 @@ use codex_core::config::Config;
 use codex_core::config::ConfigOverrides;
 use codex_protocol::models::ActivePermissionProfile;
 use codex_protocol::models::PermissionProfile;
-use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_rollout::RolloutItem;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -63,21 +62,24 @@ impl PersistedResumeRuntime {
         if restored_workspace_roots {
             typesafe_overrides.workspace_roots = settings.runtime_workspace_roots.clone();
         }
-        let permission_profile = history
+        // Retained roots and native environments belong to the TurnContext
+        // which recorded them. A later settings event must not relabel their
+        // provenance, even though current Config enforces the new policy.
+        let (active_permission_profile, permission_profile) = history
             .iter()
             .rev()
             .find_map(|item| match item {
-                RolloutItem::TurnContext(context) => Some(context.permission_profile.clone()),
-                RolloutItem::EventMsg(EventMsg::ThreadSettingsApplied(event)) => {
-                    Some(Some(event.thread_settings.permission_profile.clone()))
-                }
+                RolloutItem::TurnContext(context) => Some((
+                    context.active_permission_profile.clone(),
+                    context.permission_profile.clone(),
+                )),
                 _ => None,
             })
-            .flatten();
+            .unwrap_or((None, None));
         Self {
             environment,
             restored_workspace_roots,
-            active_permission_profile: settings.active_permission_profile.clone(),
+            active_permission_profile,
             permission_profile,
         }
     }
@@ -133,3 +135,7 @@ pub(super) async fn load_config_for_resume(
         persisted_runtime.and_then(|runtime| runtime.environment),
     ))
 }
+
+#[cfg(test)]
+#[path = "resume_runtime_environment_tests.rs"]
+mod tests;
