@@ -90,6 +90,7 @@ mod sideband;
 
 use self::bem::ChannelParser as BemChannelParser;
 use self::bem::message_phase as bem_message_phase;
+use self::handoff_owner::RealtimeHandoffOutputGate;
 pub(crate) use self::handoff_owner::RealtimeHandoffRequest;
 use self::handoff_owner::RealtimeTurnHandoff;
 use self::handoff_owner::send_owned_handoff_output;
@@ -154,7 +155,7 @@ enum RealtimeSessionKind {
 #[derive(Clone, Debug)]
 struct RealtimeHandoffState {
     identity: Arc<()>,
-    output_complete: Arc<Mutex<bool>>,
+    output_gate: Arc<RealtimeHandoffOutputGate>,
     output_tx: Sender<RealtimeOutbound>,
     last_output: Arc<Mutex<Option<RealtimeHandoffOutput>>>,
     stream: Arc<Mutex<RealtimeHandoffStreamState>>,
@@ -597,7 +598,7 @@ impl RealtimeConversationManager {
         let stop_token = CancellationToken::new();
         let handoff = RealtimeHandoffState {
             identity: Arc::new(()),
-            output_complete: Arc::new(Mutex::new(/*t*/ false)),
+            output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
             output_tx: handoff_output_tx,
             last_output: Arc::new(Mutex::new(None)),
             stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),

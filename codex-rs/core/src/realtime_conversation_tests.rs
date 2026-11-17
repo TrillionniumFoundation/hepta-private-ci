@@ -1,5 +1,6 @@
 use super::AGENT_FINAL_MESSAGE_PREFIX;
 use super::HANDOFF_STREAM_TRUNCATION_MARKER;
+use super::RealtimeHandoffOutputGate;
 use super::RealtimeHandoffState;
 use super::RealtimeInputTaskExit;
 use super::RealtimeOutbound;
@@ -209,7 +210,7 @@ async fn clears_active_handoff_explicitly() {
     let (tx, _rx) = bounded(1);
     let state = RealtimeHandoffState {
         identity: Arc::new(()),
-        output_complete: Arc::new(Mutex::new(/*t*/ false)),
+        output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
         output_tx: tx,
         last_output: Arc::new(Mutex::new(None)),
         stream: Arc::new(Mutex::new(Default::default())),

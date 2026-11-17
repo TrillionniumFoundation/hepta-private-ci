@@ -1,3 +1,4 @@
+use super::RealtimeHandoffOutputGate;
 use super::RealtimeHandoffRequest;
 use super::RealtimeTurnHandoff;
 use super::send_owned_handoff_output;
@@ -17,14 +18,17 @@ use futures::FutureExt;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 use tokio::sync::Mutex;
 
-fn handoff(kind: RealtimeSessionKind) -> (RealtimeHandoffState, Receiver<RealtimeOutbound>) {
+pub(super) fn handoff(
+    kind: RealtimeSessionKind,
+) -> (RealtimeHandoffState, Receiver<RealtimeOutbound>) {
     let (tx, rx) = async_channel::bounded(/*cap*/ 8);
     (
         RealtimeHandoffState {
             identity: Arc::new(()),
-            output_complete: Arc::new(Mutex::new(/*t*/ false)),
+            output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
             output_tx: tx,
             last_output: Arc::new(Mutex::new(/*t*/ None)),
             stream: Arc::new(Mutex::new(Default::default())),
@@ -41,6 +45,16 @@ fn handoff(kind: RealtimeSessionKind) -> (RealtimeHandoffState, Receiver<Realtim
         },
         rx,
     )
+}
+
+pub(super) async fn output_complete(handoff: &RealtimeHandoffState) -> bool {
+    let gate = &handoff.output_gate;
+    let _permit = gate
+        .permit
+        .acquire()
+        .await
+        .expect("the output gate is never closed");
+    gate.complete.load(Ordering::Relaxed)
 }
 
 #[tokio::test]
@@ -154,6 +168,10 @@ async fn v1_steering_changes_only_the_accepted_turn_owner() {
         &first_owner.handoff.stream,
         &second_owner.handoff.stream
     ));
+    assert!(Arc::ptr_eq(
+        &first_owner.handoff.output_gate,
+        &second_owner.handoff.output_gate
+    ));
     assert_eq!(
         second_owner
             .handoff
@@ -256,7 +274,7 @@ async fn only_the_matching_aborted_owner_retires_without_a_completion_acknowledg
                 }),
             )
             .await;
-        assert!(!*first_owner.handoff.output_complete.lock().await);
+        assert!(!output_complete(&first_owner.handoff).await);
         assert!(rx.try_recv().is_err());
         session
             .send_event(
@@ -270,7 +288,7 @@ async fn only_the_matching_aborted_owner_retires_without_a_completion_acknowledg
                 }),
             )
             .await;
-        assert!(*first_owner.handoff.output_complete.lock().await);
+        assert!(output_complete(&first_owner.handoff).await);
         assert!(
             first_owner
                 .handoff
@@ -383,6 +401,10 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
         &current.identity
     ));
     assert!(Arc::ptr_eq(&current_owner.handoff.stream, &current.stream));
+    assert!(Arc::ptr_eq(
+        &current_owner.handoff.output_gate,
+        &current.output_gate
+    ));
     manager
         .handoff_out(
             &turn,
@@ -405,7 +427,7 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
         .expect("original completion no-op");
     manager.clear_active_handoff(&turn).await;
     assert!(current.stream.lock().await.active_handoff.is_none());
-    assert!(!*current.output_complete.lock().await);
+    assert!(!output_complete(&current).await);
     assert!(current_rx.try_recv().is_err());
     send_owned_handoff_output(
         &old_owner.handoff,
@@ -428,7 +450,7 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
         .expect("next completion no-op");
     manager.clear_active_handoff(&next_turn).await;
     assert!(current.stream.lock().await.active_handoff.is_none());
-    assert!(!*current.output_complete.lock().await);
+    assert!(!output_complete(&current).await);
     assert!(current_rx.try_recv().is_err());
 }
 
@@ -448,6 +470,8 @@ async fn server_managed_readmission_does_not_inherit_a_prior_client_managed_glob
     assert!(Arc::ptr_eq(&owner.handoff.identity, &server.identity));
     assert!(!Arc::ptr_eq(&owner.handoff.stream, &client.stream));
     assert!(!Arc::ptr_eq(&owner.handoff.stream, &server.stream));
+    assert!(!Arc::ptr_eq(&owner.handoff.output_gate, &client.output_gate));
+    assert!(!Arc::ptr_eq(&owner.handoff.output_gate, &server.output_gate));
     assert!(!owner.handoff.client_managed_handoffs);
     assert_eq!(
         client.stream.lock().await.active_handoff.as_deref(),

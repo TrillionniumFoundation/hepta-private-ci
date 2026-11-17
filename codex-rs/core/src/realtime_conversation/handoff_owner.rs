@@ -9,8 +9,35 @@ use codex_protocol::error::CodexErr;
 use codex_protocol::error::Result as CodexResult;
 use std::sync::Arc;
 use std::sync::OnceLock;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use tokio::sync::Mutex;
 use tokio::sync::OwnedMutexGuard;
+use tokio::sync::Semaphore;
+
+/// Keep output coordination and retirement state inseparable for one owner.
+/// The completion bit is accessed only while the single permit is held.
+pub(super) struct RealtimeHandoffOutputGate {
+    permit: Semaphore,
+    complete: AtomicBool,
+}
+
+impl std::fmt::Debug for RealtimeHandoffOutputGate {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("RealtimeHandoffOutputGate")
+            .finish_non_exhaustive()
+    }
+}
+
+impl Default for RealtimeHandoffOutputGate {
+    fn default() -> Self {
+        Self {
+            permit: Semaphore::new(/*permits*/ 1),
+            complete: AtomicBool::new(/*v*/ false),
+        }
+    }
+}
 
 #[derive(Clone, Debug)]
 pub(super) struct RealtimeTurnHandoff {
@@ -58,7 +85,7 @@ impl RealtimeHandoffRequest {
                     RealtimeHandoffState {
                         last_output: Arc::new(Mutex::new(/*t*/ None)),
                         stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),
-                        output_complete: Arc::new(Mutex::new(/*t*/ false)),
+                        output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
                         ..self.handoff.clone()
                     }
                 };
@@ -126,7 +153,7 @@ impl PreparedRealtimeHandoff<'_> {
 }
 
 /// Serialize progress, accepted-steer acknowledgement and retirement for one
-/// owner. Completion and abort close this gate before releasing the turn fence;
+/// owner. Completion and abort mark it complete before releasing the turn fence;
 /// a late timer cannot enqueue stale progress. Abort supplies no completion
 /// output. The receiver therefore does not need a later arrival's global
 /// handoff ID to classify an already-owned V2 output.
@@ -135,12 +162,17 @@ pub(super) async fn send_owned_handoff_output(
     output: Option<RealtimeOutbound>,
     complete: bool,
 ) -> CodexResult<()> {
-    let mut output_complete = handoff.output_complete.lock().await;
-    if *output_complete {
+    let gate = &handoff.output_gate;
+    let _permit = gate
+        .permit
+        .acquire()
+        .await
+        .map_err(|_| CodexErr::InvalidRequest("conversation is not running".to_string()))?;
+    if gate.complete.load(Ordering::Relaxed) {
         return Ok(());
     }
     if complete {
-        *output_complete = true;
+        gate.complete.store(/*val*/ true, Ordering::Relaxed);
     }
     let acknowledgement = handoff
         .stream
@@ -158,6 +190,10 @@ pub(super) async fn send_owned_handoff_output(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "handoff_output_gate_tests.rs"]
+mod output_gate_tests;
 
 #[cfg(test)]
 #[path = "handoff_owner_tests.rs"]

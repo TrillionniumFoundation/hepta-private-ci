@@ -18,14 +18,15 @@ pub(super) async fn flush_pending_realtime_event(
     let Some(event) = pending.as_ref() else {
         return Ok(());
     };
+    let should_stop = event.should_stop;
     if events_tx.send(event.event.clone()).await.is_err() {
         // A closed receiver cannot accept this event on a later drain. Keep
         // the original terminal error and discard only the failed send.
         let _ = pending.take();
         anyhow::bail!("realtime output event channel closed");
     }
-    let event = pending.take().expect("the delivered event remains owned");
-    if event.should_stop {
+    let _ = pending.take();
+    if should_stop {
         error!("realtime stream error event received");
         anyhow::bail!("realtime stream error event received");
     }

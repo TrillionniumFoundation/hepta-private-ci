@@ -1,4 +1,5 @@
 use super::run;
+use crate::realtime_conversation::RealtimeHandoffOutputGate;
 use crate::realtime_conversation::RealtimeHandoffState;
 use crate::realtime_conversation::RealtimeSessionKind;
 use crate::realtime_conversation::RealtimeStartOutput;
@@ -64,7 +65,7 @@ async fn joined_fanout_preserves_parsed_events_and_tail_after_transport_end(expl
             realtime_active: Arc::clone(&realtime_active),
             handoff: RealtimeHandoffState {
                 identity: Arc::new(()),
-                output_complete: Arc::new(Mutex::new(/*t*/ false)),
+                output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
                 output_tx,
                 last_output: Arc::new(Mutex::new(/*t*/ None)),
                 stream: Arc::new(Mutex::new(Default::default())),
