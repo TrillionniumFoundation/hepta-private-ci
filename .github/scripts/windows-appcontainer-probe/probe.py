@@ -393,7 +393,6 @@ def run_case(api, lpac, user, base_token):
             token_facts
             == {
                 "is_appcontainer": 1,
-                "is_lpac": int(lpac),
                 "package_sid": package,
                 "integrity_sid": "S-1-16-4096",
                 "user_sid": user,
@@ -401,6 +400,28 @@ def run_case(api, lpac, user, base_token):
             },
             "actual child token differs from requested identity",
         )
+        query = api.lpac_token_query(token)
+        result["lpac_information_class_query"] = query
+        access = api.lpac_access_check(token)
+        result["lpac_native_access_check"] = access
+        expected_access = 2 if lpac else 3
+        require(
+            access["access_status"]
+            and access["granted_access"] == expected_access
+            and access["privilege_count"] == 0,
+            "actual child application-package access differs from requested mode",
+        )
+        if query["status"] == "observed":
+            require(query["value"] == int(lpac), "LPAC query and access check disagree")
+        else:
+            require(
+                query["status"] == "unavailable"
+                and query["information_class"] == 46
+                and query["error"] == 87
+                and query["value"] is None,
+                "unknown LPAC query result",
+            )
+        result["lpac_identity_basis"] = "actual child token AccessCheck"
         records = observe(api, token, root, prepared["operations"])
         result["native_operations_with_child_token"] = records
         resume = api.ResumeThread(process.hThread)

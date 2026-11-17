@@ -39,6 +39,18 @@ const MAX_RETIRED_IDS: usize = 16_384;
 /// digested plans by the caller.
 pub const MAX_MICROBATCH_REQUESTS_V1: usize = 256;
 
+/// Source and model lineage required to identify a shared feature result.
+/// Every digest is validated by the identity constructor before use.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FeatureSnapshotLineageV1 {
+    pub source_frontier: Digest32,
+    pub model: Digest32,
+    pub adapter: Digest32,
+    pub tokenizer: Digest32,
+    pub normalizer: Digest32,
+    pub calibration: Digest32,
+}
+
 /// Identity dimensions that must agree before an encoder result is reused.
 ///
 /// The legacy four-argument [`FeatureSnapshotV1::new`] constructor remains
@@ -69,25 +81,15 @@ impl FeatureSnapshotIdentityV1 {
         scope: StableId,
         workspace: StableId,
         purpose: StableId,
-        source_frontier: Digest32,
-        model: Digest32,
-        adapter: Digest32,
-        tokenizer: Digest32,
-        normalizer: Digest32,
-        calibration: Digest32,
+        lineage: FeatureSnapshotLineageV1,
     ) -> Result<Self, DataPlaneError> {
         Self::new_with_question_options(
             scope,
             workspace,
             purpose,
-            tagged_digest(b"legacy.question", source_frontier, model),
-            tagged_digest(b"legacy.options", source_frontier, adapter),
-            source_frontier,
-            model,
-            adapter,
-            tokenizer,
-            normalizer,
-            calibration,
+            tagged_digest(b"legacy.question", lineage.source_frontier, lineage.model),
+            tagged_digest(b"legacy.options", lineage.source_frontier, lineage.adapter),
+            lineage,
         )
     }
 
@@ -99,12 +101,7 @@ impl FeatureSnapshotIdentityV1 {
         purpose: StableId,
         question: Digest32,
         options: Digest32,
-        source_frontier: Digest32,
-        model: Digest32,
-        adapter: Digest32,
-        tokenizer: Digest32,
-        normalizer: Digest32,
-        calibration: Digest32,
+        lineage: FeatureSnapshotLineageV1,
     ) -> Result<Self, DataPlaneError> {
         let identity = Self {
             scope,
@@ -112,12 +109,12 @@ impl FeatureSnapshotIdentityV1 {
             purpose,
             question,
             options,
-            source_frontier,
-            model,
-            adapter,
-            tokenizer,
-            normalizer,
-            calibration,
+            source_frontier: lineage.source_frontier,
+            model: lineage.model,
+            adapter: lineage.adapter,
+            tokenizer: lineage.tokenizer,
+            normalizer: lineage.normalizer,
+            calibration: lineage.calibration,
         };
         identity.validate()?;
         Ok(identity)
@@ -876,16 +873,7 @@ impl ReferenceBackendBatchV1 {
                 return Err(DataPlaneError::WireDimensionMismatch);
             }
             let output_q24 = model.head.execute(request.snapshot.features_q24())?;
-            let output_digest = digest_output(
-                &request.request_id,
-                &request.model_id,
-                request.generation,
-                model.head.head_digest,
-                request.snapshot.encoder_digest,
-                request.snapshot.input_digest,
-                request.snapshot.identity.semantic_digest(),
-                &output_q24,
-            );
+            let output_digest = digest_output(request, model.head.head_digest, &output_q24);
             outputs.push(HeadExecutionOutputV1 {
                 request_id: request.request_id.clone(),
                 model_id: request.model_id.clone(),
@@ -1014,25 +1002,20 @@ fn append_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 fn digest_output(
-    request_id: &StableId,
-    model_id: &StableId,
-    generation: Generation,
+    request: &HeadExecutionRequestV1,
     head_digest: Digest32,
-    encoder_digest: Digest32,
-    input_digest: Digest32,
-    identity_digest: Digest32,
     output: &[i64],
 ) -> Digest32 {
     // V2 frames both variable-length IDs so different request/model splits
     // cannot produce the same output identity.
     let mut bytes = b"hepta.neuron.reference-backend-output.v2\0".to_vec();
-    append_stable_id(&mut bytes, request_id);
-    append_stable_id(&mut bytes, model_id);
-    bytes.extend_from_slice(&generation.get().to_be_bytes());
+    append_stable_id(&mut bytes, &request.request_id);
+    append_stable_id(&mut bytes, &request.model_id);
+    bytes.extend_from_slice(&request.generation.get().to_be_bytes());
     bytes.extend_from_slice(head_digest.as_array());
-    bytes.extend_from_slice(encoder_digest.as_array());
-    bytes.extend_from_slice(input_digest.as_array());
-    bytes.extend_from_slice(identity_digest.as_array());
+    bytes.extend_from_slice(request.snapshot.encoder_digest.as_array());
+    bytes.extend_from_slice(request.snapshot.input_digest.as_array());
+    bytes.extend_from_slice(request.snapshot.identity.semantic_digest().as_array());
     for value in output {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
@@ -1064,3 +1047,7 @@ fn digest_microbatch_plan(
 #[cfg(test)]
 #[path = "data_plane_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "data_plane_identity_tests.rs"]
+mod identity_tests;

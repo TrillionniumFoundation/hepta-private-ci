@@ -57,6 +57,34 @@ async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
 }
 
 #[tokio::test]
+async fn historical_sqlite_shim_keeps_parallel_owner_fixtures_isolated() {
+    let (canonical_root, canonical) = historical_pool(false).await;
+    let (displaced_root, displaced) = historical_pool(true).await;
+    assert_ne!(canonical_root.path(), displaced_root.path());
+    assert!(canonical_root.path().join("historical.sqlite3").is_file());
+    assert!(displaced_root.path().join("historical.sqlite3").is_file());
+
+    let original_displaced: Vec<Vec<u8>> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&displaced)
+            .await
+            .expect("independent displaced migration history");
+    sqlx::query("UPDATE _sqlx_migrations SET checksum = x'00' WHERE version = 4")
+        .execute(&canonical)
+        .await
+        .expect("corrupt only the canonical test fixture");
+    let still_displaced: Vec<Vec<u8>> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&displaced)
+            .await
+            .expect("unchanged independent migration history");
+    assert_eq!(still_displaced, original_displaced);
+
+    canonical.close().await;
+    displaced.close().await;
+}
+
+#[tokio::test]
 async fn both_historical_branches_converge_without_rewriting_checksums() {
     for displaced in [false, true] {
         let (directory, pool) = historical_pool(displaced).await;

@@ -206,14 +206,30 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
             (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
         ):
+            live_read_markers = ("live.read_current().await?",)
+            predecessor_read_markers = (f"self.{reader}(&source).await?",)
+            remote_after_markers = ()
+            if path == SELECTOR:
+                live_read_markers = (
+                    "let original = live.read_current().await;",
+                    "let original = original?;",
+                )
+                predecessor_read_markers = (
+                    "let before = self.training_evidence(&source).await;",
+                    "let before = before?;",
+                )
+                remote_after_markers = (
+                    "let after = self.training_evidence(source).await;",
+                    "after?",
+                )
             for marker in (
                 "live.require_original_context(",
-                "live.read_current().await?",
+                *live_read_markers,
             ):
                 self.rejects(path, function, marker)
             for marker in (
                 "if matches!(source.location(), ObservationLocation::RemoteOwner)",
-                f"self.{reader}(&source).await?",
+                *predecessor_read_markers,
                 f"{verifier}(&self.config, &before, now()?)?",
                 "let bytes = self.journal.read(&self.saved)?;",
             ):
@@ -221,6 +237,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             for marker in (
                 "ObservationLocation::RemoteOwner",
                 f"self.{reader}(source).await?",
+                *remote_after_markers,
                 "if self.prepare(source).await? != *observed",
                 "if self.journal.read(&self.saved)? != bytes",
                 "let current = now()?;",

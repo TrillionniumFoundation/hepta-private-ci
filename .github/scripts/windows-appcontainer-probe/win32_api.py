@@ -23,6 +23,16 @@ DACL_INFO = 0x4
 LABEL_INFO = 0x10
 PROTECTED_DACL = 0x80000000
 WAIT_TIMEOUT = 258
+MAXIMUM_ALLOWED = 0x02000000
+
+
+class GenericMapping(C.Structure):
+    _fields_ = [
+        ("GenericRead", DWORD),
+        ("GenericWrite", DWORD),
+        ("GenericExecute", DWORD),
+        ("GenericAll", DWORD),
+    ]
 
 
 class StartupInfo(C.Structure):
@@ -153,6 +163,20 @@ class Api:
                 BOOL,
                 [HANDLE, DWORD, PTR, C.c_int, C.c_int, C.POINTER(HANDLE)],
             ),
+            "AccessCheck": (
+                self.advapi,
+                BOOL,
+                [
+                    PTR,
+                    HANDLE,
+                    DWORD,
+                    C.POINTER(GenericMapping),
+                    PTR,
+                    C.POINTER(DWORD),
+                    C.POINTER(DWORD),
+                    C.POINTER(BOOL),
+                ],
+            ),
             "ImpersonateLoggedOnUser": (self.advapi, BOOL, [HANDLE]),
             "RevertToSelf": (self.advapi, BOOL, []),
             "CreateAppContainerProfile": (
@@ -268,12 +292,90 @@ class Api:
         integrity = self.token_bytes(token, 25)
         return {
             "is_appcontainer": self.token_dword(token, 29),
-            "is_lpac": self.token_dword(token, 46),
             "package_sid": self.sid_text(PTR.from_buffer(package).value),
             "integrity_sid": self.sid_text(PTR.from_buffer(integrity).value),
             "user_sid": self.user_sid(token),
             "capability_count": DWORD.from_buffer(self.token_bytes(token, 30)).value,
         }
+
+    def lpac_token_query(self, token):
+        try:
+            value = self.token_dword(token, 46)
+        except OSError as error:
+            if error.errno != 87:
+                raise
+            # Preserve the native query error; it provides no LPAC identity.
+            return {
+                "information_class": 46,
+                "status": "unavailable",
+                "error": error.errno,
+                "message": str(error),
+                "value": None,
+            }
+        require(value in (0, 1), "unexpected LPAC information-class value")
+        return {"information_class": 46, "status": "observed", "value": value}
+
+    def lpac_access_check(self, token):
+        # This checks the actual child token, not requested creation attributes.
+        # World covers the ordinary token pass. Separate application-package
+        # access bits distinguish the lowbox authorization pass.
+        sddl = "O:SYG:SYD:P(A;;0x3;;;WD)(A;;0x1;;;S-1-15-2-1)(A;;0x2;;;S-1-15-2-2)"
+        descriptor = PTR()
+        impersonation = HANDLE()
+        try:
+            self.checked(
+                self.ConvertStringSecurityDescriptorToSecurityDescriptorW(
+                    sddl, 1, C.byref(descriptor), None
+                ),
+                "parse LPAC identity descriptor",
+            )
+            require(descriptor.value is not None, "LPAC identity descriptor missing")
+            self.checked(
+                self.DuplicateTokenEx(
+                    token, TOKEN_QUERY, None, 2, 2, C.byref(impersonation)
+                ),
+                "duplicate actual child token for AccessCheck",
+            )
+            require(impersonation.value is not None, "AccessCheck token missing")
+            mapping = GenericMapping()
+            privileges = C.create_string_buffer(1024)
+            returned = DWORD(len(privileges))
+            granted, status = DWORD(), BOOL()
+            self.checked(
+                self.AccessCheck(
+                    descriptor,
+                    impersonation,
+                    MAXIMUM_ALLOWED,
+                    C.byref(mapping),
+                    privileges,
+                    C.byref(returned),
+                    C.byref(granted),
+                    C.byref(status),
+                ),
+                "AccessCheck actual child application-package rights",
+            )
+            require(
+                2 * C.sizeof(DWORD) <= returned.value <= len(privileges),
+                "AccessCheck privilege result outside allocation",
+            )
+            privilege_count = DWORD.from_buffer(privileges).value
+            require(privilege_count == 0, "LPAC identity used a token privilege")
+            require(status.value in (0, 1), "unexpected AccessCheck status value")
+            return {
+                "descriptor_sddl": sddl,
+                "desired_access": MAXIMUM_ALLOWED,
+                "generic_mapping": [0, 0, 0, 0],
+                "granted_access": granted.value,
+                "access_status": bool(status.value),
+                "privilege_count": privilege_count,
+                "privilege_bytes": returned.value,
+            }
+        finally:
+            try:
+                self.close(impersonation)
+            finally:
+                if descriptor.value is not None:
+                    self.LocalFree(descriptor)
 
     def set_dacl(self, path, sddl):
         descriptor = PTR()

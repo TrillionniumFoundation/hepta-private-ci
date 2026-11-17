@@ -11,6 +11,12 @@ pub mod generation_driver;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+/// Shared-feature reference neuron microbatch planning and execution.
+pub mod neuron_microbatch;
+pub use neuron_microbatch::NeuronMicrobatchExecutionV1;
+pub use neuron_microbatch::NeuronMicrobatchWorkerError;
+pub use neuron_microbatch::NeuronMicrobatchWorkerV1;
+
 /// Composition-aware shared encoder residency seam (qualification only).
 pub mod composition;
 

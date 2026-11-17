@@ -126,6 +126,20 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             self.assertNotIn(".read(", body)
             self.assertNotIn("now()", body)
 
+    def test_split_owner_reads_still_require_error_propagation(self):
+        for function, marker in (
+            ("fn attest_source(", "let evidence = self.training_evidence(&source).await;"),
+            ("fn attest_source(", "let evidence = evidence?;"),
+            ("fn readback_source(", "let before = self.training_evidence(&source).await;"),
+            ("fn readback_source(", "let before = before?;"),
+            ("fn finish_original_readback(", "let after = self.training_evidence(source).await;"),
+            ("fn finish_original_readback(", "after?"),
+            ("fn read_remote_selection(", "let original = live.read_current().await;"),
+            ("fn read_remote_selection(", "let original = original?;"),
+        ):
+            with self.subTest(function=function, marker=marker):
+                self.rejects(function, marker)
+
     def test_missing_pending_deadline_and_role_separation_remain_distinct(self):
         for function, marker in (
             ("fn attest_source(", "let started_at = now()?;"),

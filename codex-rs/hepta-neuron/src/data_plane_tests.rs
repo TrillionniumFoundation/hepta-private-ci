@@ -29,12 +29,14 @@ fn identity(label: &str) -> FeatureSnapshotIdentityV1 {
         id(&format!("purpose-{label}")),
         digest(&format!("question-{label}")),
         digest(&format!("options-{label}")),
-        digest(&format!("frontier-{label}")),
-        digest(&format!("model-{label}")),
-        digest(&format!("adapter-{label}")),
-        digest(&format!("tokenizer-{label}")),
-        digest(&format!("normalizer-{label}")),
-        digest(&format!("calibration-{label}")),
+        FeatureSnapshotLineageV1 {
+            source_frontier: digest(&format!("frontier-{label}")),
+            model: digest(&format!("model-{label}")),
+            adapter: digest(&format!("adapter-{label}")),
+            tokenizer: digest(&format!("tokenizer-{label}")),
+            normalizer: digest(&format!("normalizer-{label}")),
+            calibration: digest(&format!("calibration-{label}")),
+        },
     )
     .expect("identity")
 }

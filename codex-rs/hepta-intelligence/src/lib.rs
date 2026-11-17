@@ -7,6 +7,18 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod cell_ndu_selection;
+
+pub use cell_ndu_selection::CellNduCandidateEvidenceV1;
+pub use cell_ndu_selection::CellNduEvaluationReceiptV1;
+pub use cell_ndu_selection::CellNduEvaluationRequestV1;
+pub use cell_ndu_selection::CellNduExecutionReceiptV1;
+pub use cell_ndu_selection::CellNduSelectionDecisionV1;
+pub use cell_ndu_selection::CellNduSelectionErrorV1;
+pub use cell_ndu_selection::CellSelectionTokenV1;
+pub use cell_ndu_selection::evaluate_cell_ndu_v1;
+pub use cell_ndu_selection::execute_cell_ndu_v1;
+pub use cell_ndu_selection::select_cell_ndu_v1;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
