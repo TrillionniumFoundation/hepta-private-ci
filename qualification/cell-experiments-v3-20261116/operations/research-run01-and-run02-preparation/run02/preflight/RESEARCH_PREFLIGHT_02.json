@@ -1,0 +1,90 @@
+{
+  "MemAvailable_bytes": 77696794624,
+  "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+  "format_sha256": "b87296a2439627c04593c338926e74d52934cf3df61f9fc7fb52e913c90a4fc7",
+  "gpu": [
+    {
+      "argv": [
+        "/usr/bin/nvidia-smi",
+        "--query-gpu=uuid,name,memory.total,memory.free",
+        "--format=csv,noheader,nounits"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "GPU-a33875b7-7eb7-679e-df08-19227d3decee, NVIDIA GeForce RTX 4060, 8188, 6497\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/nvidia-smi",
+        "--query-compute-apps=pid,process_name,used_memory",
+        "--format=csv,noheader,nounits"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "9243, /opt/google/chrome/chrome --type=gpu-process --gpu-recent-crash-count=0 --ozone-platform=wayland --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=9174 --enable-crash-reporter=? --change-stack-guard-on-fork=enable --gpu-preferences=YAAAAAAAAAAgAQAEAAAAAAAAAAAAAGAASAAAAAAAAAABAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --shared-files --metrics-shmem-handle=4?i?6146500322015047430?8046464640003019071?262144 --field-trial-handle=3?i?6844592851126018384?16331561515598153181?262144 --variations-seed-version=20261113-170055.076000-production --pseudonymization-salt-handle=7?i?13728938487325130399?12655355340358938304?4 --trace-process-track-uuid=3190708988185955192, 443\n10568, /home/qian-qi/.local/opt/Telegram/Telegram, 20\n"
+    }
+  ],
+  "immutable_input_count": 61,
+  "model_calls": 0,
+  "observed_at_ns": 1794889260700199937,
+  "original_device_admission_minimum_bytes_unchanged": 4294967296,
+  "owned_preflight_exit": {
+    "automatic_retry": false,
+    "exit_code": 0,
+    "pid": 2443246,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "6d55cfe1fd25eddc57ffc2209c9bb9dd4d270edb8a737eb770aa4de5ee37444f",
+    "timed_out": false,
+    "wait_source": "subprocess.Popen.wait",
+    "wall_seconds": 0.8670489020005334
+  },
+  "preflight": {
+    "E3": "BLOCKED: no authenticated additional teachers",
+    "E4": "BLOCKED: no trained circuit and matched ablation experiment",
+    "E5": "BLOCKED: no independent source-growth cohorts",
+    "E6": "BLOCKED: repeated exposed tasks; no independent selection, new C or adoption",
+    "candidate_selected": null,
+    "circuit_qualified": false,
+    "cost": {
+      "complete": false,
+      "completed_child_cpu_seconds": 0.0,
+      "energy_joules": null,
+      "gpu_active_seconds": null,
+      "monetary_cost": null,
+      "nested_scopes_are_not_additive": true,
+      "own_cpu_seconds": 0.7195349999999999,
+      "process_lifetime_peak_rss_bytes": 43159552,
+      "wall_seconds": 0.6796907889947761
+    },
+    "exposure": "old_exposed_development_only",
+    "external_teacher_count_added": 0,
+    "fit_attempts_started": 0,
+    "freeze_digest": "ff99c51fd042cf929f3cf389e0d12401bb6c6025c17748c601d5add0bfbc62a2",
+    "independent_sample_increment": 0,
+    "independent_selection": false,
+    "mode": "preflight",
+    "model_loads": 0,
+    "native_cell_adoption": false,
+    "new_C": false,
+    "new_model_calls": 0,
+    "new_reference_calls": 0,
+    "new_users": 0,
+    "parent_successful_A_tasks": 0,
+    "proof_of_useful_work_eligible": false,
+    "protocol_changed_after_observed_failure": true,
+    "receipt_sha256": "356443bfeeee5810c0c2d58f2484feeb114f265dcf9972334f2a2a5da3da0809",
+    "research_only": true,
+    "schema": "hepta.research-sft-preflight.v1",
+    "scientific_confirmation_qualified": false,
+    "status": "REFERENCE_ADMITTED"
+  },
+  "research_fits": 0,
+  "resource_reschedule": true,
+  "resource_reservation_claimed": false,
+  "root_free_memory_schedule_minimum_MiB": 6144,
+  "runtime_root": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a",
+  "schema": "hepta.research-root-preflight.v1",
+  "source_deployment_sha256": "5fd522ef471fb2bfa279538d227ceb4e315f7ade2c4e3763a3c5e5487043cd55",
+  "tmpfs_available_bytes": 25607954432,
+  "workspace_root": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a"
+}
