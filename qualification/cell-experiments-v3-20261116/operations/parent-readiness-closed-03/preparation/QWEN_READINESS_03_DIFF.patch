@@ -1,0 +1,182 @@
+--- run_qwen_readiness_v3_02.py
++++ run_qwen_readiness_v3_03.py
+@@ -1,6 +1,6 @@
+ """One exclusive, offline Qwen development readiness operation on desktop.
+ 
+-Run with ROOT/venv/bin/python -I -B ROOT/operations/run_qwen_readiness_v3_02.py.
++Run with ROOT/venv/bin/python -I -B WORKSPACE/operations/run_qwen_readiness_v3_03.py.
+ The operation never trains, repairs generated answers, or opens confirmation data.
+ """
+ 
+@@ -23,8 +23,11 @@
+ 
+ 
+ ROOT = Path("/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a")
+-CANDIDATE = ROOT / "candidate-qwen-02"
+-OUTPUT = ROOT / "probe-qwen-parent-02"
++WORKSPACE = Path("/dev/shm/hepta-cell-experiments-v3-20261116-0c078a")
++CANDIDATE = WORKSPACE / "candidate-qwen-03"
++OUTPUT = WORKSPACE / "probe-qwen-parent-03"
++WORKSPACE_OWNERSHIP_SHA = "b526ddc15709e080a99b0c05102c1179c0e2c15313d3c971a4214946d2fcd37a"
++MATERIAL_COPY_SHA = "dec624957ff434cbb9e0e1fbfbf474176d16658e5defbf97575b2458ad1bc6a6"
+ SOURCE_SHA = "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7"
+ SOURCE_MANIFEST_SHA = "f4baf14dfb07513ade469adf6877ce6cd15ac98fbcc0e390854fcf24c85ae2be"
+ UPSTREAM_SHA = "bc183bff3f9c6253c3e732f39fcaf692cc6cbf5040374e3ead1e04aaa97b2cea"
+@@ -155,8 +158,8 @@
+ 
+ 
+ def extract_source():
+-    archive = ROOT / "qwen-source-02.zip"
+-    manifest = read_json(ROOT / "operations/QWEN_SOURCE_02.json", SOURCE_MANIFEST_SHA)
++    archive = WORKSPACE / "qwen-source-02.zip"
++    manifest = read_json(WORKSPACE / "operations/QWEN_SOURCE_02.json", SOURCE_MANIFEST_SHA)
+     if (file_hash(archive), archive.stat().st_size) != (SOURCE_SHA, 387581):
+         raise ValueError("frozen source archive changed")
+     if (manifest["sha256"], manifest["bytes"], manifest["formatted"]) != (SOURCE_SHA, 387581, True):
+@@ -321,7 +324,7 @@
+     return ready, materials, bindings, distributions
+ 
+ 
+-def runtime_and_materials(probe):
++def runtime_and_materials(probe, workspace_bindings):
+     ready, materials, bindings, distributions = recovery_evidence()
+     expected_python = ROOT / "venv/bin/python"
+     if (Path(sys.executable) != expected_python
+@@ -349,7 +352,7 @@
+     upstream = read_json(ROOT / "operations/UPSTREAM_MODEL_API.json", UPSTREAM_SHA)
+     if (upstream["id"], upstream["sha"]) != (MODEL_ID, REVISION):
+         raise ValueError("upstream material identity mismatch")
+-    manifest = probe.build_manifest(ROOT, "materials-recovered", revision=REVISION,
++    manifest = probe.build_manifest(WORKSPACE, "materials-recovered", revision=REVISION,
+                                     device="cuda:0", dtype="bfloat16",
+                                     max_input_tokens=4096, max_new_tokens=384, threads=2)
+     declared = [{k: row[k] for k in ("path", "bytes", "sha256")} for row in materials["files"]]
+@@ -365,7 +368,7 @@
+         if source.get("lfs"):
+             matches = row["sha256"] == source["lfs"]["sha256"]
+         else:
+-            raw = (ROOT / "materials-recovered" / row["path"]).read_bytes()
++            raw = (WORKSPACE / "materials-recovered" / row["path"]).read_bytes()
+             matches = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == source["blobId"]
+         if not matches:
+             raise ValueError("material differs from the pinned upstream object")
+@@ -376,6 +379,8 @@
+     bindings["operations/UPSTREAM_MODEL_API.json"] = UPSTREAM_SHA
+     runtime = {"python": str(expected_python), "python_version": sys.version,
+                "hostname": socket.gethostname(), "pid": os.getpid(),
++               "runtime_root": str(ROOT), "workspace_root": str(WORKSPACE),
++               "workspace_bindings": workspace_bindings,
+                "versions": versions, "torch_runtime": actual, "device": device,
+                "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+                "recovery_profile": RECOVERY_PROFILE,
+@@ -431,6 +436,12 @@
+     if (file_hash(ROOT / "qwen-source-02.zip") != SOURCE_SHA
+             or file_hash(ROOT / "operations/QWEN_SOURCE_02.json") != SOURCE_MANIFEST_SHA):
+         raise ValueError("source archive or source manifest changed")
++    if (file_hash(WORKSPACE / "qwen-source-02.zip") != SOURCE_SHA
++            or file_hash(WORKSPACE / "operations/QWEN_SOURCE_02.json") != SOURCE_MANIFEST_SHA):
++        raise ValueError("RAM source archive or source manifest changed")
++    for name, expected in runtime["workspace_bindings"].items():
++        if file_hash(WORKSPACE / name) != expected:
++            raise ValueError("RAM workspace preparation evidence changed during readiness")
+     for name, expected in runtime["recovery_bindings"].items():
+         if file_hash(ROOT / name) != expected:
+             raise ValueError("recovery evidence changed during readiness")
+@@ -441,9 +452,37 @@
+         raise ValueError("prepared records or model/freeze metadata changed")
+ 
+ 
++def workspace_evidence():
++    ownership = read_json(WORKSPACE / "WORKSPACE_OWNERSHIP.json", WORKSPACE_OWNERSHIP_SHA)
++    copied = read_json(WORKSPACE / "operations/MATERIALS_COPY_03.json", MATERIAL_COPY_SHA)
++    if (ownership.get("workspace") != str(WORKSPACE)
++            or ownership.get("read_only_original_root") != str(ROOT)
++            or ownership.get("uid") != os.getuid()
++            or copied.get("status") != "VERIFIED"
++            or copied.get("runtime_root") != str(ROOT)
++            or copied.get("workspace_root") != str(WORKSPACE)
++            or copied.get("model_id") != MODEL_ID or copied.get("revision") != REVISION
++            or copied.get("materials_receipt_sha256") != MATERIALS_RECEIPT_SHA
++            or copied.get("ownership_sha256") != WORKSPACE_OWNERSHIP_SHA
++            or copied.get("original_files_modified") is not False
++            or copied.get("venv_copied") is not False
++            or copied.get("symlinks_created") is not False
++            or copied.get("model_loaded") is not False
++            or len(copied.get("files", [])) != 9):
++        raise ValueError("exact verified RAM workspace/material preparation required")
++    return {"WORKSPACE_OWNERSHIP.json": WORKSPACE_OWNERSHIP_SHA,
++            "operations/MATERIALS_COPY_03.json": MATERIAL_COPY_SHA}
++
++
+ def main():
+     if not ROOT.is_dir() or ROOT.is_symlink():
+         raise ValueError("the pre-existing desktop operation root is required")
++    if not WORKSPACE.is_dir() or WORKSPACE.resolve() != WORKSPACE:
++        raise ValueError("preflight-created nonsymlink RAM workspace required")
++    for name in ("tmp", "cache", "cuda-cache", "triton-cache", "torch-cache", "hf-cache"):
++        if not (WORKSPACE / name).is_dir() or (WORKSPACE / name).resolve() != WORKSPACE / name:
++            raise ValueError("preflight-created nonsymlink RAM temporary/cache directory required")
++    workspace_bindings = workspace_evidence()
+     CANDIDATE.mkdir(exist_ok=False)
+     OUTPUT.mkdir(exist_ok=False)
+     operation = Operation()
+@@ -452,6 +491,10 @@
+         "schema": "hepta.qwen-readiness-operation.v3", "started_at_ns": operation.started,
+         "script_sha256": script_sha, "source_archive_sha256": SOURCE_SHA,
+         "recovery_profile": RECOVERY_PROFILE,
++        "runtime_root": str(ROOT), "workspace_root": str(WORKSPACE),
++        "replay_of_incomplete_operation": "qwen-readiness02",
++        "prior_costs_are_additional": True,
++        "workspace_bindings": workspace_bindings,
+         "candidate": str(CANDIDATE), "budget": BUDGET,
+         "evidence_scope": "old_exposed_development_only", "new_C": False,
+         "independent_sample_increment": 0, "training_started": False,
+@@ -463,7 +506,12 @@
+     signal.alarm(BUDGET["operation_wall_limit_seconds"])
+     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
+                       HF_HUB_DISABLE_TELEMETRY="1", TOKENIZERS_PARALLELISM="false",
+-                      OMP_NUM_THREADS="2", OPENBLAS_NUM_THREADS="2")
++                      OMP_NUM_THREADS="2", OPENBLAS_NUM_THREADS="2",
++                      TMPDIR=str(WORKSPACE / "tmp"), XDG_CACHE_HOME=str(WORKSPACE / "cache"),
++                      CUDA_CACHE_PATH=str(WORKSPACE / "cuda-cache"),
++                      TRITON_CACHE_DIR=str(WORKSPACE / "triton-cache"),
++                      TORCH_HOME=str(WORKSPACE / "torch-cache"),
++                      HF_HOME=str(WORKSPACE / "hf-cache"))
+     try:
+         with operation.stage("SOURCE"):
+             source = extract_source()
+@@ -479,7 +527,7 @@
+                     if not Path(module.__file__).is_relative_to(CANDIDATE / "scripts"):
+                         raise ValueError("experiment import escaped the frozen source")
+         with operation.stage("RUNTIME_MATERIALS"):
+-            torch, parent, runtime = runtime_and_materials(probe)
++            torch, parent, runtime = runtime_and_materials(probe, workspace_bindings)
+         fixtures = CANDIDATE / QUALIFICATION
+         with operation.stage("PREPARATION"):
+             input_path = fixtures / "development-old-open.records.jsonl"
+@@ -509,6 +557,7 @@
+         freeze = {
+             "schema": "hepta.qwen-readiness-freeze.v3", "created_at_ns": time.time_ns(),
+             "script_sha256": script_sha, "source": source, "runtime": runtime,
++            "runtime_root": str(ROOT), "workspace_root": str(WORKSPACE),
+             "model_digest": data.digest(parent), "records_digest": data.digest(records),
+             "A_records_digest": data.digest(records[:6]), "budget": BUDGET,
+             "sqlite_spec_sha256": data.digest(sqlite_spec), "new_C": False,
+@@ -520,7 +569,7 @@
+         try:
+             with operation.stage("MODEL_LOAD"):
+                 torch.cuda.reset_peak_memory_stats(0)
+-                predictor = probe.Predictor(parent, ROOT)
++                predictor = probe.Predictor(parent, WORKSPACE)
+                 if predictor.model_digest != freeze["model_digest"]:
+                     raise ValueError("loaded model digest differs from the freeze")
+                 write_new(OUTPUT / "MODEL_LOADED.json", {
+@@ -543,7 +592,7 @@
+                 write_new(OUTPUT / "CUDA_MEMORY.json", gpu)
+         with operation.stage("POSTVERIFY"):
+             verify_unchanged(source, runtime, script_sha, records, parent, freeze)
+-            if probe.verify_model(parent, ROOT) != freeze["model_digest"]:
++            if probe.verify_model(parent, WORKSPACE) != freeze["model_digest"]:
+                 raise ValueError("model material binding changed during readiness")
+         inventory = {p.relative_to(OUTPUT).as_posix(): file_hash(p) for p in sorted(OUTPUT.rglob("*")) if p.is_file()}
+         report = {
