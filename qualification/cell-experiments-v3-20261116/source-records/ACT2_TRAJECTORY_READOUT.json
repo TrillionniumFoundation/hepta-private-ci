@@ -1,0 +1,75 @@
+{
+  "actual_complete": 72,
+  "arms": [
+    "B1_macro"
+  ],
+  "claimed_success": 64,
+  "composition_lengths": [
+    1,
+    2
+  ],
+  "decompressed_bytes": 106947,
+  "destination_labels": [
+    "train-a",
+    "train-b"
+  ],
+  "events": 448,
+  "faults": [
+    "already_partial",
+    "lost_reply",
+    "normal",
+    "opaque_after_apply",
+    "prestaged"
+  ],
+  "file_identities": {
+    "act2_frozen_manifest.json": {
+      "bytes": 64965,
+      "git_blob": "83fc8493a649f8826f3880162d74408c3d6fd570",
+      "sha256": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9"
+    },
+    "act2_review.md": {
+      "bytes": 3021,
+      "git_blob": "3029013ecea6983c47e2586abd4247660cefbf65",
+      "sha256": "733e3c81b6ccf0e355eceaa7a9147a3e95dbf93427e04c8ac2057acbe73a47f7"
+    },
+    "act2_run.py.txt": {
+      "bytes": 13884,
+      "git_blob": "9adda63641c29b1cf304980162916541f6959110",
+      "sha256": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c"
+    },
+    "act2_sqlite_destination.py.txt": {
+      "bytes": 6746,
+      "git_blob": "0ad66601612826c6a3eda731f0f62f4d950b45f4",
+      "sha256": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+    },
+    "h7_guard.sql": {
+      "bytes": 735,
+      "git_blob": "a42f62de7bde2af2a184e7a7b6629669851426ac",
+      "sha256": "fb5c21f87ba34a5638b2c7a4060b53cf6c1c606422369ea1bade5d23e67af2ae"
+    },
+    "h7_schema.sql": {
+      "bytes": 6830,
+      "git_blob": "037e0edcc3ed3d72f8ddbb89ec5231480fba4e88",
+      "sha256": "adb66da205ecaab11f16c62899e283653e153abf28d601e6b86cb4681b3256ee"
+    },
+    "training-trajectories.jsonl.gz": {
+      "bytes": 10012,
+      "git_blob": "13c3717fd41fb5dd1f2893717ebe56765cccb0bb",
+      "sha256": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec"
+    }
+  },
+  "manifest_confirm_rows": 80,
+  "manifest_train_ids_match": true,
+  "manifest_train_rows": 80,
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "primitive_calls": 448,
+  "provenance": "controlled_local_sqlite_research_fixture",
+  "rows": 80,
+  "schema_values": [
+    0,
+    1
+  ],
+  "unique_decision_sequences": 4,
+  "unique_task_ids": 80
+}
