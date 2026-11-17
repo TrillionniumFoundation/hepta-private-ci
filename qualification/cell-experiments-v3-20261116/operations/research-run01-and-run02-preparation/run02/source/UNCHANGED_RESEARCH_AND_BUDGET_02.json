@@ -1,0 +1,182 @@
+{
+  "four_runtime_modules": {
+    "research_sft_contract_v1.py": {
+      "bytes": 19385,
+      "sha256": "2ae7c2496ee58ce71cbda7a6d245e65550a76104cbc1359aca06d005f6b16f2c"
+    },
+    "research_sft_execution_v1.py": {
+      "bytes": 20692,
+      "sha256": "704e7a7e157412d9ce8a7523c31ed635269ead41d40f1720c591dccc4d67f2cd"
+    },
+    "research_sft_train_v1.py": {
+      "bytes": 12545,
+      "sha256": "a95ccfde26ebb3f32ef1e3fb2df3f1b4d35ab27b4ae42edf8858dc315d2f9972"
+    },
+    "run_research_sft_v1.py": {
+      "bytes": 24716,
+      "sha256": "0fba8d8800ba3012a55055d7a84c4bfa156d0f96c64e0bd488211f188cbe256c"
+    }
+  },
+  "missing_or_unknown_measurements_are_not_zero": true,
+  "new_independent_sample_increment": 0,
+  "prior_and_new_scopes_must_be_reported_separately_then_combined_without_double_counting": true,
+  "prior_coordinator_cost_preserved": {
+    "complete": false,
+    "completed_child_cpu_seconds": 244.295266,
+    "energy_joules": null,
+    "gpu_active_seconds": null,
+    "monetary_cost": null,
+    "nested_scopes_are_not_additive": true,
+    "own_cpu_seconds": 2.591109,
+    "process_lifetime_peak_rss_bytes": 44662784,
+    "scope": "whole coordinator plus completed children; nested figures are not additive",
+    "wall_seconds": 246.6030926690146
+  },
+  "prior_freeze_sha256": "ff08f18b0479ae089303787ec71013d558cf057b685e9c93432504877364db41",
+  "prior_ledger_preserved": {
+    "E3": "BLOCKED: no authenticated additional teachers",
+    "E4": "BLOCKED: no trained circuit and matched ablation experiment",
+    "E5": "BLOCKED: no independent source-growth cohorts",
+    "E6": "BLOCKED: repeated exposed tasks; no independent selection, new C or adoption",
+    "authored_reference_receipts": 36,
+    "authored_reference_request_files": 36,
+    "budget_violations": [],
+    "calls_without_completed_output_receipt": 0,
+    "candidate_selected": null,
+    "circuit_qualified": false,
+    "cold_outputs_are_repeated_observations": true,
+    "completed_output_receipts": 6,
+    "completed_training_step_receipts": 0,
+    "controlled_reuse_adds_model_calls": 0,
+    "controlled_reuse_adds_verifier_calls": 0,
+    "exposure": "old_exposed_development_only",
+    "external_teacher_count_added": 0,
+    "failed_attempt_measurement_complete": false,
+    "global_totals_unknown": true,
+    "independent_sample_increment": 0,
+    "independent_selection": false,
+    "input_tokens": null,
+    "input_tokens_measured_subtotal": 1727,
+    "measurement_errors": [],
+    "measurement_gaps": [],
+    "model_calls": null,
+    "native_cell_adoption": false,
+    "new_C": false,
+    "new_users": 0,
+    "output_tokens": null,
+    "output_tokens_measured_subtotal": 1764,
+    "padded_training_positions_measured_subtotal": null,
+    "persisted_output_files": 6,
+    "persisted_requests": 6,
+    "proof_of_useful_work_eligible": false,
+    "protocol_changed_after_observed_failure": true,
+    "readable_requests": 6,
+    "reference_batch_summaries_counted_again": false,
+    "reference_calls": null,
+    "research_only": true,
+    "schema": "hepta.research-sft-retained-ledger.v1",
+    "scientific_confirmation_qualified": false,
+    "scope": "new retained worker files; prior readiness costs excluded and separately linked",
+    "student_verification_receipts": 0,
+    "student_verifier_calls": null,
+    "training_steps": null,
+    "unknown_generation_before_request_or_after_output_is_not_inferred_zero": true
+  },
+  "profile": "research.authored-sft.v1",
+  "schema": "hepta.research-reschedule-budget-binding.v1",
+  "source_target": "research-sft-v1-source",
+  "unchanged_fitting_modes": {
+    "controlled_correction": "trajectory",
+    "final_answer": "final_answer",
+    "shadow_correction": "trajectory",
+    "trajectory": "trajectory"
+  },
+  "unchanged_per_operation_budget": {
+    "automatic_retry": false,
+    "evaluation_wall_seconds": 600,
+    "fit_and_evaluation_wall_seconds": 1800,
+    "fit_arms": 4,
+    "fit_steps_per_arm": 64,
+    "max_input_tokens": 4096,
+    "max_new_tokens": 384,
+    "maximum_attempts": 2,
+    "maximum_evaluation_verifier_calls": 216,
+    "maximum_generated_tokens": 85248,
+    "maximum_model_calls": 222,
+    "maximum_padded_training_positions": 393216,
+    "maximum_reference_rechecks": 36,
+    "maximum_training_steps": 256,
+    "operation_wall_seconds": 14400,
+    "sequence_tokens": 1536,
+    "shadow_calls": 6,
+    "shadow_wall_seconds": 600,
+    "truncation": false
+  },
+  "unchanged_schedule": [
+    {
+      "arm": "corrections",
+      "phase": "collect",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "parent",
+      "phase": "primary",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "parent",
+      "phase": "cold",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "retrieval",
+      "phase": "primary",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "retrieval",
+      "phase": "cold",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "final_answer",
+      "phase": "primary",
+      "wall_seconds": 1800
+    },
+    {
+      "arm": "final_answer",
+      "phase": "cold",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "trajectory",
+      "phase": "primary",
+      "wall_seconds": 1800
+    },
+    {
+      "arm": "trajectory",
+      "phase": "cold",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "shadow_correction",
+      "phase": "primary",
+      "wall_seconds": 1800
+    },
+    {
+      "arm": "shadow_correction",
+      "phase": "cold",
+      "wall_seconds": 600
+    },
+    {
+      "arm": "controlled_correction",
+      "phase": "primary",
+      "wall_seconds": 1800
+    },
+    {
+      "arm": "controlled_correction",
+      "phase": "cold",
+      "wall_seconds": 600
+    }
+  ]
+}
