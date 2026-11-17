@@ -332,7 +332,9 @@ impl Fixture {
             ),
             (
                 "provider_terminal_digest",
-                json!(Digest32::of_bytes(&self.provider.terminal.canonical_wire_bytes()?).to_string()),
+                json!(
+                    Digest32::of_bytes(&self.provider.terminal.canonical_wire_bytes()?).to_string()
+                ),
             ),
             (
                 "provider_evidence_verifier_digest",
@@ -362,7 +364,10 @@ impl Fixture {
             ("terminal_observed", json!(terminal_observed)),
             ("disposition", json!(disposition)),
             ("observed_unix_ms", json!(40)),
-            ("receipt_digest", json!(self.receipt.receipt_digest().to_string())),
+            (
+                "receipt_digest",
+                json!(self.receipt.receipt_digest().to_string()),
+            ),
         ];
         let entries = fields
             .iter()

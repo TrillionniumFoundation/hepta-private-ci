@@ -16,9 +16,7 @@ fn validate_verifier_context(
     Ok(())
 }
 
-fn validate_enumerated(
-    value: &EnumeratedPromptCandidatesV1,
-) -> Result<(), VerifiedPromptErrorV2> {
+fn validate_enumerated(value: &EnumeratedPromptCandidatesV1) -> Result<(), VerifiedPromptErrorV2> {
     if value.candidates.len() > MAX_CANONICAL_PROMPT_FACTORS {
         return Err(VerifiedPromptErrorV2::BoundExceeded("candidate limit"));
     }
@@ -97,9 +95,7 @@ fn validate_enumerated(
     if value.receipt.receipt_digest
         != digest_candidate_receipt(value, candidates_digest, order_digest)
     {
-        return Err(VerifiedPromptErrorV2::DigestMismatch(
-            "candidate receipt",
-        ));
+        return Err(VerifiedPromptErrorV2::DigestMismatch("candidate receipt"));
     }
     Ok(())
 }
@@ -128,9 +124,12 @@ fn validate_priced(value: &PricedPromptCandidatesV1) -> Result<(), VerifiedPromp
             || row.pricing.token_cost != row.binding.realization.token_cost
             || row.net_utility_q32 != row.pricing.expected_utility_q32
             || row.pricing.authority.grants_any()
-            || row.pricing.confidence_interval.support_audit_digest.is_zero()
-            || row.pricing.confidence_interval.lower_q32
-                > row.pricing.confidence_interval.upper_q32
+            || row
+                .pricing
+                .confidence_interval
+                .support_audit_digest
+                .is_zero()
+            || row.pricing.confidence_interval.lower_q32 > row.pricing.confidence_interval.upper_q32
         {
             return Err(VerifiedPromptErrorV2::IdentityMismatch(
                 "pricing row/binding",
@@ -138,9 +137,7 @@ fn validate_priced(value: &PricedPromptCandidatesV1) -> Result<(), VerifiedPromp
         }
         let expected = digest_pricing_receipt(value, row);
         if row.pricing.receipt_digest != expected {
-            return Err(VerifiedPromptErrorV2::DigestMismatch(
-                "pricing receipt",
-            ));
+            return Err(VerifiedPromptErrorV2::DigestMismatch("pricing receipt"));
         }
     }
     if value.pricing_set_digest != digest_pricing_set(value) {
@@ -244,9 +241,7 @@ fn validate_selected(
         ));
     }
     if value.receipt.receipt_digest != digest_portfolio_receipt(value) {
-        return Err(VerifiedPromptErrorV2::DigestMismatch(
-            "portfolio receipt",
-        ));
+        return Err(VerifiedPromptErrorV2::DigestMismatch("portfolio receipt"));
     }
     if value != &context.expected_selected {
         return Err(VerifiedPromptErrorV2::IdentityMismatch(

@@ -1,8 +1,6 @@
 /// Compute the exact host trust scope required for generator/evaluator evidence.
 #[must_use]
-pub fn prompt_evidence_scope_digest_v2(
-    value: &VerifiedEnumeratedPromptCandidatesV2,
-) -> Digest32 {
+pub fn prompt_evidence_scope_digest_v2(value: &VerifiedEnumeratedPromptCandidatesV2) -> Digest32 {
     value.scope_digest
 }
 

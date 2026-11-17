@@ -22,13 +22,16 @@ use codex_hepta_types::StableId;
 
 use crate::canonical::CanonicalPromptError;
 use crate::canonical::EnumeratedPromptCandidatesV1;
+use crate::canonical::MAX_CANONICAL_PROMPT_FACTORS;
+use crate::canonical::MAX_CANONICAL_SELECTED_FACTORS;
+use crate::canonical::MAX_CANONICAL_TOKEN_BUDGET;
 use crate::canonical::PricedPromptCandidatesV1;
 use crate::canonical::PromptEnumerationRequestV1;
 use crate::canonical::PromptExerciseActionV1;
 use crate::canonical::PromptExerciseDecisionV1;
 use crate::canonical::PromptExerciseRequestV1;
-use crate::canonical::PromptPairUtilityEvidenceV1;
 use crate::canonical::PromptOptimalityDisclosureV1;
+use crate::canonical::PromptPairUtilityEvidenceV1;
 use crate::canonical::PromptPortfolioRequestV1;
 use crate::canonical::PromptPricingEvidenceV1;
 use crate::canonical::PromptPricingPolicyV1;
@@ -41,9 +44,6 @@ use crate::canonical::pair_utility_evidence_signing_payload_v1;
 use crate::canonical::price_factors_v1;
 use crate::canonical::pricing_evidence_signing_payload_v1;
 use crate::canonical::select_portfolio_v1;
-use crate::canonical::MAX_CANONICAL_PROMPT_FACTORS;
-use crate::canonical::MAX_CANONICAL_SELECTED_FACTORS;
-use crate::canonical::MAX_CANONICAL_TOKEN_BUDGET;
 
 const EVIDENCE_SCOPE_DOMAIN: &[u8] = b"hepta.prompt-optimizer.evidence-scope.v2";
 const EVIDENCE_LINEAGE_DOMAIN: &[u8] = b"hepta.prompt-optimizer.evidence-lineage.v2";

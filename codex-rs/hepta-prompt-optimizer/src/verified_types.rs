@@ -105,7 +105,6 @@ impl PromptPortfolioVerificationContextV2 {
     pub const fn evidence_lineage_digest(&self) -> Digest32 {
         self.evidence_lineage_digest
     }
-
 }
 
 /// Enumerated candidates whose registry/model/order/digest invariants were

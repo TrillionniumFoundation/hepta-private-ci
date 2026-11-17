@@ -157,7 +157,10 @@ fn priced() -> PricedPromptCandidatesV1 {
     value
 }
 
-fn selected() -> (SelectedPromptPortfolioV1, PromptPortfolioVerificationContextV2) {
+fn selected() -> (
+    SelectedPromptPortfolioV1,
+    PromptPortfolioVerificationContextV2,
+) {
     let priced = priced();
     let binding = priced.rows[0].binding.clone();
     let model_tuple = priced.candidates.model_tuple.clone();

@@ -152,8 +152,7 @@ fn selected() -> TestResult<VerifiedSelectedPromptPortfolioV2> {
             lifecycle: Lifecycle::Draft,
         };
         registry.register_factor(factor.clone())?;
-        let binding =
-            final_use_admission_binding(&factor, &reviewer, scope, admission_evidence)?;
+        let binding = final_use_admission_binding(&factor, &reviewer, scope, admission_evidence)?;
         let admission = sign_grant(
             FinalUseGrant {
                 schema_version: 1,
@@ -532,7 +531,10 @@ fn recomputing_receipt_hash_cannot_extend_expiry() -> TestResult {
 fn self_consistent_realization_replacement_cannot_change_selected_entries() -> TestResult {
     let selected = selected()?;
     let mut forged = selected.canonical().clone();
-    let first = forged.selected.first_mut().ok_or("selected entry missing")?;
+    let first = forged
+        .selected
+        .first_mut()
+        .ok_or("selected entry missing")?;
     first.realization.payload_digest = digest("forged realization payload");
     first.binding_digest = first.realization.digest();
     assert_postimage_rejected(&selected, forged)
