@@ -43,8 +43,14 @@ async fn joined_fanout_preserves_parsed_events_and_tail_after_transport_end(expl
         item_id: "following-event".to_string(),
     };
     events_tx.send(handoff.clone()).await.expect("parsed handoff");
-    events_tx.send(following.clone()).await.expect("following event");
-    tail_tx.send("original transcript tail".to_string()).await.expect("tail");
+    events_tx
+        .send(following.clone())
+        .await
+        .expect("following event");
+    tail_tx
+        .send("original transcript tail".to_string())
+        .await
+        .expect("tail");
     drop(events_tx);
     drop(tail_tx);
     drop(output_rx);

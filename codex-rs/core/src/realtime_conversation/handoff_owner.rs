@@ -43,7 +43,10 @@ impl RealtimeHandoffRequest {
 
     /// The caller holds the original admission owner. For steering, retain
     /// this stream guard until the input is appended and commit synchronously.
-    pub(crate) async fn prepare<'a>(&'a self, turn: &'a TurnContext) -> PreparedRealtimeHandoff<'a> {
+    pub(crate) async fn prepare<'a>(
+        &'a self,
+        turn: &'a TurnContext,
+    ) -> PreparedRealtimeHandoff<'a> {
         let owner = turn
             .extension_data
             .get::<RealtimeTurnHandoff>()

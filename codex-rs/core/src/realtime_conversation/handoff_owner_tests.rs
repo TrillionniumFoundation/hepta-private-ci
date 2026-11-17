@@ -66,7 +66,11 @@ async fn old_output_and_cleanup_cannot_target_a_new_turn_owner() {
     let manager = RealtimeConversationManager::new();
     let second_request = RealtimeHandoffRequest::new(state.clone(), "second".to_string());
     manager
-        .handoff_out(&first, "old output".to_string(), Some(MessagePhase::FinalAnswer))
+        .handoff_out(
+            &first,
+            "old output".to_string(),
+            Some(MessagePhase::FinalAnswer),
+        )
         .await
         .expect("old owner output");
     second_request.prepare(&second).await.commit();
@@ -76,7 +80,11 @@ async fn old_output_and_cleanup_cannot_target_a_new_turn_owner() {
         .expect("old owner completion");
     manager.clear_active_handoff(&first).await;
     manager
-        .handoff_out(&second, "new output".to_string(), Some(MessagePhase::FinalAnswer))
+        .handoff_out(
+            &second,
+            "new output".to_string(),
+            Some(MessagePhase::FinalAnswer),
+        )
         .await
         .expect("new owner output");
     let old_output = rx.recv().await.expect("old output retained");
@@ -102,7 +110,13 @@ async fn old_output_and_cleanup_cannot_target_a_new_turn_owner() {
         .get::<RealtimeTurnHandoff>()
         .expect("second owner");
     assert_eq!(
-        second_owner.handoff.stream.lock().await.active_handoff.as_deref(),
+        second_owner
+            .handoff
+            .stream
+            .lock()
+            .await
+            .active_handoff
+            .as_deref(),
         Some("second")
     );
     assert!(state.stream.lock().await.active_handoff.is_none());
@@ -129,10 +143,19 @@ async fn v1_steering_changes_only_the_accepted_turn_owner() {
         &second_owner.handoff.stream
     ));
     assert_eq!(
-        second_owner.handoff.stream.lock().await.active_handoff.as_deref(),
+        second_owner
+            .handoff
+            .stream
+            .lock()
+            .await
+            .active_handoff
+            .as_deref(),
         Some("second")
     );
-    second.flush_admitted().await.expect("no V1 steering acknowledgement");
+    second
+        .flush_admitted()
+        .await
+        .expect("no V1 steering acknowledgement");
     assert!(rx.try_recv().is_err());
 }
 
@@ -146,16 +169,32 @@ async fn v2_accepted_steer_acknowledgement_precedes_owned_progress_and_completio
     second.prepare(&turn).await.commit();
     let owner = second.admitted.get().expect("accepted steer owner");
     assert_eq!(
-        owner.handoff.stream.lock().await.active_handoff.as_deref(),
+        owner
+            .handoff
+            .stream
+            .lock()
+            .await
+            .active_handoff
+            .as_deref(),
         Some("first")
     );
     let manager = RealtimeConversationManager::new();
     manager
-        .handoff_out(&turn, "result".to_string(), Some(MessagePhase::FinalAnswer))
+        .handoff_out(
+            &turn,
+            "result".to_string(),
+            Some(MessagePhase::FinalAnswer),
+        )
         .await
         .expect("owned progress flushes accepted steering acknowledgement");
-    second.flush_admitted().await.expect("no duplicate acknowledgement");
-    manager.handoff_complete(&turn).await.expect("owned completion");
+    second
+        .flush_admitted()
+        .await
+        .expect("no duplicate acknowledgement");
+    manager
+        .handoff_complete(&turn)
+        .await
+        .expect("owned completion");
     assert_eq!(
         rx.recv().await.expect("steering acknowledgement"),
         RealtimeOutbound::HandoffSteerAck {

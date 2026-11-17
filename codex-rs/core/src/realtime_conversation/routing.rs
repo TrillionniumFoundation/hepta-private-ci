@@ -62,7 +62,7 @@ pub(super) async fn run(session: Arc<Session>, sub_id: String, start: RealtimeSt
                         first_decision: Some(first_decision),
                     })
                     .await
-                    .expect("the joined realtime router remains owned");
+                    .unwrap_or_else(|_| panic!("the joined realtime router remains owned"));
                 // Preserve normal start/steer ordering. An exact Finish wait
                 // signals here before waiting, allowing following audio/events.
                 let _ = decided.await;
@@ -84,7 +84,7 @@ pub(super) async fn run(session: Arc<Session>, sub_id: String, start: RealtimeSt
                     first_decision: None,
                 })
                 .await
-                .expect("the joined realtime router drains the original tail");
+                .unwrap_or_else(|_| panic!("the joined realtime router drains the original tail"));
         }
         drop(routing_tx);
         end

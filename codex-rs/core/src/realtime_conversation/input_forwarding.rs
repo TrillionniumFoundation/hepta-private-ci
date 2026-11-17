@@ -1,6 +1,5 @@
 //! Retains one parsed event while the shared input pump services outbound work.
 
-use anyhow::Context;
 use async_channel::Sender;
 use codex_api::RealtimeEvent;
 use tracing::error;
@@ -19,10 +18,12 @@ pub(super) async fn flush_pending_realtime_event(
     let Some(event) = pending.as_ref() else {
         return Ok(());
     };
-    events_tx
-        .send(event.event.clone())
-        .await
-        .context("realtime output event channel closed")?;
+    if events_tx.send(event.event.clone()).await.is_err() {
+        // A closed receiver cannot accept this event on a later drain. Keep
+        // the original terminal error and discard only the failed send.
+        pending.take();
+        anyhow::bail!("realtime output event channel closed");
+    }
     let event = pending.take().expect("the delivered event remains owned");
     if event.should_stop {
         error!("realtime stream error event received");
