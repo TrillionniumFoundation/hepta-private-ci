@@ -188,3 +188,52 @@ fn planner_rejects_empty_and_mixed_snapshot_batches() {
         ))
     );
 }
+
+#[test]
+fn planner_accepts_two_requests_with_identical_snapshots() {
+    let worker = NeuronMicrobatchWorkerV1::new(id("worker"), generation(/*value*/ 1), backend());
+    let mut same_snapshot = requests();
+    same_snapshot.push(HeadExecutionRequestV1 {
+        request_id: id("request-2"),
+        model_id: id("head"),
+        generation: generation(/*value*/ 1),
+        snapshot: snapshot(),
+    });
+    let plan = worker
+        .plan(
+            /*planned_at_micros*/ 10,
+            /*deadline_micros*/ 100,
+            same_snapshot,
+        )
+        .unwrap_or_else(|error| {
+            panic!("identical snapshots form one shared-feature batch: {error:?}")
+        });
+    assert_eq!(plan.requests().len(), 2);
+}
+
+#[test]
+fn planner_rejects_one_unit_change_in_second_snapshot_feature() {
+    let worker = NeuronMicrobatchWorkerV1::new(id("worker"), generation(/*value*/ 1), backend());
+    let mut mixed = requests();
+    let features = vec![Q24 / 2, -Q24 / 4 + 1];
+    mixed.push(HeadExecutionRequestV1 {
+        request_id: id("request-2"),
+        model_id: id("head"),
+        generation: generation(/*value*/ 1),
+        snapshot: FeatureSnapshotV1::new(
+            digest("encoder"),
+            generation(/*value*/ 1),
+            codex_hepta_neuron::canonical_feature_vector_digest_v1(&features),
+            features,
+        )
+        .unwrap_or_else(|error| panic!("snapshot: {error:?}")),
+    });
+    assert_eq!(
+        worker.plan(
+            /*planned_at_micros*/ 10, /*deadline_micros*/ 100, mixed
+        ),
+        Err(NeuronMicrobatchWorkerError::DataPlane(
+            DataPlaneError::InvalidMicrobatchPlan
+        ))
+    );
+}

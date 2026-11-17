@@ -566,70 +566,117 @@ async fn timed_out_guardian_network_review_uses_timeout_outcome_without_user_fal
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
 
-    let server = start_mock_server().await;
-    let test = managed_network_unified_exec_test(&server).await?;
     let call_id = "guardian-network-timeout";
     let poll_call_id = "guardian-network-timeout-poll";
-    mount_sse_once_match(
-        &server,
-        |request: &wiremock::Request| {
-            !is_guardian_request(request)
-                && request_body_contains(request, "time out the Guardian network review")
+    let (guardian_requested_tx, mut guardian_requested_rx) =
+        tokio::sync::mpsc::channel::<tokio::time::Instant>(/*buffer*/ 1);
+    let (guardian_ready_tx, guardian_ready_rx) = oneshot::channel();
+    let (guardian_release_tx, guardian_release_rx) = oneshot::channel();
+    let _guardian_delay = tokio::spawn(async move {
+        if let Some(requested_at) = guardian_requested_rx.recv().await {
+            // Keep the original delayed review response: no headers before
+            // 300 s from its actual HTTP request, beyond the 91 s advance.
+            let release_at = requested_at + Duration::from_secs(/*secs*/ 300);
+            let _ = guardian_ready_tx.send(());
+            tokio::time::sleep_until(release_at).await;
+            let _ = guardian_release_tx.send(());
+        }
+    });
+    let parent_poll_seen = Arc::new(tokio::sync::Notify::new());
+    let parent_poll_seen_for_match = Arc::clone(&parent_poll_seen);
+    let (parent_poll_tx, parent_poll_rx) = oneshot::channel();
+    let (server, _completions, responses) = start_matching_streaming_sse_server(vec![
+        MatchingStreamingSseResponse {
+            matcher: Box::new(|request: &wiremock::Request| {
+                !is_guardian_request(request)
+                    && request_body_contains(request, "time out the Guardian network review")
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-parent"),
+                        ev_function_call(
+                            call_id,
+                            "exec_command",
+                            &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
+                        ),
+                        ev_completed("resp-guardian-timeout-parent"),
+                    ]),
+                }],
+            },
         },
-        sse(vec![
-            ev_response_created("resp-guardian-timeout-parent"),
-            ev_function_call(
-                call_id,
-                "exec_command",
-                &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
-            ),
-            ev_completed("resp-guardian-timeout-parent"),
-        ]),
-    )
-    .await;
-    let pending_guardian = mount_response_once_match(
-        &server,
-        is_guardian_request,
-        sse_response(sse(vec![
-            ev_response_created("resp-guardian-timeout-review"),
-            ev_assistant_message("msg-guardian-timeout-review", r#"{"outcome":"allow"}"#),
-            ev_completed("resp-guardian-timeout-review"),
-        ]))
-        .set_delay(Duration::from_secs(300)),
-    )
-    .await;
-    mount_sse_once_match(
-        &server,
-        |request: &wiremock::Request| {
-            !is_guardian_request(request) && request_body_contains(request, call_id)
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                is_guardian_request(request)
+                    && guardian_requested_tx
+                        .try_send(tokio::time::Instant::now())
+                        .is_ok()
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(guardian_release_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-review"),
+                        ev_assistant_message(
+                            "msg-guardian-timeout-review",
+                            r#"{"outcome":"allow"}"#,
+                        ),
+                        ev_completed("resp-guardian-timeout-review"),
+                    ]),
+                }],
+            },
         },
-        sse(vec![
-            ev_response_created("resp-guardian-timeout-parent-followup"),
-            ev_function_call(
-                poll_call_id,
-                "write_stdin",
-                &serde_json::to_string(&json!({
-                    "session_id": 1000,
-                    "chars": "",
-                    "yield_time_ms": 1_000,
-                }))?,
-            ),
-            ev_completed("resp-guardian-timeout-parent-followup"),
-        ]),
-    )
-    .await;
-    let parent_final = mount_sse_once_match(
-        &server,
-        |request: &wiremock::Request| {
-            !is_guardian_request(request) && request_body_contains(request, poll_call_id)
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                let matched =
+                    !is_guardian_request(request) && request_body_contains(request, call_id);
+                if matched {
+                    parent_poll_seen_for_match.notify_one();
+                }
+                matched
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(parent_poll_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-parent-followup"),
+                        ev_function_call(
+                            poll_call_id,
+                            "write_stdin",
+                            &serde_json::to_string(&json!({
+                                "session_id": 1000,
+                                "chars": "",
+                                "yield_time_ms": 1_000,
+                            }))?,
+                        ),
+                        ev_completed("resp-guardian-timeout-parent-followup"),
+                    ]),
+                }],
+            },
         },
-        sse(vec![
-            ev_response_created("resp-guardian-timeout-parent-final"),
-            ev_assistant_message("msg-guardian-timeout-parent-final", "timed out"),
-            ev_completed("resp-guardian-timeout-parent-final"),
-        ]),
-    )
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request) && request_body_contains(request, poll_call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-parent-final"),
+                        ev_assistant_message("msg-guardian-timeout-parent-final", "timed out"),
+                        ev_completed("resp-guardian-timeout-parent-final"),
+                    ]),
+                }],
+            },
+        },
+    ])
     .await;
+    let test = managed_network_unified_exec_test_with_features(&server.uri(), &[]).await?;
 
     submit_managed_network_turn(
         &test,
@@ -639,14 +686,46 @@ async fn timed_out_guardian_network_review_uses_timeout_outcome_without_user_fal
         AskForApproval::OnRequest,
     )
     .await?;
-    wait_for_response_request(&pending_guardian).await;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        guardian_ready_rx
+            .await
+            .context("Guardian response delay was not armed")?;
+        // This request follows the initial exec result, so its original
+        // process has been retained before the simulated review deadline.
+        parent_poll_seen.notified().await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("timed out waiting for the original Guardian and parent requests")??;
     tokio::time::pause();
     tokio::time::advance(Duration::from_secs(91)).await;
     tokio::time::resume();
-    wait_for_completion_without_network_prompt(&test).await;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        // Advancing the clock wakes both the review timeout and unrelated
+        // poll timers. Release the one original poll only after the real
+        // terminal event, whose watcher waits for the denial monitor.
+        let terminal = wait_for_event(&test.codex, |event| match event {
+            EventMsg::ExecCommandEnd(end) => end.call_id == call_id,
+            EventMsg::ExecApprovalRequest(_) | EventMsg::TurnComplete(_) => true,
+            _ => false,
+        })
+        .await;
+        anyhow::ensure!(
+            matches!(&terminal, EventMsg::ExecCommandEnd(end) if end.call_id == call_id),
+            "expected the original exec terminal event without user approval: {terminal:?}"
+        );
+        parent_poll_tx
+            .send(())
+            .map_err(|_| anyhow::anyhow!("original parent poll response closed"))?;
+        wait_for_completion_without_network_prompt(&test).await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("timed out waiting for original network denial and turn completion")??;
 
-    let tool_output = parent_final
-        .requests()
+    let requests = responses.requests();
+    assert_eq!(requests.len(), 4);
+    let tool_output = requests
         .iter()
         .find_map(|request| request.function_call_output_text(poll_call_id))
         .context("expected timed-out Guardian tool output")?;
