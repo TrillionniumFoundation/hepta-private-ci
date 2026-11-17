@@ -86,6 +86,16 @@ pub fn formatted_truncate_text_content_items_with_policy(
     (out, Some(original_token_count))
 }
 
+#[cfg(feature = "hia-native")]
+pub fn truncate_function_output_items_with_policy(
+    items: &[FunctionCallOutputContentItem],
+    policy: TruncationPolicy,
+    estimate_audio_token_count: impl Fn(&str) -> usize,
+) -> Vec<FunctionCallOutputContentItem> {
+    hia_native::truncate(items, policy, estimate_audio_token_count)
+}
+
+#[cfg(not(feature = "hia-native"))]
 pub fn truncate_function_output_items_with_policy(
     items: &[FunctionCallOutputContentItem],
     policy: TruncationPolicy,
@@ -180,6 +190,12 @@ pub fn approx_tokens_from_byte_count_i64(bytes: i64) -> i64 {
     let bytes = usize::try_from(bytes).unwrap_or(usize::MAX);
     i64::try_from(approx_tokens_from_byte_count(bytes)).unwrap_or(i64::MAX)
 }
+
+#[cfg(feature = "hia-native")]
+mod hia_native;
+
+#[cfg(test)]
+mod output_item_budget_tests;
 
 #[cfg(test)]
 mod truncate_tests;
