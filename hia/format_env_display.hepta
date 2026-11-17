@@ -363,3 +363,371 @@ block invalid()
   no:bool = const() {"value":false}
   ret(no)
 end
+fn sort_reply(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  pending_at:usize = const() {"value":80}
+  pending:u64 = call(source,pending_at) {"function":"read_word"}
+  reply_kind_at:usize = const() {"value":160}
+  reply_kind:u64 = call(source,reply_kind_at) {"function":"read_word"}
+  c_at:usize = const() {"value":200}
+  c:u64 = call(source,c_at) {"function":"read_word"}
+  two:u64 = const() {"value":2}
+  is_swap:bool = compare.ge(pending,two)
+  branch is_swap swap(source,reply_kind,c) compare_shape(source,reply_kind,c)
+block swap(s_source:readbuf,s_kind:u64,s_c:u64)
+  one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  exact:usize = const() {"value":208}
+  size:usize = buffer.len(s_source)
+  kind_ok:bool = compare.eq(s_kind,one)
+  c_zero:bool = compare.eq(s_c,zero)
+  exact_ok:bool = compare.eq(size,exact)
+  swap_pair:bool = bool.and(kind_ok,c_zero)
+  swap_ok:bool = bool.and(swap_pair,exact_ok)
+  branch swap_ok swap_zeros(s_source) invalid()
+block swap_zeros(z_source:readbuf)
+  cache_start:usize = const() {"value":104}
+  cache_bytes:usize = const() {"value":48}
+  reply_start:usize = const() {"value":168}
+  reply_bytes:usize = const() {"value":40}
+  cache_zero:bool = call(z_source,cache_start,cache_bytes) {"function":"bytes_are_zero"}
+  reply_zero:bool = call(z_source,reply_start,reply_bytes) {"function":"bytes_are_zero"}
+  zeros_ok:bool = bool.and(cache_zero,reply_zero)
+  ret(zeros_ok)
+block compare_shape(cs_source:readbuf,cs_kind:u64,cs_c:u64)
+  cs_zero:u64 = const() {"value":0}
+  limit:u64 = const() {"value":4096}
+  compare_kind:bool = compare.eq(cs_kind,cs_zero)
+  c_bound:bool = compare.le(cs_c,limit)
+  bounded:bool = bool.and(compare_kind,c_bound)
+  branch bounded frame(cs_source,cs_c) invalid()
+block frame(f_source:readbuf,f_c:u64)
+  f_two:u64 = const() {"value":2}
+  header:u64 = const() {"value":208}
+  doubled:u64 = int.mul.checked(f_c,f_two)
+  expected:u64 = int.add.checked(header,doubled)
+  expected_size:usize = int.cast(expected) {"mode":"wrap"}
+  actual_size:usize = buffer.len(f_source)
+  exact_frame:bool = compare.eq(actual_size,expected_size)
+  branch exact_frame comparison(f_source) invalid()
+block comparison(c_source:readbuf)
+  comparison_ok:bool = call(c_source) {"function":"sort_comparison_binding"}
+  ret(comparison_ok)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn sort_comparison_binding(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  n_at:usize = const() {"value":24}
+  n:u64 = call(source,n_at) {"function":"read_word"}
+  started_at:usize = const() {"value":144}
+  started:u64 = call(source,started_at) {"function":"read_word"}
+  left_id_at:usize = const() {"value":168}
+  left_id:u64 = call(source,left_id_at) {"function":"read_word"}
+  right_id_at:usize = const() {"value":176}
+  right_id:u64 = call(source,right_id_at) {"function":"read_word"}
+  one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  left_ok:bool = compare.lt(left_id,n)
+  right_ok:bool = compare.lt(right_id,n)
+  distinct:bool = compare.ne(left_id,right_id)
+  started_ok:bool = compare.le(started,one)
+  pair1:bool = bool.and(left_ok,right_ok)
+  pair2:bool = bool.and(distinct,started_ok)
+  binding_ok:bool = bool.and(pair1,pair2)
+  branch binding_ok kind(source,started) invalid()
+block kind(k_source:readbuf,k_started:u64)
+  k_zero:u64 = const() {"value":0}
+  fresh:bool = compare.eq(k_started,k_zero)
+  branch fresh initial(k_source) continuation(k_source)
+block initial(i_source:readbuf)
+  start:usize = const() {"value":104}
+  count:usize = const() {"value":48}
+  zero_cache:bool = call(i_source,start,count) {"function":"bytes_are_zero"}
+  branch zero_cache fragment(i_source) invalid()
+block continuation(c_source:readbuf)
+  c_offset_at:usize = const() {"value":104}
+  c_offset:u64 = call(c_source,c_offset_at) {"function":"read_word"}
+  c_left_id_at:usize = const() {"value":112}
+  c_left_id:u64 = call(c_source,c_left_id_at) {"function":"read_word"}
+  c_right_id_at:usize = const() {"value":120}
+  c_right_id:u64 = call(c_source,c_right_id_at) {"function":"read_word"}
+  c_left_len_at:usize = const() {"value":128}
+  c_left_len:u64 = call(c_source,c_left_len_at) {"function":"read_word"}
+  c_right_len_at:usize = const() {"value":136}
+  c_right_len:u64 = call(c_source,c_right_len_at) {"function":"read_word"}
+  reply_left_id_at:usize = const() {"value":168}
+  reply_left_id:u64 = call(c_source,reply_left_id_at) {"function":"read_word"}
+  reply_right_id_at:usize = const() {"value":176}
+  reply_right_id:u64 = call(c_source,reply_right_id_at) {"function":"read_word"}
+  reply_left_len_at:usize = const() {"value":184}
+  reply_left_len:u64 = call(c_source,reply_left_len_at) {"function":"read_word"}
+  reply_right_len_at:usize = const() {"value":192}
+  reply_right_len:u64 = call(c_source,reply_right_len_at) {"function":"read_word"}
+  c_zero:u64 = const() {"value":0}
+  mask:u64 = const() {"value":4095}
+  remainder:u64 = bit.and(c_offset,mask)
+  aligned:bool = compare.eq(remainder,c_zero)
+  positive:bool = compare.gt(c_offset,c_zero)
+  shorter:bool = compare.lt(c_left_len,c_right_len)
+  common:u64 = select(shorter,c_left_len,c_right_len)
+  unfinished:bool = compare.lt(c_offset,common)
+  left_same:bool = compare.eq(c_left_id,reply_left_id)
+  right_same:bool = compare.eq(c_right_id,reply_right_id)
+  left_length_same:bool = compare.eq(c_left_len,reply_left_len)
+  right_length_same:bool = compare.eq(c_right_len,reply_right_len)
+  cp1:bool = bool.and(aligned,positive)
+  cp2:bool = bool.and(unfinished,left_same)
+  cp3:bool = bool.and(right_same,left_length_same)
+  cp4:bool = bool.and(cp1,cp2)
+  cp5:bool = bool.and(cp3,right_length_same)
+  cache_ok:bool = bool.and(cp4,cp5)
+  branch cache_ok fragment(c_source) invalid()
+block fragment(f_source:readbuf)
+  fragment_ok:bool = call(f_source) {"function":"sort_fragment_shape"}
+  ret(fragment_ok)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn sort_fragment_shape(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  offset_at:usize = const() {"value":104}
+  offset:u64 = call(source,offset_at) {"function":"read_word"}
+  left_len_at:usize = const() {"value":184}
+  left_len:u64 = call(source,left_len_at) {"function":"read_word"}
+  right_len_at:usize = const() {"value":192}
+  right_len:u64 = call(source,right_len_at) {"function":"read_word"}
+  c_at:usize = const() {"value":200}
+  c:u64 = call(source,c_at) {"function":"read_word"}
+  shorter:bool = compare.lt(left_len,right_len)
+  common:u64 = select(shorter,left_len,right_len)
+  within:bool = compare.le(offset,common)
+  branch within remaining(common,offset,c) invalid()
+block remaining(r_common:u64,r_offset:u64,r_c:u64)
+  rest:u64 = int.sub.checked(r_common,r_offset)
+  limit:u64 = const() {"value":4096}
+  small:bool = compare.lt(rest,limit)
+  expected:u64 = select(small,rest,limit)
+  exact:bool = compare.eq(r_c,expected)
+  ret(exact)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn sort_resume(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  size:usize = buffer.len(source)
+  minimum:usize = const() {"value":208}
+  enough_source:bool = compare.ge(size,minimum)
+  branch enough_source geometry(source,output) invalid()
+block geometry(g_source:readbuf,g_output:mutbuf)
+  geometry_ok:bool = call(g_source) {"function":"sort_geometry"}
+  branch geometry_ok reply(g_source,g_output) invalid()
+block reply(r_source:readbuf,r_output:mutbuf)
+  reply_ok:bool = call(r_source) {"function":"sort_reply"}
+  branch reply_ok capacity(r_source,r_output) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf)
+  cap:usize = buffer.len(c_output)
+  required:usize = const() {"value":152}
+  enough_output:bool = compare.ge(cap,required)
+  branch enough_output advance(c_source,c_output) short_output()
+block advance(a_source:readbuf,a_output:mutbuf)
+  n_at:usize = const() {"value":24}
+  n:u64 = call(a_source,n_at) {"function":"read_word"}
+  phase_at:usize = const() {"value":32}
+  phase:u64 = call(a_source,phase_at) {"function":"read_word"}
+  k_at:usize = const() {"value":40}
+  k:u64 = call(a_source,k_at) {"function":"read_word"}
+  end_at:usize = const() {"value":48}
+  end:u64 = call(a_source,end_at) {"function":"read_word"}
+  selected_at:usize = const() {"value":72}
+  selected:u64 = call(a_source,selected_at) {"function":"read_word"}
+  pending_at:usize = const() {"value":80}
+  pending:u64 = call(a_source,pending_at) {"function":"read_word"}
+  two:u64 = const() {"value":2}
+  three:u64 = const() {"value":3}
+  extracting:bool = compare.eq(pending,three)
+  branch extracting extract_ack(a_output,n,end) sift_kind(a_source,a_output,n,phase,k,end,selected,pending)
+block sift_kind(sk_source:readbuf,sk_output:mutbuf,sk_n:u64,sk_phase:u64,sk_k:u64,sk_end:u64,sk_selected:u64,sk_pending:u64)
+  sk_two:u64 = const() {"value":2}
+  swapped:bool = compare.eq(sk_pending,sk_two)
+  branch swapped sift_ack(sk_output,sk_n,sk_phase,sk_k,sk_end,sk_selected) compare_call(sk_source,sk_output)
+block sift_ack(sa_output:mutbuf,sa_n:u64,sa_phase:u64,sa_k:u64,sa_end:u64,sa_selected:u64)
+  sift_result:u32 = call(sa_output,sa_n,sa_phase,sa_k,sa_end,sa_selected) {"function":"sort_schedule"}
+  ret(sift_result)
+block extract_ack(e_output:mutbuf,e_n:u64,e_end:u64)
+  one:u64 = const() {"value":1}
+  next_end:u64 = int.sub.checked(e_end,one)
+  complete:bool = compare.le(next_end,one)
+  branch complete done(e_output,e_n) root(e_output,e_n,next_end)
+block root(rt_output:mutbuf,rt_n:u64,rt_end:u64)
+  rt_zero:u64 = const() {"value":0}
+  rt_one:u64 = const() {"value":1}
+  root_result:u32 = call(rt_output,rt_n,rt_one,rt_zero,rt_end,rt_zero) {"function":"sort_nonleaf"}
+  ret(root_result)
+block done(d_output:mutbuf,d_n:u64)
+  done_result:u32 = call(d_output,d_n) {"function":"sort_done"}
+  ret(done_result)
+block compare_call(cc_source:readbuf,cc_output:mutbuf)
+  compare_result:u32 = call(cc_source,cc_output) {"function":"sort_compare"}
+  ret(compare_result)
+block invalid()
+  invalid_result:u32 = const() {"value":4294967295}
+  ret(invalid_result)
+block short_output()
+  short_result:u32 = const() {"value":4294967294}
+  ret(short_result)
+end
+fn sort_compare(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  offset_at:usize = const() {"value":104}
+  offset:u64 = call(source,offset_at) {"function":"read_word"}
+  left_len_at:usize = const() {"value":184}
+  left_len:u64 = call(source,left_len_at) {"function":"read_word"}
+  right_len_at:usize = const() {"value":192}
+  right_len:u64 = call(source,right_len_at) {"function":"read_word"}
+  c_at:usize = const() {"value":200}
+  c:u64 = call(source,c_at) {"function":"read_word"}
+  result:u64 = call(source,c) {"function":"compare_bytes"}
+  zero:u64 = const() {"value":0}
+  different:bool = compare.ne(result,zero)
+  branch different complete(source,output,result) equal(source,output,offset,left_len,right_len,c)
+block equal(e_source:readbuf,e_output:mutbuf,e_offset:u64,e_left:u64,e_right:u64,e_c:u64)
+  next:u64 = int.add.checked(e_offset,e_c)
+  left_shorter:bool = compare.lt(e_left,e_right)
+  common:u64 = select(left_shorter,e_left,e_right)
+  more:bool = compare.lt(next,common)
+  branch more continuation(e_source,e_output,next) lengths(e_source,e_output,e_left,e_right)
+block continuation(c_source:readbuf,c_output:mutbuf,c_next:u64)
+  continued:u32 = call(c_source,c_output,c_next) {"function":"sort_continue"}
+  ret(continued)
+block lengths(l_source:readbuf,l_output:mutbuf,l_left:u64,l_right:u64)
+  same_length:bool = compare.eq(l_left,l_right)
+  branch same_length indices(l_source,l_output) length_order(l_source,l_output,l_left,l_right)
+block length_order(lo_source:readbuf,lo_output:mutbuf,lo_left:u64,lo_right:u64)
+  lo_one:u64 = const() {"value":1}
+  lo_two:u64 = const() {"value":2}
+  shorter:bool = compare.lt(lo_left,lo_right)
+  length_result:u64 = select(shorter,lo_one,lo_two)
+  jump complete(lo_source,lo_output,length_result)
+block indices(i_source:readbuf,i_output:mutbuf)
+  i_left_at:usize = const() {"value":168}
+  i_left:u64 = call(i_source,i_left_at) {"function":"read_word"}
+  i_right_at:usize = const() {"value":176}
+  i_right:u64 = call(i_source,i_right_at) {"function":"read_word"}
+  i_one:u64 = const() {"value":1}
+  i_two:u64 = const() {"value":2}
+  earlier:bool = compare.lt(i_left,i_right)
+  index_result:u64 = select(earlier,i_one,i_two)
+  jump complete(i_source,i_output,index_result)
+block complete(cp_source:readbuf,cp_output:mutbuf,cp_result:u64)
+  completed:u32 = call(cp_source,cp_output,cp_result) {"function":"sort_complete_comparison"}
+  ret(completed)
+end
+fn compare_bytes(source:readbuf,count:u64) -> (u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,count:u64)
+  first:usize = const() {"value":0}
+  length:usize = int.cast(count) {"mode":"wrap"}
+  jump loop(source,length,first)
+block loop(l_source:readbuf,l_count:usize,l_index:usize)
+  more:bool = compare.lt(l_index,l_count)
+  branch more byte(l_source,l_count,l_index) equal()
+block byte(b_source:readbuf,b_count:usize,b_index:usize)
+  base:usize = const() {"value":208}
+  left_at:usize = int.add.checked(base,b_index)
+  right_at:usize = int.add.checked(left_at,b_count)
+  left:u8 = buffer.load(b_source,left_at)
+  right:u8 = buffer.load(b_source,right_at)
+  same:bool = compare.eq(left,right)
+  branch same advance(b_source,b_count,b_index) different(left,right)
+block advance(a_source:readbuf,a_count:usize,a_index:usize)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(a_index,one)
+  jump loop(a_source,a_count,next)
+block different(d_left:u8,d_right:u8)
+  less:bool = compare.lt(d_left,d_right)
+  less_code:u64 = const() {"value":1}
+  greater_code:u64 = const() {"value":2}
+  result:u64 = select(less,less_code,greater_code)
+  ret(result)
+block equal()
+  equal_code:u64 = const() {"value":0}
+  ret(equal_code)
+end
+fn sort_continue(source:readbuf,output:mutbuf,next:u64) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,next:u64)
+  source_at:usize = const() {"value":16}
+  output_at:usize = const() {"value":8}
+  count:usize = const() {"value":144}
+  _ = call(source,output,source_at,output_at,count) {"function":"copy_bytes"}
+  left_id_at:usize = const() {"value":168}
+  left_id:u64 = call(source,left_id_at) {"function":"read_word"}
+  right_id_at:usize = const() {"value":176}
+  right_id:u64 = call(source,right_id_at) {"function":"read_word"}
+  left_len_at:usize = const() {"value":184}
+  left_len:u64 = call(source,left_len_at) {"function":"read_word"}
+  right_len_at:usize = const() {"value":192}
+  right_len:u64 = call(source,right_len_at) {"function":"read_word"}
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  store_0:usize = const() {"value":0}
+  _ = call(output,store_0,zero) {"function":"write_word"}
+  store_96:usize = const() {"value":96}
+  _ = call(output,store_96,next) {"function":"write_word"}
+  store_104:usize = const() {"value":104}
+  _ = call(output,store_104,left_id) {"function":"write_word"}
+  store_112:usize = const() {"value":112}
+  _ = call(output,store_112,right_id) {"function":"write_word"}
+  store_120:usize = const() {"value":120}
+  _ = call(output,store_120,left_len) {"function":"write_word"}
+  store_128:usize = const() {"value":128}
+  _ = call(output,store_128,right_len) {"function":"write_word"}
+  store_136:usize = const() {"value":136}
+  _ = call(output,store_136,one) {"function":"write_word"}
+  written:u32 = const() {"value":152}
+  ret(written)
+end
+fn sort_complete_comparison(source:readbuf,output:mutbuf,order:u64) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,order:u64)
+  n_at:usize = const() {"value":24}
+  n:u64 = call(source,n_at) {"function":"read_word"}
+  phase_at:usize = const() {"value":32}
+  phase:u64 = call(source,phase_at) {"function":"read_word"}
+  k_at:usize = const() {"value":40}
+  k:u64 = call(source,k_at) {"function":"read_word"}
+  end_at:usize = const() {"value":48}
+  end:u64 = call(source,end_at) {"function":"read_word"}
+  root_at:usize = const() {"value":56}
+  root:u64 = call(source,root_at) {"function":"read_word"}
+  left_at:usize = const() {"value":64}
+  left:u64 = call(source,left_at) {"function":"read_word"}
+  selected_at:usize = const() {"value":72}
+  selected:u64 = call(source,selected_at) {"function":"read_word"}
+  pending_at:usize = const() {"value":80}
+  pending:u64 = call(source,pending_at) {"function":"read_word"}
+  a_at:usize = const() {"value":88}
+  a:u64 = call(source,a_at) {"function":"read_word"}
+  b_at:usize = const() {"value":96}
+  b:u64 = call(source,b_at) {"function":"read_word"}
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  children:bool = compare.eq(pending,zero)
+  less:bool = compare.eq(order,one)
+  branch children select_child(output,n,phase,k,end,root,left,a,b,less) root_result(output,n,phase,k,end,root,left,selected,less)
+block select_child(c_output:mutbuf,c_n:u64,c_phase:u64,c_k:u64,c_end:u64,c_root:u64,c_left:u64,c_a:u64,c_b:u64,c_less:bool)
+  candidate:u64 = select(c_less,c_b,c_a)
+  c_one:u64 = const() {"value":1}
+  request:u32 = call(c_output,c_n,c_phase,c_k,c_end,c_root,c_left,candidate,c_one,c_root,candidate) {"function":"sort_request"}
+  ret(request)
+block root_result(r_output:mutbuf,r_n:u64,r_phase:u64,r_k:u64,r_end:u64,r_root:u64,r_left:u64,r_selected:u64,r_less:bool)
+  branch r_less swap(r_output,r_n,r_phase,r_k,r_end,r_root,r_left,r_selected) finish(r_output,r_n,r_phase,r_k,r_end)
+block swap(s_output:mutbuf,s_n:u64,s_phase:u64,s_k:u64,s_end:u64,s_root:u64,s_left:u64,s_selected:u64)
+  two:u64 = const() {"value":2}
+  swap_request:u32 = call(s_output,s_n,s_phase,s_k,s_end,s_root,s_left,s_selected,two,s_root,s_selected) {"function":"sort_request"}
+  ret(swap_request)
+block finish(f_output:mutbuf,f_n:u64,f_phase:u64,f_k:u64,f_end:u64)
+  finish_result:u32 = call(f_output,f_n,f_phase,f_k,f_end) {"function":"sort_finish_sift"}
+  ret(finish_result)
+end
