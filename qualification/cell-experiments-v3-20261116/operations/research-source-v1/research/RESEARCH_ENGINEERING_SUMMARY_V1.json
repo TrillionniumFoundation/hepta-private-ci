@@ -1,0 +1,88 @@
+{
+  "actual_adapter_roundtrip_exact_logits": true,
+  "actual_exit_codes": [
+    0,
+    0
+  ],
+  "actual_runtime_python": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+  "actual_tiny_input_tokens": 414,
+  "actual_tiny_padded_positions": 98304,
+  "actual_tiny_supervised_tokens": 128,
+  "actual_tiny_tensor_steps": 64,
+  "all_runtime_modules_unchanged_after_tests": true,
+  "archive_bytes": 333959,
+  "archive_sha256": "78629fbaf830a733e09a77b733e33ec38546c57daa2f8899f5a8f28902794381",
+  "authored_verifier_calls": 0,
+  "behavior_tests": 12,
+  "controller_exit_code": 0,
+  "controller_output_complete": true,
+  "engineered_child_timeout_seconds": 300,
+  "errors": 0,
+  "exact_result_files": {
+    "engineering-results-01/RESULT.json": {
+      "bytes": 1238,
+      "sha256": "01e993f67918d3261b785cf92aca6911d6bbcf43c88cffe42876a4b747e94768"
+    },
+    "engineering-results-01/behavior/EXIT.json": {
+      "bytes": 387,
+      "sha256": "cc3cfc16d417d13d2fef3c8192a453ced65f9d1de77caeaffd5ad610be342d08"
+    },
+    "engineering-results-01/behavior/RESULT.json": {
+      "bytes": 4416,
+      "sha256": "ba82e8a5abcc485ec085768b9ad98ba455f25893fedc332bc4f3ea87e920575d"
+    },
+    "engineering-results-01/behavior/stderr.log": {
+      "bytes": 2441,
+      "sha256": "b47c3cec8cd7f20df29917ef8d3373c17aa0e8577e6f91315373792f8a68b706"
+    },
+    "engineering-results-01/behavior/stdout.log": {
+      "bytes": 86,
+      "sha256": "13a55321f5cb3b6f76ec9a026b49fa13f9ca3d0444dc98b195822cc1a866fa3b"
+    },
+    "engineering-results-01/behavior/test_real_parent03_zero_baseline_loads_read_only_with_pinned_runtime/READ_ONLY_PARENT_COMPATIBILITY.json": {
+      "bytes": 1009,
+      "sha256": "39070193757691ece1bb125646ade097806658fd6b276d6891d11b7c4fca43ac"
+    },
+    "engineering-results-01/tensor/EXIT.json": {
+      "bytes": 385,
+      "sha256": "5ad690c6f689d0c78ee7e8803f28c95d4c0d3d576af2728b5d5775b096d41193"
+    },
+    "engineering-results-01/tensor/RESULT.json": {
+      "bytes": 2865,
+      "sha256": "b70d5fe27e619c033d03b01f57a6a604dfc90a4054a7c441a7393e130737ffd1"
+    },
+    "engineering-results-01/tensor/actual-tensor-fixture/NUMERIC_RESULT.json": {
+      "bytes": 1928,
+      "sha256": "9bf68d1076412642994b618e94fed5cd0558ed32f6766a6b477998cd74a8ec71"
+    },
+    "engineering-results-01/tensor/stderr.log": {
+      "bytes": 548,
+      "sha256": "00a47390d6b6fa126cc6c7f88020e3485b139ae2b99c45e954b9b6f2b16a752a"
+    },
+    "engineering-results-01/tensor/stdout.log": {
+      "bytes": 83,
+      "sha256": "ea1b8df7c6aa968b2c3d9f1229988cd729684d48ea45a9d1516319fc85affd76"
+    }
+  },
+  "failures": 0,
+  "gpu_used": false,
+  "mac_verified_receipt_sha256": "0db2542cc71d7c9a1ddf62d406088a061631b8b24384b9db8e711417f6fcd8a0",
+  "missing_torch_cannot_pass": true,
+  "original_helper_tests_rerun": false,
+  "real_Qwen_generations": 0,
+  "real_research_fits": 0,
+  "reruns": 0,
+  "schema": "hepta.research-sft-engineering-summary.v1",
+  "skips": 0,
+  "source_manifest_sha256": "8b382e78579d78d86a831f91f8f7aee6757b3c3d20c5f6f8eaceaab98b928d8d",
+  "tensor_tests": 1,
+  "terminal_id": "dpty-c93b933cae01db26d9e362f11fd40edff5d3f00b8c5b4ef59e4de38c04a88d35",
+  "terminal_observation_sha256": "457575c9e16c3bca046064cab86a174a30d2e11b37c7fc68e6d4f0a3aec1f7e2",
+  "test_suite_runs": 2,
+  "timed_out": [
+    false,
+    false
+  ],
+  "tiny_fixture_base_loading_only_is_synthetic": true,
+  "total_tests": 13
+}
