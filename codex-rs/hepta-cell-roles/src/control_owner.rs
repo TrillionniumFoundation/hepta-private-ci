@@ -1030,10 +1030,10 @@ fn decode_receipt(
         sequence: cursor.u64()?,
         status: status(cursor.byte()?)?,
         terminal_receipt_digest: cursor.digest()?,
-        restart_reconciliation_digest: if cursor.byte()? == 0 {
-            None
-        } else {
-            Some(cursor.digest()?)
+        restart_reconciliation_digest: match cursor.byte()? {
+            0 => None,
+            1 => Some(cursor.digest()?),
+            _ => return Err(ControlOwnerErrorV1::InvalidDurableSnapshot),
         },
         execution_allowed: false,
         authority: AuthorityPosture::DENY_ALL,
@@ -1503,3 +1503,7 @@ mod tests {
 #[cfg(test)]
 #[path = "control_snapshot_read_tests.rs"]
 mod snapshot_read_tests;
+
+#[cfg(test)]
+#[path = "control_receipt_tag_tests.rs"]
+mod receipt_tag_tests;
