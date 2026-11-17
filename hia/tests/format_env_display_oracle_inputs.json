@@ -29,10 +29,10 @@
   },
   "logical_length_boundary": "logical_continuation_only cases supply tiny bounded fragments with >4GiB/u64 metadata; no preceding giant byte sequence, allocation or complete giant workload is supplied or executed. Valid private state shapes are not authenticated histories.",
   "counts": {
-    "streams": 15,
-    "stream_calls": 52,
+    "streams": 20,
+    "stream_calls": 65,
     "raw_cases": 0,
-    "literal_frames": 52
+    "literal_frames": 65
   },
   "streams": [
     {
@@ -2993,6 +2993,469 @@
           "expected_output_prefix_hex": "0700000000000000011000000000000001100000000000000100000000000000a93d2a2a2a2a2a"
         }
       ]
+    },
+    {
+      "id": "join-no-parts",
+      "kind": "join",
+      "expected_payload_hex": "2d",
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000003000000000000000000000000000000",
+          "output_capacity": 82,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 65,
+          "expected_written_bytes": 65,
+          "source_words_le": [
+            "1",
+            "3",
+            "0"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_payload_hex": "2d",
+          "expected_output_prefix_hex": "010000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000001000000000000002d"
+        }
+      ]
+    },
+    {
+      "id": "join-one-empty-raw-part",
+      "kind": "join",
+      "expected_payload_hex": "",
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000003000000000000000100000000000000",
+          "output_capacity": 81,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 64,
+          "expected_written_bytes": 64,
+          "source_words_le": [
+            "1",
+            "3",
+            "1"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "00000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 88,
+          "source_hex": "01000000000000000400000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "output_capacity": 81,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 64,
+          "expected_written_bytes": 64,
+          "source_words_le": [
+            "1",
+            "4",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "00000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000"
+        }
+      ]
+    },
+    {
+      "id": "join-two-empty-raw-parts",
+      "kind": "join",
+      "expected_payload_hex": "2c20",
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000003000000000000000200000000000000",
+          "output_capacity": 81,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 64,
+          "expected_written_bytes": 64,
+          "source_words_le": [
+            "1",
+            "3",
+            "2"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "00000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 88,
+          "source_hex": "01000000000000000400000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "output_capacity": 81,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 64,
+          "expected_written_bytes": 64,
+          "source_words_le": [
+            "1",
+            "4",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "00000000000000000200000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 88,
+          "source_hex": "01000000000000000400000000000000020000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "output_capacity": 83,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 66,
+          "expected_written_bytes": 66,
+          "source_words_le": [
+            "1",
+            "4",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "2",
+            "2",
+            "2",
+            "0",
+            "0",
+            "2",
+            "0",
+            "1"
+          ],
+          "expected_payload_hex": "2c20",
+          "expected_output_prefix_hex": "020000000000000002000000000000000200000000000000000000000000000000000000000000000200000000000000000000000000000001000000000000002c20"
+        }
+      ]
+    },
+    {
+      "id": "join-two-masked-map-keys",
+      "kind": "join",
+      "expected_payload_hex": "413d2a2a2a2a2a2c20423d2a2a2a2a2a",
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000003000000000000000200000000000000",
+          "output_capacity": 81,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 64,
+          "expected_written_bytes": 64,
+          "source_words_le": [
+            "1",
+            "3",
+            "2"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "00000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 95,
+          "source_hex": "01000000000000000400000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007000000000000000700000000000000413d2a2a2a2a2a",
+          "output_capacity": 88,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 71,
+          "expected_written_bytes": 71,
+          "source_words_le": [
+            "1",
+            "4",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "7",
+            "7"
+          ],
+          "source_payload_hex": "413d2a2a2a2a2a",
+          "expected_output_words_le": [
+            "7",
+            "2",
+            "1",
+            "0",
+            "0",
+            "7",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "413d2a2a2a2a2a",
+          "expected_output_prefix_hex": "07000000000000000200000000000000010000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000413d2a2a2a2a2a"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 95,
+          "source_hex": "01000000000000000400000000000000020000000000000001000000000000000000000000000000000000000000000007000000000000000000000000000000000000000000000007000000000000000700000000000000423d2a2a2a2a2a",
+          "output_capacity": 90,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 73,
+          "expected_written_bytes": 73,
+          "source_words_le": [
+            "1",
+            "4",
+            "2",
+            "1",
+            "0",
+            "0",
+            "7",
+            "0",
+            "0",
+            "7",
+            "7"
+          ],
+          "source_payload_hex": "423d2a2a2a2a2a",
+          "expected_output_words_le": [
+            "9",
+            "2",
+            "2",
+            "0",
+            "0",
+            "16",
+            "0",
+            "1"
+          ],
+          "expected_payload_hex": "2c20423d2a2a2a2a2a",
+          "expected_output_prefix_hex": "090000000000000002000000000000000200000000000000000000000000000000000000000000001000000000000000000000000000000001000000000000002c20423d2a2a2a2a2a"
+        }
+      ]
+    },
+    {
+      "id": "join-empty-name-and-repeated-vars",
+      "kind": "join",
+      "expected_payload_hex": "3d2a2a2a2a2a2c20544f4b454e3d2a2a2a2a2a2c20544f4b454e3d2a2a2a2a2a",
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000003000000000000000300000000000000",
+          "output_capacity": 81,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 64,
+          "expected_written_bytes": 64,
+          "source_words_le": [
+            "1",
+            "3",
+            "3"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "3",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "00000000000000000300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 94,
+          "source_hex": "010000000000000004000000000000000300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000006000000000000003d2a2a2a2a2a",
+          "output_capacity": 87,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 70,
+          "expected_written_bytes": 70,
+          "source_words_le": [
+            "1",
+            "4",
+            "3",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "6",
+            "6"
+          ],
+          "source_payload_hex": "3d2a2a2a2a2a",
+          "expected_output_words_le": [
+            "6",
+            "3",
+            "1",
+            "0",
+            "0",
+            "6",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "3d2a2a2a2a2a",
+          "expected_output_prefix_hex": "060000000000000003000000000000000100000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000003d2a2a2a2a2a"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 99,
+          "source_hex": "0100000000000000040000000000000003000000000000000100000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000b000000000000000b00000000000000544f4b454e3d2a2a2a2a2a",
+          "output_capacity": 94,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 77,
+          "expected_written_bytes": 77,
+          "source_words_le": [
+            "1",
+            "4",
+            "3",
+            "1",
+            "0",
+            "0",
+            "6",
+            "0",
+            "0",
+            "11",
+            "11"
+          ],
+          "source_payload_hex": "544f4b454e3d2a2a2a2a2a",
+          "expected_output_words_le": [
+            "13",
+            "3",
+            "2",
+            "0",
+            "0",
+            "19",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "2c20544f4b454e3d2a2a2a2a2a",
+          "expected_output_prefix_hex": "0d0000000000000003000000000000000200000000000000000000000000000000000000000000001300000000000000000000000000000000000000000000002c20544f4b454e3d2a2a2a2a2a"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 99,
+          "source_hex": "0100000000000000040000000000000003000000000000000200000000000000000000000000000000000000000000001300000000000000000000000000000000000000000000000b000000000000000b00000000000000544f4b454e3d2a2a2a2a2a",
+          "output_capacity": 94,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 77,
+          "expected_written_bytes": 77,
+          "source_words_le": [
+            "1",
+            "4",
+            "3",
+            "2",
+            "0",
+            "0",
+            "19",
+            "0",
+            "0",
+            "11",
+            "11"
+          ],
+          "source_payload_hex": "544f4b454e3d2a2a2a2a2a",
+          "expected_output_words_le": [
+            "13",
+            "3",
+            "3",
+            "0",
+            "0",
+            "32",
+            "0",
+            "1"
+          ],
+          "expected_payload_hex": "2c20544f4b454e3d2a2a2a2a2a",
+          "expected_output_prefix_hex": "0d0000000000000003000000000000000300000000000000000000000000000000000000000000002000000000000000000000000000000001000000000000002c20544f4b454e3d2a2a2a2a2a"
+        }
+      ]
     }
   ],
   "raw_cases": [],
@@ -3002,9 +3465,9 @@
       "sha256": "9ed01ce7c5aad87677ad21a20e8bdf9442cdd5588ac2ff13fbdd4138325aacd1",
       "git_blob": "74c32ad1829b2e5e7bf963a44236c2d502fb60c0"
     },
-    "included_whole_frames": 52,
+    "included_whole_frames": 65,
     "final_whole_frames": 231,
-    "complete_streams": 15,
+    "complete_streams": 20,
     "partial_stream": null,
     "not_runnable": "The final harness pins only the complete final corpus; incomplete streams and this partial JSON are review stages, never a qualification input."
   }
