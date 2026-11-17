@@ -1,0 +1,77 @@
+{
+  "bindings": {
+    "candidate_source": {
+      "bytes": 47066,
+      "path": "operations/research02-diagnostic-order-fix-01/qwen_research_diagnostic_v1_order_fixed.py",
+      "sha256": "ce0b68cd98673bf15f170d1da7c42670f65320ba5c9d3cacc2f1c28696273821"
+    },
+    "fix_manifest": {
+      "bytes": 3855,
+      "path": "operations/research02-diagnostic-order-fix-01/POSTHOC_FIX_MANIFEST.json",
+      "sha256": "3373b6677feacba7206a0b5b545c2dc4cd743b9be12d5e23cdf22e2b1ceed7bd"
+    },
+    "operation_freeze": {
+      "bytes": 55576,
+      "path": "research-sft-02/FREEZE.json",
+      "sha256": "50a6ad4c3e8088100cc84a047f0556b92294eb3e44dc644e62e2976137c2770a"
+    },
+    "original_diagnostic": {
+      "bytes": 64006,
+      "path": "research-diagnostic-02/DIAGNOSTIC.json",
+      "sha256": "662f575d3f01705fb13cb6e168ad5d7069a8ddcc81e484f0c515b63afd65236b"
+    },
+    "original_rules": {
+      "bytes": 3861,
+      "path": "research-diagnostic-v1-source-02/QWEN_RESEARCH_DIAGNOSTIC_FREEZE_02.json",
+      "sha256": "f50ced9146611fc07c4638a35f204e94f1ebf0b5e6c4ab70ac9667095135c1bc"
+    },
+    "original_source": {
+      "bytes": 46995,
+      "path": "research-diagnostic-v1-source-02/qwen_research_diagnostic_v1.py",
+      "sha256": "28d82e170ab0720fb6b453275a80b4bf1eebc1e987ed1ae3bd935bb00a77a071"
+    },
+    "patch": {
+      "bytes": 1227,
+      "path": "operations/research02-diagnostic-order-fix-01/ORDER_FIX.diff",
+      "sha256": "29c614601ac0e63d2c2d64bd0c99d817d41bdda065ae3982a1052d28dec819ad"
+    },
+    "recorded_inputs": {
+      "bytes": 495218,
+      "path": "research-sft-02/INPUTS.json",
+      "sha256": "691945696e7dad9ee0f3023617edf5ca0f787850c16f2623c08d14bc6cfbeaf3"
+    },
+    "regression": {
+      "bytes": 468,
+      "path": "operations/research02-diagnostic-order-fix-01/REGRESSION.json",
+      "sha256": "2e531b414b72382e7afb265179088158142d0de287caba0a69d54e42dfbef62e"
+    },
+    "runner": {
+      "bytes": 11951,
+      "path": "operations/research02-diagnostic-order-fix-01/run_posthoc_readonly.py",
+      "sha256": "d78fd9c8b4c2349303a187a8cd715385c0e42bccd3180a60aea45bd891cd125a"
+    }
+  },
+  "candidate_selected": null,
+  "circuit_qualified": false,
+  "created_at_ns": 1794893947979722000,
+  "external_teacher_count_added": 0,
+  "independent_sample_increment": 0,
+  "model_calls_authorized": 0,
+  "native_cell_adoption": false,
+  "new_C": false,
+  "new_source_does_not_inherit_prefit_freeze": true,
+  "new_users": 0,
+  "original_main_called": false,
+  "original_rules_modified": false,
+  "outer_runner_validation": "AST parse and immutable binding check only; not executed",
+  "output": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-diagnostic-posthoc-02",
+  "posthoc": true,
+  "proof_of_useful_work_eligible": false,
+  "requires_root_review_before_full_readout": true,
+  "rules_validation_source": "actual original source SHA, not derived candidate SHA",
+  "schema": "hepta.diagnostic-order-posthoc-manifest.v1",
+  "scientific_confirmation_qualified": false,
+  "status": "PREPARED_NOT_EXECUTED",
+  "verifier_calls_authorized": 0,
+  "workspace": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a"
+}

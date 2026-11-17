@@ -1,0 +1,19 @@
+--- original/qwen_research_diagnostic_v1.py
++++ posthoc/qwen_research_diagnostic_v1_order_fixed.py
+@@ -586,13 +586,15 @@
+         reader.hash(baseline / name, expected)
+     reader.inventory(baseline, freeze["readiness_inventory"])
+     context = contract.load_context(WORKSPACE, source, baseline)
+-    require(reader.read(freeze["inputs_path"], freeze["inputs_sha256"]) == context
++    recorded_context = reader.read(freeze["inputs_path"], freeze["inputs_sha256"])
++    require(recorded_context == context
+             and freeze["parent_digest"] == digest(context["parent"])
+             and freeze["parent_readiness_digest"] == digest(context["readiness"])
+             and freeze["parent_successful_A_tasks"] == context["gate"]["successful_A_tasks"]
+             and freeze["reference_admission_digest"] == digest(context["research_admission"])
+             and freeze["runtime"] == context["runtime"],
+             "operation INPUTS or measured baseline differs")
++    context = recorded_context
+     parent_outcomes = {"first": {}, "last": {}}
+     for record, row in zip(context["records"][:6], context["readiness"]["rows"][:6]):
+         for attempt, field in (("first", "first_attempt_success"), ("last", "success")):
