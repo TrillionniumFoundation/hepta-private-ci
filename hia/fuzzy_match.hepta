@@ -893,3 +893,451 @@ block no()
   k84:bool = const() {"value":false}
   ret(k84)
 end
+fn valid_operation(source:readbuf,operation:u64) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,operation:u64)
+  k0:u64 = const() {"value":0}
+  v1:bool = compare.eq(operation,k0)
+  branch v1 begin(source) nonzero(source,operation)
+block begin(begin_source:readbuf)
+  k2:usize = const() {"value":16}
+  r3:u64 = call(begin_source,k2) {"function":"read_word"}
+  k4:u64 = const() {"value":0}
+  v5:bool = compare.eq(r3,k4)
+  k6:usize = const() {"value":24}
+  r7:u64 = call(begin_source,k6) {"function":"read_word"}
+  k8:u64 = const() {"value":0}
+  v9:bool = compare.eq(r7,k8)
+  v10:bool = bool.and(v5,v9)
+  ret(v10)
+block nonzero(nonzero_source:readbuf,nonzero_operation:u64)
+  k11:u64 = const() {"value":3}
+  v12:bool = compare.eq(nonzero_operation,k11)
+  branch v12 matching(nonzero_source) normalize(nonzero_source,nonzero_operation)
+block normalize(normalize_source:readbuf,normalize_operation:u64)
+  k13:u64 = const() {"value":1}
+  v14:bool = compare.eq(normalize_operation,k13)
+  k15:usize = const() {"value":72}
+  r16:u64 = call(normalize_source,k15) {"function":"read_word"}
+  k17:usize = const() {"value":80}
+  r18:u64 = call(normalize_source,k17) {"function":"read_word"}
+  v19:u64 = select(v14,r16,r18)
+  k20:usize = const() {"value":88}
+  r21:u64 = call(normalize_source,k20) {"function":"read_word"}
+  k22:usize = const() {"value":96}
+  r23:u64 = call(normalize_source,k22) {"function":"read_word"}
+  v24:u64 = select(v14,r21,r23)
+  k25:usize = const() {"value":24}
+  r26:u64 = call(normalize_source,k25) {"function":"read_word"}
+  v27:u64 = int.sub.wrap(v19,v24)
+  k28:u64 = const() {"value":0}
+  v29:bool = compare.eq(v19,k28)
+  k30:u64 = const() {"value":0}
+  v31:bool = compare.eq(v24,k30)
+  v32:bool = bool.and(v14,v29)
+  v33:bool = bool.and(v32,v31)
+  k34:u64 = const() {"value":0}
+  v35:bool = compare.gt(r26,k34)
+  v36:bool = bool.or(v35,v33)
+  v37:bool = compare.eq(r26,v27)
+  k38:usize = const() {"value":16}
+  r39:u64 = call(normalize_source,k38) {"function":"read_word"}
+  k40:u64 = const() {"value":1}
+  v41:bool = compare.eq(r39,k40)
+  v42:bool = compare.le(r26,v27)
+  v43:bool = compare.eq(v37,v41)
+  k44:usize = const() {"value":32}
+  r45:u64 = call(normalize_source,k44) {"function":"read_word"}
+  k46:u64 = const() {"value":0}
+  v47:bool = compare.eq(r45,k46)
+  k48:usize = const() {"value":40}
+  r49:u64 = call(normalize_source,k48) {"function":"read_word"}
+  k50:u64 = const() {"value":0}
+  v51:bool = compare.eq(r49,k50)
+  v52:bool = bool.and(v36,v42)
+  v53:bool = bool.and(v52,v43)
+  v54:bool = bool.and(v53,v47)
+  v55:bool = bool.and(v54,v51)
+  ret(v55)
+block matching(matching_source:readbuf)
+  k56:usize = const() {"value":112}
+  r57:u64 = call(matching_source,k56) {"function":"read_word"}
+  k58:usize = const() {"value":160}
+  r59:u64 = call(matching_source,k58) {"function":"read_word"}
+  v60:u64 = int.sub.wrap(r57,r59)
+  k61:usize = const() {"value":128}
+  r62:u64 = call(matching_source,k61) {"function":"read_word"}
+  k63:usize = const() {"value":168}
+  r64:u64 = call(matching_source,k63) {"function":"read_word"}
+  v65:u64 = int.sub.wrap(r62,r64)
+  k66:u64 = const() {"value":128}
+  v67:bool = compare.lt(v60,k66)
+  v68:u64 = select(v67,v60,k66)
+  v69:bool = compare.lt(v65,k66)
+  v70:u64 = select(v69,v65,k66)
+  k71:u64 = const() {"value":24}
+  v72:u64 = int.mul.wrap(v68,k71)
+  k73:u64 = const() {"value":8}
+  v74:u64 = int.mul.wrap(v70,k73)
+  v75:u64 = int.add.wrap(v72,v74)
+  k76:usize = const() {"value":16}
+  r77:u64 = call(matching_source,k76) {"function":"read_word"}
+  k78:u64 = const() {"value":0}
+  v79:bool = compare.eq(r77,k78)
+  k80:usize = const() {"value":32}
+  r81:u64 = call(matching_source,k80) {"function":"read_word"}
+  v82:bool = compare.eq(r81,v68)
+  k83:usize = const() {"value":40}
+  r84:u64 = call(matching_source,k83) {"function":"read_word"}
+  v85:bool = compare.eq(r84,v70)
+  k86:usize = const() {"value":24}
+  r87:u64 = call(matching_source,k86) {"function":"read_word"}
+  v88:bool = compare.eq(r87,v75)
+  v89:bool = bool.and(v79,v82)
+  v90:bool = bool.and(v89,v85)
+  v91:bool = bool.and(v90,v88)
+  ret(v91)
+end
+fn hay_record(source:readbuf,index:u64) -> (u64,u64,u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,index:u64)
+  k0:u64 = const() {"value":320}
+  k1:u64 = const() {"value":24}
+  v2:u64 = int.mul.wrap(index,k1)
+  v3:u64 = int.add.wrap(k0,v2)
+  k4:u64 = const() {"value":0}
+  v5:u64 = int.add.wrap(v3,k4)
+  v6:usize = int.cast(v5) {"mode":"checked"}
+  r7:u64 = call(source,v6) {"function":"read_word"}
+  k8:u64 = const() {"value":8}
+  v9:u64 = int.add.wrap(v3,k8)
+  v10:usize = int.cast(v9) {"mode":"checked"}
+  r11:u64 = call(source,v10) {"function":"read_word"}
+  k12:u64 = const() {"value":16}
+  v13:u64 = int.add.wrap(v3,k12)
+  v14:usize = int.cast(v13) {"mode":"checked"}
+  r15:u64 = call(source,v14) {"function":"read_word"}
+  ret(r7,r11,r15)
+end
+fn needle_scalar(source:readbuf,index:u64) -> (u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,index:u64)
+  k0:u64 = const() {"value":320}
+  k1:usize = const() {"value":32}
+  r2:u64 = call(source,k1) {"function":"read_word"}
+  k3:u64 = const() {"value":24}
+  v4:u64 = int.mul.wrap(r2,k3)
+  v5:u64 = int.add.wrap(k0,v4)
+  k6:u64 = const() {"value":8}
+  v7:u64 = int.mul.wrap(index,k6)
+  v8:u64 = int.add.wrap(v5,v7)
+  v9:usize = int.cast(v8) {"mode":"checked"}
+  r10:u64 = call(source,v9) {"function":"read_word"}
+  ret(r10)
+end
+fn valid_match_payload(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  k0:u64 = const() {"value":0}
+  k1:usize = const() {"value":288}
+  r2:u64 = call(source,k1) {"function":"read_word"}
+  k3:usize = const() {"value":296}
+  r4:u64 = call(source,k3) {"function":"read_word"}
+  jump hay(source,k0,r2,r4)
+block hay(hay_source:readbuf,hay_index:u64,hay_prior_original:u64,hay_prior_start:u64)
+  k5:usize = const() {"value":32}
+  r6:u64 = call(hay_source,k5) {"function":"read_word"}
+  v7:bool = compare.lt(hay_index,r6)
+  k8:u64 = const() {"value":0}
+  branch v7 record(hay_source,hay_index,hay_prior_original,hay_prior_start) needle(hay_source,k8)
+block record(record_source:readbuf,record_index:u64,record_prior_original:u64,record_prior_start:u64)
+  r9:u64,r10:u64,r11:u64 = call(record_source,record_index) {"function":"hay_record"}
+  k12:usize = const() {"value":160}
+  r13:u64 = call(record_source,k12) {"function":"read_word"}
+  v14:u64 = int.add.wrap(r13,record_index)
+  k15:u64 = const() {"value":0}
+  v16:bool = compare.eq(v14,k15)
+  v17:bool = compare.eq(r10,k15)
+  v18:bool = compare.eq(r11,k15)
+  v19:bool = bool.and(v17,v18)
+  v20:bool = compare.eq(r10,record_prior_original)
+  v21:bool = compare.eq(r11,record_prior_start)
+  v22:bool = bool.and(v20,v21)
+  k23:u64 = const() {"value":1}
+  v24:u64 = int.add.wrap(record_prior_original,k23)
+  v25:bool = compare.eq(r10,v24)
+  v26:bool = compare.eq(r11,v14)
+  v27:bool = bool.and(v25,v26)
+  v28:bool = bool.or(v22,v27)
+  v29:bool = select(v16,v19,v28)
+  k30:usize = const() {"value":112}
+  r31:u64 = call(record_source,k30) {"function":"read_word"}
+  k32:u64 = const() {"value":1}
+  v33:u64 = int.sub.wrap(r31,k32)
+  v34:bool = compare.eq(v14,v33)
+  k35:bool = const() {"value":false}
+  v36:bool = compare.eq(v34,k35)
+  k37:usize = const() {"value":104}
+  r38:u64 = call(record_source,k37) {"function":"read_word"}
+  k39:u64 = const() {"value":1}
+  v40:u64 = int.sub.wrap(r38,k39)
+  v41:bool = compare.eq(r10,v40)
+  v42:bool = bool.or(v36,v41)
+  r43:bool = call(r9) {"function":"valid_scalar"}
+  k44:usize = const() {"value":104}
+  r45:u64 = call(record_source,k44) {"function":"read_word"}
+  v46:bool = compare.lt(r10,r45)
+  v47:bool = compare.le(r11,v14)
+  v48:u64 = int.sub.wrap(v14,r11)
+  k49:u64 = const() {"value":2}
+  v50:bool = compare.le(v48,k49)
+  v51:bool = bool.and(r43,v46)
+  v52:bool = bool.and(v51,v47)
+  v53:bool = bool.and(v52,v50)
+  v54:bool = bool.and(v53,v29)
+  v55:bool = bool.and(v54,v42)
+  branch v55 next_hay(record_source,record_index,r10,r11) no()
+block next_hay(next_hay_source:readbuf,next_hay_index:u64,next_hay_prior_original:u64,next_hay_prior_start:u64)
+  k56:u64 = const() {"value":1}
+  v57:u64 = int.add.wrap(next_hay_index,k56)
+  jump hay(next_hay_source,v57,next_hay_prior_original,next_hay_prior_start)
+block needle(needle_source:readbuf,needle_index:u64)
+  k58:usize = const() {"value":40}
+  r59:u64 = call(needle_source,k58) {"function":"read_word"}
+  v60:bool = compare.lt(needle_index,r59)
+  branch v60 scalar(needle_source,needle_index) yes()
+block scalar(scalar_source:readbuf,scalar_index:u64)
+  r61:u64 = call(scalar_source,scalar_index) {"function":"needle_scalar"}
+  r62:bool = call(r61) {"function":"valid_scalar"}
+  branch r62 next_needle(scalar_source,scalar_index) no()
+block next_needle(next_needle_source:readbuf,next_needle_index:u64)
+  k63:u64 = const() {"value":1}
+  v64:u64 = int.add.wrap(next_needle_index,k63)
+  jump needle(next_needle_source,v64)
+block yes()
+  k65:bool = const() {"value":true}
+  ret(k65)
+block no()
+  k66:bool = const() {"value":false}
+  ret(k66)
+end
+fn mapping_count(second:u64,third:u64) -> (u64) effects(trap) entry(entry)
+block entry(second:u64,third:u64)
+  k0:u64 = const() {"value":0}
+  v1:bool = compare.eq(third,k0)
+  k2:u64 = const() {"value":2}
+  k3:u64 = const() {"value":3}
+  v4:u64 = select(v1,k2,k3)
+  k5:u64 = const() {"value":0}
+  v6:bool = compare.eq(second,k5)
+  k7:u64 = const() {"value":1}
+  v8:u64 = select(v6,k7,v4)
+  ret(v8)
+end
+fn emit_hay_record(output:mutbuf,index:u64,scalar:u64,original:u64,start:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,index:u64,scalar:u64,original:u64,start:u64)
+  k0:u64 = const() {"value":384}
+  k1:u64 = const() {"value":24}
+  v2:u64 = int.mul.wrap(index,k1)
+  v3:u64 = int.add.wrap(k0,v2)
+  k4:u64 = const() {"value":0}
+  v5:u64 = int.add.wrap(v3,k4)
+  v6:usize = int.cast(v5) {"mode":"checked"}
+  _ = call(output,v6,scalar) {"function":"write_word"}
+  k7:u64 = const() {"value":8}
+  v8:u64 = int.add.wrap(v3,k7)
+  v9:usize = int.cast(v8) {"mode":"checked"}
+  _ = call(output,v9,original) {"function":"write_word"}
+  k10:u64 = const() {"value":16}
+  v11:u64 = int.add.wrap(v3,k10)
+  v12:usize = int.cast(v11) {"mode":"checked"}
+  _ = call(output,v12,start) {"function":"write_word"}
+  ret()
+end
+fn emit_hay_mapping(output:mutbuf,index:u64,original:u64,start:u64,first:u64,second:u64,third:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,index:u64,original:u64,start:u64,first:u64,second:u64,third:u64)
+  _ = call(output,index,first,original,start) {"function":"emit_hay_record"}
+  k0:u64 = const() {"value":0}
+  v1:bool = compare.ne(second,k0)
+  branch v1 second(output,index,original,start,second,third) done()
+block second(second_output:mutbuf,second_index:u64,second_original:u64,second_start:u64,second_second:u64,second_third:u64)
+  k2:u64 = const() {"value":1}
+  v3:u64 = int.add.wrap(second_index,k2)
+  _ = call(second_output,v3,second_second,second_original,second_start) {"function":"emit_hay_record"}
+  k4:u64 = const() {"value":0}
+  v5:bool = compare.ne(second_third,k4)
+  branch v5 third(second_output,second_index,second_original,second_start,second_third) done()
+block third(third_output:mutbuf,third_index:u64,third_original:u64,third_start:u64,third_third:u64)
+  k6:u64 = const() {"value":2}
+  v7:u64 = int.add.wrap(third_index,k6)
+  _ = call(third_output,v7,third_third,third_original,third_start) {"function":"emit_hay_record"}
+  jump done()
+block done()
+  ret()
+end
+fn scan_hay(source:readbuf,output:mutbuf,emit:bool) -> (u64,u64) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,emit:bool)
+  k0:usize = const() {"value":24}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  v2:usize = int.cast(r1) {"mode":"checked"}
+  k3:usize = const() {"value":0}
+  k4:u64 = const() {"value":0}
+  k5:u64 = const() {"value":0}
+  jump loop(source,output,emit,v2,k3,k4,k5)
+block loop(loop_source:readbuf,loop_output:mutbuf,loop_emit:bool,loop_length:usize,loop_index:usize,loop_original:u64,loop_lower:u64)
+  v6:bool = compare.lt(loop_index,loop_length)
+  branch v6 scalar(loop_source,loop_output,loop_emit,loop_length,loop_index,loop_original,loop_lower) done(loop_original,loop_lower)
+block scalar(scalar_source:readbuf,scalar_output:mutbuf,scalar_emit:bool,scalar_length:usize,scalar_index:usize,scalar_original:u64,scalar_lower:u64)
+  r7:u64,r8:usize,r9:bool = call(scalar_source,scalar_index,scalar_length) {"function":"decode_scalar"}
+  r10:u64,r11:u64,r12:u64 = call(r7) {"function":"lower_scalar"}
+  r13:u64 = call(r11,r12) {"function":"mapping_count"}
+  v14:usize = int.add.wrap(scalar_index,r8)
+  k15:u64 = const() {"value":1}
+  v16:u64 = int.add.wrap(scalar_original,k15)
+  v17:u64 = int.add.wrap(scalar_lower,r13)
+  branch scalar_emit write(scalar_source,scalar_output,scalar_emit,scalar_length,v14,scalar_original,scalar_lower,v16,v17,r10,r11,r12) loop(scalar_source,scalar_output,scalar_emit,scalar_length,v14,v16,v17)
+block write(write_source:readbuf,write_output:mutbuf,write_emit:bool,write_length:usize,write_next_index:usize,write_original:u64,write_lower:u64,write_next_original:u64,write_next_lower:u64,write_first:u64,write_second:u64,write_third:u64)
+  k18:usize = const() {"value":104}
+  r19:u64 = call(write_source,k18) {"function":"read_word"}
+  v20:u64 = int.add.wrap(r19,write_original)
+  k21:usize = const() {"value":112}
+  r22:u64 = call(write_source,k21) {"function":"read_word"}
+  v23:u64 = int.add.wrap(r22,write_lower)
+  _ = call(write_output,write_lower,v20,v23,write_first,write_second,write_third) {"function":"emit_hay_mapping"}
+  jump loop(write_source,write_output,write_emit,write_length,write_next_index,write_next_original,write_next_lower)
+block done(done_original:u64,done_lower:u64)
+  ret(done_original,done_lower)
+end
+fn emit_needle_command(output:mutbuf,emit:bool,index:u64,kind:u64,slot:u64,scalar:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,emit:bool,index:u64,kind:u64,slot:u64,scalar:u64)
+  branch emit write(output,index,kind,slot,scalar) done()
+block write(write_output:mutbuf,write_index:u64,write_kind:u64,write_slot:u64,write_scalar:u64)
+  k0:u64 = const() {"value":384}
+  k1:u64 = const() {"value":24}
+  v2:u64 = int.mul.wrap(write_index,k1)
+  v3:u64 = int.add.wrap(k0,v2)
+  k4:u64 = const() {"value":0}
+  v5:u64 = int.add.wrap(v3,k4)
+  v6:usize = int.cast(v5) {"mode":"checked"}
+  _ = call(write_output,v6,write_kind) {"function":"write_word"}
+  k7:u64 = const() {"value":8}
+  v8:u64 = int.add.wrap(v3,k7)
+  v9:usize = int.cast(v8) {"mode":"checked"}
+  _ = call(write_output,v9,write_slot) {"function":"write_word"}
+  k10:u64 = const() {"value":16}
+  v11:u64 = int.add.wrap(v3,k10)
+  v12:usize = int.cast(v11) {"mode":"checked"}
+  _ = call(write_output,v12,write_scalar) {"function":"write_word"}
+  jump done()
+block done()
+  ret()
+end
+fn emit_needle_mapping(output:mutbuf,emit:bool,index:u64,slot:u64,first:u64,second:u64,third:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,emit:bool,index:u64,slot:u64,first:u64,second:u64,third:u64)
+  k0:u64 = const() {"value":0}
+  _ = call(output,emit,index,k0,slot,first) {"function":"emit_needle_command"}
+  k1:u64 = const() {"value":0}
+  v2:bool = compare.ne(second,k1)
+  branch v2 second(output,emit,index,slot,second,third) done()
+block second(second_output:mutbuf,second_emit:bool,second_index:u64,second_slot:u64,second_second:u64,second_third:u64)
+  k3:u64 = const() {"value":1}
+  v4:u64 = int.add.wrap(second_index,k3)
+  k5:u64 = const() {"value":0}
+  k6:u64 = const() {"value":1}
+  v7:u64 = int.add.wrap(second_slot,k6)
+  _ = call(second_output,second_emit,v4,k5,v7,second_second) {"function":"emit_needle_command"}
+  k8:u64 = const() {"value":0}
+  v9:bool = compare.ne(second_third,k8)
+  branch v9 third(second_output,second_emit,second_index,second_slot,second_third) done()
+block third(third_output:mutbuf,third_emit:bool,third_index:u64,third_slot:u64,third_third:u64)
+  k10:u64 = const() {"value":2}
+  v11:u64 = int.add.wrap(third_index,k10)
+  k12:u64 = const() {"value":0}
+  k13:u64 = const() {"value":2}
+  v14:u64 = int.add.wrap(third_slot,k13)
+  _ = call(third_output,third_emit,v11,k12,v14,third_third) {"function":"emit_needle_command"}
+  jump done()
+block done()
+  ret()
+end
+fn needle_properties(scalar:u64) -> (bool,bool) effects(trap) entry(entry)
+block entry(scalar:u64)
+  r0:bool = call(scalar) {"function":"case_ignorable"}
+  branch r0 ignorable() other(scalar)
+block ignorable()
+  k1:bool = const() {"value":true}
+  k2:bool = const() {"value":false}
+  ret(k1,k2)
+block other(other_scalar:u64)
+  k3:bool = const() {"value":false}
+  r4:bool = call(other_scalar) {"function":"is_cased"}
+  ret(k3,r4)
+end
+fn resolve_sigma(output:mutbuf,emit:bool,commands:u64,flags:u64,slot:u64,ignorable:bool,cased:bool) -> (u64,u64,u64) effects(write,trap) entry(entry)
+block entry(output:mutbuf,emit:bool,commands:u64,flags:u64,slot:u64,ignorable:bool,cased:bool)
+  branch ignorable keep(commands,flags,slot) boundary(output,emit,commands,flags,slot,cased)
+block keep(keep_commands:u64,keep_flags:u64,keep_slot:u64)
+  ret(keep_commands,keep_flags,keep_slot)
+block boundary(boundary_output:mutbuf,boundary_emit:bool,boundary_commands:u64,boundary_flags:u64,boundary_slot:u64,boundary_cased:bool)
+  k0:u64 = const() {"value":2}
+  v1:u64 = bit.and(boundary_flags,k0)
+  k2:u64 = const() {"value":0}
+  v3:bool = compare.ne(v1,k2)
+  k4:bool = const() {"value":false}
+  v5:bool = compare.eq(boundary_cased,k4)
+  v6:bool = bool.and(v3,v5)
+  branch v6 replace(boundary_output,boundary_emit,boundary_commands,boundary_flags,boundary_slot) clear(boundary_commands,boundary_flags)
+block replace(replace_output:mutbuf,replace_emit:bool,replace_commands:u64,replace_flags:u64,replace_slot:u64)
+  k7:u64 = const() {"value":1}
+  k8:u64 = const() {"value":962}
+  _ = call(replace_output,replace_emit,replace_commands,k7,replace_slot,k8) {"function":"emit_needle_command"}
+  k9:u64 = const() {"value":1}
+  v10:u64 = int.add.wrap(replace_commands,k9)
+  jump clear(v10,replace_flags)
+block clear(clear_commands:u64,clear_flags:u64)
+  k11:u64 = const() {"value":1}
+  v12:u64 = bit.and(clear_flags,k11)
+  k13:u64 = const() {"value":0}
+  ret(clear_commands,v12,k13)
+end
+fn finish_needle_context(source:readbuf,output:mutbuf,emit:bool,commands:u64,flags:u64,slot:u64) -> (u64,u64,u64) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,emit:bool,commands:u64,flags:u64,slot:u64)
+  k0:usize = const() {"value":16}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  k2:u64 = const() {"value":1}
+  v3:bool = compare.eq(r1,k2)
+  branch v3 end(output,emit,commands,flags,slot) keep(commands,flags,slot)
+block end(end_output:mutbuf,end_emit:bool,end_commands:u64,end_flags:u64,end_slot:u64)
+  k4:u64 = const() {"value":2}
+  v5:u64 = bit.and(end_flags,k4)
+  k6:u64 = const() {"value":0}
+  v7:bool = compare.ne(v5,k6)
+  branch v7 replace(end_output,end_emit,end_commands,end_slot) clear(end_commands)
+block replace(replace_output:mutbuf,replace_emit:bool,replace_commands:u64,replace_slot:u64)
+  k8:u64 = const() {"value":1}
+  k9:u64 = const() {"value":962}
+  _ = call(replace_output,replace_emit,replace_commands,k8,replace_slot,k9) {"function":"emit_needle_command"}
+  k10:u64 = const() {"value":1}
+  v11:u64 = int.add.wrap(replace_commands,k10)
+  jump clear(v11)
+block clear(clear_commands:u64)
+  k12:u64 = const() {"value":0}
+  k13:u64 = const() {"value":0}
+  ret(clear_commands,k12,k13)
+block keep(keep_commands:u64,keep_flags:u64,keep_slot:u64)
+  ret(keep_commands,keep_flags,keep_slot)
+end
+fn write_context(output:mutbuf,emit:bool,flags:u64,slot:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,emit:bool,flags:u64,slot:u64)
+  branch emit write(output,flags,slot) done()
+block write(write_output:mutbuf,write_flags:u64,write_slot:u64)
+  k0:u64 = const() {"value":1}
+  v1:u64 = bit.and(write_flags,k0)
+  k2:usize = const() {"value":200}
+  _ = call(write_output,k2,v1) {"function":"write_word"}
+  k3:u64 = const() {"value":1}
+  v4:u64 = int.shr.checked(write_flags,k3)
+  k5:usize = const() {"value":208}
+  _ = call(write_output,k5,v4) {"function":"write_word"}
+  k6:usize = const() {"value":216}
+  _ = call(write_output,k6,write_slot) {"function":"write_word"}
+  jump done()
+block done()
+  ret()
+end
