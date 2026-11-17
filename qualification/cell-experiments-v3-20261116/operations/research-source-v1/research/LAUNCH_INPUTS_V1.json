@@ -1,0 +1,93 @@
+{
+  "actual_launch_owner": "root",
+  "actual_run_started": false,
+  "base_model_digest": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+  "baseline_freeze_sha256": "02fa20ad7ce2d74d8631dd5a6ac1a2b8a5496a8632244fcdf4676eb1c21aad2c",
+  "baseline_result_sha256": "33d0d5359edf547afa6d5de36a9db5f691b14a5eca4387c0ebcdd36b6d6f550d",
+  "candidate_selected": null,
+  "circuit_qualified": false,
+  "current_protocol_sha256": "1f3171699624a18f705728f495d81c51c4909d2e7c3a6950df14335b31cdc0ee",
+  "diagnostic_freeze_sha256": "93dff768e527af37551a71b3cf89c47b2b8ad83dae461e11d7a8214cfc0e5ddc",
+  "diagnostic_source_sha256": "c43ff3c5f9bc99c5825a96e0f4b4020d361489d2ffa3ae31bffe49f03ddb6f91",
+  "environment": {
+    "HF_HUB_DISABLE_TELEMETRY": "1",
+    "HF_HUB_OFFLINE": "1",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "TOKENIZERS_PARALLELISM": "false",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "historical_design_original_bytes_restored": false,
+  "historical_design_sha256": "d4aa19925cd347602e853570c2ff62c1b7744597aaa70c9f2cc18a883162738f",
+  "native_cell_adoption": false,
+  "new_C": false,
+  "preflight_argv": [
+    "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+    "-I",
+    "-B",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-sft-v1-source/run_research_sft_v1.py",
+    "--artifact-root",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a",
+    "--helper-directory",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/e1e2-operation-helpers-04",
+    "--source",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-03",
+    "--readiness-directory",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/probe-qwen-parent-03",
+    "--diagnostic-freeze",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-diagnostic-v1-source/QWEN_RESEARCH_DIAGNOSTIC_FREEZE_01.json",
+    "--diagnostic-freeze-sha256",
+    "93dff768e527af37551a71b3cf89c47b2b8ad83dae461e11d7a8214cfc0e5ddc",
+    "--output",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-sft-preflight-01",
+    "--mode",
+    "preflight"
+  ],
+  "preflight_output_is_separate_and_not_reused": true,
+  "proof_of_useful_work_eligible": false,
+  "run_argv": [
+    "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+    "-I",
+    "-B",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-sft-v1-source/run_research_sft_v1.py",
+    "--artifact-root",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a",
+    "--helper-directory",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/e1e2-operation-helpers-04",
+    "--source",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-03",
+    "--readiness-directory",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/probe-qwen-parent-03",
+    "--diagnostic-freeze",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-diagnostic-v1-source/QWEN_RESEARCH_DIAGNOSTIC_FREEZE_01.json",
+    "--diagnostic-freeze-sha256",
+    "93dff768e527af37551a71b3cf89c47b2b8ad83dae461e11d7a8214cfc0e5ddc",
+    "--output",
+    "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-sft-01",
+    "--mode",
+    "run"
+  ],
+  "runtime_modules": {
+    "research_sft_contract_v1.py": {
+      "bytes": 19385,
+      "sha256": "2ae7c2496ee58ce71cbda7a6d245e65550a76104cbc1359aca06d005f6b16f2c"
+    },
+    "research_sft_execution_v1.py": {
+      "bytes": 20692,
+      "sha256": "704e7a7e157412d9ce8a7523c31ed635269ead41d40f1720c591dccc4d67f2cd"
+    },
+    "research_sft_train_v1.py": {
+      "bytes": 12545,
+      "sha256": "a95ccfde26ebb3f32ef1e3fb2df3f1b4d35ab27b4ae42edf8858dc315d2f9972"
+    },
+    "run_research_sft_v1.py": {
+      "bytes": 24716,
+      "sha256": "0fba8d8800ba3012a55055d7a84c4bfa156d0f96c64e0bd488211f188cbe256c"
+    }
+  },
+  "runtime_root": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a",
+  "schema": "hepta.research-sft-launch-inputs.v1",
+  "scientific_confirmation_qualified": false,
+  "source_target": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-sft-v1-source",
+  "workspace_root": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a"
+}
