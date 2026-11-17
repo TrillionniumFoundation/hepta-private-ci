@@ -21,10 +21,13 @@ jobs:
     timeout-minutes: 60
     env:
       CARGO_BUILD_JOBS: "2"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/optimizer-encoder-target-${{ github.run_id }}-${{ github.run_attempt }}
-      HEPTA_VALIDATION_OUTPUT: ${{ runner.temp }}/optimizer-encoder-records-${{ github.run_id }}-${{ github.run_attempt }}
-      HEPTA_PUBLIC_TOOL_OUTPUT: ${{ runner.temp }}/optimizer-encoder-public-tools-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
+      - name: Set isolated validation directories on the runner
+        run: |
+          printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/optimizer-encoder-target-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+          printf 'HEPTA_VALIDATION_OUTPUT=%s\n' "$RUNNER_TEMP/optimizer-encoder-records-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+          printf 'HEPTA_PUBLIC_TOOL_OUTPUT=%s\n' "$RUNNER_TEMP/optimizer-encoder-public-tools-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+
       - name: Check out the actual push commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
