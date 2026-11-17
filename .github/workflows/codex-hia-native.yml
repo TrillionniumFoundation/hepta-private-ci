@@ -863,6 +863,13 @@ jobs:
             -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments -p codex-utils-template -p codex-execpolicy --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
 
+      - name: Verify exact file-update dependency source admission
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_file_update_dependency_admission.py -v \
+            2>&1 | tee "$RUNNER_TEMP/hia-file-update-dependency-admission.log"
+
       - name: Check out complete original file-update owner
         if: ${{ always() && steps.build.outcome == 'success' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -1536,6 +1543,7 @@ jobs:
             {0}/hia-file-update-caller/original/
             {0}/hia-file-update-caller.json
             {0}/hia-file-update-caller.log
+            {0}/hia-file-update-dependency-admission.log
             {0}/hia-file-update-caller/cases.json
             {0}/hia-file-update-caller/original-source-manifest.json
             {0}/hia-file-update-caller/metadata-source-inputs.json
