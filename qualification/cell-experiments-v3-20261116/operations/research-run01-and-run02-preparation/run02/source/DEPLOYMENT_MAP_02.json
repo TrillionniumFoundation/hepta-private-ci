@@ -1,0 +1,36 @@
+{
+  "archive_entry": "operations/archive_qwen_research_v1_03.py",
+  "artifact_root": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a",
+  "create_only": true,
+  "deployment_performed": false,
+  "diagnostic_rules_sha256": "f50ced9146611fc07c4638a35f204e94f1ebf0b5e6c4ab70ac9667095135c1bc",
+  "files": {
+    "operations/archive_qwen_research_v1_03.py": {
+      "bytes": 20170,
+      "sha256": "251e08cae5fb55df3872ab45619e1b22d0177a0c8d1a0b8b200ddcfd237ab462"
+    },
+    "operations/launch_qwen_research_owned_v1_02.py": {
+      "bytes": 9063,
+      "sha256": "205a72dbe8adab915c8f7c9225a3d4effb0f399f80ba167cd5786213aa7eda00"
+    },
+    "research-diagnostic-v1-source-02/QWEN_RESEARCH_DIAGNOSTIC_FREEZE_02.json": {
+      "bytes": 3861,
+      "sha256": "f50ced9146611fc07c4638a35f204e94f1ebf0b5e6c4ab70ac9667095135c1bc"
+    },
+    "research-diagnostic-v1-source-02/qwen_research_diagnostic_v1.py": {
+      "bytes": 46995,
+      "sha256": "28d82e170ab0720fb6b453275a80b4bf1eebc1e987ed1ae3bd935bb00a77a071"
+    }
+  },
+  "postrun_launch_freeze": "operations/RESEARCH_POSTRUN_LAUNCH_FREEZE_02.json",
+  "postrun_output": "research-diagnostic-02",
+  "postrun_owned": "owned-research-diagnostic-02",
+  "research_entry_unchanged": "research-sft-v1-source/run_research_sft_v1.py",
+  "research_launch_freeze": "operations/RESEARCH_LAUNCH_FREEZE_02.json",
+  "research_output": "research-sft-02",
+  "research_owned": "owned-research-sft-02",
+  "root_freezes_and_preflight_required_before_actual_launch": true,
+  "runtime_python": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+  "schema": "hepta.research-reschedule-deployment-map.v1",
+  "wrapper_sha256": "205a72dbe8adab915c8f7c9225a3d4effb0f399f80ba167cd5786213aa7eda00"
+}
