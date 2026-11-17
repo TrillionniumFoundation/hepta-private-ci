@@ -3,7 +3,7 @@
   "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
   "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
   "audited_name_union": 29,
-  "current_opt_in_linked_kernels": 28,
+  "current_opt_in_linked_kernels": 29,
   "retained_oracle_only_kernels": 3,
   "entry_profiles": {
     "token_budget": "u64-pair-to-u64-v1",
@@ -471,6 +471,23 @@
       "production_entry": "codex_utils_output_truncation::truncate_function_output_items_with_policy; Core history/code-mode callers through codex-core/hia-native and the CLI feature",
       "runtime_qualified_on_joint_tree": false,
       "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "format_env_display",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/format_env_display.hepta",
+      "source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+      "source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc",
+      "source_sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+      "production_link_sites": [
+        "codex-rs/utils/cli/build.rs"
+      ],
+      "production_entry": "codex_utils_cli::format_env_display; two CLI MCP views and the TUI MCP environment view",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -536,9 +553,10 @@
   },
   "count_is_not_a_production_coverage_claim": true,
   "current_build_or_runtime_executed": false,
-  "current_build_module_count": 31,
+  "current_build_module_count": 32,
   "modules_added_after_audited_union": [
     "output_lines",
-    "output_item_budget"
+    "output_item_budget",
+    "format_env_display"
   ]
 }

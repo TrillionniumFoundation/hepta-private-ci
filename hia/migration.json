@@ -82,7 +82,7 @@
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
     "qualification_status": "source_increment_requires_fresh_current_tree_qualification",
     "remaining_work": [
-      "Build the exact thirty-one-module lock from fresh B1/B2/B3 receipts and qualify output_item_budget and retained output_lines raw/public/installed consumers. Previous29/30-lock receipts are not reusable.",
+      "Build the exact full-native32 lock with fresh B1/B2/B3 and all32 module/link bindings; qualify the new format_env_display and every retained raw/public/installed gate. Earlier29/30/31 receipts are not reusable.",
       "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
       "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
@@ -100,7 +100,7 @@
     "current_report": "hia/verification.json#ci_qualification_at_revision",
     "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report.",
     "previous_qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
-    "current_source_module_count": 31,
+    "current_source_module_count": 32,
     "current_lock_build_qualified": false
   },
   "candidate_modules": [
@@ -1643,6 +1643,50 @@
         "codex-rs/utils/output-truncation/src/truncate_tests.rs",
         "codex-rs/core/src/context_manager/history_tests.rs",
         "codex-rs/core/src/tools/code_mode/mod.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false
+      }
+    },
+    {
+      "id": "format_env_display",
+      "hia_source": "hia/format_env_display.hepta",
+      "hia_source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+      "hia_source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc",
+      "hia_source_sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+      "source_path": "codex-rs/utils/cli/src/format_env_display.rs",
+      "source_revision": "9a310390e84372c2d3fa33e1614a531e1d50a7e7",
+      "source_git_blob": "714b44c312a6a9de6b6c3ec0c20be6e3b4a7cf37",
+      "source_function": "format_env_display",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_format_env_display",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/format_env_display_buffer_contract.json",
+        "transport": "Five bounded operations: SortInit/SortResume/Mask/JoinInit/Join. Compare chunks are at most4096 bytes per key; the private sort/mask/join states have18/3/7 u64 words. Full key and output lengths use checked u64 counters, not the u32 status."
+      },
+      "behavior": {
+        "hia_owns": "Complete iterative heap ordering and byte comparison, index swap decisions, mask bytes, separators and join progress.",
+        "rust_retains": "Owned key/index/string containers, mechanical swaps and bounded transport, each variable AsRef exactly once at its original position after map formatting, and complete-part/final UTF-8 conversion.",
+        "map_values_read": false,
+        "rust_sort_comparator_or_fallback": false,
+        "complete_cli_tui_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_format_env_display_abi.py",
+        "hia/tests/format_env_display_oracle_inputs.json",
+        "codex-rs/utils/cli/src/format_env_display.rs",
+        "codex-rs/utils/cli/src/format_env_display_additional_tests.rs",
         "hia/tests/test_installed_codex.py"
       ],
       "validation": {
@@ -3441,13 +3485,15 @@
       "command_dispatch",
       "network_host",
       "output_lines",
-      "output_item_budget"
+      "output_item_budget",
+      "format_env_display"
     ],
     "actual_opt_in_link_modules": [
       "allowed_prefixes",
       "ascii_json_fragment",
       "command_dispatch",
       "file_update",
+      "format_env_display",
       "markdown_location",
       "metric_tag",
       "network_domains",
@@ -3497,10 +3543,11 @@
     "current_tree_qualified": false,
     "pending_modules": [
       "output_lines",
-      "output_item_budget"
+      "output_item_budget",
+      "format_env_display"
     ],
-    "new_kernel_source_revision": "3f18f08d19d59a49e2fbe19a85b306db14136abe",
-    "new_kernel_source_git_blob": "fa974b63d1be45a765fe62d6c12411b0a130b8b9"
+    "new_kernel_source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+    "new_kernel_source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc"
   },
   "source_owner_histories": {
     "17": {
@@ -3570,5 +3617,121 @@
       ]
     },
     "qualification_transferred_to_current31": false
+  },
+  "previous_source_increment_31": {
+    "source_revision": "9a310390e84372c2d3fa33e1614a531e1d50a7e7",
+    "source_migration": {
+      "bytes": 159272,
+      "sha256": "731c9bd9e65126ee67c4b27bbd7ad39fc10f2e37b798f24e5d8594c79f9ef88e",
+      "git_blob": "a5d585946148d556d197b4159e68bd86b8a451ab"
+    },
+    "toolchain_current_source_module_count": 31,
+    "toolchain_remaining_work": [
+      "Build the exact thirty-one-module lock from fresh B1/B2/B3 receipts and qualify output_item_budget and retained output_lines raw/public/installed consumers. Previous29/30-lock receipts are not reusable.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_link_gate": {
+      "helper": "hia/cargo_build.rs",
+      "builder": "hia/build.py",
+      "tests": "hia/tests/test_build_receipt.py",
+      "status": "source_increment_requires_fresh_build_and_link_qualification",
+      "accepted_build_modules": [
+        "seek_sequence",
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "source_file",
+        "file_update",
+        "parser",
+        "patch_effects",
+        "unified_diff",
+        "patch_summary",
+        "patch_application",
+        "patch_standalone",
+        "uuid_find",
+        "template_parse",
+        "template_render",
+        "template_index",
+        "uuid_matches",
+        "template_parser",
+        "prefix_match",
+        "prefix_admission",
+        "policy_summary",
+        "network_domains",
+        "allowed_prefixes",
+        "command_dispatch",
+        "network_host",
+        "output_lines",
+        "output_item_budget"
+      ],
+      "actual_opt_in_link_modules": [
+        "allowed_prefixes",
+        "ascii_json_fragment",
+        "command_dispatch",
+        "file_update",
+        "markdown_location",
+        "metric_tag",
+        "network_domains",
+        "network_host",
+        "output_item_budget",
+        "output_lines",
+        "parser",
+        "patch_application",
+        "patch_effects",
+        "patch_standalone",
+        "patch_summary",
+        "policy_summary",
+        "prefix_admission",
+        "prefix_match",
+        "seek_sequence",
+        "source_file",
+        "template_index",
+        "template_parse",
+        "template_render",
+        "token_budget",
+        "truncate",
+        "unified_diff",
+        "utf8_prefix",
+        "uuid_find"
+      ],
+      "entry_profiles": {
+        "token_budget": "u64-pair-to-u64-v1",
+        "prefix_admission": "u64-pair-to-u64-v1"
+      },
+      "feature_off_requires_artifacts": false,
+      "unsupported_native_targets": "build_error",
+      "runtime_shared_library_requirement": false,
+      "build_report_sha256": null,
+      "checks_passed": null,
+      "existing_link_or_build_reports_reusable_without_regeneration": false,
+      "build_report_payload_independently_read": false,
+      "current_report": "hia/verification.json#ci_qualification_at_revision",
+      "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+      "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+    },
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget"
+      ],
+      "new_kernel_source_revision": "3f18f08d19d59a49e2fbe19a85b306db14136abe",
+      "new_kernel_source_git_blob": "fa974b63d1be45a765fe62d6c12411b0a130b8b9"
+    },
+    "qualification_transferred_to_current32": false
   }
 }

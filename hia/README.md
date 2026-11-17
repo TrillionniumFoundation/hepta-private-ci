@@ -1,6 +1,57 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: output-item budget decisions
+## Current source increment: bounded environment display
+
+The complete format_env_display source unit is authored with a borrowed v8
+HIA entry. HIA owns iterative heap sorting, byte comparison, masks, separators
+and join progress. Rust retains owned containers, mechanical swaps, bounded
+transport and complete-string UTF-8 validation. Map keys finish before each
+variable's original AsRef call, once per variable; the final join follows all
+variables. Empty and duplicate variable names remain observable. Map values
+are not read, and there is no Rust sorting/comparison fallback.
+
+The current configuration contains **32 modules and 29 opt-in caller kernels**:
+30 borrowed-buffer profiles and the unchanged two scalar profiles. Six Cargo
+build entries account for the links (9 + 7 + 3 + 8 + 1 + 1). The new owner is
+codex-utils-cli; the CLI's two MCP views and the TUI's MCP environment view
+continue to call its public function. These are source counts, not runtime
+coverage or qualification claims.
+
+The kernel's complete source origin is
+917b786fbf6f0d25a19fe5748074f59f997e0e04. The
+[buffer contract](format_env_display_buffer_contract.json) binds the exact
+kernel bytes and five bounded operations. Chunks are at most 4096 bytes per
+key; full key/output lengths are carried separately. This protocol avoids
+using a single frame or the u32 status to bound the public function's output.
+The configured seed-wrapper cap is not a claim that every B3 production path
+has that cap.
+
+The raw harness contains 231 authored literal frames: 71 calls in 22 complete
+streams and 160 standalone cases. Ten cases use logical large lengths and do
+not represent executed giant-payload workloads. The public source retains all
+four original methods and five complete equalities, and adds nine methods,
+including a comparison of two keys with a shared prefix over 1 MiB. No new
+kernel, default/native public test or current32 build has been executed here.
+
+The workflow retains all prior owner groups and selected Core methods. It
+adds only the new raw gate and the new owner's default/native crate tests;
+the existing four-owner and later consumer groups are not duplicated. The
+network, output-lines and output-item-budget raw commands select full-native32;
+the new environment raw gate requires it. Historical exact29/30/31 profiles
+remain closed sets with their original defaults. Installed CLI checks require
+28 linked symbols, plus one library-only and three retained oracle-only roles
+with their existing distinctions.
+
+Both workflow jobs retain their 60-minute budgets. Fresh B1/B2/B3, all32
+module/artifact bindings, six-owner static links and complete original oracles
+are pending. The workflow still has only original/current network baselines;
+the separate mandatory original/native16/current gate remains unexecuted.
+Earlier31/30/483 qualification records are preserved as historical objects.
+Current runtime, default release, workspace, performance, independent artifact
+custody and retirement flags remain false. The thirteen pending and two partial
+capability groups are unchanged.
+
+## Earlier source increment: output-item budget decisions
 
 The authored `output_item_budget` module moves only numeric per-item budget
 state and keep/omit/truncate decisions into HIA. Rust retains the original
@@ -122,13 +173,13 @@ Codex retains compiler pin `0de5657a80f96b138525ac7ee9ce11712a83a10d`.
 The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
 nineteen-name branch with the HIA scope of
 `74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
-names. The later source increments add `output_lines` and `output_item_budget`
-for 31 modules. Five Cargo build entries configure 28 opt-in links
-(9 + 7 + 3 + 8 + 1) when `hia-native` is enabled.
+names. The later source increments add `output_lines`, `output_item_budget`
+and `format_env_display` for 32 modules. Six Cargo build entries configure
+29 opt-in links (9 + 7 + 3 + 8 + 1 + 1) when `hia-native` is enabled.
 `utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
 kernels; their current production replacements are `utf8_prefix`, `uuid_find`
 and `template_parse`. There are two scalar profiles, `token_budget` and
-`prefix_admission`; the other 29 entries retain the borrowed
+`prefix_admission`; the other 30 entries retain the borrowed
 buffer profile. See `joint_module_roles.json` for source, role, replacement and
 link sites. Names, configured links, algorithms and observed calls are distinct
 counts.
