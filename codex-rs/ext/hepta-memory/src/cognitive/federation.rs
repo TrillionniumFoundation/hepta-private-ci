@@ -1259,6 +1259,10 @@ mod tests {
         let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
         // Grant and physical send use the same native path carried by the turn URI.
         let workspace = workspace_uri.to_path_buf();
+        assert!(
+            workspace.is_absolute(),
+            "provider workspace must stay absolute"
+        );
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
