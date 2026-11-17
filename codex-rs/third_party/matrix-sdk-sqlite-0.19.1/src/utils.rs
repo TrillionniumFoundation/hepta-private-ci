@@ -33,6 +33,7 @@ use crate::{
     OpenStoreError, RuntimeConfig, Secret,
     connection::Connection as SqliteAsyncConn,
     error::{Error, Result},
+    open_diagnostics::{OpenPhase, record_open_phase},
     store_cipher::{prepare_store_cipher, run_cipher_work},
 };
 
@@ -599,13 +600,16 @@ pub(crate) trait SqliteKeyValueStoreAsyncConnExt: SqliteAsyncConnExt {
     ) -> Result<StoreCipher, OpenStoreError> {
         const STORAGE_KEY: &str = "cipher";
 
+        record_open_phase(OpenPhase::CipherRead);
         let encrypted_cipher =
             self.get_kv(STORAGE_KEY).await.map_err(OpenStoreError::LoadCipher)?;
 
+        record_open_phase(OpenPhase::CipherWait);
         let (cipher, pending_export) =
             run_cipher_work(move || prepare_store_cipher(secret, encrypted_cipher)).await?;
 
         if let Some(export) = pending_export {
+            record_open_phase(OpenPhase::CipherSave);
             self.set_kv(STORAGE_KEY, export).await.map_err(OpenStoreError::SaveCipher)?;
         }
 

@@ -17,7 +17,11 @@ use matrix_sdk_store_encryption::StoreCipher;
 use vodozemac::base64_encode;
 use zeroize::Zeroize;
 
-use crate::{OpenStoreError, Secret, error::Result};
+use crate::{
+    OpenStoreError, Secret,
+    error::Result,
+    open_diagnostics::{WorkerPhase, capture_open_trace},
+};
 
 /// Keep CPU-bound cipher work off the async task that owns database access.
 /// Dropping this future cannot stop a started worker; callers retain all writes.
@@ -26,7 +30,22 @@ where
     T: Send + 'static,
     F: FnOnce() -> Result<T, OpenStoreError> + Send + 'static,
 {
-    tokio::task::spawn_blocking(work).await.map_err(OpenStoreError::CipherTask)?
+    let trace = capture_open_trace();
+    if let Some(trace) = &trace {
+        trace.worker(WorkerPhase::Submitted);
+    }
+    tokio::task::spawn_blocking(move || {
+        if let Some(trace) = &trace {
+            trace.worker(WorkerPhase::Started);
+        }
+        let result = work();
+        if let Some(trace) = &trace {
+            trace.worker(WorkerPhase::Returned);
+        }
+        result
+    })
+    .await
+    .map_err(OpenStoreError::CipherTask)?
 }
 
 /// Prepare the original cipher and, when needed, its encrypted database value.
