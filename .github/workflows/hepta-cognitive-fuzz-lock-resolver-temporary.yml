@@ -1,0 +1,569 @@
+# Resolver source anchor: 30c68cf4a28199d84fabaf64ba289234fc4ec31b
+name: Cognitive fuzz lock resolver
+
+on:
+  push:
+    branches:
+      - integration/hepta-rust-validation-20261117-59d82
+    paths:
+      - .github/workflows/hepta-cognitive-fuzz-lock-resolver-temporary.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-fuzz-lock-resolver-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-private-lock:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/integration/hepta-rust-validation-20261117-59d82' &&
+      github.event.deleted == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Set isolated source and record directories
+        run: |
+          printf 'HEPTA_RESOLVER_SOURCE=%s\n' "$RUNNER_TEMP/cognitive-fuzz-lock-source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+          printf 'HEPTA_RESOLVER_OUTPUT=%s\n' "$RUNNER_TEMP/cognitive-fuzz-lock-records-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+
+      - name: Check out the actual push commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install the existing Python runtime version
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Install the original fuzz resolver toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: nightly-2026-09-20
+
+      - name: Resolve only the lock in a verified private source copy
+        working-directory: codex-rs
+        run: |
+          python3 - <<'PY'
+          """Generate one fuzz lock in an exact private source copy, without building or testing."""
+
+          from datetime import datetime, timezone
+          import gzip
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import stat
+          import subprocess
+          import sys
+          import tarfile
+          import time
+          import tomllib
+
+          SOURCE = "30c68cf4a28199d84fabaf64ba289234fc4ec31b"
+          SOURCE_TREE = "cf5b84888a74a7e2314b561000bbd40024ff5103"
+          REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+          REF = "refs/heads/integration/hepta-rust-validation-20261117-59d82"
+          TOOLCHAIN = "nightly-2026-09-20"
+          LOCK = "codex-rs/hepta-cognitive-types/fuzz/Cargo.lock"
+          ROOT = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          OUTPUT = Path(os.environ["HEPTA_RESOLVER_OUTPUT"])
+          PRIVATE = Path(os.environ["HEPTA_RESOLVER_SOURCE"])
+          MAX_LOG_BYTES = 64 * 1024 * 1024
+
+
+          def now():
+              return datetime.now(timezone.utc).isoformat()
+
+
+          def git(*args):
+              return subprocess.check_output(
+                  ["git", "-c", "protocol.allow=never", *args],
+                  cwd=ROOT,
+                  env={**os.environ, "GIT_OPTIONAL_LOCKS": "0", "GIT_NO_LAZY_FETCH": "1"},
+              )
+
+
+          def save(path, value):
+              data = (json.dumps(value, sort_keys=True, indent=2) + "\n").encode()
+              if path.suffix == ".gz":
+                  data = gzip.compress(data, mtime=0)
+              temporary = path.with_name(path.name + ".pending")
+              with temporary.open("xb") as stream:
+                  stream.write(data)
+                  stream.flush()
+                  os.fsync(stream.fileno())
+              temporary.replace(path)
+              return {
+                  "path": path.name,
+                  "bytes": len(data),
+                  "sha256": hashlib.sha256(data).hexdigest(),
+              }
+
+
+          def file_identity(path):
+              before = path.lstat()
+              if stat.S_ISLNK(before.st_mode):
+                  data = os.fsencode(os.readlink(path))
+                  return {
+                      "mode": "120000",
+                      "bytes": len(data),
+                      "blob": hashlib.sha1(
+                          b"blob " + str(len(data)).encode() + b"\0" + data
+                      ).hexdigest(),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                  }
+              if not stat.S_ISREG(before.st_mode):
+                  raise ValueError(f"not a tracked regular file or link: {path}")
+              sha = hashlib.sha256()
+              blob = hashlib.sha1(b"blob " + str(before.st_size).encode() + b"\0")
+              total = 0
+              with path.open("rb") as stream:
+                  while chunk := stream.read(1024 * 1024):
+                      total += len(chunk)
+                      sha.update(chunk)
+                      blob.update(chunk)
+              after = path.lstat()
+              fields = ("st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")
+              if total != before.st_size or any(
+                  getattr(before, f) != getattr(after, f) for f in fields
+              ):
+                  raise ValueError(f"file changed while being recorded: {path}")
+              return {
+                  "mode": "100755" if before.st_mode & 0o111 else "100644",
+                  "bytes": total,
+                  "blob": blob.hexdigest(),
+                  "sha256": sha.hexdigest(),
+              }
+
+
+          def snapshot(output, name):
+              rows = []
+              for raw in git("ls-files", "--stage", "-z").split(b"\0"):
+                  if not raw:
+                      continue
+                  metadata, path_raw = raw.split(b"\t", 1)
+                  mode, blob, stage = metadata.decode().split()
+                  path = os.fsdecode(path_raw)
+                  row = {"path": path, "indexMode": mode, "indexBlob": blob, "stage": stage}
+                  try:
+                      if mode == "160000":
+                          raise ValueError("submodule content is outside this file manifest")
+                      row.update(file_identity(ROOT / path))
+                  except (OSError, ValueError) as error:
+                      row["readError"] = str(error)
+                  rows.append(row)
+              for raw in git("ls-files", "--others", "--exclude-standard", "-z").split(b"\0"):
+                  if raw:
+                      path = os.fsdecode(raw)
+                      row = {
+                          "path": path,
+                          "indexMode": None,
+                          "indexBlob": None,
+                          "stage": "untracked",
+                      }
+                      try:
+                          row.update(file_identity(ROOT / path))
+                      except (OSError, ValueError) as error:
+                          row["readError"] = str(error)
+                      rows.append(row)
+              state = {
+                  "head": git("rev-parse", "HEAD").decode().strip(),
+                  "tree": git("rev-parse", "HEAD^{tree}").decode().strip(),
+                  "status": git(
+                      "status", "--porcelain=v1", "--untracked-files=all", "-z"
+                  ).decode(),
+                  "rows": rows,
+              }
+              receipt = save(output / f"{name}.json.gz", state)
+              receipt["trackedFiles"] = sum(row["stage"] != "untracked" for row in rows)
+              receipt["untrackedFiles"] = sum(row["stage"] == "untracked" for row in rows)
+              return state, receipt
+
+
+          def read_bounded(path, limit):
+              with path.open("rb") as stream:
+                  data = stream.read(limit + 1)
+              if len(data) > limit:
+                  raise ValueError(f"record input exceeds {limit} bytes: {path}")
+              return data
+
+
+          def private_manifest():
+              rows = {}
+              for path in sorted(PRIVATE.rglob("*")):
+                  if path.is_dir() and not path.is_symlink():
+                      continue
+                  rows[path.relative_to(PRIVATE).as_posix()] = file_identity(path)
+              return rows
+
+
+          def materialize_source():
+              if git("rev-parse", f"{SOURCE}^{{tree}}").decode().strip() != SOURCE_TREE:
+                  raise ValueError("reviewed resolver source tree differs")
+              git("merge-base", "--is-ancestor", SOURCE, "HEAD")
+              raw = git("ls-tree", "-r", "-z", SOURCE)
+              (OUTPUT / "source-tree.entries").write_bytes(raw)
+              expected = {}
+              for record in raw.split(b"\0"):
+                  if not record:
+                      continue
+                  metadata, name = record.split(b"\t", 1)
+                  mode, kind, sha = metadata.decode().split()
+                  relative = os.fsdecode(name)
+                  path = Path(relative)
+                  if path.is_absolute() or any(part in {".", ".."} for part in path.parts):
+                      raise ValueError("invalid source tree path")
+                  if kind != "blob" or mode not in {"100644", "100755", "120000"}:
+                      raise ValueError("resolver copy contains a non-file Git entry")
+                  expected[relative] = {"mode": mode, "blob": sha}
+              if LOCK in expected:
+                  raise ValueError("this one-time resolver refuses to replace an existing lock")
+              PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=False)
+              with (OUTPUT / "copy-source.stderr").open("xb") as errors:
+                  process = subprocess.Popen(
+                      ["git", "-c", "protocol.allow=never", "cat-file", "--batch"],
+                      cwd=ROOT,
+                      env={**os.environ, "GIT_OPTIONAL_LOCKS": "0", "GIT_NO_LAZY_FETCH": "1"},
+                      stdin=subprocess.PIPE,
+                      stdout=subprocess.PIPE,
+                      stderr=errors,
+                  )
+                  try:
+                      for relative, entry in expected.items():
+                          process.stdin.write((entry["blob"] + "\n").encode())
+                          process.stdin.flush()
+                          header = process.stdout.readline().decode().split()
+                          if len(header) != 3 or header[:2] != [entry["blob"], "blob"]:
+                              raise ValueError("source object response differs from the tree")
+                          size = int(header[2])
+                          path = PRIVATE / relative
+                          path.parent.mkdir(parents=True, exist_ok=True)
+                          if not path.parent.resolve().is_relative_to(PRIVATE):
+                              raise ValueError("source parent escapes the private copy")
+                          if entry["mode"] == "120000":
+                              if size > 32768:
+                                  raise ValueError("source link exceeds the copy bound")
+                              data = process.stdout.read(size)
+                              if len(data) != size:
+                                  raise ValueError("source link was truncated")
+                              os.symlink(os.fsdecode(data), path)
+                              if not path.resolve().is_relative_to(PRIVATE):
+                                  raise ValueError("source link escapes the private copy")
+                          else:
+                              remaining = size
+                              with path.open("xb") as stream:
+                                  while remaining:
+                                      chunk = process.stdout.read(min(remaining, 1024 * 1024))
+                                      if not chunk:
+                                          raise ValueError("source object was truncated")
+                                      stream.write(chunk)
+                                      remaining -= len(chunk)
+                              path.chmod(0o755 if entry["mode"] == "100755" else 0o644)
+                          if process.stdout.read(1) != b"\n":
+                              raise ValueError("source object terminator differs")
+                  finally:
+                      process.stdin.close()
+                      # Drain this read-only Git child naturally; never signal a process.
+                      while process.stdout.read(1024 * 1024):
+                          pass
+                      code = process.wait()
+                      process.stdout.close()
+                  if code:
+                      raise ValueError(f"source object reader failed: {code}")
+              rows = private_manifest()
+              if rows.keys() != expected.keys() or any(
+                  rows[path]["blob"] != item["blob"] or rows[path]["mode"] != item["mode"]
+                  for path, item in expected.items()
+              ):
+                  raise ValueError("private source files do not exactly match the reviewed tree")
+              return rows
+
+
+          def preserve_private_changes(before, after):
+              changes = [
+                  {"path": path, "before": before.get(path), "after": after.get(path)}
+                  for path in sorted(before.keys() | after.keys())
+                  if before.get(path) != after.get(path)
+              ]
+              save(OUTPUT / "private-changes.json", changes)
+              with tarfile.open(
+                  OUTPUT / "private-changed-files.tar.gz", "w:gz", dereference=False
+              ) as archive:
+                  for change in changes:
+                      path = PRIVATE / change["path"]
+                      if path.is_file() or path.is_symlink():
+                          archive.add(path, arcname=change["path"], recursive=False)
+              if LOCK in after:
+                  path = PRIVATE / LOCK
+                  if after[LOCK]["mode"] == "100644":
+                      destination = OUTPUT / "generated-lock" / LOCK
+                      destination.parent.mkdir(parents=True)
+                      with path.open("rb") as source, destination.open("xb") as target:
+                          while chunk := source.read(1024 * 1024):
+                              target.write(chunk)
+                      if file_identity(destination) != after[LOCK]:
+                          raise ValueError("generated lock changed during preservation")
+              return changes
+
+
+          def resolve():
+              for path in (OUTPUT, PRIVATE):
+                  if not path.is_absolute() or path.resolve().is_relative_to(ROOT):
+                      raise ValueError(
+                          "resolver records and private source must be outside checkout"
+                      )
+              if (
+                  OUTPUT.resolve() == PRIVATE.resolve()
+                  or OUTPUT.resolve().is_relative_to(PRIVATE.resolve())
+                  or PRIVATE.resolve().is_relative_to(OUTPUT.resolve())
+              ):
+                  raise ValueError("resolver source and records must be separate directories")
+              OUTPUT.mkdir(parents=True, exist_ok=False)
+              result = {
+                  "status": "running",
+                  "startedAt": now(),
+                  "sourceCommit": SOURCE,
+                  "sourceTree": SOURCE_TREE,
+                  "buildOrTestExecuted": False,
+              }
+              code = 1
+              before = None
+              checkout_before = None
+              process = None
+              try:
+                  save(OUTPUT / "result.json", result)
+                  raw = read_bounded(Path(os.environ["GITHUB_EVENT_PATH"]), 2 * 1024 * 1024)
+                  (OUTPUT / "event.json").write_bytes(raw)
+                  event = json.loads(raw)
+                  runtime = os.environ["GITHUB_SHA"]
+                  if (
+                      os.environ.get("GITHUB_EVENT_NAME") != "push"
+                      or os.environ.get("GITHUB_REPOSITORY") != REPOSITORY
+                      or os.environ.get("GITHUB_REF") != REF
+                      or not isinstance(event, dict)
+                      or not isinstance(event.get("repository"), dict)
+                      or event.get("repository", {}).get("full_name") != REPOSITORY
+                      or event.get("ref") != REF
+                      or event.get("after") != runtime
+                      or event.get("deleted") is not False
+                      or git("rev-parse", "HEAD").decode().strip() != runtime
+                  ):
+                      raise ValueError("runtime does not identify the dedicated non-deleted push")
+                  result.update(
+                      {
+                          "runtimeHead": runtime,
+                          "runId": os.environ["GITHUB_RUN_ID"],
+                          "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                          "eventSha256": hashlib.sha256(raw).hexdigest(),
+                      }
+                  )
+                  save(OUTPUT / "result.json", result)
+                  checkout_before, result["checkoutBefore"] = snapshot(OUTPUT, "checkout-before")
+                  if checkout_before["status"] or any(
+                      row.get("blob") != row["indexBlob"]
+                      or row.get("mode") != row["indexMode"]
+                      or row["stage"] != "0"
+                      for row in checkout_before["rows"]
+                  ):
+                      raise ValueError("workflow checkout is not the exact clean runtime commit")
+                  before = materialize_source()
+                  result["privateBefore"] = save(OUTPUT / "private-before.json.gz", before)
+                  cwd = PRIVATE / "codex-rs/hepta-cognitive-types"
+                  versions = []
+                  for argv in (
+                      [sys.executable, "--version"],
+                      ["rustup", "run", TOOLCHAIN, "rustc", "-Vv"],
+                      ["cargo", "+" + TOOLCHAIN, "--version"],
+                  ):
+                      completed = subprocess.run(argv, cwd=cwd, capture_output=True, check=False)
+                      versions.append(
+                          {
+                              "argv": argv,
+                              "cwd": str(cwd),
+                              "exitCode": completed.returncode,
+                              "stdout": completed.stdout.decode(errors="replace"),
+                              "stderr": completed.stderr.decode(errors="replace"),
+                          }
+                      )
+                      save(OUTPUT / "tool-versions.json", versions)
+                      if completed.returncode:
+                          raise ValueError("resolver tool identity failed")
+                  if (
+                      not versions[0]["stdout"].startswith("Python 3.12.14")
+                      or "-nightly" not in versions[1]["stdout"]
+                  ):
+                      raise ValueError("resolver Python or dated nightly differs")
+                  if private_manifest() != before:
+                      raise ValueError("private source changed during tool version checks")
+                  argv = [
+                      "cargo",
+                      "+" + TOOLCHAIN,
+                      "generate-lockfile",
+                      "--manifest-path",
+                      "fuzz/Cargo.toml",
+                  ]
+                  invocation = {
+                      "argv": argv,
+                      "cwd": str(cwd),
+                      "status": "running",
+                      "startedAt": now(),
+                      "environment": {
+                          key: os.environ.get(key)
+                          for key in (
+                              "PATH",
+                              "CARGO_HOME",
+                              "RUSTUP_HOME",
+                              "RUSTUP_TOOLCHAIN",
+                              "CI",
+                          )
+                      },
+                      "logLimitBytes": MAX_LOG_BYTES,
+                  }
+                  result["command"] = invocation
+                  save(OUTPUT / "result.json", result)
+                  save(OUTPUT / "command.json", invocation)
+                  started = time.monotonic()
+                  process = subprocess.Popen(
+                      argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                  )
+                  invocation["pid"] = process.pid
+                  save(OUTPUT / "command.json", invocation)
+                  total = kept = 0
+                  observed = hashlib.sha256()
+                  recorded = hashlib.sha256()
+                  with (OUTPUT / "command.log").open("xb") as log:
+                      while chunk := process.stdout.read(65536):
+                          total += len(chunk)
+                          observed.update(chunk)
+                          part = chunk[: max(0, MAX_LOG_BYTES - kept)]
+                          log.write(part)
+                          recorded.update(part)
+                          kept += len(part)
+                          sys.stdout.buffer.write(part)
+                          sys.stdout.buffer.flush()
+                  code = process.wait()
+                  process.stdout.close()
+                  invocation.update(
+                      {
+                          "status": "completed",
+                          "exitCode": code,
+                          "elapsedSeconds": time.monotonic() - started,
+                          "finishedAt": now(),
+                          "observedBytes": total,
+                          "observedSha256": observed.hexdigest(),
+                          "retainedBytes": kept,
+                          "retainedSha256": recorded.hexdigest(),
+                          "logComplete": total == kept,
+                      }
+                  )
+                  save(OUTPUT / "command.json", invocation)
+                  if code:
+                      raise ValueError("original lock resolver returned nonzero")
+                  if total != kept:
+                      code = 1
+                      raise ValueError("resolver output exceeded the evidence bound")
+                  after = private_manifest()
+                  result["privateAfter"] = save(OUTPUT / "private-after.json.gz", after)
+                  changes = preserve_private_changes(before, after)
+                  if (
+                      [entry["path"] for entry in changes] != [LOCK]
+                      or changes[0]["before"] is not None
+                      or after[LOCK]["mode"] != "100644"
+                  ):
+                      code = 1
+                      raise ValueError("resolver changed more than the one new independent lock")
+                  data = read_bounded(PRIVATE / LOCK, MAX_LOG_BYTES)
+                  parsed = tomllib.loads(data.decode())
+                  names = {package["name"] for package in parsed.get("package", [])}
+                  if not {"hepta-cognitive-types-fuzz", "libfuzzer-sys"}.issubset(names):
+                      code = 1
+                      raise ValueError(
+                          "generated lock does not describe the actual fuzz workspace"
+                      )
+                  result["generatedLock"] = {
+                      "path": LOCK,
+                      **after[LOCK],
+                      "packageCount": len(parsed["package"]),
+                      "lockFormatVersion": parsed.get("version"),
+                      "reviewRequired": True,
+                  }
+                  result["status"] = "resolved; generated lock awaits review"
+              except (
+                  OSError,
+                  ValueError,
+                  subprocess.SubprocessError,
+                  tomllib.TOMLDecodeError,
+              ) as error:
+                  result.update({"status": "failed", "error": str(error)})
+                  code = code or 1
+              except KeyboardInterrupt:
+                  result.update(
+                      {
+                          "status": "interrupted",
+                          "error": "No process signal was sent by this resolver",
+                      }
+                  )
+                  code = 130
+              finally:
+                  try:
+                      if before is not None and "privateAfter" not in result:
+                          after = private_manifest()
+                          result["privateAfter"] = save(OUTPUT / "private-after.json.gz", after)
+                          preserve_private_changes(before, after)
+                      if checkout_before is not None:
+                          checkout_after, result["checkoutAfter"] = snapshot(
+                              OUTPUT, "checkout-after"
+                          )
+                          result["workflowCheckoutUnchanged"] = checkout_after == checkout_before
+                          if checkout_after != checkout_before:
+                              result["status"] = "failed: workflow checkout changed"
+                              code = code or 1
+                      if (
+                          "eventSha256" in result
+                          and hashlib.sha256(
+                              read_bounded(Path(os.environ["GITHUB_EVENT_PATH"]), 2 * 1024 * 1024)
+                          ).hexdigest()
+                          != result["eventSha256"]
+                      ):
+                          result["status"] = "failed: workflow event changed"
+                          code = code or 1
+                      if process is not None and process.poll() is None:
+                          result.update(
+                              {
+                                  "status": "incomplete",
+                                  "childState": "natural completion unobserved; no signal sent",
+                              }
+                          )
+                          code = code or 1
+                      result.update({"exitCode": code, "finishedAt": now()})
+                      save(OUTPUT / "result.json", result)
+                  except (OSError, ValueError, subprocess.SubprocessError) as error:
+                      code = code or 1
+                      try:
+                          save(
+                              OUTPUT / "finalization-error.json",
+                              {"error": str(error), "preservedExitCode": code},
+                          )
+                      except OSError:
+                          pass
+              return code if code >= 0 else 128 - code
+
+
+          raise SystemExit(resolve())
+          PY
+
+      - name: Preserve resolver records and the generated lock for review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-fuzz-lock-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HEPTA_RESOLVER_OUTPUT }}
+          if-no-files-found: error
+          retention-days: 14
