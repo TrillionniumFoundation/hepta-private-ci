@@ -529,7 +529,6 @@ jobs:
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
-
       - name: Verify citation stream literal frames and atomic ABI errors
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -631,7 +630,6 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-cli --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-default.log"
 
-
       - name: Test citation stream public oracles with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -727,7 +725,6 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR just test --lib -p codex-core --locked \
             -E "$output_item_callers" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-default.log"
-
 
       - name: Test existing Core citation consumers with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
