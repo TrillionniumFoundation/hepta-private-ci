@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.research-diagnostic-progress.v1",
+  "created_utc": "2026-11-17T03:09:09.607064+00:00",
+  "scope": "independent read-only research diagnostic and implementation review",
+  "code_created": false,
+  "review_status": "implementation source not yet available; no implementation findings asserted",
+  "accepted_design": {
+    "file": "RESEARCH_SFT_POSTRUN_ARCHIVE_DESIGN_01.md",
+    "sha256": "a4b86a2d53a6a9ec985ca49a74ffecfea32630b3448269a98f262d1b1a65c0a7",
+    "bytes": 8882,
+    "location_status": "original RAM environment unavailable; original bytes not restored here"
+  },
+  "constraints": {
+    "new_C": false,
+    "model_execution": false,
+    "core_changes": false,
+    "helper01_04_changes": false,
+    "launcher_or_archive_changes": false
+  },
+  "slots": [
+    "final_answer",
+    "trajectory",
+    "controlled_correction"
+  ],
+  "separate_arm": "shadow_correction",
+  "rules": {
+    "zero_baseline_conditional_retention": null,
+    "missing_raw_or_adapter": "unavailable",
+    "cost_gaps": "unknown totals with measured subtotals",
+    "first_and_last_attempts": "separate",
+    "slot_replacement": false
+  }
+}
