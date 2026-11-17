@@ -435,6 +435,409 @@
       "expected_pending_body": {
         "literal_hex": ""
       }
+    },
+    {
+      "id": "auto-close-body-and-repeat-finish",
+      "calls": [
+        {
+          "public_call": "push",
+          "repeat": 1,
+          "call": {
+            "source_hex": "01000000000000000000000000000000000000000000000000000000000000001900000000000000783c6f61692d6d656d2d6369746174696f6e3e736f75726365",
+            "source_bytes": 65,
+            "output_capacity": 923,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "0",
+              "0",
+              "0",
+              "25"
+            ],
+            "source_payload_hex": "783c6f61692d6d656d2d6369746174696f6e3e736f75726365",
+            "expected_core_return": 87,
+            "expected_written_bytes": 87,
+            "expected_header_words_le": [
+              "1",
+              "0",
+              "1",
+              "0",
+              "2",
+              "7"
+            ],
+            "expected_events": [
+              {
+                "kind": 0,
+                "payload_hex": "78"
+              },
+              {
+                "kind": 1,
+                "payload_hex": "736f75726365"
+              }
+            ],
+            "expected_output_prefix_hex": "010000000000000000000000000000000100000000000000000000000000000002000000000000000700000000000000000000000000000001000000000000007801000000000000000600000000000000736f75726365"
+          }
+        },
+        {
+          "public_call": "finish-1",
+          "repeat": 1,
+          "call": {
+            "source_hex": "01000000000000000100000000000000010000000000000000000000000000000000000000000000",
+            "source_bytes": 40,
+            "output_capacity": 98,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            "source_payload_hex": "",
+            "expected_core_return": 64,
+            "expected_written_bytes": 64,
+            "expected_header_words_le": [
+              "1",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0"
+            ],
+            "expected_events": [
+              {
+                "kind": 2,
+                "payload_hex": ""
+              }
+            ],
+            "expected_output_prefix_hex": "01000000000000000100000000000000000000000000000000000000000000000100000000000000000000000000000002000000000000000000000000000000"
+          }
+        },
+        {
+          "public_call": "finish-2",
+          "repeat": 1,
+          "call": {
+            "source_hex": "01000000000000000100000000000000000000000000000000000000000000000000000000000000",
+            "source_bytes": 40,
+            "output_capacity": 98,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            "source_payload_hex": "",
+            "expected_core_return": 48,
+            "expected_written_bytes": 48,
+            "expected_header_words_le": [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "expected_events": [],
+            "expected_output_prefix_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "expected_public_results": [
+        {
+          "public_call": "push",
+          "visible": {
+            "literal_hex": "78"
+          },
+          "citations": []
+        },
+        {
+          "public_call": "finish-1",
+          "visible": {
+            "literal_hex": ""
+          },
+          "citations": [
+            {
+              "literal_hex": "736f75726365"
+            }
+          ]
+        },
+        {
+          "public_call": "finish-2",
+          "visible": {
+            "literal_hex": ""
+          },
+          "citations": []
+        }
+      ],
+      "expected_final_state_words": [
+        "0",
+        "0"
+      ],
+      "expected_pending_body": {
+        "literal_hex": ""
+      }
+    },
+    {
+      "id": "empty-closed-and-empty-auto-close",
+      "calls": [
+        {
+          "public_call": "empty-closed",
+          "repeat": 1,
+          "call": {
+            "source_hex": "010000000000000000000000000000000000000000000000000000000000000025000000000000003c6f61692d6d656d2d6369746174696f6e3e3c2f6f61692d6d656d2d6369746174696f6e3e",
+            "source_bytes": 77,
+            "output_capacity": 1319,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "0",
+              "0",
+              "0",
+              "37"
+            ],
+            "source_payload_hex": "3c6f61692d6d656d2d6369746174696f6e3e3c2f6f61692d6d656d2d6369746174696f6e3e",
+            "expected_core_return": 64,
+            "expected_written_bytes": 64,
+            "expected_header_words_le": [
+              "1",
+              "0",
+              "0",
+              "0",
+              "1",
+              "0"
+            ],
+            "expected_events": [
+              {
+                "kind": 2,
+                "payload_hex": ""
+              }
+            ],
+            "expected_output_prefix_hex": "01000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000002000000000000000000000000000000"
+          }
+        },
+        {
+          "public_call": "empty-open",
+          "repeat": 1,
+          "call": {
+            "source_hex": "010000000000000000000000000000000000000000000000000000000000000012000000000000003c6f61692d6d656d2d6369746174696f6e3e",
+            "source_bytes": 58,
+            "output_capacity": 692,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "0",
+              "0",
+              "0",
+              "18"
+            ],
+            "source_payload_hex": "3c6f61692d6d656d2d6369746174696f6e3e",
+            "expected_core_return": 48,
+            "expected_written_bytes": 48,
+            "expected_header_words_le": [
+              "1",
+              "0",
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            "expected_events": [],
+            "expected_output_prefix_hex": "010000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "public_call": "finish",
+          "repeat": 1,
+          "call": {
+            "source_hex": "01000000000000000100000000000000010000000000000000000000000000000000000000000000",
+            "source_bytes": 40,
+            "output_capacity": 98,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            "source_payload_hex": "",
+            "expected_core_return": 64,
+            "expected_written_bytes": 64,
+            "expected_header_words_le": [
+              "1",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0"
+            ],
+            "expected_events": [
+              {
+                "kind": 2,
+                "payload_hex": ""
+              }
+            ],
+            "expected_output_prefix_hex": "01000000000000000100000000000000000000000000000000000000000000000100000000000000000000000000000002000000000000000000000000000000"
+          }
+        }
+      ],
+      "expected_public_results": [
+        {
+          "public_call": "empty-closed",
+          "visible": {
+            "literal_hex": ""
+          },
+          "citations": [
+            {
+              "literal_hex": ""
+            }
+          ]
+        },
+        {
+          "public_call": "empty-open",
+          "visible": {
+            "literal_hex": ""
+          },
+          "citations": []
+        },
+        {
+          "public_call": "finish",
+          "visible": {
+            "literal_hex": ""
+          },
+          "citations": [
+            {
+              "literal_hex": ""
+            }
+          ]
+        }
+      ],
+      "expected_final_state_words": [
+        "0",
+        "0"
+      ],
+      "expected_pending_body": {
+        "literal_hex": ""
+      }
+    },
+    {
+      "id": "original-non-nested",
+      "calls": [
+        {
+          "public_call": "push",
+          "repeat": 1,
+          "call": {
+            "source_hex": "01000000000000000000000000000000000000000000000000000000000000004f00000000000000613c6f61692d6d656d2d6369746174696f6e3e783c6f61692d6d656d2d6369746174696f6e3e793c2f6f61692d6d656d2d6369746174696f6e3e7a3c2f6f61692d6d656d2d6369746174696f6e3e62",
+            "source_bytes": 119,
+            "output_capacity": 2705,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "0",
+              "0",
+              "0",
+              "79"
+            ],
+            "source_payload_hex": "613c6f61692d6d656d2d6369746174696f6e3e783c6f61692d6d656d2d6369746174696f6e3e793c2f6f61692d6d656d2d6369746174696f6e3e7a3c2f6f61692d6d656d2d6369746174696f6e3e62",
+            "expected_core_return": 154,
+            "expected_written_bytes": 154,
+            "expected_header_words_le": [
+              "1",
+              "0",
+              "0",
+              "0",
+              "4",
+              "42"
+            ],
+            "expected_events": [
+              {
+                "kind": 0,
+                "payload_hex": "61"
+              },
+              {
+                "kind": 1,
+                "payload_hex": "783c6f61692d6d656d2d6369746174696f6e3e79"
+              },
+              {
+                "kind": 2,
+                "payload_hex": ""
+              },
+              {
+                "kind": 0,
+                "payload_hex": "7a3c2f6f61692d6d656d2d6369746174696f6e3e62"
+              }
+            ],
+            "expected_output_prefix_hex": "010000000000000000000000000000000000000000000000000000000000000004000000000000002a00000000000000000000000000000001000000000000006101000000000000001400000000000000783c6f61692d6d656d2d6369746174696f6e3e7902000000000000000000000000000000000000000000000015000000000000007a3c2f6f61692d6d656d2d6369746174696f6e3e62"
+          }
+        },
+        {
+          "public_call": "finish",
+          "repeat": 1,
+          "call": {
+            "source_hex": "01000000000000000100000000000000000000000000000000000000000000000000000000000000",
+            "source_bytes": 40,
+            "output_capacity": 98,
+            "workspace_hex": "00ff5a",
+            "logical_state_only": false,
+            "source_words_le": [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            "source_payload_hex": "",
+            "expected_core_return": 48,
+            "expected_written_bytes": 48,
+            "expected_header_words_le": [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "expected_events": [],
+            "expected_output_prefix_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      ],
+      "expected_public_results": [
+        {
+          "public_call": "push",
+          "visible": {
+            "literal_hex": "617a3c2f6f61692d6d656d2d6369746174696f6e3e62"
+          },
+          "citations": [
+            {
+              "literal_hex": "783c6f61692d6d656d2d6369746174696f6e3e79"
+            }
+          ]
+        },
+        {
+          "public_call": "finish",
+          "visible": {
+            "literal_hex": ""
+          },
+          "citations": []
+        }
+      ],
+      "expected_final_state_words": [
+        "0",
+        "0"
+      ],
+      "expected_pending_body": {
+        "literal_hex": ""
+      }
     }
   ],
   "raw_cases": [],
