@@ -1,5 +1,6 @@
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU8;
 use std::sync::atomic::AtomicUsize;
@@ -16,6 +17,8 @@ use matrix_sdk::Client;
 use matrix_sdk::ClientBuildError;
 use matrix_sdk::Error as MatrixSdkTransportError;
 use matrix_sdk::HttpError;
+use matrix_sdk::SqliteStoreConfig;
+use matrix_sdk::SqliteStoreOpenDiagnostics;
 use matrix_sdk::config::SyncSettings;
 use matrix_sdk::config::SyncToken;
 use matrix_sdk::ruma::OwnedRoomId;
@@ -63,6 +66,7 @@ struct MatrixBuildDiagnostics {
     entry: &'static str,
     caller: &'static str,
     phase: AtomicU8,
+    stores: OnceLock<SqliteStoreOpenDiagnostics>,
 }
 
 impl MatrixBuildDiagnostics {
@@ -82,6 +86,7 @@ impl MatrixBuildDiagnostics {
             entry,
             caller,
             phase: AtomicU8::new(MatrixBuildPhase::Unpolled as u8),
+            stores: OnceLock::new(),
         }
     }
 
@@ -100,9 +105,16 @@ impl MatrixBuildDiagnostics {
             6 => "complete",
             _ => "unknown",
         };
+        // Store roles are state, crypto, event-cache, media; values are observations
+        // at reporting time, not phase durations or a simultaneous deadline snapshot.
+        let (owner, worker) = self
+            .stores
+            .get()
+            .map(SqliteStoreOpenDiagnostics::snapshot)
+            .unwrap_or((["unobserved"; 4], ["unobserved"; 4]));
         let _ = writeln!(
             std::io::stderr().lock(),
-            "[matrix-init] {event} call={} entry={} caller={} phase={phase} kind={kind}",
+            "[matrix-init] {event} call={} entry={} caller={} phase={phase} kind={kind} owner={owner:?} worker={worker:?}",
             self.call,
             self.entry,
             self.caller
@@ -241,9 +253,15 @@ impl MatrixSdkClient {
         diagnostics.enter(MatrixBuildPhase::Paths);
         let paths = MatrixSdkPaths::prepare(layout, &config)?;
         diagnostics.enter(MatrixBuildPhase::ClientBuilder);
+        let stores = diagnostics.stores.get_or_init(SqliteStoreOpenDiagnostics::default);
         let client = Client::builder()
             .homeserver_url(config.binding.homeserver.as_str())
-            .sqlite_store_with_cache_path(paths.state(), paths.cache(), store_passphrase)
+            .sqlite_store_with_config_and_cache_path(
+                SqliteStoreConfig::new(paths.state())
+                    .passphrase(store_passphrase)
+                    .open_diagnostics(stores.clone()),
+                Some(paths.cache()),
+            )
             .handle_refresh_tokens()
             .build()
             .await

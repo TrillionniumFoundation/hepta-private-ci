@@ -159,3 +159,6 @@ pub(super) fn capture_open_trace() -> Option<OpenTrace> {
     CURRENT.try_with(Clone::clone).ok().flatten()
 }
 
+#[cfg(test)]
+#[path = "open_diagnostics_tests.rs"]
+mod tests;

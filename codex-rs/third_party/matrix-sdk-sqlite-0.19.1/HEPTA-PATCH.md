@@ -18,6 +18,14 @@ key import/export, the high-entropy migration, and the existing test-only
 fast-export branch are unchanged. Started cipher work may outlive a cancelled
 async owner, but has no database connection or path and cannot write the store.
 
+An optional typed observer records eight fixed atomic slots for the four store
+roles and their existing cipher workers. A private task-local scopes each open;
+only the small observation handle crosses the existing worker boundary. Store
+operations, migrations, cipher algorithms, and public errors are unchanged.
+Snapshots are independent last-entered observations, not timing or success
+proofs; started workers can update them after the async owner is cancelled.
+The Hepta wrapper reads them only at its existing diagnostic report sites.
+
 The release archive omits its repository license file. LICENSE is copied
 from upstream commit b18166c68bb958a21f0bca8b2d8320cb53583362:
 https://raw.githubusercontent.com/matrix-org/matrix-rust-sdk/b18166c68bb958a21f0bca8b2d8320cb53583362/LICENSE

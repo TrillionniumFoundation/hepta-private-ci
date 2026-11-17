@@ -15,6 +15,10 @@ conceal an old implementation.
 Both published manifests also raise vodozemac's floor to 0.11.2. Other Matrix
 SDK behavior and features remain the official 0.19.1 implementation.
 
+The sqlite feature also re-exports the patched SQLite store's opaque fixed-slot
+open observer beside SqliteStoreConfig. Its existing typed-config builder seam
+and four-store try_join are unchanged; no callback or new store-opening API is added.
+
 The release archive omits its repository license file. LICENSE is copied
 from upstream commit b18166c68bb958a21f0bca8b2d8320cb53583362:
 https://raw.githubusercontent.com/matrix-org/matrix-rust-sdk/b18166c68bb958a21f0bca8b2d8320cb53583362/LICENSE
