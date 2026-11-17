@@ -501,8 +501,7 @@ impl TurnContext {
         let native_path = |path: &PathUri| {
             let native =
                 LegacyAppPathString::from_path_uri(path, path.infer_path_convention()?).ok()?;
-            (native.to_inferred_path_uri().as_ref() == Some(path))
-                .then(|| native.into_string())
+            (native.to_inferred_path_uri().as_ref() == Some(path)).then(|| native.into_string())
         };
         let environments = (self.environments.ordinary_selections_complete
             && self.environments.starting().next().is_none())

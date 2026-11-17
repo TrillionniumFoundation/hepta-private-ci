@@ -19,7 +19,7 @@ use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_rollout::RolloutItem;
 use codex_rollout::RolloutRecorder;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use core_test_support::TestEnv;
+use core_test_support::test_codex::TestEnv;
 use pretty_assertions::assert_eq;
 use std::path::Path;
 use tempfile::TempDir;

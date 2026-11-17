@@ -19,6 +19,7 @@ use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
+use codex_protocol::ResponseItemId;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::ContentItem;
@@ -97,11 +98,12 @@ impl Fixture {
         let unique = Arc::get_mut(&mut session).expect("fresh test session");
         unique.services.extensions = Arc::new(extensions.build());
         let store = attach_in_memory_thread_store(unique).await;
+        let history = session.clone_history().await;
+        assert!(history.raw_items().next().is_none());
+        assert!(session.reference_context_item().await.is_none());
         session
-            .state
-            .lock()
-            .await
-            .set_reference_context_item(Some(context.to_turn_context_item()));
+            .replace_history(Vec::new(), Some(context.to_turn_context_item()))
+            .await;
         let configured = SessionConfiguredEvent {
             session_id: session.session_id(),
             thread_id: session.thread_id,
@@ -162,8 +164,9 @@ impl Fixture {
 }
 
 fn injected_item() -> ResponseItem {
+    let id = "msg.standalone-injected-context".to_string();
     let mut item = ResponseItem::Message {
-        id: Some("msg.standalone-injected-context".into()),
+        id: Some(ResponseItemId::from_server(id)),
         role: "assistant".to_string(),
         content: vec![ContentItem::OutputText {
             text: "exact standalone context".to_string(),
@@ -184,7 +187,14 @@ fn install_fence(
         .pending_task_terminalization_completions
         .lock()
         .expect("terminalization registry")
-        .push((Arc::new(()), Arc::clone(&completion), kind, None, None, None));
+        .push((
+            Arc::new(()),
+            Arc::clone(&completion),
+            kind,
+            None,
+            None,
+            None,
+        ));
     completion
 }
 

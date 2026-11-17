@@ -20,8 +20,7 @@ impl TestCodexExecBuilder {
             .path()
             .canonicalize()
             .expect("canonical temp home");
-        let sqlite_home =
-            AbsolutePathBuf::try_from(canonical_home).expect("absolute SQLite home");
+        let sqlite_home = AbsolutePathBuf::try_from(canonical_home).expect("absolute SQLite home");
         cmd.current_dir(self.cwd.path())
             .env("CODEX_HOME", self.home.path())
             .env("CODEX_SQLITE_HOME", sqlite_home.as_path())

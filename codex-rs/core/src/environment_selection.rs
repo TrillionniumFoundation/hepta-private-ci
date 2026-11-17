@@ -683,9 +683,9 @@ impl ThreadEnvironments {
         }
         TurnEnvironmentSnapshot {
             ordinary_selections_complete: environments.len() == selected.len()
-                && selected
-                    .iter()
-                    .all(|environment| environment.config_origin == EnvironmentConfigOrigin::Thread),
+                && selected.iter().all(|environment| {
+                    environment.config_origin == EnvironmentConfigOrigin::Thread
+                }),
             environments,
         }
     }
