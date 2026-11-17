@@ -1100,3 +1100,125 @@ block overflow()
   overflow_result:u32 = const() {"value":4294967293}
   ret(overflow_result)
 end
+fn zero_prefix(output:mutbuf,count:usize) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,count:usize)
+  first:usize = const() {"value":0}
+  jump loop(output,count,first)
+block loop(l_output:mutbuf,l_count:usize,l_index:usize)
+  more:bool = compare.lt(l_index,l_count)
+  branch more byte(l_output,l_count,l_index) done()
+block byte(b_output:mutbuf,b_count:usize,b_index:usize)
+  zero:u8 = const() {"value":0}
+  _ = buffer.store(b_output,b_index,zero)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(b_index,one)
+  jump loop(b_output,b_count,next)
+block done()
+  ret()
+end
+fn bytes_are_zero(source:readbuf,start:usize,count:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,start:usize,count:usize)
+  first:usize = const() {"value":0}
+  jump loop(source,start,count,first)
+block loop(l_source:readbuf,l_start:usize,l_count:usize,l_index:usize)
+  more:bool = compare.lt(l_index,l_count)
+  branch more byte(l_source,l_start,l_count,l_index) yes()
+block byte(b_source:readbuf,b_start:usize,b_count:usize,b_index:usize)
+  at:usize = int.add.checked(b_start,b_index)
+  value:u8 = buffer.load(b_source,at)
+  zero:u8 = const() {"value":0}
+  empty:bool = compare.eq(value,zero)
+  branch empty advance(b_source,b_start,b_count,b_index) no()
+block advance(a_source:readbuf,a_start:usize,a_count:usize,a_index:usize)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(a_index,one)
+  jump loop(a_source,a_start,a_count,next)
+block yes()
+  good:bool = const() {"value":true}
+  ret(good)
+block no()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn copy_bytes(source:readbuf,output:mutbuf,source_at:usize,output_at:usize,count:usize) -> () effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,source_at:usize,output_at:usize,count:usize)
+  first:usize = const() {"value":0}
+  jump loop(source,output,source_at,output_at,count,first)
+block loop(l_source:readbuf,l_output:mutbuf,l_source_at:usize,l_output_at:usize,l_count:usize,l_index:usize)
+  more:bool = compare.lt(l_index,l_count)
+  branch more byte(l_source,l_output,l_source_at,l_output_at,l_count,l_index) done()
+block byte(b_source:readbuf,b_output:mutbuf,b_source_at:usize,b_output_at:usize,b_count:usize,b_index:usize)
+  read_at:usize = int.add.checked(b_source_at,b_index)
+  write_at:usize = int.add.checked(b_output_at,b_index)
+  value:u8 = buffer.load(b_source,read_at)
+  _ = buffer.store(b_output,write_at,value)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(b_index,one)
+  jump loop(b_source,b_output,b_source_at,b_output_at,b_count,next)
+block done()
+  ret()
+end
+fn write_mask(output:mutbuf,start:usize) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,start:usize)
+  equals:u8 = const() {"value":61}
+  _ = buffer.store(output,start,equals)
+  first:usize = const() {"value":1}
+  jump loop(output,start,first)
+block loop(l_output:mutbuf,l_start:usize,l_index:usize)
+  end:usize = const() {"value":6}
+  more:bool = compare.lt(l_index,end)
+  branch more star(l_output,l_start,l_index) done()
+block star(s_output:mutbuf,s_start:usize,s_index:usize)
+  at:usize = int.add.checked(s_start,s_index)
+  value:u8 = const() {"value":42}
+  _ = buffer.store(s_output,at,value)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(s_index,one)
+  jump loop(s_output,s_start,next)
+block done()
+  ret()
+end
+fn read_word(source:readbuf,position:usize) -> (u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize)
+  first:usize = const() {"value":0}
+  initial:u64 = const() {"value":0}
+  jump loop(source,position,first,initial)
+block loop(l_source:readbuf,l_position:usize,l_index:usize,l_value:u64)
+  limit:usize = const() {"value":8}
+  more:bool = compare.lt(l_index,limit)
+  branch more byte(l_source,l_position,l_index,l_value) done(l_value)
+block byte(b_source:readbuf,b_position:usize,b_index:usize,b_value:u64)
+  address:usize = int.add.checked(b_position,b_index)
+  octet:u8 = buffer.load(b_source,address)
+  wide:u64 = int.cast(octet) {"mode":"wrap"}
+  index_word:u64 = int.cast(b_index) {"mode":"wrap"}
+  eight:u64 = const() {"value":8}
+  shift:u64 = int.mul.wrap(index_word,eight)
+  shifted:u64 = int.shl.checked(wide,shift)
+  result:u64 = bit.or(b_value,shifted)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(b_index,one)
+  jump loop(b_source,b_position,next,result)
+block done(value:u64)
+  ret(value)
+end
+fn write_word(output:mutbuf,position:usize,value:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,position:usize,value:u64)
+  first:usize = const() {"value":0}
+  jump loop(output,position,value,first)
+block loop(l_output:mutbuf,l_position:usize,l_value:u64,l_index:usize)
+  limit:usize = const() {"value":8}
+  more:bool = compare.lt(l_index,limit)
+  branch more byte(l_output,l_position,l_value,l_index) done()
+block byte(b_output:mutbuf,b_position:usize,b_value:u64,b_index:usize)
+  octet:u8 = int.cast(b_value) {"mode":"wrap"}
+  address:usize = int.add.checked(b_position,b_index)
+  _ = buffer.store(b_output,address,octet)
+  eight:u64 = const() {"value":8}
+  next_value:u64 = int.shr.checked(b_value,eight)
+  one:usize = const() {"value":1}
+  next_index:usize = int.add.checked(b_index,one)
+  jump loop(b_output,b_position,next_value,next_index)
+block done()
+  ret()
+end
