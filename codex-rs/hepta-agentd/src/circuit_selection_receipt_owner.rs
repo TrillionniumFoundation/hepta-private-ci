@@ -168,7 +168,16 @@ async fn read_remote_selection(
         &config.training_evidence,
         None,
     )?;
-    let original = live.read_current().await?;
+    #[cfg(test)]
+    let published_started = std::time::Instant::now();
+    let original = live.read_current().await;
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_SELECTOR_REMOTE_PUBLISHED elapsed_us={} result={:?}",
+        published_started.elapsed().as_micros(),
+        original.as_ref().map(|_| ())
+    );
+    let original = original?;
     Ok(original.observation().clone())
 }
 
@@ -252,7 +261,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &mut self,
         source: OriginalCircuitSelectionRemoteSourcesV1<'_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.attest_source(source).await
+        #[cfg(test)]
+        let started = std::time::Instant::now();
+        let result = self.attest_source(source).await;
+        #[cfg(test)]
+        eprintln!(
+            "HEPTA_SELECTOR_REMOTE_ATTEST elapsed_us={} result={:?}",
+            started.elapsed().as_micros(),
+            result.as_ref().map(|_| ())
+        );
+        result
     }
 
     async fn attest_source(
@@ -273,7 +291,18 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         }
         require_new_attestation(&self.config, started_at, now()?)?;
         let observed = self.prepare(&source).await?;
-        let evidence = self.training_evidence(&source).await?;
+        #[cfg(test)]
+        let before_started = std::time::Instant::now();
+        let evidence = self.training_evidence(&source).await;
+        #[cfg(test)]
+        if matches!(source.location(), ObservationLocation::RemoteOwner) {
+            eprintln!(
+                "HEPTA_SELECTOR_REMOTE_TRAINER_BEFORE elapsed_us={} result={:?}",
+                before_started.elapsed().as_micros(),
+                evidence.as_ref().map(|_| ())
+            );
+        }
+        let evidence = evidence?;
         authenticate_training(&self.config, &evidence, now()?)?;
         if self.prepare(&source).await? != observed {
             return Err(OwnerError::CommitUncertain.into());
@@ -328,7 +357,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &mut self,
         source: OriginalCircuitSelectionRemoteSourcesV1<'_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.readback_source(source).await
+        #[cfg(test)]
+        let started = std::time::Instant::now();
+        let result = self.readback_source(source).await;
+        #[cfg(test)]
+        eprintln!(
+            "HEPTA_SELECTOR_REMOTE_READBACK elapsed_us={} result={:?}",
+            started.elapsed().as_micros(),
+            result.as_ref().map(|_| ())
+        );
+        result
     }
 
     async fn readback_source(
@@ -341,7 +379,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         }
         let observed = self.prepare(&source).await?;
         if matches!(source.location(), ObservationLocation::RemoteOwner) {
-            let before = self.training_evidence(&source).await?;
+            #[cfg(test)]
+            let before_started = std::time::Instant::now();
+            let before = self.training_evidence(&source).await;
+            #[cfg(test)]
+            eprintln!(
+                "HEPTA_SELECTOR_REMOTE_TRAINER_BEFORE elapsed_us={} result={:?}",
+                before_started.elapsed().as_micros(),
+                before.as_ref().map(|_| ())
+            );
+            let before = before?;
             authenticate_training(&self.config, &before, now()?)?;
         }
         let bytes = self.journal.read(&self.saved)?;
@@ -412,7 +459,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
                 if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
                 }
-                self.training_evidence(source).await?
+                #[cfg(test)]
+                let after_started = std::time::Instant::now();
+                let after = self.training_evidence(source).await;
+                #[cfg(test)]
+                eprintln!(
+                    "HEPTA_SELECTOR_REMOTE_TRAINER_AFTER elapsed_us={} result={:?}",
+                    after_started.elapsed().as_micros(),
+                    after.as_ref().map(|_| ())
+                );
+                after?
             }
         };
         if self.journal.read(&self.saved)? != bytes {
