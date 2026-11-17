@@ -1,0 +1,586 @@
+{
+  "schemaVersion": 1,
+  "capturedUTC": {
+    "started": "2026-11-17T01:16:44.417126+00:00",
+    "finished": "2026-11-17T01:17:01.184695+00:00"
+  },
+  "proofCompletedUTC": "2026-11-17T01:22:00.319342+00:00",
+  "sourceDirectory": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint",
+  "scope": "Every regular file in the completed fresh snapshot directory, without changes to original bytes or modes.",
+  "headCount": 7353,
+  "protectedCount": 122,
+  "newProtectedCount": 18,
+  "candidate": "4a5630661b1fee17582b452520c32fb5805831aa",
+  "candidateTree": "3c2c8718270bc8c45eb22918e81fbc35cc695189",
+  "candidateCovered": 1835,
+  "originalEligible": 7230,
+  "candidateRemaining": 5395,
+  "publishedIntegration": "60658ec54cf7f857197733fecf455ba44fecd3d4",
+  "publishedIntegrationCovered": 1826,
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "rawRefsSha256": "80e199276c091b79f759070aaae83fdc238ac335bdb4b7f922b3e4c64db74312",
+  "proofSha256": "74efcf0ecfc19138713da5bc5dd75d391460bb56d71f44e7fefc24cd7b68c925",
+  "candidateIntersections": {
+    "markers": [],
+    "originalAndPriorProtected": [],
+    "currentProtected": []
+  },
+  "noRemoteWrites": true,
+  "format": {
+    "archive": "POSIX USTAR with regular files only; zero archive timestamps and numeric owner 0; each original mode retained.",
+    "compression": "Each numbered part is an independent gzip stream of the next 480000 bytes or fewer of the uncompressed tar stream. Decompress in ordinal order and concatenate; concatenating compressed bytes is not the tar stream.",
+    "maximumStoredPartBytes": 270141,
+    "archiveBytes": 7690240,
+    "archiveSha256": "c829b1087cb480a74674507e0efdb5ec5a9be835dc6d5877ff193ad172fc5069",
+    "restorePolicy": "Verify each stored part size and SHA256, decompress and verify raw fragment size and SHA256, concatenate in ordinal order, verify archive SHA256. Restore only the manifest's exact regular-file closed set into a new empty output directory; reject absolute paths, parent traversal, links, unknown entries, duplicates and unexpected modes. Create files exclusively, then verify bytes, SHA256, Git blob identity and POSIX mode against this manifest. No commands, filters, Git checkout or network requests are executed during restoration."
+  },
+  "parts": [
+    {
+      "path": "evidence/part-0000.tar.gz",
+      "ordinal": 0,
+      "uncompressedOffset": 0,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "259d941fc8848564db09673ef60fbb4fc1b6f3052616d87160ac955fccacf4f1",
+      "bytes": 269831,
+      "sha256": "7e6cf0618897a3ad8f4d6621728f8aa28761bf441e4a52320cf8c1dd04cac310",
+      "gitBlob": "0b19dd9503a61073f5f094c113872c08213598a3"
+    },
+    {
+      "path": "evidence/part-0001.tar.gz",
+      "ordinal": 1,
+      "uncompressedOffset": 480000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "9df344a3f85176eeaff2123e924775bc34abc40af7c9c83194fe0e5552a3ae09",
+      "bytes": 269983,
+      "sha256": "b8f3eb598a81177043f525eee67f016cd32f91cdb2cc18e5cf90bdb5d138fb51",
+      "gitBlob": "c8d036de8367996725794f201dcec946480769ea"
+    },
+    {
+      "path": "evidence/part-0002.tar.gz",
+      "ordinal": 2,
+      "uncompressedOffset": 960000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "abe8d74ec1f6f0ac1135acbbe2dd1c251c536815b35bedd97951097b0e52d526",
+      "bytes": 270141,
+      "sha256": "fc56036e4b0bdbf6368a287a8d40565ec090ce3aea37c2a8cb04bacacba7f90f",
+      "gitBlob": "1e0a882b962cd5b2aba081f201e54340746b3594"
+    },
+    {
+      "path": "evidence/part-0003.tar.gz",
+      "ordinal": 3,
+      "uncompressedOffset": 1440000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "d408319f563f4c5c95de284b98f6144681e1fb9e9b08414350fa906a3f113ec2",
+      "bytes": 212348,
+      "sha256": "0e70d65a2dd8ec3843a9962e9cf689f843e483e93b17c6d66fa6d178642e4348",
+      "gitBlob": "c4e6c39775c319b7fab9c4ffb45ec9ad5e84afea"
+    },
+    {
+      "path": "evidence/part-0004.tar.gz",
+      "ordinal": 4,
+      "uncompressedOffset": 1920000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "e410ebb2c3351aea32e224f9268199ae8e203331c4d03ac79f5f5954d5c899c2",
+      "bytes": 163918,
+      "sha256": "1b65d5b6d6bf748f02ff327e338ef260edb9d354154f1aad75fe0107b75b78a6",
+      "gitBlob": "e68ccdbd8af57e7f1326dfcec7de132f93198372"
+    },
+    {
+      "path": "evidence/part-0005.tar.gz",
+      "ordinal": 5,
+      "uncompressedOffset": 2400000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "94e86885e7cfc03040df4f2e956c68e624722b698154c7028988adb50b26cc32",
+      "bytes": 164967,
+      "sha256": "9c3e798c9099379c48c59dcba937aaeeae0b17151b03667108981c06e7e1c7c4",
+      "gitBlob": "98991722fc28f19bb0b1668143e3948c9f3beb72"
+    },
+    {
+      "path": "evidence/part-0006.tar.gz",
+      "ordinal": 6,
+      "uncompressedOffset": 2880000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "c718ed16bd5c7ef9ef358d94d1518ac84280cc57ccd79342c560a883ad95a002",
+      "bytes": 165426,
+      "sha256": "70ff6fac976f4443c34fba6c1aaa7d581f72098bf904f0aafa0ca5b027f6bde6",
+      "gitBlob": "6f3b047c57f7eb362da57e089cbc3b0e33044fd8"
+    },
+    {
+      "path": "evidence/part-0007.tar.gz",
+      "ordinal": 7,
+      "uncompressedOffset": 3360000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "ffe9bce29367e10358c0034f0fea9841b2d26e675a879c9c47d3f47f47b69ba0",
+      "bytes": 161658,
+      "sha256": "3c9410c4b05b65d942a21a04b51f38cea9753eb18b60425cacb6436d14a87fad",
+      "gitBlob": "aff6f2978475a3ff74755a24f10562f7d96e4b4d"
+    },
+    {
+      "path": "evidence/part-0008.tar.gz",
+      "ordinal": 8,
+      "uncompressedOffset": 3840000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "0d4a9415608ef1cc2a23f91f9a962ca5a531319e434187e70fef09eef6fc22dd",
+      "bytes": 161763,
+      "sha256": "32eb4d07c34b4720a593542aca91b3a8669580c5aedc9bd0e75cca99cfcfea82",
+      "gitBlob": "c51b0bf964a8e1d90404e7fa09cf1ea456d53cb0"
+    },
+    {
+      "path": "evidence/part-0009.tar.gz",
+      "ordinal": 9,
+      "uncompressedOffset": 4320000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "be7b069192056bb43fb86f72c85c8b4db54fcdc88799886b4091ae24eab5f160",
+      "bytes": 161570,
+      "sha256": "f84a0daaaa642275e40e4557e18900c63718eef2b1b09198feed687150803969",
+      "gitBlob": "875ef6aec39d2e559fc6f499374badfc85898c96"
+    },
+    {
+      "path": "evidence/part-0010.tar.gz",
+      "ordinal": 10,
+      "uncompressedOffset": 4800000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "a839e6f4d525dad10513904e5a79e4c0238964c26d912776728800de5c7c15ce",
+      "bytes": 118931,
+      "sha256": "4ebf8ff153e1c657789b217481a5a1dc1cd45eb160f26ad897de1b305af924f8",
+      "gitBlob": "6bbf8d69625059ff9b31202f831049f1bc69d2fb"
+    },
+    {
+      "path": "evidence/part-0011.tar.gz",
+      "ordinal": 11,
+      "uncompressedOffset": 5280000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "8be21ac3e611a2a3add26642e1b8f727012db480ec454c69be27c6f715f53f46",
+      "bytes": 85691,
+      "sha256": "37dd98439fa59551d60699542bee0e65019508f6cf40222d79f8b8dbabd1d605",
+      "gitBlob": "dd5074f9e3f345e870091cc1e105abc1fc4093ce"
+    },
+    {
+      "path": "evidence/part-0012.tar.gz",
+      "ordinal": 12,
+      "uncompressedOffset": 5760000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "251d060a0e8100888dcd7eb544680a8948ab34c94283df0b7e24eadd7f890572",
+      "bytes": 91945,
+      "sha256": "803c6bd3e63a382e6cd65fef38ef053915407f45571bfe27994c1a19b704af24",
+      "gitBlob": "1f9ca3e72098c3684dfbb3820b08ad92ff227554"
+    },
+    {
+      "path": "evidence/part-0013.tar.gz",
+      "ordinal": 13,
+      "uncompressedOffset": 6240000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "7fc050db165eb0506490a369aa40f41d252d7d93ba9efc1cf9c1d085b823be1d",
+      "bytes": 89260,
+      "sha256": "2aa215ab55c02a88bc80f8539793d288a127c4a078b823c81001ba2bab510585",
+      "gitBlob": "6545d5b7ffc4a800f3ef15e7ec576d5d321c421a"
+    },
+    {
+      "path": "evidence/part-0014.tar.gz",
+      "ordinal": 14,
+      "uncompressedOffset": 6720000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "77e76e02d2ec0b05a7c5435be8fe24f6256d20c07a6cf4f7245b07f6a6368502",
+      "bytes": 134074,
+      "sha256": "85743b0dafa7f4bb3b794d719f91af664f9ba2b14e0d33400242a06f7444e575",
+      "gitBlob": "09d227864aad2730867fba7a416826e4205193b5"
+    },
+    {
+      "path": "evidence/part-0015.tar.gz",
+      "ordinal": 15,
+      "uncompressedOffset": 7200000,
+      "uncompressedBytes": 480000,
+      "uncompressedSha256": "e98f5673becd02e4cc00cbfeff74fe2efe8d78eeb895b53b964f410a3af69297",
+      "bytes": 181304,
+      "sha256": "4cd1fe50696f1bb4be2efccbb168dfafd07f590c781a78361b0d51a3b2d9b93a",
+      "gitBlob": "f78a5beaa638fc23f6da879502bf8bdad075c1b8"
+    },
+    {
+      "path": "evidence/part-0016.tar.gz",
+      "ordinal": 16,
+      "uncompressedOffset": 7680000,
+      "uncompressedBytes": 10240,
+      "uncompressedSha256": "5c67d9355baf29e7a928194ac44756dc63f8be247f72dc24d0f31dd107f048fa",
+      "bytes": 928,
+      "sha256": "0233d4e623a4a62039a59af026c0e16ee3848a1fc9127e33bca1779047cc79a5",
+      "gitBlob": "60084c68be4966f6ca5318ddda65eb6ecef5173a"
+    }
+  ],
+  "members": [
+    {
+      "path": "candidate-ancestors.txt",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/candidate-ancestors.txt",
+      "bytes": 1656441,
+      "mode": "0600",
+      "sha256": "bf2660676f86fd2cfd861520664bf16f708926354490464044c28c658c357188",
+      "gitBlob": "a5e58ba27e3f74c6a6f7f43fd6f7c8d69437e1d7"
+    },
+    {
+      "path": "candidate-parent-graph.txt",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/candidate-parent-graph.txt",
+      "bytes": 3443877,
+      "mode": "0600",
+      "sha256": "276c2d48ee421e27a091d65bba69f5691d25f03dc5b4bce6416c8fd984e2ce0b",
+      "gitBlob": "91927295ed480408a1898819a1dba22b724ebbcd"
+    },
+    {
+      "path": "capture.py",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/capture.py",
+      "bytes": 2195,
+      "mode": "0600",
+      "sha256": "6b523091a16d12454066dc556e558c40536815280783a1dafc0a6f50d6faeab4",
+      "gitBlob": "121103ba09533f2a984ce2b68f96596f011e74e3"
+    },
+    {
+      "path": "comparison.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/comparison.json",
+      "bytes": 3552,
+      "mode": "0600",
+      "sha256": "b74743aed6b8de05710e911169d4fef87d4d8ac91b484f7b85f1435fa55908d8",
+      "gitBlob": "919d8c881bae212f5361364d1e1880726907244b"
+    },
+    {
+      "path": "fresh-ref-protection.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/fresh-ref-protection.json",
+      "bytes": 105413,
+      "mode": "0600",
+      "sha256": "74efcf0ecfc19138713da5bc5dd75d391460bb56d71f44e7fefc24cd7b68c925",
+      "gitBlob": "273060572474b375b12680171067547688c82664"
+    },
+    {
+      "path": "immutable-commit-gets/06541f9f4a1717774dca5071c0023865c8ae818d.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/06541f9f4a1717774dca5071c0023865c8ae818d.json",
+      "bytes": 1245,
+      "mode": "0600",
+      "sha256": "3e0f0fa6b06dc8166a3098e4e3fd7438dd93075cf9b6763b9c8b81a7a15854e2",
+      "gitBlob": "acdff18054c450839a753a623fb79cc734b88064"
+    },
+    {
+      "path": "immutable-commit-gets/06541f9f4a1717774dca5071c0023865c8ae818d.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/06541f9f4a1717774dca5071c0023865c8ae818d.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/13153e5b0334e8ce883f957161c5cbcd38386f67.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/13153e5b0334e8ce883f957161c5cbcd38386f67.json",
+      "bytes": 1236,
+      "mode": "0600",
+      "sha256": "83cc1a5938b1e62a803c23f95f123fb37612e0a3450f91f998bbb962a0f55584",
+      "gitBlob": "2b7d7d7fc8b871d6657bff13fe611703d0522097"
+    },
+    {
+      "path": "immutable-commit-gets/13153e5b0334e8ce883f957161c5cbcd38386f67.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/13153e5b0334e8ce883f957161c5cbcd38386f67.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/33feb9b96751d260bec1d4f122b48ad4fa57eba1.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/33feb9b96751d260bec1d4f122b48ad4fa57eba1.json",
+      "bytes": 1229,
+      "mode": "0600",
+      "sha256": "7200a94186f5688a43bbe51c383ed1762913947a3056738f67bd4161b449fe8a",
+      "gitBlob": "a93ebe101117d65970a1740405bbdaf5f2e87457"
+    },
+    {
+      "path": "immutable-commit-gets/33feb9b96751d260bec1d4f122b48ad4fa57eba1.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/33feb9b96751d260bec1d4f122b48ad4fa57eba1.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/644c539c6703e314d7ef6cb1171af5bd863c1035.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/644c539c6703e314d7ef6cb1171af5bd863c1035.json",
+      "bytes": 1238,
+      "mode": "0600",
+      "sha256": "f0cc3d32d7ff2fa83189dbd3071fe5ad02058b10123dfb786ee8bb82071a6abe",
+      "gitBlob": "31fff5b9b38fef5f43df14159ca2814e70091dcb"
+    },
+    {
+      "path": "immutable-commit-gets/644c539c6703e314d7ef6cb1171af5bd863c1035.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/644c539c6703e314d7ef6cb1171af5bd863c1035.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/66c9db75feeb3e5a78fd7e99ed359331f34910e3.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/66c9db75feeb3e5a78fd7e99ed359331f34910e3.json",
+      "bytes": 1230,
+      "mode": "0600",
+      "sha256": "6da19b233588b9875272d53b738865418e8b6eaafd56ef80c2c5a9c62b76fef0",
+      "gitBlob": "6b103623d262f0e005b68f280a4fde4b22c663eb"
+    },
+    {
+      "path": "immutable-commit-gets/66c9db75feeb3e5a78fd7e99ed359331f34910e3.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/66c9db75feeb3e5a78fd7e99ed359331f34910e3.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/707cbcdf8d4910138cb880aa6c8e6a92063b2916.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/707cbcdf8d4910138cb880aa6c8e6a92063b2916.json",
+      "bytes": 1219,
+      "mode": "0600",
+      "sha256": "e446fe741884e95bc58549aa0977a2f95bce059b4de4db4e47d6e6eb2847cf57",
+      "gitBlob": "c81b106e804a9517f6ea5db54da615948db97326"
+    },
+    {
+      "path": "immutable-commit-gets/707cbcdf8d4910138cb880aa6c8e6a92063b2916.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/707cbcdf8d4910138cb880aa6c8e6a92063b2916.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/8e21ac3ced5cd13d025aba8ef02167b5f69982a7.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/8e21ac3ced5cd13d025aba8ef02167b5f69982a7.json",
+      "bytes": 1235,
+      "mode": "0600",
+      "sha256": "f422957c8f1657ce406a4e9ffef508b7f44523d4d983146bcf8ae4de49e99077",
+      "gitBlob": "a4735df41292ea93165d81780c09d9c3aacb387c"
+    },
+    {
+      "path": "immutable-commit-gets/8e21ac3ced5cd13d025aba8ef02167b5f69982a7.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/8e21ac3ced5cd13d025aba8ef02167b5f69982a7.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/8ed5eed02c16233fc5ac8357645f7d68b99cc967.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/8ed5eed02c16233fc5ac8357645f7d68b99cc967.json",
+      "bytes": 1235,
+      "mode": "0600",
+      "sha256": "9692bc43319e3170e8429cec593b3b9d3136c6d2873e8f2f60fbe04890dcf774",
+      "gitBlob": "5084736c923ebc46170861a7f65d916d8d878bb6"
+    },
+    {
+      "path": "immutable-commit-gets/8ed5eed02c16233fc5ac8357645f7d68b99cc967.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/8ed5eed02c16233fc5ac8357645f7d68b99cc967.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/93143d62161592a6f853bee8299bc2172ccd9eb8.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/93143d62161592a6f853bee8299bc2172ccd9eb8.json",
+      "bytes": 1223,
+      "mode": "0600",
+      "sha256": "6810c901014d99113a0e16ff1cbea7bfbe7e5372e7d40d4c3e0aebe607ee59be",
+      "gitBlob": "4ede4bdc6cc17d4f96ab78b83e6f9ecb1eb8c52d"
+    },
+    {
+      "path": "immutable-commit-gets/93143d62161592a6f853bee8299bc2172ccd9eb8.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/93143d62161592a6f853bee8299bc2172ccd9eb8.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/93c96e3027dabde897594aaf201cb5de4959c2ff.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/93c96e3027dabde897594aaf201cb5de4959c2ff.json",
+      "bytes": 1233,
+      "mode": "0600",
+      "sha256": "11732a6c7245c89f963c8dd488f64bd880ad23b31903a785f2e0a32fc327a9d3",
+      "gitBlob": "ed4f362edb1e9176731058ae31f0b5debc43bf0b"
+    },
+    {
+      "path": "immutable-commit-gets/93c96e3027dabde897594aaf201cb5de4959c2ff.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/93c96e3027dabde897594aaf201cb5de4959c2ff.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/9d62fafa3713e25fa4c80eaab403e094ef4bc647.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/9d62fafa3713e25fa4c80eaab403e094ef4bc647.json",
+      "bytes": 1241,
+      "mode": "0600",
+      "sha256": "1acdef9195f1dff0a3b8ef70ef9142497106b33ac03d5b127a6009208549cb56",
+      "gitBlob": "ff08d91b12a6883582f4dc8c7302e5458d379368"
+    },
+    {
+      "path": "immutable-commit-gets/9d62fafa3713e25fa4c80eaab403e094ef4bc647.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/9d62fafa3713e25fa4c80eaab403e094ef4bc647.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/b0dcc8a211cdd3fe02004fb8e7d10c286e9730ba.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/b0dcc8a211cdd3fe02004fb8e7d10c286e9730ba.json",
+      "bytes": 1232,
+      "mode": "0600",
+      "sha256": "63ac7db2d9668e46b22a360386128ec5c70353e18df530958721724fe2cadb58",
+      "gitBlob": "8f969e2dc1a50d306261d4e02007e088267c7b30"
+    },
+    {
+      "path": "immutable-commit-gets/b0dcc8a211cdd3fe02004fb8e7d10c286e9730ba.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/b0dcc8a211cdd3fe02004fb8e7d10c286e9730ba.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/bfdaafe3334d0271b8268ad0e2d9f3e8f4b5dfd3.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/bfdaafe3334d0271b8268ad0e2d9f3e8f4b5dfd3.json",
+      "bytes": 1232,
+      "mode": "0600",
+      "sha256": "d786cb6afd491c2fca118a76ece1cefdf802ed17925a96603815bd2ff7396c5d",
+      "gitBlob": "a7947611a299dbeddf77a9753433fcfeff11aff2"
+    },
+    {
+      "path": "immutable-commit-gets/bfdaafe3334d0271b8268ad0e2d9f3e8f4b5dfd3.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/bfdaafe3334d0271b8268ad0e2d9f3e8f4b5dfd3.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/c2aafe768c8296c13df9443ec12e2ffc6bfc375a.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/c2aafe768c8296c13df9443ec12e2ffc6bfc375a.json",
+      "bytes": 1230,
+      "mode": "0600",
+      "sha256": "4ba633746ebf35812ec766f494edf9f83bde9652833999f9f95b9ca2bc3f99c9",
+      "gitBlob": "033f55183b3658046ac167a0eb7370e91a4c235f"
+    },
+    {
+      "path": "immutable-commit-gets/c2aafe768c8296c13df9443ec12e2ffc6bfc375a.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/c2aafe768c8296c13df9443ec12e2ffc6bfc375a.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/d16ddb60337726790f70a5fcaa7cb5af81a0462c.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/d16ddb60337726790f70a5fcaa7cb5af81a0462c.json",
+      "bytes": 1235,
+      "mode": "0600",
+      "sha256": "62e4cd7009f99bd7be7227429d70eb5a47f23bfbd0800da3feb9aea8cb5e9384",
+      "gitBlob": "54f1c732ad6bac3a637064f20538a3512084a954"
+    },
+    {
+      "path": "immutable-commit-gets/d16ddb60337726790f70a5fcaa7cb5af81a0462c.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/d16ddb60337726790f70a5fcaa7cb5af81a0462c.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/d76f5d8f387fcf6b63d856ab511cc32e167dfd33.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/d76f5d8f387fcf6b63d856ab511cc32e167dfd33.json",
+      "bytes": 1223,
+      "mode": "0600",
+      "sha256": "03a0d15913a30ff66a89ef9d2a162d499ac21e7ef2ea9c57da9a50241d6d73f0",
+      "gitBlob": "47a31c748648e1f2e766ad25bb5f13e6a72dcc07"
+    },
+    {
+      "path": "immutable-commit-gets/d76f5d8f387fcf6b63d856ab511cc32e167dfd33.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/d76f5d8f387fcf6b63d856ab511cc32e167dfd33.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/e38f9393a67b34f14f84a6175a0c579c5eeeebd2.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/e38f9393a67b34f14f84a6175a0c579c5eeeebd2.json",
+      "bytes": 1232,
+      "mode": "0600",
+      "sha256": "dcc3822e296ecbd3b0e9a3d4fb44253d159669212b6878989f75a411ba412962",
+      "gitBlob": "4ebba5ba3ca2c3d8d5f397a2473810cf229bb630"
+    },
+    {
+      "path": "immutable-commit-gets/e38f9393a67b34f14f84a6175a0c579c5eeeebd2.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/e38f9393a67b34f14f84a6175a0c579c5eeeebd2.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "immutable-commit-gets/f52397fa1f1d0ea63e471528a62863b1214e7bdc.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/f52397fa1f1d0ea63e471528a62863b1214e7bdc.json",
+      "bytes": 1232,
+      "mode": "0600",
+      "sha256": "8f50bf1c69ba507e56145b92994d3187471019338cd4e784cec4a5153fc009b7",
+      "gitBlob": "05fb023d989c59d5d94fe77a627eaacad09d96cf"
+    },
+    {
+      "path": "immutable-commit-gets/f52397fa1f1d0ea63e471528a62863b1214e7bdc.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/immutable-commit-gets/f52397fa1f1d0ea63e471528a62863b1214e7bdc.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "original-eligible-coverage.json",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/original-eligible-coverage.json",
+      "bytes": 1681569,
+      "mode": "0600",
+      "sha256": "5622e2c78dffda3c32d4618bb09880e7068a96ca6b313770485ec8e0c311e171",
+      "gitBlob": "716e6114849f8241be293460dc5b5676ef9d0bf5"
+    },
+    {
+      "path": "protection.py",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/protection.py",
+      "bytes": 10381,
+      "mode": "0600",
+      "sha256": "ba4591211052418e2f98859ea4ee782698252f4f570c29bf35cf968fff2e15fc",
+      "gitBlob": "480751968176ea94dc11944583d7ad89eef0c724"
+    },
+    {
+      "path": "refs.raw",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/refs.raw",
+      "bytes": 726369,
+      "mode": "0600",
+      "sha256": "80e199276c091b79f759070aaae83fdc238ac335bdb4b7f922b3e4c64db74312",
+      "gitBlob": "a82e80a7fdca63bc8acbc517c8b2e010d51c5a1c"
+    },
+    {
+      "path": "refs.stderr",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T011644-pre4a-checkpoint/refs.stderr",
+      "bytes": 0,
+      "mode": "0600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ],
+  "previousEvidenceReferences": [
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261117T003737-precheckpoint/fresh-ref-protection.json",
+      "bytes": 99505,
+      "sha256": "89321205dbcf3b5c093b9e2876a139326d6a2dbce29a5bdc542fbbae6fae6ae9",
+      "vectorCount": 104
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-refs-20261116T231802-final-lease/final-lease-protection-proof.json",
+      "bytes": 54064,
+      "sha256": "009992a9e9e4b444062d218f5f68dc50a3203be0d6c798b7088b50b5586633b8",
+      "vectorCount": 87
+    }
+  ],
+  "excluded": []
+}

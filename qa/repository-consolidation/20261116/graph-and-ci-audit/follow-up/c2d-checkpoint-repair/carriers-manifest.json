@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "encoding": "Each physical carrier is a complete independent gzip stream. Decompress each in numeric order and concatenate to reconstruct objects.tar.gz; then extract objects and restore original paths using originals-manifest.json.",
+  "archive_bytes": 4007952,
+  "archive_sha256": "2e41d694caf55124f28b5eea30b54d8fb62fa47636f68d2c40e963955275aa05",
+  "originals_manifest_sha256": "79124667d84318245aa8dd1e3fbf9bdeeb0428bbbc0e44457630fee9d5290764",
+  "carriers": [
+    {
+      "path": "objects-001.gz",
+      "bytes": 480168,
+      "sha256": "d3f8fac1034b4c8634cd1e7d757d9e65beda0e6d65c6d2e0dade333ebb0caee4",
+      "git_blob": "53d4aad90bb3a8f36dc2e75e87710c162e270459",
+      "decompressed_offset": 0,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "752408090146b6a2e74569542837779c33c9c5cbaf3860de8b2db659298c7ac8"
+    },
+    {
+      "path": "objects-002.gz",
+      "bytes": 480168,
+      "sha256": "336dc7bdd623ce5d4d29fbfd0da6127633d8ee58169f69beeab74184f2c3d663",
+      "git_blob": "19424310d6194fb167f888edd93ae5f8e9b25bd5",
+      "decompressed_offset": 480000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "f8e1249302d766b17ca7dbf70afb4d474af73be256d83c7d46d733f5bc32706e"
+    },
+    {
+      "path": "objects-003.gz",
+      "bytes": 480168,
+      "sha256": "41ec3f8a96ff7ba056e77b2da0b31c590cfa3ebb7c2ea848722c078c62120df5",
+      "git_blob": "8cb61ae76e8bec2fa3989546ad88859096b36564",
+      "decompressed_offset": 960000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "7446e3939824451bcf842082a02987cbb5c3fb49c5527dbcb4202180cbcc7744"
+    },
+    {
+      "path": "objects-004.gz",
+      "bytes": 480168,
+      "sha256": "a1d74383df13c58504dad753fb3fa9a8a1992df13f3d22d38417b679b33a675c",
+      "git_blob": "d316e1e0730b8b3a5091900b873fc72fe71ccd4f",
+      "decompressed_offset": 1440000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "5500e7b7e3ae34f40b3814468bd1aeca827e71e6534e8a213b3efda6f39460cf"
+    },
+    {
+      "path": "objects-005.gz",
+      "bytes": 480168,
+      "sha256": "02ee53c49ea7b3e24775c36217afd37e6f269fc3767aa8ce913595649c7028fd",
+      "git_blob": "77b895be0f428169d6a491a58f64aae6897f3ee2",
+      "decompressed_offset": 1920000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "770f8c98dd3749ff25a90996817aae7c707999314b558efdb85525548a4d29f7"
+    },
+    {
+      "path": "objects-006.gz",
+      "bytes": 480168,
+      "sha256": "3f0d928383448033f615a286d1379ab6631f397bccb5296e268c12a7abf6645d",
+      "git_blob": "81864034afbcf7ecfb32b5c1d3090e79a12c50de",
+      "decompressed_offset": 2400000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "9c2b9279a022a1e8a8124e0655604bc792aad525c7bc718ee3380afef499e90a"
+    },
+    {
+      "path": "objects-007.gz",
+      "bytes": 480013,
+      "sha256": "bc9e3bcd3ab69952abc1ac6045e8ab36c8f095554b485333c233b60eba4f6770",
+      "git_blob": "a18ffa2890b77c806899615d4529ab5868f894b9",
+      "decompressed_offset": 2880000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "19f8fce737451a21a44c82f1ce2fb723d09065e332602e26444951708bbecb7c"
+    },
+    {
+      "path": "objects-008.gz",
+      "bytes": 480168,
+      "sha256": "af7e7f7eadf343a93b77265e96504368c99f1daa73eb1b0c107914878e5f852e",
+      "git_blob": "5f7156d26efc0689f41f1eaa4b2b02a511bc767d",
+      "decompressed_offset": 3360000,
+      "decompressed_bytes": 480000,
+      "decompressed_sha256": "00b16207e8a24b3ded601d255508cd0a58c31d6af01b96c24e61ef6796aa386f"
+    },
+    {
+      "path": "objects-009.gz",
+      "bytes": 168023,
+      "sha256": "82c7466eadfa0a51b5f5d5645062871120bd9c10cdde16bddc3304184d562f33",
+      "git_blob": "68fef94e1015914a1409759409cb5ff3332306c7",
+      "decompressed_offset": 3840000,
+      "decompressed_bytes": 167952,
+      "decompressed_sha256": "73fc1100e49b1694308c174c4a1c0e04eacb7e8ec75a0d592c048a7b761ee521"
+    }
+  ],
+  "restoration_verified": true
+}

@@ -1,72 +1,178 @@
-# Current consolidation checkpoint
+# Repository consolidation: current reviewed checkpoint
 
-Prepared 2026-11-16. The reviewed source anchor is df03a385ce0c58246f4407512ebe23a563b6259c. The append-only native and merge proof commit is f42eaaea04bf6b82f31d66af6db6c99f84dcae41. The final publication receipt and PR identify the actual combined head after the evidence and this report are added.
+## Status
 
-## State and protected branches
+The source checkpoint is `4a5630661b1fee17582b452520c32fb5805831aa`, tree
+`3c2c8718270bc8c45eb22918e81fbc35cc695189`. The evidence commit containing
+this page is intended for the existing integration PR #6293. At preparation,
+the published integration head is
+`60658ec54cf7f857197733fecf455ba44fecd3d4`; publication is verified separately
+by an exact reference readback. Main remains
+`732e934ba496d90fbe042b8d41d479ef901643e5`.
 
-The candidate retains 1,826 of the 7,230 original eligible branch heads by ancestry; 5,404 remain outside it. These counts measure retained history. They do not claim completed semantic review or native qualification of every ancestor. Main remains 732e934ba496d90fbe042b8d41d479ef901643e5. No branch has been deleted, and this task has not modified any HIA ref.
+The source ancestry contains 1,835 of the original 7,230 eligible ordinary
+branch heads, leaving 5,395 to review and integrate. The previous published
+head contained 1,826. These are ancestry coverage counts, not a claim that
+every covered behavior or every required CI job has passed. No branch has
+been deleted and no change to main has been made during this consolidation.
 
-The protected set contains 87 HIA or related cell experiment refs, including the 24 cell experiment branches without HIA in their names. Twenty older ordinary names containing that substring were individually reconciled against their original classification, unchanged observed tips, full ancestry and both protected markers. They remain ordinary candidates. Protection is based on the recorded branch and ancestry evidence, not a substring-only rule.
+The latest captured complete reference scan ran from 2026-11-17 01:16:44 to
+01:17:01 UTC and contains 7,353 heads. Its protected set contains 122 heads.
+All 104 previously protected references were unchanged; eighteen additional
+cell experiment heads were independently proved to descend from the protected
+HIA history. The candidate contains none of the current, prior, or original
+protected heads and neither protected marker commit. The complete original
+ordinary name set still matches, and no reference was moved or deleted in
+this scan. A final live reference check is required before publication.
+New HIA-related branches remain outside the ordinary merge and deletion scope.
 
-The complete snapshot at 2026-11-16T22:43:40.459465Z contains 7,318 heads. Against the preceding 21:34 snapshot there are no additions or deletions and one external advance: protected codex/hia-union29-20261116-a90d moved from 219c6b0aa296f030cf5ef868921c55f48f44b72d to 7ce3622d78dbf9d651d5f2823a861faeba8b2a42. Its four new parent nodes, all current and historical protected tips and both markers are outside the candidate ancestry. The complete snapshot and protection proof are retained in [the 22:43 evidence](branch-fresh-refs-2243/fresh-protection-proof.json.gz).
+## What this source checkpoint adds
 
-Publication updates only integration/hepta-single-main-20261113-ab5b, using the observed c0e525fd94e6eea2957bd1a12764627b86dd71ec head as an explicit fast-forward lease. Main and branch retirement remain dependent on successful required checks on the actual combined source.
+Eight actual ordinary merge commits after the preceding published checkpoint
+retain their incoming parent identities and complete reviewed histories.
+Three preceding merges added four covered heads; the next five added five
+covered heads. Resolutions preserve the current stronger behavior when an
+incoming patch was already present or would weaken a guard. They do not use
+a blanket merge strategy that discards an incoming tree without review.
 
-## Source and history added since the preceding report
+The ordinary source additions include a seven-stage learning iteration
+router, private creation of an initial cognitive database with explicit
+regular-file, link-count, permission, and synchronization checks, and a
+historical database root canonicalization fix. Recovered database pointers
+remain subject to their existing validation and are not silently recreated.
+The relevant new Agentd and Memory source has passed formatting; complete
+native validation at this combined source tree remains pending.
 
-| Change                            | Resulting behavior and review limit                                                                                                                                                                                                                                                                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI and source guards              | Preserve the original checks while repairing the observed workflow, Python source closure and evidence carrier failures. The blob limit and allowlist are unchanged.                                                                                                                                                                                     |
-| Authorized filesystem errors      | Reject unsupported authorized reads before path work, preserve typed denial errors, and bound the conversion of the exact legacy error form. The separate four-file native scope passed 528 tests with three original skips.                                                                                                                             |
-| Supervisor recovery               | Restore restart attempt projections while granting queue and deadline state only to pending work. Original reads and budget ownership remain. The nine-file source scope passed 136 tests with one original ignored case.                                                                                                                                |
-| Evidence carriers                 | Preserve 48 original fragments and 464 tar members through independently verified compressed carriers. Restore verification, malformed-input checks and original spelling checks are retained.                                                                                                                                                           |
-| Ordinary parent 6900ccde          | An actual two-parent merge retains 25 additional original heads and 33 unique original commits, with the path-specific source and history proof retained.                                                                                                                                                                                                |
-| NDU generation and Python closure | Bind the normalizer to its complete source and configuration, retain deadline checks around completion, and reject present or dangling namespace initializer paths before the six expected hash reads. The complete v6 source and model bytes are retained. This does not qualify a scientific training run.                                             |
-| Paired evaluation                 | Retain the original version-one journal behavior and add the explicitly versioned paired record path, with current-source reopening, fenced reads, complete census and independent signed roles. The separate exact-source package passed 220 tests with zero skips.                                                                                     |
-| Source-owner recovery fixture     | Keep the original handle uncertain after witness restoration. Recover from the same journals and witness using a fresh owner and verify that recovery does not rewrite the recorded bytes. The original production fence remains.                                                                                                                        |
-| Timing diagnostic                 | Move the blocking thread join out of the single-thread async reactor. Preserve the original 500 ms read limit and assertions. Actual complete current-source test results remain pending.                                                                                                                                                                |
-| Five further ordinary parents     | Retain five additional original heads and eight unique original commits through ordinary two-parent merges. Peer authentication, actual RMCP request observation and Result propagation are incorporated. Directory and SQLite conflicts retain the explicitly reviewed stronger current implementation.                                                 |
-| Windows isolation probe           | Add an independent probe using real child token and file operations, alongside the untouched existing jobs. Static and fault-injection evidence is complete; native Windows execution and the original positive isolation contracts remain pending.                                                                                                      |
-| Native app-server CI              | Run the existing app-server integration targets on the required native Linux step, with the original arguments and budgets. Actual Bash dispatch vectors pass; hosted tests remain pending.                                                                                                                                                              |
-| TUI theme changes                 | Invalidate the complete retained markdown prefix when the syntax theme revision changes. All constructors were checked. This does not resolve a separate global theme mutation during rendering. Native TUI tests remain pending.                                                                                                                        |
-| Guardian fixture routing          | Select the six original response bodies by real request identity, and hold only the parent completion until the original approval and turn identity assertions pass. Original support modules pass 15 tests; the complete revised support modules pass 19, with 494 unchanged dependency artifacts. Core consumer and musl qualification remain pending. |
+The reviewed 14-file source and workflow correction includes the total-source
+propensity correction, strict workflow dispatch decisions and omitted
+dependency triggers, and v6 workflow closure. Its experimental outputs do not
+establish finite-sample unbiasedness or production training qualification.
+The complete large incoming family has not yet been merged.
 
-The RMCP merge retains the existing 500 ms handshake deadline and 10-second delayed reply; it adds observation of the actual request without adopting the incoming expanded deadlines. Private control sockets now verify their peer before admitting work. The current Windows peer API returns Unsupported, so that path refuses access until a supported identity implementation is available. No peer guard was bypassed.
+The Windows launch correction supplies the validated absolute LOCALAPPDATA
+value to the original child environment; it preserves the original process
+creation flags, parameters, ACL behavior, and five-second budget. Exact
+source pins and checkout long-path handling were repaired. Linux call capture
+passed fourteen cases and retained two old-production counterexamples.
+Native Windows results for the new checkpoint remain pending.
 
-The directory-handle resolutions retain actual read/write access, both BACKUP_SEMANTICS and OPEN_REPARSE_POINT, and the production sync checks. SQLite fixtures retain the central durable pool, canonical roots, complete migration and rollback assertions, and pool closure before temporary directory disposal.
+The B4 correction updates exactly the one protected caller row to require the
+complete v2 envelope from the same record. All other 818 protected rows and
+all 1,645 boundaries remain unchanged. Thirteen mutation regressions reject
+comments, dead code, nested functions, and incomplete or mismatched evidence.
+The original verifier and loader are retained.
 
-## Native results and unresolved gates
+The control-layer composition adds the reviewed role admission, durable
+control receipt, publication, bounded checkpoint, and Windows identity
+changes. The Windows implementation compares the complete 128-bit file ID
+and volume identity using existing dependencies and propagates API failures.
+It retains the existing reparse-point, size, type, and poisoned-writer
+behavior. No atomic path binding, private ancestry, single-writer ownership,
+or cross-platform durability qualification is claimed.
 
-| Check                             | Observed result                     | Exact scope                                                                                                                                                                                                                                                                                                                                                        |
-| --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Three NDU packages                | 212 passed; six original skips      | Original infer-core, worker-host and Bellman scope. Earlier disk failures remain retained.                                                                                                                                                                                                                                                                         |
-| Real generation owner integration | Five passed; zero skipped           | Actual Python model execution, including completed, invalid and indeterminate outcomes. This is not the full training or calibration protocol.                                                                                                                                                                                                                     |
-| Source-owner library selection    | 13 passed; 1,605 filtered           | The original selected owner tests after the fixture-only recovery repair.                                                                                                                                                                                                                                                                                          |
-| Paired evaluation package         | 220 passed; zero skipped            | Separate ROG source closure with 7,776 native and 8,093 total frozen inputs.                                                                                                                                                                                                                                                                                       |
-| Earlier four-package Clippy       | Passed                              | 9dd native source bytes in the earlier overlay, with all 13,562 frozen inputs unchanged. Four non-native controls still differed from 9dd; this overlay did not meet the provenance wrapper contract.                                                                                                                                                              |
-| Earlier rollout attempt           | Failed before Cargo                 | The wrapper rejected absent source provenance. No build or rollout pass is inferred.                                                                                                                                                                                                                                                                               |
-| Later preparatory test attempts   | Tests did not start                 | A task process check and then insufficient disk capacity stopped preparation. Both failures are retained.                                                                                                                                                                                                                                                          |
-| Actual 2ba source checkout        | Exact and clean                     | 30,049 full index entries; 13,751 physical inputs, including 12,051 native files, verified by mode and blob identity.                                                                                                                                                                                                                                              |
-| Current five-package run          | In progress at report preparation   | Original format, explicit Rust format and five-package Clippy passed, with all 13,751 inputs unchanged. The Clippy stage took 892.093 seconds. The actual rollout build also passed: 32.558 seconds inside the original 600-second wrapper budget, with the real source-head provenance clean before and after. Complete tests continue with the original budgets. |
-| Guardian support modules          | 19 passed; zero skipped or filtered | GNU Linux TCP fixture tests, not Core E2E or musl. The first compile failure and first incomplete dependency inventory are preserved.                                                                                                                                                                                                                              |
-| Windows probe                     | Static checks passed                | No native positive isolation qualification is claimed.                                                                                                                                                                                                                                                                                                             |
+A separate narrow decoder fix rejects noncanonical optional receipt tags.
+Three regressions exercise actual terminal and reconciled snapshots, all
+254 invalid tag values with recomputed checksums, unchanged durable bytes
+after rejection, and valid round trips. The complete incoming control family
+has not yet been merged; its remaining paths and histories are still under
+review.
 
-The eight CI source changes subsequently passed the original just fmt check against the 2ba base in a separate clean f42 checkout, with all 13,752 inputs unchanged. The earlier limited formatting receipts remain historical records. The actual native rollout binary is 2,336,928 bytes with SHA-256 2ba5cec9c9596789328e4bfdf92cb5fff8ccd71f8d9a52d4cc86c5602887004c. Its full wrapper receipt and original log are retained in this checkpoint proof.
+## Actual validation results and their source limits
 
-The new actual source-head run uses SOURCE_SHA and TESTED_SHA equal to the real 2ba commit and writes command receipts outside the clean checkout. The target is a private directory on an existing executable memory filesystem, verified by an actual executable probe. No mount option changed, and unrelated work or previous completed targets were not removed.
+| Validation                       | Actual outcome                                                   | Source and interpretation                                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Original formatter               | Passed; 13,817 input files and modes unchanged                   | Actual source checkpoint 4a563; 30,178 indexed paths; all 84 reviewed source paths physically present                      |
+| Original B4 suite                | 1,344 passed                                                     | Earlier 9839 source plus the four B4 changes; not the full later tree                                                      |
+| Complete caller verifier         | Passed; 1,645 boundaries, 819 protected rows, 7,552 Rust files   | Same frozen B4 input vector; authority remained false                                                                      |
+| Original full earlier native run | 1,971 passed, 11 failed, three timed out, 193 originally skipped | Exact earlier 2ba source; original failed records retained                                                                 |
+| Exact helper-case replay         | Ten selected cases passed                                        | Same earlier source after the original helper build; original test budgets, stack, filters, and retry settings retained    |
+| ROG diagnostic cases             | Four passed twice                                                | Instrumented source on tmpfs; not a successful replay of the original unchanged desktop ext4 run                           |
+| Initial control composition      | 351 passed, then 357 passed after the bounded checkpoint repair  | Exact recorded composed source inputs; old role and checkpoint counterexamples retained                                    |
+| Final control composition        | 369 passed; zero skipped or failed                               | Six original build, formatting, Clippy, and test steps; 13,683 recorded inputs unchanged; base 287374 plus reviewed layers |
+| Windows-only additions           | Seven tests pending native Windows                               | Not executed on Linux; no Windows success claimed                                                                          |
+| v6 original command sequence     | All 17 wrapper command receipts passed                           | Twelve shell steps executed; five setup/build contexts reused and recorded; earlier exact 2ba source                       |
+| v6 Python and finite oracle      | 102 and 128 passed                                               | Original input and output identities retained                                                                              |
+| v6 smoke                         | Passed in 163.250 seconds under the original 900-second budget   | 56 rows, eight native receipts; all consumer outputs reopened and verified                                                 |
+| Fixed nextest 0.9.103 replay     | 552 executed tests passed across six steps                       | Exact same test identities/results as the preceding run; original ignored tests and filters retained                       |
 
-The existing hosted build profile uses two build jobs, no incremental output, dev/test debug information disabled and two test threads. Original 60-second case limits, 8 MiB stack, default features and zero test retries remain. A timeout is preserved as a failure; it is not converted into a pass by a larger budget.
+The exact-version replay reused completed smoke outputs and prerequisites; it
+did not claim to repeat training or the smoke experiment. The calibration
+target was compiled, not executed. The stricter local AppArmor user-namespace
+setting differs from the workflow setup, and no system setting was changed.
+The initial nextest 0.9.137 run remains available alongside the later pinned
+0.9.103 evidence and verified release-asset identity.
 
-The two original selected owner timeouts are retained in the paired evidence. The current complete tests must establish whether the diagnostic join repair resolves its original failure and whether the material reconstruction case meets the original deadline. The earlier source-owner failure also requires the current whole-package run; a 13-test selection alone cannot establish that result.
+The final control test vector is not the complete 4a563 tree: it excludes
+unrelated newer Agentd, Memory, and workflow changes. The final formatter
+checks the actual combined tree, but formatting is not a substitute for
+native execution.
 
-Previous Windows positive isolation failures remain substantive. Finite prepared roots and fresh account provenance do not prove a whole namespace boundary. The new probe does not promote engineering evidence to production authority. Other GNU, musl and CodeQL outcomes require the newly published combined head. No CodeQL alert was suppressed or dismissed, and old hosted results are not relabeled as results of this source.
+## Required work still open
 
-## Evidence and next work
+The hosted checkpoint still has failing required checks. A natural status
+capture at 00:34 UTC recorded 215 checks: 178 successful, 15 failed, 14 skipped,
+five running, two cancelled, and one neutral. This is a dated observation,
+not a statement about later check status.
 
-The native and five-merge package retains 562 complete original records, including full input maps, source images, commands, original failures, logs and exact server commit objects. Every archived member was restored and compared byte-for-byte and mode-for-mode. Its 43 physical entries satisfy the existing per-blob limit. The original compressed archive is 18,681,529 bytes.
+Ninety-eight actual strict Clippy errors are being repaired in existing test
+and helper code. The work propagates errors through fixture call chains and
+preserves production callback signatures. No lint suppression, relaxed
+assertion, increased retry count, or larger time or stack budget is used.
+That repair is not included in this source checkpoint.
 
-Separate packages retain the Python model bytes and owner results, paired evaluation records, Windows probe evidence, Linux fixture repairs, fresh protection vectors and complete raw ref snapshots. The earlier CURRENT report is preserved byte-for-byte alongside this report, with its original counts and failures unchanged.
+Four original positive Windows sandbox tests encounter the explicit elevated
+filesystem admission guard. The guard remains closed because earlier actual
+deletion experiments found ambient parent delete-child authority bypassing
+the intended restriction. It is unconditional; it is not a new per-test ACL
+check. A qualified replacement backend is required before reopening it.
+The guard must not be removed, tests skipped, or expected success changed to
+expected rejection merely to make CI pass.
 
-Continue the remaining 5,404 histories. The larger ca77 research union and c2d control union remain under source review; their reviewed source subsets do not imply their full parent histories have been merged. Further small ordinary branches are being assessed against the actual current source.
+The repaired AppContainer and LPAC launch probes still require native Windows
+execution. Their previous error occurred before a child was created, so that
+result does not qualify or disqualify the proposed isolation mechanism.
 
-Before main can advance, CI required and Architecture required must pass on the actual combined head. Before any branch is retired, refresh protection, verify its exact current tip, and prove containment in actual main. Newly added HIA branches remain excluded throughout.
+Two other Windows failures remain separate: subagent notification delivery
+timing and WebSocket turn-state isolation. One original desktop latency
+failure and three desktop timeouts also remain unresolved by the selected
+helper replay or the ROG diagnostics.
+
+Large unmerged families include the remaining control and v6 histories,
+Windows sandbox, Landlock, HCSN, directory-handle, worker, repair, and outbox
+branches. One large family has multiple merge bases and needs a real virtual
+merge-base resolution. The full ordinary branch audit and consolidation are
+not complete.
+
+Main integration and retirement of ordinary branches require the actual
+combined required checks, architecture constraints, exact ancestry, and
+fresh reference protection checks. No HIA reference is to be updated or
+deleted. New ordinary two-parent proposals prepared after this source
+checkpoint are not included in the coverage count above.
+
+## Evidence navigation
+
+- [Latest 122-head protection snapshot](branch-fresh122-20261117T011644-v1/manifest.json)
+  retains all 45 original reference, ancestry, parent graph, and coverage files,
+  including the eighteen new immutable commit responses.
+
+- [Root source and validation archive](root-checkpoint-20261117T0105/README.md)
+  contains the ordinary merge resolutions, exact source creation records,
+  full B4 gates, original helper builder and selected replay, frozen failed
+  native records, ROG diagnostic handoff, and formatter scope corrections.
+- [v6 command, fixed-version replay, and protected reference evidence](branch-v6-and-fresh104-20261117-v1/README.md)
+  retains all original wrapper receipts, output files, input maps, test
+  identity comparisons, tool provenance, and the 104-head protection proof.
+- [Initial control source layer](c2d-control-source-union/README.md) and
+  [bounded checkpoint repair](c2d-checkpoint-repair/README.md) retain complete
+  native records and old-production counterexamples.
+- [Windows launch and exact source pin repair](../windows-launch-and-pins/README.md)
+  retains the original failures, proposed source, and Linux call captures.
+- [Final control, Windows identity, and canonical receipt evidence](c2d-windows128-receipt/README.md)
+  retains the final 369-test run, invalid-tag counterexamples, complete inputs,
+  and independent Windows source review.
+
+The previous CURRENT page is retained byte for byte as
+[root-checkpoint-20261117T0105/previous-CURRENT.md.gz](root-checkpoint-20261117T0105/previous-CURRENT.md.gz).
+Each package documents its captured originals and explicit exclusions.
+Compressed carriers preserve original raw logs and failed attempts without
+rewriting their content to satisfy format or spelling checks.
