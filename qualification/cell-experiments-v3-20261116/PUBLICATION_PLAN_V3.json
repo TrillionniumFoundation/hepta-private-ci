@@ -1,0 +1,694 @@
+{
+  "schema": "hepta.publication-plan.v3",
+  "created_at": "2026-11-17T00:21:22.386174+00:00",
+  "status": "READY_FOR_STACKED_DRAFT_REVIEW_WITH_EXPLICIT_SIZE_AND_CLAIM_GATES",
+  "scope": "Read-only local review; only this plan and review are written. No scripts edit, remote operation, Git operation, model/training run, or future-C read.",
+  "stack_policy": {
+    "existing_draft_pr": 6440,
+    "existing_draft_base": "codex/cell-experiments-v2-20261116-0c078a-s23",
+    "existing_draft_head": "codex/cell-experiments-v2-20261116-0c078a-s24",
+    "existing_head_commit": "42e32825ae20d460cb782856e00816661536853a",
+    "publication_style": "One small stacked Draft PR per ordered stage; each head is based on the preceding Draft head. Do not combine all 20 modules into one large PR.",
+    "code_stage_max_changed_lines": 800,
+    "preferred_complex_stage_limit_exclusive": 500,
+    "module_limit_exclusive": 500,
+    "line_count_basis": "All new modules are additions relative to V3_BASE.json; physical lines include comments and blanks. Binary sizes are separate. Parent must confirm final git diff against the actual stack base.",
+    "intermediate_layers": "Review segments only, not complete candidates. The recorded 47-test run applies to the final complete 64-module snapshot, never to every intermediate head.",
+    "size_exceptions": "E01 historical JSON (1,890 lines) and E14b original Smol member index (1,739 lines) are isolated immutable-mechanical exceptions. All stable executable-code layers are <500; all other planned layers are <=800. If evidence exceptions are not accepted, hold only those evidence layers for a byte-preserving representation decision. The code-first stack can proceed."
+  },
+  "verified_source": {
+    "base_manifest_sha256": "12519f1ded14b80844f7758617b69fc3bec23eb3980d84e7e5cda925cdc2a712",
+    "v2_execution_source_commit": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+    "frozen_old_modules": 44,
+    "changed_old_modules": [],
+    "new_modules": 20,
+    "new_module_added_lines": 5357,
+    "largest_module_physical_lines": 469,
+    "largest_module_ast_statements": 235,
+    "current_64_module_inventory_sha256": "3cca545cd3329dd12c717aea3f70e74a98f6156d9cb42fc2da274928901c5c5a",
+    "full_current_hash_inventory": "operations/QWEN_SOURCE_01.json"
+  },
+  "module_added_lines": {
+    "causal_probe_v3.py": 441,
+    "causal_train_v3.py": 337,
+    "causal_training_contract_v3.py": 248,
+    "circuit_readiness_v3.py": 333,
+    "circuit_receipts_v3.py": 183,
+    "development_readiness_v3.py": 237,
+    "protocol_v3.py": 217,
+    "repo_interaction_v3.py": 258,
+    "repo_tasks_v3_sqlite.py": 197,
+    "source_metrics_retention_v3.py": 106,
+    "source_metrics_v3.py": 384,
+    "sqlite_agent_probe_v3.py": 412,
+    "test_causal_probe_v3.py": 357,
+    "test_causal_train_v3.py": 142,
+    "test_causal_training_contract_v3.py": 248,
+    "test_circuit_readiness_v3.py": 258,
+    "test_development_readiness_v3.py": 82,
+    "test_repo_interaction_v3.py": 469,
+    "test_source_metrics_v3.py": 206,
+    "test_sqlite_agent_probe_v3.py": 242
+  },
+  "dependency_notes": [
+    "C01 precedes test_repo_interaction_v3 in C02; C08 imports that test module as a module, avoiding duplicate TestCase discovery.",
+    "C03 precedes both circuit_readiness_v3 (C06) and causal_training_contract_v3 (C09).",
+    "C04/C05 establish the predictor before development readiness (C08), training contract (C09), and fitter (C10).",
+    "C07 test fixtures precede test_source_metrics_v3 (C12); both source-metrics implementation modules arrive together in C11.",
+    "Captured ACT-2 source in E02 precedes SQLite environment C13, agent C14, and tests C15.",
+    "Operations source in C16 is retained provenance, not authorization to execute or re-run its commands.",
+    "Code-first stack: C01-C12 can be prepared immediately; E02 inserts the required exact historical destination source before SQLite C13-C15. The >800 historical manifest exception is deferred to a separate evidence layer after the code."
+  ],
+  "test_and_format_evidence": {
+    "authoritative_test_receipt": "operations/PREFORMAT_TESTS_02.json",
+    "test_receipt_sha256": "327898e5332a1c8598c3473b454b8cf7be96503bede5bad15b46a6aaa527ce0e",
+    "test_log_sha256": "67fdb5b4df950b69931bc8396a54717ee92c86a2010b9fe0a169ae892a209012",
+    "total": 47,
+    "passed": 44,
+    "skipped": 3,
+    "exit_code": 0,
+    "skipped_tests": [
+      "test_empty_or_padding_supervision_is_rejected (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_empty_or_padding_supervision_is_rejected)",
+      "test_lora_checkpointed_selected_loss_updates_adapter_and_reloads (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_lora_checkpointed_selected_loss_updates_adapter_and_reloads)",
+      "test_selected_causal_loss_and_all_parameter_gradients_match_dense (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_selected_causal_loss_and_all_parameter_gradients_match_dense)"
+    ],
+    "formatter_receipt": "operations/FORMAT_01.json",
+    "formatter_receipt_sha256": "d7221b24ed273277c93a183e8012437dfadc9372c3c22c28000e0158fecf4ab0",
+    "formatter_command": [
+      "/opt/homebrew/bin/just",
+      "fmt"
+    ],
+    "formatter_cwd": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/codex-rs",
+    "formatter_exit_code": 0,
+    "formatter_base": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+    "formatter_base_is_publication_base": false,
+    "tested_inventory_equals_prefmt_archive": true,
+    "formatter_before_hashes_match_tests": true,
+    "formatter_after_hashes_match_current_64_files": true,
+    "formatted_archive_matches_current_64_files": true,
+    "normalized_documentation_ast_equal": true,
+    "raw_ast_changes_are_only_docstring_indentation": [
+      "scripts/cell_experiments/source_metrics_v3.py",
+      "scripts/cell_experiments/sqlite_agent_probe_v3.py"
+    ],
+    "source_before_fmt_archive_sha256": "bbaa584b238d484eda14df66d1e7e81a9626d741f4cfe91b8d1bb23251041772",
+    "formatted_source_archive_sha256": "c30b68158e1030866a9b0a8d7494f22d52e4963395b2d2793ea05fbd9727cd85",
+    "tests_rerun_by_this_review": false,
+    "tests_rerun_after_format": false,
+    "correct_release_wording": "47 engineering tests: 44 passed, 3 real-backend numerical tests skipped; formatter exit 0 with source and AST continuity. Do not say 47 passed.",
+    "separate_numeric_01": {
+      "exit_code": 1,
+      "log_sha256": "7ca7efab8f5912e001f64944805e82c08cfd8a02a076f708759f8234d4f1f0d5",
+      "log_sha256_verified": true,
+      "source_archive_sha256": "6d471456bfcf6e7a9ade52ea995317f9c0894571d9bd5ebe96dcb845d68e58ad",
+      "three_numerical_cases_executed": false,
+      "outcome": "import loader error; original receipt preserved"
+    },
+    "separate_numeric_02_root_observation": {
+      "status": "3_REAL_TORCH_CPU_TESTS_PASSED",
+      "job_id": "1a1e6e5ab62-392-3c80",
+      "source_archive_sha256": "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7",
+      "torch": "2.9.1+cpu",
+      "transformers": "4.57.3",
+      "peft": "0.18.0",
+      "reported_by": "root after observing original job",
+      "raw_receipt_reviewed_by_this_subtask": false,
+      "capture_owner": "root will retain original log and receipt in a separate evidence layer",
+      "does_not_rewrite_local_47_test_receipt": true
+    }
+  },
+  "execution_snapshot_separation": {
+    "smol_archive": "operations/smol-probe-source-01.zip",
+    "smol_archive_sha256": "7d822083fd95b790a3d39196fe960f7e2848b9b971b2463622703d4ec316a95f",
+    "smol_expected_digest_matches_retained_launcher": true,
+    "smol_package_modules": 47,
+    "current_package_modules": 64,
+    "current_modules_absent_from_smol": 17,
+    "actual_logic_differences_from_smol": [
+      "scripts/cell_experiments/development_readiness_v3.py",
+      "scripts/cell_experiments/repo_interaction_v3.py"
+    ],
+    "protocol_v3_difference_is_format_only": true,
+    "replace_smol_snapshot_with_current_source_allowed": false,
+    "qwen_archive": "operations/qwen-source-01.zip",
+    "qwen_archive_sha256": "6d471456bfcf6e7a9ade52ea995317f9c0894571d9bd5ebe96dcb845d68e58ad",
+    "qwen_source_manifest": "operations/QWEN_SOURCE_01.json",
+    "qwen_snapshot_matches_current_64_modules": true,
+    "rule": "Preserve the original source/manifest/raw outputs for each executed run. Any later re-readout is a separately bound diagnostic, not a replacement of the original result.",
+    "qwen_source_02": {
+      "sha256": "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7",
+      "root_reported_change": "32 existing dependency files added; two old confirmation files removed; 64 core module bytes unchanged",
+      "independent_import_check_reported": true,
+      "full_archive_reviewed_by_this_subtask": false
+    }
+  },
+  "open_claim_gates": [
+    {
+      "id": "P1",
+      "claim": "Test-result publication wording and numeric-02 evidence retention",
+      "observed": "Local authoritative receipt is 44 passed / 3 skipped. Numeric-01 failed at import. Root has separately observed numeric-02 all three CPU numerical tests passing under source-02; its raw originals are being retained by root.",
+      "required": "Publish these as separate source/runtime-bound observations. Include the original numeric-02 log and receipt in a later evidence layer; never replace the old skips or failed numeric-01 record.",
+      "blocks_code_publication_with_accurate_scope": false
+    }
+  ],
+  "ordered_stacked_draft_prs": [
+    {
+      "id": "C01",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s01",
+      "draft_pr_base": "codex/cell-experiments-v2-20261116-0c078a-s24",
+      "commit_subject": "feat(v3): bind prepared repository prompts and controlled attempts",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/protocol_v3.py",
+        "scripts/cell_experiments/repo_interaction_v3.py"
+      ],
+      "added_text_lines": 475
+    },
+    {
+      "id": "C02",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s02",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s01",
+      "commit_subject": "test(v3): cover real repository execution and request identity",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/test_repo_interaction_v3.py"
+      ],
+      "added_text_lines": 469
+    },
+    {
+      "id": "C03",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s03",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s02",
+      "commit_subject": "feat(v3): interpret immutable semantic receipts consistently",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/circuit_receipts_v3.py"
+      ],
+      "added_text_lines": 183
+    },
+    {
+      "id": "C04",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s04",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s03",
+      "commit_subject": "feat(v3): add a frozen local Qwen readiness predictor",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/causal_probe_v3.py"
+      ],
+      "added_text_lines": 441
+    },
+    {
+      "id": "C05",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s05",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s04",
+      "commit_subject": "test(v3): verify predictor inventory and native request contracts",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/test_causal_probe_v3.py"
+      ],
+      "added_text_lines": 357
+    },
+    {
+      "id": "C06",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s06",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s05",
+      "commit_subject": "feat(v3): gate sparse routing on bound business evidence",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/circuit_readiness_v3.py"
+      ],
+      "added_text_lines": 333
+    },
+    {
+      "id": "C07",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s07",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s06",
+      "commit_subject": "test(v3): verify routing and ablation receipt identity",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/test_circuit_readiness_v3.py"
+      ],
+      "added_text_lines": 258
+    },
+    {
+      "id": "C08",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s08",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s07",
+      "commit_subject": "feat(v3): report measured development readiness explicitly",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/development_readiness_v3.py",
+        "scripts/cell_experiments/test_development_readiness_v3.py"
+      ],
+      "added_text_lines": 319
+    },
+    {
+      "id": "C09",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s09",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s08",
+      "commit_subject": "feat(v3): freeze same-base causal training contracts",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/causal_training_contract_v3.py",
+        "scripts/cell_experiments/test_causal_training_contract_v3.py"
+      ],
+      "added_text_lines": 496
+    },
+    {
+      "id": "C10",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s10",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s09",
+      "commit_subject": "feat(v3): add bounded causal fitting and numerical test hooks",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/causal_train_v3.py",
+        "scripts/cell_experiments/test_causal_train_v3.py"
+      ],
+      "added_text_lines": 479
+    },
+    {
+      "id": "C11",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s11",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s10",
+      "commit_subject": "feat(v3): preserve source-growth and retention measurement scope",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/source_metrics_retention_v3.py",
+        "scripts/cell_experiments/source_metrics_v3.py"
+      ],
+      "added_text_lines": 490
+    },
+    {
+      "id": "C12",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s12",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s11",
+      "commit_subject": "test(v3): verify source and cost accounting",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/test_source_metrics_v3.py"
+      ],
+      "added_text_lines": 206
+    },
+    {
+      "id": "E02",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s13",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s12",
+      "commit_subject": "evidence(v3): retain controlled SQLite source and trajectory originals",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/source-records/act2_run.py.txt",
+        "qualification/cell-experiments-v3-20261116/source-records/act2_sqlite_destination.py.txt",
+        "qualification/cell-experiments-v3-20261116/source-records/act2_review.md",
+        "qualification/cell-experiments-v3-20261116/source-records/ACT2_TRAJECTORY_READOUT.json",
+        "qualification/cell-experiments-v3-20261116/source-records/training-trajectories.jsonl.gz",
+        "qualification/cell-experiments-v3-20261116/source-records/h7_schema.sql",
+        "qualification/cell-experiments-v3-20261116/source-records/h7_guard.sql"
+      ],
+      "added_text_lines": 674,
+      "binary_bytes": 10012
+    },
+    {
+      "id": "C13",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s14",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s13",
+      "commit_subject": "feat(v3): bind the controlled SQLite development environment",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/repo_tasks_v3_sqlite.py",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/task-development-sqlite.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/missing-stage-actions.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/partial-actions.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/lost-reply-actions.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/prestaged-actions.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/README.md"
+      ],
+      "added_text_lines": 351
+    },
+    {
+      "id": "C14",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s15",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s14",
+      "commit_subject": "feat(v3): run bounded SQLite decisions with visible feedback",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/sqlite_agent_probe_v3.py"
+      ],
+      "added_text_lines": 412
+    },
+    {
+      "id": "C15",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s16",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s15",
+      "commit_subject": "test(v3): cover actual SQLite execution and feedback recovery",
+      "kind": "code",
+      "files": [
+        "scripts/cell_experiments/test_sqlite_agent_probe_v3.py",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/AGENT_PROBE_V3.md"
+      ],
+      "added_text_lines": 313
+    },
+    {
+      "id": "C16",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s17",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s16",
+      "commit_subject": "ops(v3): retain bounded setup and execution launch sources",
+      "kind": "code",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/operations/prepare_formatter_workspace_v3.py",
+        "qualification/cell-experiments-v3-20261116/operations/prepare_probe_runtime_v3.py",
+        "qualification/cell-experiments-v3-20261116/operations/recover_probe_runtime_v3.py",
+        "qualification/cell-experiments-v3-20261116/operations/run_numerical_v3.py",
+        "qualification/cell-experiments-v3-20261116/operations/run_smol_probe_v3.py"
+      ],
+      "added_text_lines": 450
+    },
+    {
+      "id": "E01",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s18",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s17",
+      "commit_subject": "evidence(v3): retain the exact historical ACT-2 frozen manifest",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/source-records/act2_frozen_manifest.json"
+      ],
+      "added_text_lines": 1890,
+      "size_exception": "1,890-line immutable historical JSON. This is the explicit mechanical-evidence exception requested in the review scope, not an under-800 code layer. If the publication gate disallows even evidence exceptions, hold this layer for an agreed byte-preserving artifact representation; never split a JSON document into invalid intermediate revisions."
+    },
+    {
+      "id": "E03",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s19",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s18",
+      "commit_subject": "evidence(v3): retain repository requirements and ordinary-loop provenance",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/source-records/EXPECTED_GIT.json",
+        "qualification/cell-experiments-v3-20261116/source-records/hepta-pr-5669.json",
+        "qualification/cell-experiments-v3-20261116/source-records/hepta-pr-5735.json",
+        "qualification/cell-experiments-v3-20261116/source-records/hepta-pr-6440.json",
+        "qualification/cell-experiments-v3-20261116/source-records/chain-issue-562.json",
+        "qualification/cell-experiments-v3-20261116/source-records/chain-issue-596.json",
+        "qualification/cell-experiments-v3-20261116/source-records/chain-issue-786.json",
+        "qualification/cell-experiments-v3-20261116/source-records/learn-ordinary-round2-readme.md",
+        "qualification/cell-experiments-v3-20261116/source-records/learn-ordinary-owner-gaps.md"
+      ],
+      "added_text_lines": 367
+    },
+    {
+      "id": "E04",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s20",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s19",
+      "commit_subject": "docs(v3): publish the bounded source audit and provenance index",
+      "kind": "documentation_and_index",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/provenance_v3.json",
+        "qualification/cell-experiments-v3-20261116/SOURCE_AUDIT_V3.md",
+        "qualification/cell-experiments-v3-20261116/SOURCE_PUBLICATION_REVIEW_V3.json"
+      ],
+      "added_text_lines": 700
+    },
+    {
+      "id": "E05",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s21",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s20",
+      "commit_subject": "evidence(v3): bind preformat tests to exact formatter output",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS.json",
+        "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS.log",
+        "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS_02.json",
+        "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS_02.log",
+        "qualification/cell-experiments-v3-20261116/operations/FORMAT_01.json",
+        "qualification/cell-experiments-v3-20261116/operations/FORMAT_01.log",
+        "qualification/cell-experiments-v3-20261116/operations/FORMAT_APPLY_01.json",
+        "qualification/cell-experiments-v3-20261116/operations/source-before-fmt-02.zip",
+        "qualification/cell-experiments-v3-20261116/operations/format-input-01.zip",
+        "qualification/cell-experiments-v3-20261116/operations/formatted-source-01.zip"
+      ],
+      "added_text_lines": 638,
+      "binary_bytes": 594677
+    },
+    {
+      "id": "E06",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s22",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s21",
+      "commit_subject": "evidence(v3): retain distinct Smol and Qwen source snapshots",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "V3_BASE.json",
+        "qualification/cell-experiments-v3-20261116/operations/QWEN_SOURCE_01.json",
+        "qualification/cell-experiments-v3-20261116/operations/smol-probe-source-01.zip",
+        "qualification/cell-experiments-v3-20261116/operations/qwen-source-01.zip",
+        "qualification/cell-experiments-v3-20261116/development-old-open.records.jsonl"
+      ],
+      "added_text_lines": 156,
+      "binary_bytes": 486364
+    },
+    {
+      "id": "E07",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s23",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s22",
+      "commit_subject": "evidence(v3): retain acquisition and recovery observations",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/operations/UPSTREAM_MODEL_API.json",
+        "qualification/cell-experiments-v3-20261116/operations/OPERATIONS_INDEX.json",
+        "qualification/cell-experiments-v3-20261116/operations/SETUP_RECOVERY_STATUS_01.json",
+        "qualification/cell-experiments-v3-20261116/operations/CACHE_DISCOVERY_01.json"
+      ],
+      "added_text_lines": 691
+    },
+    {
+      "id": "E08",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s24",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s23",
+      "commit_subject": "evidence(v3): retain exact old-A routing regression",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/regression-old-A/INPUT_SUMMARY.json",
+        "qualification/cell-experiments-v3-20261116/regression-old-A/GATE.json",
+        "qualification/cell-experiments-v3-20261116/regression-old-A/VERIFICATION.json",
+        "qualification/cell-experiments-v3-20261116/regression-old-A/READOUT.json",
+        "qualification/cell-experiments-v3-20261116/regression-old-A/REGRESSION_SOURCE_PRE_FMT.zip"
+      ],
+      "added_text_lines": 546,
+      "binary_bytes": 29272
+    },
+    {
+      "id": "E09",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s25",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s24",
+      "commit_subject": "evidence(v3): retain source-versus-project growth diagnostics",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/regression-old-A/E5_SOURCE.json",
+        "qualification/cell-experiments-v3-20261116/regression-old-A/E5_PROJECT.json"
+      ],
+      "added_text_lines": 491
+    },
+    {
+      "id": "E10",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s26",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s25",
+      "commit_subject": "evidence(v3): retain the measured historical resource ledger",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/regression-old-A/RESOURCE_LEDGER.json"
+      ],
+      "added_text_lines": 564
+    },
+    {
+      "id": "E11",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s27",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s26",
+      "commit_subject": "evidence(v3): retain controlled SQLite engineering traces",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/SUMMARY.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/ACTIONS.jsonl",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/TASK.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/destination.db",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/ACTIONS.jsonl",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/TASK.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/destination.db",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/ACTIONS.jsonl",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/TASK.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/destination.db",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/ACTIONS.jsonl",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/TASK.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/destination.db",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-01/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-01/stderr.txt",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-01/stdout.txt",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-02/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-02/stderr.txt",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-02/stdout.txt",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/MESSAGES.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/STARTED.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-0.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-1.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-2.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-3.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-4.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-5.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-6.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/ACTIONS.jsonl",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/RESULT.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/TASK.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/destination.db",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-0.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-1.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-2.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-3.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-4.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-5.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-6.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-0.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-1.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-2.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-3.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-4.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-5.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-6.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-0.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-1.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-2.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-3.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-4.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-5.json",
+        "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-6.json"
+      ],
+      "added_text_lines": 144,
+      "binary_bytes": 163840
+    },
+    {
+      "id": "E14a",
+      "commit_subject": "evidence(v3): retain original Smol result and transfer receipts",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/development-smol-01/RESULT_SUMMARY_01.json",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/SMOL_PROBE_EVIDENCE_01.zip",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/SUMMARY.md",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/TRANSFER_RECEIPT_01.json",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-parent-01/FREEZE.json",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-parent-01/READINESS.json",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-trajectory-01/FREEZE.json",
+        "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-trajectory-01/READINESS.json"
+      ],
+      "added_text_lines": 288,
+      "review_scope": "Late root-owned evidence appeared while this publication review was running. Only file inventory/line sizes are included here; original-run receipt validation remains with its collecting owner. This is not a missing-evidence finding.",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s27",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s28",
+      "binary_bytes": 211433
+    },
+    {
+      "id": "E14b",
+      "commit_subject": "evidence(v3): retain the exact Smol archive member inventory",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/development-smol-01/SMOL_PROBE_MEMBERS_01.json"
+      ],
+      "added_text_lines": 1739,
+      "review_scope": "Late root-owned evidence appeared while this publication review was running. Only file inventory/line sizes are included here; original-run receipt validation remains with its collecting owner. This is not a missing-evidence finding.",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s28",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s29",
+      "size_exception": "One immutable 1,739-line generated member inventory: explicit mechanical-evidence exception only. Do not change its bytes to hide size."
+    },
+    {
+      "id": "E15",
+      "commit_subject": "docs(v3): retain the current Qwen readiness operation notes",
+      "kind": "documentation_and_index",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/operations/QWEN_READINESS_01_NOTES.md"
+      ],
+      "added_text_lines": 62,
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s29",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s30"
+    },
+    {
+      "id": "E16",
+      "commit_subject": "evidence(v3): retain numerical-01 and source-02 import diagnostics",
+      "kind": "immutable_mechanical_evidence",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/operations/LOCAL_REFERENCE_CHECK_OBSERVATION_01.json",
+        "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_01.json",
+        "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_01.log",
+        "qualification/cell-experiments-v3-20261116/operations/QWEN_SOURCE_02.json",
+        "qualification/cell-experiments-v3-20261116/operations/QWEN_SOURCE_02_IMPORT_CHECK.json",
+        "qualification/cell-experiments-v3-20261116/operations/qwen-source-02.zip"
+      ],
+      "added_text_lines": 215,
+      "review_scope": "Numeric-01 source/log hashes were checked; other late entries are inventoried for collecting-owner review.",
+      "binary_bytes": 387581,
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s30",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s31"
+    },
+    {
+      "id": "E12",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s32",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s31",
+      "commit_subject": "docs(v3): record the exact stacked publication plan",
+      "kind": "publication_documentation",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/PUBLICATION_PLAN_V3.json"
+      ],
+      "added_text_lines": 694
+    },
+    {
+      "id": "E13",
+      "draft_pr_head": "codex/cell-experiments-v3-20261116-0c078a-s33",
+      "draft_pr_base": "codex/cell-experiments-v3-20261116-0c078a-s32",
+      "commit_subject": "docs(v3): record the bounded publication review",
+      "kind": "publication_documentation",
+      "files": [
+        "qualification/cell-experiments-v3-20261116/PUBLICATION_REVIEW_V3.md"
+      ],
+      "added_text_lines": 36
+    }
+  ],
+  "later_evidence_reservation": {
+    "numerical": [
+      "NUMERICAL_TESTS_01.json",
+      "NUMERICAL_TESTS_01.log"
+    ],
+    "each_model_run": [
+      "FREEZE.json",
+      "RECORDS.json",
+      "READINESS.json or FAILED.json",
+      "request-*.json",
+      "output-*.json",
+      "step-*.json",
+      "model manifest and terminal execution receipt"
+    ],
+    "instruction": "Add newly materialized evidence as additional small mechanical-evidence Draft layers with exact inventories. The present source snapshot stays unchanged.",
+    "mutable_qwen_launcher": {
+      "path": "qualification/cell-experiments-v3-20261116/operations/run_qwen_readiness_v3.py",
+      "observed_lines": 548,
+      "status": "DEFERRED_UNTIL_ROOT_FREEZES_EXECUTED_BYTES",
+      "scope": "Outside the stable 20 package modules; root should place the final launcher in its later operation/evidence layer."
+    },
+    "numerical_02": [
+      "NUMERICAL_TESTS_02.json",
+      "NUMERICAL_TESTS_02.log"
+    ]
+  },
+  "unassigned_late_paths_not_read": [
+    "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_02.json",
+    "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_02.log",
+    "qualification/cell-experiments-v3-20261116/operations/run_numerical_v3_02.py",
+    "qualification/cell-experiments-v3-20261116/operations/run_qwen_readiness_v3.py"
+  ],
+  "scripts_changes_by_this_review": [],
+  "late_evidence_update": {
+    "smol_original_evidence_now_present": true,
+    "included_as_stage": "E14",
+    "contents_reviewed_by_this_publication_task": false,
+    "missing_smol_receipt_finding_withdrawn": true,
+    "reason": "Root materialized original evidence while the read-only publication audit was in progress; initial missing-local-evidence observation is no longer a current finding."
+  },
+  "finalized_at": "2026-11-17T00:30:09.006793+00:00"
+}
