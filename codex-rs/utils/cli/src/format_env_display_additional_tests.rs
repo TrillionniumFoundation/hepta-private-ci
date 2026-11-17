@@ -145,7 +145,7 @@ fn variables_call_as_ref_once_each_in_original_slice_order() {
         format_env_display(Some(&env), &variables),
         "B=*****, A=*****, A=*****, =*****"
     );
-    assert_eq!(calls.into_inner(), vec!["first", "second", "third"]);
+    assert_eq!(*calls.borrow(), vec!["first", "second", "third"]);
 }
 
 #[test]
@@ -176,5 +176,5 @@ fn an_as_ref_panic_preserves_the_observed_callback_prefix() {
         format_env_display(Some(&env), &variables)
     }));
     assert!(outcome.is_err());
-    assert_eq!(calls.into_inner(), vec!["first", "stop"]);
+    assert_eq!(*calls.borrow(), vec!["first", "stop"]);
 }
