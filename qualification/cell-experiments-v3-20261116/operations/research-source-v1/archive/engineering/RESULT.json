@@ -1,0 +1,69 @@
+{
+  "archive_source_sha256": "1b88e687a6c92148f6efff6bfd77bf0e20ae42eb613181e6d1ef523dd2d0e903",
+  "behavior_checks": 3,
+  "checks": [
+    "actual_nonzero_wait_and_raw_log_binding",
+    "foreign_argv_rejected",
+    "live_writer_not_terminal"
+  ],
+  "live_process_observation": {
+    "current_boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+    "current_start_time_ticks": 23589154,
+    "current_state": "R",
+    "expected": {
+      "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "pid": 2020179,
+      "start_time_ticks": 23589154
+    },
+    "observed_at_ns": 1794885788657865817,
+    "proc_stat_sha256": "24359be2cbc2b394b79b608cbe8400fe58a6bd30f94db99927bf6d14278b3cc6",
+    "reason": "writer_may_be_live",
+    "stopped": false
+  },
+  "new_model_calls": 0,
+  "new_training_steps": 0,
+  "original_fixture_exit_code": 7,
+  "owned_process_observations": [
+    {
+      "current_boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "expected": {
+        "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+        "clock_ticks_per_second": 100,
+        "pid": 1954431,
+        "process_group_id": 1954431,
+        "start_time_ticks": 23511335,
+        "stat_sha256": "d75a5b77a4e282229550b4cfff89d504f4e4421eb5bdeb2613cd32b07e2c769f"
+      },
+      "observed_at_ns": 1794885788657167098,
+      "reason": "pid_absent",
+      "stopped": true
+    },
+    {
+      "current_boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "expected": {
+        "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+        "clock_ticks_per_second": 100,
+        "pid": 1954430,
+        "process_group_id": 1954430,
+        "start_time_ticks": 23511328,
+        "stat_sha256": "26c2e6699945822cfc0842a68cf25af4bbb56eb7ec66d0aa68f501ea86be1e6e"
+      },
+      "observed_at_ns": 1794885788657297639,
+      "reason": "pid_absent",
+      "stopped": true
+    }
+  ],
+  "source_files": [
+    {
+      "name": "archive_qwen_research_v1.py",
+      "reused_existing": false,
+      "sha256": "1b88e687a6c92148f6efff6bfd77bf0e20ae42eb613181e6d1ef523dd2d0e903"
+    },
+    {
+      "name": "archive_qwen_final_v3.py",
+      "reused_existing": false,
+      "sha256": "7bcd81d5bc8cae58c03a80c62e5c39f858a5996c1df1768ac4252a2d58fb80d1"
+    }
+  ],
+  "status": "PASS"
+}
