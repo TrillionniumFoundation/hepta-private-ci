@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "scripts.cell_experiments.test_sqlite_agent_probe_v3",
+    "-v"
+  ],
+  "completed_at": "2026-11-16T23:38:57Z",
+  "confirmation_qualified": false,
+  "exit_code": 0,
+  "new_independent_sources": 0,
+  "new_model_calls": 0,
+  "new_training_jobs": 0,
+  "predictor_kind": "scripted",
+  "previous_check": "probe-engineering-check-01 retained at its own exact source",
+  "revision_reason": "Require an immediately preceding real readback before labeling apply as an observed unstaged error; repeated idempotent apply after a stale view remains non-error.",
+  "schema": "hepta.sqlite-probe-engineering-check.v3",
+  "source_sha256": {
+    "scripts/cell_experiments/repo_tasks_v3_sqlite.py": "c07ede8ca630fb69cb2c8a1aeb20c86b56c208d9e3cb66878bc08f6f8954c01f",
+    "scripts/cell_experiments/sqlite_agent_probe_v3.py": "58c0a1175ff2f90bf1a40e11633f709c03aaeeb6252e6551e47260d4eb626007",
+    "scripts/cell_experiments/test_sqlite_agent_probe_v3.py": "4ea00d149b350945f7655831caf9742a7bc1d191769b9b8ec5d6cc2aaad14f0d"
+  },
+  "source_unchanged": true,
+  "started_at": "2026-11-16T23:38:57Z",
+  "stderr_sha256": "00666088bd845224b745c18d3217b0cbb90ec26477f77b5bec82c7ae9baf2aed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wall_seconds": 0.1299922170001082
+}
