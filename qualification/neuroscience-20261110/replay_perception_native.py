@@ -99,7 +99,12 @@ def validate_partitions(phases, collection, model):
     if set(phases) != {"B", "C"} or any(not phases[k] for k in phases):
         raise ValueError("Nonempty B and C rosters required")
     occupied, physical, groups = {}, {}, defaultdict(set)
-    rows = [(p["split"], p["case"]) for p in collection["pairs"]]
+    rows = []
+    for pair in collection["pairs"]:
+        # A frozen training collection cannot silently contribute B/C cases.
+        if type(pair) is not dict or pair.get("split") not in ("train", "calibration"):
+            raise ValueError("Original collection must contain train/calibration only")
+        rows.append((pair["split"], pair["case"]))
     for phase in ("B", "C"):
         contexts = set()
         for row in phases[phase]:
