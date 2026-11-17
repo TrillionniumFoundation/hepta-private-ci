@@ -1,0 +1,296 @@
+{
+  "archive": {
+    "bytes": 83698,
+    "members": 42,
+    "path": "onpolicy-engineering-evidence.zip",
+    "sha256": "065e2c7b17c4515bc9567bb0b3b0d56134018a913ac5f34bc33e1d0fd6477821"
+  },
+  "code_snapshots": {
+    "source-01": {
+      "code_files": 8,
+      "manifest": "snapshots/source-01.json",
+      "sha256": "9cbe01aae3ec1ad42f7e588691655159cf1f653a6fc8d931270f67dad43a81a6"
+    },
+    "source-02": {
+      "code_files": 11,
+      "manifest": "snapshots/source-02.json",
+      "sha256": "8b21a8f3ea8e9877353064c04debdcf4328d19f74e965b46e6902e711408962e"
+    },
+    "source-03": {
+      "code_files": 13,
+      "manifest": "snapshots/source-03.json",
+      "sha256": "c4f9c11b3531515d07e89023d9bc5ff50b46de955c33c857412f66f26b8d3f99"
+    },
+    "source-04": {
+      "code_files": 14,
+      "manifest": "snapshots/source-04.json",
+      "sha256": "934ea947efa6ce5ef15b109f2b9c7bb162832c2a04b3baf2d5ec6b4e9a14e33b"
+    }
+  },
+  "exact_output_extractions": [
+    {
+      "bytes": 1961,
+      "exit_code": 1,
+      "original_json_pointer": "/tensor_attempt_01/bytes_hex",
+      "original_sha256": "7264aea7b6e9c1860fe53ed9c5fe7748f08a799589192514f83346fd5cf061b4",
+      "path": "evidence/warm_start_cpu_attempt01_pty_output.txt",
+      "representation": "exact_bytes_extracted_from_complete_PTY_capture",
+      "sha256": "d44905ff6ac49a19e88252e21a2966ecb83c03ddabc62850429de3826c5b8de1",
+      "stream": "combined PTY stdout and stderr"
+    },
+    {
+      "bytes": 749,
+      "exit_code": 0,
+      "original_json_pointer": "/tensor_attempt_02/bytes_hex",
+      "original_sha256": "7264aea7b6e9c1860fe53ed9c5fe7748f08a799589192514f83346fd5cf061b4",
+      "path": "evidence/warm_start_cpu_attempt02_pty_output.txt",
+      "representation": "exact_bytes_extracted_from_complete_PTY_capture",
+      "sha256": "86cb1e9e771eb6b11968a8cce19bfe5eaba2510fa6368cd308a3847b03c24d41",
+      "stream": "combined PTY stdout and stderr"
+    },
+    {
+      "bytes": 2031,
+      "exit_code": 1,
+      "original_json_pointer": "/previous_source03_cleanup_revision/first_attempt/output",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "evidence/cleanup_import_attempt01_process_output.txt",
+      "representation": "unchanged_process_output_text_extraction",
+      "sha256": "533a1a1706b860fe1e0f424265c8334fc43542e8a7eb88f7b577b9d0c934beec"
+    },
+    {
+      "bytes": 1430,
+      "exit_code": 0,
+      "original_json_pointer": "/previous_source03_cleanup_revision/second_attempt/output",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "evidence/cleanup_source03_attempt02_passed_process_output.txt",
+      "representation": "unchanged_process_output_text_extraction",
+      "sha256": "1c81ff9a4756806970471cbe7490dc0ea8546d2ecd2313acff647a5b6bea31de"
+    },
+    {
+      "bytes": 2212,
+      "exit_code": 0,
+      "original_json_pointer": "/combined_revision_tests/observation/output",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "evidence/source04_lifecycle_cache_11_passed_process_output.txt",
+      "representation": "unchanged_process_output_text_extraction",
+      "sha256": "2882a566242f2b93b10fd06e1be729eecfdb0840c3f42c794e6ae123bab00205"
+    }
+  ],
+  "history_notes": [
+    "Warm-start attempt01 failed import; attempt02 added read-only original scripts and passed.",
+    "Lifecycle first launch failed importing hepta_cells; corrected path passed without source changes.",
+    "Reviewer attempt01 failed namespace import; attempt02 corrects its erroneous fallback-exercised label.",
+    "source04 validation said review PENDING at sealing; later independent review is separately included."
+  ],
+  "json_views": [
+    {
+      "omitted_fields_count": 2,
+      "original_json_pointer": "",
+      "original_sha256": "7264aea7b6e9c1860fe53ed9c5fe7748f08a799589192514f83346fd5cf061b4",
+      "path": "views/source01_validation.json",
+      "sha256": "4591df45b28b7564db033a0f5229bcabd0bf36664826a5d853d64c1d78bdf6cf"
+    },
+    {
+      "omitted_fields_count": 3,
+      "original_json_pointer": "",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "views/source04_validation_at_sealing.json",
+      "sha256": "ee1f8260964fd250bae7a980ed64f9d4a73edcfd0f92a9a6d27f6d0914b0fea2"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "",
+      "original_sha256": "6390efc725bccb6782c99c3c1b74bbb02dddaf0fdf788be626cdd3c95c8906d1",
+      "path": "views/original_pool_review.json",
+      "sha256": "bedbc32c98e4ceb47af12d8dcf7a1020f653a8d412fa9f455f45d7d3e5995497"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "",
+      "original_sha256": "0cb7ab9b6d2bd067aa449e8850afe3b38bb111b94f6706826917f38545fc92fe",
+      "path": "views/original_pool_review_checks.json",
+      "sha256": "532524c415ec5621750cbd2063450a3e2ba20561e5852f6d7d9f9033b3899a0e"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "",
+      "original_sha256": "66ce2b4b7f0ad6e902356ca48d6975c5f95f69a1187d4c9ee01f65a84f37ea8d",
+      "path": "views/source04_independent_review.json",
+      "sha256": "963d7192fd1aa57258eb48dd8936031149c8b3f3c5f14b3d1dc2b351d2faed79"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "",
+      "original_sha256": "f2e707a40e2af6e53ff706458af787f3e01b8088f78aa2cf3eba800d062d7115",
+      "path": "views/reviewer_source04_attempt01_failed_import.json",
+      "sha256": "5ef4d66db299fcd5484b780baf8104fdc9b0f35cb7def14b7117e38305b5eabc"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "",
+      "original_sha256": "a0a6d67cb22fd770dfbba6ab024caa2a7d9d7f85dad3d7fb4af360d866b3d9ea",
+      "path": "views/reviewer_source04_attempt02_passed.json",
+      "sha256": "97c37e92ec86ace115b4f1817346dc6bbe1e1a8db0233a90c2db82b2847cfa9d"
+    },
+    {
+      "omitted_fields_count": 1,
+      "original_json_pointer": "/tensor_attempt_01",
+      "original_sha256": "7264aea7b6e9c1860fe53ed9c5fe7748f08a799589192514f83346fd5cf061b4",
+      "path": "views/warm_start_cpu_attempt01_terminal.json",
+      "sha256": "4c4c9ddd3bff18eb5e766f72197de6648148f53e62874d6a2c2220297d0b65c7"
+    },
+    {
+      "omitted_fields_count": 1,
+      "original_json_pointer": "/tensor_attempt_02",
+      "original_sha256": "7264aea7b6e9c1860fe53ed9c5fe7748f08a799589192514f83346fd5cf061b4",
+      "path": "views/warm_start_cpu_attempt02_terminal.json",
+      "sha256": "4db504408ab554010ed9b6daf0ead6628f5270274a14f66cc5c3d6c7266ee28a"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "/previous_source03_cleanup_revision/first_attempt",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "views/cleanup_import_attempt01_terminal.json",
+      "sha256": "e12d0271d3134c3e5c0da2a2166ebcb20a9a48a4725dd64e8b3ecc8d336a2b5d"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "/previous_source03_cleanup_revision/second_attempt",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "views/cleanup_source03_attempt02_passed_terminal.json",
+      "sha256": "cd5a3bad9b34a886dc614dfad80577c24c54a4206f7c7cd0db668f20fb80e442"
+    },
+    {
+      "omitted_fields_count": 0,
+      "original_json_pointer": "/combined_revision_tests/observation",
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "views/source04_lifecycle_cache_11_passed_terminal.json",
+      "sha256": "43075ff3f095233caca682353cdf854d731dfd8e5584f77733458d6e6d6b5734"
+    }
+  ],
+  "omission_summary": {
+    "allowed_reasons": [
+      "redundant_bytes_hex",
+      "internal_tunnel_url"
+    ],
+    "error_text_status_code_unchanged": true,
+    "fields_removed": 7
+  },
+  "remote_actions_during_packaging": 0,
+  "schema": "hepta.onpolicy-engineering-publication-index.v1",
+  "scope": "engineering evidence only; public derived JSON views are not originals",
+  "source04_original_file_hashes": [
+    {
+      "bytes": 25738,
+      "original_sha256": "244947008e4017a73931d97c9a4163f9616947d5ae58b0c79146495817f57788",
+      "path": "ENGINEERING_VALIDATION.json"
+    },
+    {
+      "bytes": 2742,
+      "original_sha256": "44cb0e092355d6226a56bd5cec9831ce45b1a4ce419fbab9d4edc8845b9c1e8e",
+      "path": "INVENTORY.json"
+    },
+    {
+      "bytes": 6142,
+      "original_sha256": "e0a05bdbfd137195f9eef3b94df28116d112c8b9c56635e054e4b0bf23cf3a22",
+      "path": "README.md"
+    },
+    {
+      "bytes": 3014,
+      "original_sha256": "f027dc9ecaad879ca252336efa3fb35f37ce89f236c8c37ce2a89340c91985a7",
+      "path": "backend_smoke.py"
+    },
+    {
+      "bytes": 4448,
+      "original_sha256": "fc3e4c66f36f352e89359a406c8c8d8ff1a8f607b1930e2d00f9b802aa1db566",
+      "path": "online_v4/onpolicy_backend.py"
+    },
+    {
+      "bytes": 6651,
+      "original_sha256": "e79cf7f17d06cf57451415b51c54d596536bfb018113c67a9da70ef1bf194a10",
+      "path": "online_v4/onpolicy_contract.py"
+    },
+    {
+      "bytes": 2943,
+      "original_sha256": "c04307a1cc384a1045f95b3388a24d0d7fd0dfc965de072298370114ca92a1d2",
+      "path": "online_v4/onpolicy_feedback.py"
+    },
+    {
+      "bytes": 8370,
+      "original_sha256": "fd0d9706838736bffe8e5980b272ebe3dd918f6a7e4c5a20a7dcd0777a3a13c2",
+      "path": "online_v4/onpolicy_loop.py"
+    },
+    {
+      "bytes": 6898,
+      "original_sha256": "957ca60ad66dc578da405734a6060068a4d551af5a157642942810eafa8797b7",
+      "path": "online_v4/onpolicy_rollout.py"
+    },
+    {
+      "bytes": 9909,
+      "original_sha256": "64db149bee43242e68703a30ce090c3c2a3eb38f3d0347ac8c152d63898255f8",
+      "path": "online_v4/onpolicy_train.py"
+    },
+    {
+      "bytes": 13555,
+      "original_sha256": "02c3c7311a8b2834523b2995b831b90e6d9ff6495702418eadf59a5ba17594fc",
+      "path": "online_v4/shared_pool_v4.py"
+    },
+    {
+      "bytes": 2578,
+      "original_sha256": "a13104521f1837ff81739ca3707ab9a4af10d89a7387a4c3b590d6387a69b43a",
+      "path": "online_v4/test_onpolicy_cache.py"
+    },
+    {
+      "bytes": 9277,
+      "original_sha256": "fa0e03074f7c2218626811c8ca3dac62425a95a05fda9b1b5203ee4792c0978c",
+      "path": "online_v4/test_onpolicy_flow.py"
+    },
+    {
+      "bytes": 3144,
+      "original_sha256": "e2455b5d219a2da5175406324c3abd16b71dc2c6c749a4b3229d38cf8d32f998",
+      "path": "online_v4/test_onpolicy_tensor.py"
+    },
+    {
+      "bytes": 7095,
+      "original_sha256": "5fee971d8affb9c084b016bfc620340469f7b1387c1458540b1d0f2355776e54",
+      "path": "online_v4/test_shared_pool_cleanup.py"
+    },
+    {
+      "bytes": 7416,
+      "original_sha256": "9540460b1f11b7993bf376ea430d91090cdee25a8aec840e0246ce2c289ad58b",
+      "path": "online_v4/test_shared_pool_v4.py"
+    },
+    {
+      "bytes": 7187,
+      "original_sha256": "6390efc725bccb6782c99c3c1b74bbb02dddaf0fdf788be626cdd3c95c8906d1",
+      "path": "review02/REVIEW.json"
+    },
+    {
+      "bytes": 1655,
+      "original_sha256": "0cb7ab9b6d2bd067aa449e8850afe3b38bb111b94f6706826917f38545fc92fe",
+      "path": "review02/REVIEW_CHECKS.json"
+    },
+    {
+      "bytes": 7644,
+      "original_sha256": "3a361c1931167e885f0a012b6183ebd452b06fd867cbd43768586a3edf5fa04c",
+      "path": "review02/review_checks.py"
+    }
+  ],
+  "status": {
+    "actual_GPU_memory_release": "NOT_MEASURED",
+    "actual_GPU_training_by_this_author": "NOT_RUN",
+    "independent_sample_increment": 0,
+    "native_cell_adoption": false,
+    "native_python310_interpreter": "NOT_RUN",
+    "new_C": false,
+    "production_pool_adapter_loading_review": "NOT_RUN",
+    "real_default_backend_smoke": "NOT_RUN",
+    "real_shared_pool_tensor_A_B_A": "NOT_RUN",
+    "root_integration_37_tests_reexecuted": false,
+    "scientific_confirmation_qualified": false,
+    "source04_independent_review": "PASS_LIFECYCLE_AND_CIRCUIT_INTERFACE_ONLY",
+    "source04_lifecycle_cache": "PASS_11_DEPENDENCY_FREE_BEHAVIOR_TESTS",
+    "warm_start_actual_tiny_CPU": "PASS_ONE_REAL_NUMERICAL_TEST"
+  },
+  "view_provenance_location": "Each views/*.json contains complete original provenance and omitted_fields."
+}
