@@ -140,10 +140,14 @@ class Probe:
 def verify(args, report):
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / 'network_host.so', ROOT / 'hia/network_host.hepta',
-                  'full-native31', report)
-    require(report['native_build']['full31_manifest_verified'] is True
-            and report['native_build']['module_count'] == 31,
-            'item-budget raw ABI requires the complete current thirty-one-module build')
+                  args.build_profile, report)
+    verified_field, expected_count = {
+        'full-native31': ('full31_manifest_verified', 31),
+        'full-native32': ('full32_manifest_verified', 32),
+    }[args.build_profile]
+    require(report['native_build'][verified_field] is True
+            and report['native_build']['module_count'] == expected_count,
+            'item-budget raw ABI requires the complete requested module build')
     bind(Path(__file__), report)
     contract = json.loads(bind(ROOT / 'hia/output_item_budget_buffer_contract.json',
                                report, CONTRACT_SHA))
@@ -209,11 +213,13 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native31', 'full-native32'],
+                        default='full-native31')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {
         'schema': 'codex.hia.output-item-budget.raw-abi.v1', 'passed': False,
-        'requested_build_profile': 'full-native31',
+        'requested_build_profile': args.build_profile,
         'loaded_entry': 'libcodex_hia_output_item_budget.so:codex_hia_output_item_budget',
         'abi_scope': 'Normal native-selfhost B3 namespaced borrowed-buffers-u32-v1 only.',
         'return_rule': 'Full u64 equals the literal Core u32; nonzero high word is never masked.',

@@ -34,6 +34,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_token_budget",
     "codex_hia_output_lines",
     "codex_hia_output_item_budget",
+    "codex_hia_format_env_display",
     "codex_hia_source_file",
     "codex_hia_file_update",
     "codex_hia_parser",
