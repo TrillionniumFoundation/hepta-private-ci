@@ -1,0 +1,102 @@
+{
+  "closed_scope": "reviewable retained source-text availability for three previously pending Run01 controller roles",
+  "execution_provenance_limit": "original launch/terminal/owned receipts remain authoritative; text materialization does not retroactively make these paths original launch paths or independently prove every retained line executed",
+  "independent_source_custody_claimed": false,
+  "materialization_binding_sha256": "cad03659b42ebc146f0337e6d533db5a3d1dee9577119b34bc62e0c1d5847aef",
+  "original_execution_archive_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/",
+  "original_on_disk_execution_paths_claimed": false,
+  "original_receipt_members": {
+    "operations/RESEARCH_ACTUAL_TERMINAL_01.json": {
+      "bytes": 1577,
+      "device": 24,
+      "inode": 189254,
+      "mode": 436,
+      "mtime_ns": 1794888241336128955,
+      "path": "operations/RESEARCH_ACTUAL_TERMINAL_01.json",
+      "sha256": "1ebefd9403793488f068254ce82ae5deb14bd47f14d0b951e9946e91d730965d"
+    },
+    "operations/RESEARCH_POSTRUN_LAUNCH_FREEZE_01.json": {
+      "bytes": 11185,
+      "device": 24,
+      "inode": 189255,
+      "mode": 436,
+      "mtime_ns": 1794888241339614486,
+      "path": "operations/RESEARCH_POSTRUN_LAUNCH_FREEZE_01.json",
+      "sha256": "fc369cb239180bca00b21e0e33fa34ca92a6d9e8257f25defec1016a68188912"
+    },
+    "operations/RESEARCH_POSTRUN_TERMINAL_01.json": {
+      "bytes": 2035,
+      "device": 24,
+      "inode": 189337,
+      "mode": 436,
+      "mtime_ns": 1794888469586143107,
+      "path": "operations/RESEARCH_POSTRUN_TERMINAL_01.json",
+      "sha256": "62723a31f2a45afacc387f5a9c4af7211553dd46758982454a666a456426b7d4"
+    },
+    "operations/RESEARCH_TERMINAL_INDEX_01.json": {
+      "bytes": 1750,
+      "device": 24,
+      "inode": 189338,
+      "mode": 436,
+      "mtime_ns": 1794888469589548063,
+      "path": "operations/RESEARCH_TERMINAL_INDEX_01.json",
+      "sha256": "54c5fac2894dee34dd0fdd7a2b68ce9ace39b92ac2a3a2f8e4740825538e6360"
+    },
+    "owned-research-diagnostic-01/EXIT.json": {
+      "bytes": 1692,
+      "device": 24,
+      "inode": 189272,
+      "mode": 436,
+      "mtime_ns": 1794888287377487049,
+      "path": "owned-research-diagnostic-01/EXIT.json",
+      "sha256": "6d1cec534236bb9bebbec7c78967bce18cb26118261963ab4916f1ca08cf1cd4"
+    },
+    "owned-research-diagnostic-01/STARTED.json": {
+      "bytes": 1580,
+      "device": 24,
+      "inode": 189268,
+      "mode": 436,
+      "mtime_ns": 1794888286070763646,
+      "path": "owned-research-diagnostic-01/STARTED.json",
+      "sha256": "28955291cef467e1bf748321cc28eafa23debbaa59c50cbd97a194916cee7d5f"
+    },
+    "owned-research-sft-01/EXIT.json": {
+      "bytes": 1862,
+      "device": 24,
+      "inode": 189154,
+      "mode": 436,
+      "mtime_ns": 1794887929879537881,
+      "path": "owned-research-sft-01/EXIT.json",
+      "sha256": "cc5a9a23c899acf1dd2f92a2b24fee1e69f0018c9c246b57f7da154206e581b8"
+    },
+    "owned-research-sft-01/STARTED.json": {
+      "bytes": 1733,
+      "device": 24,
+      "inode": 188764,
+      "mode": 436,
+      "mtime_ns": 1794887683112332611,
+      "path": "owned-research-sft-01/STARTED.json",
+      "sha256": "535f2577e6ee02c0eb05ac90d10cb1e1477534da7b695a34ebbd5eed50d01244"
+    }
+  },
+  "reexecuted_or_new_execution_results": false,
+  "roles": [
+    {
+      "retained_source": "retained_inline_research01_inspection.py",
+      "role": "Run01 terminal inspection"
+    },
+    {
+      "retained_sources": [
+        "retained_inline_research01_postrun_prepare.py",
+        "retained_inline_research01_postrun_launch.py"
+      ],
+      "role": "Run01 postrun preparation and launch"
+    },
+    {
+      "retained_source": "retained_inline_research01_export.py",
+      "role": "Run01 final export"
+    }
+  ],
+  "schema": "hepta.retained-inline-role-coverage.v1",
+  "source_text_origin": "root retained original inline command strings, materialized under new paths"
+}

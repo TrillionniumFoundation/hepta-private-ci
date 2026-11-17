@@ -1,0 +1,4 @@
+import os,shlex
+remote="import hashlib,json,os,pathlib\nw=pathlib.Path(\"/dev/shm/hepta-cell-experiments-v3-20261116-0c078a\");p=\"/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python\"\nraw=(w/\"operations/RESEARCH_LAUNCH_FREEZE_02.json\").read_bytes()\nassert hashlib.sha256(raw).hexdigest()==\"436ba0bb2167cd2ea2cb2ad8eec05b02f943508ed4203eaa6a44107ce37f4d2b\"\nf=json.loads(raw);os.environ.update(f[\"environment\"])\nos.execv(p,[p,\"-I\",\"-B\",str(w/\"operations/launch_qwen_research_owned_v1_02.py\"),\"--role\",\"research\",\"--freeze-sha256\",\"436ba0bb2167cd2ea2cb2ad8eec05b02f943508ed4203eaa6a44107ce37f4d2b\"])\n"
+argv=["/usr/bin/ssh","-T","-o","BatchMode=yes","-o","ConnectTimeout=15","desktop-ts","/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python -I -B -c "+shlex.quote(remote)]
+os.execv(argv[0],argv)
