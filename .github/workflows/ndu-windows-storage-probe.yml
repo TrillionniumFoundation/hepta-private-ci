@@ -801,7 +801,7 @@ jobs:
           OUT = Path(os.environ["RUNNER_TEMP"]) / "hepta-appcontainer-mechanism"
           HEAD = os.environ["EXPECTED_HEAD"]
           PINS = {
-              ".github/scripts/windows-appcontainer-probe/probe.py": "772585d5aa6a42cbe8d16ad0ccd013a991f3c9dc7b3193210d77d542e4379fd6",
+              ".github/scripts/windows-appcontainer-probe/probe.py": "f928d0306ee0a899ca3666205da19bca4201c22b5c1bf224a951a0a1445c22b6",
               ".github/scripts/windows-appcontainer-probe/win32_api.py": "d6a49c3a7881356759b141920d5b1305ad4e3af0e69f37729b75db44cf22f6e8",
           }
 

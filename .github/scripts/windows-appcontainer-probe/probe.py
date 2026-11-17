@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -326,6 +327,62 @@ def observe(api, token, root, operations):
     return records
 
 
+def _observe_child_files(workspace):
+    # These are parent observations, not the child's failing Win32 operation.
+    limit = 4096
+    records = []
+    for name in (
+        "child-created.txt",
+        "child-delete.txt",
+        "child-delete-dir",
+        "child-readable.txt",
+        "child-attempts-done.txt",
+        "child-probe.cmd",
+    ):
+        record = {"path": name, "exists": None}
+        phase = "lstat"
+        try:
+            path = workspace / name
+            metadata = path.lstat()
+            attributes = getattr(metadata, "st_file_attributes", 0)
+            record.update(
+                exists=True,
+                size_bytes=metadata.st_size,
+                mode=metadata.st_mode,
+                file_attributes=attributes,
+            )
+            if attributes & 0x400 or stat.S_ISLNK(metadata.st_mode):
+                record["sample_status"] = "not_read_reparse_or_symlink"
+            elif stat.S_ISREG(metadata.st_mode):
+                phase = "read"
+                with path.open("rb") as stream:
+                    sample = stream.read(limit + 1)
+                prefix = sample[:limit]
+                record["sample"] = {
+                    "limit_bytes": limit,
+                    "captured_bytes": len(prefix),
+                    "limit_exceeded": len(sample) > limit,
+                    "prefix_hex": prefix.hex(),
+                    "prefix_sha256": hashlib.sha256(prefix).hexdigest(),
+                }
+            else:
+                record["sample_status"] = "not_read_non_regular"
+        except OSError as error:
+            if phase == "lstat" and isinstance(error, FileNotFoundError):
+                record["exists"] = False
+            message = str(error)
+            record["observer_error"] = {
+                "phase": phase,
+                "type": type(error).__name__,
+                "errno": error.errno,
+                "winerror": getattr(error, "winerror", None),
+                "message": message[:1024],
+                "message_truncated": len(message) > 1024,
+            }
+        records.append(record)
+    return {"observer": "parent_after_child_exit", "files": records}
+
+
 def cleanup_fixture(api, root, user):
     if root is None:
         return
@@ -437,6 +494,7 @@ def run_case(api, lpac, user, base_token):
         )
         result["child_exit_code"] = code.value
         workspace = prepared["workspace"]
+        result["child_file_observations"] = _observe_child_files(workspace)
         child_postconditions = (
             code.value == 0
             and (workspace / "child-created.txt").read_bytes().strip() == b"child"
