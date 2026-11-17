@@ -251,3 +251,75 @@ fn stale_abort_directive_cannot_terminalize_another_intent() -> Result<(), Super
     );
     Ok(())
 }
+
+#[test]
+fn unsigned_abort_remains_quarantined_across_repeated_cold_recovery() -> Result<(), SupervisorError>
+{
+    let fleet = fleet()?;
+    let initial_generation = 0;
+    let starting = fleet.registry.compare_and_transition(
+        &fleet.agent_id,
+        initial_generation,
+        AgentLifecycle::Starting,
+    )?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.agent_id,
+        starting.generation,
+        AgentLifecycle::Failed,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.agent_id)
+        .cloned()
+        .expect("registered agent");
+    let intent = SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"repeated-recovery-grant"),
+        fleet.agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        "source-release",
+        "target-release",
+        /*expected_control_revision*/ 4,
+        failed.generation,
+        /*authority_epoch*/ 9,
+        SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_intent_raw(record.layout.run_root(), &intent)?;
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    // A matching digest remains an unsigned instruction on every cold start.
+    // Reopening must preserve both the exact pending intent and its fence.
+    for _ in 0..3 {
+        let (recovered, report) = Supervisor::recover(
+            fleet.registry.clone(),
+            NoProcessDriver,
+            config(),
+            Instant::now(),
+        )?;
+        pretty_assertions::assert_eq!(report, codex_hepta_supervisor::TickReport::default());
+        assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+        assert!(recovered.any_production_recovery_required());
+        assert!(
+            !recovered
+                .snapshot(&fleet.agent_id)
+                .expect("snapshot")
+                .active
+        );
+        pretty_assertions::assert_eq!(
+            read_signed_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+            Some(intent.clone())
+        );
+        pretty_assertions::assert_eq!(
+            codex_hepta_supervisor::read_signed_intent_recovery_directive(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+            Some(directive.clone())
+        );
+        drop(recovered);
+    }
+    Ok(())
+}
