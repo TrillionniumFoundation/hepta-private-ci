@@ -1,0 +1,99 @@
+{
+  "action_schema": {
+    "enum": [
+      "inspect",
+      "stage",
+      "apply",
+      "stop"
+    ],
+    "max_decisions": 24,
+    "state_persists": true,
+    "type": "string"
+  },
+  "actor_contract": "Choose one primitive action at a time from inspect, stage, apply, stop. Inspect returns the next unsatisfied row and whether its prescribed payload is staged. Stage and apply operate on that visible row; payload values are supplied by the retained destination, not the actor. An initial or lost view addresses row zero until inspect restores the view. Stop claims completion only from the last actual visible complete readback. No automatic repair or implicit inspect occurs at stop.",
+  "authorization": {
+    "basis": "User requested repository audit and execution of E1\u2013E6 development experiments; parent delegated isolated local task curation.",
+    "production_authority": false,
+    "scope": "New disposable local SQLite files and retained source readback.",
+    "third_party_trace_license_established": false
+  },
+  "destination_source_sha256": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4",
+  "environment_identity": "act2-sqlite-destination@0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+  "role": "exposed_development_only",
+  "schema": "hepta.development-task-manifest.v3",
+  "scope_limits": [
+    "Action sequencing only; no generated SQL or generated payload.",
+    "All scenarios share one lineage and environment family.",
+    "No new user, external teacher, independent project, A/B/C split, or confirmation qualification.",
+    "Read-only database connections do not establish external evaluator independence.",
+    "Reference sequences are authored development material, not recorded model behavior."
+  ],
+  "success_rule": "The last visible readback reports complete, the actor chooses stop, the final same-process read-only scorer sees all prescribed values, and duplicate_effects is zero.",
+  "tasks": [
+    {
+      "confirmation_eligible": false,
+      "curated_at": "2026-11-16T23:28:08Z",
+      "environment": {
+        "fault": "lost_reply",
+        "goals": [
+          "v3-development-receipt-0"
+        ],
+        "schema": 0
+      },
+      "independent_source_count_added": 0,
+      "lineage_id": "derived:chain-786-workstream-3:act2-sqlite-family",
+      "new_user_count_added": 0,
+      "origin": "assistant-authored derivative of an existing issue and retained controlled environment",
+      "purpose": "Recover a committed write whose acknowledgement was lost; a repeated apply must not duplicate its effect.",
+      "request_created_at": "2026-11-08T05:04:58Z",
+      "request_record": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/786",
+      "source_group_id": "TrillionniumFoundation:controlled-sqlite-family",
+      "split": "development",
+      "task_id": "dev-sqlite-lost-reply-01"
+    },
+    {
+      "confirmation_eligible": false,
+      "curated_at": "2026-11-16T23:28:08Z",
+      "environment": {
+        "fault": "prestaged",
+        "goals": [
+          "v3-development-staged-0",
+          "v3-development-staged-1"
+        ],
+        "schema": 1
+      },
+      "independent_source_count_added": 0,
+      "lineage_id": "derived:chain-786-workstream-3:act2-sqlite-family",
+      "new_user_count_added": 0,
+      "origin": "assistant-authored derivative of an existing issue and retained controlled environment",
+      "purpose": "Finish two prescribed updates while respecting an existing staged first update and readback of progress.",
+      "request_created_at": "2026-11-08T05:04:58Z",
+      "request_record": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/786",
+      "source_group_id": "TrillionniumFoundation:controlled-sqlite-family",
+      "split": "development",
+      "task_id": "dev-sqlite-prestaged-01"
+    },
+    {
+      "confirmation_eligible": false,
+      "curated_at": "2026-11-16T23:28:08Z",
+      "environment": {
+        "fault": "already_partial",
+        "goals": [
+          "v3-development-partial-0",
+          "v3-development-partial-1"
+        ],
+        "schema": 0
+      },
+      "independent_source_count_added": 0,
+      "lineage_id": "derived:chain-786-workstream-3:act2-sqlite-family",
+      "new_user_count_added": 0,
+      "origin": "assistant-authored derivative of an existing issue and retained controlled environment",
+      "purpose": "Finish a partially satisfied destination after a nonproductive apply without a stage; preserve the already satisfied row.",
+      "request_created_at": "2026-11-08T05:04:58Z",
+      "request_record": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/786",
+      "source_group_id": "TrillionniumFoundation:controlled-sqlite-family",
+      "split": "development",
+      "task_id": "dev-sqlite-partial-01"
+    }
+  ]
+}
