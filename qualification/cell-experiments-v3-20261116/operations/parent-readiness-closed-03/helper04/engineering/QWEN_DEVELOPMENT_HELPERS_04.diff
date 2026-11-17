@@ -1,0 +1,11 @@
+--- helpers03/qwen_development_io_v3.py
++++ helpers04/qwen_development_io_v3.py
+@@ -20,7 +20,7 @@
+ SOURCE_SHA = "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7"
+ SOURCE_MANIFEST_SHA = "f4baf14dfb07513ade469adf6877ce6cd15ac98fbcc0e390854fcf24c85ae2be"
+ RUNTIME_ROOT = Path("/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a")
+-WORKSPACE_ROOT = Path("/data/hepta-cell-experiments-v3-20261116-0c078a")
++WORKSPACE_ROOT = Path("/dev/shm/hepta-cell-experiments-v3-20261116-0c078a")
+ ARMS = ("parent", "retrieval", "final_answer", "trajectory",
+         "shadow_correction", "controlled_correction")
+ FIT_MODES = {"final_answer": "final_answer", "trajectory": "trajectory",

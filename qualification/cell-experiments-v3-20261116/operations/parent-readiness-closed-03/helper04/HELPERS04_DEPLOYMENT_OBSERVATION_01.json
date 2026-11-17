@@ -1,0 +1,51 @@
+{
+  "archive_upload": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"7e27f8d7cbd7612ee92bb4cafe1720eebd3927bf4b14548c180fc68754d87687\",\"size\":32569,\"version\":\"16777233:610921367:32569:1794884390382615226:1794884390383367306\",\"written\":32569}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"mac\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-edca5fd0d0fd3f197a02b273c8a6c36e7e2e46bb4c79ec8fb3fd6bc70a040fdd\",\"status\":{\"boot\":\"{ sec = 1794536756, usec = 511028 } Fri Nov 13 10:25:56 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794884425555,\"output_complete\":false,\"owner_pid\":81278,\"pid\":81287,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-edca5fd0d0fd3f197a02b273c8a6c36e7e2e46bb4c79ec8fb3fd6bc70a040fdd/output.log",
+    "available_end": 583,
+    "chunk_sha256": "c5a0033d88af1f571284c86e7ec24e5972a7f286f4d29ce7d1ef05536405efeb",
+    "host": "mac",
+    "next_offset": 583,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-edca5fd0d0fd3f197a02b273c8a6c36e7e2e46bb4c79ec8fb3fd6bc70a040fdd",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 511028 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 583,
+      "bytes_stored": 583,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794884425555,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 81278,
+      "pid": 81287,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"exit_code\": 0, \"wall_seconds\": 0.3705745410406962, \"stdout_sha256\": \"0a8726e00e85bc482670197b1ac13744f7d80bad02ae0587e8fd95f84058f20b\", \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"stdout\": \"{\\\"status\\\": \\\"DEPLOYED_VERIFIED\\\", \\\"directory\\\": \\\"/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/e1e2-operation-helpers-04\\\", \\\"members\\\": 11, \\\"archive_sha256\\\": \\\"7e27f8d7cbd7612ee92bb4cafe1720eebd3927bf4b14548c180fc68754d87687\\\", \\\"receipt_sha256\\\": \\\"baf2a11f685a2659d4be6f9791d4ecc3029a7f19ab1d7507e36479708cfbe9da\\\"}\\n\", \"stderr\": \"\"}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  }
+}

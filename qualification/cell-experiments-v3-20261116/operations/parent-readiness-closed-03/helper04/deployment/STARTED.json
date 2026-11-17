@@ -1,0 +1,14 @@
+{
+  "archive_sha256": "7e27f8d7cbd7612ee92bb4cafe1720eebd3927bf4b14548c180fc68754d87687",
+  "argv": [
+    "/usr/bin/ssh",
+    "-T",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=15",
+    "desktop-ts",
+    "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python -I -B -c 'import base64,hashlib,io,json,os,stat,sys,zipfile\nfrom pathlib import Path\nworkspace=Path(\"/dev/shm/hepta-cell-experiments-v3-20261116-0c078a\")\nassert workspace.is_dir() and workspace.resolve()==workspace and workspace.stat().st_uid==os.getuid()\npacket=json.load(sys.stdin)\nmanifest=packet[\"manifest\"]\nraw=base64.b64decode(packet[\"archive_base64\"],validate=True)\nassert len(raw)==32569 and hashlib.sha256(raw).hexdigest()==\"7e27f8d7cbd7612ee92bb4cafe1720eebd3927bf4b14548c180fc68754d87687\"\noutput=workspace/\"e1e2-operation-helpers-04\"\narchive_path=workspace/\"operations/qwen-development-helpers-04.zip\"\nassert not output.exists() and not output.is_symlink() and not archive_path.exists() and not archive_path.is_symlink()\nwith zipfile.ZipFile(io.BytesIO(raw)) as archive:\n    assert archive.testzip() is None\n    assert len(archive.namelist())==len(manifest[\"members\"])==11 and set(archive.namelist())==set(manifest[\"members\"])\n    contents={}\n    for name,item in manifest[\"members\"].items():\n        assert Path(name).name==name and not stat.S_ISLNK(archive.getinfo(name).external_attr>>16)\n        data=archive.read(name)\n        assert len(data)==item[\"bytes\"] and hashlib.sha256(data).hexdigest()==item[\"sha256\"]\n        contents[name]=data\noutput.mkdir(mode=0o700,exist_ok=False)\nwith archive_path.open(\"xb\") as stream:stream.write(raw)\nfor name,data in contents.items():\n    with (output/name).open(\"xb\") as stream:stream.write(data)\nassert all(hashlib.sha256((output/name).read_bytes()).hexdigest()==item[\"sha256\"] for name,item in manifest[\"members\"].items())\nresult={\"schema\":\"hepta.qwen-helper04-deployment.v3\",\"status\":\"DEPLOYED_VERIFIED\",\"directory\":str(output),\"archive_sha256\":manifest[\"sha256\"],\"members\":manifest[\"members\"],\"model_imported\":False,\"model_calls\":0,\"training_steps\":0,\"original_helpers_modified\":False}\nwith (output/\"DEPLOYED.json\").open(\"x\") as stream:json.dump(result,stream,sort_keys=True,indent=2);stream.write(\"\\n\")\nprint(json.dumps({\"status\":result[\"status\"],\"directory\":str(output),\"members\":len(contents),\"archive_sha256\":manifest[\"sha256\"],\"receipt_sha256\":hashlib.sha256((output/\"DEPLOYED.json\").read_bytes()).hexdigest()}))\n'"
+  ],
+  "created_at_ns": 1794884425572753000
+}

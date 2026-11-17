@@ -1,0 +1,41 @@
+{
+  "actual_subprocesses": "small owned exit/timeout checks only",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-I",
+    "-B",
+    "-c",
+    "import json,sys,unittest;sys.path[:0]=['/dev/shm/hepta-cell-v3-0c078a/cell_experiments_v3_20261116/qualification/cell-experiments-v3-20261116/operations/helpers03-source', '/dev/shm/hepta-cell-v3-0c078a/cell_experiments_v3_20261116/scripts'];suite=unittest.defaultTestLoader.loadTestsFromName('test_qwen_development_v3');assert suite.countTestCases()==13;result=unittest.TextTestRunner(verbosity=2).run(suite);print(json.dumps({'tests_run':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),'skipped':len(result.skipped),'passed':result.wasSuccessful()},sort_keys=True));raise SystemExit(not result.wasSuccessful())"
+  ],
+  "automatic_retry": false,
+  "completed_at_ns": 1794883033483356777,
+  "exit_code": 0,
+  "final_repository_fmt": "to be run by root after final helper03 source is handed off; no test rerun afterward",
+  "helper_sha256": {
+    "qwen_development_execution_v3.py": "b28824a766115de190946055225452743dc95482de53a3d872781a7922b77656",
+    "qwen_development_inputs_v3.py": "6bd1b2d71857c5b541ca63ce815cbb05660b75284fc7065e5766e43d910fea20",
+    "qwen_development_io_v3.py": "98449ca18c6a4a3365ef76fc64122a64c8d15dba37c71eaccc1833091622d801",
+    "run_qwen_development_v3.py": "1f8cbc7eb21cae9a1e82654b3234e839f7cbe6cfa055f40900d16a559d72bb20",
+    "test_qwen_development_v3.py": "029175e886aedf59a5a45d3221f8386499f630e00f4bca62b438ba6bf220d294"
+  },
+  "independent_sample_increment": 0,
+  "log_sha256": "104376a3d426ecae46cb44129a7f54f0c5875c8cef23a35ac26e5fc93c9248ed",
+  "no_authored_reference_executed": true,
+  "no_model_loaded": true,
+  "revision": "helpers03",
+  "schema": "hepta.qwen-development-engineering-tests.v3",
+  "started_at_ns": 1794883032899020185,
+  "stdout_sha256": "e7efd69d26e7faa29df02d62a831b5ef14457d030239ebe29285d3359dadbe88",
+  "synthetic_receipts_are_not_experiment_evidence": true,
+  "temporary_directory_root": "/dev/shm/hepta-cell-v3-0c078a",
+  "test_methods_added": 0,
+  "test_result": {
+    "errors": 0,
+    "failures": 0,
+    "passed": true,
+    "skipped": 0,
+    "tests_run": 13
+  },
+  "test_suite_runs": 1,
+  "wall_seconds": 0.5841068419977091
+}

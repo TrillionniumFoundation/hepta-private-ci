@@ -1,0 +1,143 @@
+{
+  "arms": [
+    "parent",
+    "retrieval",
+    "final_answer",
+    "trajectory",
+    "shadow_correction",
+    "controlled_correction"
+  ],
+  "artifact_root_cli_is_workspace_root": true,
+  "budget": {
+    "automatic_retry": false,
+    "evaluation_wall_seconds": 600,
+    "fit_and_evaluation_wall_seconds": 1800,
+    "fit_arms": 4,
+    "fit_steps_per_arm": 64,
+    "max_input_tokens": 4096,
+    "max_new_tokens": 384,
+    "maximum_attempts": 2,
+    "maximum_evaluation_verifier_calls": 216,
+    "maximum_generated_tokens": 85248,
+    "maximum_model_calls": 222,
+    "maximum_padded_training_positions": 393216,
+    "maximum_reference_rechecks": 36,
+    "maximum_training_steps": 256,
+    "operation_wall_seconds": 14400,
+    "sequence_tokens": 1536,
+    "shadow_calls": 6,
+    "shadow_wall_seconds": 600,
+    "truncation": false
+  },
+  "budget_training_generation_data_policy_unchanged": true,
+  "core_edits": 0,
+  "created_at_ns": 1794883355695123807,
+  "cuda_cleanup": "gc.collect and torch.cuda.empty_cache before evaluate initial check_device after train returns; 4GiB threshold unchanged",
+  "deployment_requirements": {
+    "minimum_MemAvailable_bytes": 10737418240,
+    "minimum_tmpfs_available_bytes": 8589934592,
+    "observed_or_enforced_by_this_build": false,
+    "runtime_environment": "original HOME venv, no runtime relocation",
+    "source_manifest": "copy exact original QWEN_SOURCE_02.json to RAM workspace operations before preparation"
+  },
+  "engineering_test_suite_runs_this_revision": 0,
+  "files": {
+    "qwen_development_execution_v3.py": {
+      "ast_statements": 179,
+      "bytes": 20249,
+      "lines": 331,
+      "sha256": "b28824a766115de190946055225452743dc95482de53a3d872781a7922b77656"
+    },
+    "qwen_development_inputs_v3.py": {
+      "ast_statements": 132,
+      "bytes": 17604,
+      "lines": 270,
+      "sha256": "6bd1b2d71857c5b541ca63ce815cbb05660b75284fc7065e5766e43d910fea20"
+    },
+    "qwen_development_io_v3.py": {
+      "ast_statements": 148,
+      "bytes": 10974,
+      "lines": 258,
+      "sha256": "4116cfc058cfbec9bdca4845e409d0c1c2071d9da9faa4b56f9d8aa6df5a2060"
+    },
+    "run_qwen_development_v3.py": {
+      "ast_statements": 139,
+      "bytes": 16272,
+      "lines": 262,
+      "sha256": "1f8cbc7eb21cae9a1e82654b3234e839f7cbe6cfa055f40900d16a559d72bb20"
+    },
+    "test_qwen_development_v3.py": {
+      "ast_statements": 238,
+      "bytes": 22048,
+      "lines": 343,
+      "sha256": "029175e886aedf59a5a45d3221f8386499f630e00f4bca62b438ba6bf220d294"
+    }
+  },
+  "final_repository_fmt_owner": "root; run after helper04 handoff without rerunning engineering tests",
+  "fitting_modes": {
+    "controlled_correction": "trajectory",
+    "final_answer": "final_answer",
+    "shadow_correction": "trajectory",
+    "trajectory": "trajectory"
+  },
+  "frozen_core_64_unchanged": true,
+  "full_system_cost_matched": false,
+  "helper_inventory": {
+    "qwen_development_execution_v3.py": "b28824a766115de190946055225452743dc95482de53a3d872781a7922b77656",
+    "qwen_development_inputs_v3.py": "6bd1b2d71857c5b541ca63ce815cbb05660b75284fc7065e5766e43d910fea20",
+    "qwen_development_io_v3.py": "4116cfc058cfbec9bdca4845e409d0c1c2071d9da9faa4b56f9d8aa6df5a2060",
+    "run_qwen_development_v3.py": "1f8cbc7eb21cae9a1e82654b3234e839f7cbe6cfa055f40900d16a559d72bb20"
+  },
+  "independent_sample_increment": 0,
+  "inherited_engineering_tests": {
+    "actual_receipt": "QWEN_DEVELOPMENT_TESTS_03.json",
+    "not_actual_GPU_or_RAM_preflight": true,
+    "not_rerun_for_constant_only_change": true,
+    "receipt_sha256": "bbb3f226f639a3312915c46785f5fba51b549e8059542a806f3454164a684b3e",
+    "revision": "helpers03",
+    "tests_passed": 13,
+    "tests_run": 13
+  },
+  "model_or_training_execution_performed": false,
+  "new_C": false,
+  "new_exploratory_zero_baseline_policy_implemented": false,
+  "only_python_source_change": "WORKSPACE_ROOT constant from DATA to explicit RAM path",
+  "parsed_ast_equal_after_normalizing_that_constant": true,
+  "prior_helper03_status": "preserved unchanged, unused DATA-bound package",
+  "prior_helper_archive_sha256": "7613f6f1ef7b4448afaab7a31b8c944f693ed7384f84695e7ef9a8a055a969d6",
+  "prior_helper_manifest_sha256": "63b55bf170d29ad3f4a11704d0aea2ac46f18c89042e2564f0e4be43d4001d6f",
+  "prior_helpers02_and03_files_verified_unchanged": true,
+  "remote_upload_or_parent_setup_performed": false,
+  "required_parent_gate": "exact retained same-parent actual A business success > 0; unchanged",
+  "revision": "helpers04",
+  "runtime_root": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a",
+  "schema": "hepta.qwen-development-operation-helper-manifest.v3",
+  "source_archive_sha256": "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7",
+  "source_core_count": 64,
+  "source_inventory_119_verified_unchanged": true,
+  "source_manifest_sha256": "f4baf14dfb07513ade469adf6877ce6cd15ac98fbcc0e390854fcf24c85ae2be",
+  "status": "LOCAL_STATIC_VERIFIED_TESTS_INHERITED_NOT_EXECUTED",
+  "supporting_files": {
+    "QWEN_DEVELOPMENT_HELPERS_04.diff": {
+      "bytes": 691,
+      "sha256": "38664d95c405c9688a3e46be2ed062c619de1d87ddd88abf6052cc32ad34cf0b"
+    },
+    "QWEN_DEVELOPMENT_HELPERS_04_CHANGES.md": {
+      "bytes": 3365,
+      "sha256": "ec12dc7fa854cd46b40e546bf3e5eebd4aabc085c47a7023358787f661914f22"
+    },
+    "QWEN_DEVELOPMENT_TESTS_03.json": {
+      "bytes": 2320,
+      "sha256": "bbb3f226f639a3312915c46785f5fba51b549e8059542a806f3454164a684b3e"
+    },
+    "QWEN_DEVELOPMENT_TESTS_03.log": {
+      "bytes": 2491,
+      "sha256": "104376a3d426ecae46cb44129a7f54f0c5875c8cef23a35ac26e5fc93c9248ed"
+    },
+    "QWEN_DEVELOPMENT_TESTS_03.stdout.log": {
+      "bytes": 76,
+      "sha256": "e7efd69d26e7faa29df02d62a831b5ef14457d030239ebe29285d3359dadbe88"
+    }
+  },
+  "workspace_root": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a"
+}
