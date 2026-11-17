@@ -996,7 +996,11 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
             #[cfg(test)]
             let discovery = async move {
                 match &self.deadline_trace {
-                    Some(trace) => deadline_trace::DISCOVERY.scope(trace.clone(), discovery).await,
+                    Some(trace) => {
+                        deadline_trace::DISCOVERY
+                            .scope(trace.clone(), discovery)
+                            .await
+                    }
                     None => discovery.await,
                 }
             };

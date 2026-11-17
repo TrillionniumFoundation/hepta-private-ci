@@ -2419,7 +2419,10 @@ impl Session {
             }
             EventMsg::ItemCompleted(event) => {
                 if let TurnItem::AgentMessage(item) = &event.item
-                    && self.conversation.finish_handoff_stream_item(turn, &item.id).await
+                    && self
+                        .conversation
+                        .finish_handoff_stream_item(turn, &item.id)
+                        .await
                 {
                     return;
                 }

@@ -496,7 +496,9 @@ async fn realtime_finish_wait_reuses_the_exact_submission_and_admission() {
         &mut decision,
     );
     let finish = async {
-        decision_rx.await.expect("the exact Finish wait was identified");
+        decision_rx
+            .await
+            .expect("the exact Finish wait was identified");
         assert!(!fence.is_complete());
         assert!(session.active_turn.lock().await.is_none());
         assert!(
@@ -556,7 +558,9 @@ async fn realtime_stop_does_not_release_finish_or_admit_input(stop_before_attemp
         &mut decision,
     );
     let cancel = async {
-        decision_rx.await.expect("original admission identified Finish");
+        decision_rx
+            .await
+            .expect("original admission identified Finish");
         stop.cancel();
     };
     let (result, ()) = tokio::join!(routed, cancel);

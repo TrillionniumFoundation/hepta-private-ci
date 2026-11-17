@@ -42,7 +42,10 @@ async fn joined_fanout_preserves_parsed_events_and_tail_after_transport_end(expl
     let following = RealtimeEvent::ConversationItemDone {
         item_id: "following-event".to_string(),
     };
-    events_tx.send(handoff.clone()).await.expect("parsed handoff");
+    events_tx
+        .send(handoff.clone())
+        .await
+        .expect("parsed handoff");
     events_tx
         .send(following.clone())
         .await

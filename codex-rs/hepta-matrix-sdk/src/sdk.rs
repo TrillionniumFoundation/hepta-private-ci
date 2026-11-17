@@ -253,7 +253,9 @@ impl MatrixSdkClient {
         diagnostics.enter(MatrixBuildPhase::Paths);
         let paths = MatrixSdkPaths::prepare(layout, &config)?;
         diagnostics.enter(MatrixBuildPhase::ClientBuilder);
-        let stores = diagnostics.stores.get_or_init(SqliteStoreOpenDiagnostics::default);
+        let stores = diagnostics
+            .stores
+            .get_or_init(SqliteStoreOpenDiagnostics::default);
         let client = Client::builder()
             .homeserver_url(config.binding.homeserver.as_str())
             .sqlite_store_with_config_and_cache_path(

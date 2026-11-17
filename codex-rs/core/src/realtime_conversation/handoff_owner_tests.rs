@@ -181,22 +181,12 @@ async fn v2_accepted_steer_acknowledgement_precedes_owned_progress_and_completio
     second.prepare(&turn).await.commit();
     let owner = second.admitted.get().expect("accepted steer owner");
     assert_eq!(
-        owner
-            .handoff
-            .stream
-            .lock()
-            .await
-            .active_handoff
-            .as_deref(),
+        owner.handoff.stream.lock().await.active_handoff.as_deref(),
         Some("first")
     );
     let manager = RealtimeConversationManager::new();
     manager
-        .handoff_out(
-            &turn,
-            "result".to_string(),
-            Some(MessagePhase::FinalAnswer),
-        )
+        .handoff_out(&turn, "result".to_string(), Some(MessagePhase::FinalAnswer))
         .await
         .expect("owned progress flushes accepted steering acknowledgement");
     second
@@ -281,7 +271,15 @@ async fn only_the_matching_aborted_owner_retires_without_a_completion_acknowledg
             )
             .await;
         assert!(*first_owner.handoff.output_complete.lock().await);
-        assert!(first_owner.handoff.stream.lock().await.active_handoff.is_none());
+        assert!(
+            first_owner
+                .handoff
+                .stream
+                .lock()
+                .await
+                .active_handoff
+                .is_none()
+        );
         if matches!(kind, RealtimeSessionKind::V2) {
             assert_eq!(
                 rx.recv()
@@ -380,10 +378,17 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
         .admitted
         .get()
         .expect("accepted client-managed owner");
-    assert!(Arc::ptr_eq(&current_owner.handoff.identity, &current.identity));
+    assert!(Arc::ptr_eq(
+        &current_owner.handoff.identity,
+        &current.identity
+    ));
     assert!(Arc::ptr_eq(&current_owner.handoff.stream, &current.stream));
     manager
-        .handoff_out(&turn, "client-owned output".to_string(), /*phase*/ None)
+        .handoff_out(
+            &turn,
+            "client-owned output".to_string(),
+            /*phase*/ None,
+        )
         .await
         .expect("original client-managed output remains a no-op");
     manager

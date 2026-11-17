@@ -82,20 +82,20 @@ impl fmt::Debug for DeadlineTrace {
                 5 => "post_authority_wait",
                 _ => "unavailable",
             });
-        let discovery_stages = self
-            .discovery_stages
-            .each_ref()
-            .map(|slot| match slot.load(Ordering::Relaxed) {
-                1 => "path_checks",
-                2 => "read_only_pool",
-                3 => "query_only",
-                4 => "integrity_checks",
-                5 => "owner_and_schema",
-                6 => "capability_query",
-                7 => "capability_decode",
-                8 => "complete",
-                _ => "unavailable",
-            });
+        let discovery_stages =
+            self.discovery_stages
+                .each_ref()
+                .map(|slot| match slot.load(Ordering::Relaxed) {
+                    1 => "path_checks",
+                    2 => "read_only_pool",
+                    3 => "query_only",
+                    4 => "integrity_checks",
+                    5 => "owner_and_schema",
+                    6 => "capability_query",
+                    7 => "capability_decode",
+                    8 => "complete",
+                    _ => "unavailable",
+                });
         let mut first = "unavailable";
         let mut last = "unavailable";
         let mut recorded = 0;

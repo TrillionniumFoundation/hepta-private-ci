@@ -84,7 +84,12 @@ impl RealtimeHandoffRequest {
             return Ok(());
         }
         if let Some(owner) = self.admitted.get() {
-            send_owned_handoff_output(&owner.handoff, /*output*/ None, /*complete*/ false).await?;
+            send_owned_handoff_output(
+                &owner.handoff,
+                /*output*/ None,
+                /*complete*/ false,
+            )
+            .await?;
         }
         Ok(())
     }

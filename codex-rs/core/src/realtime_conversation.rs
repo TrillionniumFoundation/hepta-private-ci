@@ -1059,17 +1059,19 @@ impl RealtimeConversationManager {
             RealtimeSessionKind::V2 => {
                 let handoff_id = handoff.stream.lock().await.active_handoff.clone();
                 let last_output = handoff.last_output.lock().await.clone();
-                handoff_id.zip(last_output).map(|(handoff_id, last_output)| {
-                    if handoff.codex_responses_as_items {
-                        RealtimeOutbound::HandoffCompleteAck { handoff_id }
-                    } else {
-                        RealtimeOutbound::CompletedHandoff {
-                            handoff_id,
-                            text: last_output.text,
-                            phase: last_output.phase,
+                handoff_id
+                    .zip(last_output)
+                    .map(|(handoff_id, last_output)| {
+                        if handoff.codex_responses_as_items {
+                            RealtimeOutbound::HandoffCompleteAck { handoff_id }
+                        } else {
+                            RealtimeOutbound::CompletedHandoff {
+                                handoff_id,
+                                text: last_output.text,
+                                phase: last_output.phase,
+                            }
                         }
-                    }
-                })
+                    })
             }
         };
         send_owned_handoff_output(handoff, output, /*complete*/ true).await

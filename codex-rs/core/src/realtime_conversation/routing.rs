@@ -110,7 +110,10 @@ pub(super) async fn run(session: Arc<Session>, sub_id: String, start: RealtimeSt
             }
             RealtimeConversationEnd::Requested | RealtimeConversationEnd::Error => {}
         }
-        session.conversation.finish_if_active(&realtime_active).await;
+        session
+            .conversation
+            .finish_if_active(&realtime_active)
+            .await;
         send_realtime_conversation_closed(&session, sub_id, end).await;
     }
 }
