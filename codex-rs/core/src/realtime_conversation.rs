@@ -82,10 +82,13 @@ use tracing::warn;
 
 mod bem;
 mod existing_call;
+mod input_forwarding;
 mod sideband;
 
 use self::bem::ChannelParser as BemChannelParser;
 use self::bem::message_phase as bem_message_phase;
+use self::input_forwarding::PendingRealtimeEvent;
+use self::input_forwarding::flush_pending_realtime_event;
 use self::sideband::spawn_webrtc_sideband_input_task;
 
 const AUDIO_IN_QUEUE_CAPACITY: usize = 256;
@@ -1787,7 +1790,12 @@ fn spawn_realtime_input_task(
     tokio::spawn(async move {
         let events_tx = input.events_tx.clone();
         let transcript_state = input.events.transcript_state();
-        let exit = run_realtime_input_task(input, /*pending_outbound*/ None).await;
+        let mut pending_event = None;
+        let exit =
+            run_realtime_input_task(input, /*pending_outbound*/ None, &mut pending_event).await;
+        // The input receivers have been dropped. A final pending event can
+        // now drain without retaining capacity needed by a finishing turn.
+        let _ = flush_pending_realtime_event(&events_tx, &mut pending_event).await;
         if let RealtimeInputTaskExit::TransportLost { err, .. } = exit {
             report_realtime_transport_loss(&events_tx, err).await;
         }
@@ -1836,6 +1844,7 @@ enum RealtimeSidebandSessionInitialization {
 async fn run_realtime_input_task(
     input: RealtimeInputTask,
     pending_outbound: Option<Box<RealtimePendingOutbound>>,
+    pending_event: &mut Option<PendingRealtimeEvent>,
 ) -> RealtimeInputTaskExit {
     let RealtimeInputTask {
         writer,
@@ -1867,21 +1876,25 @@ async fn run_realtime_input_task(
     }
 
     loop {
+        let has_pending_event = pending_event.is_some();
         let result = tokio::select! {
             _ = stop_token.cancelled() => Err(RealtimeInputTaskExit::Terminal),
-            realtime_event = events.next_event() => {
+            delivery = flush_pending_realtime_event(&events_tx, pending_event), if has_pending_event => {
+                delivery.map_err(classify_realtime_input_error)
+            }
+            realtime_event = events.next_event(), if !has_pending_event => {
                 match realtime_event {
                     Ok(Some(event)) => {
                         handle_realtime_server_event(
                             event,
                             &writer,
-                            &events_tx,
                             &handoff_state,
                             session_kind,
                             &mut output_audio_state,
                             &mut response_create_queue,
                         )
                         .await
+                        .map(|event| *pending_event = Some(event))
                         .map_err(classify_realtime_input_error)
                     }
                     Ok(None) => Err(RealtimeInputTaskExit::Terminal),
@@ -2288,12 +2301,11 @@ async fn handle_handoff_output(
 async fn handle_realtime_server_event(
     event: RealtimeEvent,
     writer: &RealtimeWebsocketWriter,
-    events_tx: &Sender<RealtimeEvent>,
     handoff_state: &RealtimeHandoffState,
     session_kind: RealtimeSessionKind,
     output_audio_state: &mut Option<OutputAudioState>,
     response_create_queue: &mut RealtimeResponseCreateQueue,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<PendingRealtimeEvent> {
     let should_stop = match &event {
         RealtimeEvent::AudioOut(frame) => {
             match session_kind {
@@ -2431,14 +2443,7 @@ async fn handle_realtime_server_event(
         | RealtimeEvent::ConversationItemDone { .. } => false,
     };
 
-    if events_tx.send(event).await.is_err() {
-        anyhow::bail!("realtime output event channel closed");
-    }
-    if should_stop {
-        error!("realtime stream error event received");
-        anyhow::bail!("realtime stream error event received");
-    }
-    Ok(())
+    Ok(PendingRealtimeEvent { event, should_stop })
 }
 
 async fn handle_user_audio_input(
