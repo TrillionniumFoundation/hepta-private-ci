@@ -565,69 +565,66 @@ async fn retrieve_federated_product(
     };
     let mut candidates = Vec::new();
 
-    let attempts = join_all(
-        readers
-            .iter()
-            .enumerate()
-            .map(|(_index, (owner_layout, reader))| async move {
-                if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
-                    #[cfg(test)]
-                    if let Some(trace) = deadline_trace::attempt(_index) {
-                        trace.record(deadline_trace::Stage::BeforeExecute);
-                    }
-                    return Ok((
-                        Err(FederationV2Error::DeadlineExpired),
-                        Arc::new(Mutex::new(None)),
-                    ));
-                }
-                let (query, lease) = build_product_query_and_lease(
-                    reader,
-                    access,
-                    request,
-                    logical_start_ms,
-                    global_deadline_ms,
-                )?;
-                let captured = Arc::new(Mutex::new(None));
-                let transport = ProductReaderTransport {
-                    reader,
-                    access,
-                    request,
-                    captured: Arc::clone(&captured),
-                };
-                let authority = ProductReaderAuthority {
-                    owner_layout,
-                    consumer_agent_id,
-                    expected_capability: reader.capability(),
-                    logical_start_ms,
-                    started_at,
-                };
-                let control = ProductAttemptControl {
-                    logical_start_ms,
-                    started_at,
-                    #[cfg(test)]
-                    deadline_trace: deadline_trace::attempt(_index),
-                    #[cfg(test)]
-                    wait_count: AtomicU64::new(/*v*/ 0),
-                };
-                let result = execute_once(
-                    &transport,
-                    &authority,
-                    &control,
-                    logical_start_ms,
-                    query,
-                    &lease,
-                )
-                .await;
+    let attempts = join_all(readers.iter().enumerate().map(
+        |(_index, (owner_layout, reader))| async move {
+            if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
                 #[cfg(test)]
-                if let Some(trace) = &control.deadline_trace
-                    && control.wait_count.load(Ordering::Relaxed) == 0
-                    && matches!(&result, Err(FederationV2Error::DeadlineExpired))
-                {
-                    trace.record(deadline_trace::Stage::BeforeControlWait);
+                if let Some(trace) = deadline_trace::attempt(_index) {
+                    trace.record(deadline_trace::Stage::BeforeExecute);
                 }
-                Ok::<_, CognitiveStoreError>((result, captured))
-            }),
-    )
+                return Ok((
+                    Err(FederationV2Error::DeadlineExpired),
+                    Arc::new(Mutex::new(None)),
+                ));
+            }
+            let (query, lease) = build_product_query_and_lease(
+                reader,
+                access,
+                request,
+                logical_start_ms,
+                global_deadline_ms,
+            )?;
+            let captured = Arc::new(Mutex::new(None));
+            let transport = ProductReaderTransport {
+                reader,
+                access,
+                request,
+                captured: Arc::clone(&captured),
+            };
+            let authority = ProductReaderAuthority {
+                owner_layout,
+                consumer_agent_id,
+                expected_capability: reader.capability(),
+                logical_start_ms,
+                started_at,
+            };
+            let control = ProductAttemptControl {
+                logical_start_ms,
+                started_at,
+                #[cfg(test)]
+                deadline_trace: deadline_trace::attempt(_index),
+                #[cfg(test)]
+                wait_count: AtomicU64::new(/*v*/ 0),
+            };
+            let result = execute_once(
+                &transport,
+                &authority,
+                &control,
+                logical_start_ms,
+                query,
+                &lease,
+            )
+            .await;
+            #[cfg(test)]
+            if let Some(trace) = &control.deadline_trace
+                && control.wait_count.load(Ordering::Relaxed) == 0
+                && matches!(&result, Err(FederationV2Error::DeadlineExpired))
+            {
+                trace.record(deadline_trace::Stage::BeforeControlWait);
+            }
+            Ok::<_, CognitiveStoreError>((result, captured))
+        },
+    ))
     .await;
 
     for attempt in attempts {

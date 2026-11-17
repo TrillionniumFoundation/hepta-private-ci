@@ -469,8 +469,7 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
     assert_eq!(
-        coverage.completed_peers,
-        16,
+        coverage.completed_peers, 16,
         "peer coverage: {coverage:?}; deadline reporting stages: {deadline_observation:?}"
     );
     assert_eq!(coverage.failed_peers, 0);

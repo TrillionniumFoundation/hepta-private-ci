@@ -363,7 +363,6 @@ crate.annotation(
     },
     crate = "libsqlite3-sys",
 )
-
 crate.annotation(
     # The Windows lint toolchain cannot reliably materialize blake3's native x86 assembly archives.
     crate = "blake3",
