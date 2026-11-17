@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.posthoc-root-source-review.v1",
+  "status": "APPROVED_FOR_ONE_READONLY_RUN",
+  "original_source_sha256": "28d82e170ab0720fb6b453275a80b4bf1eebc1e987ed1ae3bd935bb00a77a071",
+  "candidate_source_sha256": "ce0b68cd98673bf15f170d1da7c42670f65320ba5c9d3cacc2f1c28696273821",
+  "exact_declared_replacement_only": true,
+  "runner_sha256": "d78fd9c8b4c2349303a187a8cd715385c0e42bccd3180a60aea45bd891cd125a",
+  "manifest_sha256": "147d90e993733c3c998210c55548c15d339a87d661a72bc49b1968bda3936e1c",
+  "original_rules_identity_preserved": true,
+  "original_main_not_called": true,
+  "original_artifacts_not_modified": true,
+  "study_scope": "same original run02; posthoc diagnostic only; no new independent observation",
+  "allowed_new_model_calls": 0,
+  "allowed_new_verifier_calls": 0,
+  "new_C": false,
+  "production_adoption": false,
+  "executed_at_review_time": false,
+  "reviewed_at": "2026-11-17T05:43:58.620Z",
+  "notes": [
+    "Read complete outer runner, manifests, original and candidate source, exact patch, regression report.",
+    "All downstream validation functions and original main retained; context order comes from SHA-bound recorded INPUTS.",
+    "Original archive and all-UNAVAILABLE diagnostic remain authoritative originals; new readout has explicit posthoc identity.",
+    "Outer runner denies model imports, child execution, network calls and writes outside new output after admission.",
+    "Existing closed-run export and owned waits establish completed original execution; posthoc Reader.recheck is selected-file consistency, not atomic filesystem snapshot."
+  ]
+}
