@@ -486,3 +486,410 @@ block entry(scalar:u64)
   v7:bool = bool.and(v1,v6)
   ret(v7)
 end
+fn valid_anchor(original:u64,start:u64,hit:u64,count:u64,cursor:u64) -> (bool) effects(trap) entry(entry)
+block entry(original:u64,start:u64,hit:u64,count:u64,cursor:u64)
+  v0:bool = compare.lt(original,count)
+  v1:bool = compare.le(original,start)
+  v2:bool = compare.le(start,hit)
+  v3:bool = compare.lt(hit,cursor)
+  v4:u64 = int.sub.wrap(hit,start)
+  k5:u64 = const() {"value":2}
+  v6:bool = compare.le(v4,k5)
+  k7:u64 = const() {"value":3}
+  r8:bool = call(start,original,k7) {"function":"within_multiple"}
+  v9:bool = bool.and(v0,v1)
+  v10:bool = bool.and(v9,v2)
+  v11:bool = bool.and(v10,v3)
+  v12:bool = bool.and(v11,v6)
+  v13:bool = bool.and(v12,r8)
+  ret(v13)
+end
+fn header_valid(source:readbuf,length:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,length:usize)
+  k0:usize = const() {"value":0}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  k2:usize = const() {"value":8}
+  r3:u64 = call(source,k2) {"function":"read_word"}
+  k4:usize = const() {"value":16}
+  r5:u64 = call(source,k4) {"function":"read_word"}
+  k6:usize = const() {"value":24}
+  r7:u64 = call(source,k6) {"function":"read_word"}
+  k8:usize = const() {"value":32}
+  r9:u64 = call(source,k8) {"function":"read_word"}
+  k10:usize = const() {"value":40}
+  r11:u64 = call(source,k10) {"function":"read_word"}
+  k12:usize = const() {"value":48}
+  r13:u64 = call(source,k12) {"function":"read_word"}
+  k14:usize = const() {"value":56}
+  r15:u64 = call(source,k14) {"function":"read_word"}
+  v16:u64 = int.cast(length) {"mode":"wrap"}
+  k17:u64 = const() {"value":1}
+  v18:bool = compare.eq(r1,k17)
+  k19:u64 = const() {"value":3}
+  v20:bool = compare.le(r3,k19)
+  k21:u64 = const() {"value":1}
+  v22:bool = compare.le(r5,k21)
+  k23:u64 = const() {"value":4096}
+  v24:bool = compare.le(r7,k23)
+  k25:u64 = const() {"value":320}
+  v26:u64 = int.add.wrap(r7,k25)
+  v27:bool = compare.eq(v16,v26)
+  k28:u64 = const() {"value":0}
+  v29:bool = compare.eq(r13,k28)
+  k30:u64 = const() {"value":0}
+  v31:bool = compare.eq(r15,k30)
+  v32:bool = bool.and(v18,v20)
+  v33:bool = bool.and(v32,v22)
+  v34:bool = bool.and(v33,v24)
+  v35:bool = bool.and(v34,v27)
+  v36:bool = bool.and(v35,v29)
+  v37:bool = bool.and(v36,v31)
+  ret(v37)
+end
+fn match_zero(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  k0:u64 = const() {"value":12}
+  k1:u64 = const() {"value":20}
+  r2:bool = call(source,k0,k1) {"function":"zero_range"}
+  k3:u64 = const() {"value":28}
+  k4:u64 = const() {"value":31}
+  r5:bool = call(source,k3,k4) {"function":"zero_range"}
+  v6:bool = bool.and(r2,r5)
+  ret(v6)
+end
+fn valid_context(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  k0:usize = const() {"value":136}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  k2:usize = const() {"value":144}
+  r3:u64 = call(source,k2) {"function":"read_word"}
+  k4:usize = const() {"value":152}
+  r5:u64 = call(source,k4) {"function":"read_word"}
+  k6:u64 = const() {"value":1}
+  v7:bool = compare.le(r1,k6)
+  k8:u64 = const() {"value":1}
+  v9:bool = compare.le(r3,k8)
+  v10:bool = bool.and(v7,v9)
+  k11:u64 = const() {"value":0}
+  v12:bool = compare.eq(r3,k11)
+  k13:u64 = const() {"value":0}
+  v14:bool = compare.eq(r5,k13)
+  v15:bool = bool.and(v12,v14)
+  k16:u64 = const() {"value":1}
+  v17:bool = compare.eq(r3,k16)
+  k18:u64 = const() {"value":1}
+  v19:bool = compare.eq(r1,k18)
+  k20:usize = const() {"value":120}
+  r21:u64 = call(source,k20) {"function":"read_word"}
+  k22:u64 = const() {"value":2}
+  v23:bool = compare.ge(r21,k22)
+  k24:u64 = const() {"value":0}
+  v25:bool = compare.gt(r5,k24)
+  k26:usize = const() {"value":128}
+  r27:u64 = call(source,k26) {"function":"read_word"}
+  v28:bool = compare.lt(r5,r27)
+  v29:bool = bool.and(v17,v19)
+  v30:bool = bool.and(v29,v23)
+  v31:bool = bool.and(v30,v25)
+  v32:bool = bool.and(v31,v28)
+  k33:u64 = const() {"value":0}
+  v34:bool = compare.eq(r1,k33)
+  k35:usize = const() {"value":120}
+  r36:u64 = call(source,k35) {"function":"read_word"}
+  k37:u64 = const() {"value":0}
+  v38:bool = compare.gt(r36,k37)
+  v39:bool = bool.or(v34,v38)
+  v40:bool = bool.or(v15,v32)
+  v41:bool = bool.and(v10,v39)
+  v42:bool = bool.and(v41,v40)
+  ret(v42)
+end
+fn valid_hit_state(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  k0:usize = const() {"value":160}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  k2:usize = const() {"value":168}
+  r3:u64 = call(source,k2) {"function":"read_word"}
+  k4:usize = const() {"value":176}
+  r5:u64 = call(source,k4) {"function":"read_word"}
+  k6:usize = const() {"value":184}
+  r7:u64 = call(source,k6) {"function":"read_word"}
+  k8:usize = const() {"value":192}
+  r9:u64 = call(source,k8) {"function":"read_word"}
+  k10:usize = const() {"value":200}
+  r11:u64 = call(source,k10) {"function":"read_word"}
+  k12:usize = const() {"value":208}
+  r13:u64 = call(source,k12) {"function":"read_word"}
+  k14:usize = const() {"value":216}
+  r15:u64 = call(source,k14) {"function":"read_word"}
+  k16:usize = const() {"value":304}
+  r17:u64 = call(source,k16) {"function":"read_word"}
+  k18:usize = const() {"value":104}
+  r19:u64 = call(source,k18) {"function":"read_word"}
+  k20:usize = const() {"value":288}
+  r21:u64 = call(source,k20) {"function":"read_word"}
+  k22:usize = const() {"value":296}
+  r23:u64 = call(source,k22) {"function":"read_word"}
+  r24:bool = call(r7,r9,r17,r19,r1) {"function":"valid_anchor"}
+  r25:bool = call(r13,r5,r11,r19,r1) {"function":"valid_anchor"}
+  v26:bool = compare.eq(r7,r13)
+  k27:u64 = const() {"value":1}
+  v28:bool = compare.eq(r15,k27)
+  k29:bool = const() {"value":false}
+  v30:bool = compare.eq(v26,k29)
+  v31:bool = compare.eq(r9,r5)
+  v32:bool = bool.and(v31,v28)
+  v33:bool = bool.or(v30,v32)
+  k34:u64 = const() {"value":2}
+  v35:bool = compare.ge(r15,k34)
+  v36:bool = bool.or(v26,v35)
+  k37:u64 = const() {"value":1}
+  v38:bool = compare.eq(r3,k37)
+  k39:bool = const() {"value":false}
+  v40:bool = compare.eq(v38,k39)
+  v41:bool = compare.eq(r17,r11)
+  v42:bool = compare.eq(r9,r5)
+  v43:bool = bool.and(v41,v26)
+  v44:bool = bool.and(v43,v42)
+  v45:bool = bool.and(v44,v28)
+  v46:bool = bool.or(v40,v45)
+  v47:bool = compare.eq(r13,r21)
+  k48:bool = const() {"value":false}
+  v49:bool = compare.eq(v47,k48)
+  v50:bool = compare.eq(r5,r23)
+  v51:bool = bool.or(v49,v50)
+  k52:u64 = const() {"value":1}
+  v53:bool = compare.ge(r15,k52)
+  v54:bool = compare.le(r15,r3)
+  v55:bool = compare.le(r7,r13)
+  v56:bool = compare.le(r9,r5)
+  v57:bool = compare.le(r17,r11)
+  v58:u64 = int.sub.wrap(r11,r17)
+  k59:u64 = const() {"value":1}
+  v60:u64 = int.add.wrap(v58,k59)
+  v61:bool = compare.le(r3,v60)
+  v62:u64 = int.sub.wrap(r13,r7)
+  k63:u64 = const() {"value":1}
+  v64:u64 = int.add.wrap(v62,k63)
+  v65:bool = compare.le(r15,v64)
+  v66:bool = compare.le(r13,r21)
+  v67:bool = compare.le(r5,r23)
+  v68:bool = bool.and(r24,r25)
+  v69:bool = bool.and(v68,v53)
+  v70:bool = bool.and(v69,v54)
+  v71:bool = bool.and(v70,v55)
+  v72:bool = bool.and(v71,v56)
+  v73:bool = bool.and(v72,v57)
+  v74:bool = bool.and(v73,v61)
+  v75:bool = bool.and(v74,v65)
+  v76:bool = bool.and(v75,v33)
+  v77:bool = bool.and(v76,v36)
+  v78:bool = bool.and(v77,v46)
+  v79:bool = bool.and(v78,v66)
+  v80:bool = bool.and(v79,v67)
+  v81:bool = bool.and(v80,v51)
+  ret(v81)
+end
+fn valid_scanned(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  k0:usize = const() {"value":160}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  k2:u64 = const() {"value":0}
+  v3:bool = compare.eq(r1,k2)
+  branch v3 empty(source) present(source,r1)
+block empty(empty_source:readbuf)
+  k4:usize = const() {"value":288}
+  r5:u64 = call(empty_source,k4) {"function":"read_word"}
+  k6:u64 = const() {"value":0}
+  v7:bool = compare.eq(r5,k6)
+  k8:usize = const() {"value":296}
+  r9:u64 = call(empty_source,k8) {"function":"read_word"}
+  k10:u64 = const() {"value":0}
+  v11:bool = compare.eq(r9,k10)
+  v12:bool = bool.and(v7,v11)
+  ret(v12)
+block present(present_source:readbuf,present_cursor:u64)
+  k13:usize = const() {"value":288}
+  r14:u64 = call(present_source,k13) {"function":"read_word"}
+  k15:usize = const() {"value":296}
+  r16:u64 = call(present_source,k15) {"function":"read_word"}
+  k17:usize = const() {"value":104}
+  r18:u64 = call(present_source,k17) {"function":"read_word"}
+  k19:u64 = const() {"value":1}
+  v20:u64 = int.sub.wrap(present_cursor,k19)
+  r21:bool = call(r14,r16,v20,r18,present_cursor) {"function":"valid_anchor"}
+  k22:usize = const() {"value":112}
+  r23:u64 = call(present_source,k22) {"function":"read_word"}
+  v24:bool = compare.eq(present_cursor,r23)
+  k25:bool = const() {"value":false}
+  v26:bool = compare.eq(v24,k25)
+  k27:u64 = const() {"value":1}
+  v28:u64 = int.sub.wrap(r18,k27)
+  v29:bool = compare.eq(r14,v28)
+  v30:bool = bool.or(v26,v29)
+  v31:bool = bool.and(r21,v30)
+  ret(v31)
+end
+fn valid_matching_state(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  k0:usize = const() {"value":160}
+  r1:u64 = call(source,k0) {"function":"read_word"}
+  k2:usize = const() {"value":168}
+  r3:u64 = call(source,k2) {"function":"read_word"}
+  k4:usize = const() {"value":112}
+  r5:u64 = call(source,k4) {"function":"read_word"}
+  k6:usize = const() {"value":128}
+  r7:u64 = call(source,k6) {"function":"read_word"}
+  k8:usize = const() {"value":88}
+  r9:u64 = call(source,k8) {"function":"read_word"}
+  k10:usize = const() {"value":72}
+  r11:u64 = call(source,k10) {"function":"read_word"}
+  v12:bool = compare.eq(r9,r11)
+  k13:usize = const() {"value":96}
+  r14:u64 = call(source,k13) {"function":"read_word"}
+  k15:usize = const() {"value":80}
+  r16:u64 = call(source,k15) {"function":"read_word"}
+  v17:bool = compare.eq(r14,r16)
+  k18:u64 = const() {"value":0}
+  v19:bool = compare.gt(r7,k18)
+  v20:bool = compare.lt(r3,r7)
+  v21:bool = compare.le(r1,r5)
+  v22:bool = compare.le(r3,r1)
+  k23:u64 = const() {"value":9}
+  k24:u64 = const() {"value":12}
+  r25:bool = call(source,k23,k24) {"function":"zero_range"}
+  r26:bool = call(source) {"function":"valid_scanned"}
+  v27:bool = bool.and(v12,v17)
+  v28:bool = bool.and(v27,v19)
+  v29:bool = bool.and(v28,v20)
+  v30:bool = bool.and(v29,v21)
+  v31:bool = bool.and(v30,v22)
+  v32:bool = bool.and(v31,r25)
+  v33:bool = bool.and(v32,r26)
+  branch v33 hits(source,r3) no()
+block hits(hits_source:readbuf,hits_cursor:u64)
+  k34:u64 = const() {"value":0}
+  v35:bool = compare.eq(hits_cursor,k34)
+  branch v35 empty(hits_source) present(hits_source)
+block empty(empty_source:readbuf)
+  k36:u64 = const() {"value":14}
+  k37:u64 = const() {"value":20}
+  r38:bool = call(empty_source,k36,k37) {"function":"zero_range"}
+  k39:usize = const() {"value":304}
+  r40:u64 = call(empty_source,k39) {"function":"read_word"}
+  k41:u64 = const() {"value":0}
+  v42:bool = compare.eq(r40,k41)
+  v43:bool = bool.and(r38,v42)
+  ret(v43)
+block present(present_source:readbuf)
+  r44:bool = call(present_source) {"function":"valid_hit_state"}
+  ret(r44)
+block no()
+  k45:bool = const() {"value":false}
+  ret(k45)
+end
+fn valid_state(source:readbuf,operation:u64) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,operation:u64)
+  k0:u64 = const() {"value":0}
+  v1:bool = compare.eq(operation,k0)
+  branch v1 fresh(source) nonempty(source,operation)
+block fresh(fresh_source:readbuf)
+  k2:u64 = const() {"value":0}
+  k3:u64 = const() {"value":32}
+  r4:bool = call(fresh_source,k2,k3) {"function":"zero_range"}
+  ret(r4)
+block nonempty(nonempty_source:readbuf,nonempty_operation:u64)
+  k5:usize = const() {"value":64}
+  r6:u64 = call(nonempty_source,k5) {"function":"read_word"}
+  v7:bool = compare.eq(r6,nonempty_operation)
+  k8:usize = const() {"value":80}
+  r9:u64 = call(nonempty_source,k8) {"function":"read_word"}
+  k10:u64 = const() {"value":0}
+  v11:bool = compare.gt(r9,k10)
+  k12:usize = const() {"value":72}
+  r13:u64 = call(nonempty_source,k12) {"function":"read_word"}
+  k14:usize = const() {"value":88}
+  r15:u64 = call(nonempty_source,k14) {"function":"read_word"}
+  k16:usize = const() {"value":104}
+  r17:u64 = call(nonempty_source,k16) {"function":"read_word"}
+  k18:usize = const() {"value":112}
+  r19:u64 = call(nonempty_source,k18) {"function":"read_word"}
+  r20:bool = call(r13,r15,r17,r19) {"function":"valid_counts"}
+  k21:usize = const() {"value":80}
+  r22:u64 = call(nonempty_source,k21) {"function":"read_word"}
+  k23:usize = const() {"value":96}
+  r24:u64 = call(nonempty_source,k23) {"function":"read_word"}
+  k25:usize = const() {"value":120}
+  r26:u64 = call(nonempty_source,k25) {"function":"read_word"}
+  k27:usize = const() {"value":128}
+  r28:u64 = call(nonempty_source,k27) {"function":"read_word"}
+  r29:bool = call(r22,r24,r26,r28) {"function":"valid_counts"}
+  r30:bool = call(nonempty_source) {"function":"valid_context"}
+  k31:u64 = const() {"value":20}
+  k32:u64 = const() {"value":28}
+  r33:bool = call(nonempty_source,k31,k32) {"function":"zero_range"}
+  k34:usize = const() {"value":312}
+  r35:u64 = call(nonempty_source,k34) {"function":"read_word"}
+  k36:u64 = const() {"value":0}
+  v37:bool = compare.eq(r35,k36)
+  v38:bool = bool.and(v7,v11)
+  v39:bool = bool.and(v38,r20)
+  v40:bool = bool.and(v39,r29)
+  v41:bool = bool.and(v40,r30)
+  v42:bool = bool.and(v41,r33)
+  v43:bool = bool.and(v42,v37)
+  branch v43 phase(nonempty_source,nonempty_operation) no()
+block phase(phase_source:readbuf,phase_operation:u64)
+  k44:u64 = const() {"value":1}
+  v45:bool = compare.eq(phase_operation,k44)
+  branch v45 hay(phase_source) other(phase_source,phase_operation)
+block hay(hay_source:readbuf)
+  k46:usize = const() {"value":72}
+  r47:u64 = call(hay_source,k46) {"function":"read_word"}
+  k48:usize = const() {"value":88}
+  r49:u64 = call(hay_source,k48) {"function":"read_word"}
+  v50:bool = compare.lt(r49,r47)
+  k51:u64 = const() {"value":0}
+  v52:bool = compare.eq(r47,k51)
+  k53:u64 = const() {"value":0}
+  v54:bool = compare.eq(r49,k53)
+  v55:bool = bool.and(v52,v54)
+  v56:bool = bool.or(v50,v55)
+  k57:usize = const() {"value":96}
+  r58:u64 = call(hay_source,k57) {"function":"read_word"}
+  k59:u64 = const() {"value":0}
+  v60:bool = compare.eq(r58,k59)
+  k61:u64 = const() {"value":7}
+  k62:u64 = const() {"value":12}
+  r63:bool = call(hay_source,k61,k62) {"function":"zero_range"}
+  v64:bool = bool.and(v60,r63)
+  r65:bool = call(hay_source) {"function":"match_zero"}
+  v66:bool = bool.and(v56,v64)
+  v67:bool = bool.and(v66,r65)
+  ret(v67)
+block other(other_source:readbuf,other_operation:u64)
+  k68:u64 = const() {"value":2}
+  v69:bool = compare.eq(other_operation,k68)
+  branch v69 needle(other_source) matching(other_source)
+block needle(needle_source:readbuf)
+  k70:usize = const() {"value":88}
+  r71:u64 = call(needle_source,k70) {"function":"read_word"}
+  k72:usize = const() {"value":72}
+  r73:u64 = call(needle_source,k72) {"function":"read_word"}
+  v74:bool = compare.eq(r71,r73)
+  k75:usize = const() {"value":96}
+  r76:u64 = call(needle_source,k75) {"function":"read_word"}
+  k77:usize = const() {"value":80}
+  r78:u64 = call(needle_source,k77) {"function":"read_word"}
+  v79:bool = compare.lt(r76,r78)
+  r80:bool = call(needle_source) {"function":"match_zero"}
+  v81:bool = bool.and(v74,v79)
+  v82:bool = bool.and(v81,r80)
+  ret(v82)
+block matching(matching_source:readbuf)
+  r83:bool = call(matching_source) {"function":"valid_matching_state"}
+  ret(r83)
+block no()
+  k84:bool = const() {"value":false}
+  ret(k84)
+end
