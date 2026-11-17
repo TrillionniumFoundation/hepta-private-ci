@@ -82,11 +82,15 @@ use tracing::warn;
 
 mod bem;
 mod existing_call;
+mod handoff_owner;
 mod input_forwarding;
 mod sideband;
 
 use self::bem::ChannelParser as BemChannelParser;
 use self::bem::message_phase as bem_message_phase;
+pub(crate) use self::handoff_owner::RealtimeHandoffRequest;
+use self::handoff_owner::RealtimeTurnHandoff;
+use self::handoff_owner::send_owned_handoff_output;
 use self::input_forwarding::PendingRealtimeEvent;
 use self::input_forwarding::flush_pending_realtime_event;
 use self::sideband::spawn_webrtc_sideband_input_task;
@@ -147,6 +151,8 @@ enum RealtimeSessionKind {
 
 #[derive(Clone, Debug)]
 struct RealtimeHandoffState {
+    identity: Arc<()>,
+    output_complete: Arc<Mutex<bool>>,
     output_tx: Sender<RealtimeOutbound>,
     last_output: Arc<Mutex<Option<RealtimeHandoffOutput>>>,
     stream: Arc<Mutex<RealtimeHandoffStreamState>>,
@@ -168,6 +174,7 @@ struct RealtimeHandoffOutput {
 #[derive(Debug, Default)]
 struct RealtimeHandoffStreamState {
     active_handoff: Option<String>,
+    pending_steer_ack: Option<String>,
     items: HashMap<String, RealtimeStreamedItem>,
 }
 
@@ -353,6 +360,9 @@ enum RealtimeOutbound {
         phase: Option<MessagePhase>,
     },
     HandoffCompleteAck {
+        handoff_id: String,
+    },
+    HandoffSteerAck {
         handoff_id: String,
     },
 }
@@ -582,6 +592,8 @@ impl RealtimeConversationManager {
         let realtime_active = Arc::new(AtomicBool::new(true));
         let stop_token = CancellationToken::new();
         let handoff = RealtimeHandoffState {
+            identity: Arc::new(()),
+            output_complete: Arc::new(Mutex::new(/*t*/ false)),
             output_tx: handoff_output_tx,
             last_output: Arc::new(Mutex::new(None)),
             stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),

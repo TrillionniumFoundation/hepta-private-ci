@@ -1,0 +1,138 @@
+//! Binds a server-managed handoff to the turn that actually accepts its input.
+
+use super::RealtimeHandoffState;
+use super::RealtimeHandoffStreamState;
+use super::RealtimeOutbound;
+use super::RealtimeSessionKind;
+use crate::session::turn_context::TurnContext;
+use codex_protocol::error::CodexErr;
+use codex_protocol::error::Result as CodexResult;
+use std::sync::Arc;
+use std::sync::OnceLock;
+use tokio::sync::Mutex;
+use tokio::sync::OwnedMutexGuard;
+
+#[derive(Clone, Debug)]
+pub(super) struct RealtimeTurnHandoff {
+    pub(super) handoff: RealtimeHandoffState,
+}
+
+/// Retained with one submission through an exact Finish wait. Receipt of a
+/// network handoff does not install this owner or change another turn's output.
+pub(crate) struct RealtimeHandoffRequest {
+    handoff: RealtimeHandoffState,
+    handoff_id: String,
+    admitted: OnceLock<Arc<RealtimeTurnHandoff>>,
+}
+
+pub(crate) struct PreparedRealtimeHandoff<'a> {
+    request: &'a RealtimeHandoffRequest,
+    turn: &'a TurnContext,
+    owner: Arc<RealtimeTurnHandoff>,
+    stream: OwnedMutexGuard<RealtimeHandoffStreamState>,
+}
+
+impl RealtimeHandoffRequest {
+    pub(super) fn new(handoff: RealtimeHandoffState, handoff_id: String) -> Self {
+        Self {
+            handoff,
+            handoff_id,
+            admitted: OnceLock::new(),
+        }
+    }
+
+    /// The caller holds the original admission owner. For steering, retain
+    /// this stream guard until the input is appended and commit synchronously.
+    pub(crate) async fn prepare<'a>(
+        &'a self,
+        turn: &'a TurnContext,
+    ) -> PreparedRealtimeHandoff<'a> {
+        let owner = turn
+            .extension_data
+            .get::<RealtimeTurnHandoff>()
+            .filter(|owner| Arc::ptr_eq(&owner.handoff.identity, &self.handoff.identity))
+            .unwrap_or_else(|| {
+                Arc::new(RealtimeTurnHandoff {
+                    handoff: RealtimeHandoffState {
+                        last_output: Arc::new(Mutex::new(None)),
+                        stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),
+                        output_complete: Arc::new(Mutex::new(/*t*/ false)),
+                        ..self.handoff.clone()
+                    },
+                })
+            });
+        let stream = Arc::clone(&owner.handoff.stream).lock_owned().await;
+        PreparedRealtimeHandoff {
+            request: self,
+            turn,
+            owner,
+            stream,
+        }
+    }
+
+    pub(crate) async fn flush_admitted(&self) -> CodexResult<()> {
+        if let Some(owner) = self.admitted.get() {
+            send_owned_handoff_output(&owner.handoff, /*output*/ None, /*complete*/ false).await?;
+        }
+        Ok(())
+    }
+}
+
+impl PreparedRealtimeHandoff<'_> {
+    pub(crate) fn commit(mut self) {
+        match self.request.handoff.session_kind {
+            RealtimeSessionKind::V1 => {
+                self.stream.items.clear();
+                self.stream.active_handoff = Some(self.request.handoff_id.clone());
+            }
+            RealtimeSessionKind::V2 if self.stream.active_handoff.is_some() => {
+                let previous = self
+                    .stream
+                    .pending_steer_ack
+                    .replace(self.request.handoff_id.clone());
+                assert!(previous.is_none(), "the previous steering acknowledgement must drain");
+            }
+            RealtimeSessionKind::V2 => {
+                self.stream.active_handoff = Some(self.request.handoff_id.clone());
+            }
+        }
+        let _ = self.turn.extension_data.insert(self.owner.as_ref().clone());
+        self.request
+            .admitted
+            .set(Arc::clone(&self.owner))
+            .unwrap_or_else(|_| panic!("one realtime submission may be admitted only once"));
+    }
+}
+
+/// Serialize progress, accepted-steer acknowledgement and completion for one
+/// owner. After completion, a late timer cannot enqueue stale progress. The
+/// receiver therefore does not need a later arrival's global handoff ID to
+/// classify an already-owned V2 output.
+pub(super) async fn send_owned_handoff_output(
+    handoff: &RealtimeHandoffState,
+    output: Option<RealtimeOutbound>,
+    complete: bool,
+) -> CodexResult<()> {
+    let mut output_complete = handoff.output_complete.lock().await;
+    if *output_complete {
+        return Ok(());
+    }
+    if complete {
+        *output_complete = true;
+    }
+    let acknowledgement = handoff
+        .stream
+        .lock()
+        .await
+        .pending_steer_ack
+        .take()
+        .map(|handoff_id| RealtimeOutbound::HandoffSteerAck { handoff_id });
+    for output in acknowledgement.into_iter().chain(output) {
+        handoff
+            .output_tx
+            .send(output)
+            .await
+            .map_err(|_| CodexErr::InvalidRequest("conversation is not running".to_string()))?;
+    }
+    Ok(())
+}
