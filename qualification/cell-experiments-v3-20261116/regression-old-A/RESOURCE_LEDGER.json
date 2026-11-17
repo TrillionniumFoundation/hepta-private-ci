@@ -1,0 +1,564 @@
+{
+  "components": {
+    "encoder": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    },
+    "model_inference": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": true,
+          "measured_receipts": 3,
+          "measured_subtotal": 210.85600170499998,
+          "missing_receipts": [],
+          "recorded_sum": 210.85600170499998
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [
+            "ca7175766d86d26e76ac561ae9d295a3bc617087a121168cdd0f8223baefa3f2",
+            "a18e3687912a7ae32102b31fa74b5022ecc3b98678f4cabb817bfe9df185f0ab",
+            "762dc55c6c72a5be0afbb35c6b1ac1cbf17013625ecc139c8510360093c62834"
+          ],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": true,
+          "measured_receipts": 3,
+          "measured_subtotal": 5382,
+          "missing_receipts": [],
+          "recorded_sum": 5382
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [
+            "ca7175766d86d26e76ac561ae9d295a3bc617087a121168cdd0f8223baefa3f2",
+            "a18e3687912a7ae32102b31fa74b5022ecc3b98678f4cabb817bfe9df185f0ab",
+            "762dc55c6c72a5be0afbb35c6b1ac1cbf17013625ecc139c8510360093c62834"
+          ],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": true,
+          "measured_receipts": 3,
+          "measured_subtotal": 18,
+          "missing_receipts": [],
+          "recorded_sum": 18
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [
+            "ca7175766d86d26e76ac561ae9d295a3bc617087a121168cdd0f8223baefa3f2",
+            "a18e3687912a7ae32102b31fa74b5022ecc3b98678f4cabb817bfe9df185f0ab",
+            "762dc55c6c72a5be0afbb35c6b1ac1cbf17013625ecc139c8510360093c62834"
+          ],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": true,
+          "measured_receipts": 3,
+          "measured_subtotal": 2674,
+          "missing_receipts": [],
+          "recorded_sum": 2674
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": true,
+          "measured_receipts": 3,
+          "measured_subtotal": 110.32812226214446,
+          "missing_receipts": [],
+          "recorded_sum": 110.32812226214446
+        }
+      },
+      "receipt_count": 3
+    },
+    "network": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    },
+    "orchestration": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    },
+    "recovery": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    },
+    "router_kernel": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    },
+    "training": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    },
+    "verification": {
+      "metrics": {
+        "cpu_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "energy_joules": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "input_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "kernel_mac_equivalent": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "model_calls": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "optimizer_updates": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "output_tokens": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        },
+        "wall_seconds": {
+          "complete_for_supplied_component_receipts": false,
+          "measured_receipts": 0,
+          "measured_subtotal": null,
+          "missing_receipts": [],
+          "recorded_sum": null
+        }
+      },
+      "receipt_count": 0
+    }
+  },
+  "cross_scope_cpu_overlap_reconciled": false,
+  "currency_cost": null,
+  "duplicate_references": 0,
+  "full_system_cost": null,
+  "full_system_cost_known": false,
+  "input_digest": "7eac2faf92de4e1314f4f015c295f94cf5bf011eca7e705492dbfdf83c3d5f13",
+  "missing_components": [
+    "training",
+    "encoder",
+    "router_kernel",
+    "verification",
+    "recovery",
+    "network",
+    "orchestration"
+  ],
+  "receipt_bindings": {
+    "762dc55c6c72a5be0afbb35c6b1ac1cbf17013625ecc139c8510360093c62834": {
+      "cost": {
+        "cap_exhaustions": 3,
+        "complete": false,
+        "cpu_scope": "evaluation parent only; verifier subprocess CPU excluded",
+        "cpu_seconds": 71.179331951,
+        "input_tokens": 1794,
+        "model_calls": 6,
+        "output_tokens": 950,
+        "wall_seconds": 37.252761227078736
+      },
+      "scope": "model_inference"
+    },
+    "a18e3687912a7ae32102b31fa74b5022ecc3b98678f4cabb817bfe9df185f0ab": {
+      "cost": {
+        "cap_exhaustions": 3,
+        "complete": false,
+        "cpu_scope": "evaluation parent only; verifier subprocess CPU excluded",
+        "cpu_seconds": 72.993615648,
+        "input_tokens": 1794,
+        "model_calls": 6,
+        "output_tokens": 905,
+        "wall_seconds": 38.13325552199967
+      },
+      "scope": "model_inference"
+    },
+    "ca7175766d86d26e76ac561ae9d295a3bc617087a121168cdd0f8223baefa3f2": {
+      "cost": {
+        "cap_exhaustions": 2,
+        "complete": false,
+        "cpu_scope": "evaluation parent only; verifier subprocess CPU excluded",
+        "cpu_seconds": 66.683054106,
+        "input_tokens": 1794,
+        "model_calls": 6,
+        "output_tokens": 819,
+        "wall_seconds": 34.94210551306605
+      },
+      "scope": "model_inference"
+    }
+  },
+  "schema": "hepta.resource-ledger.v3",
+  "scope": "deduplicated observed component receipts; missing meters and cross-scope overlap are not zero cost",
+  "sum_of_wall_intervals_is_elapsed_time": false,
+  "unique_execution_receipts": 3
+}
