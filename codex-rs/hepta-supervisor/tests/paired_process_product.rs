@@ -631,8 +631,8 @@ fn run_agent_child() -> Result<()> {
             payload,
         };
         let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        // A closed requester ends only this connection, without a successful handshake.
+        let _ = write_fixture_response(&mut stream, &response)?;
     }
     Ok(())
 }
@@ -702,10 +702,35 @@ fn run_matrix_child() -> Result<()> {
             }),
         };
         let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        // A closed requester ends only this connection, without a successful handshake.
+        let _ = write_fixture_response(&mut stream, &response)?;
     }
     Ok(())
+}
+
+#[derive(Debug, Eq, PartialEq)]
+enum FixtureResponseWrite {
+    Complete,
+    PeerClosed,
+}
+
+fn write_fixture_response(
+    writer: &mut impl Write,
+    response: &impl serde::Serialize,
+) -> Result<FixtureResponseWrite> {
+    if let Err(error) = serde_json::to_writer(&mut *writer, response) {
+        if error.io_error_kind() == Some(std::io::ErrorKind::BrokenPipe) {
+            return Ok(FixtureResponseWrite::PeerClosed);
+        }
+        return Err(error.into());
+    }
+    match writer.write_all(b"\n") {
+        Ok(()) => Ok(FixtureResponseWrite::Complete),
+        Err(error) if error.kind() == std::io::ErrorKind::BrokenPipe => {
+            Ok(FixtureResponseWrite::PeerClosed)
+        }
+        Err(error) => Err(error.into()),
+    }
 }
 
 fn prepare_fixture_socket(path: &Path) -> Result<()> {
@@ -719,3 +744,7 @@ fn prepare_fixture_socket(path: &Path) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "paired_process_product/response_write_tests.rs"]
+mod response_write_tests;
