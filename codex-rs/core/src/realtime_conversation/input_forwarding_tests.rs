@@ -67,3 +67,21 @@ async fn error_event_is_forwarded_once_before_the_original_terminal_error() {
         .expect("an already delivered event is not sent again");
     assert!(rx.try_recv().is_err());
 }
+
+#[tokio::test]
+async fn closed_receiver_preserves_the_original_error_and_consumes_the_failed_event() {
+    let (tx, rx) = bounded(/*cap*/ 1);
+    drop(rx);
+    let mut pending = Some(PendingRealtimeEvent {
+        event: RealtimeEvent::ConversationItemDone {
+            item_id: "unforwardable".to_string(),
+        },
+        should_stop: false,
+    });
+    let error = flush_pending_realtime_event(&tx, &mut pending)
+        .await
+        .expect_err("the receiver is closed");
+    assert_eq!(error.to_string(), "realtime output event channel closed");
+    assert_eq!(error.chain().count(), 1);
+    assert!(pending.is_none());
+}

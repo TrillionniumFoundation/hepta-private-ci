@@ -21,7 +21,7 @@ pub(super) async fn flush_pending_realtime_event(
     if events_tx.send(event.event.clone()).await.is_err() {
         // A closed receiver cannot accept this event on a later drain. Keep
         // the original terminal error and discard only the failed send.
-        pending.take();
+        let _ = pending.take();
         anyhow::bail!("realtime output event channel closed");
     }
     let event = pending.take().expect("the delivered event remains owned");
