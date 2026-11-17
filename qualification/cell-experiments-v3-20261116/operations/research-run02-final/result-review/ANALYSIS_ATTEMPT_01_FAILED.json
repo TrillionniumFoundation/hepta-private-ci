@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.readonly-analysis-attempt.v1",
+  "scope": "analysis program failure; original experiment unchanged",
+  "terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-093f406fd3c3fd73ecfbc47e7226923c3f75afb2d2a3fcde14a31400a36e63e0/output.log",
+    "available_end": 737,
+    "chunk_sha256": "99098b7fc653eb66581da944c4f69a1579125ca6e4cee5e0107a970629934289",
+    "host": "mac",
+    "next_offset": 737,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-093f406fd3c3fd73ecfbc47e7226923c3f75afb2d2a3fcde14a31400a36e63e0",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 518280 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 737,
+      "bytes_stored": 737,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794893693373,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 97090,
+      "pid": 97091,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "Traceback (most recent call last):\r\n  File \"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_closed_02.py\", line 74, in <module>\r\n    observed, _ = interaction(\"probe-qwen-parent-03/repository/\" + str(i), record, parent,\r\n  File \"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_support_02.py\", line 206, in interaction\r\n    ev = semantic(record, output[\"answer\"], verification, steppath)\r\n  File \"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_support_02.py\", line 149, in semantic\r\n    verification[\"result\"][\"full_repository_integration\"] is False and\r\nKeyError: 'full_repository_integration'\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "source_file_info": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":416,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":416,\"path\":\"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_closed_02.py\",\"sha256\":\"1714db191606f399ec5277bfb1ac0d10de04cfbf46fe7e4992c150090328fd3f\",\"size\":29042,\"version\":\"16777233:611111791:29042:1794893685906903548:1794893685907195590\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":416,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":416,\"path\":\"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_support_02.py\",\"sha256\":\"02ff4275fb8b158abf61cea6588bb3f3b66fd5662d6639ef490464885682c70a\",\"size\":16620,\"version\":\"16777233:611109958:16620:1794893547877416528:1794893547877538153\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  ],
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "new_C_read": false,
+  "reason": "Review assumed optional bounded-scope flags present on invalid-patch receipts. No experiment was rerun."
+}
