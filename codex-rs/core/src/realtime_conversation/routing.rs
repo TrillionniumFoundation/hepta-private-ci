@@ -115,3 +115,7 @@ pub(super) async fn run(session: Arc<Session>, sub_id: String, start: RealtimeSt
         send_realtime_conversation_closed(&session, sub_id, end).await;
     }
 }
+
+#[cfg(test)]
+#[path = "routing_tests.rs"]
+mod tests;
