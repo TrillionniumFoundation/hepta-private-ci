@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check literal item-budget frames through the admitted B3 namespaced ABI.
 
-This gate loads an existing complete current31 build; it never builds one.
+This gate loads the selected complete native build; it never builds one.
 It does not execute the Rust public oracle or reconstruct its cost algorithm.
 """
 import argparse
@@ -144,6 +144,7 @@ def verify(args, report):
     verified_field, expected_count = {
         'full-native31': ('full31_manifest_verified', 31),
         'full-native32': ('full32_manifest_verified', 32),
+        'full-native33': ('full33_manifest_verified', 33),
     }[args.build_profile]
     require(report['native_build'][verified_field] is True
             and report['native_build']['module_count'] == expected_count,
@@ -213,7 +214,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native31', 'full-native32'],
+    parser.add_argument('--build-profile', choices=['full-native31', 'full-native32', 'full-native33'],
                         default='full-native31')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()

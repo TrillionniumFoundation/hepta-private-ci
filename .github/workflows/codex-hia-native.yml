@@ -18,6 +18,7 @@ on:
       - codex-rs/ext/goal/**
       - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
+      - codex-rs/utils/stream-parser/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
@@ -48,6 +49,7 @@ on:
       - codex-rs/ext/goal/**
       - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
+      - codex-rs/utils/stream-parser/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
@@ -503,7 +505,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native32 \
+            --build-profile full-native33 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -513,7 +515,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native32 \
+            --build-profile full-native33 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
@@ -523,9 +525,19 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native33 \
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
+
+      - name: Verify citation stream literal frames and atomic ABI errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -619,6 +631,34 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-cli --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-default.log"
 
+
+      - name: Test citation stream public oracles with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-utils-stream-parser --features codex-utils-stream-parser/hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-native.log"
+
+      - name: Test citation stream public oracles with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-stream-parser --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default.log"
+
+      - name: Lint citation stream owner with native and default features
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets -p codex-utils-stream-parser \
+            --features codex-utils-stream-parser/hia-native -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-native-clippy.log"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
+            -p codex-utils-stream-parser -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default-clippy.log"
       - name: Compare actual native and original ASCII JSON callers
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -688,6 +728,40 @@ jobs:
             -E "$output_item_callers" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-default.log"
 
+
+      - name: Test existing Core citation consumers with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          citation_callers='test(=session::tests::assistant_message_stream_parsers_can_be_seeded_from_output_item_added_text)'
+          citation_callers+=' | test(=session::tests::assistant_message_stream_parsers_seed_buffered_prefix_stays_out_of_finish_tail)'
+          citation_callers+=' | test(=session::tests::assistant_message_stream_parsers_seed_plan_parser_across_added_and_delta_boundaries)'
+          citation_callers+=' | test(=stream_events_utils::tests::handle_non_tool_response_item_strips_citations_from_assistant_message)'
+          citation_callers+=' | test(=stream_events_utils::tests::handle_non_tool_response_item_runs_turn_item_contributors_only_when_requested)'
+          citation_callers+=' | test(=stream_events_utils::tests::finalized_turn_item_defers_mailbox_for_contributed_visible_text)'
+          citation_callers+=' | test(=stream_events_utils::tests::last_assistant_message_from_item_strips_citations_and_plan_blocks)'
+          citation_callers+=' | test(=stream_events_utils::tests::last_assistant_message_from_item_returns_none_for_citation_only_message)'
+          just test --lib -p codex-core --features codex-core/hia-native --locked \
+            -E "$citation_callers" \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-native.log"
+
+      - name: Test existing Core citation consumers with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          citation_callers='test(=session::tests::assistant_message_stream_parsers_can_be_seeded_from_output_item_added_text)'
+          citation_callers+=' | test(=session::tests::assistant_message_stream_parsers_seed_buffered_prefix_stays_out_of_finish_tail)'
+          citation_callers+=' | test(=session::tests::assistant_message_stream_parsers_seed_plan_parser_across_added_and_delta_boundaries)'
+          citation_callers+=' | test(=stream_events_utils::tests::handle_non_tool_response_item_strips_citations_from_assistant_message)'
+          citation_callers+=' | test(=stream_events_utils::tests::handle_non_tool_response_item_runs_turn_item_contributors_only_when_requested)'
+          citation_callers+=' | test(=stream_events_utils::tests::finalized_turn_item_defers_mailbox_for_contributed_visible_text)'
+          citation_callers+=' | test(=stream_events_utils::tests::last_assistant_message_from_item_strips_citations_and_plan_blocks)'
+          citation_callers+=' | test(=stream_events_utils::tests::last_assistant_message_from_item_returns_none_for_citation_only_message)'
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test --lib -p codex-core --locked \
+            -E "$citation_callers" \
+            2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-default.log"
       - name: Verify native scalar token arithmetic and invalid-mode traps
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -1050,7 +1124,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native32 \
+            --build-profile full-native33 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1058,12 +1132,12 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
-          # This checkout runs original/native31. The separate owner gate requires
-          # original/native16/native31 and an admitted published16 link bundle.
+          # This checkout runs original/native33. The separate owner gate requires
+          # original/native16/native33 and an admitted published16 link bundle.
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native32 \
+            --build-profile full-native33 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1289,7 +1363,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current31-results
+          name: codex-hia-current33-results
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
@@ -1416,6 +1490,14 @@ jobs:
             {0}/hia-format-env-display-abi.log
             {0}/hia-format-env-display-native.log
             {0}/hia-format-env-display-default.log
+            {0}/hia-citation-stream-parser-abi.json
+            {0}/hia-citation-stream-parser-abi.log
+            {0}/hia-citation-stream-parser-native.log
+            {0}/hia-citation-stream-parser-default.log
+            {0}/hia-citation-stream-parser-native-clippy.log
+            {0}/hia-citation-stream-parser-default-clippy.log
+            {0}/hia-citation-stream-parser-core-native.log
+            {0}/hia-citation-stream-parser-core-default.log
             {0}/hia-output-item-budget-core-native.log
             {0}/hia-output-item-budget-core-default.log
             {0}/hia-metric-caller.json

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check literal format-env-display frames through the admitted B3 ABI.
 
-This gate loads a complete current32 build; it never builds one. It does not
+This gate loads the selected complete native build; it never builds one. It does not
 sort keys with a Python comparator or execute the Rust public oracle. The
 literal streams contain every expected native request, state and result.
 """
@@ -223,10 +223,14 @@ def byte_stream(probe, stream, fill):
 def verify(args, report):
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / 'network_host.so', ROOT / 'hia/network_host.hepta',
-                  'full-native32', report)
-    require(report['native_build']['full32_manifest_verified'] is True
-            and report['native_build']['module_count'] == 32,
-            'format-env-display ABI requires the complete current thirty-two-module build')
+                  args.build_profile, report)
+    verified_field, expected_count = {
+        'full-native32': ('full32_manifest_verified', 32),
+        'full-native33': ('full33_manifest_verified', 33),
+    }[args.build_profile]
+    require(report['native_build'][verified_field] is True
+            and report['native_build']['module_count'] == expected_count,
+            'format-env-display ABI requires the complete selected native module build')
     bind(Path(__file__), report)
     contract = json.loads(bind(ROOT / 'hia/format_env_display_buffer_contract.json',
                                report, CONTRACT_SHA))
@@ -282,11 +286,13 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native32', 'full-native33'],
+                        default='full-native32')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {
         'schema': 'codex.hia.format-env-display.raw-abi.v1', 'passed': False,
-        'requested_build_profile': 'full-native32',
+        'requested_build_profile': args.build_profile,
         'loaded_entry': 'libcodex_hia_format_env_display.so:codex_hia_format_env_display',
         'abi_scope': 'Normal native-selfhost B3 namespaced borrowed-buffers-u32-v1 only.',
         'return_rule': 'Full u64 equals the literal Core u32; nonzero high word is never masked.',
