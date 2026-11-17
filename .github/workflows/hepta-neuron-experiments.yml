@@ -44,8 +44,10 @@ jobs:
       HF_HUB_DISABLE_TELEMETRY: "1"
       DO_NOT_TRACK: "1"
       TOKENIZERS_PARALLELISM: "false"
-      HF_HOME: ${{ runner.temp }}/e0-hf-local-cache
     steps:
+      - name: Set the runner-local Hugging Face cache
+        shell: bash
+        run: printf 'HF_HOME=%s\n' "$RUNNER_TEMP/e0-hf-local-cache" >> "$GITHUB_ENV"
       - name: Exact experiment candidate source (no credentials retained)
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
