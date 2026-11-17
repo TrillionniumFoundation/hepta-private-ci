@@ -75,7 +75,7 @@ pub(super) fn decode(
     } else if text_word(last) != request.state.last_text_kind {
         return Err(WireError::Command);
     }
-    if response.records.len() % COMMAND_BYTES != 0 {
+    if !response.records.len().is_multiple_of(COMMAND_BYTES) {
         return Err(WireError::Command);
     }
     let mut commands = Vec::with_capacity(response.records.len() / COMMAND_BYTES);
