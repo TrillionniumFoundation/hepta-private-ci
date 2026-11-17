@@ -28,6 +28,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod delivery_evidence;
+
 pub const MAX_CONTEXT_CANDIDATES_V2: usize = 4_096;
 pub const MAX_CONTEXT_GROUPS_V2: usize = 256;
 pub const MAX_MANDATORY_REFERENCES_V2: usize = 4_096;

@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 pub mod canonical;
 mod graph;
 pub mod local_shadow;
+pub mod verified;
 
 pub use graph::GraphBoundPromptPortfolioReceipt;
 pub use graph::optimize_with_factor_graph;
