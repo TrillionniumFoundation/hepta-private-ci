@@ -55,6 +55,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_allowed_prefixes",
     "codex_hia_command_dispatch",
     "codex_hia_network_host",
+    "codex_hia_fuzzy_match",
 )
 
 

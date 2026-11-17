@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check frozen ProposedPlan frames against the admitted native34 B3 entry.
+"""Check frozen ProposedPlan frames against the selected native34/35 B3 entry.
 
 Expected requests, next states, commands and public results are literal data.
 This gate does not execute a Rust oracle or a reference parser.
@@ -105,10 +105,14 @@ class RawAbi:
 def verify(args, report):
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / 'network_host.so', ROOT / 'hia/network_host.hepta',
-                  'full-native34', report)
-    require(report['native_build']['full34_manifest_verified'] is True
-            and report['native_build']['module_count'] == 34,
-            'ProposedPlan ABI requires the complete thirty-four-module build')
+                  args.build_profile, report)
+    verified_field, expected_count = {
+        'full-native34': ('full34_manifest_verified', 34),
+        'full-native35': ('full35_manifest_verified', 35),
+    }[args.build_profile]
+    require(report['native_build'][verified_field] is True
+            and report['native_build']['module_count'] == expected_count,
+            'ProposedPlan ABI requires the complete selected native module build')
     bind(Path(__file__), report)
     contract = json.loads(bind(ROOT / 'hia/proposed_plan_parser_buffer_contract.json',
                                report, CONTRACT_SHA))
@@ -164,11 +168,13 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native34', 'full-native35'],
+                        default='full-native34')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {
         'schema': 'codex.hia.proposed-plan-parser.raw-abi.v1', 'passed': False,
-        'requested_build_profile': 'full-native34',
+        'requested_build_profile': args.build_profile,
         'loaded_entry': 'libcodex_hia_proposed_plan_parser.so:codex_hia_proposed_plan_parser',
         'abi_scope': 'Normal native-selfhost B3 namespaced borrowed-buffers-u32-v1 only.',
         'return_rule': 'Full u64 equals literal Core u32; nonzero high32 is never masked.',

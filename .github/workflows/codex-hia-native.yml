@@ -19,6 +19,7 @@ on:
       - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
       - codex-rs/utils/stream-parser/**
+      - codex-rs/utils/fuzzy-match/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
@@ -50,6 +51,7 @@ on:
       - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
       - codex-rs/utils/stream-parser/**
+      - codex-rs/utils/fuzzy-match/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
@@ -505,7 +507,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native34 \
+            --build-profile full-native35 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -515,7 +517,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native34 \
+            --build-profile full-native35 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
@@ -525,7 +527,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native34 \
+            --build-profile full-native35 \
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
@@ -535,7 +537,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native34 \
+            --build-profile full-native35 \
             --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
       - name: Verify proposed plan literal frames and atomic ABI errors
@@ -544,8 +546,19 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_proposed_plan_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native35 \
             --report "$RUNNER_TEMP/hia-proposed-plan-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-proposed-plan-parser-abi.log"
+      - name: Verify fuzzy match literal states and atomic ABI errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_fuzzy_match_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native35 \
+            --report "$RUNNER_TEMP/hia-fuzzy-match-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-abi.log"
+
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -666,6 +679,58 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
             -p codex-utils-stream-parser -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default-clippy.log"
+      - name: Test fuzzy match public and decoder oracles with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-utils-fuzzy-match --features codex-utils-fuzzy-match/hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-native.log"
+
+      - name: Test fuzzy match original public oracles with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-fuzzy-match --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-default.log"
+
+      - name: Lint fuzzy match owner with native and default features
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets -p codex-utils-fuzzy-match \
+            --features codex-utils-fuzzy-match/hia-native -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-native-clippy.log"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
+            -p codex-utils-fuzzy-match -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-default-clippy.log"
+
+      - name: Test existing fuzzy ranking and highlight callers with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          fuzzy_caller_filter='test(bottom_pane::command_popup::) | test(bottom_pane::file_search_popup::)'
+          fuzzy_caller_filter+=' | test(bottom_pane::selection_popup_common::) | test(bottom_pane::skill_popup::)'
+          fuzzy_caller_filter+=' | test(bottom_pane::skills_toggle_view::)'
+          just test -p codex-tui --features codex-tui/hia-native --locked --lib \
+            -E "$fuzzy_caller_filter" \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-callers-native.log"
+
+      - name: Test existing fuzzy ranking and highlight callers with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          fuzzy_caller_filter='test(bottom_pane::command_popup::) | test(bottom_pane::file_search_popup::)'
+          fuzzy_caller_filter+=' | test(bottom_pane::selection_popup_common::) | test(bottom_pane::skill_popup::)'
+          fuzzy_caller_filter+=' | test(bottom_pane::skills_toggle_view::)'
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-tui --locked --lib \
+            -E "$fuzzy_caller_filter" \
+            2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-callers-default.log"
+
       - name: Compare actual native and original ASCII JSON callers
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -1137,7 +1202,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native34 \
+            --build-profile full-native35 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1150,7 +1215,7 @@ jobs:
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native34 \
+            --build-profile full-native35 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1376,7 +1441,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current33-results
+          name: codex-hia-current35-results
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
@@ -1507,6 +1572,14 @@ jobs:
             {0}/hia-citation-stream-parser-abi.log
             {0}/hia-proposed-plan-parser-abi.json
             {0}/hia-proposed-plan-parser-abi.log
+            {0}/hia-fuzzy-match-abi.json
+            {0}/hia-fuzzy-match-abi.log
+            {0}/hia-fuzzy-match-native.log
+            {0}/hia-fuzzy-match-default.log
+            {0}/hia-fuzzy-match-native-clippy.log
+            {0}/hia-fuzzy-match-default-clippy.log
+            {0}/hia-fuzzy-callers-native.log
+            {0}/hia-fuzzy-callers-default.log
             {0}/hia-citation-stream-parser-native.log
             {0}/hia-citation-stream-parser-default.log
             {0}/hia-citation-stream-parser-native-clippy.log
