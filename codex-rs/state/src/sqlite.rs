@@ -280,13 +280,15 @@ impl SqliteConfig {
     /// Open a single in-memory database for fixture-level migration checks.
     ///
     /// Keep foreign keys enabled and the original single-connection pool.
+    /// This non-durable fixture pool must not hold production evidence.
     pub async fn open_in_memory_test_pool() -> Result<SqlitePool, Error> {
         SqlitePoolOptions::new()
             .max_connections(1)
             .connect_with(
                 SqliteConnectOptions::new()
                     .in_memory(true)
-                    .foreign_keys(true),
+                    .foreign_keys(true)
+                    .log_statements(LevelFilter::Off),
             )
             .await
     }
