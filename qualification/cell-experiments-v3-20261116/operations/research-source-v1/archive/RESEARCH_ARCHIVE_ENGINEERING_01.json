@@ -1,0 +1,51 @@
+{
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"mac\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-301e9e2ba042a0dfb34cb9701fffb87adb2aebc305754423a22df30109fbc505\",\"status\":{\"boot\":\"{ sec = 1794536756, usec = 511028 } Fri Nov 13 10:25:56 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794885787657,\"output_complete\":false,\"owner_pid\":13503,\"pid\":13509,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-301e9e2ba042a0dfb34cb9701fffb87adb2aebc305754423a22df30109fbc505/output.log",
+    "available_end": 156,
+    "chunk_sha256": "a96af54b04cb8340c3a66c9d5854140881a9deabb0f8c49aaf0012d0db3e5015",
+    "host": "mac",
+    "next_offset": 156,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-301e9e2ba042a0dfb34cb9701fffb87adb2aebc305754423a22df30109fbc505",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 511028 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 156,
+      "bytes_stored": 156,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794885787657,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 13503,
+      "pid": 13509,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"status\": \"PASS\", \"checks\": 3, \"source_sha256\": \"1b88e687a6c92148f6efff6bfd77bf0e20ae42eb613181e6d1ef523dd2d0e903\", \"new_model_calls\": 0, \"exit_code\": 0}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "source": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"1b88e687a6c92148f6efff6bfd77bf0e20ae42eb613181e6d1ef523dd2d0e903\",\"size\":20160,\"version\":\"16777233:610945495:20160:1794885727880360251:1794885727882263498\",\"written\":20160}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}
