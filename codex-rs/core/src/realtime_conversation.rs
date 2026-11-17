@@ -988,7 +988,11 @@ impl RealtimeConversationManager {
         Ok(())
     }
 
-    pub(crate) async fn finish_handoff_stream_item(&self, turn: &TurnContext, item_id: &str) -> bool {
+    pub(crate) async fn finish_handoff_stream_item(
+        &self,
+        turn: &TurnContext,
+        item_id: &str,
+    ) -> bool {
         let handoff = self.handoff_for_turn(turn).await;
         let Some(handoff) = handoff else {
             return false;
@@ -2363,7 +2367,8 @@ async fn handle_realtime_server_event(
                         stream.active_handoff = Some(handoff.handoff_id.clone());
                     }
                     RealtimeSessionKind::V2 => {
-                        let active_handoff = handoff_state.stream.lock().await.active_handoff.clone();
+                        let active_handoff =
+                            handoff_state.stream.lock().await.active_handoff.clone();
                         match active_handoff {
                             Some(_) => {
                                 if let Err(err) = writer

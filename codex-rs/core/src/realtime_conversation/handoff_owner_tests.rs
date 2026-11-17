@@ -284,7 +284,9 @@ async fn only_the_matching_aborted_owner_retires_without_a_completion_acknowledg
         assert!(first_owner.handoff.stream.lock().await.active_handoff.is_none());
         if matches!(kind, RealtimeSessionKind::V2) {
             assert_eq!(
-                rx.recv().await.expect("only the accepted steering acknowledgement"),
+                rx.recv()
+                    .await
+                    .expect("only the accepted steering acknowledgement"),
                 RealtimeOutbound::HandoffSteerAck {
                     handoff_id: "steer".to_string(),
                 }
@@ -337,7 +339,12 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
     let (old, old_rx) = handoff(RealtimeSessionKind::V2);
     let old_request = RealtimeHandoffRequest::new(old, "old-server".to_string());
     old_request.prepare(&turn).await.commit();
-    let old_owner = Arc::clone(old_request.admitted.get().expect("old accepted owner"));
+    let old_owner = Arc::clone(
+        old_request
+            .admitted
+            .get()
+            .expect("old accepted owner"),
+    );
     // Original conversation stop closes its receiver, not the accepted Core turn.
     drop(old_rx);
     let (mut current, current_rx) = handoff(RealtimeSessionKind::V2);
@@ -374,19 +381,31 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
             .expect("original client-managed ACK handling is not repeated")
             .expect("no new ACK send");
     }
-    let current_owner = request.admitted.get().expect("accepted client-managed owner");
-    assert!(Arc::ptr_eq(&current_owner.handoff.identity, &current.identity));
+    let current_owner = request
+        .admitted
+        .get()
+        .expect("accepted client-managed owner");
+    assert!(Arc::ptr_eq(
+        &current_owner.handoff.identity,
+        &current.identity
+    ));
     assert!(Arc::ptr_eq(&current_owner.handoff.stream, &current.stream));
     manager
         .handoff_out(&turn, "client-owned output".to_string(), /*phase*/ None)
         .await
         .expect("original client-managed output remains a no-op");
-    manager.handoff_aborted(&turn).await.expect("original abort no-op");
+    manager
+        .handoff_aborted(&turn)
+        .await
+        .expect("original abort no-op");
     assert_eq!(
         current.stream.lock().await.active_handoff.as_deref(),
         Some("received-client")
     );
-    manager.handoff_complete(&turn).await.expect("original completion no-op");
+    manager
+        .handoff_complete(&turn)
+        .await
+        .expect("original completion no-op");
     manager.clear_active_handoff(&turn).await;
     assert!(current.stream.lock().await.active_handoff.is_none());
     assert!(!*current.output_complete.lock().await);
@@ -406,7 +425,10 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
     current.stream.lock().await.active_handoff = Some("next-client".to_string());
     let next_request = RealtimeHandoffRequest::new(current.clone(), "next-client".to_string());
     next_request.prepare(&next_turn).await.commit();
-    manager.handoff_complete(&next_turn).await.expect("next completion no-op");
+    manager
+        .handoff_complete(&next_turn)
+        .await
+        .expect("next completion no-op");
     manager.clear_active_handoff(&next_turn).await;
     assert!(current.stream.lock().await.active_handoff.is_none());
     assert!(!*current.output_complete.lock().await);
