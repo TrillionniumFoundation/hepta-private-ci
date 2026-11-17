@@ -1,0 +1,43 @@
+{
+  "actual_remote_entry": "operations/recovery-03/RECOVERY_RESUME_03_SPACE.py",
+  "download_budget_seconds": 3600,
+  "download_chunk_bytes": 1048576,
+  "download_connections": 8,
+  "helpers": [
+    {
+      "bytes": 12853,
+      "name": "recover_cuda_runtime_03_resume03_space.py",
+      "sha256": "b7052e7c9077567f255c297c38da6c6bd6564bebf24d6e3981cadc33406c013a"
+    },
+    {
+      "bytes": 18868,
+      "name": "cuda_runtime_materials_03.py",
+      "sha256": "651bbe1cb32ae905eff33924bedb2c32aff64dbe5eed3527c3078b96d84832ba"
+    },
+    {
+      "bytes": 7778,
+      "name": "cuda_runtime_install_03.py",
+      "sha256": "806b9ac568276fbeb72177fbcb612998ad93103776eb65949f9c11a445496996"
+    },
+    {
+      "bytes": 2543,
+      "name": "verify_installed_wheel_03.py",
+      "sha256": "2dd787c6920b689c26eeb35c7bb2994dd54ff2e4f6cccd2cbb5bb211e397ea27"
+    }
+  ],
+  "install_budget_seconds": 1200,
+  "minimum_free_bytes": 1610612736,
+  "model_loaded": false,
+  "new_single_link_wheels_release": "only after offline install and installed RECORD byte checks; four original reused hardlinks protected",
+  "old_writer_exit": 1,
+  "old_writer_output_complete": true,
+  "old_writer_terminal_receipt": "RESUME02_TERMINAL_OBSERVATION.json",
+  "operation_key": "hepta-e1e6-v3-20261116-0c078a-cuda-recovery03-materialize-resume03",
+  "prepared_but_never_launched": [
+    "RECOVERY_RESUME_03.py"
+  ],
+  "ready_claimed": false,
+  "schema": "hepta.runtime-recovery-control-started.v2",
+  "session_id": "dpty-d64b1ca8a0e8988d8578e00e486a8f45cac37bb1c3d4ef800cecc0309148b87a",
+  "training_started": false
+}
