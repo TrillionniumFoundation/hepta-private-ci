@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod provider_bound_v3;
 mod provider_request;
 mod requirements;
 mod v2;
@@ -22,6 +23,9 @@ mod wire;
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use provider_bound_v3::CanonicalContextSourceFieldV3;
+pub use provider_bound_v3::CanonicalContextSourceSegmentV3;
+pub use provider_bound_v3::CanonicalContextSourceV3;
 pub use provider_request::CanonicalContextSegmentKindV2;
 pub use provider_request::CanonicalContextSegmentV2;
 pub use provider_request::CanonicalSerializedContextV2;
