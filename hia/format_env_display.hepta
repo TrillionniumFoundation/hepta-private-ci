@@ -1,0 +1,365 @@
+hia-asm.v1 hepta.hia.program.v8 codex_format_env_display
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  size:usize = buffer.len(source)
+  minimum:usize = const() {"value":16}
+  maximum:usize = const() {"value":8400}
+  enough:bool = compare.ge(size,minimum)
+  bounded:bool = compare.le(size,maximum)
+  shape:bool = bool.and(enough,bounded)
+  branch shape header(source,output) invalid()
+block header(h_source:readbuf,h_output:mutbuf)
+  version_at:usize = const() {"value":0}
+  version:u64 = call(h_source,version_at) {"function":"read_word"}
+  one:u64 = const() {"value":1}
+  version_ok:bool = compare.eq(version,one)
+  branch version_ok operation(h_source,h_output) invalid()
+block operation(o_source:readbuf,o_output:mutbuf)
+  operation_at:usize = const() {"value":8}
+  op:u64 = call(o_source,operation_at) {"function":"read_word"}
+  zero:u64 = const() {"value":0}
+  init:bool = compare.eq(op,zero)
+  branch init sort_init_call(o_source,o_output) next(o_source,o_output,op)
+block next(n_source:readbuf,n_output:mutbuf,n_op:u64)
+  resume_op:u64 = const() {"value":1}
+  resume:bool = compare.eq(n_op,resume_op)
+  branch resume sort_resume_call(n_source,n_output) next_mask(n_source,n_output,n_op)
+block next_mask(m_source:readbuf,m_output:mutbuf,m_op:u64)
+  mask_op:u64 = const() {"value":2}
+  mask:bool = compare.eq(m_op,mask_op)
+  branch mask mask_call(m_source,m_output) next_join(m_source,m_output,m_op)
+block next_join(j_source:readbuf,j_output:mutbuf,j_op:u64)
+  join_init_op:u64 = const() {"value":3}
+  join_init:bool = compare.eq(j_op,join_init_op)
+  branch join_init join_init_call(j_source,j_output) last(j_source,j_output,j_op)
+block last(l_source:readbuf,l_output:mutbuf,l_op:u64)
+  fragment_op:u64 = const() {"value":4}
+  fragment:bool = compare.eq(l_op,fragment_op)
+  branch fragment join_fragment_call(l_source,l_output) invalid()
+block sort_init_call(si_source:readbuf,si_output:mutbuf)
+  si_result:u32 = call(si_source,si_output) {"function":"sort_init"}
+  ret(si_result)
+block sort_resume_call(sr_source:readbuf,sr_output:mutbuf)
+  sr_result:u32 = call(sr_source,sr_output) {"function":"sort_resume"}
+  ret(sr_result)
+block mask_call(mc_source:readbuf,mc_output:mutbuf)
+  mc_result:u32 = call(mc_source,mc_output) {"function":"mask_fragment"}
+  ret(mc_result)
+block join_init_call(ji_source:readbuf,ji_output:mutbuf)
+  ji_result:u32 = call(ji_source,ji_output) {"function":"join_init"}
+  ret(ji_result)
+block join_fragment_call(jf_source:readbuf,jf_output:mutbuf)
+  jf_result:u32 = call(jf_source,jf_output) {"function":"join_fragment"}
+  ret(jf_result)
+block invalid()
+  error:u32 = const() {"value":4294967295}
+  ret(error)
+end
+fn sort_init(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  size:usize = buffer.len(source)
+  exact:usize = const() {"value":24}
+  shape_ok:bool = compare.eq(size,exact)
+  branch shape_ok capacity(source,output) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf)
+  cap:usize = buffer.len(c_output)
+  required:usize = const() {"value":152}
+  enough:bool = compare.ge(cap,required)
+  branch enough start(c_source,c_output) short_output()
+block start(s_source:readbuf,s_output:mutbuf)
+  n_at:usize = const() {"value":16}
+  n:u64 = call(s_source,n_at) {"function":"read_word"}
+  one:u64 = const() {"value":1}
+  small:bool = compare.le(n,one)
+  branch small done(s_output,n) build(s_output,n)
+block build(b_output:mutbuf,b_n:u64)
+  two:u64 = const() {"value":2}
+  b_one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  half:u64 = int.div.checked(b_n,two)
+  root:u64 = int.sub.checked(half,b_one)
+  result:u32 = call(b_output,b_n,zero,root,b_n,root) {"function":"sort_nonleaf"}
+  ret(result)
+block done(d_output:mutbuf,d_n:u64)
+  done_result:u32 = call(d_output,d_n) {"function":"sort_done"}
+  ret(done_result)
+block invalid()
+  invalid_result:u32 = const() {"value":4294967295}
+  ret(invalid_result)
+block short_output()
+  short_result:u32 = const() {"value":4294967294}
+  ret(short_result)
+end
+fn sort_request(output:mutbuf,n:u64,phase:u64,k:u64,end:u64,root:u64,left:u64,selected:u64,pending:u64,a:u64,b:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,n:u64,phase:u64,k:u64,end:u64,root:u64,left:u64,selected:u64,pending:u64,a:u64,b:u64)
+  bytes:usize = const() {"value":152}
+  _ = call(output,bytes) {"function":"zero_prefix"}
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  two:u64 = const() {"value":2}
+  compare:bool = compare.lt(pending,two)
+  action:u64 = select(compare,zero,one)
+  store_0:usize = const() {"value":0}
+  _ = call(output,store_0,action) {"function":"write_word"}
+  store_8:usize = const() {"value":8}
+  _ = call(output,store_8,one) {"function":"write_word"}
+  store_16:usize = const() {"value":16}
+  _ = call(output,store_16,n) {"function":"write_word"}
+  store_24:usize = const() {"value":24}
+  _ = call(output,store_24,phase) {"function":"write_word"}
+  store_32:usize = const() {"value":32}
+  _ = call(output,store_32,k) {"function":"write_word"}
+  store_40:usize = const() {"value":40}
+  _ = call(output,store_40,end) {"function":"write_word"}
+  store_48:usize = const() {"value":48}
+  _ = call(output,store_48,root) {"function":"write_word"}
+  store_56:usize = const() {"value":56}
+  _ = call(output,store_56,left) {"function":"write_word"}
+  store_64:usize = const() {"value":64}
+  _ = call(output,store_64,selected) {"function":"write_word"}
+  store_72:usize = const() {"value":72}
+  _ = call(output,store_72,pending) {"function":"write_word"}
+  store_80:usize = const() {"value":80}
+  _ = call(output,store_80,a) {"function":"write_word"}
+  store_88:usize = const() {"value":88}
+  _ = call(output,store_88,b) {"function":"write_word"}
+  written:u32 = const() {"value":152}
+  ret(written)
+end
+fn sort_done(output:mutbuf,n:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,n:u64)
+  bytes:usize = const() {"value":152}
+  _ = call(output,bytes) {"function":"zero_prefix"}
+  one:u64 = const() {"value":1}
+  two:u64 = const() {"value":2}
+  four:u64 = const() {"value":4}
+  small:bool = compare.le(n,one)
+  end:u64 = select(small,n,one)
+  store_0:usize = const() {"value":0}
+  _ = call(output,store_0,two) {"function":"write_word"}
+  store_8:usize = const() {"value":8}
+  _ = call(output,store_8,one) {"function":"write_word"}
+  store_16:usize = const() {"value":16}
+  _ = call(output,store_16,n) {"function":"write_word"}
+  store_24:usize = const() {"value":24}
+  _ = call(output,store_24,two) {"function":"write_word"}
+  store_40:usize = const() {"value":40}
+  _ = call(output,store_40,end) {"function":"write_word"}
+  store_72:usize = const() {"value":72}
+  _ = call(output,store_72,four) {"function":"write_word"}
+  written:u32 = const() {"value":152}
+  ret(written)
+end
+fn sort_nonleaf(output:mutbuf,n:u64,phase:u64,k:u64,end:u64,root:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,n:u64,phase:u64,k:u64,end:u64,root:u64)
+  two:u64 = const() {"value":2}
+  one:u64 = const() {"value":1}
+  doubled:u64 = int.mul.checked(root,two)
+  left:u64 = int.add.checked(doubled,one)
+  last:u64 = int.sub.checked(end,one)
+  has_right:bool = compare.lt(left,last)
+  branch has_right children(output,n,phase,k,end,root,left) root_only(output,n,phase,k,end,root,left)
+block children(c_output:mutbuf,c_n:u64,c_phase:u64,c_k:u64,c_end:u64,c_root:u64,c_left:u64)
+  zero:u64 = const() {"value":0}
+  c_one:u64 = const() {"value":1}
+  c_right:u64 = int.add.checked(c_left,c_one)
+  children_result:u32 = call(c_output,c_n,c_phase,c_k,c_end,c_root,c_left,zero,zero,c_left,c_right) {"function":"sort_request"}
+  ret(children_result)
+block root_only(r_output:mutbuf,r_n:u64,r_phase:u64,r_k:u64,r_end:u64,r_root:u64,r_left:u64)
+  r_one:u64 = const() {"value":1}
+  root_result:u32 = call(r_output,r_n,r_phase,r_k,r_end,r_root,r_left,r_left,r_one,r_root,r_left) {"function":"sort_request"}
+  ret(root_result)
+end
+fn sort_finish_sift(output:mutbuf,n:u64,phase:u64,k:u64,end:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,n:u64,phase:u64,k:u64,end:u64)
+  zero:u64 = const() {"value":0}
+  building:bool = compare.eq(phase,zero)
+  remaining:bool = compare.gt(k,zero)
+  another:bool = bool.and(building,remaining)
+  branch another build(output,n,k,end) extract(output,n,end)
+block build(b_output:mutbuf,b_n:u64,b_k:u64,b_end:u64)
+  one:u64 = const() {"value":1}
+  b_zero:u64 = const() {"value":0}
+  next:u64 = int.sub.checked(b_k,one)
+  build_result:u32 = call(b_output,b_n,b_zero,next,b_end,next) {"function":"sort_nonleaf"}
+  ret(build_result)
+block extract(e_output:mutbuf,e_n:u64,e_end:u64)
+  e_zero:u64 = const() {"value":0}
+  e_one:u64 = const() {"value":1}
+  three:u64 = const() {"value":3}
+  last:u64 = int.sub.checked(e_end,e_one)
+  extract_result:u32 = call(e_output,e_n,e_one,e_zero,e_end,e_zero,e_zero,e_zero,three,e_zero,last) {"function":"sort_request"}
+  ret(extract_result)
+end
+fn sort_schedule(output:mutbuf,n:u64,phase:u64,k:u64,end:u64,root:u64) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,n:u64,phase:u64,k:u64,end:u64,root:u64)
+  two:u64 = const() {"value":2}
+  half:u64 = int.div.checked(end,two)
+  nonleaf:bool = compare.lt(root,half)
+  branch nonleaf sift(output,n,phase,k,end,root) finish(output,n,phase,k,end)
+block sift(s_output:mutbuf,s_n:u64,s_phase:u64,s_k:u64,s_end:u64,s_root:u64)
+  sift_result:u32 = call(s_output,s_n,s_phase,s_k,s_end,s_root) {"function":"sort_nonleaf"}
+  ret(sift_result)
+block finish(f_output:mutbuf,f_n:u64,f_phase:u64,f_k:u64,f_end:u64)
+  finish_result:u32 = call(f_output,f_n,f_phase,f_k,f_end) {"function":"sort_finish_sift"}
+  ret(finish_result)
+end
+fn sort_geometry(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  schema_at:usize = const() {"value":16}
+  schema:u64 = call(source,schema_at) {"function":"read_word"}
+  n_at:usize = const() {"value":24}
+  n:u64 = call(source,n_at) {"function":"read_word"}
+  phase_at:usize = const() {"value":32}
+  phase:u64 = call(source,phase_at) {"function":"read_word"}
+  k_at:usize = const() {"value":40}
+  k:u64 = call(source,k_at) {"function":"read_word"}
+  end_at:usize = const() {"value":48}
+  end:u64 = call(source,end_at) {"function":"read_word"}
+  root_at:usize = const() {"value":56}
+  root:u64 = call(source,root_at) {"function":"read_word"}
+  pending_at:usize = const() {"value":80}
+  pending:u64 = call(source,pending_at) {"function":"read_word"}
+  reserved_at:usize = const() {"value":152}
+  reserved:u64 = call(source,reserved_at) {"function":"read_word"}
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  two:u64 = const() {"value":2}
+  three:u64 = const() {"value":3}
+  schema_ok:bool = compare.eq(schema,one)
+  reserved_ok:bool = compare.eq(reserved,zero)
+  n_ok:bool = compare.ge(n,two)
+  phase_ok:bool = compare.le(phase,one)
+  pending_ok:bool = compare.le(pending,three)
+  end_min:bool = compare.ge(end,two)
+  end_max:bool = compare.le(end,n)
+  pair1:bool = bool.and(schema_ok,reserved_ok)
+  pair2:bool = bool.and(n_ok,phase_ok)
+  pair3:bool = bool.and(pending_ok,end_min)
+  pair4:bool = bool.and(pair1,pair2)
+  pair5:bool = bool.and(pair3,end_max)
+  valid:bool = bool.and(pair4,pair5)
+  branch valid phase_check(source,n,phase,k,end,root,pending) invalid()
+block phase_check(p_source:readbuf,p_n:u64,p_phase:u64,p_k:u64,p_end:u64,p_root:u64,p_pending:u64)
+  p_zero:u64 = const() {"value":0}
+  build:bool = compare.eq(p_phase,p_zero)
+  branch build build_check(p_source,p_n,p_k,p_end,p_root,p_pending) extract_check(p_source,p_k,p_pending)
+block build_check(b_source:readbuf,b_n:u64,b_k:u64,b_end:u64,b_root:u64,b_pending:u64)
+  b_two:u64 = const() {"value":2}
+  half:u64 = int.div.checked(b_n,b_two)
+  end_same:bool = compare.eq(b_end,b_n)
+  k_ok:bool = compare.lt(b_k,half)
+  root_ok:bool = compare.ge(b_root,b_k)
+  pending_sift:bool = compare.le(b_pending,b_two)
+  build_pair1:bool = bool.and(end_same,k_ok)
+  build_pair2:bool = bool.and(root_ok,pending_sift)
+  build_ok:bool = bool.and(build_pair1,build_pair2)
+  branch build_ok sift(b_source) invalid()
+block extract_check(e_source:readbuf,e_k:u64,e_pending:u64)
+  e_zero:u64 = const() {"value":0}
+  k_zero:bool = compare.eq(e_k,e_zero)
+  branch k_zero extract_kind(e_source,e_pending) invalid()
+block extract_kind(ek_source:readbuf,ek_pending:u64)
+  ek_three:u64 = const() {"value":3}
+  swap:bool = compare.eq(ek_pending,ek_three)
+  branch swap extraction_swap(ek_source) sift(ek_source)
+block extraction_swap(x_source:readbuf)
+  x_end_at:usize = const() {"value":48}
+  x_end:u64 = call(x_source,x_end_at) {"function":"read_word"}
+  x_root_at:usize = const() {"value":56}
+  x_root:u64 = call(x_source,x_root_at) {"function":"read_word"}
+  x_left_at:usize = const() {"value":64}
+  x_left:u64 = call(x_source,x_left_at) {"function":"read_word"}
+  x_selected_at:usize = const() {"value":72}
+  x_selected:u64 = call(x_source,x_selected_at) {"function":"read_word"}
+  x_a_at:usize = const() {"value":88}
+  x_a:u64 = call(x_source,x_a_at) {"function":"read_word"}
+  x_b_at:usize = const() {"value":96}
+  x_b:u64 = call(x_source,x_b_at) {"function":"read_word"}
+  x_zero:u64 = const() {"value":0}
+  x_one:u64 = const() {"value":1}
+  last:u64 = int.sub.checked(x_end,x_one)
+  fields1:u64 = bit.or(x_root,x_left)
+  fields2:u64 = bit.or(x_selected,x_a)
+  fields:u64 = bit.or(fields1,fields2)
+  unused_zero:bool = compare.eq(fields,x_zero)
+  last_ok:bool = compare.eq(x_b,last)
+  extract_ok:bool = bool.and(unused_zero,last_ok)
+  ret(extract_ok)
+block sift(s_source:readbuf)
+  sift_ok:bool = call(s_source) {"function":"sort_sift_geometry"}
+  ret(sift_ok)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn sort_sift_geometry(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  end_at:usize = const() {"value":48}
+  end:u64 = call(source,end_at) {"function":"read_word"}
+  root_at:usize = const() {"value":56}
+  root:u64 = call(source,root_at) {"function":"read_word"}
+  left_at:usize = const() {"value":64}
+  left:u64 = call(source,left_at) {"function":"read_word"}
+  selected_at:usize = const() {"value":72}
+  selected:u64 = call(source,selected_at) {"function":"read_word"}
+  pending_at:usize = const() {"value":80}
+  pending:u64 = call(source,pending_at) {"function":"read_word"}
+  a_at:usize = const() {"value":88}
+  a:u64 = call(source,a_at) {"function":"read_word"}
+  b_at:usize = const() {"value":96}
+  b:u64 = call(source,b_at) {"function":"read_word"}
+  two:u64 = const() {"value":2}
+  half:u64 = int.div.checked(end,two)
+  nonleaf:bool = compare.lt(root,half)
+  a_bound:bool = compare.lt(a,end)
+  b_bound:bool = compare.lt(b,end)
+  positions:bool = bool.and(a_bound,b_bound)
+  bounded:bool = bool.and(nonleaf,positions)
+  branch bounded left_check(end,root,left,selected,pending,a,b) invalid()
+block left_check(l_end:u64,l_root:u64,l_left:u64,l_selected:u64,l_pending:u64,l_a:u64,l_b:u64)
+  l_two:u64 = const() {"value":2}
+  l_one:u64 = const() {"value":1}
+  doubled:u64 = int.mul.checked(l_root,l_two)
+  expected:u64 = int.add.checked(doubled,l_one)
+  left_ok:bool = compare.eq(l_left,expected)
+  branch left_ok kind(l_end,l_root,l_left,l_selected,l_pending,l_a,l_b) invalid()
+block kind(k_end:u64,k_root:u64,k_left:u64,k_selected:u64,k_pending:u64,k_a:u64,k_b:u64)
+  zero:u64 = const() {"value":0}
+  children:bool = compare.eq(k_pending,zero)
+  branch children children_check(k_end,k_left,k_selected,k_a,k_b) root_check(k_end,k_root,k_left,k_selected,k_a,k_b)
+block children_check(c_end:u64,c_left:u64,c_selected:u64,c_a:u64,c_b:u64)
+  c_one:u64 = const() {"value":1}
+  c_zero:u64 = const() {"value":0}
+  last:u64 = int.sub.checked(c_end,c_one)
+  both:bool = compare.lt(c_left,last)
+  unselected:bool = compare.eq(c_selected,c_zero)
+  first_ok:bool = compare.eq(c_a,c_left)
+  children_pair:bool = bool.and(both,unselected)
+  children_ok:bool = bool.and(children_pair,first_ok)
+  branch children_ok right_check(c_left,c_b) invalid()
+block root_check(r_end:u64,r_root:u64,r_left:u64,r_selected:u64,r_a:u64,r_b:u64)
+  root_position:bool = compare.eq(r_a,r_root)
+  child_position:bool = compare.eq(r_b,r_selected)
+  pair_ok:bool = bool.and(root_position,child_position)
+  branch pair_ok selected_check(r_end,r_left,r_selected) invalid()
+block selected_check(sc_end:u64,sc_left:u64,sc_selected:u64)
+  is_left:bool = compare.eq(sc_selected,sc_left)
+  branch is_left valid() selected_right(sc_end,sc_left,sc_selected)
+block selected_right(sr_end:u64,sr_left:u64,sr_selected:u64)
+  sr_one:u64 = const() {"value":1}
+  sr_last:u64 = int.sub.checked(sr_end,sr_one)
+  has_right:bool = compare.lt(sr_left,sr_last)
+  branch has_right right_check(sr_left,sr_selected) invalid()
+block right_check(rc_left:u64,rc_value:u64)
+  rc_one:u64 = const() {"value":1}
+  right:u64 = int.add.checked(rc_left,rc_one)
+  right_ok:bool = compare.eq(rc_value,right)
+  ret(right_ok)
+block valid()
+  yes:bool = const() {"value":true}
+  ret(yes)
+block invalid()
+  no:bool = const() {"value":false}
+  ret(no)
+end
