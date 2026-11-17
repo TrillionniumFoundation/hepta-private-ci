@@ -88,4 +88,8 @@ impl ToolExecutor<ToolInvocation> for GetContextRemainingHandler {
     }
 }
 
-impl CoreToolRuntime for GetContextRemainingHandler {}
+impl CoreToolRuntime for GetContextRemainingHandler {
+    fn defer_streamed_execution_until_response_end(&self) -> bool {
+        true
+    }
+}
