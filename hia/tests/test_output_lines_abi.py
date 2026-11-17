@@ -16,7 +16,7 @@ from test_network_host_abi import native_inputs, recheck_inputs
 
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS_SHA = '43a724456cad25140e71a5923a61e3f09234c5446c1a47839b0142376ff2b9d8'
-ADAPTER_SHA = 'cf48b25c2fac39b7ab963e2f708e287b0cfb7152b1cc794c0f272cc19f8226b2'
+ADAPTER_SHA = 'd7acad7e4c12583783f0288c45ac856c65cb043f881ec150e128343ac339cb45'
 GUARD = bytes(range(1, 34))
 OK, INVALID, SHORT, OVERFLOW = 32, 0xFFFFFFFF, 0xFFFFFFFE, 0xFFFFFFFD
 MAX_FRAME = 1_048_577  # Includes the literal one-byte-oversize Core cases.
