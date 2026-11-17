@@ -1,0 +1,45 @@
+{
+  "all_three_normalized_AST_equal": true,
+  "byte_edits_only_declared_quoted_literals": true,
+  "comparison": "AST with only declared old string constants mapped to new values",
+  "files": {
+    "operations/archive_qwen_research_v1_03.py": {
+      "changed_constant_count": 7,
+      "new_bytes": 20170,
+      "new_sha256": "251e08cae5fb55df3872ab45619e1b22d0177a0c8d1a0b8b200ddcfd237ab462",
+      "normalized_ast_equal": true,
+      "normalized_ast_sha256": "de196ff287db5c536fb57d303f704bedf35e390ddf1e44140dbaa80e8c21afa4",
+      "only_declared_raw_quoted_string_substitutions": true,
+      "source_bytes": 20164,
+      "source_path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/archive_qwen_research_v1_02.py",
+      "source_sha256": "658438b68dff7a039a9631beb9e07ded8e7f56de23912672f868a531e063c3b2",
+      "tests_or_module_execution_performed": false
+    },
+    "operations/launch_qwen_research_owned_v1_02.py": {
+      "changed_constant_count": 7,
+      "new_bytes": 9063,
+      "new_sha256": "205a72dbe8adab915c8f7c9225a3d4effb0f399f80ba167cd5786213aa7eda00",
+      "normalized_ast_equal": true,
+      "normalized_ast_sha256": "f0745f991452b52fae203ea122bae3dbab584bf6564f06413973c29d9995ec8d",
+      "only_declared_raw_quoted_string_substitutions": true,
+      "source_bytes": 9060,
+      "source_path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/launch_qwen_research_owned_v1.py",
+      "source_sha256": "4f647ae7e7cc5f5f0d04b597db10f0a68b946ecff04821651a16633bfe02eab0",
+      "tests_or_module_execution_performed": false
+    },
+    "research-diagnostic-v1-source-02/qwen_research_diagnostic_v1.py": {
+      "changed_constant_count": 2,
+      "new_bytes": 46995,
+      "new_sha256": "28d82e170ab0720fb6b453275a80b4bf1eebc1e987ed1ae3bd935bb00a77a071",
+      "normalized_ast_equal": true,
+      "normalized_ast_sha256": "d42969f4420be7af7fe4074498b362eb509e0c835c695105af570fb85e3c87f2",
+      "only_declared_raw_quoted_string_substitutions": true,
+      "source_bytes": 46995,
+      "source_path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/research-diagnostic-v1-source/qwen_research_diagnostic_v1.py",
+      "source_sha256": "c43ff3c5f9bc99c5825a96e0f4b4020d361489d2ffa3ae31bffe49f03ddb6f91",
+      "tests_or_module_execution_performed": false
+    }
+  },
+  "schema": "hepta.research-reschedule-literal-comparison.v1",
+  "tests_models_or_modules_executed": false
+}
