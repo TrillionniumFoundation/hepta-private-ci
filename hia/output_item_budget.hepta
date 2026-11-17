@@ -137,12 +137,12 @@ block kind(k_source:readbuf,k_output:mutbuf,k_mode:u64,k_budget:u64,k_remaining:
   branch kind_ok choose_kind(k_output,k_mode,k_budget,k_remaining,k_total,k_processed,k_text,k_audio,item_kind,item_value) invalid()
 block choose_kind(ck_output:mutbuf,ck_mode:u64,ck_budget:u64,ck_remaining:u64,ck_total:u64,ck_processed:u64,ck_text:u64,ck_audio:u64,ck_kind:u64,ck_value:u64)
   text_kind:u64 = const() {"value":0}
-  is_text:bool = compare.eq(ck_kind,text_kind)
-  branch is_text text_budget(ck_output,ck_mode,ck_budget,ck_remaining,ck_total,ck_processed,ck_text,ck_audio,ck_value) audio_or_opaque(ck_output,ck_mode,ck_budget,ck_remaining,ck_total,ck_processed,ck_text,ck_audio,ck_kind,ck_value)
+  ck_is_text:bool = compare.eq(ck_kind,text_kind)
+  branch ck_is_text text_budget(ck_output,ck_mode,ck_budget,ck_remaining,ck_total,ck_processed,ck_text,ck_audio,ck_value) audio_or_opaque(ck_output,ck_mode,ck_budget,ck_remaining,ck_total,ck_processed,ck_text,ck_audio,ck_kind,ck_value)
 block audio_or_opaque(ao_output:mutbuf,ao_mode:u64,ao_budget:u64,ao_remaining:u64,ao_total:u64,ao_processed:u64,ao_text:u64,ao_audio:u64,ao_kind:u64,ao_value:u64)
   audio_kind:u64 = const() {"value":1}
-  is_audio:bool = compare.eq(ao_kind,audio_kind)
-  branch is_audio audio_cost(ao_output,ao_mode,ao_budget,ao_remaining,ao_total,ao_processed,ao_text,ao_audio,ao_value) opaque(ao_output,ao_mode,ao_budget,ao_remaining,ao_total,ao_processed,ao_text,ao_audio,ao_value)
+  ao_is_audio:bool = compare.eq(ao_kind,audio_kind)
+  branch ao_is_audio audio_cost(ao_output,ao_mode,ao_budget,ao_remaining,ao_total,ao_processed,ao_text,ao_audio,ao_value) opaque(ao_output,ao_mode,ao_budget,ao_remaining,ao_total,ao_processed,ao_text,ao_audio,ao_value)
 block opaque(oq_output:mutbuf,oq_mode:u64,oq_budget:u64,oq_remaining:u64,oq_total:u64,oq_processed:u64,oq_text:u64,oq_audio:u64,oq_value:u64)
   opaque_zero:u64 = const() {"value":0}
   opaque_ok:bool = compare.eq(oq_value,opaque_zero)
