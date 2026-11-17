@@ -3,7 +3,7 @@
   "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
   "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
   "audited_name_union": 29,
-  "current_opt_in_linked_kernels": 27,
+  "current_opt_in_linked_kernels": 28,
   "retained_oracle_only_kernels": 3,
   "entry_profiles": {
     "token_budget": "u64-pair-to-u64-v1",
@@ -454,6 +454,23 @@
       "production_entry": "codex_utils_string::count_lines, used by formatted_truncate_text",
       "runtime_qualified_on_joint_tree": false,
       "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "output_item_budget",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/output_item_budget.hepta",
+      "source_revision": "3f18f08d19d59a49e2fbe19a85b306db14136abe",
+      "source_git_blob": "fa974b63d1be45a765fe62d6c12411b0a130b8b9",
+      "source_sha256": "65c7fc4c861fffac9caeb85d4e872014fc309389f76db636d4c88dd80171ca51",
+      "production_link_sites": [
+        "codex-rs/utils/output-truncation/build.rs"
+      ],
+      "production_entry": "codex_utils_output_truncation::truncate_function_output_items_with_policy; Core history/code-mode callers through codex-core/hia-native and the CLI feature",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -519,8 +536,9 @@
   },
   "count_is_not_a_production_coverage_claim": true,
   "current_build_or_runtime_executed": false,
-  "current_build_module_count": 30,
+  "current_build_module_count": 31,
   "modules_added_after_audited_union": [
-    "output_lines"
+    "output_lines",
+    "output_item_budget"
   ]
 }

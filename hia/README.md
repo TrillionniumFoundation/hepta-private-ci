@@ -1,6 +1,42 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: output line counting
+## Current source increment: output-item budget decisions
+
+The authored `output_item_budget` module moves only numeric per-item budget
+state and keep/omit/truncate decisions into HIA. Rust retains the original
+item order, callback timing, text truncation, opaque content and omission
+summaries. The current configuration has **31 modules and 28 opt-in caller
+kernels**: 29 borrowed-buffer entries and the same two scalar entries. Five
+Cargo build entries configure those links (9 + 7 + 3 + 8 + 1).
+
+The new [buffer contract](output_item_budget_buffer_contract.json) binds the
+kernel source bytes. Its raw harness contains 143 literal frames; eight new
+public Rust tests and the original truncation tests exercise the same public
+API in default and `hia-native` configurations. Two existing Core caller
+oracles are also selected in both configurations. These are authored gates,
+not execution results. Build, runtime, platform, performance, default-release,
+whole-product and retirement qualification remain open or false.
+
+The opt-in feature propagates from the CLI through `codex-core` to
+`codex-utils-output-truncation` and the existing native string feature. The
+default Rust implementation and all original budgets/oracles remain. Fresh
+`full-native31` compiler generations and all31 source/object/library/archive/
+link bindings are required; historical exact29/30 profiles remain distinct
+and cannot admit the new kernel. The installed symbol check requires27 CLI
+symbols, plus one library-only and three retained raw-only module identities;
+symbol presence alone does not prove a budget call executed.
+
+The current network-owner workflow still runs only `original` and `native31`.
+The separate mandatory `original`/`native16`/`native31` owner gate requires its
+admitted published16 bundle and is not satisfied by that workflow. The same
+60-minute limits, compiler pin and complete exact74d1 historical job remain.
+Kernel source origin: `3f18f08d19d59a49e2fbe19a85b306db14136abe` (source identity,
+not an execution or publication claim).
+
+## Earlier source increment: output line counting
+
+The following section preserves the earlier30 source-increment record. Its
+counts and unexecuted status describe that record, not current31 qualification.
 
 The authored `output_lines` source connects through the existing `hia-native`
 string feature. HIA owns LF counting, chunk state and final-line arithmetic;
@@ -86,12 +122,13 @@ Codex retains compiler pin `0de5657a80f96b138525ac7ee9ce11712a83a10d`.
 The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
 nineteen-name branch with the HIA scope of
 `74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
-names. The current lock adds `output_lines` for 30 modules. Four Cargo build
-entries configure 27 opt-in links (9 + 7 + 3 + 8) when `hia-native` is enabled.
+names. The later source increments add `output_lines` and `output_item_budget`
+for 31 modules. Five Cargo build entries configure 28 opt-in links
+(9 + 7 + 3 + 8 + 1) when `hia-native` is enabled.
 `utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
 kernels; their current production replacements are `utf8_prefix`, `uuid_find`
 and `template_parse`. There are two scalar profiles, `token_budget` and
-`prefix_admission`; the other 28 entries retain the borrowed
+`prefix_admission`; the other 29 entries retain the borrowed
 buffer profile. See `joint_module_roles.json` for source, role, replacement and
 link sites. Names, configured links, algorithms and observed calls are distinct
 counts.

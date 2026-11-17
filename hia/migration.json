@@ -82,7 +82,7 @@
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
     "qualification_status": "source_increment_requires_fresh_current_tree_qualification",
     "remaining_work": [
-      "Build the exact thirty-module lock from fresh B1/B2/B3 receipts and qualify output_lines raw/public/installed consumers. Previous lock receipts are not reusable.",
+      "Build the exact thirty-one-module lock from fresh B1/B2/B3 receipts and qualify output_item_budget and retained output_lines raw/public/installed consumers. Previous29/30-lock receipts are not reusable.",
       "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
       "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
@@ -100,7 +100,7 @@
     "current_report": "hia/verification.json#ci_qualification_at_revision",
     "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report.",
     "previous_qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
-    "current_source_module_count": 30,
+    "current_source_module_count": 31,
     "current_lock_build_qualified": false
   },
   "candidate_modules": [
@@ -1608,6 +1608,50 @@
         "historical_ci_does_not_qualify_new_source": true,
         "performance_closed": false
       }
+    },
+    {
+      "id": "output_item_budget",
+      "hia_source": "hia/output_item_budget.hepta",
+      "hia_source_revision": "3f18f08d19d59a49e2fbe19a85b306db14136abe",
+      "hia_source_git_blob": "fa974b63d1be45a765fe62d6c12411b0a130b8b9",
+      "hia_source_sha256": "65c7fc4c861fffac9caeb85d4e872014fc309389f76db636d4c88dd80171ca51",
+      "source_path": "codex-rs/utils/output-truncation/src/lib.rs",
+      "source_revision": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
+      "source_git_blob": "c479f5163621e4e74337f45e39c0e4163229ccf3",
+      "source_function": "truncate_function_output_items_with_policy: numeric per-item budget decisions only",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_output_item_budget",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/output_item_budget_buffer_contract.json",
+        "transport": "Fixed40/96/88/80-byte event frames and88-byte output; nine u64 state words. Numeric item lengths/costs do not bound original text or collection sizes."
+      },
+      "behavior": {
+        "hia_owns": "Validated numeric item state, original saturating costs, keep/omit/truncate decisions, counters and Finish transition.",
+        "rust_retains": "Original per-item order, one audio callback at its original item, original truncate_text call and returned bytes, Vec/opaque content ownership, and text-before-audio omission summaries.",
+        "complete_output_truncation_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_output_item_budget_abi.py",
+        "hia/tests/output_item_budget_oracle_inputs.json",
+        "codex-rs/utils/output-truncation/src/output_item_budget_tests.rs",
+        "codex-rs/utils/output-truncation/src/truncate_tests.rs",
+        "codex-rs/core/src/context_manager/history_tests.rs",
+        "codex-rs/core/src/tools/code_mode/mod.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false
+      }
     }
   ],
   "capabilities": [
@@ -1837,9 +1881,10 @@
         "UTF-8 boundaries",
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers",
-        "Streaming output line count with original Rust line semantics"
+        "Streaming output line count with original Rust line semantics",
+        "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order"
       ],
-      "next_implementation": "Qualify output_lines through a fresh full-native30 build, raw ABI, original Rust public and output consumer gates. Complete UUID helpers, JSON serialization outside the fragment encoder, remaining truncation performance, current consumer/installed CI, then complete owner/default-release/platform qualification.",
+      "next_implementation": "Qualify output_item_budget and output_lines through a fresh full-native31 build, both raw ABI gates, original Rust/default/public and selected Core caller oracles. Complete remaining UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
@@ -1848,7 +1893,8 @@
         "ascii_json_fragment",
         "truncate",
         "token_budget",
-        "output_lines"
+        "output_lines",
+        "output_item_budget"
       ]
     },
     {
@@ -3394,7 +3440,8 @@
       "allowed_prefixes",
       "command_dispatch",
       "network_host",
-      "output_lines"
+      "output_lines",
+      "output_item_budget"
     ],
     "actual_opt_in_link_modules": [
       "allowed_prefixes",
@@ -3405,6 +3452,7 @@
       "metric_tag",
       "network_domains",
       "network_host",
+      "output_item_budget",
       "output_lines",
       "parser",
       "patch_application",
@@ -3442,14 +3490,17 @@
   },
   "current_qualification": {
     "status": "source_increment_unqualified",
-    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+    "qualification_revision": null,
     "report": "hia/verification.json#current_qualification",
     "documentation_successor_exact_head_qualified": false,
     "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
     "current_tree_qualified": false,
     "pending_modules": [
-      "output_lines"
-    ]
+      "output_lines",
+      "output_item_budget"
+    ],
+    "new_kernel_source_revision": "3f18f08d19d59a49e2fbe19a85b306db14136abe",
+    "new_kernel_source_git_blob": "fa974b63d1be45a765fe62d6c12411b0a130b8b9"
   },
   "source_owner_histories": {
     "17": {
@@ -3503,5 +3554,21 @@
   "default_release_migrated": false,
   "workspace_qualified": false,
   "performance_qualified": false,
-  "legacy_source_retired": false
+  "legacy_source_retired": false,
+  "previous_source_increment_qualification": {
+    "source_revision": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
+    "source_migration_sha256": "7ad4041051db39e508eda086a55afd5d52257ef2147426c001495d4483d1f77e",
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines"
+      ]
+    },
+    "qualification_transferred_to_current31": false
+  }
 }
