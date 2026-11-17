@@ -43,9 +43,7 @@ jobs:
           python-version: "3.12.14"
 
       - name: Install the original fuzz resolver toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: nightly-2026-09-20
+        run: rustup toolchain install nightly-2026-09-20 --profile minimal --no-self-update
 
       - name: Resolve only the lock in a verified private source copy
         working-directory: codex-rs
