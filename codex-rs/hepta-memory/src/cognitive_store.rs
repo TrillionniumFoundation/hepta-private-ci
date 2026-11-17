@@ -387,30 +387,15 @@ impl CognitiveStore {
         open_guard: Arc<CognitiveStoreOpenGuard>,
     ) -> Result<Self, CognitiveStoreError> {
         let path = resolve_active_database_path(&root)?;
+        // SQLite creates WAL/SHM during its first open. Seed only a genuinely
+        // new initial database with private mode before those files can exist.
+        // Existing databases (including recovered generations) are not changed.
+        #[cfg(unix)]
+        if path == root.join(COGNITIVE_DB_FILENAME) {
+            create_private_initial_database(&path)?;
+        }
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            use std::os::unix::fs::PermissionsExt;
-
-            // SQLite inherits the main file's creation mode for WAL/SHM.
-            // Protect a new file before the first connection can create them.
-            match OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .mode(0o600)
-                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-                .open(&path)
-            {
-                Ok(file) => file
-                    .set_permissions(fs::Permissions::from_mode(0o600))
-                    .map_err(unavailable)?,
-                // Preserve the existing legacy-file and concurrent-open path.
-                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
-                Err(error) => return Err(unavailable(error)),
-            }
-        }
         let commit_gate = CognitiveCommitGate::default();
         let connection_gate = commit_gate.clone();
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -1826,6 +1811,33 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
     Ok(canonical)
 }
 
+#[cfg(unix)]
+fn create_private_initial_database(path: &Path) -> Result<(), CognitiveStoreError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    let file = match OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(path)
+    {
+        Ok(file) => file,
+        // Never replace, truncate, chmod or repair pre-existing crash evidence.
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => return Ok(()),
+        Err(error) => return Err(unavailable(error)),
+    };
+    let metadata = file.metadata().map_err(unavailable)?;
+    if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+        return Err(CognitiveStoreError::Corrupt(
+            "new cognitive database must be one private regular file".to_string(),
+        ));
+    }
+    file.sync_all().map_err(unavailable)?;
+    Ok(())
+}
+
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
     #[cfg(unix)]
     {
@@ -1838,3 +1850,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_schema_tests.rs"]
 mod schema_tests;
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_initial_database_permissions_tests.rs"]
+mod initial_database_permissions_tests;
