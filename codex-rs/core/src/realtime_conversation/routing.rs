@@ -52,13 +52,12 @@ pub(super) async fn run(session: Arc<Session>, sub_id: String, start: RealtimeSt
             {
                 debug!(text = %text, "[realtime-text] realtime conversation text output");
                 let (first_decision, decided) = oneshot::channel();
-                let owner = (!handoff.client_managed_handoffs).then(|| {
-                    RealtimeHandoffRequest::new(handoff.clone(), request.handoff_id.clone())
-                });
+                let owner =
+                    RealtimeHandoffRequest::new(handoff.clone(), request.handoff_id.clone());
                 routing_tx
                     .send(RoutedInput {
                         text,
-                        handoff: owner,
+                        handoff: Some(owner),
                         first_decision: Some(first_decision),
                     })
                     .await

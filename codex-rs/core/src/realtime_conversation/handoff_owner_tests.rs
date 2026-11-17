@@ -13,6 +13,7 @@ use codex_protocol::protocol::CodexResponseHandoffMode;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::TurnAbortReason;
 use codex_protocol::protocol::TurnAbortedEvent;
+use futures::FutureExt;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -136,7 +137,15 @@ async fn v1_steering_changes_only_the_accepted_turn_owner() {
     let second = RealtimeHandoffRequest::new(state, "second".to_string());
     {
         let prepared = second.prepare(&turn).await;
-        assert_eq!(prepared.stream.active_handoff.as_deref(), Some("first"));
+        assert_eq!(
+            prepared
+                .stream
+                .as_ref()
+                .expect("server-managed stream guard")
+                .active_handoff
+                .as_deref(),
+            Some("first")
+        );
         assert!(second.admitted.get().is_none());
         prepared.commit();
     }
@@ -319,4 +328,87 @@ async fn only_the_matching_aborted_owner_retires_without_a_completion_acknowledg
         );
         assert!(rx.try_recv().is_err());
     }
+}
+
+#[tokio::test]
+async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_old_output() {
+    let (_session, turn, _events) = make_session_and_context_with_rx().await;
+    let (_next_session, next_turn, _next_events) = make_session_and_context_with_rx().await;
+    let (old, old_rx) = handoff(RealtimeSessionKind::V2);
+    let old_request = RealtimeHandoffRequest::new(old, "old-server".to_string());
+    old_request.prepare(&turn).await.commit();
+    let old_owner = Arc::clone(old_request.admitted.get().expect("old accepted owner"));
+    // Original conversation stop closes its receiver, not the accepted Core turn.
+    drop(old_rx);
+    let (mut current, current_rx) = handoff(RealtimeSessionKind::V2);
+    current.client_managed_handoffs = true;
+    current.stream.lock().await.active_handoff = Some("received-client".to_string());
+    let request = RealtimeHandoffRequest::new(current.clone(), "received-client".to_string());
+    let manager = RealtimeConversationManager::new();
+    assert!(Arc::ptr_eq(
+        &turn
+            .extension_data
+            .get::<RealtimeTurnHandoff>()
+            .expect("receipt must not replace the accepted owner")
+            .handoff
+            .identity,
+        &old_owner.handoff.identity
+    ));
+    manager
+        .handoff_out(&turn, "old output".to_string(), /*phase*/ None)
+        .await
+        .expect_err("old output stays on the stopped conversation");
+    assert!(current_rx.try_recv().is_err());
+    {
+        let stream = current.stream.lock().await;
+        let prepared = request
+            .prepare(&turn)
+            .now_or_never()
+            .expect("client-managed admission must not lock the global stream");
+        assert!(prepared.stream.is_none());
+        prepared.commit();
+        assert_eq!(stream.active_handoff.as_deref(), Some("received-client"));
+        request
+            .flush_admitted()
+            .now_or_never()
+            .expect("original client-managed ACK handling is not repeated")
+            .expect("no new ACK send");
+    }
+    let current_owner = request.admitted.get().expect("accepted client-managed owner");
+    assert!(Arc::ptr_eq(&current_owner.handoff.identity, &current.identity));
+    assert!(Arc::ptr_eq(&current_owner.handoff.stream, &current.stream));
+    manager
+        .handoff_out(&turn, "client-owned output".to_string(), /*phase*/ None)
+        .await
+        .expect("original client-managed output remains a no-op");
+    manager.handoff_aborted(&turn).await.expect("original abort no-op");
+    assert_eq!(
+        current.stream.lock().await.active_handoff.as_deref(),
+        Some("received-client")
+    );
+    manager.handoff_complete(&turn).await.expect("original completion no-op");
+    manager.clear_active_handoff(&turn).await;
+    assert!(current.stream.lock().await.active_handoff.is_none());
+    assert!(!*current.output_complete.lock().await);
+    assert!(current_rx.try_recv().is_err());
+    send_owned_handoff_output(
+        &old_owner.handoff,
+        Some(RealtimeOutbound::HandoffAppend {
+            handoff_id: "old-server".to_string(),
+            text: "late old timer".to_string(),
+            phase: None,
+        }),
+        /*complete*/ false,
+    )
+    .await
+    .expect_err("the old timer still holds only its stopped conversation");
+    assert!(current_rx.try_recv().is_err());
+    current.stream.lock().await.active_handoff = Some("next-client".to_string());
+    let next_request = RealtimeHandoffRequest::new(current.clone(), "next-client".to_string());
+    next_request.prepare(&next_turn).await.commit();
+    manager.handoff_complete(&next_turn).await.expect("next completion no-op");
+    manager.clear_active_handoff(&next_turn).await;
+    assert!(current.stream.lock().await.active_handoff.is_none());
+    assert!(!*current.output_complete.lock().await);
+    assert!(current_rx.try_recv().is_err());
 }

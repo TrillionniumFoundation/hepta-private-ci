@@ -1047,6 +1047,9 @@ impl RealtimeConversationManager {
             return Ok(());
         };
         let handoff = &owner.handoff;
+        if handoff.client_managed_handoffs {
+            return Ok(());
+        }
         let output = match handoff.session_kind {
             RealtimeSessionKind::V1 => None,
             RealtimeSessionKind::V2 => {
@@ -1074,6 +1077,9 @@ impl RealtimeConversationManager {
         let Some(owner) = turn.extension_data.get::<RealtimeTurnHandoff>() else {
             return Ok(());
         };
+        if owner.handoff.client_managed_handoffs {
+            return Ok(());
+        }
         let result =
             send_owned_handoff_output(&owner.handoff, /*output*/ None, /*complete*/ true).await;
         self.clear_active_handoff(turn).await;

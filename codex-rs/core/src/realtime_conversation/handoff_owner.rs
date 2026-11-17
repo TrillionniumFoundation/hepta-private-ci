@@ -1,4 +1,4 @@
-//! Binds a server-managed handoff to the turn that actually accepts its input.
+//! Binds a handoff conversation to the turn that actually accepts its input.
 
 use super::RealtimeHandoffState;
 use super::RealtimeHandoffStreamState;
@@ -29,7 +29,7 @@ pub(crate) struct PreparedRealtimeHandoff<'a> {
     request: &'a RealtimeHandoffRequest,
     turn: &'a TurnContext,
     owner: Arc<RealtimeTurnHandoff>,
-    stream: OwnedMutexGuard<RealtimeHandoffStreamState>,
+    stream: Option<OwnedMutexGuard<RealtimeHandoffStreamState>>,
 }
 
 impl RealtimeHandoffRequest {
@@ -52,16 +52,25 @@ impl RealtimeHandoffRequest {
             .get::<RealtimeTurnHandoff>()
             .filter(|owner| Arc::ptr_eq(&owner.handoff.identity, &self.handoff.identity))
             .unwrap_or_else(|| {
-                Arc::new(RealtimeTurnHandoff {
-                    handoff: RealtimeHandoffState {
+                let handoff = if self.handoff.client_managed_handoffs {
+                    self.handoff.clone()
+                } else {
+                    RealtimeHandoffState {
                         last_output: Arc::new(Mutex::new(/*t*/ None)),
                         stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),
                         output_complete: Arc::new(Mutex::new(/*t*/ false)),
                         ..self.handoff.clone()
-                    },
-                })
+                    }
+                };
+                Arc::new(RealtimeTurnHandoff { handoff })
             });
-        let stream = Arc::clone(&owner.handoff.stream).lock_owned().await;
+        // Client-managed receipt already owns global activation and ACKs.
+        // Bind its identity at admission without locking or mutating that stream.
+        let stream = if self.handoff.client_managed_handoffs {
+            None
+        } else {
+            Some(Arc::clone(&owner.handoff.stream).lock_owned().await)
+        };
         PreparedRealtimeHandoff {
             request: self,
             turn,
@@ -71,6 +80,9 @@ impl RealtimeHandoffRequest {
     }
 
     pub(crate) async fn flush_admitted(&self) -> CodexResult<()> {
+        if self.handoff.client_managed_handoffs {
+            return Ok(());
+        }
         if let Some(owner) = self.admitted.get() {
             send_owned_handoff_output(&owner.handoff, /*output*/ None, /*complete*/ false).await?;
         }
@@ -80,23 +92,24 @@ impl RealtimeHandoffRequest {
 
 impl PreparedRealtimeHandoff<'_> {
     pub(crate) fn commit(mut self) {
-        match self.request.handoff.session_kind {
-            RealtimeSessionKind::V1 => {
-                self.stream.items.clear();
-                self.stream.active_handoff = Some(self.request.handoff_id.clone());
-            }
-            RealtimeSessionKind::V2 if self.stream.active_handoff.is_some() => {
-                let previous = self
-                    .stream
-                    .pending_steer_ack
-                    .replace(self.request.handoff_id.clone());
-                assert!(
-                    previous.is_none(),
-                    "the previous steering acknowledgement must drain"
-                );
-            }
-            RealtimeSessionKind::V2 => {
-                self.stream.active_handoff = Some(self.request.handoff_id.clone());
+        if let Some(stream) = self.stream.as_mut() {
+            match self.request.handoff.session_kind {
+                RealtimeSessionKind::V1 => {
+                    stream.items.clear();
+                    stream.active_handoff = Some(self.request.handoff_id.clone());
+                }
+                RealtimeSessionKind::V2 if stream.active_handoff.is_some() => {
+                    let previous = stream
+                        .pending_steer_ack
+                        .replace(self.request.handoff_id.clone());
+                    assert!(
+                        previous.is_none(),
+                        "the previous steering acknowledgement must drain"
+                    );
+                }
+                RealtimeSessionKind::V2 => {
+                    stream.active_handoff = Some(self.request.handoff_id.clone());
+                }
             }
         }
         let _ = self.turn.extension_data.insert(self.owner.as_ref().clone());
