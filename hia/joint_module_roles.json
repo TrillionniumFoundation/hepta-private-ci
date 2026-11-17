@@ -3,7 +3,7 @@
   "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
   "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
   "audited_name_union": 29,
-  "current_opt_in_linked_kernels": 31,
+  "current_opt_in_linked_kernels": 32,
   "retained_oracle_only_kernels": 3,
   "entry_profiles": {
     "token_budget": "u64-pair-to-u64-v1",
@@ -522,6 +522,23 @@
       "production_entry": "codex_utils_stream_parser::ProposedPlanParser push_str/finish, strip_proposed_plan_blocks and extract_proposed_plan_text; existing AssistantTextStreamParser and Core streaming/finalization callers through the existing codex-core and CLI hia-native feature route",
       "runtime_qualified_on_joint_tree": false,
       "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "fuzzy_match",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/fuzzy_match.hepta",
+      "source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+      "source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+      "source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+      "production_link_sites": [
+        "codex-rs/utils/fuzzy-match/build.rs"
+      ],
+      "production_entry": "codex_utils_fuzzy_match::fuzzy_match, selected by codex-utils-fuzzy-match/hia-native and forwarded by the existing TUI/CLI feature route; existing ranking and scalar-index highlight consumers retain their APIs",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -587,12 +604,13 @@
   },
   "count_is_not_a_production_coverage_claim": true,
   "current_build_or_runtime_executed": false,
-  "current_build_module_count": 34,
+  "current_build_module_count": 35,
   "modules_added_after_audited_union": [
     "output_lines",
     "output_item_budget",
     "format_env_display",
     "citation_stream_parser",
-    "proposed_plan_parser"
+    "proposed_plan_parser",
+    "fuzzy_match"
   ]
 }

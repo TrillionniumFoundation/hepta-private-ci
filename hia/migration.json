@@ -82,7 +82,7 @@
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
     "qualification_status": "source_increment_requires_fresh_current_tree_qualification",
     "remaining_work": [
-      "Build the exact full-native34 lock with fresh B1/B2/B3 and all34 module/link bindings; qualify proposed_plan_parser and every retained citation/raw/public/installed gate. Earlier29/30/31/32/33 receipts are not reusable.",
+      "Build the exact full-native35 lock with fresh B1/B2/B3 and all35 module/link bindings; qualify fuzzy_match and every retained parser/raw/public/installed gate. Earlier29/30/31/32/33/34 receipts are not reusable.",
       "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
       "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
@@ -100,7 +100,7 @@
     "current_report": "hia/verification.json#ci_qualification_at_revision",
     "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report.",
     "previous_qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
-    "current_source_module_count": 34,
+    "current_source_module_count": 35,
     "current_lock_build_qualified": false
   },
   "candidate_modules": [
@@ -1808,6 +1808,84 @@
         "added_native_decoder_methods": 11,
         "large_default_execution_claimed": false
       }
+    },
+    {
+      "id": "fuzzy_match",
+      "hia_source": "hia/fuzzy_match.hepta",
+      "hia_source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+      "hia_source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+      "hia_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+      "source_path": "codex-rs/utils/fuzzy-match/src/lib.rs",
+      "source_revision": "e226cd0cf21e9b6e51c97b6b18207e87e22c051e",
+      "source_git_blob": "d644b31677745e938611852720add65d0d6f6f8c",
+      "source_function": "fuzzy_match(&str, &str) -> Option<(Vec<usize>, i32)>",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_fuzzy_match",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/fuzzy_match_buffer_contract.json",
+        "transport": "Begin/LowerHaystack/LowerNeedle/Match use32 finite u64 state words, a320-byte request prefix and384-byte response prefix. UTF-8 payloads are at most4096 bytes ending at a complete scalar; Match transports at most128 hay records and128 needle scalars. Normative output capacities are384,384+72*N,384+24*(4*N+1),2048. The complete u64 wrapper return is checked before low32 Core status; no aggregate string/vector cap is added."
+      },
+      "behavior": {
+        "hia_owns": "Complete Unicode17 lowercase tables, haystack char lowering, whole-needle Final_Sigma context with Case_Ignorable precedence, NUL retention, greedy cursors, original-scalar index deduplication, prefix preference, wrapped i32 score and the first overflowing primitive trace.",
+        "rust_retains": "Complete-scalar framing, unbounded owned containers, whole-frame/state/command/anchor validation before effects, mechanical storage and index collection, and one ordinary i32 primitive at the HIA-selected first overflow to preserve the actual compilation overflow-check policy.",
+        "rust_lowercase_matcher_score_or_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "original_default_matcher_and_all_eight_tests_retained": true,
+        "workspace_written": false,
+        "allocation_OOM_and_panic_timing_equivalence_claimed": false,
+        "logical_u64_raw_states_are_executed_giant_histories": false,
+        "complete_cli_tui_or_string_utilities_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_fuzzy_match_abi.py",
+        "hia/tests/fuzzy_match_oracle_inputs.json",
+        "hia/tests/fuzzy_match_oracle_streams.json",
+        "hia/tests/fuzzy_match_oracle_raw_core.json",
+        "hia/tests/fuzzy_match_oracle_raw_hay_max.json",
+        "hia/tests/fuzzy_match_oracle_raw_tail.json",
+        "codex-rs/utils/fuzzy-match/src/lib.rs",
+        "codex-rs/utils/fuzzy-match/src/fuzzy_match_additional_tests.rs",
+        "codex-rs/utils/fuzzy-match/src/fuzzy_match_large_native_tests.rs",
+        "codex-rs/utils/fuzzy-match/src/hia_native_fuzzy_match_wire_tests.rs",
+        "codex-rs/utils/fuzzy-match/src/hia_native_fuzzy_match_transition_tests.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "focused_original_UI_regression_groups": [
+        "bottom_pane::command_popup::",
+        "bottom_pane::file_search_popup::",
+        "bottom_pane::selection_popup_common::",
+        "bottom_pane::skill_popup::",
+        "bottom_pane::skills_toggle_view::"
+      ],
+      "focused_UI_scope": "Five focused original UI regression groups under native/default selections, not five direct fuzzy callers or whole-default-TUI coverage. The two skill_popup ranking oracles use the real matcher; selection_popup_common renders supplied scalar indices, command_popup has independent exact/prefix logic, file_search_popup preserves result paging, and skills_toggle_view routes through match_skill.",
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false,
+        "planned_raw_native_calls": 242,
+        "literal_frame_templates": 242,
+        "complete_literal_streams": 16,
+        "literal_stream_calls": 70,
+        "standalone_raw_cases": 172,
+        "raw_manifest_and_four_bound_shards": true,
+        "maximum_raw_shard_bytes": 308312,
+        "original_matcher_methods_preserved": 8,
+        "added_public_methods_both_features": 1,
+        "hand_derived_public_literal_rows": 50,
+        "added_native_only_large_public_methods": 2,
+        "added_private_decoder_methods": 13,
+        "focused_original_UI_regression_group_count": 5,
+        "large_default_execution_claimed": false,
+        "whole_default_TUI_qualified": false
+      }
     }
   ],
   "capabilities": [
@@ -2029,7 +2107,8 @@
       "id": "string_utilities",
       "source_roots": [
         "codex-rs/utils/string",
-        "codex-rs/utils/output-truncation"
+        "codex-rs/utils/output-truncation",
+        "codex-rs/utils/fuzzy-match"
       ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
@@ -2038,9 +2117,10 @@
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers",
         "Streaming output line count with original Rust line semantics",
-        "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order"
+        "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order",
+        "Unicode17 haystack scalar lowercase and needle Final_Sigma lowercase, greedy matching, original-scalar indices with deduplication, prefix preference and original i32 score/panic-policy behavior"
       ],
-      "next_implementation": "Qualify proposed_plan_parser, citation_stream_parser, format_env_display, output_item_budget and output_lines through the exact full-native34 build, retained raw gates, original Rust/default/public and selected Core consumer oracles. Complete remaining UTF-8/inline-tag/UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification.",
+      "next_implementation": "Qualify fuzzy_match, proposed_plan_parser, citation_stream_parser, format_env_display, output_item_budget and output_lines through the exact full-native35 build, retained raw gates, original default/native public oracles, selected Core consumers and five focused original UI regression groups. Complete remaining UTF-8/inline-tag/UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification. These focused UI groups do not qualify the full CLI/TUI capability.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
@@ -2050,7 +2130,8 @@
         "truncate",
         "token_budget",
         "output_lines",
-        "output_item_budget"
+        "output_item_budget",
+        "fuzzy_match"
       ]
     },
     {
@@ -3600,7 +3681,8 @@
       "output_item_budget",
       "format_env_display",
       "citation_stream_parser",
-      "proposed_plan_parser"
+      "proposed_plan_parser",
+      "fuzzy_match"
     ],
     "actual_opt_in_link_modules": [
       "allowed_prefixes",
@@ -3609,6 +3691,7 @@
       "command_dispatch",
       "file_update",
       "format_env_display",
+      "fuzzy_match",
       "markdown_location",
       "metric_tag",
       "network_domains",
@@ -3662,11 +3745,12 @@
       "output_item_budget",
       "format_env_display",
       "citation_stream_parser",
-      "proposed_plan_parser"
+      "proposed_plan_parser",
+      "fuzzy_match"
     ],
-    "new_kernel_source_revision": "da3817ebea57da1a940c12abc57999ce3d50706a",
-    "new_kernel_source_git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6",
-    "new_kernel_source_sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755"
+    "new_kernel_source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+    "new_kernel_source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+    "new_kernel_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661"
   },
   "source_owner_histories": {
     "17": {
@@ -4093,5 +4177,158 @@
     },
     "qualification_transferred_to_current34": false,
     "string_utilities_next_implementation": "Qualify output_item_budget and output_lines through a fresh full-native31 build, both raw ABI gates, original Rust/default/public and selected Core caller oracles. Complete remaining UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification."
+  },
+  "previous_source_increment_34": {
+    "source_revision": "e226cd0cf21e9b6e51c97b6b18207e87e22c051e",
+    "source_migration": {
+      "git_blob": "b60a3682a173363bcb06057e6f65e6ff1d938458",
+      "sha256": "97f691d8702218a5d009f2b074611414e1df5922ffb53f3da9f5301021282b17"
+    },
+    "toolchain_current_source_module_count": 34,
+    "toolchain_remaining_work": [
+      "Build the exact full-native34 lock with fresh B1/B2/B3 and all34 module/link bindings; qualify proposed_plan_parser and every retained citation/raw/public/installed gate. Earlier29/30/31/32/33 receipts are not reusable.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_link_gate": {
+      "helper": "hia/cargo_build.rs",
+      "builder": "hia/build.py",
+      "tests": "hia/tests/test_build_receipt.py",
+      "status": "source_increment_requires_fresh_build_and_link_qualification",
+      "accepted_build_modules": [
+        "seek_sequence",
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "source_file",
+        "file_update",
+        "parser",
+        "patch_effects",
+        "unified_diff",
+        "patch_summary",
+        "patch_application",
+        "patch_standalone",
+        "uuid_find",
+        "template_parse",
+        "template_render",
+        "template_index",
+        "uuid_matches",
+        "template_parser",
+        "prefix_match",
+        "prefix_admission",
+        "policy_summary",
+        "network_domains",
+        "allowed_prefixes",
+        "command_dispatch",
+        "network_host",
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser"
+      ],
+      "actual_opt_in_link_modules": [
+        "allowed_prefixes",
+        "ascii_json_fragment",
+        "citation_stream_parser",
+        "command_dispatch",
+        "file_update",
+        "format_env_display",
+        "markdown_location",
+        "metric_tag",
+        "network_domains",
+        "network_host",
+        "output_item_budget",
+        "output_lines",
+        "parser",
+        "patch_application",
+        "patch_effects",
+        "patch_standalone",
+        "patch_summary",
+        "policy_summary",
+        "prefix_admission",
+        "prefix_match",
+        "proposed_plan_parser",
+        "seek_sequence",
+        "source_file",
+        "template_index",
+        "template_parse",
+        "template_render",
+        "token_budget",
+        "truncate",
+        "unified_diff",
+        "utf8_prefix",
+        "uuid_find"
+      ],
+      "entry_profiles": {
+        "token_budget": "u64-pair-to-u64-v1",
+        "prefix_admission": "u64-pair-to-u64-v1"
+      },
+      "feature_off_requires_artifacts": false,
+      "unsupported_native_targets": "build_error",
+      "runtime_shared_library_requirement": false,
+      "build_report_sha256": null,
+      "checks_passed": null,
+      "existing_link_or_build_reports_reusable_without_regeneration": false,
+      "build_report_payload_independently_read": false,
+      "current_report": "hia/verification.json#ci_qualification_at_revision",
+      "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+      "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+    },
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser"
+      ],
+      "new_kernel_source_revision": "da3817ebea57da1a940c12abc57999ce3d50706a",
+      "new_kernel_source_git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6",
+      "new_kernel_source_sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755"
+    },
+    "string_utilities": {
+      "id": "string_utilities",
+      "source_roots": [
+        "codex-rs/utils/string",
+        "codex-rs/utils/output-truncation"
+      ],
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "UTF-8 boundaries",
+        "middle truncation and budget accounting",
+        "metric tag, UUID, JSON and location helpers",
+        "Streaming output line count with original Rust line semantics",
+        "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order"
+      ],
+      "next_implementation": "Qualify proposed_plan_parser, citation_stream_parser, format_env_display, output_item_budget and output_lines through the exact full-native34 build, retained raw gates, original Rust/default/public and selected Core consumer oracles. Complete remaining UTF-8/inline-tag/UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification.",
+      "candidate_modules": [
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "output_lines",
+        "output_item_budget"
+      ]
+    },
+    "qualification_transferred_to_current35": false
   }
 }
