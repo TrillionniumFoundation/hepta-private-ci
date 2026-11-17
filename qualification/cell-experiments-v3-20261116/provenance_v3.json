@@ -1,0 +1,425 @@
+{
+  "act2": {
+    "confirmation_already_exposed": true,
+    "external_model_teacher_count": 0,
+    "head": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+    "historical_confirmation_episode_factorization": "80 task instances x 8 initialization seeds x 5 arm labels",
+    "historical_confirmation_episodes": 3200,
+    "historical_epochs_per_fit": 220,
+    "historical_fit_count": 16,
+    "historical_training_seed_count": 8,
+    "inadmissible_as": [
+      "new_external_user_trajectories",
+      "unseen_source_holdout",
+      "future_time_holdout",
+      "multi_external_teacher_evidence",
+      "new_C"
+    ],
+    "independent_user_count": 0,
+    "normalized_task_family_count": 1,
+    "payloads_generated_by_actor": false,
+    "pr": 5669,
+    "pr_created_at": "2026-11-10T07:49:15Z",
+    "pr_updated_at": "2026-11-10T07:56:30Z",
+    "reusable_as": [
+      "exposed_workflow_development",
+      "actual_local_sqlite_execution_adapter"
+    ],
+    "source_event_time_reason": "Generated task manifest/archive does not authenticate real user event timestamps. Date in path is not a user-event timestamp.",
+    "source_event_times": null,
+    "teacher_kind": "B1_macro deterministic scripted policy",
+    "trajectory_readout": {
+      "actual_complete": 72,
+      "arms": [
+        "B1_macro"
+      ],
+      "claimed_success": 64,
+      "composition_lengths": [
+        1,
+        2
+      ],
+      "decompressed_bytes": 106947,
+      "destination_labels": [
+        "train-a",
+        "train-b"
+      ],
+      "events": 448,
+      "faults": [
+        "already_partial",
+        "lost_reply",
+        "normal",
+        "opaque_after_apply",
+        "prestaged"
+      ],
+      "file_identities": {
+        "act2_frozen_manifest.json": {
+          "bytes": 64965,
+          "git_blob": "83fc8493a649f8826f3880162d74408c3d6fd570",
+          "sha256": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9"
+        },
+        "act2_review.md": {
+          "bytes": 3021,
+          "git_blob": "3029013ecea6983c47e2586abd4247660cefbf65",
+          "sha256": "733e3c81b6ccf0e355eceaa7a9147a3e95dbf93427e04c8ac2057acbe73a47f7"
+        },
+        "act2_run.py.txt": {
+          "bytes": 13884,
+          "git_blob": "9adda63641c29b1cf304980162916541f6959110",
+          "sha256": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c"
+        },
+        "act2_sqlite_destination.py.txt": {
+          "bytes": 6746,
+          "git_blob": "0ad66601612826c6a3eda731f0f62f4d950b45f4",
+          "sha256": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+        },
+        "h7_guard.sql": {
+          "bytes": 735,
+          "git_blob": "a42f62de7bde2af2a184e7a7b6629669851426ac",
+          "sha256": "fb5c21f87ba34a5638b2c7a4060b53cf6c1c606422369ea1bade5d23e67af2ae"
+        },
+        "h7_schema.sql": {
+          "bytes": 6830,
+          "git_blob": "037e0edcc3ed3d72f8ddbb89ec5231480fba4e88",
+          "sha256": "adb66da205ecaab11f16c62899e283653e153abf28d601e6b86cb4681b3256ee"
+        },
+        "training-trajectories.jsonl.gz": {
+          "bytes": 10012,
+          "git_blob": "13c3717fd41fb5dd1f2893717ebe56765cccb0bb",
+          "sha256": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec"
+        }
+      },
+      "manifest_confirm_rows": 80,
+      "manifest_train_ids_match": true,
+      "manifest_train_rows": 80,
+      "new_model_calls": 0,
+      "new_verifier_calls": 0,
+      "primitive_calls": 448,
+      "provenance": "controlled_local_sqlite_research_fixture",
+      "rows": 80,
+      "schema_values": [
+        0,
+        1
+      ],
+      "unique_decision_sequences": 4,
+      "unique_task_ids": 80
+    }
+  },
+  "authorization": {
+    "basis": "User explicitly requested full audit of both repositories and execution of E1\u2013E6; parent delegated source curation and local development tasks.",
+    "external_user_trajectory_export_performed": false,
+    "local_development": "authorized within isolated new task databases",
+    "production_or_native_owner_authority": "not supplied or inferred",
+    "secret_or_hidden_reasoning_read": false,
+    "third_party_model_training_rights": "not established for any external private trace"
+  },
+  "created_at": "2026-11-16T23:29:56Z",
+  "development_tasks": {
+    "actual_destination_episodes": 4,
+    "actual_intentional_failure_controls": 1,
+    "actual_successful_task_completions": 3,
+    "adapter": "scripts/cell_experiments/repo_tasks_v3_sqlite.py",
+    "adapter_sha256": "c07ede8ca630fb69cb2c8a1aeb20c86b56c208d9e3cb66878bc08f6f8954c01f",
+    "curated_at": "2026-11-16T23:28:08Z",
+    "expected_business_outcomes_observed": 4,
+    "independent_evaluator_authenticated": false,
+    "lineage_id": "derived:chain-786-workstream-3:act2-sqlite-family",
+    "manifest": "tasks/sqlite-dev-v3/task-development-sqlite.json",
+    "manifest_sha256": "a02b1e07d554fe92e2e61658dd2a64818a055db1628522aefb825a0096f7fb4b",
+    "new_independent_sources": 0,
+    "new_model_calls": 0,
+    "new_native_cell_adoptions": 0,
+    "new_training_jobs": 0,
+    "primary_request_created_at": "2026-11-08T05:04:58Z",
+    "reference_summary": "tasks/sqlite-dev-v3/development-reference-01/SUMMARY.json",
+    "source_group_id": "TrillionniumFoundation:controlled-sqlite-family"
+  },
+  "h7": {
+    "actual_database_row_count": null,
+    "constraints": {
+      "external_effect_executed": 0,
+      "kg_write_authority": 0,
+      "production_caller": 0
+    },
+    "guard_event_kinds": [
+      "turn_start",
+      "terminal"
+    ],
+    "guard_reward_bps": 0,
+    "raw_database_rows_read": 0,
+    "reward_feedback_qualification": false,
+    "role": "schema_and_observation_guard_only",
+    "row_count_reason": "No actual H7 database/export was inspected. Schema existence does not establish populated rows."
+  },
+  "issues_inspected": [
+    {
+      "author": {
+        "id": 102159240,
+        "login": "ProfHepta",
+        "type": "User"
+      },
+      "created_at": "2026-11-08T05:04:58Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/786",
+      "number": 786,
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "state": "open",
+      "title": "[HOLD_NO_GO] Coordinate seven native PoN cold-path optimizations under fixed Host acceptance",
+      "updated_at": "2026-11-08T05:04:58Z"
+    },
+    {
+      "author": {
+        "id": 102159240,
+        "login": "ProfHepta",
+        "type": "User"
+      },
+      "created_at": "2026-10-31T01:37:36Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/596",
+      "number": 596,
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "state": "open",
+      "title": "[P0-P2][NO_GO] PoN security, native consensus, Cell Swarm and Hepta evolution acceptance ledger",
+      "updated_at": "2026-10-31T02:26:51Z"
+    },
+    {
+      "author": {
+        "id": 102159240,
+        "login": "ProfHepta",
+        "type": "User"
+      },
+      "created_at": "2026-10-30T14:12:34Z",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/562",
+      "number": 562,
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "state": "open",
+      "title": "[P0] Whole-chain PQ qualification: authority, work, quantum mining, migration, capacity and rollback",
+      "updated_at": "2026-11-11T00:42:14Z"
+    }
+  ],
+  "learn_ordinary": {
+    "documented_behavior_test_source": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+    "documented_complete_chains": 0,
+    "documented_complete_noupdate_or_rollback_chains": 0,
+    "documented_positive_adopted_chains": 0,
+    "documented_status": "HOLD_ORDINARY_CHAIN_NOT_ESTABLISHED",
+    "documents_reopened": [
+      "source-records/learn-ordinary-round2-readme.md",
+      "source-records/learn-ordinary-owner-gaps.md"
+    ],
+    "head": "f97f3c90ac1ac3d5171fd9f25b3e34431f44a367",
+    "historical_component_passes_transferred": false,
+    "new_native_execution": false,
+    "pr": 5735,
+    "pr_created_at": "2026-11-10T13:15:31Z",
+    "pr_updated_at": "2026-11-10T21:26:50Z",
+    "raw_custody_archives_or_credentials_read": false,
+    "remaining_materials": [
+      "real source-to-target Dataset and original signed freeze",
+      "independent B/retention and complete measured comparison cost",
+      "Model-compatible original Proposal protocol or freshly frozen valid Parameter V3 path",
+      "original production stage-owner assembly",
+      "actual daemon and Root process cold recovery"
+    ]
+  },
+  "maintenance": {
+    "behavior_checks_before_maintenance": true,
+    "just_fmt": "not executable in this isolated extraction: codex-rs directory and justfile are absent; root owns repository integration/maintenance"
+  },
+  "repository_heads_observed": {
+    "TrillionniumFoundation/Trillionnium-Chain": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+    "TrillionniumFoundation/hepta-private-ci": "732e934ba496d90fbe042b8d41d479ef901643e5"
+  },
+  "schema": "hepta.source-provenance.v3",
+  "scope": "Bounded read-only verification of named repository issues, H7 schemas, ACT-2 retained trajectories, LEARN ordinary qualification documents and v2 provenance; local derivative SQLite development executions.",
+  "source_counts": {
+    "controlled_sqlite_normalized_environment_families": 1,
+    "controlled_sqlite_training_trajectory_rows": 80,
+    "external_coding_agent_trajectory_records_verified": 0,
+    "issue_author_account_ids": [
+      102159240
+    ],
+    "issue_records_inspected": 3,
+    "new_confirmation_C_tasks_created": 0,
+    "new_development_task_instances": 3,
+    "new_independent_sources_created": 0,
+    "new_users_created": 0,
+    "organization_names_observed": 1,
+    "repositories_inspected": 2,
+    "verified_distinct_human_users": 0,
+    "verified_external_teacher_models": 0
+  },
+  "source_inventory": [
+    {
+      "bytes": 2149,
+      "capture_kind": "derived_local_inventory",
+      "path": "source-records/ACT2_TRAJECTORY_READOUT.json",
+      "sha256": "67de44e4ed6a0a06b5bdeb9cc7c68801fbabbb0b0d741863549fc76021257781"
+    },
+    {
+      "bytes": 492,
+      "capture_kind": "derived_local_inventory",
+      "path": "source-records/EXPECTED_GIT.json",
+      "sha256": "9718f9971b8ef2cafdb4ca56678cafb92130d0df29982f0b7ff46d62f7613281"
+    },
+    {
+      "bytes": 64965,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "83fc8493a649f8826f3880162d74408c3d6fd570",
+      "path": "source-records/act2_frozen_manifest.json",
+      "ref": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "qualification/act2-learning-20261110/run2/FROZEN_MANIFEST.json",
+      "sha256": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/qualification/act2-learning-20261110/run2/FROZEN_MANIFEST.json"
+    },
+    {
+      "bytes": 3021,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "3029013ecea6983c47e2586abd4247660cefbf65",
+      "path": "source-records/act2_review.md",
+      "ref": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "qualification/act2-learning-20261110/review/REVIEW.md",
+      "sha256": "733e3c81b6ccf0e355eceaa7a9147a3e95dbf93427e04c8ac2057acbe73a47f7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/qualification/act2-learning-20261110/review/REVIEW.md"
+    },
+    {
+      "bytes": 13884,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "9adda63641c29b1cf304980162916541f6959110",
+      "path": "source-records/act2_run.py.txt",
+      "ref": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "scripts/act2_learning/run.py",
+      "sha256": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/scripts/act2_learning/run.py"
+    },
+    {
+      "bytes": 6746,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "0ad66601612826c6a3eda731f0f62f4d950b45f4",
+      "path": "source-records/act2_sqlite_destination.py.txt",
+      "ref": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "scripts/act2_learning/sqlite_destination.py",
+      "sha256": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/scripts/act2_learning/sqlite_destination.py"
+    },
+    {
+      "bytes": 7599,
+      "capture_kind": "github_api_field_projection_not_original_http_serialization",
+      "path": "source-records/chain-issue-562.json",
+      "sha256": "6fa9812c5ca8825d8b375ae0418c3a93a8430fa5627ed85620b907fd9bb2397d"
+    },
+    {
+      "bytes": 5738,
+      "capture_kind": "github_api_field_projection_not_original_http_serialization",
+      "path": "source-records/chain-issue-596.json",
+      "sha256": "fce1373d1f9aa651bd5f4972d554d7f7b6f357f63ba1c74ac63ab252f9da3676"
+    },
+    {
+      "bytes": 7446,
+      "capture_kind": "github_api_field_projection_not_original_http_serialization",
+      "path": "source-records/chain-issue-786.json",
+      "sha256": "285776f237b3a1674606ce56cb957fa62602dfb02597b9a2057c88d1419191ae"
+    },
+    {
+      "bytes": 735,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "a42f62de7bde2af2a184e7a7b6629669851426ac",
+      "path": "source-records/h7_guard.sql",
+      "ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "codex-rs/hepta-memory/migrations/0009_h7_trajectory_observation_guard.sql",
+      "sha256": "fb5c21f87ba34a5638b2c7a4060b53cf6c1c606422369ea1bade5d23e67af2ae",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-memory/migrations/0009_h7_trajectory_observation_guard.sql"
+    },
+    {
+      "bytes": 6830,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "037e0edcc3ed3d72f8ddbb89ec5231480fba4e88",
+      "path": "source-records/h7_schema.sql",
+      "ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "codex-rs/hepta-memory/migrations/0008_h7_trajectory_events.sql",
+      "sha256": "adb66da205ecaab11f16c62899e283653e153abf28d601e6b86cb4681b3256ee",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-memory/migrations/0008_h7_trajectory_events.sql"
+    },
+    {
+      "bytes": 2471,
+      "capture_kind": "github_api_field_projection_not_original_http_serialization",
+      "path": "source-records/hepta-pr-5669.json",
+      "sha256": "d4330782bd853d0fae95c7fcf21c83855e8e941bbd726e828cd768e2287b0094"
+    },
+    {
+      "bytes": 5651,
+      "capture_kind": "github_api_field_projection_not_original_http_serialization",
+      "path": "source-records/hepta-pr-5735.json",
+      "sha256": "b494d4b824d412a63d74f1bc307879212c27a0dd5e7c54b75aebe6c38d62940d"
+    },
+    {
+      "bytes": 4880,
+      "capture_kind": "github_api_field_projection_not_original_http_serialization",
+      "path": "source-records/hepta-pr-6440.json",
+      "sha256": "ba791669311462bef748a066af814fbcdd28bd1fae8b47aba147468fc8f9e059"
+    },
+    {
+      "bytes": 19809,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "dd42eb5267797e3a6e131157b4a69d52a76205c9",
+      "path": "source-records/learn-ordinary-owner-gaps.md",
+      "ref": "f97f3c90ac1ac3d5171fd9f25b3e34431f44a367",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "qualification/learn-ordinary-20261110-14cc/round2/OWNER_ASSEMBLY_GAPS.md",
+      "sha256": "4b8d132dae155f039f2cb628fdba8271ec26af5bb649c0afa8e8786befac7bed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f97f3c90ac1ac3d5171fd9f25b3e34431f44a367/qualification/learn-ordinary-20261110-14cc/round2/OWNER_ASSEMBLY_GAPS.md"
+    },
+    {
+      "bytes": 15705,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "1546d7995b4cf5900a7ced08f35809296e7162c5",
+      "path": "source-records/learn-ordinary-round2-readme.md",
+      "ref": "f97f3c90ac1ac3d5171fd9f25b3e34431f44a367",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "qualification/learn-ordinary-20261110-14cc/round2/README.md",
+      "sha256": "188d7b975d2e5db580b9d1f265f462a5fd77ead844d7af7eaaabf7ecad6ec524",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f97f3c90ac1ac3d5171fd9f25b3e34431f44a367/qualification/learn-ordinary-20261110-14cc/round2/README.md"
+    },
+    {
+      "bytes": 10012,
+      "capture_kind": "exact_github_blob_bytes",
+      "git_blob": "13c3717fd41fb5dd1f2893717ebe56765cccb0bb",
+      "path": "source-records/training-trajectories.jsonl.gz",
+      "ref": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "repository_path": "qualification/act2-learning-20261110/run2/training-trajectories.jsonl.gz",
+      "sha256": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/qualification/act2-learning-20261110/run2/training-trajectories.jsonl.gz"
+    }
+  ],
+  "split_protocol": {
+    "B": "selection cohort isolated from A; candidate-selection rule frozen before evaluation",
+    "C": "future task/source cohort sealed from training and B-selection feedback; one final evaluation after candidate and rule freeze",
+    "E5": "only actually authenticated distinct source groups may form 1/4/16/64 settings; unavailable settings remain blocked",
+    "all_attempts": "retain failure, cancellation, timeout, UNKNOWN, repetition and original attempt identity",
+    "all_current_material": "exposed development",
+    "curator_independence": "A separate agent can isolate answers operationally; shared operator and organization are explicitly not independently authenticated custody",
+    "current_A_B_C_created": false,
+    "future_grouping_unit": "original demand/request lineage; issue/PR forks, replay, seeds and agent branches remain in the same group",
+    "source_group_requires": "authenticated user/project origin, original timestamps, consent/rights and deduplicated parent lineage",
+    "time_cutoffs": "freeze before training; use original event times, not curation/export times"
+  },
+  "status": "DEVELOPMENT_SOURCES_AVAILABLE_NO_NEW_CONFIRMATION_COHORT",
+  "v2": {
+    "frozen_execution_source": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+    "head": "42e32825ae20d460cb782856e00816661536853a",
+    "old_C_reused_as_new_confirmation": false,
+    "old_split_counts": {
+      "A": 6,
+      "B": 3,
+      "C": 3
+    },
+    "pr": 6440,
+    "published_result": "nine B/C arms 0/3; both adoption branches NO_UPDATE",
+    "task_instances": 12,
+    "v3_eligibility": "exposed development regression only"
+  }
+}
