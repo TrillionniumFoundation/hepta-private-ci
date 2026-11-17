@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.smol-probe-evidence-transfer.v1",
+  "host": "ai395",
+  "remote_job_id": "1a1e6d92ee6-392-3c5c",
+  "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-smol-evidence-export01",
+  "request_digest": "c2812f1e8c8c970d30ff537afcc6574b9b2742a009396c071bf20ae5b0af6594",
+  "remote_job_state": "succeeded",
+  "remote_job_exit_code": 0,
+  "remote_job_output_complete": true,
+  "remote_job_output_durable": true,
+  "export_receipt": {
+    "schema": "hepta.smol-probe-evidence-export.v1",
+    "archive": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_EVIDENCE_01.zip",
+    "archive_size": 211433,
+    "archive_sha256": "7317355beb06eefb315e68249bf062981752536bbade008d7485240be1101066",
+    "manifest": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_MEMBERS_01.json",
+    "manifest_size": 50621,
+    "manifest_sha256": "516ac32fed57049a87f7025c97453a87d8ef2e0c7030c9a87625f68e4c0504e6",
+    "member_count": 154,
+    "member_bytes": 712255,
+    "excluded_count": 0,
+    "source_files_modified": false,
+    "model_execution_performed": false
+  },
+  "binary_tool": "h_binary_read",
+  "chunk_limit_bytes": 65536,
+  "subsequent_chunks_pinned_to_first_version": true,
+  "archive_chunks": [
+    {
+      "chunk_sha256": "19def2cc329e966ba0dd68a34bb55dc3eae5030833e73d516e72160e07ee92dc",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "path": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_EVIDENCE_01.zip",
+      "size": 211433,
+      "version": "66306:63086022:211433:1794874356714872860:1794874356714872860"
+    },
+    {
+      "chunk_sha256": "7b61a966021724ed898e11336cb7c088523aa4072338b21ee3a7777d5b91a53d",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "path": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_EVIDENCE_01.zip",
+      "size": 211433,
+      "version": "66306:63086022:211433:1794874356714872860:1794874356714872860"
+    },
+    {
+      "chunk_sha256": "7ae2a11c0db0d627f5bf3b66b631286ce36897423fc870e8a25202f1d415587d",
+      "eof": false,
+      "next_offset": 196608,
+      "offset": 131072,
+      "path": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_EVIDENCE_01.zip",
+      "size": 211433,
+      "version": "66306:63086022:211433:1794874356714872860:1794874356714872860"
+    },
+    {
+      "chunk_sha256": "a6e99102c3968e2fc1fe18d5a928d35c896ab8991e1cf7287c5a39e7c9ca935f",
+      "eof": true,
+      "next_offset": 211433,
+      "offset": 196608,
+      "path": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_EVIDENCE_01.zip",
+      "size": 211433,
+      "version": "66306:63086022:211433:1794874356714872860:1794874356714872860"
+    }
+  ],
+  "manifest_chunks": [
+    {
+      "chunk_sha256": "516ac32fed57049a87f7025c97453a87d8ef2e0c7030c9a87625f68e4c0504e6",
+      "eof": true,
+      "next_offset": 50621,
+      "offset": 0,
+      "path": "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/export-smol-probe-evidence-01-cache-v3/SMOL_PROBE_MEMBERS_01.json",
+      "size": 50621,
+      "version": "66306:63086028:50621:1794874356726968339:1794874356726968339"
+    }
+  ],
+  "local_chunk_sha256_checks": "all_passed",
+  "local_archive_sha256": "7317355beb06eefb315e68249bf062981752536bbade008d7485240be1101066",
+  "local_manifest_sha256": "516ac32fed57049a87f7025c97453a87d8ef2e0c7030c9a87625f68e4c0504e6",
+  "original_source_snapshot": {
+    "relative_path": "../operations/smol-probe-source-01.zip",
+    "sha256": "7d822083fd95b790a3d39196fe960f7e2848b9b971b2463622703d4ec316a95f",
+    "verification": "matches_required_digest",
+    "replaced_with_current_source": false
+  },
+  "model_execution_during_export_or_transfer": false
+}
