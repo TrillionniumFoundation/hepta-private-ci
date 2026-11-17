@@ -1,0 +1,27 @@
+{
+  "model_loaded_by_this_operation": false,
+  "observed_at_ns": 1794881125868803814,
+  "queries": [
+    {
+      "argv": [
+        "/usr/bin/nvidia-smi",
+        "--query-gpu=name,driver_version,memory.total,memory.free",
+        "--format=csv,noheader,nounits"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "NVIDIA GeForce RTX 4060, 580.178.04, 8188, 6434\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/nvidia-smi",
+        "--query-compute-apps=pid,process_name,used_memory",
+        "--format=csv,noheader,nounits"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "9243, /opt/google/chrome/chrome --type=gpu-process --gpu-recent-crash-count=0 --ozone-platform=wayland --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=9174 --enable-crash-reporter=? --change-stack-guard-on-fork=enable --gpu-preferences=YAAAAAAAAAAgAQAEAAAAAAAAAAAAAGAASAAAAAAAAAABAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --shared-files --metrics-shmem-handle=4?i?6146500322015047430?8046464640003019071?262144 --field-trial-handle=3?i?6844592851126018384?16331561515598153181?262144 --variations-seed-version=20261113-170055.076000-production --pseudonymization-salt-handle=7?i?13728938487325130399?12655355340358938304?4 --trace-process-track-uuid=3190708988185955192, 471\n10568, /home/qian-qi/.local/opt/Telegram/Telegram, 25\n"
+    }
+  ],
+  "schema": "hepta.runtime-ready-gpu-handoff.v1"
+}

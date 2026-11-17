@@ -1,0 +1,29 @@
+{
+  "archive_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-056740307125721bfc7e15beaa2cb79d529b9648bd014a839ae80c2042db2891/output.log",
+  "available_end": 1731,
+  "chunk_sha256": "cbd3a4dfcfda0c127363e21486654e31dd76ad7e10aa62784e879b564445a8d7",
+  "host": "desktop",
+  "next_offset": 1731,
+  "offset": 0,
+  "output_complete": true,
+  "persistent_across_runtime_restart": true,
+  "session_id": "dpty-056740307125721bfc7e15beaa2cb79d529b9648bd014a839ae80c2042db2891",
+  "status": {
+    "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+    "bytes_seen": 1731,
+    "bytes_stored": 1731,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794881125747,
+    "exit_code": 0,
+    "output_complete": true,
+    "owner_pid": 1454244,
+    "pid": 1454246,
+    "state": "exited"
+  },
+  "storage": "target_archive",
+  "text": "{\"schema\": \"hepta.runtime-ready-gpu-handoff.v1\", \"observed_at_ns\": 1794881125868803814, \"queries\": [{\"argv\": [\"/usr/bin/nvidia-smi\", \"--query-gpu=name,driver_version,memory.total,memory.free\", \"--format=csv,noheader,nounits\"], \"exit_code\": 0, \"stdout\": \"NVIDIA GeForce RTX 4060, 580.178.04, 8188, 6434\\n\", \"stderr\": \"\"}, {\"argv\": [\"/usr/bin/nvidia-smi\", \"--query-compute-apps=pid,process_name,used_memory\", \"--format=csv,noheader,nounits\"], \"exit_code\": 0, \"stdout\": \"9243, /opt/google/chrome/chrome --type=gpu-process --gpu-recent-crash-count=0 --ozone-platform=wayland --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=9174 --enable-crash-reporter=? --change-stack-guard-on-fork=enable --gpu-preferences=YAAAAAAAAAAgAQAEAAAAAAAAAAAAAGAASAAAAAAAAAABAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAMAAAAAQAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --shared-files --metrics-shmem-handle=4?i?6146500322015047430?8046464640003019071?262144 --field-trial-handle=3?i?6844592851126018384?16331561515598153181?262144 --variations-seed-version=20261113-170055.076000-production --pseudonymization-salt-handle=7?i?13728938487325130399?12655355340358938304?4 --trace-process-track-uuid=3190708988185955192, 471\\n10568, /home/qian-qi/.local/opt/Telegram/Telegram, 25\\n\", \"stderr\": \"\"}], \"model_loaded_by_this_operation\": false}\r\n{\"export\": \"/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/operations/recovery-03-export-01\", \"archive\": {\"name\": \"CUDA_RECOVERY_03_EVIDENCE.zip\", \"bytes\": 1739778, \"sha256\": \"fdd800292f0b22ac227fea457210bfafa15636a6385fa5b5b45fef1cd6c7c21d\"}, \"members\": 431, \"ready_sha256\": \"7f9368b38843ab1fbf158108e75008a04bf8d3b57c1e73a3e523d4bac832fac9\"}\r\n",
+  "text_is_lossy": false,
+  "truncated_before_offset": false,
+  "utf8_pending": false
+}
