@@ -136,3 +136,7 @@ pub(super) async fn send_owned_handoff_output(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "handoff_owner_tests.rs"]
+mod tests;
