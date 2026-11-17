@@ -1,0 +1,81 @@
+name: ACT-2 original Notes seed process qualification
+
+on:
+  push:
+    branches: [test/act2-original-thread-seed-launcher-20261111]
+    paths:
+      - codex-rs/hepta-agentd/tests/notes_thread_seed_product.rs
+      - codex-rs/hepta-agentd/src/bin/hepta-notes-thread-seed.rs
+      - codex-rs/hepta-agentd/src/notes_thread_seed.rs
+      - .github/workflows/hepta-act2-notes-thread-seed-product.yml
+
+permissions:
+  contents: read
+
+jobs:
+  native-real-process:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: 0
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+    steps:
+      - name: Check out exact pushed candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind source tree lock and compiler identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/act2-notes-seed"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git diff --check
+          {
+            printf 'source_sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree_sha=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'cargo_lock_sha256='
+            sha256sum codex-rs/Cargo.lock | cut -d' ' -f1
+            rustc --version --verbose
+            cargo --version
+          } | tee "${RUNNER_TEMP}/act2-notes-seed/identity.txt"
+
+      - name: Run the exact native real-process assertion
+        shell: bash
+        run: |
+          set -o pipefail
+          set +e
+          cargo test --locked --manifest-path codex-rs/Cargo.toml             -p codex-hepta-agentd             --test notes_thread_seed_product             launcher_seeds_one_unused_original_thread_without_model_contact             -- --nocapture --test-threads=1             2>&1 | tee "${RUNNER_TEMP}/act2-notes-seed/test.log"
+          status="${PIPESTATUS[0]}"
+          set -e
+          printf 'exit_code=%s\n' "${status}" | tee "${RUNNER_TEMP}/act2-notes-seed/result.txt"
+          exit "${status}"
+
+      - name: Retain exact built test binary identity
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          find codex-rs/target/debug/deps -maxdepth 1 -type f -executable             -name 'notes_thread_seed_product-*' -print0             | sort -z             | xargs -0 -r sha256sum             | tee "${RUNNER_TEMP}/act2-notes-seed/binary-sha256.txt"
+
+      - name: Confirm source remained clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Preserve original exact-source records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: act2-notes-seed-native-${{ github.sha }}
+          path: ${{ runner.temp }}/act2-notes-seed
+          if-no-files-found: error
+          retention-days: 14
