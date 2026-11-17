@@ -278,10 +278,14 @@ def stream(probe, item, fill):
 def verify(args, report):
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / 'network_host.so', ROOT / 'hia/network_host.hepta',
-                  'full-native33', report)
-    require(report['native_build']['full33_manifest_verified'] is True
-            and report['native_build']['module_count'] == 33,
-            'Citation ABI requires the complete current thirty-three-module build')
+                  args.build_profile, report)
+    verified_field, expected_count = {
+        'full-native33': ('full33_manifest_verified', 33),
+        'full-native34': ('full34_manifest_verified', 34),
+    }[args.build_profile]
+    require(report['native_build'][verified_field] is True
+            and report['native_build']['module_count'] == expected_count,
+            'Citation ABI requires the complete selected native module build')
     bind(Path(__file__), report)
     contract = json.loads(bind(ROOT / 'hia/citation_stream_parser_buffer_contract.json',
                                report, CONTRACT_SHA))
@@ -335,11 +339,13 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native33', 'full-native34'],
+                        default='full-native33')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {
         'schema': 'codex.hia.citation-stream-parser.raw-abi.v1', 'passed': False,
-        'requested_build_profile': 'full-native33',
+        'requested_build_profile': args.build_profile,
         'loaded_entry': 'libcodex_hia_citation_stream_parser.so:codex_hia_citation_stream_parser',
         'abi_scope': 'Normal native-selfhost B3 namespaced borrowed-buffers-u32-v1 only.',
         'return_rule': 'Full u64 equals literal Core u32; nonzero high32 is never masked.',

@@ -505,7 +505,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native33 \
+            --build-profile full-native34 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -515,7 +515,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native33 \
+            --build-profile full-native34 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
@@ -525,7 +525,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native33 \
+            --build-profile full-native34 \
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
@@ -535,8 +535,17 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native34 \
             --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
+      - name: Verify proposed plan literal frames and atomic ABI errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_proposed_plan_parser_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-proposed-plan-parser-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-proposed-plan-parser-abi.log"
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -630,7 +639,7 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-cli --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-default.log"
 
-      - name: Test citation stream public oracles with HIA enabled
+      - name: Test citation and proposed plan public oracles with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
@@ -638,7 +647,7 @@ jobs:
           just test -p codex-utils-stream-parser --features codex-utils-stream-parser/hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-native.log"
 
-      - name: Test citation stream public oracles with default Rust
+      - name: Test citation and proposed plan public oracles with default Rust
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
@@ -646,7 +655,7 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-stream-parser --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default.log"
 
-      - name: Lint citation stream owner with native and default features
+      - name: Lint citation and proposed plan owner with native and default features
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
@@ -726,7 +735,7 @@ jobs:
             -E "$output_item_callers" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-default.log"
 
-      - name: Test existing Core citation consumers with HIA enabled
+      - name: Test existing Core citation and proposed plan consumers with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
@@ -743,7 +752,7 @@ jobs:
             -E "$citation_callers" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-native.log"
 
-      - name: Test existing Core citation consumers with default Rust
+      - name: Test existing Core citation and proposed plan consumers with default Rust
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
@@ -1128,7 +1137,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native33 \
+            --build-profile full-native34 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1136,12 +1145,12 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
-          # This checkout runs original/native33. The separate owner gate requires
-          # original/native16/native33 and an admitted published16 link bundle.
+          # This checkout runs original/native34. The separate owner gate requires
+          # original/native16/native34 and an admitted published16 link bundle.
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native33 \
+            --build-profile full-native34 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1496,6 +1505,8 @@ jobs:
             {0}/hia-format-env-display-default.log
             {0}/hia-citation-stream-parser-abi.json
             {0}/hia-citation-stream-parser-abi.log
+            {0}/hia-proposed-plan-parser-abi.json
+            {0}/hia-proposed-plan-parser-abi.log
             {0}/hia-citation-stream-parser-native.log
             {0}/hia-citation-stream-parser-default.log
             {0}/hia-citation-stream-parser-native-clippy.log

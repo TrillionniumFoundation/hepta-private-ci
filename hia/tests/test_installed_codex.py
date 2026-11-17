@@ -36,6 +36,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_output_item_budget",
     "codex_hia_format_env_display",
     "codex_hia_citation_stream_parser",
+    "codex_hia_proposed_plan_parser",
     "codex_hia_source_file",
     "codex_hia_file_update",
     "codex_hia_parser",

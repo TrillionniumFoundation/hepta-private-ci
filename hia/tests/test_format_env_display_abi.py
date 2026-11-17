@@ -227,6 +227,7 @@ def verify(args, report):
     verified_field, expected_count = {
         'full-native32': ('full32_manifest_verified', 32),
         'full-native33': ('full33_manifest_verified', 33),
+        'full-native34': ('full34_manifest_verified', 34),
     }[args.build_profile]
     require(report['native_build'][verified_field] is True
             and report['native_build']['module_count'] == expected_count,
@@ -286,7 +287,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native32', 'full-native33'],
+    parser.add_argument('--build-profile', choices=['full-native32', 'full-native33', 'full-native34'],
                         default='full-native32')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
