@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.retained-inline-source-materialization.v1",
+  "explanation": "Exact retained controller source strings were originally used as inline Python command source. These new files materialize those strings for review; they were not original on-disk source paths and are not re-executed by this operation. Source hashes identify retained text; actual execution identity remains in the corresponding original launch/terminal/owned receipts.",
+  "created_at": "2026-11-17T04:50:13.244Z",
+  "source_rows": [
+    {
+      "path": "operations/retained_inline_research01_launch.py",
+      "bytes": 855,
+      "sha256": "b112694452bde98f059561bfe3144a16a976c890902c14690a2d4908d292c833",
+      "retained_store_key": "research_actual_launch_code"
+    },
+    {
+      "path": "operations/retained_inline_research02_launch.py",
+      "bytes": 858,
+      "sha256": "2e13f7fc8dccc63aeaf15cc1d34538c489054d235b822eae07978d24c0731f94",
+      "retained_store_key": "research_actual02_launch_code"
+    },
+    {
+      "path": "operations/retained_inline_research01_inspection.py",
+      "bytes": 2425,
+      "sha256": "ccfcec6f172d3f06ffb5918d458f4483ce6820fcecf6e961d4ead086912b2699",
+      "retained_store_key": "research_terminal_inspect_code"
+    },
+    {
+      "path": "operations/retained_inline_research01_postrun_prepare.py",
+      "bytes": 4663,
+      "sha256": "f04a1f41ad19d85f5742ad4924fd79139451626dad7363a3eb7ec69cd82b5ccf",
+      "retained_store_key": "postrun_prepare_code"
+    },
+    {
+      "path": "operations/retained_inline_research01_postrun_launch.py",
+      "bytes": 862,
+      "sha256": "233b45f5fc9751be89399b38bbd6a5dcc188cb43aeb7afced2a676e4189f56f6",
+      "retained_store_key": "postrun_actual_launch_code"
+    },
+    {
+      "path": "operations/retained_inline_research01_export.py",
+      "bytes": 7640,
+      "sha256": "bf918effbd18e578345c917892b59f1571361311a8199769573c8074eca9c264",
+      "retained_store_key": "research_export_code"
+    },
+    {
+      "path": "operations/retained_inline_native_closed01_publication.py",
+      "bytes": 627,
+      "sha256": "8754edbf67fd1dd39eb538cdc40780cb9c3d0326848e92ef7bdb8ba7e8462ee8",
+      "retained_store_key": "native_closed01_launch_code"
+    }
+  ],
+  "model_calls": 0,
+  "test_calls": 0,
+  "verifier_calls": 0,
+  "reexecuted": false
+}
