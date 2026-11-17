@@ -1,0 +1,24 @@
+{
+  "request": {
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "import gzip,hashlib,json,zipfile\nfrom pathlib import Path\np=Path(\"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/cuda-recovery-03-evidence-01\")\nsha=lambda b:hashlib.sha256(b).hexdigest()\nraw=(p/\"PARTS.json\").read_bytes()\nassert sha(raw)==\"4edbdab9601db8e2e2aa009a05efb3b3fb5e93addca54c41450a5297666cf54b\"\nplan=json.loads(raw);data=bytearray()\nfor row in plan[\"parts\"]:\n assert \"/\" not in row[\"name\"]\n block=(p/row[\"name\"]).read_bytes()\n assert len(data)==row[\"offset\"] and len(block)==row[\"bytes\"] and sha(block)==row[\"sha256\"]\n data.extend(block)\nassert len(data)==1739778 and sha(data)==\"fdd800292f0b22ac227fea457210bfafa15636a6385fa5b5b45fef1cd6c7c21d\"\nwith (p/\"CUDA_RECOVERY_03_EVIDENCE.zip\").open(\"xb\") as f:f.write(data)\npacked=(p/\"CUDA_RECOVERY_03_MEMBERS.json.gz\").read_bytes()\nassert sha(packed)==plan[\"member_index\"][\"gzip_sha256\"]\nraw_index=gzip.decompress(packed)\nassert len(raw_index)==72527 and sha(raw_index)==plan[\"member_index\"][\"original_sha256\"]\nindex=json.loads(raw_index)\nsources={\"RECOVERY_RESUME_03_SPACE.py\":\"recover_cuda_runtime_03_resume03_space.py\",\"cuda_runtime_materials_03.py\":\"cuda_runtime_materials_03.py\",\"cuda_runtime_install_03.py\":\"cuda_runtime_install_03.py\",\"verify_installed_wheel_03.py\":\"verify_installed_wheel_03.py\",\"check_cuda_resume03.py\":\"check_cuda_resume03.py\",\"check_cuda_install03.py\":\"check_cuda_install03.py\"}\n(p/\"reviewed-sources\").mkdir(exist_ok=False)\n(p/\"key-receipts\").mkdir(exist_ok=False)\nwith zipfile.ZipFile(p/\"CUDA_RECOVERY_03_EVIDENCE.zip\") as z:\n assert z.testzip() is None and z.namelist()==[row[\"name\"] for row in index[\"members\"]]\n for row in index[\"members\"]:\n  content=z.read(row[\"name\"]);assert len(content)==row[\"bytes\"] and sha(content)==row[\"sha256\"]\n ready=json.loads(z.read(\"ENVIRONMENT_READY.json\"))\n for row in ready[\"verification_files\"]:\n  content=z.read(row[\"path\"].split(\"operations/recovery-03/\",1)[1])\n  assert len(content)==row[\"bytes\"] and sha(content)==row[\"sha256\"]\n complete=json.loads(z.read(\"EVIDENCE_INDEX_RESUME03.json\"))\n for row in complete[\"members\"]:\n  content=z.read(row[\"path\"].split(\"operations/recovery-03/\",1)[1])\n  assert len(content)==row[\"bytes\"] and sha(content)==row[\"sha256\"]\n for src,dst in sources.items():\n  with (p/\"reviewed-sources\"/dst).open(\"xb\") as f:f.write(z.read(src))\n for name in (\"ENVIRONMENT_READY.json\",\"RUNTIME_PROBE.json\",\"PIP_CHECK.json\",\"PIP_LIST.json\",\"PIP_FREEZE.json\",\"INSTALL_RECEIPTS.json\",\"GPU_STATUS.json\",\"ENVIRONMENT_FAILED_RESUME02.json\",\"HANDOFF_GPU_01.json\",\"CONTROL_STARTED_RESUME03.json\"):\n  with (p/\"key-receipts\"/name).open(\"xb\") as f:f.write(z.read(name))\nresult={\"schema\":\"hepta.runtime-mac-replica-verified.v1\",\"status\":\"ALL_BYTES_VERIFIED\",\"archive_bytes\":len(data),\"archive_sha256\":sha(data),\"archive_members\":len(index[\"members\"]),\"ready_sha256\":sha((p/\"key-receipts/ENVIRONMENT_READY.json\").read_bytes()),\"ready_files_verified\":len(ready[\"verification_files\"]),\"complete_index_members_verified\":len(complete[\"members\"]),\"source_file_map\":sources,\"model_loaded\":False}\nwith (p/\"MAC_VERIFIED_01.json\").open(\"x\") as f:json.dump(result,f,indent=2,sort_keys=True);f.write(\"\\n\")\nprint(json.dumps(result),flush=True)\n"
+    ],
+    "cwd": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a",
+    "executable": "/opt/homebrew/bin/python3",
+    "host": "mac",
+    "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cuda-recovery03-mac-verify01"
+  },
+  "result": {
+    "content": [
+      {
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"mac\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-0cd167edee3424f572b014df39921df41d8bde7d02d39256711b2fe0121afc1f\",\"status\":{\"boot\":\"{ sec = 1794536756, usec = 577082 } Fri Nov 13 10:25:56 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794881758345,\"output_complete\":false,\"owner_pid\":9549,\"pid\":9550,\"state\":\"running\"}}",
+        "type": "text"
+      }
+    ],
+    "isError": false,
+    "structuredContent": null
+  }
+}
