@@ -32,6 +32,7 @@ mod event_cache_store;
 mod media_store;
 #[cfg(feature = "state-store")]
 mod state_store;
+mod store_cipher;
 mod utils;
 use std::{
     cmp::max,

@@ -9,8 +9,14 @@ Both published manifests select `rusqlite 0.41`, which uses the actual
 The original `limits`, `fallible_uint`, and `cache` features are retained.
 This preserves the previously carried rusqlite compatibility patch while
 advancing the Matrix implementation and its complete migration set to 0.19.1.
-Both manifests also raise vodozemac's floor to 0.11.2. No SQLite storage or
-encryption source logic is altered in this crate.
+Both manifests also raise vodozemac's floor to 0.11.2.
+
+Store-cipher preparation now runs on a Tokio blocking worker. The async
+connection owner still reads and writes the same `cipher` key, and only writes
+a pending export after successfully joining the worker. Password derivation,
+key import/export, the high-entropy migration, and the existing test-only
+fast-export branch are unchanged. Started cipher work may outlive a cancelled
+async owner, but has no database connection or path and cannot write the store.
 
 The release archive omits its repository license file. LICENSE is copied
 from upstream commit b18166c68bb958a21f0bca8b2d8320cb53583362:
