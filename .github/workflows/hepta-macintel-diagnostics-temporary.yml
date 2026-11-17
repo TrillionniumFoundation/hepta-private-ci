@@ -1,0 +1,217 @@
+name: Temporary Mac Intel whole-target diagnostics
+
+on:
+  push:
+    branches:
+      - integration/hepta-rust-validation-20261117-59d82
+    paths:
+      - .github/workflows/hepta-macintel-diagnostics-temporary.yml
+
+permissions:
+  contents: read
+
+jobs:
+  macintel-diagnostics:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event_name == 'push' &&
+      github.event.deleted == false &&
+      github.ref == 'refs/heads/integration/hepta-rust-validation-20261117-59d82'
+    runs-on: macos-15-intel
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: ""
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify the exact diagnostic source and runtime push
+        shell: python3 {0}
+        run: |
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+          REF = "refs/heads/integration/hepta-rust-validation-20261117-59d82"
+          SOURCE = "2aa77cccbe3af66f630a7f1721dab2cd7e31135f"
+          SOURCE_TREE = "6593cd39d5a02ff629d8aa1a5290685ca2238f85"
+          DIAGNOSTICS = "4eac52f5d16fca40581697b08920748f01fdef13"
+          DIAGNOSTICS_TREE = "ddb129f285d2a94da3fe0dbfc1027111ba152a8a"
+          WORKFLOW = ".github/workflows/hepta-macintel-diagnostics-temporary.yml"
+          CONTROL_PATHS = [
+              "codex-rs",
+              ".bazelignore",
+              ".bazelrc",
+              ".bazelversion",
+              "MODULE.bazel",
+              "MODULE.bazel.lock",
+              "BUILD.bazel",
+              "defs.bzl",
+              "workspace_root_test_launcher.sh.tpl",
+              "workspace_root_test_launcher.bat.tpl",
+              "bazel",
+              "third_party",
+              "tools",
+              ".github/actions",
+              ".github/scripts/run-bazel-ci.sh",
+              ".github/scripts/run_bazel_with_buildbuddy.py",
+              ".github/scripts/collect_bazel_test_logs.py",
+              ".github/workflows/bazel.yml",
+          ]
+
+
+          def require(condition, message):
+              if not condition:
+                  raise ValueError(message)
+
+
+          def git(*arguments):
+              return subprocess.check_output(["git", "-c", "protocol.allow=never", *arguments])
+
+
+          with Path(os.environ["GITHUB_EVENT_PATH"]).open("rb") as event_file:
+              event_bytes = event_file.read(2 * 1024 * 1024 + 1)
+          require(len(event_bytes) <= 2 * 1024 * 1024, "Event size bound")
+          event = json.loads(event_bytes)
+          require(isinstance(event, dict), "Push event object required")
+          require(
+              os.environ["GITHUB_REPOSITORY"] == REPOSITORY
+              and os.environ["GITHUB_EVENT_NAME"] == "push"
+              and os.environ["GITHUB_REF"] == REF
+              and event.get("ref") == REF
+              and event.get("deleted") is False
+              and event.get("after") == os.environ["GITHUB_SHA"]
+              and event.get("repository", {}).get("full_name") == REPOSITORY
+              and event.get("repository", {}).get("id") == 1320694176,
+              "Unexpected runtime push identity",
+          )
+          require(
+              os.environ["RUNNER_OS"] == "macOS" and os.environ["RUNNER_ARCH"] == "X64",
+              "The original Mac Intel runner is required",
+          )
+          head = git("rev-parse", "HEAD").decode().strip()
+          require(head == os.environ["GITHUB_SHA"], "Checkout is not the runtime head")
+          require(
+              git("rev-parse", SOURCE + "^{tree}").decode().strip() == SOURCE_TREE
+              and git("rev-parse", DIAGNOSTICS + "^{tree}").decode().strip() == DIAGNOSTICS_TREE,
+              "Source tree identity mismatch",
+          )
+          git("merge-base", "--is-ancestor", DIAGNOSTICS, SOURCE)
+          git("merge-base", "--is-ancestor", SOURCE, head)
+          changed = git(
+              "diff-tree",
+              "--no-commit-id",
+              "-r",
+              "--name-only",
+              "-z",
+              "--no-renames",
+              SOURCE,
+              head,
+          ).split(b"\0")
+          changed = sorted(path.decode() for path in changed if path)
+          require(changed == [WORKFLOW], "Unexpected changes after the fixed source")
+          require(
+              not git(
+                  "diff-tree",
+                  "--no-commit-id",
+                  "-r",
+                  "--name-only",
+                  "-z",
+                  "--no-renames",
+                  DIAGNOSTICS,
+                  SOURCE,
+                  "--",
+                  *CONTROL_PATHS,
+              ),
+              "Original diagnostic Rust or Bazel controls changed",
+          )
+          require(
+              not git("status", "--porcelain=v1", "--untracked-files=all"),
+              "Checkout is not clean",
+          )
+          proof = {
+              "repository": REPOSITORY,
+              "ref": REF,
+              "runId": os.environ["GITHUB_RUN_ID"],
+              "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "head": head,
+              "tree": git("rev-parse", "HEAD^{tree}").decode().strip(),
+              "source": SOURCE,
+              "sourceTree": SOURCE_TREE,
+              "diagnostics": DIAGNOSTICS,
+              "diagnosticsTree": DIAGNOSTICS_TREE,
+              "eventSha256": hashlib.sha256(event_bytes).hexdigest(),
+              "changedPaths": changed,
+              "unchangedDiagnosticControls": CONTROL_PATHS,
+              "qualification": "Three original whole targets; full CI remains required",
+          }
+          output = Path(os.environ["RUNNER_TEMP"]) / "bazel-execution-logs"
+          output.mkdir(parents=True, exist_ok=True)
+          (output / "diagnostic-source-identity.json").write_text(
+              json.dumps(proof, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(proof, sort_keys=True))
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-apple-darwin
+          cache-scope: bazel-${{ github.job }}
+
+      - name: Run the three original whole targets
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          bazel_targets=(
+            //codex-rs/utils/pty:pty-unit-tests
+            //codex-rs/hepta-memory:hepta-memory-unit-tests
+            //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test
+          )
+          bazel_wrapper_args=(
+            --print-failed-action-summary
+            --print-failed-test-logs
+          )
+          bazel_test_args=(
+            test
+            --test_tag_filters=-argument-comment-lint
+            --test_verbose_timeout_warnings
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA}
+          )
+          ./.github/scripts/run-bazel-ci.sh \
+            "${bazel_wrapper_args[@]}" \
+            -- \
+            "${bazel_test_args[@]}" \
+            -- \
+            "${bazel_targets[@]}"
+
+      - name: Upload Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-macintel-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: ignore
+
+      - name: Save bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
