@@ -1,5 +1,9 @@
 mod assistant_text;
 mod citation;
+#[cfg(feature = "hia-native")]
+mod hia_native_citation_stream_parser;
+#[cfg(feature = "hia-native")]
+mod hia_native_citation_stream_parser_wire;
 mod inline_hidden_tag;
 mod proposed_plan;
 mod stream_text;
