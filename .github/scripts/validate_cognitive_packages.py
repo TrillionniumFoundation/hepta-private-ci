@@ -18,8 +18,8 @@ import xml.etree.ElementTree as ET
 
 
 BASE = "464ebe0c5e1b456dff7abbd897e302dd7e1d9034"
-SOURCE = "26b4e510ef113aa4a141f668d536711b4188a40d"
-SOURCE_TREE = "7f08a6f8babda37c20a4af402589d96563f86d5a"
+SOURCE = "d19e09c67edc502ff141c76ad9480347a597c707"
+SOURCE_TREE = "7f9f6796e96bf8077e8b615bd964c769925934f8"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 REF = "refs/heads/integration/hepta-rust-validation-20261117-59d82"
 CI_PATHS = {
