@@ -28,6 +28,19 @@ class TrackedRustSecGuardTests(unittest.TestCase):
                 )
                 self.assertEqual(ignored_tracked_advisories(policy), [advisory_id])
 
+    def test_ctutils_rustsec_0385_is_rejected_in_both_policy_encodings(self):
+        advisory = "RUSTSEC-2026-0385"
+        self.assertIn(advisory, TRACKED_RUSTSEC)
+        for entry in (
+            f'"{advisory}"',
+            f'{{ id = "{advisory}", reason = "temporary" }}',
+        ):
+            with self.subTest(entry=entry):
+                self.assertEqual(
+                    ignored_tracked_advisories(f"[advisories]\nignore = [{entry}]\n"),
+                    [advisory],
+                )
+
     def test_audit_plain_string_ignores_are_not_a_bypass(self):
         for advisory_id in sorted(TRACKED_RUSTSEC):
             with self.subTest(advisory_id=advisory_id):
