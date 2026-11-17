@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.tool-terminal-observation.v1",
+  "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-research-cpu-engineering-run01",
+  "observed": {
+    "archive_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-c93b933cae01db26d9e362f11fd40edff5d3f00b8c5b4ef59e4de38c04a88d35/output.log",
+    "available_end": 874,
+    "chunk_sha256": "3dbb5a6d1902a98b2e3f8cbdb3f421df0758367473fc34cdfbd8d19db058e946",
+    "host": "desktop",
+    "next_offset": 874,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-c93b933cae01db26d9e362f11fd40edff5d3f00b8c5b4ef59e4de38c04a88d35",
+    "status": {
+      "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "bytes_seen": 874,
+      "bytes_stored": 874,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794886694306,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 2118634,
+      "pid": 2118637,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"completed_at_ns\": 1794886696787303649, \"exit_code\": 0, \"pid\": 2118646, \"result_sha256\": \"ba82e8a5abcc485ec085768b9ad98ba455f25893fedc332bc4f3ea87e920575d\", \"stderr_sha256\": \"b47c3cec8cd7f20df29917ef8d3373c17aa0e8577e6f91315373792f8a68b706\", \"stdout_sha256\": \"13a55321f5cb3b6f76ec9a026b49fa13f9ca3d0444dc98b195822cc1a866fa3b\", \"suite\": \"behavior\", \"timed_out\": false}\r\n{\"completed_at_ns\": 1794886720464442746, \"exit_code\": 0, \"pid\": 2118851, \"result_sha256\": \"b70d5fe27e619c033d03b01f57a6a604dfc90a4054a7c441a7393e130737ffd1\", \"stderr_sha256\": \"00a47390d6b6fa126cc6c7f88020e3485b139ae2b99c45e954b9b6f2b16a752a\", \"stdout_sha256\": \"ea1b8df7c6aa968b2c3d9f1229988cd729684d48ea45a9d1516319fc85affd76\", \"suite\": \"tensor\", \"timed_out\": false}\r\n{\"output\": \"/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-sft-v1-engineering-01/engineering-results-01\", \"passed\": true}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  }
+}
