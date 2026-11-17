@@ -1,0 +1,20 @@
+{
+  "source_base": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(qualified_local_retention_reaches_actual_parent_use_and_cold_recovery) | test(ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution) | test(updated_candidate_uses_original_actor_and_recovers_without_another_reset)",
+    "--no-capture"
+  ],
+  "cwd": "/workspace/scratch/761295b7d149/hepta-work/codex-rs",
+  "exit_code": 101,
+  "elapsed_seconds": 46.99899231699965,
+  "qualification": "native output must be inspected; no pass inferred",
+  "log": "local-native-attempt-1.log"
+}

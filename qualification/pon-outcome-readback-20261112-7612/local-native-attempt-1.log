@@ -1,0 +1,10 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+error: failed to download `Inflector v0.11.4`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified
+error: command `/workspace/scratch/747d27b1ca86/hepta-build-setup/rust196/bin/cargo '--color=auto' test '--manifest-path=/workspace/scratch/761295b7d149/hepta-work/codex-rs/Cargo.toml' --no-run '--message-format=json-render-diagnostics' '--package=codex-hepta-agentd' --lib --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
