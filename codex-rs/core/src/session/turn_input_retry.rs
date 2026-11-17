@@ -4,9 +4,9 @@
 use super::SessionIo;
 use super::session::Session;
 use super::turn_input;
-use crate::realtime_conversation::RealtimeHandoffRequest;
 use crate::agent::control::TurnStartCapacity;
 use crate::codex_thread::CodexThread;
+use crate::realtime_conversation::RealtimeHandoffRequest;
 use crate::state::ActiveTurn;
 use crate::state::StartTransitionCompletion;
 use crate::state::TaskTerminalizationKind;
@@ -107,12 +107,12 @@ impl Session {
             .pending_turn_input_retries
             .register(submission_id.clone());
         loop {
-            let result = turn_input::start_or_steer(
+            let result = Box::pin(turn_input::start_or_steer(
                 self,
                 request.clone(),
                 submission_id.clone(),
                 handoff,
-            )
+            ))
             .await?;
             if !matches!(
                 result,

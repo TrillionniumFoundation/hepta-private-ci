@@ -221,7 +221,13 @@ pub(super) async fn handle(
     // selected branch keeps polling `handle` within Tokio's default worker stack.
     match mode {
         TurnInputMode::StartOrSteer => {
-            Box::pin(start_or_steer(session, request, submission_id, /*realtime_handoff*/ None)).await
+            Box::pin(start_or_steer(
+                session,
+                request,
+                submission_id,
+                /*realtime_handoff*/ None,
+            ))
+            .await
         }
         TurnInputMode::StartIfIdle => {
             Box::pin(start_if_idle(

@@ -12,8 +12,8 @@ async fn backpressure_keeps_the_same_parsed_event_across_cancelled_polls() {
     tx.send(RealtimeEvent::ConversationItemDone {
         item_id: "first".to_string(),
     })
-        .await
-        .expect("fill event queue");
+    .await
+    .expect("fill event queue");
     let mut pending = Some(PendingRealtimeEvent {
         event: RealtimeEvent::ConversationItemDone {
             item_id: "second".to_string(),

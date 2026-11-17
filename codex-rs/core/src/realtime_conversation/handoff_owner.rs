@@ -43,10 +43,7 @@ impl RealtimeHandoffRequest {
 
     /// The caller holds the original admission owner. For steering, retain
     /// this stream guard until the input is appended and commit synchronously.
-    pub(crate) async fn prepare<'a>(
-        &'a self,
-        turn: &'a TurnContext,
-    ) -> PreparedRealtimeHandoff<'a> {
+    pub(crate) async fn prepare<'a>(&'a self, turn: &'a TurnContext) -> PreparedRealtimeHandoff<'a> {
         let owner = turn
             .extension_data
             .get::<RealtimeTurnHandoff>()
@@ -54,7 +51,7 @@ impl RealtimeHandoffRequest {
             .unwrap_or_else(|| {
                 Arc::new(RealtimeTurnHandoff {
                     handoff: RealtimeHandoffState {
-                        last_output: Arc::new(Mutex::new(None)),
+                        last_output: Arc::new(Mutex::new(/*t*/ None)),
                         stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),
                         output_complete: Arc::new(Mutex::new(/*t*/ false)),
                         ..self.handoff.clone()
@@ -90,7 +87,10 @@ impl PreparedRealtimeHandoff<'_> {
                     .stream
                     .pending_steer_ack
                     .replace(self.request.handoff_id.clone());
-                assert!(previous.is_none(), "the previous steering acknowledgement must drain");
+                assert!(
+                    previous.is_none(),
+                    "the previous steering acknowledgement must drain"
+                );
             }
             RealtimeSessionKind::V2 => {
                 self.stream.active_handoff = Some(self.request.handoff_id.clone());

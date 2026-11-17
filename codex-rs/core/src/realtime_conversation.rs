@@ -805,7 +805,11 @@ impl RealtimeConversationManager {
         if let Some(owner) = turn.extension_data.get::<RealtimeTurnHandoff>() {
             return Some(owner.handoff.clone());
         }
-        self.state.lock().await.as_ref().map(|state| state.handoff.clone())
+        self.state
+            .lock()
+            .await
+            .as_ref()
+            .map(|state| state.handoff.clone())
     }
 
     pub(crate) async fn handoff_out(
@@ -2231,12 +2235,16 @@ async fn handle_handoff_output(
                     .await
             }
             RealtimeOutbound::HandoffSteerAck { handoff_id } => {
-                writer
+                if let Err(err) = writer
                     .send_conversation_function_call_output(
                         handoff_id,
                         REALTIME_V2_STEER_ACKNOWLEDGEMENT.to_string(),
                     )
-                    .await?;
+                    .await
+                {
+                    warn!("failed to send handoff steering acknowledgement: {err}");
+                    return Err(err.into());
+                }
                 return response_create_queue
                     .request_create(writer, "handoff steering")
                     .await;
