@@ -597,6 +597,8 @@ async fn retrieve_federated_product(
                 expected_capability: reader.capability(),
                 logical_start_ms,
                 started_at,
+                #[cfg(test)]
+                deadline_trace: deadline_trace::attempt(_index),
             };
             let control = ProductAttemptControl {
                 logical_start_ms,
@@ -972,6 +974,8 @@ struct ProductReaderAuthority<'a> {
     expected_capability: &'a FederationCapability,
     logical_start_ms: u64,
     started_at: Instant,
+    #[cfg(test)]
+    deadline_trace: Option<deadline_trace::AttemptTrace>,
 }
 
 impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
@@ -984,13 +988,21 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
             let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
             let now_unix_seconds = i64::try_from(observed_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
-            let readers = FederatedMemoryReader::discover(
+            let discovery = FederatedMemoryReader::discover(
                 self.owner_layout,
                 self.consumer_agent_id,
                 now_unix_seconds,
-            )
-            .await
-            .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            );
+            #[cfg(test)]
+            let discovery = async move {
+                match &self.deadline_trace {
+                    Some(trace) => deadline_trace::DISCOVERY.scope(trace.clone(), discovery).await,
+                    None => discovery.await,
+                }
+            };
+            let readers = discovery
+                .await
+                .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
             let current = readers
                 .iter()
                 .find(|reader| reader.capability().id() == self.expected_capability.id());

@@ -25,6 +25,8 @@ use crate::RetrievalCandidate;
 use crate::RetrievalRequest;
 use crate::RevalidationStatus;
 use crate::cognitive_path::canonical_path_without_redirection;
+#[cfg(test)]
+use crate::cognitive_runtime::deadline_trace;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
@@ -573,6 +575,8 @@ impl FederatedMemoryReader {
         let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
         let pool = open_read_only_pool(&database_path).await?;
         verify_read_only_store(&pool, owner_layout.agent_id()).await?;
+        #[cfg(test)]
+        deadline_trace::record_discovery(deadline_trace::DiscoveryStage::CapabilityQuery);
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -583,6 +587,8 @@ impl FederatedMemoryReader {
         .fetch_all(&pool)
         .await
         .map_err(unavailable)?;
+        #[cfg(test)]
+        deadline_trace::record_discovery(deadline_trace::DiscoveryStage::CapabilityDecode);
         let owner = Arc::new(CognitiveStore::from_read_only_pool(
             pool,
             owner_layout.agent_id().clone(),
@@ -614,6 +620,8 @@ impl FederatedMemoryReader {
                     .to_string(),
             ));
         }
+        #[cfg(test)]
+        deadline_trace::record_discovery(deadline_trace::DiscoveryStage::Complete);
         Ok(readers)
     }
 
@@ -1131,6 +1139,8 @@ fn require_authorized(
 }
 
 async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreError> {
+    #[cfg(test)]
+    deadline_trace::record_discovery(deadline_trace::DiscoveryStage::PathChecks);
     let metadata = std::fs::metadata(path).map_err(unavailable)?;
     if !metadata.is_file()
         || canonical_path_without_redirection(path)
@@ -1151,10 +1161,14 @@ async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreEr
             .to_path_buf(),
     )
     .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    #[cfg(test)]
+    deadline_trace::record_discovery(deadline_trace::DiscoveryStage::ReadOnlyPool);
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_read_only_pool(path)
         .await
         .map_err(unavailable)?;
+    #[cfg(test)]
+    deadline_trace::record_discovery(deadline_trace::DiscoveryStage::QueryOnly);
     sqlx::query("PRAGMA query_only = ON")
         .execute(&pool)
         .await
@@ -1175,6 +1189,8 @@ async fn verify_read_only_store(
     pool: &SqlitePool,
     expected_owner: &AgentId,
 ) -> Result<(), CognitiveStoreError> {
+    #[cfg(test)]
+    deadline_trace::record_discovery(deadline_trace::DiscoveryStage::IntegrityChecks);
     let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
         .fetch_all(pool)
         .await
@@ -1190,6 +1206,8 @@ async fn verify_read_only_store(
             "federated cognitive store failed SQLite integrity checks".to_string(),
         ));
     }
+    #[cfg(test)]
+    deadline_trace::record_discovery(deadline_trace::DiscoveryStage::OwnerAndSchema);
     let owner: String =
         sqlx::query_scalar("SELECT owner_agent_id FROM cognitive_meta WHERE singleton = 1")
             .fetch_one(pool)
