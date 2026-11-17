@@ -495,6 +495,15 @@ jobs:
             --report "$RUNNER_TEMP/hia-parser-receipt.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-parser-receipt.log"
 
+      - name: Verify streaming output line counts and atomic ABI errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_output_lines_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
+
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -981,7 +990,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native29 \
+            --build-profile full-native30 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -989,11 +998,12 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
-          # This checkout runs original/native29. The separate owner gate requires
-          # original/native16/native29 and an admitted published16 link bundle.
+          # This checkout runs original/native30. The separate owner gate requires
+          # original/native16/native30 and an admitted published16 link bundle.
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native30 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1200,7 +1210,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current29-results
+          name: codex-hia-current30-results
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
@@ -1319,6 +1329,8 @@ jobs:
             {0}/hia-parser-receipt.log
             {0}/hia-string-caller.json
             {0}/hia-string-caller.log
+            {0}/hia-output-lines-abi.json
+            {0}/hia-output-lines-abi.log
             {0}/hia-metric-caller.json
             {0}/hia-metric-caller.log
             {0}/hia-metric-abi.json

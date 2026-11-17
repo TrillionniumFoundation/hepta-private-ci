@@ -32,6 +32,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_ascii_json_fragment",
     "codex_hia_truncate",
     "codex_hia_token_budget",
+    "codex_hia_output_lines",
     "codex_hia_source_file",
     "codex_hia_file_update",
     "codex_hia_parser",

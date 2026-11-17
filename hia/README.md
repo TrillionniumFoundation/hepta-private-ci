@@ -1,5 +1,34 @@
 # HIA components: revision-bound joint qualification
 
+## Current source increment: output line counting
+
+The authored `output_lines` source connects through the existing `hia-native`
+string feature. HIA owns LF counting, chunk state and final-line arithmetic;
+the host retains fixed 4096-byte transport chunks and the original output
+truncation order and budgets. The current configuration has **30 modules and
+27 opt-in caller kernels**, including 28 borrowed-buffer and two scalar entries.
+These are source counts, not a claim of a published release or successful build.
+
+The raw ABI harness and Rust public-oracle sources are authored. Neither has
+been executed for this increment. Current build, native/default public,
+installed-consumer, artifact-custody and performance qualification remain open.
+Fresh full-native30 compiler generations and all source/object/archive/link
+receipts are required; earlier full-native29 reports cannot qualify this lock.
+Kernel source: `8987467886706dfec8bfbd3e05f0f1f8ecbf965e`.
+
+The current network-owner workflow compares `original` and `native30` only.
+The separate mandatory owner gate requires `original`, `native16` and `native30`
+with an admitted published16 link bundle. This workflow does not execute or
+satisfy that three-baseline gate. Both original 60-minute job budgets, the
+separate exact74d1 historical job, compiler pin, default Rust dispatch and all
+whole-product/retirement flags remain unchanged.
+
+The earlier revision records below are retained as historical evidence.
+`verification.json` keeps their full build and qualification summaries separate
+from current unqualified source, without relabeling old results.
+
+## Earlier revision qualification
+
 The joint source at `48324e2e75f2ebf46540e8db667b3f33fc7b3a7c` passed
 [push run 43805537036](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43805537036),
 attempt 1. Its current29 job and the separate exact74d1 historical job both
@@ -56,12 +85,13 @@ Codex retains compiler pin `0de5657a80f96b138525ac7ee9ce11712a83a10d`.
 
 The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
 nineteen-name branch with the HIA scope of
-`74d1c0ebeced1b72a0ee74e375a0ace623762b01`. Its lock contains 29 audited module
-names. Four actual Cargo build entries link 26 kernels when `hia-native` is
-enabled. `utf8_boundaries`, `uuid_matches` and `template_parser` remain
-raw-oracle-only kernels; their current production replacements are
-`utf8_prefix`, `uuid_find` and `template_parse`. There are two scalar profiles,
-`token_budget` and `prefix_admission`; the other 27 entries retain the borrowed
+`74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
+names. The current lock adds `output_lines` for 30 modules. Four Cargo build
+entries configure 27 opt-in links (9 + 7 + 3 + 8) when `hia-native` is enabled.
+`utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
+kernels; their current production replacements are `utf8_prefix`, `uuid_find`
+and `template_parse`. There are two scalar profiles, `token_budget` and
+`prefix_admission`; the other 28 entries retain the borrowed
 buffer profile. See `joint_module_roles.json` for source, role, replacement and
 link sites. Names, configured links, algorithms and observed calls are distinct
 counts.
@@ -72,7 +102,7 @@ ranges, HIA owns deduplication/order, and owned `Vec` storage preserves the
 original ExactSizeIterator/drop behavior. The v9 render frame and private DTO
 tests are not normalized. The default Rust implementation remains in place.
 
-## Observed CI scope
+## Observed CI at 48324e (historical)
 
 The current job completed **104 API steps** in 2,610 seconds; the historical
 job completed **54 API steps** in 2,368 seconds. Both had zero failed or skipped

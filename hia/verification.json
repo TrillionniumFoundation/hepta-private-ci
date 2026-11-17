@@ -6,33 +6,17 @@
   "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "target": "x86_64-unknown-linux-gnu",
   "build_mode": "native-selfhost",
-  "build_status": "ci_build_passed_at_483_independent_artifact_custody_pending",
-  "compiler_fixed_point": true,
-  "compiler_generations": [
-    {
-      "name": "B1",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
-    },
-    {
-      "name": "B2",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
-    },
-    {
-      "name": "B3",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
-    }
-  ],
-  "build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7",
-  "native_module_count": 29,
-  "current_opt_in_linked_kernel_count": 26,
+  "build_status": "source_increment_not_executed",
+  "compiler_fixed_point": null,
+  "compiler_generations": [],
+  "build_report_sha256": null,
+  "native_module_count": 30,
+  "current_opt_in_linked_kernel_count": 27,
   "retained_oracle_only_kernel_count": 3,
-  "borrowed_module_count": 27,
+  "borrowed_module_count": 28,
   "scalar_module_count": 2,
   "production_algorithm_group_count": null,
-  "module_count_scope": "Audited name union; names, links, algorithms and observed production calls are distinct counts.",
+  "module_count_scope": "Configured current source modules and links only: 30 build modules, 27 opt-in caller kernels, 28 borrowed-buffer profiles and two scalar profiles. The historical audited union remains29. These counts do not assert publication, execution, algorithms, production coverage or qualification.",
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "default_release_migrated": false,
@@ -42,25 +26,43 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "The Linux x86-64 opt-in joint workflow passed at qualification_revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, with the separately checked-out exact74d1 historical job also passing. Original API metadata and decoded logs are retained. This documentation successor is not exact-head qualified. Full workspace, platforms, default migration, performance, retirement and independent whole-artifact custody remain unqualified.",
+  "scope": "The output_lines source increment is authored and unqualified. Fresh exact30-lock compiler/build/link, raw ABI, original Rust/default/public and installed-consumer evidence is pending. Earlier revision records and complete previous summaries below are unchanged historical evidence; they do not qualify this source.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
-    "status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
-    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
-    "report": "hia/verification.json#ci_qualification_at_revision",
+    "status": "source_increment_unqualified",
+    "qualification_revision": null,
     "source_composed": true,
-    "full_native29_admission": false,
-    "full_native29_admission_scope": "The original CI build/admission gates succeeded; independent full report, object, archive and link-receipt payload audit remains pending.",
-    "complete_current_workflow_passed": true,
-    "historical_exact17_job_passed_this_run": true,
-    "joint_job_runtime_cost_verified": true,
+    "new_source_module": "output_lines",
+    "kernel_source_revision": "8987467886706dfec8bfbd3e05f0f1f8ecbf965e",
+    "raw_abi_harness_authored": true,
+    "rust_public_oracles_authored": true,
+    "raw_abi_harness_executed": false,
+    "rust_public_oracles_executed": false,
+    "native_build_executed": false,
+    "compiler_generations_executed": false,
+    "full_native30_admission": false,
+    "opt_in_production_callers_verified": false,
+    "complete_current_workflow_passed": false,
+    "historical_exact17_job_passed_this_run": false,
+    "joint_job_runtime_cost_verified": false,
     "per_job_budget_minutes": 60,
-    "all_static_link_receipts_require_regeneration": false,
-    "receipt_regeneration_scope": "Fresh receipts were produced and admitted in the recorded CI revision. A future changed source or lock requires its own fresh binding; old artifacts are not relabeled.",
-    "new_native_artifacts_created": true,
+    "all_static_link_receipts_require_regeneration": true,
+    "receipt_regeneration_scope": "The lock and caller sources changed. Fresh exact-source B1/B2/B3/compiler evidence and all30 configured module source/object/library/archive/input/.link bindings are required. Older full-native29 receipts cannot be reused or relabeled.",
+    "new_native_artifacts_created": false,
     "complete_independent_artifact_custody": false,
     "documentation_successor_exact_head_qualified": false,
-    "retirement_authorized": false
+    "retirement_authorized": false,
+    "network_owner_workflow_baselines": [
+      "original",
+      "native30"
+    ],
+    "mandatory_owner_baselines": [
+      "original",
+      "native16",
+      "native30"
+    ],
+    "mandatory_predecessor16_gate_executed": false,
+    "network_owner_scope": "The retained workflow runs two baselines and lacks the admitted published16 link bundle. It does not execute or qualify the separate mandatory original/native16/current owner gate."
   },
   "source_owner_histories": {
     "17": {
@@ -119,7 +121,7 @@
     "Keep exact74d1 v8 renderer evidence separate from current v9 evidence; retain original owner histories and earlier failing CI runs.",
     "This three-document successor has no new exact-head CI result; the recorded qualification belongs only to revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c."
   ],
-  "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+  "qualification_revision": null,
   "build_report_payload_independently_read": false,
   "platform_qualified": false,
   "full_independent_artifact_qualified": false,
@@ -366,5 +368,66 @@
     },
     "documentation_successor_exact_head_qualified": false,
     "scope_applies_only_to_qualification_revision": true
-  }
+  },
+  "previous_build_summary": {
+    "build_status": "ci_build_passed_at_483_independent_artifact_custody_pending",
+    "compiler_fixed_point": true,
+    "compiler_generations": [
+      {
+        "name": "B1",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
+      },
+      {
+        "name": "B2",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
+      },
+      {
+        "name": "B3",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "CI scalar admission log checks recorded and actual generation fixed points; local binary custody remains pending."
+      }
+    ],
+    "build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7",
+    "native_module_count": 29,
+    "current_opt_in_linked_kernel_count": 26,
+    "retained_oracle_only_kernel_count": 3,
+    "borrowed_module_count": 27,
+    "scalar_module_count": 2,
+    "production_algorithm_group_count": null,
+    "module_count_scope": "Audited name union; names, links, algorithms and observed production calls are distinct counts.",
+    "scope": "The Linux x86-64 opt-in joint workflow passed at qualification_revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, with the separately checked-out exact74d1 historical job also passing. Original API metadata and decoded logs are retained. This documentation successor is not exact-head qualified. Full workspace, platforms, default migration, performance, retirement and independent whole-artifact custody remain unqualified.",
+    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c"
+  },
+  "previous_current_qualification": {
+    "status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+    "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+    "report": "hia/verification.json#ci_qualification_at_revision",
+    "source_composed": true,
+    "full_native29_admission": false,
+    "full_native29_admission_scope": "The original CI build/admission gates succeeded; independent full report, object, archive and link-receipt payload audit remains pending.",
+    "complete_current_workflow_passed": true,
+    "historical_exact17_job_passed_this_run": true,
+    "joint_job_runtime_cost_verified": true,
+    "per_job_budget_minutes": 60,
+    "all_static_link_receipts_require_regeneration": false,
+    "receipt_regeneration_scope": "Fresh receipts were produced and admitted in the recorded CI revision. A future changed source or lock requires its own fresh binding; old artifacts are not relabeled.",
+    "new_native_artifacts_created": true,
+    "complete_independent_artifact_custody": false,
+    "documentation_successor_exact_head_qualified": false,
+    "retirement_authorized": false
+  },
+  "pending_gates_context": {
+    "scope": "The pending_gates array is preserved verbatim as historical pending-gate text from the prior3cc metadata; its reference to a three-document successor describes that earlier documentation successor, not this output_lines source increment.",
+    "historical_qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+    "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
+  },
+  "current_pending_gates": [
+    "Build the exact full-native30 lock through fresh B1/B2/B3 receipts with the unchanged compiler pin; bind every current source/object/library/namespaced object/archive/compiler input and static-link receipt.",
+    "Execute the authored raw output_lines ABI harness and original Rust public oracles in native/default configurations, together with all original public/malformed/installed gates. Authored corpus expectations and source tests are not execution results.",
+    "Complete the original current and separate exact74d1 historical workflows under their unchanged60-minute budgets, without substituting old qualification for this source.",
+    "Separately satisfy the mandatory original/native16/current network-owner gate using an admitted published16 bundle. The retained two-baseline GitHub workflow cannot close this requirement.",
+    "Independently acquire and verify the resulting exact-source artifact/report payloads. Preserve all prior failures and qualify required platforms, whole workspace/product, performance and default release separately before any retirement proposal."
+  ]
 }

@@ -213,7 +213,8 @@ def completion(output, marker, label):
 
 
 def run_baselines(report, builds, predecessor, library, artifacts, rustc, edition, environment, run):
-    modes = [("original", builds["reference"], library), ("native29", builds["native"], library)]
+    native_label = report["requested_build_profile"].removeprefix("full-")
+    modes = [("original", builds["reference"], library), (native_label, builds["native"], library)]
     if predecessor is not None:
         modes.insert(1, ("native16", predecessor[0], predecessor[1]))
     for kind in ("allocations", "performance"):
@@ -236,7 +237,7 @@ def run_baselines(report, builds, predecessor, library, artifacts, rustc, editio
                     for name in ("allocations", "performance"))
             symbols = run(f"symbols-{kind}-{label}", ["nm", "--defined-only", "--extern-only", str(executable)], environment)
             present = bool(re.search(r"\bT codex_hia_network_host$", symbols, re.MULTILINE))
-            if present != (label == "native29"):
+            if present != (label == native_label):
                 raise RuntimeError(f"{kind}/{label}: unexpected network-host linkage")
             output = run(f"run-{kind}-{label}", [str(executable), label], environment, timeout=300)
             if prior_process is not None:
@@ -258,7 +259,7 @@ def run_baselines(report, builds, predecessor, library, artifacts, rustc, editio
         for label, result in report[kind].items():
             if [[row[key] for key in keys] for row in result["rows"]] != expected:
                 raise RuntimeError(f"{kind}/{label}: complete workload/result observations differ")
-    report["three_baselines_executed"] = all(set(report[kind]) == {"original", "native16", "native29"}
+    report["three_baselines_executed"] = all(set(report[kind]) == {"original", "native16", native_label}
         for kind in ("allocations", "performance"))
     report["performance_qualification"] = False
 
@@ -277,7 +278,7 @@ def verify(args, report):
     report["source_sha256"] = source_hashes()
     native_admission = report["native_build_admission"] = {}
     bind_native_inputs(library / "network_host.so", ROOT / "hia/network_host.hepta",
-                       "full-native29", native_admission)
+                       args.build_profile, native_admission)
     native = json.loads((library / "build.json").read_text())
     if "network_host" not in native["modules"]:
         raise RuntimeError("complete native build does not contain the network-host module")
@@ -352,7 +353,7 @@ def verify(args, report):
     if {name: sha(library / name) for name in report["native_inputs"]} != report["native_inputs"]:
         raise RuntimeError("native artifacts changed during public verification")
     if not recheck_native_inputs(native_admission):
-        raise RuntimeError("complete native29 admitted artifacts changed during public verification")
+        raise RuntimeError(f"complete {args.build_profile} admitted artifacts changed during public verification")
     verify_predecessor16_inputs(report)
     report.update(passed=True, full_policy_migration=False, performance_qualification=False,
         passed_scope="complete normalization public/effect/error gates and listed allocation/timing observations",
@@ -362,6 +363,8 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--library-dir", type=Path, required=True)
+    parser.add_argument("--build-profile", choices=["full-native29", "full-native30"],
+                        default="full-native29")
     parser.add_argument("--target-dir", type=Path, default=os.environ.get("CARGO_TARGET_DIR"))
     parser.add_argument("--rustc", default=os.environ.get("RUSTC", "rustc"))
     parser.add_argument("--cargo", default="cargo")
@@ -376,6 +379,7 @@ def main():
     if args.report.exists() or args.report == ROOT or ROOT in args.report.parents:
         parser.error("select a new report outside the checkout; retain previous evidence")
     report = {"schema": "codex.hia.native-network-host.v1", "passed": False, "commands": [],
+        "requested_build_profile": args.build_profile,
         "three_baselines_required": args.require_predecessor, "three_baselines_executed": False,
         "performance_qualification": False, "full_policy_migration": False}
     try:

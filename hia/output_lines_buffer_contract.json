@@ -3,7 +3,7 @@
   "revision": 1,
   "module": "output_lines",
   "symbol": "codex_hia_output_lines",
-  "status": "Source candidate; assembly/Core/native qualification and production integration have not been executed.",
+  "status": "Opt-in source integration is authored; assembly/Core/native and original public qualification remain pending.",
   "scope": "Only the content.lines().count() computation inside formatted_truncate_text. This is not a complete migration of output truncation, budgeting, formatting or mixed-media handling.",
   "baseline": {
     "codex_commit": "7ce3622d78dbf9d651d5f2823a861faeba8b2a42",
@@ -41,8 +41,8 @@
     "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
     "native_signature": "u64 codex_hia_output_lines(const u8* source,u64 source_len,u8* output,u64 output_capacity,u8* workspace,u64 workspace_len)",
     "native_return": "A completed Core call returns its u32 result zero-extended to u64. In the pinned direct foreign-byte profile only, a pre-Core ABI rejection instead returns ABI_status << 32; its low word is not a Core result. The line count is always the output word at offset 24.",
-    "workspace": "Unused and never read or written. Future caller uses a zero-length workspace.",
-    "output_allocation": "Future caller allocates 32 bytes; a larger valid capacity is allowed and its suffix is unchanged."
+    "workspace": "Unused and never read or written. The production adapter advertises a zero-length workspace.",
+    "output_allocation": "The production adapter uses a 32-byte stack buffer; a larger valid raw capacity is allowed and its suffix is unchanged."
   },
   "caller_preconditions": [
     "All advertised buffers are live for the complete synchronous call and obey the pinned borrowed-buffer ownership and non-overlap rules. Input bytes and lengths do not change during the call. No pointer is retained.",
@@ -181,29 +181,25 @@
     "The three loops are bounded by eight header/store bytes or the finite current chunk length. No allocation, mutable global state, clock, callback, syscall or external call is introduced in the HIA source."
   ],
   "retained_original_behavior": [
-    "Original public Rust signatures and under-budget return remain unchanged; no adapter or production file is included in this candidate.",
+    "Existing public Rust signatures and under-budget return remain unchanged. The new count_lines helper delegates through hia-native and preserves str::lines().count() when that feature is off.",
     "Original token approximation, byte/token budgets, truncate_middle algorithms, warning text and whitespace remain unchanged.",
     "Original text-segment joining and original image/audio/encrypted-item ordering, values, cost accounting and omission notices remain unchanged.",
     "Original output-truncation tests and all native/workflow budgets, assertions and skips remain unchanged.",
-    "No old oracle-only kernel is relabeled or attached to production. No default dispatch, compiler pin, lock, build link, migration coverage or qualification declaration is modified."
+    "No old oracle-only kernel is relabeled or attached to production. Compiler pin and default dispatch are unchanged; new source/build/link entries remain unqualified."
   ],
-  "future_adapter_boundary": {
-    "host": "Own input and buffers; encode fixed header; partition bytes without dropping/reordering; validate status, canonical result fields and checked usize conversion; carry raw state; use only the final native line count. No host line scan, CR/LF correction or fallback.",
-    "hia": "All LF decisions, cumulative state changes, overflow handling and final-line arithmetic.",
-    "integration_missing": "Rust feature wiring, source/build receipts, actual pinned compiler generation, independent raw-ABI differential harness and full original crate/caller gates remain separate unexecuted work."
-  },
   "qualification": {
     "source_authored": true,
     "assembler_or_core_verifier_executed": false,
     "native_or_vm_executed": false,
     "oracle_inputs_executed": false,
-    "rust_adapter_present": false,
-    "production_dispatch_changed": false,
+    "rust_adapter_present": true,
     "original_crate_qualified": false,
     "default_changed": false,
     "compiler_pin_changed": false,
     "coverage_closed": false,
-    "performance_closed": false
+    "performance_closed": false,
+    "opt_in_caller_source_integrated": true,
+    "default_production_dispatch_changed": false
   },
   "native_abi_layer": {
     "direct_profile": "hepta.hia.program.direct-linux-x86_64-borrowed-bytes.v1",
@@ -224,5 +220,13 @@
     "tree": "139f86323fc8da2ed8ca79d0c52892724c59141f",
     "base_map_sha256": "3d965dc6b67463a031190af71f8825e7114bfd6623ebd96322180192d8641ce5",
     "agreement": "Exact 7ce/3cc complete maps differ only at WAL and older-image paths; all 10065 other entries match. The three new source paths are absent."
-  }
+  },
+  "adapter_boundary": {
+    "host": "Own input and buffers; encode fixed header; partition bytes without dropping/reordering; validate status, canonical result fields and checked usize conversion; carry raw state; use only the final native line count. No host line scan, CR/LF correction or fallback.",
+    "hia": "All LF decisions, cumulative state changes, overflow handling and final-line arithmetic.",
+    "qualification_missing": "Fresh exact full-native30 compiler/build/link receipts, raw ABI execution, original Rust/public consumers and installed CLI qualification remain unexecuted.",
+    "source": "codex-rs/utils/string/src/hia_native_output_lines.rs",
+    "payload_chunk_bytes": 4096
+  },
+  "kernel_source_revision": "8987467886706dfec8bfbd3e05f0f1f8ecbf965e"
 }
