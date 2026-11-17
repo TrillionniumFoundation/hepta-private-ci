@@ -23,10 +23,10 @@
     "output_initial_fill_hex": "a5"
   },
   "counts": {
-    "streams": 9,
-    "stream_calls": 50,
+    "streams": 11,
+    "stream_calls": 58,
     "raw_cases": 0,
-    "literal_frames": 50
+    "literal_frames": 58
   },
   "construction": "Manually specified numeric inputs and complete output words serialized little-endian. Only byte/word/chain consistency was checked by stdlib; no HIA/Rust oracle/VM/native call or cost evaluator ran. MAX numeric boundaries do not allocate strings or execute callbacks.",
   "coverage_limits": [
@@ -1803,6 +1803,288 @@
             "0"
           ],
           "expected_output_prefix_hex": "01000000000000000200000000000000010000000000000005000000000000000100000000000000040000000000000004000000000000000000000000000000000000000000000004000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "id": "tokens-maximum-length-saturating-cost",
+      "description": "Numeric raw boundary, not a host allocation: saturating(MAX+3)/4 is MAX//4.",
+      "calls": [
+        {
+          "source_hex": "000000000000000001000000000000000100000000000000ffffffffffffff3f0200000000000000",
+          "source_frame_bytes": 40,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "0",
+            "1",
+            "1",
+            "4611686018427387903",
+            "2"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "1",
+            "4611686018427387903",
+            "4611686018427387903",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000000000000000000000100000000000000ffffffffffffff3fffffffffffffff3f020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "source_hex": "0100000000000000010000000000000000000000000000000100000000000000ffffffffffffff3fffffffffffffff3f02000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffff",
+          "source_frame_bytes": 96,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "1",
+            "1",
+            "0",
+            "1",
+            "4611686018427387903",
+            "4611686018427387903",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "18446744073709551615"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "1",
+            "4611686018427387903",
+            "0",
+            "2",
+            "1",
+            "0",
+            "0",
+            "1",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000000000000000000000100000000000000ffffffffffffff3f0000000000000000020000000000000001000000000000000000000000000000000000000000000001000000000000000000000000000000"
+        },
+        {
+          "source_hex": "0100000000000000010000000000000000000000000000000100000000000000ffffffffffffff3f000000000000000002000000000000000100000000000000000000000000000000000000000000000100000000000000ffffffffffffffff",
+          "source_frame_bytes": 96,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "1",
+            "1",
+            "0",
+            "1",
+            "4611686018427387903",
+            "0",
+            "2",
+            "1",
+            "0",
+            "0",
+            "1",
+            "18446744073709551615"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "1",
+            "4611686018427387903",
+            "0",
+            "2",
+            "2",
+            "0",
+            "1",
+            "2",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000000000000000000000100000000000000ffffffffffffff3f0000000000000000020000000000000002000000000000000000000000000000010000000000000002000000000000000000000000000000"
+        },
+        {
+          "source_hex": "0300000000000000010000000000000000000000000000000100000000000000ffffffffffffff3f00000000000000000200000000000000020000000000000000000000000000000100000000000000",
+          "source_frame_bytes": 80,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "3",
+            "1",
+            "0",
+            "1",
+            "4611686018427387903",
+            "0",
+            "2",
+            "2",
+            "0",
+            "1"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "2",
+            "1",
+            "4611686018427387903",
+            "0",
+            "2",
+            "2",
+            "0",
+            "1",
+            "4",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000002000000000000000100000000000000ffffffffffffff3f0000000000000000020000000000000002000000000000000000000000000000010000000000000004000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "id": "audio-saturating-bytes-maximum-budget",
+      "description": "A maximum audio estimate saturates to MAX bytes and can be kept at MAX budget.",
+      "calls": [
+        {
+          "source_hex": "000000000000000001000000000000000000000000000000ffffffffffffffff0200000000000000",
+          "source_frame_bytes": 40,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "0",
+            "1",
+            "0",
+            "18446744073709551615",
+            "2"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "0",
+            "18446744073709551615",
+            "18446744073709551615",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "source_hex": "0100000000000000010000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff02000000000000000000000000000000000000000000000000000000000000000100000000000000ffffffffffffffff",
+          "source_frame_bytes": 96,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "1",
+            "1",
+            "0",
+            "0",
+            "18446744073709551615",
+            "18446744073709551615",
+            "2",
+            "0",
+            "0",
+            "0",
+            "1",
+            "18446744073709551615"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "0",
+            "18446744073709551615",
+            "0",
+            "2",
+            "1",
+            "0",
+            "0",
+            "1",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000000000000000000000000000000000000ffffffffffffffff0000000000000000020000000000000001000000000000000000000000000000000000000000000001000000000000000000000000000000"
+        },
+        {
+          "source_hex": "0100000000000000010000000000000000000000000000000000000000000000ffffffffffffffff0000000000000000020000000000000001000000000000000000000000000000000000000000000003000000000000000000000000000000",
+          "source_frame_bytes": 96,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "1",
+            "1",
+            "0",
+            "0",
+            "18446744073709551615",
+            "0",
+            "2",
+            "1",
+            "0",
+            "0",
+            "3",
+            "0"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "0",
+            "0",
+            "18446744073709551615",
+            "0",
+            "2",
+            "2",
+            "0",
+            "0",
+            "1",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000000000000000000000000000000000000ffffffffffffffff0000000000000000020000000000000002000000000000000000000000000000000000000000000001000000000000000000000000000000"
+        },
+        {
+          "source_hex": "0300000000000000010000000000000000000000000000000000000000000000ffffffffffffffff00000000000000000200000000000000020000000000000000000000000000000000000000000000",
+          "source_frame_bytes": 80,
+          "output_capacity": 104,
+          "workspace_hex": "00ff01",
+          "expected_core_status": 88,
+          "expected_written_bytes": 88,
+          "source_words_le": [
+            "3",
+            "1",
+            "0",
+            "0",
+            "18446744073709551615",
+            "0",
+            "2",
+            "2",
+            "0",
+            "0"
+          ],
+          "expected_output_words_le": [
+            "1",
+            "2",
+            "0",
+            "18446744073709551615",
+            "0",
+            "2",
+            "2",
+            "0",
+            "0",
+            "4",
+            "0"
+          ],
+          "expected_output_prefix_hex": "010000000000000002000000000000000000000000000000ffffffffffffffff0000000000000000020000000000000002000000000000000000000000000000000000000000000004000000000000000000000000000000"
         }
       ]
     }
