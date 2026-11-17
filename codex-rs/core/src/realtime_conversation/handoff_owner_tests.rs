@@ -339,12 +339,7 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
     let (old, old_rx) = handoff(RealtimeSessionKind::V2);
     let old_request = RealtimeHandoffRequest::new(old, "old-server".to_string());
     old_request.prepare(&turn).await.commit();
-    let old_owner = Arc::clone(
-        old_request
-            .admitted
-            .get()
-            .expect("old accepted owner"),
-    );
+    let old_owner = Arc::clone(old_request.admitted.get().expect("old accepted owner"));
     // Original conversation stop closes its receiver, not the accepted Core turn.
     drop(old_rx);
     let (mut current, current_rx) = handoff(RealtimeSessionKind::V2);
@@ -385,10 +380,7 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
         .admitted
         .get()
         .expect("accepted client-managed owner");
-    assert!(Arc::ptr_eq(
-        &current_owner.handoff.identity,
-        &current.identity
-    ));
+    assert!(Arc::ptr_eq(&current_owner.handoff.identity, &current.identity));
     assert!(Arc::ptr_eq(&current_owner.handoff.stream, &current.stream));
     manager
         .handoff_out(&turn, "client-owned output".to_string(), /*phase*/ None)
