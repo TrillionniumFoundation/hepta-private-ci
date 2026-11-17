@@ -1,0 +1,40 @@
+--- originals/ARCHITECTURE_RESEARCH.md
++++ ARCHITECTURE_RESEARCH.md
+@@ -1,6 +1,6 @@
+ # 从 Agent 经验到 Cell、Circuit 与可验证有用学习
+ 
+-> 研究架构稿；状态截点：2026-11-17 的已保留原件与本轮交接。
++> 研究架构发布版；原稿状态截点：2026-11-17 UTC（美国东部标准时间 EST 为 2026-11-16）的已保留原件与本轮交接。
+ > 本文区分已实现代码、限定环境工程实测、尚待实验的科学假设。
+ > 本文不启动模型、训练、测试或生产采用，不读取新的 C 任务，不改变现有协议。
+ > 旧源码以固定提交引用；拟议 ABI 和实验方案均明确标为设计，不宣称已经实现。
+@@ -336,11 +336,11 @@
+ - [S10: main H7 轨迹 journal](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-memory/migrations/0008_h7_trajectory_events.sql)
+ - [S11: 历史共享可塑性与强控制结果](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/33476ae8288d5901e2c1a4d0c1934a848478627f/qualification/stem-selection-20261112/RESULTS.md)
+ 
+-L1–L3 相对本工作区父目录，尚未在本稿中赋予远端发布提交：
+-
+-- [L1: 研究01 RESULT](../research-final-evidence-01/research-sft-01/RESULT.json)，SHA256 `bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33`。
+-- [L2: 研究01 DIAGNOSTIC](../research-final-evidence-01/research-diagnostic-01/DIAGNOSTIC.json)，SHA256 `b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37`。
+-- [L3: 研究02补充协议](../research-reschedule-source-02/PROTOCOL_ADDENDUM_02.md)，SHA256 `8f9ae4acd63ae3eebce183cf68b0791fb0bbeec1cee9d9b337ac85fbb76335b9`。
++L1–L3 固定到发布提交 296eed0d85795d102d1bb27a84b86f8f4ed26e4b；L1、L2 指向完整封存归档目录，RESULT 与 DIAGNOSTIC 是归档内成员，需按 manifest 恢复；L3 指向该提交下的补充协议：
++
++- [L1: 研究01封存归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/)，归档内成员 `research-sft-01/RESULT.json`，成员 SHA256 `bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33`。
++- [L2: 研究01封存归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/)，归档内成员 `research-diagnostic-01/DIAGNOSTIC.json`，成员 SHA256 `b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37`。
++- [L3: 研究02补充协议](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run02/source/PROTOCOL_ADDENDUM_02.md)，SHA256 `8f9ae4acd63ae3eebce183cf68b0791fb0bbeec1cee9d9b337ac85fbb76335b9`。
+ 
+ ## 15. 学术原始文献与迁移限度
+ 
+@@ -364,9 +364,9 @@
+ [S9]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb/qualification/cell-hia-joint-20261116/ACTUAL_RUNTIME_RESULT.json
+ [S10]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-memory/migrations/0008_h7_trajectory_events.sql
+ [S11]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/33476ae8288d5901e2c1a4d0c1934a848478627f/qualification/stem-selection-20261112/RESULTS.md
+-[L1]: ../research-final-evidence-01/research-sft-01/RESULT.json
+-[L2]: ../research-final-evidence-01/research-diagnostic-01/DIAGNOSTIC.json
+-[L3]: ../research-reschedule-source-02/PROTOCOL_ADDENDUM_02.md
++[L1]: https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/
++[L2]: https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/
++[L3]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run02/source/PROTOCOL_ADDENDUM_02.md
+ [P1]: https://arxiv.org/html/1011.0686v3
+ [P2]: https://arxiv.org/html/2311.08105v3
+ [P3]: https://arxiv.org/html/2306.01708v2

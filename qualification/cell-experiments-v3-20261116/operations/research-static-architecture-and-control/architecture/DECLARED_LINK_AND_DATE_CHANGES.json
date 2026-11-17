@@ -1,0 +1,74 @@
+{
+  "L1_L2_are_archive_links_not_direct_JSON_links": true,
+  "L1_member": {
+    "bytes": 18639,
+    "device": 24,
+    "inode": 189153,
+    "mode": 436,
+    "mtime_ns": 1794887929848613547,
+    "path": "research-sft-01/RESULT.json",
+    "sha256": "bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33"
+  },
+  "L2_member": {
+    "bytes": 37021,
+    "device": 24,
+    "inode": 189271,
+    "mode": 436,
+    "mtime_ns": 1794888287348730294,
+    "path": "research-diagnostic-01/DIAGNOSTIC.json",
+    "sha256": "b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37"
+  },
+  "all_other_bytes_unchanged": true,
+  "displayed_original_cutoff_Eastern_date": "2026-11-16 EST",
+  "exact_reversible_edits": [
+    {
+      "after": "> 研究架构发布版；原稿状态截点：2026-11-17 UTC（美国东部标准时间 EST 为 2026-11-16）的已保留原件与本轮交接。",
+      "before": "> 研究架构稿；状态截点：2026-11-17 的已保留原件与本轮交接。",
+      "reason": "label the original UTC cutoff and its requested Eastern-time date; not a new runtime cutoff"
+    },
+    {
+      "after": "L1–L3 固定到发布提交 296eed0d85795d102d1bb27a84b86f8f4ed26e4b；L1、L2 指向完整封存归档目录，RESULT 与 DIAGNOSTIC 是归档内成员，需按 manifest 恢复；L3 指向该提交下的补充协议：",
+      "before": "L1–L3 相对本工作区父目录，尚未在本稿中赋予远端发布提交：",
+      "reason": "replace local-only references with frozen publication links and state archive-member scope"
+    },
+    {
+      "after": "- [L1: 研究01封存归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/)，归档内成员 `research-sft-01/RESULT.json`，成员 SHA256 `bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33`。",
+      "before": "- [L1: 研究01 RESULT](../research-final-evidence-01/research-sft-01/RESULT.json)，SHA256 `bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33`。",
+      "reason": "link to the archive, not a nonexistent directly published JSON"
+    },
+    {
+      "after": "[L1]: https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/",
+      "before": "[L1]: ../research-final-evidence-01/research-sft-01/RESULT.json",
+      "reason": "freeze the reference-definition archive URL"
+    },
+    {
+      "after": "- [L2: 研究01封存归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/)，归档内成员 `research-diagnostic-01/DIAGNOSTIC.json`，成员 SHA256 `b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37`。",
+      "before": "- [L2: 研究01 DIAGNOSTIC](../research-final-evidence-01/research-diagnostic-01/DIAGNOSTIC.json)，SHA256 `b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37`。",
+      "reason": "link to the archive, not a nonexistent directly published JSON"
+    },
+    {
+      "after": "[L2]: https://github.com/TrillionniumFoundation/hepta-private-ci/tree/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run01/export/",
+      "before": "[L2]: ../research-final-evidence-01/research-diagnostic-01/DIAGNOSTIC.json",
+      "reason": "freeze the reference-definition archive URL"
+    },
+    {
+      "after": "- [L3: 研究02补充协议](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run02/source/PROTOCOL_ADDENDUM_02.md)，SHA256 `8f9ae4acd63ae3eebce183cf68b0791fb0bbeec1cee9d9b337ac85fbb76335b9`。",
+      "before": "- [L3: 研究02补充协议](../research-reschedule-source-02/PROTOCOL_ADDENDUM_02.md)，SHA256 `8f9ae4acd63ae3eebce183cf68b0791fb0bbeec1cee9d9b337ac85fbb76335b9`。",
+      "reason": "freeze the direct protocol document URL"
+    },
+    {
+      "after": "[L3]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/296eed0d85795d102d1bb27a84b86f8f4ed26e4b/qualification/cell-experiments-v3-20261116/operations/research-run01-and-run02-preparation/run02/source/PROTOCOL_ADDENDUM_02.md",
+      "before": "[L3]: ../research-reschedule-source-02/PROTOCOL_ADDENDUM_02.md",
+      "reason": "freeze the reference-definition protocol URL"
+    }
+  ],
+  "original_bytes": 37223,
+  "original_cutoff_timezone": "UTC",
+  "original_sha256": "4bd2e5b6392e09e65ad7549cb4dcad9de231cc2c0f5ed71369762144318e5f06",
+  "original_source_unmodified": true,
+  "publication_link_commit": "296eed0d85795d102d1bb27a84b86f8f4ed26e4b",
+  "published_archive_member_index_sha256": "336e7308d967918413b0c0fc6b8e5e2acefc16476e70b419f100b3752731afa5",
+  "published_bytes": 38490,
+  "published_sha256": "08221b821fd37b5b406e4ef54e6f63865817400de291d04ab845ed2857dd2805",
+  "schema": "hepta.architecture-publication-edit.v1"
+}
