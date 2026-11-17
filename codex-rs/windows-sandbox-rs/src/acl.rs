@@ -348,11 +348,14 @@ unsafe fn dacl_has_complete_deny_for_sid(
             return false;
         }
         let hdr = &*(p_ace as *const ACE_HEADER);
-        // Only trust the leading explicit, unconditional deny ACEs. An earlier
-        // allow can satisfy access before a later deny; unknown ACE types and
-        // noncanonical order conservatively require installing the full deny.
-        if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
+        // An earlier allow or unsupported ACE can make a later deny insufficient.
+        // Inherited unconditional denies cannot grant access; skip them without
+        // counting their rights toward the explicit deny required here.
+        if hdr.AceType != ACCESS_DENIED_ACE_TYPE {
             return false;
+        }
+        if hdr.AceFlags & INHERITED_ACE != 0 {
+            continue;
         }
         // Directories require effective recursive inheritance. Files have no
         // descendants, and Windows stores their direct ACEs without child flags.

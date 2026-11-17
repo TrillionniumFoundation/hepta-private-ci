@@ -107,10 +107,14 @@ pub(super) unsafe fn has_complete_deny(
             return false;
         }
         let header = &*(entry as *const ACE_HEADER);
-        // Preserve the leading-explicit-deny rule: an earlier allow, inherited
-        // or unsupported ACE cannot be used to certify a later explicit deny.
-        if header.AceType != ACCESS_DENIED_ACE_TYPE || header.AceFlags & INHERITED_ACE != 0 {
+        // An earlier allow or unsupported ACE can make a later deny insufficient.
+        // Inherited unconditional denies cannot grant access; skip them without
+        // counting their rights toward the explicit effective and child scopes.
+        if header.AceType != ACCESS_DENIED_ACE_TYPE {
             return false;
+        }
+        if header.AceFlags & INHERITED_ACE != 0 {
+            continue;
         }
         // In particular, no-propagate must not certify arbitrary descendants.
         if header.AceFlags & !(inheritance | INHERIT_ONLY_ACE) != 0 {
