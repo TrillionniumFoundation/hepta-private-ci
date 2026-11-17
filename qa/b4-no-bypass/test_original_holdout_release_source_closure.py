@@ -123,7 +123,7 @@ class OriginalHoldoutReleaseSourceTests(unittest.TestCase):
         self.reject_removal(OWNER, "fn read_consumption(", (
             "if self.poisoned", "match self.store.load(self.binding)", "current.validate(self.binding)?",
             "if current.fence != self.fence", "if current.state_digest != self.state_digest",
-            "if journal.snapshot() != self.journal.snapshot()", "if &record.plan != plan"))
+            "if journal.snapshot() != self.journal.snapshot()", "if stored_plan.as_ref() != plan"))
 
 
 if __name__ == "__main__":
