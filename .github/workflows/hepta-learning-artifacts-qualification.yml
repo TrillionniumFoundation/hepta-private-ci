@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  merge_group:
+    types: [checks_requested]
 
 permissions:
   contents: read
@@ -13,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  SOURCE_SHA: ${{ github.event_name == 'merge_group' && github.event.merge_group.head_sha || github.event_name != 'merge_group' && (github.event.pull_request.head.sha || github.sha) }}
+  BASE_SHA: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_sha || github.event_name != 'merge_group' && (github.event.pull_request.base.sha || github.event.before) }}
   CARGO_TERM_COLOR: never
   RUSTUP_TOOLCHAIN: 1.96.0
 
@@ -57,7 +59,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [source, merge]
+        lane: ${{ fromJSON(github.event_name == 'merge_group' && '["queue"]' || '["source","merge"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:

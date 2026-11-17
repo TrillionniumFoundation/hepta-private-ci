@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / ".hepta-evidence/learning-artifacts"
 CRATE = "codex-hepta-learning-artifacts"
 MAX_LOG = 64 * 1024 * 1024
+MAX_EVENT = 25 * 1024 * 1024
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 PASS = re.compile(
     r"^\s*PASS\s+\[[^\]]+\]\s+(?:\(\s*\d+/\s*\d+\)\s+)?(\S+)\s+(\S+)\s*$", re.M
@@ -96,6 +97,10 @@ STEPS = (
         ],
     ),
     ("format", ["cargo", "fmt", "--package", CRATE, "--", "--check"]),
+    (
+        "lane-e-self-test",
+        ["python3", "../scripts/hepta-lane-e-closure.py", "self-test"],
+    ),
     ("lane-e-preflight", ["python3", "../scripts/hepta-lane-e-closure.py", "verify"]),
 )
 NEW_TESTS = (
@@ -124,14 +129,59 @@ def require_sha(value: str) -> str:
     return value
 
 
+def queue_event_identity(source: str, base: str) -> dict:
+    """Bind an existing queue commit to its event without synthesizing a merge."""
+    if os.environ.get("GITHUB_EVENT_NAME") != "merge_group":
+        raise ValueError("queue lane requires a merge_group event")
+    event_path = os.environ.get("GITHUB_EVENT_PATH", "")
+    if not event_path:
+        raise ValueError("queue event payload is required")
+    with Path(event_path).open("rb") as stream:
+        raw = stream.read(MAX_EVENT + 1)
+    if len(raw) > MAX_EVENT:
+        raise ValueError("queue event payload exceeds the byte limit")
+    event = json.loads(raw)
+    if not isinstance(event, dict) or event.get("action") != "checks_requested":
+        raise ValueError("queue event action must be checks_requested")
+    group = event.get("merge_group")
+    if not isinstance(group, dict):
+        raise ValueError("queue event merge_group object is required")
+    fields = ("head_sha", "base_sha", "head_ref", "base_ref")
+    if any(not isinstance(group.get(key), str) or not group[key] for key in fields):
+        raise ValueError("queue event identity fields must be nonempty strings")
+    head = require_sha(group["head_sha"])
+    parent = require_sha(group["base_sha"])
+    if head != source or head != os.environ.get("GITHUB_SHA") or parent != base:
+        raise ValueError("queue event head or base does not match the selected input")
+    if group["head_ref"] != os.environ.get("GITHUB_REF"):
+        raise ValueError("queue event head ref does not match the selected ref")
+    for key in ("head_ref", "base_ref"):
+        if not group[key].startswith("refs/heads/"):
+            raise ValueError("queue event refs must be full branch refs")
+        git("check-ref-format", group[key])
+    git("merge-base", "--is-ancestor", base, source)
+    return {
+        "eventName": "merge_group",
+        "action": "checks_requested",
+        "headSha": head,
+        "baseSha": parent,
+        "headRef": group["head_ref"],
+        "baseRef": group["base_ref"],
+        "eventSha256": digest(raw),
+    }
+
+
 def materialize_candidate(source: str, base: str, lane: str) -> dict:
     source, base = require_sha(source), require_sha(base)
+    if os.environ.get("GITHUB_EVENT_NAME") == "merge_group" and lane != "queue":
+        raise ValueError("merge_group events require the queue lane")
     if git("rev-parse", "HEAD") != source:
         raise ValueError("checkout is not the exact requested source")
     if git("status", "--porcelain", "--untracked-files=no"):
         raise ValueError("dirty tracked source is not admissible")
     source_tree = git("rev-parse", f"{source}^{{tree}}")
     git("cat-file", "-e", f"{base}^{{commit}}")
+    queue_event = None
     if lane == "merge":
         merged = git("merge-tree", "--write-tree", base, source).splitlines()[0]
         require_sha(merged)
@@ -162,9 +212,11 @@ def materialize_candidate(source: str, base: str, lane: str) -> dict:
         git("checkout", "--detach", candidate)
         if git("show", "-s", "--format=%P", "HEAD").split() != [base, source]:
             raise ValueError("ordered merge parent mismatch")
+    elif lane == "queue":
+        queue_event = queue_event_identity(source, base)
     elif lane != "source":
         raise ValueError("unsupported qualification lane")
-    return {
+    identity = {
         "source": source,
         "sourceTree": source_tree,
         "base": base,
@@ -173,10 +225,20 @@ def materialize_candidate(source: str, base: str, lane: str) -> dict:
         "candidateTree": git("rev-parse", "HEAD^{tree}"),
         "parents": git("show", "-s", "--format=%P", "HEAD").split(),
     }
+    if queue_event is not None:
+        identity["queueEvent"] = queue_event
+    return identity
 
 
 def verify_checkout_identity(identity: dict, expected: str) -> None:
     require_sha(expected)
+    if (
+        os.environ.get("GITHUB_EVENT_NAME") == "merge_group"
+        and identity.get("lane") != "queue"
+    ):
+        raise ValueError("merge_group events require the queue lane")
+    if identity.get("lane") != "queue" and "queueEvent" in identity:
+        raise ValueError("queue event identity cannot be used outside the queue lane")
     if identity["source"] != expected:
         raise ValueError("source identity mismatch")
     for key in ("sourceTree", "base", "candidate", "candidateTree"):
@@ -199,6 +261,16 @@ def verify_checkout_identity(identity: dict, expected: str) -> None:
     elif identity["lane"] == "merge":
         if identity["parents"] != [identity["base"], expected]:
             raise ValueError("ordered merge parent mismatch")
+    elif identity["lane"] == "queue":
+        if (
+            identity["candidate"] != expected
+            or identity["candidateTree"] != identity["sourceTree"]
+        ):
+            raise ValueError("queue candidate mismatch")
+        if identity.get("queueEvent") != queue_event_identity(
+            expected, identity["base"]
+        ):
+            raise ValueError("queue event identity mismatch")
     else:
         raise ValueError("unknown qualification lane")
     if git("status", "--porcelain", "--untracked-files=no"):
