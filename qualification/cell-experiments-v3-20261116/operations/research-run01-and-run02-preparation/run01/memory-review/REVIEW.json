@@ -1,0 +1,205 @@
+{
+  "authored_reference_receipts": 36,
+  "collection_preload_free_bytes": 5799280640,
+  "collection_preload_scope": "one pre-load Predictor device report; reused in prediction outputs, not live per-call memory",
+  "completed_shadow_output_receipts": 6,
+  "completed_training_step_receipts": 0,
+  "conclusion": "All six primaries failed the first explicit available-memory gate before loading Qwen; exact worker receipts are strictly sequential.",
+  "cost_policy": "Preserve partial unknown totals and nonadditive nested scopes; no new cost extrapolation.",
+  "device": {
+    "compute_capability": [
+      8,
+      9
+    ],
+    "device": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "dtype": "bfloat16",
+    "free_bytes_before_load": 5799280640,
+    "total_bytes": 8184135680
+  },
+  "environment_read": false,
+  "external_pid_observation": {
+    "environment_read": false,
+    "inline_code_retained": false,
+    "observed_at_ns": 1794888427935018015,
+    "pid": 2228309,
+    "schema": "hepta.bounded-process-identity-observation.v1",
+    "signals_sent": false,
+    "state": "not_present_at_observation"
+  },
+  "external_pid_ownership": "unknown; process absent when this review attempted bounded identification",
+  "failed_gates": [
+    {
+      "actual_free_bytes_at_gate": null,
+      "callsite": "line 129, in evaluate",
+      "error": "ValueError('selected CUDA device has insufficient free memory')",
+      "gate": "first explicit pre-model-load check",
+      "name": "parent-primary",
+      "optimizer_constructed": false,
+      "predictor_constructor_reached": false
+    },
+    {
+      "actual_free_bytes_at_gate": null,
+      "callsite": "line 129, in evaluate",
+      "error": "ValueError('selected CUDA device has insufficient free memory')",
+      "gate": "first explicit pre-model-load check",
+      "name": "retrieval-primary",
+      "optimizer_constructed": false,
+      "predictor_constructor_reached": false
+    },
+    {
+      "actual_free_bytes_at_gate": null,
+      "callsite": "line 135, in train",
+      "error": "ValueError('selected CUDA device has insufficient free memory')",
+      "gate": "first explicit pre-model-load check",
+      "name": "final_answer-primary",
+      "optimizer_constructed": false,
+      "predictor_constructor_reached": false
+    },
+    {
+      "actual_free_bytes_at_gate": null,
+      "callsite": "line 135, in train",
+      "error": "ValueError('selected CUDA device has insufficient free memory')",
+      "gate": "first explicit pre-model-load check",
+      "name": "trajectory-primary",
+      "optimizer_constructed": false,
+      "predictor_constructor_reached": false
+    },
+    {
+      "actual_free_bytes_at_gate": null,
+      "callsite": "line 135, in train",
+      "error": "ValueError('selected CUDA device has insufficient free memory')",
+      "gate": "first explicit pre-model-load check",
+      "name": "shadow_correction-primary",
+      "optimizer_constructed": false,
+      "predictor_constructor_reached": false
+    },
+    {
+      "actual_free_bytes_at_gate": null,
+      "callsite": "line 135, in train",
+      "error": "ValueError('selected CUDA device has insufficient free memory')",
+      "gate": "first explicit pre-model-load check",
+      "name": "controlled_correction-primary",
+      "optimizer_constructed": false,
+      "predictor_constructor_reached": false
+    }
+  ],
+  "fit_attempts_started": 4,
+  "fits_completed": 0,
+  "frozen_sources_modified": false,
+  "independent_sample_increment": 0,
+  "ledger_global_totals_unknown": true,
+  "ledger_training_steps_total": null,
+  "method": "stdlib-only byte copying, SHA verification, JSON parsing with exact Python integers, and source inspection; no frozen module imported.",
+  "new_C_read": false,
+  "not_supported": [
+    "A worker loaded this Qwen and then failed a duplicate memory gate.",
+    "One of the seven owned worker processes remained alive while the next was launched.",
+    "The later non-owned GPU PID is definitively responsible for every earlier failure.",
+    "Later GPU observations recover exact free bytes at each failed gate.",
+    "CUDA context initialization and driver reclamation latency were measured or ruled out.",
+    "This partial operation completed four fits or produced capability, Circuit, PoUW, adoption, or new-sample evidence."
+  ],
+  "observed_result": "RESEARCH_PARTIAL_UNQUALIFIED",
+  "operation": "research-sft-01",
+  "owned_wait_returncode": 0,
+  "review_model_calls": 0,
+  "review_reference_calls": 0,
+  "review_signals_sent": 0,
+  "root_gpu_observation_reference": {
+    "bytes": 106214,
+    "content_not_copied": true,
+    "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-terminal-inspection-01/INSPECTION.json",
+    "sha256": "87da8506b5d99122ca81f1cde813787a092834d22b00f6f48f6198ba691b1323",
+    "values_from_root_message": {
+      "later_gpu_free_mib": 3963,
+      "other_gpu_process_pid": 2228309,
+      "other_gpu_process_used_mib": 2570,
+      "preflight_free_mib": 6531
+    }
+  },
+  "root_gpu_values_are_separate_observations_not_per_gate_measurements": true,
+  "schema": "hepta.research-run01-memory-failure-review.v1",
+  "scope": "selected frozen source and terminal original receipts; not a complete execution archive",
+  "sealed_receipts_verified": [
+    "research-sft-01/RESULT.json",
+    "research-sft-01/processes/controlled_correction-primary/EXIT.json",
+    "research-sft-01/processes/corrections-collect/EXIT.json",
+    "research-sft-01/processes/final_answer-primary/EXIT.json",
+    "research-sft-01/processes/parent-primary/EXIT.json",
+    "research-sft-01/processes/retrieval-primary/EXIT.json",
+    "research-sft-01/processes/shadow_correction-primary/EXIT.json",
+    "research-sft-01/processes/trajectory-primary/EXIT.json",
+    "research-sft-01/workers/corrections-collect/RESULT.json"
+  ],
+  "selected_original_count": 31,
+  "shadow_input_tokens_measured": 1727,
+  "shadow_output_tokens_measured": 1764,
+  "source_recheck_observed_at_ns": 1794888750783177521,
+  "threshold_bytes": 4294967296,
+  "timeline": [
+    {
+      "completed_at_ns": 1794887824429307266,
+      "exit_code": 0,
+      "gap_after_previous_exit_ns": null,
+      "name": "corrections-collect",
+      "pid": 2230050,
+      "started_at_ns": 1794887684007231853,
+      "timed_out": false
+    },
+    {
+      "completed_at_ns": 1794887829787707941,
+      "exit_code": 1,
+      "gap_after_previous_exit_ns": 179689325,
+      "name": "parent-primary",
+      "pid": 2249477,
+      "started_at_ns": 1794887824608996591,
+      "timed_out": false
+    },
+    {
+      "completed_at_ns": 1794887834948925148,
+      "exit_code": 1,
+      "gap_after_previous_exit_ns": 181444323,
+      "name": "retrieval-primary",
+      "pid": 2251612,
+      "started_at_ns": 1794887829969152264,
+      "timed_out": false
+    },
+    {
+      "completed_at_ns": 1794887859301075266,
+      "exit_code": 1,
+      "gap_after_previous_exit_ns": 218255651,
+      "name": "final_answer-primary",
+      "pid": 2252274,
+      "started_at_ns": 1794887835167180799,
+      "timed_out": false
+    },
+    {
+      "completed_at_ns": 1794887882622783666,
+      "exit_code": 1,
+      "gap_after_previous_exit_ns": 192363773,
+      "name": "trajectory-primary",
+      "pid": 2257813,
+      "started_at_ns": 1794887859493439039,
+      "timed_out": false
+    },
+    {
+      "completed_at_ns": 1794887905984287514,
+      "exit_code": 1,
+      "gap_after_previous_exit_ns": 181485589,
+      "name": "shadow_correction-primary",
+      "pid": 2262730,
+      "started_at_ns": 1794887882804269255,
+      "timed_out": false
+    },
+    {
+      "completed_at_ns": 1794887929638542599,
+      "exit_code": 1,
+      "gap_after_previous_exit_ns": 176774124,
+      "name": "controlled_correction-primary",
+      "pid": 2266379,
+      "started_at_ns": 1794887906161061638,
+      "timed_out": false
+    }
+  ]
+}
