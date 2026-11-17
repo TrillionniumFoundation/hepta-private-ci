@@ -10,13 +10,13 @@
   "compiler_fixed_point": null,
   "compiler_generations": [],
   "build_report_sha256": null,
-  "native_module_count": 32,
-  "current_opt_in_linked_kernel_count": 29,
+  "native_module_count": 33,
+  "current_opt_in_linked_kernel_count": 30,
   "retained_oracle_only_kernel_count": 3,
-  "borrowed_module_count": 30,
+  "borrowed_module_count": 31,
   "scalar_module_count": 2,
   "production_algorithm_group_count": null,
-  "module_count_scope": "Configured current source modules and links only:32 build modules,29 opt-in caller kernels across six build entries (9+7+3+8+1+1),30 borrowed-buffer profiles and two scalar profiles. The historical audited union remains29. These counts do not assert publication, execution, algorithms, production coverage or qualification.",
+  "module_count_scope": "Configured current source modules and links only:33 build modules,30 opt-in caller kernels across seven build entries (9+7+3+8+1+1+1),31 borrowed-buffer profiles and two scalar profiles. The installed CLI requires29 symbols plus one library-only; three retained oracle-only modules remain. The historical audited union remains29. These counts do not assert publication, execution, algorithms, production coverage or qualification.",
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "default_release_migrated": false,
@@ -26,14 +26,14 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "The complete bounded format_env_display source unit, typed Rust caller and public/raw oracles are authored and unqualified. Fresh exact32-lock B1/B2/B3, every module/link receipt, original default/native public tests and installed-consumer evidence are pending. All earlier31/30/29 and exact17 revision records remain historical and do not qualify this source.",
+  "scope": "The complete citation_stream_parser HIA source, bounded Rust transport, original public routing and authored literal/public regressions are composed and unqualified. Fresh exact33-lock B1/B2/B3, all module/link receipts, original default/native owner and Core consumers, and installed-consumer evidence are pending. Earlier32/31/30/29 and exact17 records remain historical.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
     "status": "source_increment_unqualified",
     "qualification_revision": null,
     "source_composed": true,
-    "new_source_module": "format_env_display",
-    "kernel_source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+    "new_source_module": "citation_stream_parser",
+    "kernel_source_revision": "ee3d7d62c0c28a39b9d7c99073bfe68eff6a71a0",
     "raw_abi_harness_authored": true,
     "rust_public_oracles_authored": true,
     "raw_abi_harness_executed": false,
@@ -46,27 +46,30 @@
     "joint_job_runtime_cost_verified": false,
     "per_job_budget_minutes": 60,
     "all_static_link_receipts_require_regeneration": true,
-    "receipt_regeneration_scope": "The lock and caller sources changed. Fresh exact-source B1/B2/B3/compiler evidence and all32 configured module source/object/library/archive/input/.link bindings are required. Older full-native29/30/31 receipts cannot be reused or relabeled.",
+    "receipt_regeneration_scope": "The lock and caller sources changed. Fresh exact-source B1/B2/B3/compiler evidence and all33 configured module source/object/library/archive/input/.link bindings are required. Older full-native29/30/31/32 receipts cannot be reused or relabeled.",
     "new_native_artifacts_created": false,
     "complete_independent_artifact_custody": false,
     "documentation_successor_exact_head_qualified": false,
     "retirement_authorized": false,
     "network_owner_workflow_baselines": [
       "original",
-      "native32"
+      "native33"
     ],
     "mandatory_owner_baselines": [
       "original",
       "native16",
-      "native32"
+      "native33"
     ],
     "mandatory_predecessor16_gate_executed": false,
     "network_owner_scope": "The retained workflow runs two baselines and lacks the admitted published16 link bundle. It does not execute or qualify the separate mandatory original/native16/current owner gate.",
-    "kernel_source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc",
-    "kernel_source_sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
-    "configured_raw_literal_frames": 231,
-    "rust_public_oracle_methods_authored": 9,
-    "full_native32_admission": false
+    "kernel_source_git_blob": "b096b031ae6d6dd0ba385d033926ef4baf7a25c9",
+    "kernel_source_sha256": "7f015756bc249244a4ee0a0d6882550f6409de97648056580aa3d9a90ed2e163",
+    "configured_raw_literal_frames": 230,
+    "rust_public_oracle_methods_authored": 10,
+    "configured_raw_native_calls": 742,
+    "original_public_owner_methods_preserved": 15,
+    "original_Core_consumer_methods_preserved": 8,
+    "full_native33_admission": false
   },
   "source_owner_histories": {
     "17": {
@@ -428,9 +431,10 @@
     "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
   },
   "current_pending_gates": [
-    "Build exact full-native32 through fresh B1/B2/B3 with the unchanged compiler pin; bind all32 sources, objects, namespaced libraries, archives, compiler inputs and six-owner static-link receipts.",
-    "Run the231-frame format_env_display raw ABI gate, retained143-frame output_item_budget and82-frame output_lines gates, and all unchanged current gates. Ten raw frames cover logical large lengths; they are not giant-payload workload executions.",
-    "Run the original four format_env_display methods/five complete equalities and nine additional public methods in default/native configurations, including a two-key comparison with a common prefix over1MiB. All existing owner groups and selected Core methods remain required.",
+    "Build exact full-native33 through fresh B1/B2/B3 with the unchanged compiler pin; bind all33 sources, objects, namespaced libraries, archives, compiler inputs and seven-owner static-link receipts.",
+    "Run all742 planned citation ABI invocations from230 literal templates:13 complete streams and184 standalone frames, including two257x4096 byte streams. These are authored data, not executed performance or >4GiB workloads. Retain all prior raw/public gates.",
+    "Run the15 unchanged original stream-parser owner methods plus10 added public methods in default/native configurations, and the eight unchanged Core streaming/finalization methods selected by their complete original names. Preserve all prior owner groups, assertions, skips and budgets.",
+    "Verify exact compact/alternate Debug, readonly Inspect continuity, partial open/close EOF, empty citation/reuse, per-public-call grouping and UTF-8 across internal4096-byte boundaries. Body, visible text and citation count have no new aggregate cap or Rust parser fallback.",
     "Complete both current and exact74d1 historical jobs within the unchanged60-minute budgets. The current two-baseline network workflow does not satisfy the separate mandatory original/native16/current owner gate.",
     "Independently receive and verify exact-source artifact/report payloads. Required platforms, whole workspace/product behavior, performance, default release and retirement remain separately unqualified."
   ],
@@ -578,5 +582,75 @@
       "Independently acquire and verify the resulting exact-source artifact/report payloads. Preserve all prior failures and qualify required platforms, whole workspace/product, performance and default release separately before any retirement proposal."
     ],
     "qualification_transferred_to_current32": false
+  },
+  "previous_source_increment_32": {
+    "source_revision": "0941fd18d8f92942f8c944d1805e6c19d72474e6",
+    "source_verification": {
+      "git_blob": "94a8b68d85518f222cb6cc99ca0fae4a6f1d6fa2",
+      "sha256": "ca3d858fa301cfbff7c4dcb9344c680e2eccf6aa2c0e4b10192c9e946caae22c"
+    },
+    "build_summary": {
+      "build_status": "source_increment_not_executed",
+      "compiler_fixed_point": null,
+      "compiler_generations": [],
+      "build_report_sha256": null,
+      "native_module_count": 32,
+      "current_opt_in_linked_kernel_count": 29,
+      "retained_oracle_only_kernel_count": 3,
+      "borrowed_module_count": 30,
+      "scalar_module_count": 2,
+      "production_algorithm_group_count": null,
+      "module_count_scope": "Configured current source modules and links only:32 build modules,29 opt-in caller kernels across six build entries (9+7+3+8+1+1),30 borrowed-buffer profiles and two scalar profiles. The historical audited union remains29. These counts do not assert publication, execution, algorithms, production coverage or qualification.",
+      "qualification_revision": null
+    },
+    "scope": "The complete bounded format_env_display source unit, typed Rust caller and public/raw oracles are authored and unqualified. Fresh exact32-lock B1/B2/B3, every module/link receipt, original default/native public tests and installed-consumer evidence are pending. All earlier31/30/29 and exact17 revision records remain historical and do not qualify this source.",
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "source_composed": true,
+      "new_source_module": "format_env_display",
+      "kernel_source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+      "raw_abi_harness_authored": true,
+      "rust_public_oracles_authored": true,
+      "raw_abi_harness_executed": false,
+      "rust_public_oracles_executed": false,
+      "native_build_executed": false,
+      "compiler_generations_executed": false,
+      "opt_in_production_callers_verified": false,
+      "complete_current_workflow_passed": false,
+      "historical_exact17_job_passed_this_run": false,
+      "joint_job_runtime_cost_verified": false,
+      "per_job_budget_minutes": 60,
+      "all_static_link_receipts_require_regeneration": true,
+      "receipt_regeneration_scope": "The lock and caller sources changed. Fresh exact-source B1/B2/B3/compiler evidence and all32 configured module source/object/library/archive/input/.link bindings are required. Older full-native29/30/31 receipts cannot be reused or relabeled.",
+      "new_native_artifacts_created": false,
+      "complete_independent_artifact_custody": false,
+      "documentation_successor_exact_head_qualified": false,
+      "retirement_authorized": false,
+      "network_owner_workflow_baselines": [
+        "original",
+        "native32"
+      ],
+      "mandatory_owner_baselines": [
+        "original",
+        "native16",
+        "native32"
+      ],
+      "mandatory_predecessor16_gate_executed": false,
+      "network_owner_scope": "The retained workflow runs two baselines and lacks the admitted published16 link bundle. It does not execute or qualify the separate mandatory original/native16/current owner gate.",
+      "kernel_source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc",
+      "kernel_source_sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+      "configured_raw_literal_frames": 231,
+      "rust_public_oracle_methods_authored": 9,
+      "full_native32_admission": false
+    },
+    "current_pending_gates": [
+      "Build exact full-native32 through fresh B1/B2/B3 with the unchanged compiler pin; bind all32 sources, objects, namespaced libraries, archives, compiler inputs and six-owner static-link receipts.",
+      "Run the231-frame format_env_display raw ABI gate, retained143-frame output_item_budget and82-frame output_lines gates, and all unchanged current gates. Ten raw frames cover logical large lengths; they are not giant-payload workload executions.",
+      "Run the original four format_env_display methods/five complete equalities and nine additional public methods in default/native configurations, including a two-key comparison with a common prefix over1MiB. All existing owner groups and selected Core methods remain required.",
+      "Complete both current and exact74d1 historical jobs within the unchanged60-minute budgets. The current two-baseline network workflow does not satisfy the separate mandatory original/native16/current owner gate.",
+      "Independently receive and verify exact-source artifact/report payloads. Required platforms, whole workspace/product behavior, performance, default release and retirement remain separately unqualified."
+    ],
+    "qualification_transferred_to_current33": false
   }
 }

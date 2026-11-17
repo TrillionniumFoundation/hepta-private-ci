@@ -1,6 +1,57 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: bounded environment display
+## Current source increment: citation streaming
+
+The complete citation_stream_parser source unit moves the literal, non-nested
+citation parser into HIA under the existing opt-in feature. HIA owns matching,
+pending prefixes, body/visible events, citation completion and EOF reset.
+Rust keeps owned containers and bounded transport. The original generic tag,
+plan and UTF-8 admission parsers remain available for their original roles.
+
+The current source configures **33 modules and 30 opt-in caller kernels**:
+31 borrowed-buffer and two unchanged scalar profiles. Seven Cargo build
+owners account for the links (9 + 7 + 3 + 8 + 1 + 1 + 1). The new owner is
+codex-utils-stream-parser. Core forwards its existing hia-native feature to
+that owner; the CLI already forwards Core, so no duplicate CLI route is added.
+Installed CLI admission requires 29 symbols, with one library-only and three
+retained oracle-only modules kept distinct.
+
+Kernel source origin: `ee3d7d62c0c28a39b9d7c99073bfe68eff6a71a0`.
+The [buffer contract](citation_stream_parser_buffer_contract.json) binds its
+complete bytes. Push, Finish and readonly Inspect use a 40-byte request header
+and at most 4096 payload bytes. HIA returns packed records after a 48-byte
+header. The output reservations are 98 + 33*N, 98 and 64 + prefix respectively.
+The finite state does not contain an aggregate body, text or citation limit.
+Rust accumulates internal byte fragments before converting complete public
+results to UTF-8. Inspect supplies pending bytes for the original compact and
+alternate Debug structures without a second parser in Rust.
+
+The raw gate has 230 literal templates and 742 planned native invocations:
+13 streams with 558 calls plus 184 standalone frames. Two streams prescribe
+257 chunks of 4096 bytes each; they are unexecuted source fixtures and do not
+claim performance or a workload above 4 GiB. The corpus is below the unchanged
+512000-byte repository limit. No reference parser computed its expectations.
+
+All 15 original owner methods and eight selected Core streaming/finalization
+methods are preserved. Ten added public tests cover per-call extraction,
+empty/repeated finish and reuse, false prefixes, internal UTF-8 splits, many
+citations, visible/body data above 1 MiB, and exact Debug continuity. The
+workflow adds complete owner default/native tests, strict owner lint and
+the eight original Core consumers in both configurations. Existing groups,
+the complete historical job and both 60-minute budgets remain intact.
+
+Network, output-lines, item-budget and environment raw gates explicitly select
+full-native33; the new citation gate requires it. Historical exact29/30/31/32
+profiles retain their original closed module sets and defaults. Fresh B1/B2/B3,
+all33 module/artifact bindings and all seven-owner static-link receipts are
+required; earlier receipts cannot qualify this source increment.
+
+This source increment has not been compiled or executed. Current runtime,
+default release, complete workspace/product, performance, independent artifact
+custody and retirement remain unqualified. The thirteen pending and two partial
+capability groups remain open; no legacy implementation is retired here.
+
+## Earlier source increment: bounded environment display
 
 The complete format_env_display source unit is authored with a borrowed v8
 HIA entry. HIA owns iterative heap sorting, byte comparison, masks, separators
@@ -173,13 +224,14 @@ Codex retains compiler pin `0de5657a80f96b138525ac7ee9ce11712a83a10d`.
 The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
 nineteen-name branch with the HIA scope of
 `74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
-names. The later source increments add `output_lines`, `output_item_budget`
-and `format_env_display` for 32 modules. Six Cargo build entries configure
-29 opt-in links (9 + 7 + 3 + 8 + 1 + 1) when `hia-native` is enabled.
+names. The later source increments add `output_lines`, `output_item_budget`,
+`format_env_display` and `citation_stream_parser` for 33 modules. Seven Cargo
+build entries configure 30 opt-in links (9 + 7 + 3 + 8 + 1 + 1 + 1) when
+`hia-native` is enabled.
 `utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
 kernels; their current production replacements are `utf8_prefix`, `uuid_find`
 and `template_parse`. There are two scalar profiles, `token_budget` and
-`prefix_admission`; the other 30 entries retain the borrowed
+`prefix_admission`; the other 31 entries retain the borrowed
 buffer profile. See `joint_module_roles.json` for source, role, replacement and
 link sites. Names, configured links, algorithms and observed calls are distinct
 counts.

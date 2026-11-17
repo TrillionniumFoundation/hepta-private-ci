@@ -3,7 +3,7 @@
   "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
   "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
   "audited_name_union": 29,
-  "current_opt_in_linked_kernels": 29,
+  "current_opt_in_linked_kernels": 30,
   "retained_oracle_only_kernels": 3,
   "entry_profiles": {
     "token_budget": "u64-pair-to-u64-v1",
@@ -488,6 +488,23 @@
       "production_entry": "codex_utils_cli::format_env_display; two CLI MCP views and the TUI MCP environment view",
       "runtime_qualified_on_joint_tree": false,
       "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "citation_stream_parser",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/citation_stream_parser.hepta",
+      "source_revision": "ee3d7d62c0c28a39b9d7c99073bfe68eff6a71a0",
+      "source_git_blob": "b096b031ae6d6dd0ba385d033926ef4baf7a25c9",
+      "source_sha256": "7f015756bc249244a4ee0a0d6882550f6409de97648056580aa3d9a90ed2e163",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "codex_utils_stream_parser::CitationStreamParser push_str/finish and strip_citations; AssistantTextStreamParser and Core streaming/finalization callers through codex-core/hia-native and the existing CLI feature",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -553,10 +570,11 @@
   },
   "count_is_not_a_production_coverage_claim": true,
   "current_build_or_runtime_executed": false,
-  "current_build_module_count": 32,
+  "current_build_module_count": 33,
   "modules_added_after_audited_union": [
     "output_lines",
     "output_item_budget",
-    "format_env_display"
+    "format_env_display",
+    "citation_stream_parser"
   ]
 }
