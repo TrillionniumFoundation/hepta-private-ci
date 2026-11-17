@@ -1,0 +1,25 @@
+import ast,base64,hashlib,io,json,pathlib,shlex,subprocess,time,zipfile
+root=pathlib.Path("/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a")
+output=root/"owned-launcher-engineering-01"
+output.mkdir(exist_ok=False)
+raw=(root/"operations/launch_qwen_research_owned_v1.py").read_bytes()
+assert hashlib.sha256(raw).hexdigest()=="4f647ae7e7cc5f5f0d04b597db10f0a68b946ecff04821651a16633bfe02eab0"
+ast.parse(raw)
+remote="import ast,base64,hashlib,importlib.util,io,json,os,pathlib,sys,zipfile\nroot=pathlib.Path(\"/dev/shm/hepta-cell-experiments-v3-20261116-0c078a\")\npacket=json.load(sys.stdin)\nraw=base64.b64decode(packet[\"source\"],validate=True)\nassert hashlib.sha256(raw).hexdigest()==\"4f647ae7e7cc5f5f0d04b597db10f0a68b946ecff04821651a16633bfe02eab0\"\nast.parse(raw)\nsource=root/\"operations/launch_qwen_research_owned_v1.py\"\nwith source.open(\"xb\") as stream:stream.write(raw)\ntest=root/\"owned-launcher-engineering-01\"\ntest.mkdir(exist_ok=False)\nspec=importlib.util.spec_from_file_location(\"owned_fixture\",source)\nmodule=importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\nread_fd,write_fd=os.pipe()\nos.close(read_fd)\nchild_program=\"import os,sys,time\\nos.write(1,bytes([111,117,116,0,255,10]))\\nos.write(2,bytes([101,114,114,0,254,10]))\\ntime.sleep(0.1)\\nsys.exit(7)\\n\"\nargv=[sys.executable,\"-I\",\"-B\",\"-c\",child_program]\ncode=module.run_owned(test/\"child\",argv,root,os.environ.copy(),\n    {\"role\":\"engineering_fixture\",\"operation_key\":\"owned-launcher-engineering-01\",\"model_calls\":0},write_fd)\nos.close(write_fd)\nassert code==7\nout=(test/\"child/stdout.log\").read_bytes()\nerr=(test/\"child/stderr.log\").read_bytes()\nassert out==bytes([111,117,116,0,255,10]) and err==bytes([101,114,114,0,254,10])\nstarted=json.loads((test/\"child/STARTED.json\").read_bytes())\nexited=json.loads((test/\"child/EXIT.json\").read_bytes())\nassert exited[\"wait_returncode\"]==7 and exited[\"exit_source\"]==\"subprocess.Popen.wait\"\nassert isinstance(started[\"child_identity\"][\"start_time_ticks\"],int)\nassert exited[\"child_identity\"]==started[\"child_identity\"]\nassert not pathlib.Path(\"/proc\",str(started[\"child_identity\"][\"pid\"])).exists()\nassert exited[\"h_terminal_status\"]==\"not_observed_by_this_wrapper\"\nassert exited[\"started_sha256\"]==hashlib.sha256((test/\"child/STARTED.json\").read_bytes()).hexdigest()\nassert exited[\"stdout\"]=={\"bytes\":6,\"sha256\":hashlib.sha256(out).hexdigest()}\nassert exited[\"stderr\"]=={\"bytes\":6,\"sha256\":hashlib.sha256(err).hexdigest()}\nresult={\"status\":\"PASS\",\"actual_fixture_processes\":1,\"expected_child_returncode\":7,\n        \"broken_control_pipe_tolerated\":True,\"raw_binary_streams_preserved\":True,\n        \"wait_and_identity_bound\":True,\"source_sha256\":hashlib.sha256(raw).hexdigest(),\n        \"model_calls\":0,\"training_steps\":0,\"independent_sample_increment\":0}\nwith (test/\"RESULT.json\").open(\"x\") as stream:json.dump(result,stream,sort_keys=True,indent=2);stream.write(\"\\n\")\nbuffer=io.BytesIO()\nwith zipfile.ZipFile(buffer,\"w\",compression=zipfile.ZIP_DEFLATED) as z:\n    for path in sorted(test.rglob(\"*\")):\n        if path.is_file():z.write(path,path.relative_to(test).as_posix())\narchive=buffer.getvalue()\nprint(json.dumps({\"result\":result,\"archive_sha256\":hashlib.sha256(archive).hexdigest(),\"archive_bytes\":len(archive),\"archive_base64\":base64.b64encode(archive).decode()}))\n"
+argv=["/usr/bin/ssh","-T","-o","BatchMode=yes","-o","ConnectTimeout=15","desktop-ts","/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python -I -B -c "+shlex.quote(remote)]
+with (output/"STARTED.json").open("x") as stream:json.dump({"argv":argv,"created_at_ns":time.time_ns(),"source_sha256":hashlib.sha256(raw).hexdigest()},stream,sort_keys=True,indent=2)
+started=time.perf_counter()
+result=subprocess.run(argv,input=json.dumps({"source":base64.b64encode(raw).decode()}).encode(),capture_output=True,timeout=120)
+for name,data in (("stdout.log",result.stdout),("stderr.log",result.stderr)):
+    with (output/name).open("xb") as stream:stream.write(data)
+receipt={"exit_code":result.returncode,"wall_seconds":time.perf_counter()-started,"stdout_sha256":hashlib.sha256(result.stdout).hexdigest(),"stderr_sha256":hashlib.sha256(result.stderr).hexdigest()}
+with (output/"EXIT.json").open("x") as stream:json.dump(receipt,stream,sort_keys=True,indent=2)
+assert result.returncode==0,result.stderr.decode(errors="replace")
+packet=json.loads(result.stdout)
+data=base64.b64decode(packet["archive_base64"],validate=True)
+assert len(data)==packet["archive_bytes"] and hashlib.sha256(data).hexdigest()==packet["archive_sha256"]
+with zipfile.ZipFile(io.BytesIO(data)) as archive:assert archive.testzip() is None
+with (output/"engineering-fixture.zip").open("xb") as stream:stream.write(data)
+packet.pop("archive_base64")
+with (output/"RESULT.json").open("x") as stream:json.dump(packet,stream,sort_keys=True,indent=2);stream.write("\n")
+print(json.dumps(packet))
