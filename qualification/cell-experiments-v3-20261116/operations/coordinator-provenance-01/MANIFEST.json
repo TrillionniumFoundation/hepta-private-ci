@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.coordinator-operation-provenance.v3",
+  "selection_started_utc": "2026-11-17T02:27:09.222323+00:00",
+  "source_reverification_finished_utc": "2026-11-17T02:27:09.353387+00:00",
+  "scope": "exact selected existing root-level operation files; excludes already planned paths and named transfer/raw-log duplicates; no subdirectories or future-history claim",
+  "source_root": "/dev/shm/hepta-cell-v3-0c078a/cell_experiments_v3_20261116/qualification/cell-experiments-v3-20261116/operations",
+  "selected_member_count": 149,
+  "selected_member_bytes": 2034733,
+  "excluded_regular_file_count": 46,
+  "untraversed_directory_count": 6,
+  "native_plans": [
+    {
+      "name": "NATIVE_SOURCE_PLAN_01.json",
+      "size": 26166,
+      "sha256": "bb7de08e66f5129fd1f88117bbc34d31a0541971d13286e5043483428ea91cd0"
+    },
+    {
+      "name": "NATIVE_EVIDENCE_PLAN_01.json",
+      "size": 65414,
+      "sha256": "5895f430a7b1b6f8c884f5229fb89f9be238a867d0382317e4fcaa09c3c20765"
+    }
+  ],
+  "member_index": {
+    "path": "MEMBERS.jsonl.gz",
+    "size": 15061,
+    "sha256": "48445596f4b5dbdba2b0f466d1d6270c4e5c8fb42b3b7deda810b5d37c28064f",
+    "uncompressed_size": 100376,
+    "uncompressed_sha256": "f61fe69d5f5734c45733fa2275ff93d8b873963114dcfdfeff6e3ddb0c1fbb08",
+    "rows": 202
+  },
+  "zip": {
+    "logical_name": "coordinator-provenance-01.zip",
+    "size": 726713,
+    "sha256": "6f8870657d67722f984cc5ffb986e603c5e50c0cffc7b054328ec5f23eaeeab4",
+    "retention": "split parts only",
+    "member_prefix": "operations/"
+  },
+  "parts": [
+    {
+      "path": "ARCHIVE.part0000.bin",
+      "offset": 0,
+      "size": 322560,
+      "sha256": "d7f02e9399a0ffeef588a606ff35e73664e36d0eb3165df4dffc013e50187f12"
+    },
+    {
+      "path": "ARCHIVE.part0001.bin",
+      "offset": 322560,
+      "size": 322560,
+      "sha256": "289b00900a50aadf74f7c2900fd2a55f98c68c98ded34b0c21f273b55b70b33a"
+    },
+    {
+      "path": "ARCHIVE.part0002.bin",
+      "offset": 645120,
+      "size": 81593,
+      "sha256": "af6ede7701c89cd37c74fb04233766b27a2b9f4b7704ba9d6c03a8f890e0633a"
+    }
+  ],
+  "readme": {
+    "path": "README.md",
+    "size": 3151,
+    "sha256": "42317dbb1e6766645a745cbe3476a51893939ce2c47c8d23523fac38b065c9ca"
+  },
+  "verification": {
+    "before_after_source_stat_equal": true,
+    "before_after_source_bytes_equal": true,
+    "zip_crc_checked": true,
+    "every_zip_member_byte_equal": true,
+    "every_part_byte_equal": true,
+    "reassembled_zip_byte_equal": true,
+    "excluded_raw_CI_logs_byte_equal_to_prior_zip": true
+  },
+  "git_object_limit_exclusive": 512000,
+  "part_size": 322560,
+  "models_or_tests_run": false,
+  "inputs_modified": false,
+  "mac_verification_receipt_separate": true
+}

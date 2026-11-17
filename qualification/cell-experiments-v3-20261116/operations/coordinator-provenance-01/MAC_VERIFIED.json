@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.coordinator-provenance-mac-verification.v3",
+  "verified_utc": "2026-11-17T02:30:25.708768+00:00",
+  "directory": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/coordinator-provenance-01",
+  "manifest_sha256": "7fb96f09e3a5e9397c5ecb5d5b0f4edc5ac006a90366861e1ded5d12f1e4f55a",
+  "zip_size": 726713,
+  "zip_sha256": "6f8870657d67722f984cc5ffb986e603c5e50c0cffc7b054328ec5f23eaeeab4",
+  "selected_members_verified": 149,
+  "member_bytes_verified": 2034733,
+  "files": [
+    {
+      "path": "MANIFEST.json",
+      "size": 2722,
+      "sha256": "7fb96f09e3a5e9397c5ecb5d5b0f4edc5ac006a90366861e1ded5d12f1e4f55a"
+    },
+    {
+      "path": "README.md",
+      "size": 3151,
+      "sha256": "42317dbb1e6766645a745cbe3476a51893939ce2c47c8d23523fac38b065c9ca"
+    },
+    {
+      "path": "MEMBERS.jsonl.gz",
+      "size": 15061,
+      "sha256": "48445596f4b5dbdba2b0f466d1d6270c4e5c8fb42b3b7deda810b5d37c28064f"
+    },
+    {
+      "path": "ARCHIVE.part0000.bin",
+      "size": 322560,
+      "sha256": "d7f02e9399a0ffeef588a606ff35e73664e36d0eb3165df4dffc013e50187f12"
+    },
+    {
+      "path": "ARCHIVE.part0001.bin",
+      "size": 322560,
+      "sha256": "289b00900a50aadf74f7c2900fd2a55f98c68c98ded34b0c21f273b55b70b33a"
+    },
+    {
+      "path": "ARCHIVE.part0002.bin",
+      "size": 81593,
+      "sha256": "af6ede7701c89cd37c74fb04233766b27a2b9f4b7704ba9d6c03a8f890e0633a"
+    }
+  ],
+  "zip_crc_and_all_member_sha_verified": true,
+  "preliminary_check": {
+    "pty": "dpty-b230927aa06ee3516e8736daed1cd10dca6acf2951200787bdb7b03dc24add2b",
+    "exit_code": 1,
+    "reason": "Exact directory entry check stopped because six empty h transfer lock sidecars were present. No archive mismatch was reported and no payload file was changed.",
+    "later_adjustment": "Each observed sidecar name, regular type, zero size and mode was checked explicitly; sidecars were neither removed nor included as payload."
+  },
+  "non_payload_entries_checked": [
+    {
+      "name": ".hepta-lock-3a7b9b8bb947a79feb173ac9",
+      "size": 0,
+      "mode": "0o100600",
+      "is_symlink": false
+    },
+    {
+      "name": ".hepta-lock-96cbb22e8217a8c2da7ec43b",
+      "size": 0,
+      "mode": "0o100600",
+      "is_symlink": false
+    },
+    {
+      "name": ".hepta-lock-ac1a57d94319c8355631e0e9",
+      "size": 0,
+      "mode": "0o100600",
+      "is_symlink": false
+    },
+    {
+      "name": ".hepta-lock-b335630551682c19a781afeb",
+      "size": 0,
+      "mode": "0o100600",
+      "is_symlink": false
+    },
+    {
+      "name": ".hepta-lock-c2644a589e8c1cb7f1926106",
+      "size": 0,
+      "mode": "0o100600",
+      "is_symlink": false
+    },
+    {
+      "name": ".hepta-lock-e8c07e5c36f85f3c90a62583",
+      "size": 0,
+      "mode": "0o100600",
+      "is_symlink": false
+    }
+  ],
+  "inputs_or_publication_worktree_modified": false,
+  "models_or_tests_run": false,
+  "snapshot_history_interval_extended": false,
+  "receipt_is_outside_frozen_source_snapshot": true
+}
