@@ -1,0 +1,154 @@
+{
+  "Git_mutations_by_packager": false,
+  "actual_operation_results": "not included; require separate real-operation evidence",
+  "atomic_filesystem_snapshot_claimed": false,
+  "diagnostic_rules": {
+    "bytes": 2007,
+    "sha256": "93dff768e527af37551a71b3cf89c47b2b8ad83dae461e11d7a8214cfc0e5ddc"
+  },
+  "diagnostic_source": {
+    "bytes": 46995,
+    "sha256": "c43ff3c5f9bc99c5825a96e0f4b4020d361489d2ffa3ae31bffe49f03ddb6f91"
+  },
+  "engineering": {
+    "actual_authored_business_verifier_calls": 0,
+    "actual_behavior_tests": 12,
+    "actual_final_diagnostic_tests": 10,
+    "actual_tiny_tensor_steps": 64,
+    "actual_tiny_tensor_tests": 1,
+    "archive01_actual_checks": 3,
+    "archive02_extra_tests_claimed": 0,
+    "archive02_one_literal_difference_verified": true,
+    "owned_fixture_expected_exit": 7,
+    "prior_diagnostic_receipt_separate": true,
+    "real_pretrained_Qwen_generations": 0,
+    "real_research_fits": 0
+  },
+  "excluded": [
+    "base pretrained weights",
+    "venv",
+    "runtime caches",
+    "future results",
+    "unverified draft diagnostic fragments"
+  ],
+  "input_archives": [
+    {
+      "bytes": 42679,
+      "members": 14,
+      "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-sft-v1-source-working/RESEARCH_SOURCE_V1.zip",
+      "sha256": "a3e2228377c20dab52a8cdfa20ce3cef62f92b75c5eacb1a5cea426b43e922bc",
+      "verified_member_hashes": 13
+    },
+    {
+      "bytes": 333959,
+      "members": 373,
+      "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-sft-v1-source-working/CPU_ENGINEERING_01.zip",
+      "sha256": "78629fbaf830a733e09a77b733e33ec38546c57daa2f8899f5a8f28902794381",
+      "verified_member_hashes": 372
+    },
+    {
+      "bytes": 32108,
+      "members": 13,
+      "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/research-diagnostic-v1-source/qwen-research-diagnostic-helper-01.zip",
+      "sha256": "c395702327f6cf3356b611c4533a0a9c82759f8141b5165703051fa0107ec2a3",
+      "verified_member_hashes": 12
+    }
+  ],
+  "opaque_original_archive_empty_non_evidence_lock_members": [
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-36d10d50d4fff01baa7365b1",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-41fa4619eba77357bd48cb76",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-5bc6c124c243f9e4113fc2c4",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-5fbf1206509ecd034be7d830",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-669f8cabba57eeeb7de42962",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-7bd29dd42c1a53e6b6d994a8",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-8a0692d712fd7d2ef318b604",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-b05d158dbddbb18e510a25bc",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-c7a2924bb76413b49c341ff4",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": ".hepta-lock-cf6a4858f0df31fad4791f82",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_core_git_blobs_unchanged": true,
+  "original_core_python_files": 64,
+  "original_cpu_zip_preserved_byte_for_byte": true,
+  "prepared_at_ns": 1794887948368958000,
+  "publication_base": "6b63615afc272cec57d8b3d26bd0135f02e440d9",
+  "qualification": {
+    "candidate_selected": null,
+    "circuit_qualified": false,
+    "independent_sample_increment": 0,
+    "native_cell_adoption": false,
+    "new_C": false,
+    "new_teachers": 0,
+    "new_users": 0,
+    "proof_of_useful_work_eligible": false,
+    "research_only": true,
+    "scientific_confirmation_qualified": false
+  },
+  "recovery": {
+    "historical_design_sha256": "d4aa19925cd347602e853570c2ff62c1b7744597aaa70c9f2cc18a883162738f",
+    "new_protocol_sha256": "1f3171699624a18f705728f495d81c51c4909d2e7c3a6950df14335b31cdc0ee",
+    "old_design_original_bytes_recovered": false,
+    "old_local_RAM_original_lost": true,
+    "original_migration_and_checkpoint_receipts_preserved": true
+  },
+  "runtime_modules": {
+    "research_sft_contract_v1.py": {
+      "bytes": 19385,
+      "sha256": "2ae7c2496ee58ce71cbda7a6d245e65550a76104cbc1359aca06d005f6b16f2c"
+    },
+    "research_sft_execution_v1.py": {
+      "bytes": 20692,
+      "sha256": "704e7a7e157412d9ce8a7523c31ed635269ead41d40f1720c591dccc4d67f2cd"
+    },
+    "research_sft_train_v1.py": {
+      "bytes": 12545,
+      "sha256": "a95ccfde26ebb3f32ef1e3fb2df3f1b4d35ab27b4ae42edf8858dc315d2f9972"
+    },
+    "run_research_sft_v1.py": {
+      "bytes": 24716,
+      "sha256": "0fba8d8800ba3012a55055d7a84c4bfa156d0f96c64e0bd488211f188cbe256c"
+    }
+  },
+  "schema": "hepta.research-source-publication-coverage.v1",
+  "source_scope": "prefit implementation, frozen diagnostic and engineering only",
+  "standalone_lock_files": 0
+}
