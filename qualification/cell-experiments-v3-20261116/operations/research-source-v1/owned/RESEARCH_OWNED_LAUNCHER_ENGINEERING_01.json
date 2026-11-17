@@ -1,0 +1,51 @@
+{
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"mac\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-5c1df17aafaa38f545b7b6f5d46c2682139d13aeedca39b3e9556fc15bba8408\",\"status\":{\"boot\":\"{ sec = 1794536756, usec = 511028 } Fri Nov 13 10:25:56 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794885009362,\"output_complete\":false,\"owner_pid\":95079,\"pid\":95080,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-5c1df17aafaa38f545b7b6f5d46c2682139d13aeedca39b3e9556fc15bba8408/output.log",
+    "available_end": 473,
+    "chunk_sha256": "76e4ffd853b6eb74a6e4908e06fbc252776f0c6dd7d1dfa3d5e6d6da6344c081",
+    "host": "mac",
+    "next_offset": 473,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-5c1df17aafaa38f545b7b6f5d46c2682139d13aeedca39b3e9556fc15bba8408",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 511028 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 473,
+      "bytes_stored": 473,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794885009362,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 95079,
+      "pid": 95080,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"result\": {\"status\": \"PASS\", \"actual_fixture_processes\": 1, \"expected_child_returncode\": 7, \"broken_control_pipe_tolerated\": true, \"raw_binary_streams_preserved\": true, \"wait_and_identity_bound\": true, \"source_sha256\": \"4f647ae7e7cc5f5f0d04b597db10f0a68b946ecff04821651a16633bfe02eab0\", \"model_calls\": 0, \"training_steps\": 0, \"independent_sample_increment\": 0}, \"archive_sha256\": \"78d924d52fa328955fa466e012dad00983aeb721e9133e538952d7e93604f9ce\", \"archive_bytes\": 2713}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "source": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"4f647ae7e7cc5f5f0d04b597db10f0a68b946ecff04821651a16633bfe02eab0\",\"size\":9060,\"version\":\"16777233:610929270:9060:1794884906673093464:1794884906673617545\",\"written\":9060}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}
