@@ -1,0 +1,429 @@
+﻿2026-11-17T00:42:46.6958249Z Current runner version: '2.338.2'
+2026-11-17T00:42:46.6979262Z ##[group]Runner Image Provisioner
+2026-11-17T00:42:46.6980130Z Hosted Compute Agent
+2026-11-17T00:42:46.6980629Z Version: 20261103.629
+2026-11-17T00:42:46.6981149Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-17T00:42:46.6982063Z Build Date: 2026-11-03T17:26:59Z
+2026-11-17T00:42:46.6982654Z Worker ID: {c8dc9134-0d27-461a-8f26-51f1dffd8bfe}
+2026-11-17T00:42:46.6983302Z Region: eastus
+2026-11-17T00:42:46.6983779Z Cloud: Azure
+2026-11-17T00:42:46.6984235Z ##[endgroup]
+2026-11-17T00:42:46.6985810Z ##[group]Operating System
+2026-11-17T00:42:46.6986379Z Ubuntu
+2026-11-17T00:42:46.6986972Z 24.04.5
+2026-11-17T00:42:46.6987408Z LTS
+2026-11-17T00:42:46.6987885Z ##[endgroup]
+2026-11-17T00:42:46.6988363Z ##[group]Runner Image
+2026-11-17T00:42:46.6988875Z Image: ubuntu-24.04
+2026-11-17T00:42:46.6989426Z Version: 20261111.370.1
+2026-11-17T00:42:46.6990478Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.370/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-17T00:42:46.6991976Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.370
+2026-11-17T00:42:46.6992815Z ##[endgroup]
+2026-11-17T00:42:46.6993850Z ##[group]GITHUB_TOKEN Permissions
+2026-11-17T00:42:46.6995702Z Contents: read
+2026-11-17T00:42:46.6996317Z Metadata: read
+2026-11-17T00:42:46.6996796Z ##[endgroup]
+2026-11-17T00:42:46.6998447Z Secret source: Actions
+2026-11-17T00:42:46.6999396Z Cache mode: write
+2026-11-17T00:42:46.7000224Z Prepare workflow directory
+2026-11-17T00:42:46.7302260Z Prepare all required actions
+2026-11-17T00:42:46.7340329Z Getting action download info
+2026-11-17T00:42:46.9080225Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-17T00:42:47.0005628Z Download action repository 'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0' (SHA:6d4fd22b20465ccc0f7354476588e8df7c9ca0e0)
+2026-11-17T00:42:47.1782374Z Complete job name: Engineering integrity (Python 3.12; no learning qualification)
+2026-11-17T00:42:47.2463514Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-17T00:42:47.2464300Z with:
+2026-11-17T00:42:47.2464663Z   persist-credentials: false
+2026-11-17T00:42:47.2465146Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-17T00:42:47.2468551Z   token: ***
+2026-11-17T00:42:47.2468908Z   ssh-strict: true
+2026-11-17T00:42:47.2469268Z   ssh-user: git
+2026-11-17T00:42:47.2469610Z   clean: true
+2026-11-17T00:42:47.2469969Z   sparse-checkout-cone-mode: true
+2026-11-17T00:42:47.2470389Z   fetch-depth: 1
+2026-11-17T00:42:47.2470738Z   fetch-tags: false
+2026-11-17T00:42:47.2471094Z   show-progress: true
+2026-11-17T00:42:47.2471459Z   lfs: false
+2026-11-17T00:42:47.2472025Z   submodules: false
+2026-11-17T00:42:47.2472403Z   set-safe-directory: true
+2026-11-17T00:42:47.2472812Z   allow-unsafe-pr-checkout: false
+2026-11-17T00:42:47.2473438Z env:
+2026-11-17T00:42:47.2473781Z   PYTHONPATH: scripts
+2026-11-17T00:42:47.2474192Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-17T00:42:47.2474636Z   OPENBLAS_NUM_THREADS: 1
+2026-11-17T00:42:47.2475013Z   OMP_NUM_THREADS: 1
+2026-11-17T00:42:47.2475370Z   HF_HUB_OFFLINE: 1
+2026-11-17T00:42:47.2475729Z   TRANSFORMERS_OFFLINE: 1
+2026-11-17T00:42:47.2476110Z   HF_DATASETS_OFFLINE: 1
+2026-11-17T00:42:47.2476476Z ##[endgroup]
+2026-11-17T00:42:47.5211941Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-17T00:42:47.5215104Z ##[group]Getting Git version info
+2026-11-17T00:42:47.5216506Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-17T00:42:47.5217880Z [command]/usr/bin/git version
+2026-11-17T00:42:47.5288753Z git version 2.56.1
+2026-11-17T00:42:47.5305462Z ##[endgroup]
+2026-11-17T00:42:47.5314598Z Temporarily overriding HOME='/home/runner/work/_temp/fdb2a23c-a16a-49ae-b52e-2b8f060bb4ef' before making global git config changes
+2026-11-17T00:42:47.5317191Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-17T00:42:47.5325833Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-17T00:42:47.5374801Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-17T00:42:47.5377850Z ##[group]Determining repository object format
+2026-11-17T00:42:47.5380095Z ##[endgroup]
+2026-11-17T00:42:47.5382107Z ##[group]Initializing the repository
+2026-11-17T00:42:47.5384115Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-17T00:42:47.5469395Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-17T00:42:47.5471483Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-17T00:42:47.5473502Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-17T00:42:47.5475081Z hint: call:
+2026-11-17T00:42:47.5476097Z hint:
+2026-11-17T00:42:47.5477398Z hint: 	git config --global init.defaultBranch <name>
+2026-11-17T00:42:47.5479156Z hint:
+2026-11-17T00:42:47.5480780Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-17T00:42:47.5483631Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-17T00:42:47.5485703Z hint:
+2026-11-17T00:42:47.5486819Z hint: 	git branch -m <name>
+2026-11-17T00:42:47.5488183Z hint:
+2026-11-17T00:42:47.5489874Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-17T00:42:47.5493190Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-17T00:42:47.5499231Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-17T00:42:47.5540621Z ##[endgroup]
+2026-11-17T00:42:47.5542878Z ##[group]Disabling automatic garbage collection
+2026-11-17T00:42:47.5544418Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-17T00:42:47.5576839Z ##[endgroup]
+2026-11-17T00:42:47.5578881Z ##[group]Setting up auth
+2026-11-17T00:42:47.5580543Z Removing SSH command configuration
+2026-11-17T00:42:47.5583592Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-17T00:42:47.5622239Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-17T00:42:47.6220859Z Removing HTTP extra header
+2026-11-17T00:42:47.6226157Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-17T00:42:47.6266502Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-17T00:42:47.6467499Z Removing includeIf entries pointing to credentials config files
+2026-11-17T00:42:47.6471868Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-17T00:42:47.6511023Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-17T00:42:47.6732165Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-17T00:42:47.6773417Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:42:47.6810225Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:42:47.6847741Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:42:47.6887113Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:42:47.6925018Z ##[endgroup]
+2026-11-17T00:42:47.6926875Z ##[group]Fetching the repository
+2026-11-17T00:42:47.6932255Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6b258c7062f7bc8a3ff4ab9dd3b2150f1dcda55e:refs/remotes/pull/6457/merge
+2026-11-17T00:43:00.5638941Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-17T00:43:00.5639744Z  * [new ref]         6b258c7062f7bc8a3ff4ab9dd3b2150f1dcda55e -> pull/6457/merge
+2026-11-17T00:43:00.5642984Z ##[endgroup]
+2026-11-17T00:43:00.5643485Z ##[group]Determining the checkout info
+2026-11-17T00:43:00.5643931Z ##[endgroup]
+2026-11-17T00:43:00.5648339Z [command]/usr/bin/git sparse-checkout disable
+2026-11-17T00:43:00.5716474Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-17T00:43:00.5752761Z ##[group]Checking out the ref
+2026-11-17T00:43:00.5755877Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/6457/merge
+2026-11-17T00:43:01.5083880Z Note: switching to 'refs/remotes/pull/6457/merge'.
+2026-11-17T00:43:01.5084504Z 
+2026-11-17T00:43:01.5084924Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-17T00:43:01.5085778Z changes and commit them, and you can discard any commits you make in this
+2026-11-17T00:43:01.5086386Z state without impacting any branches by switching back to a branch.
+2026-11-17T00:43:01.5086755Z 
+2026-11-17T00:43:01.5087034Z If you want to create a new branch to retain commits you create, you may
+2026-11-17T00:43:01.5087649Z do so (now or later) by using -c with the switch command. Example:
+2026-11-17T00:43:01.5088009Z 
+2026-11-17T00:43:01.5088142Z   git switch -c <new-branch-name>
+2026-11-17T00:43:01.5088379Z 
+2026-11-17T00:43:01.5088523Z Or undo this operation with:
+2026-11-17T00:43:01.5088800Z 
+2026-11-17T00:43:01.5089825Z   git switch -
+2026-11-17T00:43:01.5090056Z 
+2026-11-17T00:43:01.5090348Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-17T00:43:01.5090742Z 
+2026-11-17T00:43:01.5091177Z HEAD is now at 6b258c7 Merge 6b5c918bce563f8574619a3101c3970926136df5 into 0a6ea90e40634b552a9aa5695575aaf06cd01061
+2026-11-17T00:43:01.5128206Z ##[endgroup]
+2026-11-17T00:43:01.5180062Z [command]/usr/bin/git log -1 --format=%H
+2026-11-17T00:43:01.5212646Z 6b258c7062f7bc8a3ff4ab9dd3b2150f1dcda55e
+2026-11-17T00:43:01.5219625Z ##[group]Removing auth
+2026-11-17T00:43:01.5219968Z Removing SSH command configuration
+2026-11-17T00:43:01.5223130Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-17T00:43:01.5259511Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-17T00:43:01.5486506Z Removing HTTP extra header
+2026-11-17T00:43:01.5487225Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-17T00:43:01.5522892Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-17T00:43:01.5745855Z Removing includeIf entries pointing to credentials config files
+2026-11-17T00:43:01.5746315Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-17T00:43:01.5779708Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-17T00:43:01.5780477Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-17T00:43:01.5781118Z includeif.gitdir:/github/workspace/.git.path
+2026-11-17T00:43:01.5781843Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-17T00:43:01.5788126Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-17T00:43:01.5817554Z /home/runner/work/_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:43:01.5826809Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-7162c941\-ba59\-4be0\-8c31\-5717f18a0363\.config
+2026-11-17T00:43:01.5869348Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-17T00:43:01.5898588Z /home/runner/work/_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:43:01.5906305Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-7162c941\-ba59\-4be0\-8c31\-5717f18a0363\.config
+2026-11-17T00:43:01.5952008Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-17T00:43:01.5980679Z /github/runner_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:43:01.5987394Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-7162c941\-ba59\-4be0\-8c31\-5717f18a0363\.config
+2026-11-17T00:43:01.6025753Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-17T00:43:01.6056251Z /github/runner_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config
+2026-11-17T00:43:01.6063923Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-7162c941\-ba59\-4be0\-8c31\-5717f18a0363\.config
+2026-11-17T00:43:01.6112927Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-17T00:43:01.6340994Z Removing credentials config '/home/runner/work/_temp/git-credentials-7162c941-ba59-4be0-8c31-5717f18a0363.config'
+2026-11-17T00:43:01.6349669Z ##[endgroup]
+2026-11-17T00:43:01.6648738Z ##[group]Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+2026-11-17T00:43:01.6649058Z with:
+2026-11-17T00:43:01.6649241Z   python-version: 3.12
+2026-11-17T00:43:01.6649438Z   check-latest: false
+2026-11-17T00:43:01.6651491Z   token: ***
+2026-11-17T00:43:01.6651900Z   mirror: https://raw.githubusercontent.com/actions/python-versions/main
+2026-11-17T00:43:01.6652216Z   update-environment: true
+2026-11-17T00:43:01.6652426Z   allow-prereleases: false
+2026-11-17T00:43:01.6652632Z   freethreaded: false
+2026-11-17T00:43:01.6652816Z env:
+2026-11-17T00:43:01.6652979Z   PYTHONPATH: scripts
+2026-11-17T00:43:01.6653169Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-17T00:43:01.6653372Z   OPENBLAS_NUM_THREADS: 1
+2026-11-17T00:43:01.6653573Z   OMP_NUM_THREADS: 1
+2026-11-17T00:43:01.6653746Z   HF_HUB_OFFLINE: 1
+2026-11-17T00:43:01.6653922Z   TRANSFORMERS_OFFLINE: 1
+2026-11-17T00:43:01.6654108Z   HF_DATASETS_OFFLINE: 1
+2026-11-17T00:43:01.6654289Z ##[endgroup]
+2026-11-17T00:43:01.7616726Z ##[group]Installed versions
+2026-11-17T00:43:01.7685859Z Successfully set up CPython (3.12.16)
+2026-11-17T00:43:01.7686456Z ##[endgroup]
+2026-11-17T00:43:01.7820730Z ##[group]Run python -m venv "$RUNNER_TEMP/cell-integrity-venv"
+2026-11-17T00:43:01.7821157Z [36;1mpython -m venv "$RUNNER_TEMP/cell-integrity-venv"[0m
+2026-11-17T00:43:01.7821530Z [36;1m"$RUNNER_TEMP/cell-integrity-venv/bin/python" -m pip install \[0m
+2026-11-17T00:43:01.7822178Z [36;1m  --disable-pip-version-check --only-binary=:all: numpy==2.3.5[0m
+2026-11-17T00:43:01.7857725Z shell: /usr/bin/bash -e {0}
+2026-11-17T00:43:01.7857938Z env:
+2026-11-17T00:43:01.7858114Z   PYTHONPATH: scripts
+2026-11-17T00:43:01.7858318Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-17T00:43:01.7858740Z   OPENBLAS_NUM_THREADS: 1
+2026-11-17T00:43:01.7858926Z   OMP_NUM_THREADS: 1
+2026-11-17T00:43:01.7859101Z   HF_HUB_OFFLINE: 1
+2026-11-17T00:43:01.7859277Z   TRANSFORMERS_OFFLINE: 1
+2026-11-17T00:43:01.7859461Z   HF_DATASETS_OFFLINE: 1
+2026-11-17T00:43:01.7859691Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:01.7860106Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-17T00:43:01.7860443Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:01.7860987Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:01.7861457Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:01.7862098Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-17T00:43:01.7862515Z ##[endgroup]
+2026-11-17T00:43:04.7885683Z Collecting numpy==2.3.5
+2026-11-17T00:43:04.9215649Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-17T00:43:05.0133758Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-11-17T00:43:05.4334676Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 44.8 MB/s eta 0:00:00
+2026-11-17T00:43:05.4634405Z Installing collected packages: numpy
+2026-11-17T00:43:06.9656293Z Successfully installed numpy-2.3.5
+2026-11-17T00:43:07.0144856Z ##[group]Run for module in data coding_sft campaign adoption composition interaction; do
+2026-11-17T00:43:07.0145362Z [36;1mfor module in data coding_sft campaign adoption composition interaction; do[0m
+2026-11-17T00:43:07.0145757Z [36;1m  test -f "scripts/cell_experiments/test_${module}.py"[0m
+2026-11-17T00:43:07.0146019Z [36;1mdone[0m
+2026-11-17T00:43:07.0146275Z [36;1m# Discovery also includes test_sequence.py and later test modules.[0m
+2026-11-17T00:43:07.0146657Z [36;1m# The top-level directory preserves package-relative imports.[0m
+2026-11-17T00:43:07.0147042Z [36;1m"$RUNNER_TEMP/cell-integrity-venv/bin/python" -m unittest discover \[0m
+2026-11-17T00:43:07.0147404Z [36;1m  --start-directory scripts/cell_experiments \[0m
+2026-11-17T00:43:07.0147728Z [36;1m  --top-level-directory scripts --pattern 'test_*.py' --verbose[0m
+2026-11-17T00:43:07.0166948Z shell: /usr/bin/bash -e {0}
+2026-11-17T00:43:07.0167155Z env:
+2026-11-17T00:43:07.0167355Z   PYTHONPATH: scripts
+2026-11-17T00:43:07.0167553Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-17T00:43:07.0167760Z   OPENBLAS_NUM_THREADS: 1
+2026-11-17T00:43:07.0167945Z   OMP_NUM_THREADS: 1
+2026-11-17T00:43:07.0168118Z   HF_HUB_OFFLINE: 1
+2026-11-17T00:43:07.0168292Z   TRANSFORMERS_OFFLINE: 1
+2026-11-17T00:43:07.0168482Z   HF_DATASETS_OFFLINE: 1
+2026-11-17T00:43:07.0168715Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:07.0169070Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-17T00:43:07.0169403Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:07.0169702Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:07.0170011Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:07.0170318Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-17T00:43:07.0170575Z ##[endgroup]
+2026-11-17T00:43:07.4054846Z test_combined_adapter_matches_two_separate_deltas (cell_experiments.test_adapter_mix_v2.MixtureTests.test_combined_adapter_matches_two_separate_deltas) ... ok
+2026-11-17T00:43:07.4056239Z test_mixture_rejects_incompatible_base_shapes (cell_experiments.test_adapter_mix_v2.MixtureTests.test_mixture_rejects_incompatible_base_shapes) ... ok
+2026-11-17T00:43:07.4137129Z test_changed_sources_time_model_and_task_refuse_before_selection (cell_experiments.test_adoption.AdoptionTests.test_changed_sources_time_model_and_task_refuse_before_selection) ... ok
+2026-11-17T00:43:07.4247743Z test_cold_failure_retains_selection_and_prevents_automatic_reexecution (cell_experiments.test_adoption.AdoptionTests.test_cold_failure_retains_selection_and_prevents_automatic_reexecution) ... ok
+2026-11-17T00:43:07.4338411Z test_cold_timeout_is_incomplete_not_a_completed_no_update (cell_experiments.test_adoption.AdoptionTests.test_cold_timeout_is_incomplete_not_a_completed_no_update) ... ok
+2026-11-17T00:43:07.4525097Z test_completed_adopt_and_no_update_use_actual_selected_manifest (cell_experiments.test_adoption.AdoptionTests.test_completed_adopt_and_no_update_use_actual_selected_manifest) ... ok
+2026-11-17T00:43:07.4540448Z test_independent_is_default_and_self_attestation_cannot_enable_it (cell_experiments.test_adoption.AdoptionTests.test_independent_is_default_and_self_attestation_cannot_enable_it) ... ok
+2026-11-17T00:43:07.4587294Z test_missing_failed_and_incomplete_never_become_no_update (cell_experiments.test_adoption.AdoptionTests.test_missing_failed_and_incomplete_never_become_no_update) ... ok
+2026-11-17T00:43:07.4607674Z test_overlapping_source_groups_cannot_be_called_independent_B (cell_experiments.test_adoption.AdoptionTests.test_overlapping_source_groups_cannot_be_called_independent_B) ... ok
+2026-11-17T00:43:07.4924000Z test_tampered_cold_selection_and_artifact_are_rejected (cell_experiments.test_adoption.AdoptionTests.test_tampered_cold_selection_and_artifact_are_rejected) ... ok
+2026-11-17T00:43:07.4925843Z test_boolean_is_not_misclassified_as_integer (cell_experiments.test_campaign.CampaignTests.test_boolean_is_not_misclassified_as_integer) ... ok
+2026-11-17T00:43:07.4936266Z test_plan_freezes_actual_subset_and_mode (cell_experiments.test_campaign.CampaignTests.test_plan_freezes_actual_subset_and_mode) ... ok
+2026-11-17T00:43:07.4937449Z test_retrieval_cannot_use_the_probe_answer (cell_experiments.test_campaign.CampaignTests.test_retrieval_cannot_use_the_probe_answer) ... ok
+2026-11-17T00:43:07.4972535Z test_changed_or_added_files_are_rejected_before_backend_import (cell_experiments.test_causal_probe_v3.ProbeTests.test_changed_or_added_files_are_rejected_before_backend_import) ... ok
+2026-11-17T00:43:07.5030572Z test_cuda_checks_selected_device_and_never_falls_back (cell_experiments.test_causal_probe_v3.ProbeTests.test_cuda_checks_selected_device_and_never_falls_back) ... ok
+2026-11-17T00:43:07.5070984Z test_exact_shard_inventory_and_symlinks_fail_closed (cell_experiments.test_causal_probe_v3.ProbeTests.test_exact_shard_inventory_and_symlinks_fail_closed) ... ok
+2026-11-17T00:43:07.5112849Z test_explicit_device_and_token_budgets_are_required (cell_experiments.test_causal_probe_v3.ProbeTests.test_explicit_device_and_token_budgets_are_required) ... ok
+2026-11-17T00:43:07.5194420Z test_local_load_and_whitelisted_native_history_preserve_raw_answer (cell_experiments.test_causal_probe_v3.ProbeTests.test_local_load_and_whitelisted_native_history_preserve_raw_answer) ... ok
+2026-11-17T00:43:07.5281407Z test_no_truncation_and_actual_cap_or_eos_termination (cell_experiments.test_causal_probe_v3.ProbeTests.test_no_truncation_and_actual_cap_or_eos_termination) ... ok
+2026-11-17T00:43:07.5317073Z test_template_generation_and_backend_changes_fail_before_loading (cell_experiments.test_causal_probe_v3.ProbeTests.test_template_generation_and_backend_changes_fail_before_loading) ... ok
+2026-11-17T00:43:07.5318679Z test_empty_or_padding_supervision_is_rejected (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_empty_or_padding_supervision_is_rejected) ... skipped 'real torch/transformers/peft are absent; numeric tests must run in the pinned runtime'
+2026-11-17T00:43:07.5320097Z test_lora_checkpointed_selected_loss_updates_adapter_and_reloads (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_lora_checkpointed_selected_loss_updates_adapter_and_reloads) ... skipped 'real torch/transformers/peft are absent; numeric tests must run in the pinned runtime'
+2026-11-17T00:43:07.5322242Z test_selected_causal_loss_and_all_parameter_gradients_match_dense (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_selected_causal_loss_and_all_parameter_gradients_match_dense) ... skipped 'real torch/transformers/peft are absent; numeric tests must run in the pinned runtime'
+2026-11-17T00:43:07.6523114Z test_A_authorization_and_student_target_masks_are_enforced (cell_experiments.test_causal_training_contract_v3.ContractTests.test_A_authorization_and_student_target_masks_are_enforced) ... ok
+2026-11-17T00:43:07.6542821Z test_adapter_byte_and_generation_changes_are_rejected (cell_experiments.test_causal_training_contract_v3.ContractTests.test_adapter_byte_and_generation_changes_are_rejected) ... ok
+2026-11-17T00:43:07.6646242Z test_plan_binds_data_sources_readiness_and_runtime (cell_experiments.test_causal_training_contract_v3.ContractTests.test_plan_binds_data_sources_readiness_and_runtime) ... ok
+2026-11-17T00:43:07.7635403Z test_positive_counts_cannot_replace_bound_real_business_evidence (cell_experiments.test_causal_training_contract_v3.ContractTests.test_positive_counts_cannot_replace_bound_real_business_evidence) ... ok
+2026-11-17T00:43:07.7637121Z test_each_supervised_turn_uses_its_actual_generation_prefix (cell_experiments.test_chat_protocol.NativeChatTests.test_each_supervised_turn_uses_its_actual_generation_prefix) ... ok
+2026-11-17T00:43:07.7644227Z test_explicit_event_supervision_is_native_only_and_dedup_is_exact (cell_experiments.test_chat_protocol.NativeChatTests.test_explicit_event_supervision_is_native_only_and_dedup_is_exact) ... ok
+2026-11-17T00:43:07.7646307Z test_final_answer_prefix_is_exactly_the_inference_prompt (cell_experiments.test_chat_protocol.NativeChatTests.test_final_answer_prefix_is_exactly_the_inference_prompt) ... ok
+2026-11-17T00:43:07.7647988Z test_final_answer_sft_preserves_the_same_initial_recovery_messages (cell_experiments.test_chat_protocol.NativeChatTests.test_final_answer_sft_preserves_the_same_initial_recovery_messages) ... ok
+2026-11-17T00:43:07.7649591Z test_recovery_history_matches_training_and_masks_failed_actions (cell_experiments.test_chat_protocol.NativeChatTests.test_recovery_history_matches_training_and_masks_failed_actions) ... ok
+2026-11-17T00:43:07.7650628Z test_termination_distinguishes_eos_at_the_cap_from_truncation (cell_experiments.test_chat_protocol.NativeChatTests.test_termination_distinguishes_eos_at_the_cap_from_truncation) ... ok
+2026-11-17T00:43:07.7652250Z test_unsupported_history_boundaries_and_overflow_fail_closed (cell_experiments.test_chat_protocol.NativeChatTests.test_unsupported_history_boundaries_and_overflow_fail_closed) ... ok
+2026-11-17T00:43:07.7689581Z test_ablation_cannot_transplant_another_tasks_success_receipt (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_ablation_cannot_transplant_another_tasks_success_receipt) ... ok
+2026-11-17T00:43:07.7725372Z test_ablation_requires_inventory_and_measures_business_losses (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_ablation_requires_inventory_and_measures_business_losses) ... ok
+2026-11-17T00:43:07.7755711Z test_alias_branches_do_not_manufacture_complementarity (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_alias_branches_do_not_manufacture_complementarity) ... ok
+2026-11-17T00:43:07.7788759Z test_all_failure_does_not_create_a_training_label_or_block_baselines (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_all_failure_does_not_create_a_training_label_or_block_baselines) ... ok
+2026-11-17T00:43:07.7841449Z test_business_summaries_must_agree_with_original_and_control_observations (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_business_summaries_must_agree_with_original_and_control_observations) ... ok
+2026-11-17T00:43:07.7877974Z test_complementary_real_successes_keep_original_v3_receipt_identity (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_complementary_real_successes_keep_original_v3_receipt_identity) ... ok
+2026-11-17T00:43:07.7903867Z test_completed_calls_cannot_be_reported_as_attempts (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_completed_calls_cannot_be_reported_as_attempts) ... ok
+2026-11-17T00:43:07.7930016Z test_execution_summary_cannot_disagree_with_the_original_calls (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_execution_summary_cannot_disagree_with_the_original_calls) ... ok
+2026-11-17T00:43:07.7957746Z test_missing_call_evidence_is_unknown_and_confirmation_is_not_training (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_missing_call_evidence_is_unknown_and_confirmation_is_not_training) ... ok
+2026-11-17T00:43:07.7983982Z test_same_input_with_different_initial_chat_context_is_not_same_attempt (cell_experiments.test_circuit_readiness_v3.CircuitReadinessTests.test_same_input_with_different_initial_chat_context_is_not_same_attempt) ... ok
+2026-11-17T00:43:07.7997219Z test_a_labels_use_fixed_tie_priority_and_all_failed_fallback (cell_experiments.test_circuit_task_readout_v2.TaskReadoutTests.test_a_labels_use_fixed_tie_priority_and_all_failed_fallback) ... ok
+2026-11-17T00:43:07.8003525Z test_claimed_success_without_business_checks_is_rejected (cell_experiments.test_circuit_task_readout_v2.TaskReadoutTests.test_claimed_success_without_business_checks_is_rejected) ... ok
+2026-11-17T00:43:07.8026535Z test_optional_rank_evidence_is_bound_to_actual_model_and_plan (cell_experiments.test_circuit_task_readout_v2.TaskReadoutTests.test_optional_rank_evidence_is_bound_to_actual_model_and_plan) ... ok
+2026-11-17T00:43:07.8041785Z test_routes_and_ablations_resolve_actual_business_results (cell_experiments.test_circuit_task_readout_v2.TaskReadoutTests.test_routes_and_ablations_resolve_actual_business_results) ... ok
+2026-11-17T00:43:07.8066688Z test_unicode_external_receipts_and_circuit_hashes_keep_their_conventions (cell_experiments.test_circuit_task_readout_v2.TaskReadoutTests.test_unicode_external_receipts_and_circuit_hashes_keep_their_conventions) ... ok
+2026-11-17T00:43:07.8084022Z test_wrong_model_prompt_panel_and_output_bindings_are_rejected (cell_experiments.test_circuit_task_readout_v2.TaskReadoutTests.test_wrong_model_prompt_panel_and_output_bindings_are_rejected) ... ok
+2026-11-17T00:43:07.8219849Z test_actual_useful_training_kernels_match_without_router_padding (cell_experiments.test_circuit_v2.CircuitTests.test_actual_useful_training_kernels_match_without_router_padding) ... ok
+2026-11-17T00:43:07.8224330Z test_cell_and_intercell_edge_ablation_changes_activation_flow (cell_experiments.test_circuit_v2.CircuitTests.test_cell_and_intercell_edge_ablation_changes_activation_flow) ... ok
+2026-11-17T00:43:07.8255126Z test_gradient_matches_finite_difference_on_selected_path (cell_experiments.test_circuit_v2.CircuitTests.test_gradient_matches_finite_difference_on_selected_path) ... ok
+2026-11-17T00:43:07.8298206Z test_roundtrip_preserves_graph_weights_and_rejects_changed_bytes (cell_experiments.test_circuit_v2.CircuitTests.test_roundtrip_preserves_graph_weights_and_rejects_changed_bytes) ... ok
+2026-11-17T00:43:07.8837157Z test_b_is_frozen_before_c_and_ablations_do_not_reselect (cell_experiments.test_circuit_v2.StudyTests.test_b_is_frozen_before_c_and_ablations_do_not_reselect) ... ok
+2026-11-17T00:43:07.8840966Z test_cross_panel_lineage_and_relabelled_observations_are_rejected (cell_experiments.test_circuit_v2.StudyTests.test_cross_panel_lineage_and_relabelled_observations_are_rejected) ... ok
+2026-11-17T00:43:07.8845490Z test_e5_replay_and_alias_projects_do_not_create_source_groups (cell_experiments.test_circuit_v2.StudyTests.test_e5_replay_and_alias_projects_do_not_create_source_groups) ... ok
+2026-11-17T00:43:07.9112125Z test_mutated_frozen_checkpoint_is_rejected_before_c_access (cell_experiments.test_circuit_v2.StudyTests.test_mutated_frozen_checkpoint_is_rejected_before_c_access) ... ok
+2026-11-17T00:43:07.9113670Z test_long_trace_rejected_instead_of_silently_truncated (cell_experiments.test_coding_sft.PreprocessingTests.test_long_trace_rejected_instead_of_silently_truncated) ... ok
+2026-11-17T00:43:07.9114922Z test_observation_is_present_but_never_a_target (cell_experiments.test_coding_sft.PreprocessingTests.test_observation_is_present_but_never_a_target) ... ok
+2026-11-17T00:43:07.9123791Z test_output_is_create_only_and_model_file_is_confined (cell_experiments.test_coding_sft.PreprocessingTests.test_output_is_create_only_and_model_file_is_confined) ... ok
+2026-11-17T00:43:07.9139488Z test_unfrozen_training_data_is_rejected_before_loading_a_model (cell_experiments.test_coding_sft.PreprocessingTests.test_unfrozen_training_data_is_rejected_before_loading_a_model) ... ok
+2026-11-17T00:43:08.0073085Z test_c_labels_cannot_change_b_selection_and_missing_evidence_stays_blocked (cell_experiments.test_composition.IntegrityTests.test_c_labels_cannot_change_b_selection_and_missing_evidence_stays_blocked) ... ok
+2026-11-17T00:43:08.0360474Z test_default_independent_gate_blocks_and_engineering_records_gaps (cell_experiments.test_composition.IntegrityTests.test_default_independent_gate_blocks_and_engineering_records_gaps) ... ok
+2026-11-17T00:43:08.0376839Z test_duplicate_content_and_cross_split_groups_are_rejected (cell_experiments.test_composition.IntegrityTests.test_duplicate_content_and_cross_split_groups_are_rejected) ... ok
+2026-11-17T00:43:08.0834399Z test_empty_teacher_output_is_bound_invalid_class_not_gold_or_placeholder (cell_experiments.test_composition.IntegrityTests.test_empty_teacher_output_is_bound_invalid_class_not_gold_or_placeholder) ... ok
+2026-11-17T00:43:08.1028228Z test_evaluation_failure_keeps_actual_completed_training_cost (cell_experiments.test_composition.IntegrityTests.test_evaluation_failure_keeps_actual_completed_training_cost) ... ok
+2026-11-17T00:43:08.1483299Z test_multi_teacher_training_uses_both_cost_stages_and_preserves_raw_outputs (cell_experiments.test_composition.IntegrityTests.test_multi_teacher_training_uses_both_cost_stages_and_preserves_raw_outputs) ... ok
+2026-11-17T00:43:08.1490206Z test_postaction_features_and_nonchronological_panels_are_rejected (cell_experiments.test_composition.IntegrityTests.test_postaction_features_and_nonchronological_panels_are_rejected) ... ok
+2026-11-17T00:43:08.1519029Z test_teacher_receipt_pin_and_distinct_model_requirement (cell_experiments.test_composition.IntegrityTests.test_teacher_receipt_pin_and_distinct_model_requirement) ... ok
+2026-11-17T00:43:08.1525301Z test_insufficient_budget_is_blocked_and_failed_arithmetic_is_not_no_update (cell_experiments.test_composition_core.NumericalTests.test_insufficient_budget_is_blocked_and_failed_arithmetic_is_not_no_update) ... ok
+2026-11-17T00:43:08.1533063Z test_per_source_budget_is_enforced_for_uneven_source_sizes (cell_experiments.test_composition_core.NumericalTests.test_per_source_budget_is_enforced_for_uneven_source_sizes) ... ok
+2026-11-17T00:43:08.1573687Z test_real_sgd_reduces_loss_and_respects_mac_without_mutating_parent (cell_experiments.test_composition_core.NumericalTests.test_real_sgd_reduces_loss_and_respects_mac_without_mutating_parent) ... ok
+2026-11-17T00:43:08.1579856Z test_restore_verifies_parameters_and_ablation_changes_actual_forward (cell_experiments.test_composition_core.NumericalTests.test_restore_verifies_parameters_and_ablation_changes_actual_forward) ... ok
+2026-11-17T00:43:08.1653480Z test_sparse_router_and_every_head_match_finite_differences (cell_experiments.test_composition_core.NumericalTests.test_sparse_router_and_every_head_match_finite_differences) ... ok
+2026-11-17T00:43:08.1660084Z test_curated_records_cannot_be_promoted_to_confirmation_evidence (cell_experiments.test_data.DataIntegrityTests.test_curated_records_cannot_be_promoted_to_confirmation_evidence) ... ok
+2026-11-17T00:43:08.1666204Z test_eval_data_and_unauthorized_or_failed_data_cannot_train (cell_experiments.test_data.DataIntegrityTests.test_eval_data_and_unauthorized_or_failed_data_cannot_train) ... ok
+2026-11-17T00:43:08.1669017Z test_exact_sft_input_and_observation_mask (cell_experiments.test_data.DataIntegrityTests.test_exact_sft_input_and_observation_mask) ... ok
+2026-11-17T00:43:08.1680601Z test_jsonl_ingestion_rejects_duplicate_keys_and_postaction_features (cell_experiments.test_data.DataIntegrityTests.test_jsonl_ingestion_rejects_duplicate_keys_and_postaction_features) ... ok
+2026-11-17T00:43:08.1692685Z test_related_families_sources_inputs_never_cross_split (cell_experiments.test_data.DataIntegrityTests.test_related_families_sources_inputs_never_cross_split) ... ok
+2026-11-17T00:43:08.1697975Z test_semantic_verifier_checks_actual_output_not_syntax_only (cell_experiments.test_data.DataIntegrityTests.test_semantic_verifier_checks_actual_output_not_syntax_only) ... ok
+2026-11-17T00:43:08.1700283Z test_teacher_replay_is_not_student_execution (cell_experiments.test_data.DataIntegrityTests.test_teacher_replay_is_not_student_execution) ... ok
+2026-11-17T00:43:08.1707718Z test_time_assignment_is_explicit_and_preserves_original (cell_experiments.test_data.DataIntegrityTests.test_time_assignment_is_explicit_and_preserves_original) ... ok
+2026-11-17T00:43:08.2967789Z {"task_id": "task-1", "success": false, "first_attempt_success": false, "attempts": 1}
+2026-11-17T00:43:08.4338211Z {"task_id": "task-1", "success": true, "first_attempt_success": false, "attempts": 2}
+2026-11-17T00:43:08.4400893Z test_no_followup_has_no_recovery_rate_and_real_retry_is_measured (cell_experiments.test_development_readiness_v3.ReadinessAccountingTests.test_no_followup_has_no_recovery_rate_and_real_retry_is_measured) ... ok
+2026-11-17T00:43:08.4463265Z {"task_id": "task-1", "success": false, "first_attempt_success": false, "attempts": 1}
+2026-11-17T00:43:08.4503225Z test_timeout_keeps_format_admission_and_unknown_completed_calls (cell_experiments.test_development_readiness_v3.ReadinessAccountingTests.test_timeout_keeps_format_admission_and_unknown_completed_calls) ... ok
+2026-11-17T00:43:08.4557589Z test_collection_shadow_does_not_apply_and_correction_uses_visited_state (cell_experiments.test_interaction.InteractionTests.test_collection_shadow_does_not_apply_and_correction_uses_visited_state) ... ok
+2026-11-17T00:43:08.4578741Z test_evaluation_retries_own_state_without_gold_or_reference (cell_experiments.test_interaction.InteractionTests.test_evaluation_retries_own_state_without_gold_or_reference) ... ok
+2026-11-17T00:43:08.4593375Z test_inference_failure_is_incomplete_not_zero_score_and_retains_output (cell_experiments.test_interaction.InteractionTests.test_inference_failure_is_incomplete_not_zero_score_and_retains_output) ... ok
+2026-11-17T00:43:08.4611108Z test_invalid_json_is_not_applied_and_budget_is_enforced (cell_experiments.test_interaction.InteractionTests.test_invalid_json_is_not_applied_and_budget_is_enforced) ... ok
+2026-11-17T00:43:08.4625086Z test_model_json_fields_are_data_never_paths_or_commands (cell_experiments.test_interaction.InteractionTests.test_model_json_fields_are_data_never_paths_or_commands) ... ok
+2026-11-17T00:43:08.4630112Z test_reference_collection_refuses_evaluation_split_before_model_load (cell_experiments.test_interaction.InteractionTests.test_reference_collection_refuses_evaluation_split_before_model_load) ... ok
+2026-11-17T00:43:08.4753883Z test_collection_freezes_correct_mode_and_exact_corpus_for_all_three_names (cell_experiments.test_interaction_campaign.InteractionCampaignTests.test_collection_freezes_correct_mode_and_exact_corpus_for_all_three_names) ... ok
+2026-11-17T00:43:08.5040765Z test_selection_is_create_only_and_changed_b_bytes_block_c_before_model_calls (cell_experiments.test_interaction_campaign.InteractionCampaignTests.test_selection_is_create_only_and_changed_b_bytes_block_c_before_model_calls) ... ok
+2026-11-17T00:43:08.6237655Z test_actual_assertions_distinguish_original_from_wrong_outputs (cell_experiments.test_repo_execution.RepoExecutionTests.test_actual_assertions_distinguish_original_from_wrong_outputs) ... ok
+2026-11-17T00:43:10.0220600Z test_built_trace_contains_actual_incomplete_then_complete_test_results (cell_experiments.test_repo_execution.RepoExecutionTests.test_built_trace_contains_actual_incomplete_then_complete_test_results) ... ok
+2026-11-17T00:43:10.0224553Z test_confirmation_requires_retained_selection_digest (cell_experiments.test_repo_execution.RepoExecutionTests.test_confirmation_requires_retained_selection_digest) ... ok
+2026-11-17T00:43:10.0232147Z test_only_assertion_subject_calls_reach_child (cell_experiments.test_repo_execution.RepoExecutionTests.test_only_assertion_subject_calls_reach_child) ... ok
+2026-11-17T00:43:10.0234079Z test_source_binding_checked_before_execution (cell_experiments.test_repo_execution.RepoExecutionTests.test_source_binding_checked_before_execution) ... ok
+2026-11-17T00:43:10.1187171Z test_syntax_valid_but_wrong_business_expectation_fails (cell_experiments.test_repo_execution.RepoExecutionTests.test_syntax_valid_but_wrong_business_expectation_fails) ... ok
+2026-11-17T00:43:10.2148582Z test_weak_assertion_does_not_earn_semantic_success (cell_experiments.test_repo_execution.RepoExecutionTests.test_weak_assertion_does_not_earn_semantic_success) ... ok
+2026-11-17T00:43:10.2149623Z test_feedback_does_not_leak_oracle_or_worker_values (cell_experiments.test_repo_interaction_v2.InteractionTests.test_feedback_does_not_leak_oracle_or_worker_values) ... ok
+2026-11-17T00:43:10.2201760Z test_retry_preserves_history_and_does_not_receive_gold (cell_experiments.test_repo_interaction_v2.InteractionTests.test_retry_preserves_history_and_does_not_receive_gold) ... ok
+2026-11-17T00:43:10.2227057Z test_shadow_does_not_execute_verifier_or_claim_success (cell_experiments.test_repo_interaction_v2.InteractionTests.test_shadow_does_not_execute_verifier_or_claim_success) ... ok
+2026-11-17T00:43:10.4440006Z test_evaluation_keeps_actual_verifier_and_raw_policy_mismatch_output (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_evaluation_keeps_actual_verifier_and_raw_policy_mismatch_output) ... ok
+2026-11-17T00:43:10.6512497Z test_json_and_ast_rejections_feed_a_real_successful_retry (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_json_and_ast_rejections_feed_a_real_successful_retry) ... ok
+2026-11-17T00:43:10.8740435Z test_missing_call_counts_remain_unknown_with_a_measured_subtotal (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_missing_call_counts_remain_unknown_with_a_measured_subtotal) ... ok
+2026-11-17T00:43:10.8749157Z test_preparation_is_pre_freeze_and_preserves_actual_observations (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_preparation_is_pre_freeze_and_preserves_actual_observations) ... ok
+2026-11-17T00:43:11.0060164Z test_prompt_panels_preserve_identity_and_retain_both_bindings (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_prompt_panels_preserve_identity_and_retain_both_bindings) ... ok
+2026-11-17T00:43:11.3393817Z test_reference_rebinding_and_collected_corrections_remain_separate (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_reference_rebinding_and_collected_corrections_remain_separate) ... ok
+2026-11-17T00:43:11.3565182Z test_shadow_and_stale_bindings_do_not_start_verifier_children (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_shadow_and_stale_bindings_do_not_start_verifier_children) ... ok
+2026-11-17T00:43:11.5723937Z test_syntax_admission_and_weak_assertions_are_not_success (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_syntax_admission_and_weak_assertions_are_not_success) ... ok
+2026-11-17T00:43:11.7723529Z test_type_error_does_not_become_a_control_kill_score (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_type_error_does_not_become_a_control_kill_score) ... ok
+2026-11-17T00:43:11.7774073Z test_wrong_input_or_history_is_retained_but_never_executed (cell_experiments.test_repo_interaction_v3.InteractionV3Tests.test_wrong_input_or_history_is_retained_but_never_executed) ... ok
+2026-11-17T00:43:11.7837078Z test_changed_input_is_rejected_before_a_child_can_run (cell_experiments.test_sequence.ExecutionTests.test_changed_input_is_rejected_before_a_child_can_run) ... ok
+2026-11-17T00:43:11.7892388Z {"stage": "failed", "state": "started", "time_ns": 1794876191788717160}
+2026-11-17T00:43:11.7919227Z {"stage": "failed", "exit_code": 7, "error": null, "started_at_ns": 1794876191788717160, "completed_at_ns": 1794876191791307676, "wall_seconds": 0.002590556000001243, "stdout_sha256": "4f2fac1f04909abec4b78ab4dc53abe09cd6e6b88e8fa72250b9ffa9e3051717", "stderr_sha256": "4992d45436d51f5bb476a93a2795d57ab15a01888f1acde87cae83f39d54e3e4", "status": "FAILED"}
+2026-11-17T00:43:11.7926820Z test_failed_stage_keeps_exit_status_and_both_raw_logs (cell_experiments.test_sequence.ExecutionTests.test_failed_stage_keeps_exit_status_and_both_raw_logs) ... ok
+2026-11-17T00:43:11.7960385Z test_bound_execution_counts_do_not_turn_failed_calls_into_experience (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_bound_execution_counts_do_not_turn_failed_calls_into_experience) ... ok
+2026-11-17T00:43:11.7991023Z test_missing_execution_meters_do_not_become_zero_source_experience (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_missing_execution_meters_do_not_become_zero_source_experience) ... ok
+2026-11-17T00:43:11.8029915Z test_retention_preserves_domain_regressions_even_when_mean_is_unchanged (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_retention_preserves_domain_regressions_even_when_mean_is_unchanged) ... ok
+2026-11-17T00:43:11.8064900Z test_shared_evaluations_are_counted_once_and_missing_costs_stay_unknown (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_shared_evaluations_are_counted_once_and_missing_costs_stay_unknown) ... ok
+2026-11-17T00:43:11.8076566Z test_source_replays_do_not_supply_four_source_groups (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_source_replays_do_not_supply_four_source_groups) ... ok
+2026-11-17T00:43:11.8092693Z test_unfinished_decisions_and_wrong_used_model_cannot_look_adopted (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_unfinished_decisions_and_wrong_used_model_cannot_look_adopted) ... ok
+2026-11-17T00:43:11.8127368Z test_zero_prior_success_does_not_prove_absence_of_forgetting (cell_experiments.test_source_metrics_v3.SourceMetricsTests.test_zero_prior_success_does_not_prove_absence_of_forgetting) ... ok
+2026-11-17T00:43:11.8433549Z test_format_and_unstaged_apply_recover_through_real_feedback (cell_experiments.test_sqlite_agent_probe_v3.SQLiteAgentProbeV3Tests.test_format_and_unstaged_apply_recover_through_real_feedback) ... ok
+2026-11-17T00:43:11.8517246Z test_mismatched_model_return_is_retained_without_effect (cell_experiments.test_sqlite_agent_probe_v3.SQLiteAgentProbeV3Tests.test_mismatched_model_return_is_retained_without_effect) ... ok
+2026-11-17T00:43:11.8967136Z test_panel_uses_three_real_destinations_with_one_source_lineage (cell_experiments.test_sqlite_agent_probe_v3.SQLiteAgentProbeV3Tests.test_panel_uses_three_real_destinations_with_one_source_lineage) ... ok
+2026-11-17T00:43:11.9133010Z test_twelve_bad_decisions_do_not_execute_or_get_repaired (cell_experiments.test_sqlite_agent_probe_v3.SQLiteAgentProbeV3Tests.test_twelve_bad_decisions_do_not_execute_or_get_repaired) ... ok
+2026-11-17T00:43:12.2577475Z test_actual_business_receipts_keep_first_attempt_separate_from_recovery (cell_experiments.test_study_v2.StudyIntegrationTests.test_actual_business_receipts_keep_first_attempt_separate_from_recovery) ... ok
+2026-11-17T00:43:13.8897458Z test_actual_semantic_receipts_and_saved_history_are_checked (cell_experiments.test_study_v2_confirm.StudyCoordinatorTests.test_actual_semantic_receipts_and_saved_history_are_checked) ... ok
+2026-11-17T00:43:13.8899317Z test_adoption_uses_source_macro_and_strictly_beats_both_baselines (cell_experiments.test_study_v2_confirm.StudyCoordinatorTests.test_adoption_uses_source_macro_and_strictly_beats_both_baselines) ... ok
+2026-11-17T00:43:13.8915081Z test_changed_pre_c_material_never_opens_c (cell_experiments.test_study_v2_confirm.StudyCoordinatorTests.test_changed_pre_c_material_never_opens_c) ... ok
+2026-11-17T00:43:13.8928702Z test_heldout_all_failed_targets_are_fallback_not_task_success (cell_experiments.test_study_v2_confirm.StudyCoordinatorTests.test_heldout_all_failed_targets_are_fallback_not_task_success) ... ok
+2026-11-17T00:43:13.8937903Z test_wrong_external_selection_hash_never_opens_c (cell_experiments.test_study_v2_confirm.StudyCoordinatorTests.test_wrong_external_selection_hash_never_opens_c) ... ok
+2026-11-17T00:43:13.8938672Z 
+2026-11-17T00:43:13.8939186Z ----------------------------------------------------------------------
+2026-11-17T00:43:13.8939592Z Ran 132 tests in 6.498s
+2026-11-17T00:43:13.8939757Z 
+2026-11-17T00:43:13.8939859Z OK (skipped=3)
+2026-11-17T00:43:13.9207777Z ##[group]Run cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+2026-11-17T00:43:13.9208119Z [36;1mcat >> "$GITHUB_STEP_SUMMARY" <<'EOF'[0m
+2026-11-17T00:43:13.9208370Z [36;1m## Engineering integrity only[0m
+2026-11-17T00:43:13.9208593Z [36;1m[0m
+2026-11-17T00:43:13.9208841Z [36;1mTest outcomes are recorded in the test step above. This job checks[0m
+2026-11-17T00:43:13.9209237Z [36;1mnumerical updates, record integrity, budgets, and control flow using[0m
+2026-11-17T00:43:13.9209631Z [36;1mauthored fixtures and mocked model/process ports. The repository[0m
+2026-11-17T00:43:13.9210004Z [36;1mcontract tests also execute reviewed function subsets and check[0m
+2026-11-17T00:43:13.9210400Z [36;1mwhether candidate assertions reject incorrect outputs. It installs NumPy;[0m
+2026-11-17T00:43:13.9210829Z [36;1mit does not run the language-model training campaign or download weights.[0m
+2026-11-17T00:43:13.9211132Z [36;1m[0m
+2026-11-17T00:43:13.9211433Z [36;1mScientific learning and independent-confirmation gates remain BLOCKED.[0m
+2026-11-17T00:43:13.9212124Z [36;1mNo native CellOwner adoption, external-teacher trajectory evidence,[0m
+2026-11-17T00:43:13.9212535Z [36;1mHEPLCP FinalUse, production eligibility, or settlement is established.[0m
+2026-11-17T00:43:13.9212850Z [36;1mEOF[0m
+2026-11-17T00:43:13.9231318Z shell: /usr/bin/bash -e {0}
+2026-11-17T00:43:13.9231521Z env:
+2026-11-17T00:43:13.9231800Z   PYTHONPATH: scripts
+2026-11-17T00:43:13.9232002Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-17T00:43:13.9232211Z   OPENBLAS_NUM_THREADS: 1
+2026-11-17T00:43:13.9232392Z   OMP_NUM_THREADS: 1
+2026-11-17T00:43:13.9232562Z   HF_HUB_OFFLINE: 1
+2026-11-17T00:43:13.9232734Z   TRANSFORMERS_OFFLINE: 1
+2026-11-17T00:43:13.9232920Z   HF_DATASETS_OFFLINE: 1
+2026-11-17T00:43:13.9233149Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:13.9233500Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-17T00:43:13.9233834Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:13.9234136Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:13.9234431Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-17T00:43:13.9234730Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-17T00:43:13.9234991Z ##[endgroup]
+2026-11-17T00:43:13.9378340Z Post job cleanup.
+2026-11-17T00:43:14.0513805Z Post job cleanup.
+2026-11-17T00:43:14.1251374Z [command]/usr/bin/git version
+2026-11-17T00:43:14.1292222Z git version 2.56.1
+2026-11-17T00:43:14.1325132Z Temporarily overriding HOME='/home/runner/work/_temp/cb62dd96-3e0f-4417-8991-ed2d15401f86' before making global git config changes
+2026-11-17T00:43:14.1328028Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-17T00:43:14.1330386Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-17T00:43:14.1370844Z Removing SSH command configuration
+2026-11-17T00:43:14.1377339Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-17T00:43:14.1474864Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-17T00:43:14.1748047Z Removing HTTP extra header
+2026-11-17T00:43:14.1754625Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-17T00:43:14.1842084Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-17T00:43:14.2120829Z Removing includeIf entries pointing to credentials config files
+2026-11-17T00:43:14.2129091Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-17T00:43:14.2168041Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-17T00:43:14.2539097Z Cleaning up orphan processes
