@@ -430,6 +430,7 @@ mod tests {
                 ))
                 .expect("absolute parent cwd"),
                 workspace_roots: None,
+                environments: None,
                 current_date: None,
                 timezone: None,
                 approval_policy: AskForApproval::Never,
@@ -477,6 +478,7 @@ mod tests {
                 ))
                 .expect("absolute workspace cwd"),
                 workspace_roots: None,
+                environments: None,
                 current_date: None,
                 timezone: None,
                 approval_policy: AskForApproval::OnRequest,
@@ -520,6 +522,7 @@ mod tests {
                 cwd: serde_json::from_value(serde_json::json!(&fallback_cwd))
                     .expect("absolute fallback cwd"),
                 workspace_roots: None,
+                environments: None,
                 current_date: None,
                 timezone: None,
                 approval_policy: AskForApproval::OnRequest,
@@ -560,6 +563,7 @@ mod tests {
                 ))
                 .expect("absolute fallback cwd"),
                 workspace_roots: None,
+                environments: None,
                 current_date: None,
                 timezone: None,
                 approval_policy: AskForApproval::OnRequest,

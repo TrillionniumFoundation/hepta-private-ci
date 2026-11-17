@@ -22,9 +22,11 @@ use codex_protocol::protocol::EnvironmentConfigState;
 use codex_protocol::protocol::ErrorEvent;
 use codex_protocol::protocol::MultiAgentVersion;
 use codex_protocol::protocol::ThreadHistoryMode;
+use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_sandboxing::policy_transforms::effective_permission_profile;
 use codex_skills_extension::HostSkillsSnapshot;
+use codex_utils_path_uri::LegacyAppPathString;
 use codex_utils_path_uri::PathUri;
 use futures::FutureExt;
 use futures::future::BoxFuture;
@@ -496,12 +498,40 @@ impl TurnContext {
 
     pub(crate) fn to_turn_context_item(&self) -> TurnContextItem {
         let workspace_roots = self.effective_workspace_roots();
+        let native_path = |path: &PathUri| {
+            let native =
+                LegacyAppPathString::from_path_uri(path, path.infer_path_convention()?).ok()?;
+            (native.to_inferred_path_uri().as_ref() == Some(path)).then(|| native.into_string())
+        };
+        let environments = (self.environments.ordinary_selections_complete
+            && self.environments.starting().next().is_none())
+        .then(|| {
+            self.environments
+                .turn_environments()
+                .map(|environment| {
+                    if environment.config_origin != EnvironmentConfigOrigin::Thread {
+                        return None;
+                    }
+                    Some(TurnContextEnvironmentItem {
+                        environment_id: environment.selection.environment_id.clone(),
+                        cwd: native_path(environment.cwd())?,
+                        workspace_roots: environment
+                            .workspace_roots()
+                            .iter()
+                            .map(native_path)
+                            .collect::<Option<Vec<_>>>()?,
+                    })
+                })
+                .collect::<Option<Vec<_>>>()
+        })
+        .flatten();
         #[allow(deprecated)]
         let cwd = self.cwd.clone();
         TurnContextItem {
             turn_id: Some(self.sub_id.clone()),
             cwd,
             workspace_roots: (!workspace_roots.is_empty()).then_some(workspace_roots),
+            environments,
             current_date: self.current_date.clone(),
             timezone: self.timezone.clone(),
             approval_policy: self.approval_policy(),

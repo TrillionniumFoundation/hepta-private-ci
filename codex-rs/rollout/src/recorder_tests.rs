@@ -1695,6 +1695,7 @@ async fn resume_candidate_matches_cwd_reads_latest_turn_context() -> std::io::Re
             cwd: serde_json::from_value(serde_json::json!(&latest_cwd))
                 .expect("absolute latest cwd"),
             workspace_roots: None,
+            environments: None,
             current_date: None,
             timezone: None,
             approval_policy: AskForApproval::Never,

@@ -643,7 +643,11 @@ async fn start_if_idle(
         turn_context
             .turn_metadata_state
             .apply_recovery_start_state(&replay.start);
-        if turn_context.to_turn_context_item() != *expected_context
+        let mut current_item = turn_context.to_turn_context_item();
+        if expected_context.environments.is_none() {
+            current_item.environments = None;
+        }
+        if current_item != *expected_context
             || super::turn::turn_recovery_environment_selections(&turn_context.environments)
                 .as_ref()
                 != Some(&replay.environments)
@@ -780,7 +784,11 @@ async fn recovery_reference_context(
     // below remain strict comparisons against the resumed session.
     current_mut.current_date = expected.current_date.clone();
     current_mut.timezone = expected.timezone.clone();
-    let current_item = current.to_turn_context_item();
+    let mut current_item = current.to_turn_context_item();
+    // Older Ready records omit native paths; the replay environment binding below stays exact.
+    if expected.environments.is_none() {
+        current_item.environments = None;
+    }
     if expected != current_item {
         return None;
     }

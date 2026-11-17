@@ -10,6 +10,7 @@ use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::AdditionalContextEntry as CoreAdditionalContextEntry;
 use codex_protocol::protocol::AdditionalContextKind as CoreAdditionalContextKind;
 use codex_skills::system_cache_root_dir;
+use codex_utils_path_uri::PathUri;
 
 use crate::image_url::REMOTE_IMAGE_URL_ERROR;
 use crate::image_url::is_remote_image_url;
@@ -682,6 +683,27 @@ impl TurnRequestProcessor {
 
         let snapshot = thread.config_snapshot().await;
         let current_cwd = snapshot.cwd().clone();
+        // A roots-only update must not replace native cwd with its legacy host projection.
+        // Owner-provided configuration keeps the existing update and rejection path.
+        if cwd.is_none()
+            && let Some(roots) = workspace_roots.as_ref()
+            && snapshot
+                .environments
+                .environments
+                .iter()
+                .all(|selection| selection.config == EnvironmentConfigState::FromThread)
+        {
+            let environments = snapshot
+                .environments
+                .environments
+                .into_iter()
+                .map(|mut selection| {
+                    selection.workspace_roots = roots.iter().map(PathUri::from_abs_path).collect();
+                    selection
+                })
+                .collect();
+            return Some(TurnEnvironmentSelections::new(current_cwd, environments));
+        }
         let legacy_fallback_cwd = cwd.unwrap_or_else(|| current_cwd.clone());
         let workspace_roots = match workspace_roots {
             Some(workspace_roots) => workspace_roots,

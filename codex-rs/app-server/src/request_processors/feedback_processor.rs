@@ -704,6 +704,7 @@ mod tests {
                     cwd: AbsolutePathBuf::from_absolute_path(tempdir.path())
                         .expect("absolute feedback rollout directory"),
                     workspace_roots: None,
+                    environments: None,
                     current_date: None,
                     timezone: None,
                     approval_policy: codex_protocol::protocol::AskForApproval::Never,

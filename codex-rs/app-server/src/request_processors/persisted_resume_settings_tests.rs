@@ -73,6 +73,7 @@ fn turn_context_item(
         turn_id: Some(turn_id.to_string()),
         cwd: cwd(),
         workspace_roots,
+        environments: None,
         current_date: None,
         timezone: None,
         approval_policy,
@@ -95,6 +96,71 @@ fn turn_context_item(
 }
 
 #[test]
+fn latest_native_snapshot_survives_settings_but_not_a_later_legacy_context() {
+    let mut turn = turn_context_item(
+        "native",
+        AskForApproval::Never,
+        /*approvals_reviewer*/ None,
+        /*active_permission_profile*/ None,
+        /*workspace_roots*/ None,
+    );
+    let RolloutItem::TurnContext(context) = &mut turn else {
+        panic!("turn context fixture");
+    };
+    let environments = vec![codex_protocol::protocol::TurnContextEnvironmentItem {
+        environment_id: "remote".to_string(),
+        cwd: r"C:\work".to_string(),
+        workspace_roots: vec![r"C:\work".to_string(), r"D:\extra".to_string()],
+    }];
+    context.environments = Some(environments.clone());
+    let mut history = vec![
+        turn,
+        settings_item(
+            AskForApproval::Never,
+            ApprovalsReviewer::User,
+            /*active_permission_profile*/ None,
+        ),
+    ];
+    assert_eq!(
+        latest_persisted_resume_settings(&history)
+            .expect("settings")
+            .runtime_environments,
+        Some(environments)
+    );
+    let mut empty = turn_context_item(
+        "empty",
+        AskForApproval::Never,
+        /*approvals_reviewer*/ None,
+        /*active_permission_profile*/ None,
+        /*workspace_roots*/ None,
+    );
+    let RolloutItem::TurnContext(context) = &mut empty else {
+        panic!("turn context fixture");
+    };
+    context.environments = Some(Vec::new());
+    history.push(empty);
+    assert_eq!(
+        latest_persisted_resume_settings(&history)
+            .expect("settings")
+            .runtime_environments,
+        Some(Vec::new())
+    );
+    history.push(turn_context_item(
+        "later",
+        AskForApproval::Never,
+        /*approvals_reviewer*/ None,
+        /*active_permission_profile*/ None,
+        /*workspace_roots*/ None,
+    ));
+    assert_eq!(
+        latest_persisted_resume_settings(&history)
+            .expect("settings")
+            .runtime_environments,
+        None
+    );
+}
+
+#[test]
 fn latest_settings_snapshot_wins() {
     let expected = PersistedResumeSettings {
         approval_policy: AskForApproval::OnRequest,
@@ -102,6 +168,7 @@ fn latest_settings_snapshot_wins() {
         active_permission_profile: Some(ActivePermissionProfile::new("dev")),
         runtime_cwd: None,
         runtime_workspace_roots: None,
+        runtime_environments: None,
     };
     let history = vec![
         settings_item(
@@ -127,6 +194,7 @@ fn latest_turn_context_wins_over_earlier_settings_update() {
         active_permission_profile: Some(ActivePermissionProfile::read_only()),
         runtime_cwd: Some(cwd()),
         runtime_workspace_roots: Some(vec![workspace_root("turn-2-root")]),
+        runtime_environments: None,
     };
     let history = vec![
         settings_item(
@@ -173,6 +241,7 @@ fn older_reviewer_is_used_when_latest_turn_context_omits_it() {
             active_permission_profile: None,
             runtime_cwd: Some(cwd()),
             runtime_workspace_roots: Some(vec![workspace_root("turn-2-root")]),
+            runtime_environments: None,
         })
     );
 }
@@ -203,6 +272,7 @@ fn later_settings_snapshot_does_not_erase_turn_context_workspace_roots() {
             active_permission_profile: Some(ActivePermissionProfile::new("dev")),
             runtime_cwd: Some(cwd()),
             runtime_workspace_roots: Some(vec![persisted_root]),
+            runtime_environments: None,
         })
     );
 }

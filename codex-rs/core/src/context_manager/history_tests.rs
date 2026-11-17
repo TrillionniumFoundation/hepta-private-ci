@@ -320,6 +320,7 @@ fn reference_context_item() -> TurnContextItem {
         )
         .expect("absolute reference cwd"),
         workspace_roots: None,
+        environments: None,
         current_date: Some("2026-03-23".to_string()),
         timezone: Some("America/Los_Angeles".to_string()),
         approval_policy: AskForApproval::OnRequest,
