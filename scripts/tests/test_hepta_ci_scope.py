@@ -32,6 +32,12 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(scope["native"])
         self.assertTrue(scope["full_repo"])
 
+    def test_taskflow_migration_fixture_requires_full_repo_bazel_validation(self):
+        scope = select(["codex-rs/hepta-automation/tests/automation.rs"])
+        self.assertTrue(all(scope[key] for key in GROUPS))
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["full_repo"])
+
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
         self.assertFalse(
             select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])[

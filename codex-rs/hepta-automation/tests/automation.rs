@@ -971,6 +971,33 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // Require the real latest-schema dependency before the current early
+    // table drops remove the attached trigger and both later owner tables.
+    let drain_trigger_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'trigger' \
+         AND name = 'automation_timer_lifecycle_drain'",
+    )
+    .fetch_one(&mut *rewind)
+    .await
+    .expect("inspect post-v1 drain trigger");
+    assert_eq!(
+        drain_trigger_count, 1,
+        "the fresh schema must contain the real post-v1 drain trigger"
+    );
+    // The converged owner migrations also add these two post-v1 tables.
+    // Require the actual latest schema before removing them, so a missing
+    // migration cannot be silently classified as a successful v1 replay.
+    let later_owner_tables: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND
+         name IN ('destination_operation_dedupe', 'automation_timer_lifecycle')",
+    )
+    .fetch_one(&mut *rewind)
+    .await
+    .expect("inspect post-v1 owner tables");
+    assert_eq!(
+        later_owner_tables, 2,
+        "require both real later owner migrations"
+    );
     // Drop the later timer/dedupe tables and their attached triggers before
     // removing the dispatch table referenced by the timer drain trigger.
     for statement in [
@@ -982,6 +1009,17 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .await
             .expect("drop post-v1 timer/dedupe objects");
     }
+    let remaining_owner_tables: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND
+         name IN ('destination_operation_dedupe', 'automation_timer_lifecycle')",
+    )
+    .fetch_one(&mut *rewind)
+    .await
+    .expect("inspect v1 owner-table absence");
+    assert_eq!(
+        remaining_owner_tables, 0,
+        "v1 must not retain later owner tables"
+    );
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await

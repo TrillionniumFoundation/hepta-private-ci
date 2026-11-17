@@ -435,6 +435,245 @@ jobs:
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
 
+  taskflow-owner-replay:
+    name: Historical TaskFlow v1 migration ${{ matrix.lane }} replay
+    # Keep the original frozen parent and workflow-only difference assertions.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == '8ac3e707f4522d951a159c54eaa356903cddf2f1' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact tested commit and frozen TaskFlow parent
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PRODUCT_PARENT_SHA: f915ee92fdce3d2c4fd8e39be92dd0db04555938
+          DIFF_PARENT_SHA: 806d17a16624b90f8bd8955978296e128fa01432
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git merge-base --is-ancestor "$PRODUCT_PARENT_SHA" "$TESTED_SHA"
+          git merge-base --is-ancestor "$DIFF_PARENT_SHA" "$SOURCE_SHA"
+          if [[ "$LANE" == "prospective-merge" ]]; then
+            git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
+          fi
+          expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml")"
+          actual_files="$(git diff --name-only "$DIFF_PARENT_SHA" "$SOURCE_SHA")"
+          test "$actual_files" = "$expected_files"
+          printf 'TaskFlow %s SHA: %s\n' "$LANE" "$TESTED_SHA"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-taskflow-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached complete TaskFlow automation test target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/taskflow-${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-automation:hepta-automation-automation-test
+
+      - name: Upload TaskFlow Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-taskflow-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/taskflow-${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
+  taskflow-owner-current:
+    name: Current TaskFlow v1 migration ${{ matrix.lane }} replay
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind current TaskFlow source and prospective merge identities
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PRODUCT_PARENT_SHA: f915ee92fdce3d2c4fd8e39be92dd0db04555938
+          DIFF_PARENT_SHA: 806d17a16624b90f8bd8955978296e128fa01432
+        shell: bash
+        run: |
+          set -euo pipefail
+          for identity in "$TESTED_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PRODUCT_PARENT_SHA" "$DIFF_PARENT_SHA"; do
+            [[ "$identity" =~ ^[0-9a-f]{40}$ ]]
+            git --no-replace-objects cat-file -e "$identity^{commit}"
+          done
+          case "$LANE" in
+            source-head|prospective-merge) ;;
+            *) echo "Unknown TaskFlow qualification lane" >&2; exit 1 ;;
+          esac
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=normal)"
+          git --no-replace-objects diff --check
+          git --no-replace-objects merge-base --is-ancestor "$PRODUCT_PARENT_SHA" "$TESTED_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$DIFF_PARENT_SHA" "$SOURCE_SHA"
+          identity_dir="$RUNNER_TEMP/taskflow-current-identity/$LANE"
+          mkdir -p "$identity_dir"
+          if [[ "$LANE" == "source-head" ]]; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+            expected_tree="$(git --no-replace-objects rev-parse "$SOURCE_SHA^{tree}")"
+          else
+            read -r -a parents <<< "$(git --no-replace-objects rev-list --parents --max-count=1 "$TESTED_SHA")"
+            test "${#parents[@]}" -eq 3
+            test "${parents[0]}" = "$TESTED_SHA"
+            test "${parents[1]}" = "$BASE_SHA"
+            test "${parents[2]}" = "$SOURCE_SHA"
+            merge_status=0
+            git --no-replace-objects merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" \
+              > "$identity_dir/merge-tree.stdout" 2> "$identity_dir/merge-tree.stderr" || merge_status=$?
+            test "$merge_status" -eq 0
+            expected_tree="$(cat "$identity_dir/merge-tree.stdout")"
+          fi
+          [[ "$expected_tree" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git --no-replace-objects rev-parse "$TESTED_SHA^{tree}")" = "$expected_tree"
+          git --no-replace-objects diff --no-ext-diff --no-textconv --no-renames --name-only \
+            "$BASE_SHA" "$SOURCE_SHA" -- > "$identity_dir/changed-paths.txt"
+          git --no-replace-objects cat-file commit "$TESTED_SHA" > "$identity_dir/tested.commit"
+          printf 'lane=%s\nsource=%s\nbase=%s\ntested=%s\ntree=%s\nhistorical_workflow_only_replay=false\n' \
+            "$LANE" "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" "$expected_tree" > "$identity_dir/identity.txt"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-taskflow-current-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached complete TaskFlow automation test target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/taskflow-current-${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-automation:hepta-automation-automation-test
+
+      - name: Upload TaskFlow Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-taskflow-current-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/taskflow-current-${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Retain current TaskFlow candidate identity
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: taskflow-current-identity-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/taskflow-current-identity/${{ matrix.lane }}
+          if-no-files-found: error
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
@@ -479,6 +718,8 @@ jobs:
       - sdk
       - hepta-scoped
       - ledgerwriter-owner-replay
+      - taskflow-owner-replay
+      - taskflow-owner-current
       - lightweight
     # Needs/result fan-in uses Python only; leave native work on its target architecture.
     runs-on: ubuntu-24.04-arm
@@ -494,6 +735,8 @@ jobs:
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
           NDU_V6: ${{ needs.scope.outputs.ndu_v6 }}
           LEDGERWRITER_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
+          EVENT_NAME: ${{ github.event_name }}
+          TASKFLOW_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == '8ac3e707f4522d951a159c54eaa356903cddf2f1' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -509,6 +752,10 @@ jobs:
               allowed.append("ndu-v6")
           if not replay_requested:
               allowed.append("ledgerwriter-owner-replay")
+          if os.environ["EVENT_NAME"] != "pull_request":
+              allowed.append("taskflow-owner-current")
+          if os.environ["TASKFLOW_REPLAY_REQUESTED"] != "true":
+              allowed.append("taskflow-owner-replay")
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:
