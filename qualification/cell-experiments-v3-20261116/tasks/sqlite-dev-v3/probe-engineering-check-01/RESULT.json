@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "scripts.cell_experiments.test_sqlite_agent_probe_v3",
+    "-v"
+  ],
+  "completed_at": "2026-11-16T23:38:18Z",
+  "confirmation_qualified": false,
+  "exit_code": 0,
+  "new_independent_sources": 0,
+  "new_model_calls": 0,
+  "new_training_jobs": 0,
+  "predictor_kind": "scripted",
+  "schema": "hepta.sqlite-probe-engineering-check.v3",
+  "source_sha256": {
+    "scripts/cell_experiments/repo_tasks_v3_sqlite.py": "c07ede8ca630fb69cb2c8a1aeb20c86b56c208d9e3cb66878bc08f6f8954c01f",
+    "scripts/cell_experiments/sqlite_agent_probe_v3.py": "ef2a9832372053d7aa957cb44fc2b7d331442d7afd9be9cfe27dfaba5446d38e",
+    "scripts/cell_experiments/test_sqlite_agent_probe_v3.py": "0602325fb801e3ef094eea905eabe6ccf7b0e5a53c78050dd033071b722430c0"
+  },
+  "source_unchanged": true,
+  "started_at": "2026-11-16T23:38:18Z",
+  "stderr_sha256": "ed37ac2050a1681cf3b5d5c6d068e5ead91ff5411b629c277731b7d6956ac7e4",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wall_seconds": 0.14360628899885342
+}
