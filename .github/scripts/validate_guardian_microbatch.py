@@ -18,8 +18,8 @@ import xml.etree.ElementTree as ET
 
 
 BASE = "de977dbce164848f7b7175e423c5c8f95729e430"
-SOURCE = "464ebe0c5e1b456dff7abbd897e302dd7e1d9034"
-SOURCE_TREE = "d97ca4041584031198f971bf50786225fb2b80c9"
+SOURCE = "30c68cf4a28199d84fabaf64ba289234fc4ec31b"
+SOURCE_TREE = "cf5b84888a74a7e2314b561000bbd40024ff5103"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 REF = "refs/heads/integration/hepta-rust-validation-20261117-59d82"
 CI_PATHS = {
@@ -27,7 +27,7 @@ CI_PATHS = {
     ".github/scripts/validate_guardian_microbatch.py",
 }
 REVIEWED_TEST_BLOBS = {
-    "codex-rs/core/tests/suite/network_approval.rs": "b88d77557b536262b3b1ea6170c132ce38155aaf",
+    "codex-rs/core/tests/suite/network_approval.rs": "6abf7adb41876d4895b20c00892192ff4307bb20",
     "codex-rs/hepta-infer-worker-host/src/neuron_microbatch_tests.rs": "016296eb639027997cb2d1f9ac4d06e18a455317",
 }
 HOST_CASES = (

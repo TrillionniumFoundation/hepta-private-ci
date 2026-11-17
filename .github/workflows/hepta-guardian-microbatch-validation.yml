@@ -1,3 +1,5 @@
+# Reviewed worker-host source anchor: 30c68cf4a28199d84fabaf64ba289234fc4ec31b
+# Original GNU and musl Core targets completed in run 44139360836; this push resumes the blocked host package.
 name: Guardian and microbatch whole native validation
 
 on:
@@ -24,14 +26,6 @@ jobs:
             target: x86_64-unknown-linux-gnu
             platform: ""
             timeout_minutes: 60
-          - mode: core-gnu
-            target: x86_64-unknown-linux-gnu
-            platform: ""
-            timeout_minutes: 120
-          - mode: core-musl
-            target: x86_64-unknown-linux-musl
-            platform: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
-            timeout_minutes: 120
     environment:
       name: bazel
       deployment: false
@@ -92,6 +86,9 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: just@1.51.0,cargo-nextest@0.9.103
+
+      - name: Install the existing Bazel formatter launcher
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
 
       - name: Install the fixed formatter environment manager
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.3.1
