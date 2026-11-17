@@ -434,3 +434,58 @@ async fn accepted_client_managed_conversation_rebinds_cleanup_without_rerouting_
     assert!(!*current.output_complete.lock().await);
     assert!(current_rx.try_recv().is_err());
 }
+
+#[tokio::test]
+async fn server_managed_readmission_does_not_inherit_a_prior_client_managed_global_stream() {
+    let (_session, turn, _events) = make_session_and_context_with_rx().await;
+    let (mut client, client_rx) = handoff(RealtimeSessionKind::V2);
+    client.client_managed_handoffs = true;
+    client.stream.lock().await.active_handoff = Some("received-client".to_string());
+    let client_request = RealtimeHandoffRequest::new(client.clone(), "received-client".to_string());
+    client_request.prepare(&turn).await.commit();
+    drop(client_rx);
+    let (server, server_rx) = handoff(RealtimeSessionKind::V2);
+    let request = RealtimeHandoffRequest::new(server.clone(), "server-c".to_string());
+    request.prepare(&turn).await.commit();
+    let owner = request.admitted.get().expect("accepted server owner");
+    assert!(Arc::ptr_eq(&owner.handoff.identity, &server.identity));
+    assert!(!Arc::ptr_eq(&owner.handoff.stream, &client.stream));
+    assert!(!Arc::ptr_eq(&owner.handoff.stream, &server.stream));
+    assert!(!owner.handoff.client_managed_handoffs);
+    assert_eq!(
+        client.stream.lock().await.active_handoff.as_deref(),
+        Some("received-client")
+    );
+    let manager = RealtimeConversationManager::new();
+    manager
+        .handoff_out(&turn, "C output".to_string(), /*phase*/ None)
+        .await
+        .expect("only the accepted server conversation receives output");
+    manager
+        .handoff_complete(&turn)
+        .await
+        .expect("server completion");
+    manager.clear_active_handoff(&turn).await;
+    assert_eq!(
+        server_rx.recv().await.expect("server output"),
+        RealtimeOutbound::HandoffUpdate {
+            handoff_id: "server-c".to_string(),
+            text: "[BACKEND] C output".to_string(),
+            phase: None,
+        }
+    );
+    assert_eq!(
+        server_rx.recv().await.expect("server completion"),
+        RealtimeOutbound::CompletedHandoff {
+            handoff_id: "server-c".to_string(),
+            text: "[BACKEND] C output".to_string(),
+            phase: None,
+        }
+    );
+    assert!(server_rx.try_recv().is_err());
+    assert!(server.stream.lock().await.active_handoff.is_none());
+    assert_eq!(
+        client.stream.lock().await.active_handoff.as_deref(),
+        Some("received-client")
+    );
+}
