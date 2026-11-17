@@ -1,0 +1,285 @@
+{
+  "schema": "hepta.source-intake-review.v1",
+  "observed_at": "2026-11-17T10:05:00.056Z",
+  "scope": {
+    "repositories": [
+      "TrillionniumFoundation/hepta-private-ci",
+      "TrillionniumFoundation/Trillionnium-Chain"
+    ],
+    "new_issue_search_since": "2026-11-16",
+    "requirements_reviewed": [
+      150,
+      118,
+      68
+    ],
+    "open_chain_issue_metadata_complete": true,
+    "recent_PR_metadata_pages_complete": true,
+    "new_confirmatory_tasks_selected": 0,
+    "new_C_payloads_read": 0,
+    "solution_patches_or_test_bodies_read": 0,
+    "requirement_bodies_read": 3
+  },
+  "source_observations_file": "SOURCE_OBSERVATIONS_03.jsonl",
+  "observation_counts": {
+    "new_issues_hepta": 0,
+    "new_issues_chain": 0,
+    "open_issues_hepta": 0,
+    "open_issues_chain": 20,
+    "chain_open_nonbot_issue_records": 14,
+    "chain_open_bot_issue_records": 6,
+    "chain_open_distinct_account_ids": 3,
+    "chain_open_nonbot_account_ids": 2,
+    "authenticated_independent_human_users": null,
+    "recent_PR_metadata_records": 151,
+    "recent_PR_distinct_author_accounts": 1,
+    "PRs_counted_as_independent_tasks": 0
+  },
+  "source_candidates": [
+    {
+      "source_id": "github:TrillionniumFoundation/Trillionnium-Chain:issue:150",
+      "original_event_at": "2026-09-13T09:30:33Z",
+      "retrieved_at": "2026-11-17T09:56:45.120Z",
+      "project_id": "TrillionniumFoundation/Trillionnium-Chain",
+      "author_account_id": 102159240,
+      "lineage_id": "github:TrillionniumFoundation/Trillionnium-Chain:issue:150",
+      "family_id": null,
+      "request_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/issues/150",
+      "task_kind": "historical_existing_candidate_validation",
+      "source_status": "NEWLY_RETRIEVED_HISTORICAL_REQUIREMENT",
+      "prior_three_issue_audit_included": false,
+      "prior_account_wide_exposure_unknown": true,
+      "assignment": "unassigned",
+      "future_task": false,
+      "training_record_ready": false,
+      "independent_sample_increment": 0,
+      "project_overlap_with_prior_study": true,
+      "account_overlap_with_prior_study": true,
+      "original_visible_agent_trajectory_available": false,
+      "reset_contract": "isolated checkout of the exact historical candidate; do not mutate main or activate a service",
+      "source_revision": "e6464bb48d43468fbd90ea6531f378246801a9f3",
+      "source_tree": "abb45c3f35f0f9758756f47a9bed43a3e6da0331",
+      "source_git_identity_readback": true,
+      "requirement_body_exposure": "curator only; not supplied as a training target",
+      "acceptance_kind": "standard repository tests and lint for pinned candidate; independent acceptance remains separate",
+      "code_under_test_not_read": true,
+      "test_source_not_read": true,
+      "test_path_metadata": "trillionnium/crates/trnm-poco-node-io/tests/pacemaker_retry_regressions.rs",
+      "test_git_blob": "25a9b0c1d6c5a2a4e5b6d5ae488af604f88aadfd",
+      "toolchain": "1.95.0",
+      "features": [
+        "candidate-pacemaker",
+        "candidate-authenticated-p2p"
+      ],
+      "preflight_required": "bash scripts/project-preflight.sh",
+      "training_blockers": [
+        "no retained teacher request/output/action trajectory",
+        "no original environment and execution receipts for this intake",
+        "no semantic result or accepted target artifact bound to the intended task",
+        "family and cross-source dependence not yet reviewed",
+        "no train/selection/confirmation assignment or time cutoffs frozen"
+      ]
+    },
+    {
+      "source_id": "derived:chain-786-workstream-3:act2-sqlite-family",
+      "original_event_at": "2026-11-08T05:04:58Z",
+      "project_id": "TrillionniumFoundation/Trillionnium-Chain",
+      "author_account_id": 102159240,
+      "lineage_id": "derived:chain-786-workstream-3:act2-sqlite-family",
+      "family_id": "controlled-sqlite-family",
+      "source_status": "PREVIOUSLY_EXPOSED_DEVELOPMENT",
+      "assignment": "development",
+      "future_task": false,
+      "training_record_ready": false,
+      "independent_sample_increment": 0,
+      "task_ids": [
+        "dev-sqlite-lost-reply-01",
+        "dev-sqlite-prestaged-01",
+        "dev-sqlite-partial-01"
+      ],
+      "manifest_path": "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/task-development-sqlite.json",
+      "manifest_sha256": "a02b1e07d554fe92e2e61658dd2a64818a055db1628522aefb825a0096f7fb4b",
+      "entrypoint": "cell_experiments.repo_tasks_v3_sqlite.DevelopmentSession",
+      "actual_stateful_environment": true,
+      "actor_generates_payload": false,
+      "role": "usable for current-student controlled execution engineering, not new sources"
+    }
+  ],
+  "excluded_requirements": [
+    {
+      "source_id": "github:TrillionniumFoundation/Trillionnium-Chain:issue:68",
+      "original_event_at": "2026-09-02T10:25:35Z",
+      "author_account_id": 273670192,
+      "reason": "Broad independent multi-operator/HSM/physical power-loss/soak acceptance, not a bounded resettable coding task or an agent trajectory",
+      "independent_human_identity_authenticated": false
+    },
+    {
+      "source_id": "github:TrillionniumFoundation/Trillionnium-Chain:issue:118",
+      "original_event_at": "2026-09-09T11:06:45Z",
+      "author_account_id": 102159240,
+      "reason": "Cross-repository component-owner acceptance; no standalone task input/environment/oracle pair retrieved"
+    }
+  ],
+  "teacher_candidates": [
+    {
+      "identity": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+      "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+      "weight_bytes": 3087467144,
+      "weight_sha256": "c1b9b30e907950516ba3c646bdf570d8084c25a6410a0cdca80cf04b11bc13a8",
+      "evidence": "retained recovery-04 MODEL_MATERIALS and UPSTREAM_MODEL_API",
+      "evidence_currentness": "historical retained file; live service loading not asserted",
+      "role_so_far": "student/base model",
+      "new_task_teacher_output_receipts": 0,
+      "current_teacher_ready": false
+    },
+    {
+      "identity": "existing Smol parent research candidate",
+      "model_digest": "65d78bbf81ee10674873df4c5b7abd044c06992e05f360ca04e68e67bc14788d",
+      "exact_upstream_identity_not_rederived_here": true,
+      "evidence": "retained development-smol-01 parent FREEZE",
+      "evidence_currentness": "historical retained freeze",
+      "role_so_far": "student/base model",
+      "new_task_teacher_output_receipts": 0,
+      "current_teacher_ready": false
+    },
+    {
+      "identity": "ACT-2 B1_macro",
+      "evidence": "previously exposed controlled scripted trajectories",
+      "kind": "scripted_policy",
+      "role": "one development reference policy",
+      "external_LLM_teacher": false,
+      "new_task_teacher_output_receipts": 0,
+      "current_teacher_ready": false
+    }
+  ],
+  "intake": {
+    "schema": "hepta.cell-experiments.record.v1",
+    "authoritative_module": "scripts/cell_experiments/data.py",
+    "authoritative_module_sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+    "example_entrypoint": "intake_existing_data.py",
+    "original_artifacts_required": [
+      "original request URI and retained request bytes",
+      "original event time and availability time; export time is separate",
+      "project/source/task/lineage/family identities and review of dependencies",
+      "authorization training/evaluation scope and original basis",
+      "immutable environment/source/target identities and reset method",
+      "visible ordered action/observation/correction events",
+      "exact teacher model identity and raw output receipts when actor is teacher",
+      "actual executing student policy and process/action receipts when actor is student",
+      "registered semantic verifier identity, actual result and retained receipt",
+      "final answer/target artifact bound to the observed successful task",
+      "all failed/cancelled/unknown attempts and measured costs"
+    ],
+    "required_record_fields": [
+      "record_id",
+      "task_id",
+      "lineage_id",
+      "family_id",
+      "project_id",
+      "source_id",
+      "source.repository",
+      "source.path",
+      "source.revision (repository history)",
+      "source.sha256",
+      "observed_at",
+      "available_at",
+      "split",
+      "origin_kind",
+      "exposure",
+      "authorization.training_allowed",
+      "authorization.evaluation_allowed",
+      "authorization.rights_basis",
+      "authorization.scope",
+      "task.input",
+      "task.verifier.name",
+      "task.verifier.version",
+      "task.verifier.parameters",
+      "final_answer",
+      "teacher_id",
+      "trajectory",
+      "verified_outcome.success",
+      "verified_outcome.receipt_sha256",
+      "verified_outcome.verifier_name",
+      "verified_outcome.verifier_version"
+    ],
+    "conditional_teacher_fields": [
+      "model_digest",
+      "teacher_output_receipt_sha256",
+      "trajectory[*].receipt_sha256"
+    ],
+    "conditional_executed_student_fields": [
+      "trajectory[*].policy_sha256",
+      "trajectory[*].receipt_sha256",
+      "trajectory[*].receipt_actor=student"
+    ],
+    "split_state": "NOT_ASSIGNED",
+    "train_before": null,
+    "selection_before": null,
+    "train_records_file": null,
+    "admitted_training_records": 0,
+    "admitted_independent_trajectory_sources": 0,
+    "qualification_granted": false,
+    "note": "A structural intake does not authenticate users, provenance, custody, or usefulness. Never use new export/PR timestamps as original task times. Only an explicitly authorized train-only JSONL is passed to the example; B/C files remain separate."
+  },
+  "limitations": {
+    "all_metadata_observations_are_non_atomic": true,
+    "repository_wide_absence_claim": false,
+    "credentials_read": false,
+    "model_calls": 0,
+    "training_calls": 0,
+    "business_verifier_calls": 0,
+    "Git_API_mutations": 0,
+    "old_artifacts_modified": false
+  },
+  "local_input_bindings": [
+    {
+      "bytes": 22520,
+      "path": "AGENTS.md",
+      "sha256": "3f7d567dbed66ca514101f674511d42707dab033c22239f93e62248dbac62a09"
+    },
+    {
+      "bytes": 16163,
+      "path": "scripts/cell_experiments/data.py",
+      "sha256": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09"
+    },
+    {
+      "bytes": 7467,
+      "path": "scripts/cell_experiments/README_DATA.md",
+      "sha256": "5f27c15a7c60f4f4d9c1f6f16f331b036933eb43468b5701d859139b38c9d076"
+    },
+    {
+      "bytes": 15386,
+      "path": "scripts/cell_experiments/source_metrics_v3.py",
+      "sha256": "dac1ddcb1b1460977cd8ef48648add5823cee39b90c9d6cd395ab53a91cde2b3"
+    },
+    {
+      "bytes": 7739,
+      "path": "scripts/cell_experiments/repo_tasks_v3_sqlite.py",
+      "sha256": "450952caf0976d07697b08a0c4a8bb8b30c14961036229e6c256d2c886a6087b"
+    },
+    {
+      "bytes": 13561,
+      "path": "qualification/cell-experiments-v3-20261116/SOURCE_AUDIT_V3.md",
+      "sha256": "1139894fe1f4639e6af0429feee36041290d90fa66999865a12f469d38a58e03"
+    },
+    {
+      "bytes": 4826,
+      "path": "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/task-development-sqlite.json",
+      "sha256": "a02b1e07d554fe92e2e61658dd2a64818a055db1628522aefb825a0096f7fb4b"
+    },
+    {
+      "bytes": 9719,
+      "path": "qualification/cell-experiments-v3-20261116/operations/UPSTREAM_MODEL_API.json",
+      "sha256": "bc183bff3f9c6253c3e732f39fcaf692cc6cbf5040374e3ead1e04aaa97b2cea"
+    },
+    {
+      "bytes": 4384,
+      "path": "qualification/cell-experiments-v3-20261116/operations/recovery-04-evidence/MODEL_MATERIALS.json",
+      "sha256": "2e06a748dfc4d378598d94d1c81beb3a33f19df91c79b2822fa14b173849ccd6"
+    },
+    {
+      "bytes": 4538,
+      "path": "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-parent-01/FREEZE.json",
+      "sha256": "4d7148e98d4fe46e8dd1c7f238a884de45ebe96691eb8097e1b86a449ff11e35"
+    }
+  ]
+}
