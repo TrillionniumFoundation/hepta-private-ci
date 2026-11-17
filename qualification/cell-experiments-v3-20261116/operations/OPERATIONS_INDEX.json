@@ -1,0 +1,117 @@
+{
+  "jobs": {
+    "desktop_inventory_pending": {
+      "host": "desktop",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-desktop-env04",
+      "job_id": null,
+      "outcome": "launch acknowledgement unresolved; no mutation requested"
+    },
+    "format_01": {
+      "exit_code": 0,
+      "host": "mac",
+      "receipt": "FORMAT_01.json",
+      "session_id": "dpty-6f2b67c512870909f1ef3e97fd7f1638e66742bd3dea5db03b9104fc33799d7b"
+    },
+    "formatter": {
+      "host": "mac",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-format-prepare01",
+      "last_observed_exit_code": 0,
+      "root": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a",
+      "session_id": "dpty-c8d9af57746e0620c33db38e552965a0a4af1113dc5e9b8e0443b2c231e5e1da"
+    },
+    "model_recovery_04": {
+      "host": "desktop",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-model-recovery04",
+      "last_observed_state": "running",
+      "root": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/operations/recovery-04",
+      "session_id": "dpty-131e5bb51a31f6286c1d7671d159ff8551951193e2e78a036a22538a5bc85e94"
+    },
+    "native_source_publication": {
+      "draft_prs": [
+        6442,
+        6443,
+        6444,
+        6445,
+        6446,
+        6447,
+        6448,
+        6449,
+        6450,
+        6451,
+        6452,
+        6453,
+        6454,
+        6455,
+        6456,
+        6457
+      ],
+      "final_head": "6b5c918bce563f8574619a3101c3970926136df5",
+      "host": "mac",
+      "merged": false,
+      "native_push": "succeeded",
+      "preparation_session": "dpty-fcc6939f25076eae302db1f03b205329be10d79ec29068bf4d45e39fce88a27b",
+      "push_session": "dpty-5676221445649890c32b0c65e94ef25d101855ad2b85c3ed254c00666acbc951",
+      "remote_refs_verified": 16,
+      "source_session": "dpty-bfada21e819ed8246f9cadd506f0bd3a42bcc66c4fd81677ba248d063c620a07"
+    },
+    "qwen_numerical_01": {
+      "actual_scope": "import failure before any of the three numerical tests ran",
+      "exclusive_effect_guard": "candidate-qwen-numeric-01 mkdir",
+      "exit_code": 1,
+      "host": "ai395",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-qwen-numerical01",
+      "job_id": "1a1e6d7935b-392-3c55",
+      "launch_acknowledgement": "reconciled; terminal evidence complete",
+      "state": "failed"
+    },
+    "qwen_numerical_02": {
+      "exit_code": 0,
+      "host": "ai395",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-qwen-numerical02",
+      "job_id": "1a1e6e5ab62-392-3c80",
+      "scope": "real CPU tiny-Qwen implementation checks, not model capability",
+      "source_archive_sha256": "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7",
+      "tests_passed": 3
+    },
+    "runtime_probe": {
+      "host": "desktop",
+      "last_observed_exit_code": 0,
+      "session_id": "dpty-a83656b38cf9d103ccf36c5ecea3f35d467ce0d64a7961d79190a13533eb79ca"
+    },
+    "setup_cuda": {
+      "host": "desktop",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cuda-materials01",
+      "root": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a",
+      "session_id": "dpty-fdd76c5add111e6ea7837e66e864b0c872b3b37e260ca56a50bf24952351fbb7"
+    },
+    "setup_recovery_02": {
+      "closed": true,
+      "environment": "timed out; exact failure receipt retained remotely",
+      "exit_code": -15,
+      "host": "desktop",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cuda-materials-recovery02",
+      "model_download": "retained prefix; continued by recovery04",
+      "session_id": "dpty-65d41bad2d266a5577c45b53102ce569b2dcbfae00026a9d4a1adc8f3d6b1d17",
+      "state": "stopped"
+    },
+    "smol_readiness": {
+      "close_termination_confirmed": false,
+      "host": "ai395",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-smol-readiness01",
+      "last_observed_state": "launch_unknown",
+      "session_id": "dpty-b52355b61afa245b805b8d35536b9cdd56f10fa71fd9508c293b68116c625163"
+    },
+    "smol_readiness_recovery": {
+      "exclusive_effect_guard": "candidate-smol-01 mkdir",
+      "host": "ai395",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-smol-readiness-recovery02",
+      "job_id": "1a1e6c311a6-392-3c33"
+    },
+    "smol_terminal_inspection": {
+      "host": "ai395",
+      "job_id": "1a1e6c1bae0-392-3c32",
+      "observation": "managed unit not-found/inactive/dead; MainPID=0"
+    }
+  },
+  "scope": "captured operation identities; inspect retained provider receipts for live state"
+}

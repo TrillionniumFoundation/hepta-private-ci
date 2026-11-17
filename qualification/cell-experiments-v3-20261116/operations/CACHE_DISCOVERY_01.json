@@ -1,0 +1,341 @@
+{
+  "schema_version": "cache-discovery-01",
+  "experiment": "cell-experiments-v3-20261116",
+  "evidence_type": "bounded_read_only_metadata_discovery",
+  "summary_zh": "在四台主机的指定目录名和深度范围内，未确认完整的 0.5–3B coder/instruct 基础模型，亦未确认可复用的 CUDA Torch 环境。唯一确认完整权重的 pinned-base 存储参数量为 134515008，低于目标范围。已发现的 Torch 版本文件均明确为 +cpu。这里的未发现仅适用于本次有界检查，不能解释为整台主机不存在其他缓存或 CUDA 环境。",
+  "target": {
+    "model_parameter_range": [
+      500000000,
+      3000000000
+    ],
+    "model_task_types": [
+      "coder",
+      "instruct"
+    ],
+    "weights": "trainable Hugging Face base model",
+    "runtime": "existing CUDA Torch environment"
+  },
+  "scope": {
+    "homes": {
+      "ai395": "/home/qq",
+      "desktop": "/home/qian-qi",
+      "rog": "/home/qian-qi",
+      "mac": "/Users/qianqi"
+    },
+    "candidate_name_regex": "qwen|coder|llm|model|weight|torch|cuda|venv",
+    "candidate_name_exclusion_regex": "experiments-v3|qualification|artifacts|node_modules",
+    "candidate_limit_per_host": 25,
+    "max_relative_depth": 3,
+    "top_level_symlinks_followed": false,
+    "file_enumeration": "rg --files --hidden --max-depth 3; gitignore rules honored",
+    "file_globs": [
+      "config.json",
+      "model.safetensors",
+      "model.safetensors.index.json",
+      "pytorch_model.bin"
+    ],
+    "excluded_subtrees": [
+      "qualification",
+      "artifacts",
+      "node_modules",
+      "site-packages",
+      ".git"
+    ],
+    "matching_file_limit_per_candidate": 150,
+    "environment_locations": [
+      "candidate root",
+      "venv",
+      ".venv",
+      "ci-env"
+    ],
+    "torch_inspection": "Parse literal version/cuda/hip assignments in torch/version.py using AST; do not import torch.",
+    "model_inspection": "Read config/tokenizer presence and safetensors headers, compare declared data end with file length; no tensor deserialization or execution.",
+    "not_performed": [
+      "downloads",
+      "training",
+      "inference",
+      "CUDA initialization",
+      "host-wide scan",
+      "parent recovery-02 file/process modifications",
+      "additional remote scan during report creation"
+    ]
+  },
+  "observations": [
+    {
+      "host": "ai395",
+      "job_id": "1a1e6cd7b94-392-3c44",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cache-bounded-ai395-01",
+      "candidate_count_examined": 11,
+      "candidate_count_total": 11,
+      "candidate_limit": 25,
+      "candidates": [
+        "h3-task2-20261004-production-model",
+        "h3-task2-stage2-resident-qpack-model-ab-20261005-attempt4",
+        "hepta-common-20261109-e1c98-model-no-update-001",
+        "hepta-common-20261109-e1c98-model-no-update-002",
+        "hepta-model-download-probe-20261108",
+        "hepta-model-identity-20261029",
+        "hepta-smollm2-weight-research-20261103",
+        ".venvs",
+        "venvs",
+        "hws-smollm2-20261103-t1",
+        "local-llm"
+      ],
+      "environments": [
+        {
+          "libraries_present": {
+            "numpy": true,
+            "peft": true,
+            "safetensors": true,
+            "transformers": true
+          },
+          "python": "/home/qq/hepta-smollm2-weight-research-20261103/venv/bin/python",
+          "torch_version_metadata": {
+            "__version__": "2.9.1+cpu",
+            "cuda": null,
+            "hip": null
+          }
+        },
+        {
+          "libraries_present": {
+            "numpy": true,
+            "peft": true,
+            "safetensors": true,
+            "transformers": true
+          },
+          "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+          "torch_version_metadata": {
+            "__version__": "2.9.1+cpu",
+            "cuda": null,
+            "hip": null
+          }
+        }
+      ],
+      "errors": [],
+      "home": "/home/qq",
+      "max_depth": 3,
+      "models": [
+        {
+          "architectures": [
+            "LlamaForCausalLM"
+          ],
+          "complete_weight_file_present": true,
+          "model_type": "llama",
+          "name_or_path": null,
+          "path": "/home/qq/hepta-smollm2-weight-research-20261103/pinned-base",
+          "stored_tensor_parameters": 134515008,
+          "tokenizer_present": true,
+          "weight_bytes": 269060552
+        }
+      ],
+      "stdout_eof": true,
+      "stderr_text": "",
+      "exit_code_not_rechecked": true,
+      "cuda_runtime_status": "not_confirmed",
+      "runtime_import_or_execution_performed": false
+    },
+    {
+      "host": "desktop",
+      "job_id": "1a1e6cdf2da-392-3c46",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cache-bounded-desktop-01",
+      "candidate_count_examined": 14,
+      "candidate_count_total": 14,
+      "candidate_limit": 25,
+      "candidates": [
+        "h3-encoder-assembly-20261104-v1",
+        "h3-heretic-model-20261102-v1",
+        "h3-media-modelstore-20261104-v1",
+        "hepta-learn-ce434-training-model-280dd-fmt-v1",
+        "hepta-runtime-smollm2-weight-20261103-r1-transfer",
+        "hepta-runtime-weight-cancel-20261104-r1",
+        "hepta-weight-lab",
+        "chain-pq-a418-final-python-venv",
+        "cuda-train-521-523-20261110-a74883",
+        "hcsn-e901-torch280-cpu-runtime-20261112",
+        "heptatorch-e8m0-orthogonal-20261116",
+        "hepta-smollm2-mcp-research-20261103-r1",
+        "local-llm-releases",
+        "local-llm-source-backups"
+      ],
+      "environments": [
+        {
+          "libraries_present": {
+            "numpy": true,
+            "peft": false,
+            "safetensors": false,
+            "transformers": false
+          },
+          "python": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python",
+          "torch_version_metadata": {
+            "__version__": "2.8.0+cpu",
+            "cuda": null,
+            "hip": null
+          }
+        },
+        {
+          "libraries_present": {
+            "numpy": false,
+            "peft": false,
+            "safetensors": false,
+            "transformers": false
+          },
+          "python": "/home/qian-qi/heptatorch-e8m0-orthogonal-20261116/venv/bin/python",
+          "torch_version_metadata": {
+            "__version__": "2.15.0+cpu",
+            "cuda": null,
+            "hip": null
+          }
+        }
+      ],
+      "errors": [],
+      "home": "/home/qian-qi",
+      "max_depth": 3,
+      "models": [],
+      "stdout_eof": true,
+      "stderr_text": "",
+      "exit_code_not_rechecked": true,
+      "cuda_runtime_status": "not_confirmed",
+      "runtime_import_or_execution_performed": false
+    },
+    {
+      "host": "rog",
+      "job_id": "1a1e6ce38bc-392-3c48",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cache-bounded-rog-01",
+      "candidate_count_examined": 20,
+      "candidate_count_total": 20,
+      "candidate_limit": 25,
+      "candidates": [
+        "h3-film-textencoder-recovery-source-20261014-r1",
+        "h3-r83-qwen-projected-embedding-private-20261013-v1",
+        "h3-r85-Qwen-BF16-private-source-instrument-20261013-v1",
+        "h3-w1-current-model-identity-20261019-v1",
+        "hepta-weight-lab",
+        "HF-MODELS",
+        "models",
+        ".venvs",
+        "cuda-experiment-20261110-a64883-recovered",
+        "cuda-train-521-523-20261110-a74883",
+        "cuda4-20261110-4906",
+        "cuda617619-20261110-a8",
+        "cuda617619-20261110-a8-direct",
+        "hepta-rust-audit-078e4036190f-hcsn-siblings-torch-v1",
+        "hepta-rust-audit-078e4036190f-python-venv",
+        "heptatorch-continuation-20261116",
+        "heptatorch-independent-float8e5m2fnuz-20261116",
+        "heptatorch-independent-i16-20261116",
+        "heptatorch-native-i8-20261116",
+        "local-llm-evidence"
+      ],
+      "environments": [
+        {
+          "libraries_present": {
+            "numpy": true,
+            "peft": false,
+            "safetensors": true,
+            "transformers": true
+          },
+          "python": "/home/qian-qi/hepta-rust-audit-078e4036190f-python-venv/bin/python",
+          "torch_version_metadata": {
+            "__version__": "2.10.0+cpu",
+            "cuda": null,
+            "hip": null
+          }
+        }
+      ],
+      "errors": [],
+      "home": "/home/qian-qi",
+      "max_depth": 3,
+      "models": [],
+      "stdout_eof": true,
+      "stderr_text": "",
+      "exit_code_not_rechecked": true,
+      "cuda_runtime_status": "not_confirmed",
+      "runtime_import_or_execution_performed": false
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1e6cda134-392-3c45",
+      "idempotency_key": "hepta-e1e6-v3-20261116-0c078a-cache-bounded-mac-01",
+      "candidate_count_examined": 16,
+      "candidate_count_total": 16,
+      "candidate_limit": 25,
+      "candidates": [
+        ".qwen",
+        "h3-encoder-download-20261104-v4",
+        "h3-film-control-20261105-quality-modelref-forward-r1",
+        "h3-film-control-20261105-quality-modelref-legacy-writes-r1",
+        "heptabao-authbus-current-sdk-model-routes-20261106-r1",
+        "heptatorch-dview-r1-build-20261116",
+        "heptatorch-pr28-validation-20261116",
+        "heptatorch-pr29-validation-20261116",
+        "heptatorch-pr30-validation-20261116",
+        "heptatorch-pr31-validation-20261116",
+        "heptatorch-pr32-validation-20261116",
+        "heptatorch-pr33-validation-20261116",
+        "heptatorch-pr34-validation-20261116",
+        "heptatorch-to-checkpoints-20261116",
+        "heptatorch-to-recovery-20261116",
+        "heptatorch-to09b-reference14-20261116"
+      ],
+      "environments": [],
+      "errors": [],
+      "home": "/Users/qianqi",
+      "max_depth": 3,
+      "models": [],
+      "stdout_eof": true,
+      "stderr_text": "",
+      "exit_code_not_rechecked": true,
+      "cuda_runtime_status": "not_confirmed",
+      "runtime_import_or_execution_performed": false
+    }
+  ],
+  "additional_targeted_directory_reads": [
+    {
+      "host": "rog",
+      "path": "/home/qian-qi/HF-MODELS",
+      "max_depth": 1,
+      "status": "read_completed",
+      "observation_zh": "列出 MiniMax-H3 下载控制记录、manifest、encoder active JSON；此目录读取未确认目标规模的完整可训练 HF 基础权重。",
+      "proves_directory_empty": false
+    },
+    {
+      "host": "rog",
+      "path": "/home/qian-qi/hepta-weight-lab",
+      "max_depth": 1,
+      "status": "read_failed",
+      "error": "SSH connection closed; remote helper exit 255",
+      "proves_directory_empty": false
+    },
+    {
+      "host": "desktop",
+      "path": "/home/qian-qi/hepta-weight-lab",
+      "max_depth": 1,
+      "status": "read_completed_no_files_returned",
+      "proves_directory_empty": false
+    },
+    {
+      "host": "desktop",
+      "path": "/home/qian-qi/h3-media-modelstore-20261104-v1",
+      "max_depth": 1,
+      "status": "read_failed",
+      "error": "SSH connection closed; remote helper exit 255",
+      "proves_directory_empty": false
+    },
+    {
+      "host": "mac",
+      "path": "/Users/qianqi/h3-encoder-download-20261104-v4",
+      "max_depth": 1,
+      "status": "read_completed",
+      "observation_zh": "主要返回分段 .part 文件；未确认完整目标模型。",
+      "proves_directory_empty": false
+    }
+  ],
+  "interpretation_limits_zh": [
+    "CUDA 可用性均为未确认；已观测到的 +cpu 版本和 cuda=null 是对应版本文件的事实，不能推广到整个主机。",
+    "配套 Python 包仅检查目录存在，不表示成功 import、ABI 兼容或可运行训练。",
+    "safetensors 完整性指文件长度与头部声明一致且 tokenizer 存在；没有重新核验发布方 hash、来源身份、数值质量或执行推理。",
+    "失败的目录读取不能判为空，也不能据此认定没有权重。",
+    "顶层符号链接未追踪，rg 采用忽略规则，且检查深度和候选数量受限；不能据此作主机全量否定结论。",
+    "只归档既有观察与任务 ID；没有新增远程检查。"
+  ]
+}
