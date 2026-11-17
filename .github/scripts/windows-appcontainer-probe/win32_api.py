@@ -26,6 +26,14 @@ WAIT_TIMEOUT = 258
 MAXIMUM_ALLOWED = 0x02000000
 
 
+class SecurityAttributes(C.Structure):
+    _fields_ = [
+        ("nLength", DWORD),
+        ("lpSecurityDescriptor", PTR),
+        ("bInheritHandle", BOOL),
+    ]
+
+
 class GenericMapping(C.Structure):
     _fields_ = [
         ("GenericRead", DWORD),
@@ -93,6 +101,7 @@ class Api:
         signatures = {
             "GetCurrentProcess": (self.kernel, HANDLE, []),
             "CloseHandle": (self.kernel, BOOL, [HANDLE]),
+            "GetHandleInformation": (self.kernel, BOOL, [HANDLE, C.POINTER(DWORD)]),
             "LocalFree": (self.kernel, PTR, [PTR]),
             "CreateFileW": (
                 self.kernel,
@@ -552,9 +561,60 @@ class Api:
         finally:
             self.close(handle)
 
-    def create_suspended(self, package_sid, cwd, lpac):
+    def open_child_stdio(self, workspace):
+        # Ordinary owned files avoid pipe-buffer backpressure during the unchanged
+        # five-second process wait. Only these three handles may be inherited.
+        directory = workspace / "child-stdio-observation"
+        directory.mkdir()
+        capture = {"directory": directory, "handles": [], "handle_facts": []}
+        security = SecurityAttributes(C.sizeof(SecurityAttributes), None, True)
+        try:
+            for name, access in (
+                ("stdin.bin", 0x80000000),
+                ("stdout.bin", 0x40000000),
+                ("stderr.bin", 0x40000000),
+            ):
+                handle = self.CreateFileW(
+                    str(directory / name), access, 7, C.byref(security), 1, 0x80, None
+                )
+                if handle == PTR(-1).value:
+                    raise OSError(C.get_last_error(), f"create owned child {name}")
+                capture["handles"].append(handle)
+                flags = DWORD()
+                self.checked(
+                    self.GetHandleInformation(handle, C.byref(flags)),
+                    f"read child {name} handle inheritance",
+                )
+                require(
+                    flags.value & 1, "explicit child standard handle is not inheritable"
+                )
+                capture["handle_facts"].append(
+                    {"name": name, "requested_access": access, "inherit_flag": True}
+                )
+            return capture
+        except Exception:
+            self.close_child_stdio(capture)
+            raise
+
+    def close_child_stdio(self, capture):
+        errors = []
+        while capture["handles"]:
+            handle = capture["handles"].pop()
+            try:
+                self.close(handle)
+            except Exception as error:
+                errors.append(str(error))
+        require(not errors, f"close owned child standard handles: {errors}")
+
+    def create_suspended(self, package_sid, cwd, lpac, stdio_handles):
         size = C.c_size_t()
-        count = 2 if lpac else 1
+        require(len(stdio_handles) == 3, "exact stdin/stdout/stderr handle set")
+        require(len(set(stdio_handles)) == 3, "distinct child standard handles")
+        require(
+            all(handle not in (None, 0, PTR(-1).value) for handle in stdio_handles),
+            "valid explicit child standard handles",
+        )
+        count = 3 if lpac else 2
         self.InitializeProcThreadAttributeList(None, count, 0, C.byref(size))
         require(
             C.get_last_error() == 122 and 0 < size.value <= 65536, "attribute list size"
@@ -592,6 +652,13 @@ class Api:
                     ),
                     "all packages opt-out",
                 )
+            inherited = (HANDLE * 3)(*stdio_handles)
+            self.checked(
+                self.UpdateProcThreadAttribute(
+                    attributes, 0, 0x20002, inherited, C.sizeof(inherited), None, None
+                ),
+                "exact child standard handle list",
+            )
             system = C.create_unicode_buffer(32768)
             length = self.GetSystemDirectoryW(system, len(system))
             require(0 < length < len(system), "system directory")
@@ -624,6 +691,10 @@ class Api:
             )
             startup, process = StartupInfoEx(), ProcessInfo()
             startup.StartupInfo.cb = C.sizeof(startup)
+            startup.StartupInfo.dwFlags = 0x100
+            startup.StartupInfo.hStdInput = stdio_handles[0]
+            startup.StartupInfo.hStdOutput = stdio_handles[1]
+            startup.StartupInfo.hStdError = stdio_handles[2]
             startup.lpAttributeList = C.cast(attributes, PTR)
             self.checked(
                 self.CreateProcessW(
@@ -631,7 +702,7 @@ class Api:
                     command,
                     None,
                     None,
-                    False,
+                    True,
                     0x80000 | 0x4 | 0x08000000 | 0x400,
                     environment,
                     str(cwd),

@@ -383,6 +383,49 @@ def _observe_child_files(workspace):
     return {"observer": "parent_after_child_exit", "files": records}
 
 
+def _observe_child_stdio(capture):
+    # These are actual cmd standard streams. They do not identify its internal
+    # failing Win32 call or convert a failed original predicate into success.
+    limit = 65536
+    records = []
+    for name in ("stdout.bin", "stderr.bin"):
+        record = {"name": name, "limit_bytes": limit}
+        try:
+            path = capture["directory"] / name
+            metadata = path.lstat()
+            require(
+                stat.S_ISREG(metadata.st_mode)
+                and not (getattr(metadata, "st_file_attributes", 0) & 0x400),
+                "capture must remain an owned regular file",
+            )
+            with path.open("rb") as stream:
+                sample = stream.read(limit + 1)
+            prefix = sample[:limit]
+            record.update(
+                size_bytes=metadata.st_size,
+                captured_bytes=len(prefix),
+                limit_exceeded=len(sample) > limit,
+                prefix_hex=prefix.hex(),
+                prefix_sha256=hashlib.sha256(prefix).hexdigest(),
+                display_utf8_replacement=prefix.decode("utf-8", errors="replace"),
+            )
+        except Exception as error:
+            record["observer_error"] = {
+                "type": type(error).__name__,
+                "message": str(error)[:1024],
+            }
+        records.append(record)
+    return {
+        "observer": "parent_after_owned_child_exit",
+        "transport": "explicit_stdio_handle_list_owned_files",
+        "stdin": "empty_read_only_owned_file",
+        "handle_facts": capture["handle_facts"],
+        "raw_bytes_are_authoritative": True,
+        "display_encoding_is_not_a_native_code_page_claim": True,
+        "streams": records,
+    }
+
+
 def cleanup_fixture(api, root, user):
     if root is None:
         return
@@ -414,6 +457,7 @@ def run_case(api, lpac, user, base_token):
     created_profile = False
     root = None
     process = None
+    capture = None
     token = HANDLE()
     try:
         code = api.CreateAppContainerProfile(
@@ -436,7 +480,13 @@ def run_case(api, lpac, user, base_token):
         result["fixture_security"] = prepared["security"]
         result["unconfined_controls"] = prepared["unconfined_controls"]
         result["child_script_sha256"] = hashlib.sha256(CHILD_SCRIPT).hexdigest()
-        process = api.create_suspended(package_sid, prepared["workspace"], lpac)
+        capture = api.open_child_stdio(prepared["workspace"])
+        process = api.create_suspended(
+            package_sid, prepared["workspace"], lpac, capture["handles"]
+        )
+        # The child owns its copies; the parent closes every inheritable copy
+        # before token observation and resume, without affecting the child's copy.
+        api.close_child_stdio(capture)
         result["child_pid"] = process.dwProcessId
         api.checked(
             api.OpenProcessToken(
@@ -493,6 +543,7 @@ def run_case(api, lpac, user, base_token):
             api.GetExitCodeProcess(process.hProcess, C.byref(code)), "child exit code"
         )
         result["child_exit_code"] = code.value
+        result["child_stdio"] = _observe_child_stdio(capture)
         workspace = prepared["workspace"]
         result["child_file_observations"] = _observe_child_files(workspace)
         child_postconditions = (
@@ -552,6 +603,15 @@ def run_case(api, lpac, user, base_token):
             except Exception as error:
                 cleanup["owned_child_error"] = str(error)
                 result["status"] = "failed"
+        if capture is not None:
+            try:
+                api.close_child_stdio(capture)
+                cleanup["owned_stdio_handles_closed"] = True
+            except Exception as error:
+                cleanup["owned_stdio_error"] = str(error)
+                result["status"] = "failed"
+            if "child_stdio" not in result and cleanup.get("owned_child_closed"):
+                result["child_stdio"] = _observe_child_stdio(capture)
         try:
             api.close(token)
             cleanup["owned_token_closed"] = True
