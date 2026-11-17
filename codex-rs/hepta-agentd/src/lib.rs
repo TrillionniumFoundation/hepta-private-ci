@@ -724,6 +724,7 @@ mod learning_iteration_proposal;
 mod learning_iteration_research_external;
 #[cfg(all(test, unix))]
 mod learning_iteration_research_external_material;
+mod learning_iteration_stage_router;
 #[cfg(target_os = "linux")]
 mod learning_owner_command_channel;
 mod learning_owner_evidence;
@@ -1473,6 +1474,8 @@ pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
 pub use learning_iteration_ports::LearningIterationStageOwnerPortsV1;
 pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
+pub use learning_iteration_stage_router::LearningIterationOriginalStagePortsV1;
+pub use learning_iteration_stage_router::LearningIterationStageRouterV1;
 pub use native_memory::AgentdNativeMemoryCell;
 pub use native_memory_context_binding::NativeMemoryContextBindingV1;
 pub use native_memory_current::AgentdNativeMemoryContextHostV1;
