@@ -125,3 +125,7 @@ impl Drop for ProcThreadAttributeList {
         unsafe { DeleteProcThreadAttributeList(self.as_mut_ptr()) };
     }
 }
+
+#[cfg(test)]
+#[path = "procthreadattr_handle_type_tests.rs"]
+mod winapi_handle_type_tests;
