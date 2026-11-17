@@ -23,6 +23,8 @@ use codex_protocol::ResponseItemId;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::ContentItem;
+use codex_protocol::models::ContentItemKind;
+use codex_protocol::models::InternalChatMessageMetadataPassthrough;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::SessionConfiguredEvent;
@@ -172,7 +174,10 @@ fn injected_item() -> ResponseItem {
             text: "exact standalone context".to_string(),
         }],
         phase: None,
-        internal_chat_message_metadata_passthrough: None,
+        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            content_item_kinds: Some(vec![ContentItemKind("unknown".to_string())]),
+            ..Default::default()
+        }),
     };
     item.set_turn_id_if_missing("injected-context-origin");
     item
@@ -274,6 +279,35 @@ async fn standalone_injection_waits_after_turn_complete_and_persists_once() {
     assert!(fence.is_complete());
     expected_history.push(item);
     assert_eq!(fixture.history().await, expected_history);
+    let after = fixture.store.calls().await;
+    assert_eq!(
+        (after.append_items, after.flush_thread),
+        (before.append_items + 1, before.flush_thread + 1)
+    );
+    assert!(fixture.submissions.is_empty());
+}
+
+#[tokio::test]
+async fn standalone_injection_normalizes_missing_content_kinds_and_persists_once() {
+    let fixture = Fixture::new().await;
+    let before = fixture.store.calls().await;
+    let expected_item = injected_item();
+    let mut item = expected_item.clone();
+    let ResponseItem::Message {
+        internal_chat_message_metadata_passthrough: Some(metadata),
+        ..
+    } = &mut item
+    else {
+        panic!("message metadata");
+    };
+    metadata.content_item_kinds = None;
+
+    fixture
+        .thread
+        .inject_response_items(vec![item])
+        .await
+        .expect("normalize missing content classifications");
+    assert_eq!(fixture.history().await, vec![expected_item]);
     let after = fixture.store.calls().await;
     assert_eq!(
         (after.append_items, after.flush_thread),
