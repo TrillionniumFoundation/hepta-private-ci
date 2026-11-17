@@ -1,0 +1,67 @@
+{
+  "schema": "hcsn-fullpacket-v2-smallfixture-static-audit-v1",
+  "status": "PASS",
+  "exact_source_commit": "40232d51886f21520377effcd25deee31bd593e6",
+  "source_files": {
+    "README.md": {
+      "bytes": 826,
+      "git_blob_sha1": "dcb188d1c34649ec96c90999cb9de3cc0ff727c8",
+      "sha256": "c5f353b95f8ee245f14f2a3f98186774638bdbc9c73cedcd4f38d60a17df2baf"
+    },
+    "__init__.py": {
+      "bytes": 60,
+      "git_blob_sha1": "6832cfbfb148c9a1333d56cc65b31804862783d5",
+      "sha256": "7eae29d4ca45fb9a186c7d446f37161a536ea687c768f5173bd8c65ae146e5b7"
+    },
+    "candidate.py": {
+      "bytes": 17781,
+      "git_blob_sha1": "1a74673b9c8494028788eb674a83b947c6fd0ef1",
+      "sha256": "247f74257314c51a9a22a0a4f61d77dbfed0711be4424fa209e8ee76eb87aeeb"
+    },
+    "compare.py": {
+      "bytes": 2070,
+      "git_blob_sha1": "2c7454391a530cbc182410f0717e5401682ebb5b",
+      "sha256": "2f6f28c991bcd17a85be94c2b0e135f6a88275d675ed4d6694c625cc7dfcea9c"
+    },
+    "fixture.json": {
+      "bytes": 4095,
+      "git_blob_sha1": "cead209c40807a6c155298bbf752fc6d714e7a17",
+      "sha256": "8841adb310645d124d03005704235a119f6564e4a06e0fb684f986a61ba0538d"
+    },
+    "oracle.py": {
+      "bytes": 3894,
+      "git_blob_sha1": "3dc3ad39c47911b7dff797d076552e717db443a9",
+      "sha256": "abd31f4ea0c8963ceb1fea9ac6d633a026c5541cc9d102ad5261c9d2f70330d0"
+    },
+    "test_primitives.py": {
+      "bytes": 8075,
+      "git_blob_sha1": "d9bee3dde757414d7c1123adaab2a58d22224f8b",
+      "sha256": "f60007f0eec4835fb6333f7e978f3ade59a460e36fc048d3ba61657d94d77f20"
+    }
+  },
+  "oracle_imports": [
+    "fractions",
+    "hashlib",
+    "json",
+    "math",
+    "pathlib",
+    "struct"
+  ],
+  "oracle_imports_candidate_serializer_loader_or_comparator": false,
+  "test_methods": [
+    "test_canonical_roundtrip_and_independent_full_coordinate_oracle",
+    "test_cold_loader_refuses_corruption_and_noncanonical_source",
+    "test_epsilon_pruning_of_subnormal_edge_is_detected",
+    "test_refuses_missing_signed_channel_duplicate_reorder_and_returning_upper",
+    "test_same_totals_different_release_law_is_not_restorable"
+  ],
+  "test_method_count": 5,
+  "fixture_scope": "synthetic C5/n3 only",
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "numerical_execution_key": null,
+  "admission": "HOLD_SMALL_FIXTURE_ONLY",
+  "all_closed": false
+}
