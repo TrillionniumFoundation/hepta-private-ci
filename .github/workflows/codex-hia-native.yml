@@ -7,6 +7,7 @@ on:
       - codex-rs/apply-patch/**
       - codex-rs/arg0/**
       - codex-rs/cli/**
+      - codex-rs/core/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
@@ -36,6 +37,7 @@ on:
       - codex-rs/apply-patch/**
       - codex-rs/arg0/**
       - codex-rs/cli/**
+      - codex-rs/core/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
@@ -501,8 +503,18 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native31 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
+
+      - name: Verify output-item budget literal frames and atomic ABI errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_output_item_budget_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -625,8 +637,30 @@ jobs:
         run: |
           set -euo pipefail
           just test -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments \
-            --features codex-utils-string/hia-native --locked \
+            --features codex-utils-output-truncation/hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-consumers.log"
+
+      - name: Test existing Core output-item callers with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          output_item_callers='test(=context_manager::history::tests::record_items_omits_audio_that_exceeds_the_output_budget)'
+          output_item_callers+=' | test(=tools::code_mode::tests::over_budget_audio_output_is_omitted)'
+          just test --lib -p codex-core --features codex-core/hia-native --locked \
+            -E "$output_item_callers" \
+            2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-native.log"
+
+      - name: Test existing Core output-item callers with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          output_item_callers='test(=context_manager::history::tests::record_items_omits_audio_that_exceeds_the_output_budget)'
+          output_item_callers+=' | test(=tools::code_mode::tests::over_budget_audio_output_is_omitted)'
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test --lib -p codex-core --locked \
+            -E "$output_item_callers" \
+            2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-default.log"
 
       - name: Verify native scalar token arithmetic and invalid-mode traps
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -990,7 +1024,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native30 \
+            --build-profile full-native31 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -998,12 +1032,12 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
-          # This checkout runs original/native30. The separate owner gate requires
-          # original/native16/native30 and an admitted published16 link bundle.
+          # This checkout runs original/native31. The separate owner gate requires
+          # original/native16/native31 and an admitted published16 link bundle.
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native30 \
+            --build-profile full-native31 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1139,8 +1173,8 @@ jobs:
         run: |
           set -euo pipefail
           clippy_status=0
-          cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy \
-            --features codex-apply-patch/hia-native,codex-utils-string/hia-native,codex-utils-template/hia-native,codex-execpolicy/hia-native \
+          cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy -p codex-utils-output-truncation \
+            --features codex-apply-patch/hia-native,codex-utils-string/hia-native,codex-utils-template/hia-native,codex-execpolicy/hia-native,codex-utils-output-truncation/hia-native \
             --message-format=json-render-diagnostics -- -D warnings \
             > "$RUNNER_TEMP/unified-owner-clippy.jsonl" 2> "$RUNNER_TEMP/unified-owner-clippy.stderr" || clippy_status=$?
           cat "$RUNNER_TEMP/unified-owner-clippy.stderr" | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
@@ -1166,7 +1200,7 @@ jobs:
             > "$RUNNER_TEMP/unified-owner-clippy-admission.json"
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-owner-clippy-admission.json"
           env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
-            -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy -- -D warnings \
+            -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy -p codex-utils-output-truncation -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-default-owner-clippy.log"
 
       - name: Run scoped native owner fixes without source drift
@@ -1229,7 +1263,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current30-results
+          name: codex-hia-current31-results
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
@@ -1350,6 +1384,10 @@ jobs:
             {0}/hia-string-caller.log
             {0}/hia-output-lines-abi.json
             {0}/hia-output-lines-abi.log
+            {0}/hia-output-item-budget-abi.json
+            {0}/hia-output-item-budget-abi.log
+            {0}/hia-output-item-budget-core-native.log
+            {0}/hia-output-item-budget-core-default.log
             {0}/hia-metric-caller.json
             {0}/hia-metric-caller.log
             {0}/hia-metric-abi.json
