@@ -87,6 +87,9 @@ pub fn evaluate_candidates_with_policy(
     mut policy: EvaluationPolicyV1,
 ) -> Result<NduEvaluationReceiptV2, NduError> {
     validate_profile(&mut profile)?;
+    if let Some(scalarization) = &scalarization {
+        crate::ValidatedScalarizationProfileV1::try_new(&profile, scalarization.clone())?;
+    }
     validate_contribution_envelope(&set)?;
     let validated_policy = validate_evaluation_policy(&profile, &mut policy)?;
     let evaluation_policy_digest = digest_evaluation_policy(&policy);
