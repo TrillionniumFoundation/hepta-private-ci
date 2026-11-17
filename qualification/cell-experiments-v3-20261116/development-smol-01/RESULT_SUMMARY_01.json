@@ -1,0 +1,148 @@
+{
+  "schema": "hepta.smol-probe-archived-summary.v1",
+  "summary_zh": "父模型与 trajectory 模型在同一组 9 个已暴露开发任务上均为 NOT_READY；每个模型生成 18 次，36 次输出全部被 invalid_test_patch 拒绝，实际执行次数和成功任务数均为 0。该证据确认当前探针未通过动作格式准入，不能证明轨迹训练在未见任务上的收益。",
+  "archive": {
+    "name": "SMOL_PROBE_EVIDENCE_01.zip",
+    "sha256": "7317355beb06eefb315e68249bf062981752536bbade008d7485240be1101066",
+    "bytes": 211433,
+    "raw_member_count": 154,
+    "raw_member_bytes": 712255,
+    "all_member_sha256_verified": true,
+    "zip_crc_verified": true
+  },
+  "manifest": {
+    "name": "SMOL_PROBE_MEMBERS_01.json",
+    "sha256": "516ac32fed57049a87f7025c97453a87d8ef2e0c7030c9a87625f68e4c0504e6"
+  },
+  "source_snapshot": {
+    "path": "../operations/smol-probe-source-01.zip",
+    "sha256": "7d822083fd95b790a3d39196fe960f7e2848b9b971b2463622703d4ec316a95f",
+    "frozen_source_used_for_validation": true,
+    "current_source_substituted": false
+  },
+  "arms": {
+    "parent": {
+      "status": "NOT_READY",
+      "counters_recomputed_from_raw_files": {
+        "task_count": 9,
+        "model_calls": 18,
+        "format_admitted_attempts": 0,
+        "executed_attempts": 0,
+        "completed_original_calls": 0,
+        "original_passed_attempts": 0,
+        "business_passed_attempts": 0,
+        "first_attempt_successes": 0,
+        "successful_tasks": 0,
+        "recovery_opportunities": 9,
+        "recovered_tasks": 0
+      },
+      "tokens_recomputed_from_raw_files": {
+        "input_tokens": 9035,
+        "output_tokens": 4608,
+        "output_cap_hits": 18
+      },
+      "failure_reason_counts": {
+        "invalid_test_patch": 18
+      },
+      "reported_cost": {
+        "complete": false,
+        "energy_joules": null,
+        "gpu_seconds": null,
+        "input_tokens": 9035,
+        "model_calls": 18,
+        "output_cap_hits": 18,
+        "output_tokens": 4608,
+        "parent_cpu_seconds": 334.508266,
+        "parent_process_peak_rss_bytes": 1145040896,
+        "scope": "student generation and semantic verification; model load and reference rebinding excluded",
+        "verifier_child_cpu_seconds": 0.0,
+        "wall_seconds": 174.41347661311738
+      },
+      "model_digest": "65d78bbf81ee10674873df4c5b7abd044c06992e05f360ca04e68e67bc14788d",
+      "freeze_digest": "f37af0dc87ae736fd732e6ba0956d5ef464c4ffdc808c97629b346fc22a0d8c6",
+      "readiness_receipt_sha256": "9f26067d0207bb72652a8c7ca3fdbea29186789d306011f7c499615a0d6176a8",
+      "source_inventory_verified_file_count": 47,
+      "readiness_receipt_valid": true,
+      "freeze_and_records_digests_valid": true,
+      "raw_result_step_request_output_links_valid": true,
+      "step_and_semantic_receipt_digests_valid": true,
+      "semantic_receipt_digest_definition": "Canonical frozen data.verify_answer receipt excludes receipt_sha256 and derived top-level success; success independently matches result.success.",
+      "log_summary_matches_readiness": true,
+      "exposure": "development",
+      "old_B_C_are_not_unseen": true,
+      "independent_sample_increment": 0,
+      "external_teacher_count_added": 0,
+      "scientific_confirmation_qualified": false,
+      "native_cell_adoption": false
+    },
+    "trajectory": {
+      "status": "NOT_READY",
+      "counters_recomputed_from_raw_files": {
+        "task_count": 9,
+        "model_calls": 18,
+        "format_admitted_attempts": 0,
+        "executed_attempts": 0,
+        "completed_original_calls": 0,
+        "original_passed_attempts": 0,
+        "business_passed_attempts": 0,
+        "first_attempt_successes": 0,
+        "successful_tasks": 0,
+        "recovery_opportunities": 9,
+        "recovered_tasks": 0
+      },
+      "tokens_recomputed_from_raw_files": {
+        "input_tokens": 8772,
+        "output_tokens": 3770,
+        "output_cap_hits": 11
+      },
+      "failure_reason_counts": {
+        "invalid_test_patch": 18
+      },
+      "reported_cost": {
+        "complete": false,
+        "energy_joules": null,
+        "gpu_seconds": null,
+        "input_tokens": 8772,
+        "model_calls": 18,
+        "output_cap_hits": 11,
+        "output_tokens": 3770,
+        "parent_cpu_seconds": 286.46936199999993,
+        "parent_process_peak_rss_bytes": 1148219392,
+        "scope": "student generation and semantic verification; model load and reference rebinding excluded",
+        "verifier_child_cpu_seconds": 0.0,
+        "wall_seconds": 149.34281682688743
+      },
+      "model_digest": "5e531a412a61d0cd97306efadb64e9745828681291de16a60d7398f1f312c10f",
+      "freeze_digest": "e55d57fc44b6a6a191143631499abdc0ff13fcc0b2801bfa6a495ba29528f905",
+      "readiness_receipt_sha256": "61b952e980ad845bf82f2c3a1d66aa67d15157caeff689ea9ef3c57b3ccaaaa8",
+      "source_inventory_verified_file_count": 47,
+      "readiness_receipt_valid": true,
+      "freeze_and_records_digests_valid": true,
+      "raw_result_step_request_output_links_valid": true,
+      "step_and_semantic_receipt_digests_valid": true,
+      "semantic_receipt_digest_definition": "Canonical frozen data.verify_answer receipt excludes receipt_sha256 and derived top-level success; success independently matches result.success.",
+      "log_summary_matches_readiness": true,
+      "exposure": "development",
+      "old_B_C_are_not_unseen": true,
+      "independent_sample_increment": 0,
+      "external_teacher_count_added": 0,
+      "scientific_confirmation_qualified": false,
+      "native_cell_adoption": false
+    }
+  },
+  "same_task_id_panel_across_arms": true,
+  "total_recorded_model_calls": 36,
+  "total_recorded_successful_tasks_across_arms": 0,
+  "new_model_execution_during_archival": false,
+  "source_files_modified_during_archival": false,
+  "limits_zh": [
+    "本次只归档并离线核对已有结果，未重新执行模型、训练或任务。",
+    "同一组已暴露开发任务被两个模型使用；重放、修正尝试和两个实验臂不增加独立样本数。",
+    "source_id/source_count 是原始记录字段，本归档不把它们转换为真实用户或组织数量。",
+    "36 次输出全部在格式层被拒绝，因此没有学生补丁的真实业务执行成功证据。",
+    "墙钟、CPU 和 RSS 来自原始报告；成本排除模型加载和 reference rebinding，GPU 秒与能耗未记录，cost.complete=false。",
+    "报告、冻结记录、请求、输出、step、RESULT 与日志可互相核对，但相符的摘要不构成独立的模型权重身份认证。",
+    "归档不包含模型权重、候选源码目录或外部依赖环境；源码快照单独保留并按指定 SHA256 验证。",
+    "远程导出前后进行了逐文件元数据、SHA256 和文件集合复核，但不是文件系统级原子快照。"
+  ]
+}
