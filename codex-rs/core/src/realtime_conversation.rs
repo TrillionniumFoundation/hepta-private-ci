@@ -85,6 +85,7 @@ mod bem;
 mod existing_call;
 mod handoff_owner;
 mod input_forwarding;
+mod routing;
 mod sideband;
 
 use self::bem::ChannelParser as BemChannelParser;
@@ -499,6 +500,8 @@ struct RealtimeStart {
 
 struct RealtimeStartOutput {
     realtime_active: Arc<AtomicBool>,
+    handoff: RealtimeHandoffState,
+    stop_token: CancellationToken,
     events_rx: Receiver<RealtimeEvent>,
     transcript_tail_rx: Receiver<String>,
     sdp: Option<String>,
@@ -698,14 +701,16 @@ impl RealtimeConversationManager {
             audio_tx,
             text_tx,
             session_kind,
-            handoff,
+            handoff: handoff.clone(),
             input_task: task,
             fanout_task: None,
             realtime_active: Arc::clone(&realtime_active),
-            stop_token,
+            stop_token: stop_token.clone(),
         });
         Ok(RealtimeStartOutput {
             realtime_active,
+            handoff,
+            stop_token,
             events_rx,
             transcript_tail_rx,
             sdp,
@@ -1527,7 +1532,7 @@ async fn handle_start_inner(
         sdp,
         existing_call_id,
     };
-    let start_output = sess.conversation.start(start, mode_instructions).await?;
+    let mut start_output = sess.conversation.start(start, mode_instructions).await?;
 
     info!("realtime conversation started");
 
@@ -1540,13 +1545,8 @@ async fn handle_start_inner(
     })
     .await;
 
-    let RealtimeStartOutput {
-        realtime_active,
-        events_rx,
-        transcript_tail_rx,
-        sdp,
-    } = start_output;
-    if let Some(sdp) = sdp {
+    let realtime_active = Arc::clone(&start_output.realtime_active);
+    if let Some(sdp) = start_output.sdp.take() {
         sess.send_event_raw(Event {
             id: sub_id.to_string(),
             msg: EventMsg::RealtimeConversationSdp(RealtimeConversationSdpEvent { sdp }),
@@ -1554,65 +1554,11 @@ async fn handle_start_inner(
         .await;
     }
 
-    let sess_clone = Arc::clone(sess);
-    let sub_id = sub_id.to_string();
-    let fanout_realtime_active = Arc::clone(&realtime_active);
-    let fanout_task = tokio::spawn(async move {
-        let ev = |msg| Event {
-            id: sub_id.clone(),
-            msg,
-        };
-        let mut end = RealtimeConversationEnd::TransportClosed;
-        // Drain already-parsed events so a queued handoff is routed before the final tail.
-        while let Ok(event) = events_rx.recv().await {
-            match &event {
-                RealtimeEvent::AudioOut(_) => {}
-                _ => {
-                    info!(
-                        event = ?event,
-                        "received realtime conversation event"
-                    );
-                }
-            }
-            if let RealtimeEvent::Error(_) = &event {
-                end = RealtimeConversationEnd::Error;
-            }
-            let maybe_routed_text = match &event {
-                RealtimeEvent::HandoffRequested(handoff) => {
-                    realtime_delegation_from_handoff(handoff)
-                }
-                _ => None,
-            };
-            if let Some(text) = maybe_routed_text {
-                debug!(text = %text, "[realtime-text] realtime conversation text output");
-                let sess_for_routed_text = Arc::clone(&sess_clone);
-                sess_for_routed_text.route_realtime_text_input(text).await;
-            }
-            sess_clone
-                .send_event_raw(ev(EventMsg::RealtimeConversationRealtime(
-                    RealtimeConversationRealtimeEvent {
-                        payload: event.clone(),
-                    },
-                )))
-                .await;
-        }
-        if let Ok(text) = transcript_tail_rx.recv().await {
-            sess_clone.route_realtime_text_input(text).await;
-        }
-        if fanout_realtime_active.swap(false, Ordering::Relaxed) {
-            match end {
-                RealtimeConversationEnd::TransportClosed => {
-                    info!("realtime conversation transport closed");
-                }
-                RealtimeConversationEnd::Requested | RealtimeConversationEnd::Error => {}
-            }
-            sess_clone
-                .conversation
-                .finish_if_active(&fanout_realtime_active)
-                .await;
-            send_realtime_conversation_closed(&sess_clone, sub_id, end).await;
-        }
-    });
+    let fanout_task = tokio::spawn(routing::run(
+        Arc::clone(sess),
+        sub_id.to_string(),
+        start_output,
+    ));
     sess.conversation
         .register_fanout_task(&realtime_active, fanout_task)
         .await;
