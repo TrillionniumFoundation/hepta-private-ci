@@ -141,8 +141,8 @@ async fn cancellation_releases_coordination_without_undoing_committed_retirement
             Some(next.clone()),
             /*complete*/ false,
         )
-            .await
-            .expect("the next call observes the retained completion state");
+        .await
+        .expect("the next call observes the retained completion state");
         if complete {
             assert!(rx.try_recv().is_err());
         } else {
