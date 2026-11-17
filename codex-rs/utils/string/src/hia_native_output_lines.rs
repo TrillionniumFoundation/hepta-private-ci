@@ -57,7 +57,7 @@ pub(super) fn count_lines(s: &str) -> usize {
             "HIA line-count returned invalid state"
         );
         assert!(
-            (seen != 0 || (lf_count == 0 && last_is_lf == 0)) && (last_is_lf == 0 || lf_count != 0),
+            (last_is_lf == 0 || lf_count != 0) && (lf_count == 0 || seen != 0),
             "HIA line-count returned inconsistent flags"
         );
         // Validate the returned state without scanning or correcting input.

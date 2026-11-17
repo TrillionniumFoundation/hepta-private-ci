@@ -1138,11 +1138,30 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
+          clippy_status=0
           cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string -p codex-utils-template -p codex-execpolicy \
             --features codex-apply-patch/hia-native,codex-utils-string/hia-native,codex-utils-template/hia-native,codex-execpolicy/hia-native \
             --message-format=json-render-diagnostics -- -D warnings \
-            > "$RUNNER_TEMP/unified-owner-clippy.jsonl" 2> "$RUNNER_TEMP/unified-owner-clippy.stderr"
+            > "$RUNNER_TEMP/unified-owner-clippy.jsonl" 2> "$RUNNER_TEMP/unified-owner-clippy.stderr" || clippy_status=$?
           cat "$RUNNER_TEMP/unified-owner-clippy.stderr" | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
+          if (( clippy_status != 0 )); then
+            if ! python3 - "$RUNNER_TEMP/unified-owner-clippy.jsonl" <<'PY'; then
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              for line in stream:
+                  try:
+                      row = json.loads(line)
+                  except json.JSONDecodeError:
+                      continue
+                  if isinstance(row, dict) and row.get("reason") == "compiler-message":
+                      rendered = row.get("message", {}).get("rendered")
+                      if isinstance(rendered, str):
+                          sys.stderr.write(rendered)
+          PY
+              echo "Unable to render stored Clippy diagnostics" >&2
+            fi
+            exit "$clippy_status"
+          fi
           python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-owner-clippy.jsonl" \
             > "$RUNNER_TEMP/unified-owner-clippy-admission.json"
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-owner-clippy-admission.json"
