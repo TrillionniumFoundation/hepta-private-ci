@@ -107,10 +107,11 @@ impl PreparedRealtimeHandoff<'_> {
     }
 }
 
-/// Serialize progress, accepted-steer acknowledgement and completion for one
-/// owner. After completion, a late timer cannot enqueue stale progress. The
-/// receiver therefore does not need a later arrival's global handoff ID to
-/// classify an already-owned V2 output.
+/// Serialize progress, accepted-steer acknowledgement and retirement for one
+/// owner. Completion and abort close this gate before releasing the turn fence;
+/// a late timer cannot enqueue stale progress. Abort supplies no completion
+/// output. The receiver therefore does not need a later arrival's global
+/// handoff ID to classify an already-owned V2 output.
 pub(super) async fn send_owned_handoff_output(
     handoff: &RealtimeHandoffState,
     output: Option<RealtimeOutbound>,

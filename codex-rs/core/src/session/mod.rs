@@ -2435,13 +2435,22 @@ impl Session {
     }
 
     async fn maybe_clear_realtime_handoff_for_event(&self, turn: &TurnContext, msg: &EventMsg) {
-        if !matches!(msg, EventMsg::TurnComplete(_)) {
-            return;
+        match msg {
+            EventMsg::TurnComplete(_) => {
+                if let Err(err) = self.conversation.handoff_complete(turn).await {
+                    debug!("failed to finalize realtime handoff output: {err}");
+                }
+                self.conversation.clear_active_handoff(turn).await;
+            }
+            EventMsg::TurnAborted(event)
+                if event.turn_id.as_deref() == Some(turn.sub_id.as_str()) =>
+            {
+                if let Err(err) = self.conversation.handoff_aborted(turn).await {
+                    debug!("failed to retire aborted realtime handoff output: {err}");
+                }
+            }
+            _ => {}
         }
-        if let Err(err) = self.conversation.handoff_complete(turn).await {
-            debug!("failed to finalize realtime handoff output: {err}");
-        }
-        self.conversation.clear_active_handoff(turn).await;
     }
 
     pub(crate) async fn send_event_raw(&self, event: Event) {

@@ -10,6 +10,9 @@ use async_channel::Receiver;
 use codex_api::RealtimeEventParser;
 use codex_protocol::models::MessagePhase;
 use codex_protocol::protocol::CodexResponseHandoffMode;
+use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::TurnAbortReason;
+use codex_protocol::protocol::TurnAbortedEvent;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -229,4 +232,91 @@ async fn v2_accepted_steer_acknowledgement_precedes_owned_progress_and_completio
     .await
     .expect("a completed owner's late timer is ignored");
     assert!(rx.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn only_the_matching_aborted_owner_retires_without_a_completion_acknowledgement() {
+    for kind in [RealtimeSessionKind::V1, RealtimeSessionKind::V2] {
+        let (session, first, _events) = make_session_and_context_with_rx().await;
+        let (_second_session, second, _second_events) = make_session_and_context_with_rx().await;
+        let (state, rx) = handoff(kind);
+        let first_request = RealtimeHandoffRequest::new(state.clone(), "first".to_string());
+        first_request.prepare(&first).await.commit();
+        let steer = RealtimeHandoffRequest::new(state.clone(), "steer".to_string());
+        steer.prepare(&first).await.commit();
+        let first_owner = steer.admitted.get().expect("accepted owner");
+        session
+            .send_event(
+                &first,
+                EventMsg::TurnAborted(TurnAbortedEvent {
+                    turn_id: Some("different-turn".to_string()),
+                    reason: TurnAbortReason::Interrupted,
+                    started_at: None,
+                    completed_at: None,
+                    duration_ms: None,
+                }),
+            )
+            .await;
+        assert!(!*first_owner.handoff.output_complete.lock().await);
+        assert!(rx.try_recv().is_err());
+        session
+            .send_event(
+                &first,
+                EventMsg::TurnAborted(TurnAbortedEvent {
+                    turn_id: Some(first.sub_id.clone()),
+                    reason: TurnAbortReason::Interrupted,
+                    started_at: None,
+                    completed_at: None,
+                    duration_ms: None,
+                }),
+            )
+            .await;
+        assert!(*first_owner.handoff.output_complete.lock().await);
+        assert!(first_owner.handoff.stream.lock().await.active_handoff.is_none());
+        if matches!(kind, RealtimeSessionKind::V2) {
+            assert_eq!(
+                rx.recv().await.expect("only the accepted steering acknowledgement"),
+                RealtimeOutbound::HandoffSteerAck {
+                    handoff_id: "steer".to_string(),
+                }
+            );
+        }
+        assert!(rx.try_recv().is_err());
+        let next = RealtimeHandoffRequest::new(state, "next".to_string());
+        next.prepare(&second).await.commit();
+        let manager = RealtimeConversationManager::new();
+        manager.clear_active_handoff(&first).await;
+        send_owned_handoff_output(
+            &first_owner.handoff,
+            Some(RealtimeOutbound::HandoffAppend {
+                handoff_id: "first".to_string(),
+                text: "late aborted timer".to_string(),
+                phase: Some(MessagePhase::Commentary),
+            }),
+            /*complete*/ false,
+        )
+        .await
+        .expect("retired owner's timer is ignored");
+        manager
+            .handoff_out(
+                &second,
+                "next output".to_string(),
+                Some(MessagePhase::FinalAnswer),
+            )
+            .await
+            .expect("next owner remains active");
+        let expected_text = match kind {
+            RealtimeSessionKind::V1 => "next output",
+            RealtimeSessionKind::V2 => "[BACKEND] next output",
+        };
+        assert_eq!(
+            rx.recv().await.expect("next owner output"),
+            RealtimeOutbound::HandoffUpdate {
+                handoff_id: "next".to_string(),
+                text: expected_text.to_string(),
+                phase: Some(MessagePhase::FinalAnswer),
+            }
+        );
+        assert!(rx.try_recv().is_err());
+    }
 }

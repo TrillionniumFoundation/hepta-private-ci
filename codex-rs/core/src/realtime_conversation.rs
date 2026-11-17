@@ -1068,6 +1068,18 @@ impl RealtimeConversationManager {
         send_owned_handoff_output(handoff, output, /*complete*/ true).await
     }
 
+    /// Retire only the owner attached to this aborted turn. Accepted steering
+    /// acknowledgements retain their order, but an abort sends no completion.
+    pub(crate) async fn handoff_aborted(&self, turn: &TurnContext) -> CodexResult<()> {
+        let Some(owner) = turn.extension_data.get::<RealtimeTurnHandoff>() else {
+            return Ok(());
+        };
+        let result =
+            send_owned_handoff_output(&owner.handoff, /*output*/ None, /*complete*/ true).await;
+        self.clear_active_handoff(turn).await;
+        result
+    }
+
     pub(crate) async fn clear_active_handoff(&self, turn: &TurnContext) {
         let handoff = self.handoff_for_turn(turn).await;
         if let Some(handoff) = handoff {
