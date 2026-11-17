@@ -3,7 +3,13 @@
 
 use std::error::Error as StdError;
 
+use codex_hepta_intelligence_eval::FencedHoldoutError;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreError;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionErrorV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
+use codex_hepta_intelligence_eval::ProductEvidenceSinkErrorV1;
+use codex_hepta_intelligence_eval::ProductProviderErrorV1;
+use codex_hepta_neuron::CellGenerationErrorV2;
 
 use crate::CellQ24ModelProposalErrorV1;
 use crate::CellQ24TrainingOwnerErrorV1;
@@ -38,6 +44,27 @@ pub(crate) fn is_commit_uncertain(error: &(dyn StdError + 'static)) -> bool {
     ) || matches!(
         error.downcast_ref::<ProductEvaluationExecutionStoreErrorV1>(),
         Some(ProductEvaluationExecutionStoreErrorV1::Indeterminate)
+    ) || matches!(
+        error.downcast_ref::<ProductEvaluationExecutionErrorV1>(),
+        Some(ProductEvaluationExecutionErrorV1::Pending)
+    ) || matches!(
+        error.downcast_ref::<ProductProviderErrorV1>(),
+        Some(ProductProviderErrorV1::Indeterminate)
+    ) || matches!(
+        error.downcast_ref::<ProductEvidenceSinkErrorV1>(),
+        Some(ProductEvidenceSinkErrorV1::Indeterminate)
+    ) || matches!(
+        error.downcast_ref::<FencedHoldoutError>(),
+        Some(
+            FencedHoldoutError::Indeterminate
+                | FencedHoldoutError::Store(FinalHoldoutCasStoreError::Indeterminate)
+        )
+    ) || matches!(
+        error.downcast_ref::<FinalHoldoutCasStoreError>(),
+        Some(FinalHoldoutCasStoreError::Indeterminate)
+    ) || matches!(
+        error.downcast_ref::<CellGenerationErrorV2>(),
+        Some(CellGenerationErrorV2::Pending | CellGenerationErrorV2::CommitUncertain)
     ) || matches!(error.downcast_ref::<Error>(), Some(Error::CommitUncertain))
     {
         return true;
