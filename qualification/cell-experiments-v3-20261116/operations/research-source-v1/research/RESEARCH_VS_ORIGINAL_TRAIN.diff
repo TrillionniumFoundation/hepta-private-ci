@@ -1,0 +1,331 @@
+--- original64/causal_train_v3.py
++++ research_sft_train_v1.py
+@@ -1,58 +1,29 @@
+-"""Bounded Qwen LoRA development fits, with exact selected-token causal loss.
+-
+-Run training in a dedicated process: Torch RNG, threads and CUDA allocator limits
+-are process settings. This module never downloads a model or opens a new C set.
+-Qwen2 v4.57.3 supports tensor logits_to_keep before its language-model head:
+-https://github.com/huggingface/transformers/blob/v4.57.3/src/transformers/models/qwen2/modeling_qwen2.py
+-The reviewed upstream blob is 262e03cb1568dad0c9b2d027fa8ebdc36301b88b.
++"""Research-only LoRA training with the original numeric loss and fixed loop.
++
++No original contract is monkeypatched. The separate research schema cannot be
++loaded through the native candidate validator. Import only after source binding.
+ """
+ 
+-import argparse
+ import copy
+-import hashlib
+-import json
+ import os
+ from pathlib import Path
+ import time
+ 
+-from . import causal_probe_v3 as probe, chat_protocol, data, repo_execution
+-from .coding_sft import file_hash, write_new
+-from .causal_training_contract_v3 import SCHEMA, FAMILY, validate_plan, verify_candidate
+-from .causal_training_contract_v3 import make_plan as make_plan
+-
+-
+-def selected_token_loss(model, input_ids, attention_mask, labels):
+-    """Exactly the batch-one dense causal objective, without unused head logits."""
+-    import torch
+-
+-    if (
+-        input_ids.ndim != 2
+-        or input_ids.shape[0] != 1
+-        or labels.shape != input_ids.shape
+-        or attention_mask.shape != input_ids.shape
+-    ):
+-        raise ValueError("one aligned sequence required")
+-    positions = torch.nonzero(labels[0, 1:] != -100, as_tuple=False).flatten()
+-    if positions.numel() == 0 or bool((attention_mask[0, positions + 1] != 1).any()):
+-        raise ValueError("nonempty unmasked next-token supervision required")
+-    logits = model(
+-        input_ids=input_ids,
+-        attention_mask=attention_mask,
+-        use_cache=False,
+-        logits_to_keep=positions,
+-    ).logits
+-    if logits.shape[:2] != (1, positions.numel()):
+-        raise ValueError("backend did not select the declared causal positions")
+-    return torch.nn.functional.cross_entropy(
+-        logits[0].float(), labels[0, positions + 1]
+-    ), int(positions.numel())
++import research_sft_contract_v1 as contract
++from cell_experiments import causal_probe_v3 as probe, chat_protocol, data, repo_execution
++from cell_experiments import causal_train_v3 as original
++from cell_experiments.coding_sft import file_hash, write_new
++
++io = contract.helpers().io
++selected_token_loss = original.selected_token_loss
++_parameter_hash = original._parameter_hash
+ 
+ 
+ class Predictor(probe.Predictor):
+-    """Cold-load the exact candidate while retaining the parent's greedy policy."""
++    """Cold-load the exact research artifact while retaining the parent's greedy policy."""
+ 
+     def __init__(self, manifest, artifact_root):
+-        identity = verify_candidate(manifest, artifact_root)
++        identity = contract.verify_model(manifest, artifact_root)
+         super().__init__(manifest["base_manifest"], artifact_root)
+         import peft
+ 
+@@ -79,36 +50,79 @@
+     )
+ 
+ 
+-def _parameter_hash(parameters, torch):
+-    result = hashlib.sha256()
+-    for name, value in parameters:
+-        result.update(
+-            data.canonical(
+-                {"name": name, "dtype": str(value.dtype), "shape": list(value.shape)}
+-            )
+-        )
+-        result.update(
+-            value.detach().cpu().contiguous().view(torch.uint8).numpy().tobytes()
+-        )
+-    return result.hexdigest()
+-
+-
+-def train(records, parent, root, plan, output, readiness):
+-    """Create one immutable candidate; failures and completed steps are retained."""
+-    root, output = Path(root).resolve(), Path(output).resolve()
+-    output.relative_to(root)
++def fit_steps(torch, model, pad_token_id, encoded, records, settings, optimizer, parameters, device, output):
++    """The production numeric loop; also exercised by a separate tiny CPU test."""
++    io.require(settings == contract.TRAINING and len(encoded) == len(records) == 6,
++               "fixed research settings and all six record groups required")
++    losses, consumed, supervised = [], 0, 0
++    counts = [[0] * len(turns) for turns in encoded]
++    for index in range(settings["steps"]):
++        group = index % len(encoded)
++        turn = (index // len(encoded)) % len(encoded[group])
++        row = encoded[group][turn]
++        padding = settings["sequence_tokens"] - len(row["input_ids"])
++        ids = torch.tensor(
++            [row["input_ids"] + [pad_token_id] * padding],
++            device=device,
++        )
++        labels = torch.tensor([row["labels"] + [-100] * padding], device=device)
++        mask = torch.tensor(
++            [[1] * len(row["input_ids"]) + [0] * padding], device=device
++        )
++        optimizer.zero_grad(set_to_none=True)
++        loss, selected = selected_token_loss(model, ids, mask, labels)
++        if not bool(torch.isfinite(loss)):
++            raise ValueError("nonfinite observed training loss")
++        loss.backward()
++        norm = torch.nn.utils.clip_grad_norm_(
++            [value for _, value in parameters],
++            settings["max_grad_norm"],
++            error_if_nonfinite=True,
++        )
++        optimizer.step()
++        losses.append(float(loss.detach()))
++        consumed += len(row["input_ids"])
++        supervised += selected
++        counts[group][turn] += 1
++        step = {
++            "step": index + 1,
++            "task_id": records[group]["task_id"],
++            "record_id": row["record_id"],
++            "turn": turn,
++            "loss": losses[-1],
++            "gradient_norm_before_clip": float(norm),
++            "input_tokens": len(row["input_ids"]),
++            "supervised_tokens": selected,
++            "padded_positions": settings["sequence_tokens"],
++            "observed_at_ns": time.time_ns(),
++        }
++        with (output / "STEPS.jsonl").open("ab") as stream:
++            stream.write(data.canonical(step) + b"\n")
++            stream.flush()
++            os.fsync(stream.fileno())
++    return losses, consumed, supervised, counts
++
++
++def train(records, parent, root, plan, output, context):
++    """Create one research-only artifact; failures and completed steps are retained."""
++    root, output = Path(root), Path(output)
++    io.workspace_guard(root, output)
++    io.require(parent == context["parent"], "research parent differs from bound baseline")
+     output.mkdir(parents=True, exist_ok=False)
+     write_new(
+         output / "STARTED.json",
+-        {"plan_digest": data.digest(plan), "started_at_ns": time.time_ns()},
++        {"plan_digest": data.digest(plan), "started_at_ns": time.time_ns(), **contract.SCOPE},
+     )
++    usage_before = io.usage()
+     started, cpu, predictor = time.perf_counter(), time.process_time(), None
+     torch = None
+     try:
+-        validate_plan(records, parent, readiness, plan)
++        contract.validate_plan(records, context, plan)
+         probe.verify_model(parent, root)
+         repo_execution.load_catalog()
+-        references = [data.verify_answer(row, row["final_answer"]) for row in records]
++        references = []
++        for index, row in enumerate(records):
++            references.append(contract.recheck_reference(row, output / "references" / str(index)))
+         write_new(output / "REFERENCE_RECHECKS.json", references)
+         if not all(row["success"] for row in references):
+             raise ValueError("an actual A reference execution failed")
+@@ -167,52 +181,9 @@
+             eps=settings["optimizer_eps"],
+             weight_decay=settings["weight_decay"],
+         )
+-        losses, consumed, supervised = [], 0, 0
+-        counts = [[0] * len(turns) for turns in encoded]
+-        for index in range(settings["steps"]):
+-            group = index % len(encoded)
+-            turn = (index // len(encoded)) % len(encoded[group])
+-            row = encoded[group][turn]
+-            padding = settings["sequence_tokens"] - len(row["input_ids"])
+-            ids = torch.tensor(
+-                [row["input_ids"] + [predictor.tokenizer.pad_token_id] * padding],
+-                device=device,
+-            )
+-            labels = torch.tensor([row["labels"] + [-100] * padding], device=device)
+-            mask = torch.tensor(
+-                [[1] * len(row["input_ids"]) + [0] * padding], device=device
+-            )
+-            optimizer.zero_grad(set_to_none=True)
+-            loss, selected = selected_token_loss(model, ids, mask, labels)
+-            if not bool(torch.isfinite(loss)):
+-                raise ValueError("nonfinite observed training loss")
+-            loss.backward()
+-            norm = torch.nn.utils.clip_grad_norm_(
+-                [value for _, value in parameters],
+-                settings["max_grad_norm"],
+-                error_if_nonfinite=True,
+-            )
+-            optimizer.step()
+-            losses.append(float(loss.detach()))
+-            consumed += len(row["input_ids"])
+-            supervised += selected
+-            counts[group][turn] += 1
+-            step = {
+-                "step": index + 1,
+-                "task_id": records[group]["task_id"],
+-                "record_id": row["record_id"],
+-                "turn": turn,
+-                "loss": losses[-1],
+-                "gradient_norm_before_clip": float(norm),
+-                "input_tokens": len(row["input_ids"]),
+-                "supervised_tokens": selected,
+-                "padded_positions": settings["sequence_tokens"],
+-                "observed_at_ns": time.time_ns(),
+-            }
+-            with (output / "STEPS.jsonl").open("ab") as stream:
+-                stream.write(data.canonical(step) + b"\n")
+-                stream.flush()
+-                os.fsync(stream.fileno())
++        losses, consumed, supervised, counts = fit_steps(
++            torch, model, predictor.tokenizer.pad_token_id, encoded, records,
++            settings, optimizer, parameters, device, output)
+         after = _parameter_hash(parameters, torch)
+         adapter = output / "adapter"
+         adapter.mkdir(exist_ok=False)
+@@ -220,8 +191,10 @@
+         with (output / "optimizer.pt").open("xb") as stream:
+             torch.save(optimizer.state_dict(), stream)
+         manifest = {
+-            "schema": SCHEMA,
+-            "family": FAMILY,
++            "schema": contract.MODEL_SCHEMA,
++            "profile": contract.PROFILE,
++            "admission_policy": contract.ADMISSION,
++            "family": contract.FAMILY,
+             "model_id": probe.MODEL_ID,
+             "parent_model_digest": data.digest(parent),
+             "base_manifest": copy.deepcopy(parent),
+@@ -231,17 +204,21 @@
+             "adapter_files": probe._inventory(adapter),
+             "peft_version": peft.__version__,
+             "training_plan_digest": data.digest(plan),
+-            "evidence_scope": "development_only",
++            "evidence_scope": "research_only_post_failure_exploration",
++            "research_source_inventory": plan["source_inventory"],
++            "reference_admission_digest": data.digest(plan["reference_admission"]),
++            "parent_successful_A_tasks": plan["reference_admission"]["parent_successful_A_tasks"],
++            **contract.SCOPE,
+         }
+-        candidate = verify_candidate(manifest, root)
+-        validate_plan(records, parent, readiness, plan)
++        candidate = contract.verify_model(manifest, root)
++        contract.validate_plan(records, context, plan)
+         torch.cuda.synchronize(device)
+         receipt = {
+-            "schema": "hepta.causal-lora-training.v3",
++            "schema": "hepta.research-authored-sft-training.v1",
+             "status": "COMPLETE",
+             "plan_digest": data.digest(plan),
+             "parent_model_digest": data.digest(parent),
+-            "candidate_model_digest": candidate,
++            "research_model_digest": candidate,
+             "records_digest": data.digest(records),
+             "source_inventory": plan["source_inventory"],
+             "mode": plan["mode"],
+@@ -273,7 +250,10 @@
+                 "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated(device),
+                 "cuda_peak_reserved_bytes": torch.cuda.max_memory_reserved(device),
+                 "cuda_memory_fraction": settings["cuda_memory_fraction"],
+-                "scope": "verification/load/encode/train/save; CPU excludes verifier subprocesses",
++                "scope": "research verification/load/encode/train/save; self CPU and completed verifier-child CPU are separate",
++                "completed_child_cpu_seconds": io.cost(usage_before)["completed_child_cpu_seconds"],
++                "monetary_cost": None, "gpu_active_seconds": None,
++                "nested_scopes_are_not_additive": True,
+                 "energy_joules": None,
+                 "complete": False,
+             },
+@@ -284,6 +264,7 @@
+             "external_teacher_count_added": 0,
+             "scientific_confirmation_qualified": False,
+             "native_cell_adoption": False,
++            **contract.SCOPE,
+         }
+         write_new(output / "manifest.json", manifest)
+         write_new(output / "TRAINING.json", receipt)
+@@ -298,6 +279,7 @@
+                 "automatic_retry": False,
+                 "completed_steps_log": "STEPS.jsonl",
+                 "completed_at_ns": time.time_ns(),
++                "cost": io.cost(usage_before), **contract.SCOPE,
+             },
+         )
+         raise
+@@ -308,30 +290,3 @@
+             torch.cuda.empty_cache()
+ 
+ 
+-def main():
+-    parser = argparse.ArgumentParser(description=__doc__)
+-    for name in ("records", "parent", "readiness", "plan", "root", "output"):
+-        parser.add_argument("--" + name, type=Path, required=True)
+-    args = parser.parse_args()
+-
+-    def read(path):
+-        return json.loads(path.read_text())
+-
+-    _, result = train(
+-        read(args.records),
+-        read(args.parent),
+-        args.root,
+-        read(args.plan),
+-        args.output,
+-        read(args.readiness),
+-    )
+-    print(
+-        json.dumps(
+-            {k: v for k, v in result.items() if k not in ("source_inventory", "losses")}
+-        ),
+-        flush=True,
+-    )
+-
+-
+-if __name__ == "__main__":
+-    main()
