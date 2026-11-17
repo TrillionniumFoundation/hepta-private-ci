@@ -33,7 +33,9 @@ pub(super) fn latest_persisted_resume_settings(
         _ => None,
     });
     let runtime_cwd = runtime_environment.as_ref().map(|(cwd, _, _)| cwd.clone());
-    let runtime_workspace_roots = runtime_environment.as_ref().map(|(_, roots, _)| roots.clone());
+    let runtime_workspace_roots = runtime_environment
+        .as_ref()
+        .map(|(_, roots, _)| roots.clone());
     let runtime_environments = runtime_environment.and_then(|(_, _, environments)| environments);
 
     history

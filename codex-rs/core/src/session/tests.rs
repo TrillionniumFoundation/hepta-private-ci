@@ -10578,7 +10578,10 @@ async fn turn_context_item_stores_local_cwd() {
         environment_id: "second".to_string(),
         ..native[0].clone()
     });
-    assert_eq!(turn_context.to_turn_context_item().environments, Some(expected));
+    assert_eq!(
+        turn_context.to_turn_context_item().environments,
+        Some(expected)
+    );
 }
 
 #[tokio::test]
