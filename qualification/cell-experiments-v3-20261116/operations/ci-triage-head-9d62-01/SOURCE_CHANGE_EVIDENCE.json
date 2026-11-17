@@ -1,0 +1,314 @@
+{
+  "schema": "hepta.ci-source-comparison.v3",
+  "base": "42e32825ae20d460cb782856e00816661536853a",
+  "head": "9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+  "tested_merge": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+  "base_to_head": {
+    "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/compare/42e32825ae20d460cb782856e00816661536853a...9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+    "status": "ahead",
+    "ahead_by": 34,
+    "changed_paths_count": 161,
+    "changed_paths": [
+      "V3_BASE.json",
+      "qualification/cell-experiments-v3-20261116/PUBLICATION_PLAN_V3.json",
+      "qualification/cell-experiments-v3-20261116/PUBLICATION_REVIEW_V3.md",
+      "qualification/cell-experiments-v3-20261116/SOURCE_AUDIT_V3.md",
+      "qualification/cell-experiments-v3-20261116/SOURCE_PUBLICATION_REVIEW_V3.json",
+      "qualification/cell-experiments-v3-20261116/development-old-open.records.jsonl",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/RESULT_SUMMARY_01.json",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/SMOL_PROBE_EVIDENCE_01.zip",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/SMOL_PROBE_MEMBERS_01.json",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/SUMMARY.md",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/TRANSFER_RECEIPT_01.json",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-parent-01/FREEZE.json",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-parent-01/READINESS.json",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-trajectory-01/FREEZE.json",
+      "qualification/cell-experiments-v3-20261116/development-smol-01/probe-smol-trajectory-01/READINESS.json",
+      "qualification/cell-experiments-v3-20261116/operations/CACHE_DISCOVERY_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/CI_SOURCE_INTEGRITY_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/CI_SOURCE_INTEGRITY_01.log",
+      "qualification/cell-experiments-v3-20261116/operations/FORMAT_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/FORMAT_01.log",
+      "qualification/cell-experiments-v3-20261116/operations/FORMAT_APPLY_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/LOCAL_REFERENCE_CHECK_OBSERVATION_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_01.log",
+      "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_02.json",
+      "qualification/cell-experiments-v3-20261116/operations/NUMERICAL_TESTS_02.log",
+      "qualification/cell-experiments-v3-20261116/operations/OPERATIONS_INDEX.json",
+      "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS.json",
+      "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS.log",
+      "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS_02.json",
+      "qualification/cell-experiments-v3-20261116/operations/PREFORMAT_TESTS_02.log",
+      "qualification/cell-experiments-v3-20261116/operations/QWEN_SOURCE_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/QWEN_SOURCE_02.json",
+      "qualification/cell-experiments-v3-20261116/operations/QWEN_SOURCE_02_IMPORT_CHECK.json",
+      "qualification/cell-experiments-v3-20261116/operations/SETUP_RECOVERY_STATUS_01.json",
+      "qualification/cell-experiments-v3-20261116/operations/UPSTREAM_MODEL_API.json",
+      "qualification/cell-experiments-v3-20261116/operations/format-input-01.zip",
+      "qualification/cell-experiments-v3-20261116/operations/formatted-source-01.zip",
+      "qualification/cell-experiments-v3-20261116/operations/native_publish_source_v3.py",
+      "qualification/cell-experiments-v3-20261116/operations/native_push_source_v3_02.py",
+      "qualification/cell-experiments-v3-20261116/operations/prepare_formatter_workspace_v3.py",
+      "qualification/cell-experiments-v3-20261116/operations/prepare_probe_runtime_v3.py",
+      "qualification/cell-experiments-v3-20261116/operations/qwen-source-01.zip",
+      "qualification/cell-experiments-v3-20261116/operations/qwen-source-02.zip",
+      "qualification/cell-experiments-v3-20261116/operations/recover_probe_runtime_v3.py",
+      "qualification/cell-experiments-v3-20261116/operations/run_numerical_v3.py",
+      "qualification/cell-experiments-v3-20261116/operations/run_numerical_v3_02.py",
+      "qualification/cell-experiments-v3-20261116/operations/run_smol_probe_v3.py",
+      "qualification/cell-experiments-v3-20261116/operations/smol-probe-source-01.zip",
+      "qualification/cell-experiments-v3-20261116/operations/source-before-fmt-02.zip",
+      "qualification/cell-experiments-v3-20261116/provenance_v3.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/E5_PROJECT.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/E5_SOURCE.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/GATE.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/INPUT_SUMMARY.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/READOUT.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/REGRESSION_SOURCE_PRE_FMT.zip",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/RESOURCE_LEDGER.json",
+      "qualification/cell-experiments-v3-20261116/regression-old-A/VERIFICATION.json",
+      "qualification/cell-experiments-v3-20261116/source-records/ACT2_TRAJECTORY_READOUT.json",
+      "qualification/cell-experiments-v3-20261116/source-records/EXPECTED_GIT.json",
+      "qualification/cell-experiments-v3-20261116/source-records/act2_frozen_manifest.json",
+      "qualification/cell-experiments-v3-20261116/source-records/act2_review.md",
+      "qualification/cell-experiments-v3-20261116/source-records/act2_run.py.txt",
+      "qualification/cell-experiments-v3-20261116/source-records/act2_sqlite_destination.py.txt",
+      "qualification/cell-experiments-v3-20261116/source-records/chain-issue-562.json",
+      "qualification/cell-experiments-v3-20261116/source-records/chain-issue-596.json",
+      "qualification/cell-experiments-v3-20261116/source-records/chain-issue-786.json",
+      "qualification/cell-experiments-v3-20261116/source-records/h7_guard.sql",
+      "qualification/cell-experiments-v3-20261116/source-records/h7_schema.sql",
+      "qualification/cell-experiments-v3-20261116/source-records/hepta-pr-5669.json",
+      "qualification/cell-experiments-v3-20261116/source-records/hepta-pr-5735.json",
+      "qualification/cell-experiments-v3-20261116/source-records/hepta-pr-6440.json",
+      "qualification/cell-experiments-v3-20261116/source-records/learn-ordinary-owner-gaps.md",
+      "qualification/cell-experiments-v3-20261116/source-records/learn-ordinary-round2-readme.md",
+      "qualification/cell-experiments-v3-20261116/source-records/training-trajectories.jsonl.gz",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/AGENT_PROBE_V3.md",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/README.md",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/SUMMARY.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/ACTIONS.jsonl",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/TASK.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/lost-reply/destination.db",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/ACTIONS.jsonl",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/TASK.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/missing-stage/destination.db",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/ACTIONS.jsonl",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/TASK.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/partial/destination.db",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/ACTIONS.jsonl",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/TASK.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/development-reference-01/prestaged/destination.db",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/lost-reply-actions.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/missing-stage-actions.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/partial-actions.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/prestaged-actions.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-01/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-01/stderr.txt",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-01/stdout.txt",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-02/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-02/stderr.txt",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/probe-engineering-check-02/stdout.txt",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/MESSAGES.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/STARTED.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-0.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-1.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-2.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-3.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-4.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-5.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/call-started-6.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/ACTIONS.jsonl",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/RESULT.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/TASK.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/destination/destination.db",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-0.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-1.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-2.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-3.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-4.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-5.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/output-6.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-0.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-1.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-2.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-3.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-4.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-5.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/request-6.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-0.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-1.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-2.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-3.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-4.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-5.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/scripted-agent-probe-01/step-6.json",
+      "qualification/cell-experiments-v3-20261116/tasks/sqlite-dev-v3/task-development-sqlite.json",
+      "scripts/cell_experiments/causal_probe_v3.py",
+      "scripts/cell_experiments/causal_train_v3.py",
+      "scripts/cell_experiments/causal_training_contract_v3.py",
+      "scripts/cell_experiments/circuit_readiness_v3.py",
+      "scripts/cell_experiments/circuit_receipts_v3.py",
+      "scripts/cell_experiments/development_readiness_v3.py",
+      "scripts/cell_experiments/protocol_v3.py",
+      "scripts/cell_experiments/repo_interaction_v3.py",
+      "scripts/cell_experiments/repo_tasks_v3_sqlite.py",
+      "scripts/cell_experiments/source_metrics_retention_v3.py",
+      "scripts/cell_experiments/source_metrics_v3.py",
+      "scripts/cell_experiments/sqlite_agent_probe_v3.py",
+      "scripts/cell_experiments/test_causal_probe_v3.py",
+      "scripts/cell_experiments/test_causal_train_v3.py",
+      "scripts/cell_experiments/test_causal_training_contract_v3.py",
+      "scripts/cell_experiments/test_circuit_readiness_v3.py",
+      "scripts/cell_experiments/test_development_readiness_v3.py",
+      "scripts/cell_experiments/test_repo_interaction_v3.py",
+      "scripts/cell_experiments/test_source_metrics_v3.py",
+      "scripts/cell_experiments/test_sqlite_agent_probe_v3.py"
+    ]
+  },
+  "head_to_tested_merge": {
+    "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/compare/9d62fafa3713e25fa4c80eaab403e094ef4bc647...477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+    "changed_paths_count": 0,
+    "merge_base": "9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+    "note": "The checkout commit differs but GitHub compare reports no changed files. This removes a tree-difference explanation, not other runtime/environment explanations."
+  },
+  "referenced_repository_paths": [
+    {
+      "path": ".github/workflows/bazel.yml",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/.github/workflows/bazel.yml"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/.github/workflows/blocking-ci.yml"
+    },
+    {
+      "path": ".github/workflows/cell-experiments.yml",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/.github/workflows/cell-experiments.yml"
+    },
+    {
+      "path": ".github/workflows/cell-hia-joint.yml",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/.github/workflows/cell-hia-joint.yml"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/Cargo.lock"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/cli/tests/sandbox_cloud_config.rs"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/src/agent/control_tests.rs"
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/src/tools/handlers/multi_agents_tests.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/tests/suite/apply_patch_cli.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/tests/suite/approvals.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/cyber_exec_policy.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/tests/suite/cyber_exec_policy.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/skill_approval.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/tests/suite/skill_approval.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/tests/suite/subagent_notifications.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-agentd/src/circuit_cell_test_support.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-agentd/src/neuron_generation_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/perception_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-neuron/src/perception_tests.rs"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/tui/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/windows-sandbox-rs/src/spawn_prep.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/windows-sandbox-rs/src/token_tests.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "changed_base_to_head": false,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+    }
+  ],
+  "causality_limit": "No matched baseline CI run was examined. Unchanged files do not demonstrate that failures are harmless or safe to waive."
+}
