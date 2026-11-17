@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.readonly-analysis-attempt.v1",
+  "terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-65a5ceea06ad797041fde401827b8f0e1b6718e6b5c4a7f0230c236f8103ed9e/output.log",
+    "available_end": 2250,
+    "chunk_sha256": "6740d9004082c6c926387a44934fe5272fd113c85da4762172955e38d9b594a1",
+    "host": "mac",
+    "next_offset": 2250,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-65a5ceea06ad797041fde401827b8f0e1b6718e6b5c4a7f0230c236f8103ed9e",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 518280 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 2250,
+      "bytes_stored": 2250,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794893731956,
+      "exit_code": 2,
+      "output_complete": true,
+      "owner_pid": 97674,
+      "pid": 97675,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"bytes\": 583248, \"checks\": 4416, \"counts\": {\"input_tokens\": 92217, \"model_calls\": 202, \"output_tokens\": 30896, \"padded_training_positions\": 393216, \"reference_calls\": 36, \"student_verifier_calls\": 196, \"training_steps\": 256}, \"failures\": [{\"category\": \"binding\", \"check\": \"exact reused parent row 0\"}, {\"category\": \"binding\", \"check\": \"exact reused parent row 1\"}, {\"category\": \"binding\", \"check\": \"exact reused parent row 2\"}, {\"category\": \"binding\", \"check\": \"exact reused parent row 3\"}, {\"category\": \"binding\", \"check\": \"exact reused parent row 4\"}, {\"category\": \"binding\", \"check\": \"exact reused parent row 5\"}, {\"category\": \"cold\", \"check\": \"final_answer: exact cold candidate, new process, identical outputs\"}, {\"category\": \"cold\", \"check\": \"trajectory: exact cold candidate, new process, identical outputs\"}], \"files_read\": 1248, \"new_C_read\": false, \"new_model_calls\": 0, \"new_verifier_calls\": 0, \"output\": \"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/CLOSED_RESULT_REVIEW_02.json\", \"primary_outcomes\": {\"controlled_correction\": {\"A_retention\": {\"first_attempt_successes\": 1, \"successful_tasks\": 1, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"final_answer\": {\"A_retention\": {\"first_attempt_successes\": 5, \"successful_tasks\": 5, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"parent\": {\"A_retention\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"retrieval\": {\"A_retention\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"shadow_correction\": {\"A_retention\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"trajectory\": {\"A_retention\": {\"first_attempt_successes\": 4, \"successful_tasks\": 4, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}}, \"sha256\": \"35f3b6c0ca37db6d4540ce017e79c7d6680fee1d369bce58688df400cec0c615\", \"status\": \"REVIEW_MISMATCH\"}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "source_file_info": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":416,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":416,\"path\":\"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_closed_02.py\",\"sha256\":\"1714db191606f399ec5277bfb1ac0d10de04cfbf46fe7e4992c150090328fd3f\",\"size\":29042,\"version\":\"16777233:611111791:29042:1794893685906903548:1794893685907195590\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":416,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":416,\"path\":\"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_support_02.py\",\"sha256\":\"fc8a0b1912ebb2f8e724d6a5085ac30cf3a8438590bc097934d498d644a42ad2\",\"size\":16634,\"version\":\"16777233:611112235:16634:1794893721277276542:1794893721277564417\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  ],
+  "reason": "Six parent aggregate/raw differences are the expected added task_digest field. Two additional cold predicates detected actual differing feedback/request history; preserved as explicit interpretation limits, not erased. Original first readout remains unchanged.",
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "new_C_read": false
+}

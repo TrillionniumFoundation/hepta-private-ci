@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.readonly-analysis-execution.v1",
+  "scope": "Independent analysis of closed Run02 bytes; no model/tokenizer/verifier/test execution; no C read",
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/review_closed_02_v2.py"
+  ],
+  "idempotency_key": "hepta-v3-0c078a-closed-research02-independent-review03",
+  "source": {
+    "review_closed_02_v2_py": "43b72f35c3c38bbc3df0b677c66bb0df95bcc994fc0adc445248ffd964190615",
+    "review_support_02_py": "fc8a0b1912ebb2f8e724d6a5085ac30cf3a8438590bc097934d498d644a42ad2"
+  },
+  "actual_terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-0e7249b94e9bf082d41dab5cdbfa1051eb6c3356bb553959b8fb2c2177cdbb25/output.log",
+    "available_end": 1669,
+    "chunk_sha256": "75f969c6215b09df86c59ff7ac4e9f61322635e91bffd1fc80cf911379641f23",
+    "host": "mac",
+    "next_offset": 1669,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-0e7249b94e9bf082d41dab5cdbfa1051eb6c3356bb553959b8fb2c2177cdbb25",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 518280 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 1669,
+      "bytes_stored": 1669,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794893854801,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 758,
+      "pid": 760,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"bytes\": 586375, \"checks\": 4416, \"counts\": {\"input_tokens\": 92217, \"model_calls\": 202, \"output_tokens\": 30896, \"padded_training_positions\": 393216, \"reference_calls\": 36, \"student_verifier_calls\": 196, \"training_steps\": 256}, \"failures\": [], \"files_read\": 1248, \"new_C_read\": false, \"new_model_calls\": 0, \"new_verifier_calls\": 0, \"output\": \"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-02/CLOSED_RESULT_REVIEW_02_FINAL.json\", \"primary_outcomes\": {\"controlled_correction\": {\"A_retention\": {\"first_attempt_successes\": 1, \"successful_tasks\": 1, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"final_answer\": {\"A_retention\": {\"first_attempt_successes\": 5, \"successful_tasks\": 5, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"parent\": {\"A_retention\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"retrieval\": {\"A_retention\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"shadow_correction\": {\"A_retention\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}, \"trajectory\": {\"A_retention\": {\"first_attempt_successes\": 4, \"successful_tasks\": 4, \"tasks\": 6}, \"B_exposed\": {\"first_attempt_successes\": 0, \"successful_tasks\": 0, \"tasks\": 3}}}, \"sha256\": \"13a8d77f1221e37524352ec50bf4f95f0c15aa1d6b98ab9678a82fcd229b8450\", \"status\": \"PASS\"}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "prior_analysis_attempts_preserved": [
+    "ANALYSIS_ATTEMPT_01_FAILED.json",
+    "ANALYSIS_ATTEMPT_02_READOUT.json",
+    "MISMATCH_INSPECTION_RECEIPT_02.json"
+  ],
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "new_training_steps": 0,
+  "new_tokenizer_calls": 0,
+  "new_C_read": false,
+  "original_artifacts_modified": false,
+  "full_system_cost_still_unknown": true
+}
