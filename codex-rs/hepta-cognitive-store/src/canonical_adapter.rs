@@ -133,7 +133,7 @@ impl CanonicalCognitiveStoreV1Ext for AdmittedCognitiveStoreV2 {
         let canonical_digest = canonical_semantic_digest_v1(&canonical_receipt)
             .ok_or(CanonicalStoreAdapterErrorV1::NonCommittedOutcome)?;
         let shadow_receipt = ShadowComparisonReceiptV1::new(
-            intent.intent_id.clone(),
+            intent.intent_id,
             CognitiveConsumerV1::CognitiveStore,
             Some(compatibility_digest),
             Some(canonical_digest),

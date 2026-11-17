@@ -676,7 +676,7 @@ async fn timed_out_guardian_network_review_uses_timeout_outcome_without_user_fal
         },
     ])
     .await;
-    let test = managed_network_unified_exec_test_with_features(&server.uri(), &[]).await?;
+    let test = managed_network_unified_exec_test_with_features(server.uri(), &[]).await?;
 
     submit_managed_network_turn(
         &test,
