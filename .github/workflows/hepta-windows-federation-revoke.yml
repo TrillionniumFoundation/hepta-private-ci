@@ -27,6 +27,13 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: |
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
       - name: Checkout immutable pull-request source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

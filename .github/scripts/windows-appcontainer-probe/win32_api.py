@@ -1,6 +1,7 @@
 """Windows APIs used only by the owned-object AppContainer experiment."""
 
 import ctypes as C
+import os
 from ctypes import wintypes as W
 from pathlib import Path
 
@@ -465,11 +466,19 @@ class Api:
             length = self.GetSystemDirectoryW(system, len(system))
             require(0 < length < len(system), "system directory")
             executable = str(Path(system.value) / "cmd.exe")
+            local_app_data = os.environ.get("LOCALAPPDATA", "")
+            require(
+                local_app_data
+                and "\0" not in local_app_data
+                and Path(local_app_data).is_absolute(),
+                "LOCALAPPDATA must identify an absolute profile path",
+            )
             # Only fixed non-secret process variables are passed to the probe.
             environment = C.create_unicode_buffer(
                 "\0".join(
                     [
                         f"ComSpec={executable}",
+                        f"LOCALAPPDATA={local_app_data}",
                         f"SystemRoot={Path(system.value).parent}",
                         f"TEMP={cwd}",
                         f"TMP={cwd}",

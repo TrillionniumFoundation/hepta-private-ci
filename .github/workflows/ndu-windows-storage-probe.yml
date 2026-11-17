@@ -138,10 +138,10 @@ jobs:
                   "sha256": "72a4a810750bafa704541b9814a22a080774ab5efd7c135bb197f421ba217860"
               },
               "codex-rs/Cargo.toml": {
-                  "bytes": 23983,
+                  "bytes": 24176,
                   "mode": "100644",
-                  "oid": "29300f13b3bde63e1ceb51158f605e7a011f13aa",
-                  "sha256": "d11a310d64b11a6b64447c0b17545c8848f8b3e787cb2036f981497fe40c67e3"
+                  "oid": "3b19f81c7e2a9848e03f7c19e87622746080445c",
+                  "sha256": "3be8da55d49613d0a58a0b0b91dca2fc00b4743d050a4d53673a0def10e3da65"
               },
               "codex-rs/rust-toolchain.toml": {
                   "bytes": 78,
@@ -246,10 +246,10 @@ jobs:
                   "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705"
               },
               "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs": {
-                  "bytes": 27824,
+                  "bytes": 27899,
                   "mode": "100644",
-                  "oid": "48ad6216b73344931b22fdc482eefa4e7615a308",
-                  "sha256": "61d625ab60b6e44f70b1b92e171f540237cb638351a181beedf814d9b0f15db6"
+                  "oid": "433b86d4df845b9152b3f30c4de6017c49b5beae",
+                  "sha256": "06dd2efb32eb98292f3953ce707cce29608f8b4a7cce221a028ae43596e16b36"
               },
               "codex-rs/windows-sandbox-rs/src/token_native_access_tests.rs": {
                   "bytes": 15481,
@@ -264,10 +264,10 @@ jobs:
                   "sha256": "8bbea9b387cd5642c843467db9f1d8c9300d5ddc7eabb4e529083cb1030ba4fb"
               },
               "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs": {
-                  "bytes": 30653,
+                  "bytes": 30694,
                   "mode": "100644",
-                  "oid": "1b43360fe10b570cfd9020fb9acb430fd711c148",
-                  "sha256": "59be12c1e607c3ee686d49cb8ff10481de4e463d6ff164c6f5d8c4f1fcf0c5bb"
+                  "oid": "f9549826fb61fa8d54a930c6bced045b54f6a4f5",
+                  "sha256": "ed9f95d975967813bb67acc0199998c33ae954bb87ec3ed465c96b347f69a695"
               },
               "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
                   "bytes": 21699,
@@ -802,7 +802,7 @@ jobs:
           HEAD = os.environ["EXPECTED_HEAD"]
           PINS = {
               ".github/scripts/windows-appcontainer-probe/probe.py": "c6dd142579e20651e73000bc1c7200715e729e0d6336d7d1935d3f877929959b",
-              ".github/scripts/windows-appcontainer-probe/win32_api.py": "9a10459b06eb6393f1fd7338ade903193a2382faf07d1cc5d34aacf00e39be8f",
+              ".github/scripts/windows-appcontainer-probe/win32_api.py": "9fc52f7ba6a0058554342e42b078aabb8d725b7f8fabe9dedcdf40d99eb21522",
           }
 
           def require(condition, message):
