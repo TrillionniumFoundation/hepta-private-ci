@@ -1,0 +1,178 @@
+{
+  "credential_pattern_types_checked": [
+    "private_key_block",
+    "github_credential",
+    "openai_style_credential",
+    "aws_access_key_id",
+    "google_api_key",
+    "literal_bearer_token",
+    "url_embedded_credential",
+    "assigned_secret_literal"
+  ],
+  "hashes_match_previous_inventory": true,
+  "limitations": "Pattern and content review cannot prove absence of every unknown secret format. Future model outputs, exception messages and later-added files are outside this 17-file review.",
+  "manual_review": "Documents and code refer to authorization, owner keys and trust boundaries without including key material. GitHub account fields identify the public ProfHepta account. Absolute local paths and commit/file hashes are provenance, not credential values. ACT-2 data are generated controlled SQLite goals, features, decisions and outcomes; no hidden reasoning or user conversation history was collected.",
+  "pattern_findings": 0,
+  "publication_assessment": "No credential material identified in the inspected source files. Suitable for inclusion in the user-authorized repository evidence publication, subject to the repository existing visibility; this is not a permission grant for unrelated public redistribution.",
+  "review_scope": "The 17 captured source files listed in provenance_v3.json, including decompressed trajectory bytes. Not a global repository or filesystem scan.",
+  "reviewed_at": "2026-11-16T23:37:52Z",
+  "rows": [
+    {
+      "bytes": 2149,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 2149,
+      "path": "source-records/ACT2_TRAJECTORY_READOUT.json",
+      "sha256": "67de44e4ed6a0a06b5bdeb9cc7c68801fbabbb0b0d741863549fc76021257781"
+    },
+    {
+      "bytes": 492,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 492,
+      "path": "source-records/EXPECTED_GIT.json",
+      "sha256": "9718f9971b8ef2cafdb4ca56678cafb92130d0df29982f0b7ff46d62f7613281"
+    },
+    {
+      "bytes": 64965,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 64965,
+      "path": "source-records/act2_frozen_manifest.json",
+      "sha256": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9"
+    },
+    {
+      "bytes": 3021,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 3021,
+      "path": "source-records/act2_review.md",
+      "sha256": "733e3c81b6ccf0e355eceaa7a9147a3e95dbf93427e04c8ac2057acbe73a47f7"
+    },
+    {
+      "bytes": 13884,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 13884,
+      "path": "source-records/act2_run.py.txt",
+      "sha256": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c"
+    },
+    {
+      "bytes": 6746,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 6746,
+      "path": "source-records/act2_sqlite_destination.py.txt",
+      "sha256": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+    },
+    {
+      "bytes": 7599,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 7599,
+      "path": "source-records/chain-issue-562.json",
+      "sha256": "6fa9812c5ca8825d8b375ae0418c3a93a8430fa5627ed85620b907fd9bb2397d"
+    },
+    {
+      "bytes": 5738,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 5738,
+      "path": "source-records/chain-issue-596.json",
+      "sha256": "fce1373d1f9aa651bd5f4972d554d7f7b6f357f63ba1c74ac63ab252f9da3676"
+    },
+    {
+      "bytes": 7446,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 7446,
+      "path": "source-records/chain-issue-786.json",
+      "sha256": "285776f237b3a1674606ce56cb957fa62602dfb02597b9a2057c88d1419191ae"
+    },
+    {
+      "bytes": 735,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 735,
+      "path": "source-records/h7_guard.sql",
+      "sha256": "fb5c21f87ba34a5638b2c7a4060b53cf6c1c606422369ea1bade5d23e67af2ae"
+    },
+    {
+      "bytes": 6830,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 6830,
+      "path": "source-records/h7_schema.sql",
+      "sha256": "adb66da205ecaab11f16c62899e283653e153abf28d601e6b86cb4681b3256ee"
+    },
+    {
+      "bytes": 2471,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 2471,
+      "path": "source-records/hepta-pr-5669.json",
+      "sha256": "d4330782bd853d0fae95c7fcf21c83855e8e941bbd726e828cd768e2287b0094"
+    },
+    {
+      "bytes": 5651,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 5651,
+      "path": "source-records/hepta-pr-5735.json",
+      "sha256": "b494d4b824d412a63d74f1bc307879212c27a0dd5e7c54b75aebe6c38d62940d"
+    },
+    {
+      "bytes": 4880,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 4880,
+      "path": "source-records/hepta-pr-6440.json",
+      "sha256": "ba791669311462bef748a066af814fbcdd28bd1fae8b47aba147468fc8f9e059"
+    },
+    {
+      "bytes": 19809,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 19809,
+      "path": "source-records/learn-ordinary-owner-gaps.md",
+      "sha256": "4b8d132dae155f039f2cb628fdba8271ec26af5bb649c0afa8e8786befac7bed"
+    },
+    {
+      "bytes": 15705,
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 15705,
+      "path": "source-records/learn-ordinary-round2-readme.md",
+      "sha256": "188d7b975d2e5db580b9d1f265f462a5fd77ead844d7af7eaaabf7ecad6ec524"
+    },
+    {
+      "bytes": 10012,
+      "content_classification": "controlled SQLite task/features/action/result records; no chat transcripts or private user reasoning",
+      "credential_pattern_findings": [],
+      "decoded_bytes_scanned": 106947,
+      "path": "source-records/training-trajectories.jsonl.gz",
+      "sha256": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec",
+      "top_level_keys": [
+        "applied_effects",
+        "arm",
+        "claimed_success",
+        "complete",
+        "completion_ns",
+        "composition",
+        "custody_ns",
+        "database_archive_member",
+        "database_sha256",
+        "decisions",
+        "destination",
+        "duplicate_effects",
+        "duration_ns",
+        "events",
+        "fault",
+        "goal_label_available",
+        "independent_oracle_queries",
+        "inference_cpu_ns",
+        "inference_ns",
+        "lost_replies",
+        "partial",
+        "policy_decisions",
+        "policy_visible_features",
+        "primitive_calls",
+        "private_state_bytes",
+        "readback_queries",
+        "right_censored",
+        "schema",
+        "setup_ns",
+        "task_id",
+        "unknown",
+        "write_transactions"
+      ],
+      "trajectory_rows": 80
+    }
+  ],
+  "schema": "hepta.source-publication-review.v3",
+  "source_files_checked": 17
+}
