@@ -1,6 +1,81 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: proposed plan parsing
+## Current source increment: Unicode fuzzy matching
+
+The complete `fuzzy_match` source unit moves the original public matcher into
+HIA under the opt-in feature. HIA owns the pinned Rust 1.96.1 / Unicode 17
+lowercase tables, haystack scalar lowering, whole-needle Final_Sigma context,
+Case_Ignorable precedence, NUL retention, greedy matching, original-scalar
+index deduplication, prefix preference and score arithmetic.
+
+The current source configures **35 modules and 32 opt-in caller kernels**:
+33 borrowed-buffer and two unchanged scalar profiles. Eight Cargo build owners
+account for the links (9 + 7 + 3 + 8 + 1 + 1 + 2 + 1). The fuzzy-match crate
+adds its link through TUI's feature forwarding and the existing CLI route.
+Installed CLI admission requires 31 symbols, with one library-only symbol
+and three retained oracle-only modules kept distinct.
+
+Kernel source origin: `ea64655b0152ff2a5009b01a8f45df28e6147702`.
+The [buffer contract](fuzzy_match_buffer_contract.json) binds its complete
+202030-byte source, blob `27c9136b4dd3229a9c4536164b06af61acf90e3e`. Its
+unassigned contract commit field stays null; this actual origin is recorded
+in the current roles and migration metadata instead of inventing a commit.
+
+Begin, LowerHaystack, LowerNeedle and Match use 32 finite u64 state words,
+a 320-byte request prefix and a 384-byte response prefix. UTF-8 frames carry
+at most 4096 bytes ending on complete scalars; Match carries at most 128 hay
+records and 128 needle scalars. The whole u64 wrapper result is validated
+before Core status. Structural INVALID, actual counter overflow and SHORT
+checks precede every store, and the workspace stays untouched. The compiler's
+known one-MiB seed-wrapper limit does not define a production string cap.
+
+Rust retains mechanical framing, owned containers, complete response/state
+and command validation, direct fixed-anchor checks and result storage. HIA
+chooses the score and its first overflowing original i32 primitive; Rust
+replays only that ordinary primitive to preserve the actual compilation
+overflow-check policy, without guessing it from debug assertions. There is
+no Rust lowercase, search or score fallback. Strings and normalized vectors
+have no new aggregate semantic limit. Allocation, OOM and panic timing are
+not asserted equivalent to the original implementation.
+
+The raw gate contains **242 planned calls**: 16 literal streams with 70 calls
+and 172 standalone frames. A small manifest binds four exact-name, size and
+SHA-256 JSON shards, whose largest file is 308312 bytes. Every file remains
+below the unchanged 512000-byte source limit; the earlier oversized draft is
+not part of this source unit. Huge u64 history fixtures are logical states,
+not evidence that giant real workloads ran. No reference matcher computed
+the expected results.
+
+All eight original matcher tests remain. One new public method checks 50
+hand-derived literal rows under default and native selections. Thirteen
+private native decoder methods check invalid frames and transitions. Two
+native-only public tests carry inputs above one MiB; large default execution
+is not claimed. Five focused original UI regression groups run under both
+selections. The two skill-popup ranking oracles use the real matcher;
+selection-popup rendering uses supplied indices, command-popup logic is
+independent exact/prefix matching, file-search-popup checks paging, and the
+skills-toggle view routes through `match_skill`. These groups are not five
+direct matcher callers and do not establish whole-default-TUI coverage.
+
+Current raw gates explicitly select full-native35. Earlier exact29 through
+exact34 profiles retain their closed module sets and defaults. Fresh B1/B2/B3,
+all 35 module bindings and every static-link receipt are required. The
+historical exact74d1 job and both 60-minute job budgets remain unchanged.
+Previous34 source state is retained in `previous_source_increment_34`; prior
+CI cannot qualify this new source. No current35 compilation, ABI execution,
+native artifact, full workflow or performance result is claimed here.
+
+The 198-component Rust inventory and all 15 capability groups are unchanged:
+13 remain pending and two remain partial. String utilities remains partial
+with the new candidate; CLI/TUI remains pending. Whole production dispatch,
+default release, workspace/product behavior, required platforms, independent
+artifact custody, performance and legacy retirement remain unqualified.
+
+## Earlier source increment: proposed plan parsing
+
+The following is the preserved 34-module source-preparation record. Its
+counts and pending gates describe that earlier increment; subsequent CI
+observations remain bound to their own revisions and do not qualify Fuzzy35.
 
 The complete `proposed_plan_parser` source unit moves line-based plan parsing
 into HIA under the existing opt-in feature. HIA owns UTF-8 admission, the pinned
@@ -51,10 +126,11 @@ retain their closed module sets and defaults. Fresh B1/B2/B3, all 34 module
 bindings and every static-link receipt are required. Earlier receipts cannot
 qualify this source increment.
 
-This increment has not been compiled or executed. Runtime, default release,
-whole workspace/product, required platforms, performance, independent artifact
-custody and retirement remain unqualified. The thirteen pending and two partial
-capability groups remain open.
+At source preparation, this increment was uncompiled and unexecuted. This
+historical paragraph does not relabel later observed CI. Runtime, default
+release, whole workspace/product, required platforms, performance, independent
+artifact custody and retirement were not qualified by the source record; none
+of its evidence is transferred to the current Fuzzy35 increment.
 
 ## Earlier source increment: citation streaming
 
@@ -285,14 +361,14 @@ The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
 nineteen-name branch with the HIA scope of
 `74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
 names. The later source increments add `output_lines`, `output_item_budget`,
-`format_env_display`, `citation_stream_parser` and `proposed_plan_parser` for
-34 modules. Seven Cargo build entries configure 31 opt-in links
-(9 + 7 + 3 + 8 + 1 + 1 + 2) when
+`format_env_display`, `citation_stream_parser`, `proposed_plan_parser` and
+`fuzzy_match` for 35 modules. Eight Cargo build entries configure 32 opt-in links
+(9 + 7 + 3 + 8 + 1 + 1 + 2 + 1) when
 `hia-native` is enabled.
 `utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
 kernels; their current production replacements are `utf8_prefix`, `uuid_find`
 and `template_parse`. There are two scalar profiles, `token_budget` and
-`prefix_admission`; the other 32 entries retain the borrowed
+`prefix_admission`; the other 33 entries retain the borrowed
 buffer profile. See `joint_module_roles.json` for source, role, replacement and
 link sites. Names, configured links, algorithms and observed calls are distinct
 counts.
