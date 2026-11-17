@@ -1,0 +1,11 @@
+--- archive_qwen_research_v1.py
++++ archive_qwen_research_v1_02.py
+@@ -266,7 +266,7 @@
+     sources.extend(retained)
+     require(all(not output.is_relative_to(p) and not p.is_relative_to(output) for p in sources), "export/source overlap rejected")
+     require({name: checksum(helpers / name) for name in HELPERS} == HELPERS, "helpers04 bytes differ")
+-    freeze, result = root / DEV / "FREEZE.json", root / DIAG / "RESULT.json"
++    freeze, result = root / DEV / "FREEZE.json", root / DIAG / "DIAGNOSTIC.json"
+     require((checksum(freeze) if freeze.exists() else None) == terminal["research_freeze_sha256"],
+             "research freeze differs from root terminal index")
+     require((checksum(result) if result.exists() else None) == terminal["diagnostic_result_sha256"],
