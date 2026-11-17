@@ -1,0 +1,84 @@
+{
+  "C_read": false,
+  "E5_diagnostic_settings": 6,
+  "E5_insufficient_source_settings": 10,
+  "adoption_rate": null,
+  "available_project_groups": 1,
+  "available_source_groups": 6,
+  "files": {
+    "E5_PROJECT.json": {
+      "bytes": 9021,
+      "canonical_digest": "9b876a83267813a271cd5ae58c3e7fe97c371e3b9640f4a4d7b62dea5afd8e48",
+      "sha256": "f1ce4365a97995c66d8b0692829b1ab2af53579df2d72ac6e8384cfad4ee2b15"
+    },
+    "E5_SOURCE.json": {
+      "bytes": 11790,
+      "canonical_digest": "4baf5bb1e33b379060a3926a822cd681200201e0e759c3f950132f2d51a4b455",
+      "sha256": "1a05dd9e441a57422aa3078e694072c02b9026773ddf063058bfe96ab1677bd4"
+    },
+    "GATE.json": {
+      "bytes": 9511,
+      "canonical_digest": "a720740c6563a2a272d2e0cea99b592d7b4e52159bbe8ce9f5fe4834c4c3eb88",
+      "sha256": "dcecfa9d1c13d71ddbf6d4bf20084fa64d7e2c0e71b7a02fea0017c693215f4d"
+    },
+    "INPUT_SUMMARY.json": {
+      "bytes": 9645,
+      "canonical_digest": "d07349a6bfc4be5b823e1a94c8444a67193dee4489ef91295c8d17737a1fe1a9",
+      "sha256": "17bff35a1034bd1cac182039090a72fad7073d1f6271b63022b82d40bcc6b79b"
+    },
+    "REGRESSION_SOURCE_PRE_FMT.zip": {
+      "bytes": 29272,
+      "sha256": "2b8b35a0442ddfe99913cdc369ce32b3d091dd9ec39c21cbb24d5d7dc8d523a4"
+    },
+    "RESOURCE_LEDGER.json": {
+      "bytes": 18541,
+      "canonical_digest": "881c121ea88cff9776fcf55f6698bb57abc37aba789cbbcbcec155a298b82b21",
+      "sha256": "33d1cc5bb61f1d1764de76962baeedc81572b2e7fe856d0f982fb175cf149114"
+    },
+    "VERIFICATION.json": {
+      "bytes": 1075,
+      "canonical_digest": "ea6921231a063cae8c45477eb8259e42f97c2c45e8bc62d83cd2fbbfeb35a8d8",
+      "sha256": "fc92d12de45cd71531a49947b3e91134b4761eecc281f8f60472821f89d38b69"
+    }
+  },
+  "forgetting": null,
+  "full_system_cost": null,
+  "gate_reasons": [
+    "no_verified_success_on_primary_A_clusters",
+    "no_observed_complementarity_for_single_choice_routing"
+  ],
+  "gate_status": "NOT_READY",
+  "historical_input_tokens": 5382,
+  "historical_model_calls": 18,
+  "historical_output_tokens": 2674,
+  "legacy_all_failed_fallback_labels": 6,
+  "new_independent_samples": 0,
+  "new_model_calls": 0,
+  "new_sources": 0,
+  "new_task_executions": 0,
+  "new_training_updates": 0,
+  "old_A_tasks": 6,
+  "per_model_successful_primary_clusters": [
+    0,
+    0,
+    0
+  ],
+  "provenance_clusters": 6,
+  "recorded_verifier_execution_cluster_counts": {
+    "project_id": [
+      0,
+      0
+    ],
+    "source_id": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "schema": "hepta.old-a-regression-readout.v3",
+  "scientific_qualification": "BLOCKED",
+  "scope": "Recompute v3 diagnostics from exact frozen v2 A receipts; not a new experiment or new source.",
+  "v3_null_targets": 6,
+  "v3_supervised_rows": 0
+}

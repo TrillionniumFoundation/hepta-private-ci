@@ -1,0 +1,198 @@
+{
+  "A_feature_rows_digest": "551bb433da009db3c3eccfcf13c4771d0c426925de5c95775b1dd0b24fe3c8e9",
+  "A_task_metadata": [
+    {
+      "available_at": 1794838631,
+      "exposure": "development",
+      "lineage_id": "curated-requirement:A-counter",
+      "observed_at": 1794838631,
+      "origin_kind": "curated_development",
+      "project_id": "TrillionniumFoundation/hepta-private-ci",
+      "record_id": "A-counter",
+      "source_id": "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/deterministic.py",
+      "split": "train",
+      "task_id": "test-completion:A-counter"
+    },
+    {
+      "available_at": 1794838631,
+      "exposure": "development",
+      "lineage_id": "curated-requirement:A-mse",
+      "observed_at": 1794838631,
+      "origin_kind": "curated_development",
+      "project_id": "TrillionniumFoundation/hepta-private-ci",
+      "record_id": "A-mse",
+      "source_id": "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/semantic.py",
+      "split": "train",
+      "task_id": "test-completion:A-mse"
+    },
+    {
+      "available_at": 1794838631,
+      "exposure": "development",
+      "lineage_id": "curated-requirement:A-readout-score",
+      "observed_at": 1794838631,
+      "origin_kind": "curated_development",
+      "project_id": "TrillionniumFoundation/hepta-private-ci",
+      "record_id": "A-readout-score",
+      "source_id": "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/stem_credit_support.py",
+      "split": "train",
+      "task_id": "test-completion:A-readout-score"
+    },
+    {
+      "available_at": 1794838631,
+      "exposure": "development",
+      "lineage_id": "curated-requirement:A-clipped-metrics",
+      "observed_at": 1794838631,
+      "origin_kind": "curated_development",
+      "project_id": "TrillionniumFoundation/hepta-private-ci",
+      "record_id": "A-clipped-metrics",
+      "source_id": "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/stem_plastic_study.py",
+      "split": "train",
+      "task_id": "test-completion:A-clipped-metrics"
+    },
+    {
+      "available_at": 1794838631,
+      "exposure": "development",
+      "lineage_id": "curated-requirement:A-pair-map",
+      "observed_at": 1794838631,
+      "origin_kind": "curated_development",
+      "project_id": "TrillionniumFoundation/hepta-private-ci",
+      "record_id": "A-pair-map",
+      "source_id": "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/readout_credit.py",
+      "split": "train",
+      "task_id": "test-completion:A-pair-map"
+    },
+    {
+      "available_at": 1794838631,
+      "exposure": "development",
+      "lineage_id": "curated-requirement:A-colon-repair",
+      "observed_at": 1794838631,
+      "origin_kind": "curated_development",
+      "project_id": "TrillionniumFoundation/hepta-private-ci",
+      "record_id": "A-colon-repair",
+      "source_id": "TrillionniumFoundation/hepta-private-ci:scripts/hepta_cells/maintenance_tasks.py",
+      "split": "train",
+      "task_id": "test-completion:A-colon-repair"
+    }
+  ],
+  "C_read": false,
+  "bindings": [
+    {
+      "git_blob": "c7cbd4a4213ccbca6fcaed27587df77a321dba59",
+      "h_read_version": "66306:64920960:16561:1794840935187528068:1794840935187528068",
+      "host": "ai395",
+      "inventory_sha256_verified": true,
+      "read_method": "h_binary_read, offset 0, EOF, one chunk <= 65536 bytes",
+      "relative_path": "features/AB.json",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/features/AB.json",
+      "sha256": "a0d72f713b1cfe6fe06ccbcc5066fde50f87db6f6c78dd073de3d5f1cabe2aa7",
+      "size": 16561
+    },
+    {
+      "git_blob": "e0d0ec2757b4a436d1db38007432d5143b21e3c9",
+      "h_read_version": "66306:64920961:15132:1794840935200527571:1794840935200527571",
+      "host": "ai395",
+      "inventory_sha256_verified": true,
+      "read_method": "h_binary_read, offset 0, EOF, one chunk <= 65536 bytes",
+      "relative_path": "features/A_ROUTING_TARGETS.json",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/features/A_ROUTING_TARGETS.json",
+      "sha256": "4e871ffe4455ff0433192257a5c503d9566b4c7d4668d62201e5843a4ea7f5c6",
+      "size": 15132
+    },
+    {
+      "git_blob": "b0fa5bf04b67e351bf817b4c5fb70c004e306330",
+      "h_read_version": "66306:64920832:16077:1794840887420672533:1794840887420672533",
+      "host": "ai395",
+      "inventory_sha256_verified": true,
+      "read_method": "h_binary_read, offset 0, EOF, one chunk <= 65536 bytes",
+      "relative_path": "evaluation/A/specialist_numeric/EVALUATION.json",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/evaluation/A/specialist_numeric/EVALUATION.json",
+      "sha256": "51d7d9d2f3c3520af32086b466acbe288d52a7e42e9de5eb2ae04732fc5dc93a",
+      "size": 16077
+    },
+    {
+      "git_blob": "1872a46e7f9ba1e12d45f274d584de5250b15b15",
+      "h_read_version": "66306:64920859:15744:1794840890612878283:1794840890612878283",
+      "host": "ai395",
+      "inventory_sha256_verified": true,
+      "read_method": "h_binary_read, offset 0, EOF, one chunk <= 65536 bytes",
+      "relative_path": "evaluation/A/specialist_structured/EVALUATION.json",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/evaluation/A/specialist_structured/EVALUATION.json",
+      "sha256": "b26a3be9f9dd3cf0466b645a7eaa0bd8e6544b6a35c9ee15af9b64c1fa6e647c",
+      "size": 15744
+    },
+    {
+      "git_blob": "45f0b322efecae29ff3b7c9a514ff180a515faab",
+      "h_read_version": "66306:64920931:16433:1794840927670693500:1794840927670693500",
+      "host": "ai395",
+      "inventory_sha256_verified": true,
+      "read_method": "h_binary_read, offset 0, EOF, one chunk <= 65536 bytes",
+      "relative_path": "evaluation/A/final_answer/EVALUATION.json",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/evaluation/A/final_answer/EVALUATION.json",
+      "sha256": "9671ad2f83cf8029ffdfa79e4701adeddbd916299d3630641653599faa07864f",
+      "size": 16433
+    },
+    {
+      "git_blob": "076d31db381b6e499537fa0a79c0625e84d2d0e4",
+      "h_read_version": "66306:64266425:30614:1794838635371331626:1794838635371331626",
+      "host": "ai395",
+      "inventory_sha256_verified": true,
+      "read_method": "h_binary_read, offset 0, EOF, one chunk <= 65536 bytes",
+      "relative_path": "plans/final_answer.records.json",
+      "remote_path": "/home/qq/hepta-cell-experiments-20261116-0c078a/run-v2-01/plans/final_answer.records.json",
+      "sha256": "a4af338b46114d877a6c1890c5f6b5c38f95789f572e11b1b2988b606a59a2df",
+      "size": 30614
+    }
+  ],
+  "data_role": "previously exposed A regression only",
+  "feature_selection_rule": "Keep only the six frozen A task IDs from AB.json; no other feature rows passed to metrics.",
+  "frozen_v2_source_digest": "fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1",
+  "frozen_v2_sources_changed": [],
+  "frozen_v2_sources_checked": 44,
+  "inventory_path": "/workspace/scratch/0c078af77c37/cell_experiments_v2_20261116/qualification/cell-experiments-v2-20261116/evidence-v2-01/export/INVENTORY.json",
+  "inventory_sha256": "45848ea1b849f4d7e5dd69d86afd0dc5875413436ba8b58d777520ea2ed04f6f",
+  "model_digests": [
+    "974b7e13b0897c31abc2a108dab6725b19bc0732b4f4a5d64cb049c162b51d36",
+    "6d5087964eb266c002e881f4f6d072079369d074a6aaece0b1974781e1d582f7",
+    "dd0d27485233e953e56cdfde67940d6fa7c0148bb20fb3f239b7d46afbc85c00"
+  ],
+  "model_order": [
+    "specialist_numeric",
+    "specialist_structured",
+    "final_answer"
+  ],
+  "new_independent_samples": 0,
+  "new_model_calls": 0,
+  "new_sources": 0,
+  "new_task_executions": 0,
+  "new_training_updates": 0,
+  "old_experiment": "run-v2-01",
+  "python_runtime": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "raw_A_record_count": 6,
+  "raw_inputs_included": false,
+  "regression_source_files": {
+    "chat_protocol.py": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+    "circuit_readiness_v3.py": "173be5f317dfebc16e708ad347b794a757b0b13c501d28aacf3415c0877fb186",
+    "circuit_receipts_v3.py": "644a9ffec1b66791dc5dce4c019f219205f1fc807d427dbf1a3f805c2dfd470c",
+    "circuit_study_v2.py": "e2c5ac63e25fe820edccf774885e913a6b5838ecace9b82d93dc6fce380c66b3",
+    "circuit_task_bindings_v2.py": "30fc1277db9ebb3986ad386969e0f1cfaafa8889c0e5ef06ce32b782e91da721",
+    "composition_core.py": "98370c35240c505f882800c8244dd3b7bc2a0c6c279bbe35c7d693811b9c92bc",
+    "data.py": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+    "source_metrics_retention_v3.py": "32f634c8f2581d1b590fe9c9587c120f244e8586c62063729566be3d6a36a702",
+    "source_metrics_v3.py": "ff81f89f2421b731601c9097422eec12ec36d59b3be992b1d53010531e3e329d"
+  },
+  "regression_source_snapshot": {
+    "bytes": 29272,
+    "file": "REGRESSION_SOURCE_PRE_FMT.zip",
+    "purpose": "Exact source bytes used for this readout, retained before final repository formatting.",
+    "sha256": "2b8b35a0442ddfe99913cdc369ce32b3d091dd9ec39c21cbb24d5d7dc8d523a4"
+  },
+  "remote_processes_started": false,
+  "reproduction": {
+    "E5": "source_metrics_v3.source_growth_metrics(A_features, unit_field=project_id/source_id, readiness=gate.receipt)",
+    "budget_updates_per_source": 224,
+    "gate": "circuit_readiness_v3.routing_readiness(records, evaluations in model_order, model_digests, A_features, expected_panel_digest)"
+  },
+  "schema": "hepta.old-a-regression-inputs.v3",
+  "source_qualification": "Existing development records retain their original exposure and split.",
+  "task_panel_digest": "29f6ab01f8b0a77e70c2508649395ecabb6d56a8f448c126088588b77914957a"
+}
