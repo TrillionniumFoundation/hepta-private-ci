@@ -28,6 +28,9 @@ mod retirement_recovery_tests;
 #[path = "learning_iteration_capacity_tests.rs"]
 mod capacity_tests;
 
+#[path = "learning_iteration_handoff_tests.rs"]
+mod handoff_tests;
+
 #[path = "learning_iteration_readback_budget_tests.rs"]
 mod readback_budget_tests;
 
