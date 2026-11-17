@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.local-reference-check-observation.v1",
+  "record_type": "posthoc_transcription_of_session_tool_output",
+  "original_execution_log_retained": false,
+  "temporary_reference_artifacts_retained": false,
+  "executed_script_sha256_recorded_at_execution": null,
+  "source_archive_sha256": "6d471456bfcf6e7a9ade52ea995317f9c0894571d9bd5ebe96dcb845d68e58ad",
+  "explanation": "The local reference integrations ran in TemporaryDirectory. Their original stdout/stderr were returned by exec_command in this conversation but were not retained as files, and temporary reference artifacts were deleted on context exit. This file records observed tool results after the fact; it is not an original execution log or a newly executed test. No reference tests were rerun to create this record. Reference execution does not test the hepta_cells import closure required by the separate numerical training tests.",
+  "observations": [
+    {
+      "tool_chunk_id": "b7bc9f",
+      "exit_code": 1,
+      "wall_time_seconds": 2.111861371,
+      "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 26, in <module>\nAssertionError\n",
+      "engineering_followup": "The saved JSON equality check exposed verifier identity tuples becoming arrays on serialization. The operation was changed to use the saved JSON representation for both readiness and subsequent training. This was not a GPU or model-readiness execution."
+    },
+    {
+      "tool_chunk_id": "9e1514",
+      "exit_code": 0,
+      "wall_time_seconds": 1.097798826,
+      "output": "{\"check\": \"real local archive/reference integration\", \"extracted_members\": 87, \"omitted_confirmation_members\": 2, \"actual_reference_verifications_passed\": 9, \"exact_A_records_saved\": 6, \"create_only_guard\": \"passed\", \"source_unchanged\": \"passed\", \"invalid_reference_raw_receipt_retained\": true, \"model_loaded\": false, \"readiness_executed\": false, \"torch_test_status\": \"not run; torch unavailable\", \"scientific_confirmation\": false}\n",
+      "retention_qualification": "The invalid-reference receipt existed and was inspected during the temporary test. It was not retained after TemporaryDirectory cleanup."
+    }
+  ],
+  "model_loaded": false,
+  "readiness_executed": false,
+  "remote_started": false,
+  "independent_sample_increment": 0,
+  "scientific_confirmation_qualified": false
+}

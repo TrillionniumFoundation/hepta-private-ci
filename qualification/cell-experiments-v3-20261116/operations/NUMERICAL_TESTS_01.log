@@ -1,0 +1,27 @@
+test_causal_train_v3 (unittest.loader._FailedTest.test_causal_train_v3) ... ERROR
+
+======================================================================
+ERROR: test_causal_train_v3 (unittest.loader._FailedTest.test_causal_train_v3)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_causal_train_v3
+Traceback (most recent call last):
+  File "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-numeric-01/scripts/cell_experiments/test_causal_train_v3.py", line 8, in <module>
+    from . import causal_train_v3 as train
+  File "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-numeric-01/scripts/cell_experiments/causal_train_v3.py", line 20, in <module>
+    from .causal_training_contract_v3 import SCHEMA, FAMILY, validate_plan, verify_candidate
+  File "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-numeric-01/scripts/cell_experiments/causal_training_contract_v3.py", line 10, in <module>
+    from .circuit_receipts_v3 import business_evidence
+  File "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-numeric-01/scripts/cell_experiments/circuit_receipts_v3.py", line 5, in <module>
+    from .composition_core import require, sha
+  File "/home/qq/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-numeric-01/scripts/cell_experiments/composition_core.py", line 11, in <module>
+    from hepta_cells.semantic import LocalHead, LocalObjective
+ModuleNotFoundError: No module named 'hepta_cells'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
