@@ -1,0 +1,90 @@
+{
+  "archive_members_verified": 431,
+  "bf16_validation": {
+    "device": "cuda:0",
+    "dtype": "torch.bfloat16",
+    "max_abs_error": 0.0,
+    "shape": [
+      32,
+      32
+    ]
+  },
+  "complete_index_members_checked": 422,
+  "cuda": {
+    "available": true,
+    "bf16_matmul_verified": true,
+    "bf16_supported": true,
+    "build": "12.8",
+    "device_index": 0,
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "free_total_bytes": [
+      6524633088,
+      8184135680
+    ]
+  },
+  "free_bytes_after": 3770294272,
+  "historical_failures_preserved": {
+    "ENVIRONMENT_FAILED.json": "KeyboardInterrupt()",
+    "ENVIRONMENT_FAILED_RESUME01.json": "URLError(TimeoutError('_ssl.c:983: The handshake operation timed out'))",
+    "ENVIRONMENT_FAILED_RESUME02.json": "TimeoutError('bounded recovery download deadline reached')",
+    "prior-recovery-02/ENVIRONMENT_FAILED.json": "TimeoutExpired(['/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python', '-m', 'pip', 'install', '--no-cache-dir', '--disable-pip-version-check', '--index-url', 'https://pypi.org/simple', '--report', '/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/operations/recovery-02/TORCH_INSTALL_REPORT.json', 'torch==2.9.1'], 1199.9999797820055)"
+  },
+  "installed_distribution_count_including_existing_pip": 45,
+  "installed_record_hash_rows_verified": 19045,
+  "installed_record_rows_checked_not_unique_files": 19089,
+  "installed_wheels": 44,
+  "model_loaded": false,
+  "notes": [
+    "Runtime and engineering evidence only; no capability or independent experiment claim.",
+    "Wheel RELEASE receipts follow offline install and installed RECORD byte verification.",
+    "Public wheel binaries and venv contents are excluded; compressed installed-file hash manifests are retained.",
+    "Space was checked per stage, not continuously measured or enforced by an OS filesystem quota."
+  ],
+  "pip_check_passed": true,
+  "protected_original_wheels": [
+    {
+      "filename": "nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl",
+      "reason": "protected original or non-exclusive wheel",
+      "released": false
+    },
+    {
+      "filename": "nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl",
+      "reason": "protected original or non-exclusive wheel",
+      "released": false
+    },
+    {
+      "filename": "nvidia_cuda_cupti_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "reason": "protected original or non-exclusive wheel",
+      "released": false
+    },
+    {
+      "filename": "nvidia_cuda_runtime_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "reason": "protected original or non-exclusive wheel",
+      "released": false
+    }
+  ],
+  "ready_sha256": "7f9368b38843ab1fbf158108e75008a04bf8d3b57c1e73a3e523d4bac832fac9",
+  "ready_verification_files_checked": 35,
+  "released_new_complete_wheels": 40,
+  "released_new_wheel_bytes": 3305584475,
+  "resume01_failure_range_errors_and_source_preserved": true,
+  "resume01_terminal_log_not_located": true,
+  "schema": "hepta.cuda-recovery-readout.v1",
+  "scientific_task_samples_created": 0,
+  "status": "READY",
+  "terminal": {
+    "exit_code": 0,
+    "output_complete": true,
+    "session_id": "dpty-d64b1ca8a0e8988d8578e00e486a8f45cac37bb1c3d4ef800cecc0309148b87a",
+    "state": "exited"
+  },
+  "training_started": false,
+  "versions": {
+    "numpy": "1.26.4",
+    "peft": "0.18.0",
+    "safetensors": "0.7.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.9.1+cu128",
+    "transformers": "4.57.3"
+  }
+}

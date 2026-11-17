@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "nvidia-smi",
+    "--query-gpu=name,driver_version,memory.total,memory.free",
+    "--format=csv,noheader,nounits"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "stdout": "NVIDIA GeForce RTX 4060, 580.178.04, 8188, 6448\n",
+  "wall_seconds": 0.06228364599519409
+}
