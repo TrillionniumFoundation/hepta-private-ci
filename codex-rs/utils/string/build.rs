@@ -7,5 +7,6 @@ fn main() {
     link_native("ascii_json_fragment");
     link_native("truncate");
     link_native("token_budget");
+    link_native("output_lines");
     link_native("uuid_find");
 }

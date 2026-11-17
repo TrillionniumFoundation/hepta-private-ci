@@ -15,7 +15,7 @@ pub fn formatted_truncate_text(content: &str, policy: TruncationPolicy) -> Strin
     }
 
     let original_token_count = approx_token_count(content);
-    let total_lines = content.lines().count();
+    let total_lines = codex_utils_string::count_lines(content);
     let result = truncate_text(content, policy);
     format!(
         "Warning: truncated output (original token count: {original_token_count})\nTotal output lines: {total_lines}\n\n{result}"
