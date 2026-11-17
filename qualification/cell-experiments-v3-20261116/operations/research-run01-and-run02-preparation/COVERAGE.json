@@ -1,0 +1,105 @@
+{
+  "Git_or_PR_mutation_by_packager": false,
+  "Mac_operations_coverage": {
+    "deferred_run01_inline_controller_roles": [
+      {
+        "role": "Run01 terminal inspection Mac controller",
+        "status": "next_package_pending_original_inline_source_binding"
+      },
+      {
+        "role": "Run01 postrun prepare and launch Mac controller",
+        "status": "next_package_pending_original_inline_source_binding"
+      },
+      {
+        "role": "Run01 final export Mac controller",
+        "status": "next_package_pending_original_inline_source_binding"
+      }
+    ],
+    "deferred_run02_final_files": [
+      "export_research_results_02.py",
+      "inspect_research_terminal_02.py",
+      "launch_research_postrun_02.py",
+      "observe_research_run_02.py",
+      "prepare_research_postrun_02.py"
+    ],
+    "newly_preserved_files": 10,
+    "observed_top_level_python_files": 23
+  },
+  "Run01": {
+    "all_six_primaries_first_memory_gate_failed": true,
+    "archive_members": 694,
+    "archive_sha256": "3b6b10a9bfdcb2cf3c7df965dd45e5cac3143463b3b8a615ff544aeb417b437a",
+    "closed": true,
+    "completed_fits": 0,
+    "completed_optimizer_step_receipts": 0,
+    "external_GPU_process_owner_and_exact_causal_contribution": "unknown",
+    "failed_attempts_and_unknown_cost_tails_preserved": true,
+    "fit_entries": 4,
+    "global_totals_unknown": true,
+    "new_cold_results": null,
+    "new_primary_task_success_rate": null,
+    "original_export_Git_objects": 8,
+    "retained_reference_receipts": 36,
+    "retained_shadow_output_receipts": 6,
+    "status": "RESEARCH_PARTIAL_UNQUALIFIED"
+  },
+  "Run02": {
+    "automatic_retry": false,
+    "cumulative_01_and_02_reporting_required": true,
+    "live_execution_observed_by_packager": false,
+    "reported_Desktop_PID": 2451059,
+    "reported_PTY": "dpty-245ab3897004ac7e6e8e405d65d7c78e36efa62a7b97edfdfa272e0c745f3770",
+    "root_reported_running_at_assignment": true,
+    "runtime_outputs_or_eventual_outcome_read": false,
+    "scope": "frozen source and closed preparation only",
+    "training_modules_parameters_budgets_or_thresholds_changed": false
+  },
+  "atomic_snapshot_claimed": false,
+  "base_commit": "36ec275d56bb7e40d671443e2ed6e0b154c0a489",
+  "candidate_selected": null,
+  "circuit_qualified": false,
+  "excluded": [
+    "active Run02 outputs and owned logs",
+    "Run02 candidates, adapters and task results",
+    "base weights",
+    "venv",
+    "caches",
+    "C",
+    "unrelated work",
+    "architecture final draft"
+  ],
+  "native_cell_adoption": false,
+  "new_C": false,
+  "new_independent_samples": 0,
+  "new_model_test_verifier_training_or_C_execution": false,
+  "new_snapshot_temporary_metadata_exclusions": [
+    {
+      "path": ".hepta-lock-32a158f694f5046a95064ea7",
+      "reason": "temporary transport metadata",
+      "root": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/research-run01-memory-review-01"
+    },
+    {
+      "path": ".hepta-lock-5c021c9f112b359db046f0c6",
+      "reason": "temporary transport metadata",
+      "root": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/research-run01-memory-review-01"
+    },
+    {
+      "path": ".hepta-lock-6bd4c15d3dda59d9d9812b8b",
+      "reason": "temporary transport metadata",
+      "root": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/research-run01-memory-review-01"
+    },
+    {
+      "path": ".hepta-lock-a580a232a62d4521407eed2f",
+      "reason": "temporary transport metadata",
+      "root": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/research-run01-memory-review-01"
+    }
+  ],
+  "new_teachers": 0,
+  "new_users": 0,
+  "original_64_core_git_blobs_unchanged": true,
+  "original_inputs_modified": false,
+  "prepared_at_ns": 1794890667241748000,
+  "proof_of_useful_work_eligible": false,
+  "schema": "hepta.closed01-prepared02-publication-coverage.v1",
+  "scientific_confirmation_qualified": false
+}
