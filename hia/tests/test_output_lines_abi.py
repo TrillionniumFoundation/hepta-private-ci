@@ -178,10 +178,14 @@ def partition(probe, chunks, final, label):
 def verify(args, report):
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / 'network_host.so', ROOT / 'hia/network_host.hepta',
-                  'full-native30', report)
-    require(report['native_build']['full30_manifest_verified'] is True
-            and report['native_build']['module_count'] == 30,
-            'raw output-lines requires the complete current thirty-module build')
+                  args.build_profile, report)
+    verified_field, expected_count = {
+        'full-native30': ('full30_manifest_verified', 30),
+        'full-native31': ('full31_manifest_verified', 31),
+    }[args.build_profile]
+    require(report['native_build'][verified_field] is True
+            and report['native_build']['module_count'] == expected_count,
+            'raw output-lines requires the complete selected native module build')
     bind(Path(__file__), report)
     contract = json.loads(bind(ROOT / 'hia/output_lines_buffer_contract.json', report))
     corpus = json.loads(bind(ROOT / 'hia/tests/output_lines_oracle_inputs.json', report, CORPUS_SHA))
@@ -262,11 +266,13 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native30', 'full-native31'],
+                        default='full-native30')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {
         'schema': 'codex.hia.output-lines.raw-abi.v1', 'passed': False,
-        'requested_build_profile': 'full-native30',
+        'requested_build_profile': args.build_profile,
         'loaded_entry': 'libcodex_hia_output_lines.so:codex_hia_output_lines',
         'abi_scope': 'Normal native-selfhost B3 namespaced borrowed-buffers-u32-v1 only.',
         'return_rule': 'Full u64 must equal the literal Core u32; nonzero high word is never masked or accepted.',
