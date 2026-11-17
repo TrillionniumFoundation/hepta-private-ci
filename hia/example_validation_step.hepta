@@ -1,0 +1,137 @@
+hia-asm.v1 hepta.hia.program.v9 codex_example_validation_step
+fn f0(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  entry_actual:usize = buffer.len(source)
+  entry_required:usize = const() {"value":56}
+  entry_exact:bool = compare.eq(entry_actual,entry_required)
+  branch entry_exact capacity(source,output) invalid()
+block capacity(cap_source:readbuf,cap_output:mutbuf)
+  cap_actual:usize = buffer.len(cap_output)
+  cap_minimum:usize = const() {"value":40}
+  cap_enough:bool = compare.ge(cap_actual,cap_minimum)
+  branch cap_enough decode(cap_source,cap_output) short_output()
+block decode(dec_source:readbuf,dec_output:mutbuf)
+  dec_p0:usize = const() {"value":0}
+  dec_p8:usize = const() {"value":8}
+  dec_p16:usize = const() {"value":16}
+  dec_p24:usize = const() {"value":24}
+  dec_p32:usize = const() {"value":32}
+  dec_p40:usize = const() {"value":40}
+  dec_p48:usize = const() {"value":48}
+  dec_version:u64 = buffer.load.u64.le(dec_source,dec_p0)
+  dec_mode:u64 = buffer.load.u64.le(dec_source,dec_p8)
+  dec_negative:u64 = buffer.load.u64.le(dec_source,dec_p16)
+  dec_positive:u64 = buffer.load.u64.le(dec_source,dec_p24)
+  dec_index:u64 = buffer.load.u64.le(dec_source,dec_p32)
+  dec_failed:u64 = buffer.load.u64.le(dec_source,dec_p40)
+  dec_observed:u64 = buffer.load.u64.le(dec_source,dec_p48)
+  dec_one:u64 = const() {"value":1}
+  dec_two:u64 = const() {"value":2}
+  dec_version_ok:bool = compare.eq(dec_version,dec_one)
+  dec_mode_ok:bool = compare.le(dec_mode,dec_two)
+  dec_header_ok:bool = bool.and(dec_version_ok,dec_mode_ok)
+  branch dec_header_ok route(dec_output,dec_mode,dec_negative,dec_positive,dec_index,dec_failed,dec_observed) invalid()
+block route(rt_output:mutbuf,rt_mode:u64,rt_negative:u64,rt_positive:u64,rt_index:u64,rt_failed:u64,rt_observed:u64)
+  rt_zero:u64 = const() {"value":0}
+  rt_is_begin:bool = compare.eq(rt_mode,rt_zero)
+  branch rt_is_begin begin(rt_output,rt_negative,rt_positive,rt_index,rt_failed,rt_observed) route_observed(rt_output,rt_mode,rt_negative,rt_positive,rt_index,rt_failed,rt_observed)
+block route_observed(ro_output:mutbuf,ro_mode:u64,ro_negative:u64,ro_positive:u64,ro_index:u64,ro_failed:u64,ro_observed:u64)
+  ro_one:u64 = const() {"value":1}
+  ro_is_negative:bool = compare.eq(ro_mode,ro_one)
+  branch ro_is_negative negative(ro_output,ro_negative,ro_positive,ro_index,ro_failed,ro_observed) positive(ro_output,ro_positive,ro_index,ro_failed,ro_observed)
+block begin(b_output:mutbuf,b_negative:u64,b_positive:u64,b_index:u64,b_failed:u64,b_observed:u64)
+  b_zero:u64 = const() {"value":0}
+  b_two:u64 = const() {"value":2}
+  b_zero_index:bool = compare.eq(b_index,b_zero)
+  b_zero_failed:bool = compare.eq(b_failed,b_zero)
+  b_sentinel:bool = compare.eq(b_observed,b_two)
+  b_a:bool = bool.and(b_zero_index,b_zero_failed)
+  b_valid:bool = bool.and(b_a,b_sentinel)
+  branch b_valid choose_negative(b_output,b_negative,b_positive) invalid()
+block choose_negative(cn_output:mutbuf,cn_negative:u64,cn_positive:u64)
+  cn_zero:u64 = const() {"value":0}
+  cn_has_negative:bool = compare.gt(cn_negative,cn_zero)
+  branch cn_has_negative request_negative(cn_output,cn_zero) choose_positive(cn_output,cn_positive)
+block choose_positive(cp_output:mutbuf,cp_positive:u64)
+  cp_zero:u64 = const() {"value":0}
+  cp_has_positive:bool = compare.gt(cp_positive,cp_zero)
+  branch cp_has_positive request_positive(cp_output,cp_zero,cp_zero,cp_zero) complete(cp_output)
+block negative(n_output:mutbuf,n_negative:u64,n_positive:u64,n_index:u64,n_failed:u64,n_observed:u64)
+  n_zero:u64 = const() {"value":0}
+  n_two:u64 = const() {"value":2}
+  n_in_range:bool = compare.lt(n_index,n_negative)
+  n_zero_failed:bool = compare.eq(n_failed,n_zero)
+  n_observed_valid:bool = compare.lt(n_observed,n_two)
+  n_a:bool = bool.and(n_in_range,n_zero_failed)
+  n_valid:bool = bool.and(n_a,n_observed_valid)
+  branch n_valid negative_decide(n_output,n_negative,n_positive,n_index,n_observed) invalid()
+block negative_decide(nd_output:mutbuf,nd_negative:u64,nd_positive:u64,nd_index:u64,nd_observed:u64)
+  nd_one:u64 = const() {"value":1}
+  nd_matched:bool = compare.eq(nd_observed,nd_one)
+  branch nd_matched negative_error(nd_output,nd_index) negative_next(nd_output,nd_negative,nd_positive,nd_index)
+block negative_next(nn_output:mutbuf,nn_negative:u64,nn_positive:u64,nn_index:u64)
+  nn_one:u64 = const() {"value":1}
+  nn_following:u64 = int.add.wrap(nn_index,nn_one)
+  nn_has_next:bool = compare.lt(nn_following,nn_negative)
+  branch nn_has_next request_negative(nn_output,nn_following) choose_positive(nn_output,nn_positive)
+block positive(p_output:mutbuf,p_positive:u64,p_index:u64,p_failed:u64,p_observed:u64)
+  p_two:u64 = const() {"value":2}
+  p_in_range:bool = compare.lt(p_index,p_positive)
+  p_failed_bound:bool = compare.le(p_failed,p_index)
+  p_observed_valid:bool = compare.lt(p_observed,p_two)
+  p_a:bool = bool.and(p_in_range,p_failed_bound)
+  p_valid:bool = bool.and(p_a,p_observed_valid)
+  branch p_valid positive_next(p_output,p_positive,p_index,p_failed,p_observed) invalid()
+block positive_next(pn_output:mutbuf,pn_positive:u64,pn_index:u64,pn_failed:u64,pn_observed:u64)
+  pn_zero:u64 = const() {"value":0}
+  pn_one:u64 = const() {"value":1}
+  pn_unmatched:bool = compare.eq(pn_observed,pn_zero)
+  pn_append:u64 = select(pn_unmatched,pn_one,pn_zero)
+  pn_total:u64 = int.add.wrap(pn_failed,pn_append)
+  pn_following:u64 = int.add.wrap(pn_index,pn_one)
+  pn_has_next:bool = compare.lt(pn_following,pn_positive)
+  branch pn_has_next request_positive(pn_output,pn_following,pn_total,pn_append) positive_last(pn_output,pn_index,pn_total,pn_append)
+block positive_last(pl_output:mutbuf,pl_index:u64,pl_total:u64,pl_append:u64)
+  pl_zero:u64 = const() {"value":0}
+  pl_failed:bool = compare.gt(pl_total,pl_zero)
+  branch pl_failed positive_error(pl_output,pl_index,pl_total,pl_append) complete(pl_output)
+block request_negative(rn_output:mutbuf,rn_index:u64)
+  rn_opcode:u64 = const() {"value":1}
+  rn_zero:u64 = const() {"value":0}
+  rn_phase:u64 = const() {"value":1}
+  jump emit(rn_output,rn_opcode,rn_index,rn_zero,rn_zero,rn_phase)
+block request_positive(rp_output:mutbuf,rp_index:u64,rp_failed:u64,rp_append:u64)
+  rp_opcode:u64 = const() {"value":2}
+  rp_phase:u64 = const() {"value":2}
+  jump emit(rp_output,rp_opcode,rp_index,rp_failed,rp_append,rp_phase)
+block negative_error(ne_output:mutbuf,ne_index:u64)
+  ne_opcode:u64 = const() {"value":3}
+  ne_zero:u64 = const() {"value":0}
+  jump emit(ne_output,ne_opcode,ne_index,ne_zero,ne_zero,ne_zero)
+block positive_error(pe_output:mutbuf,pe_index:u64,pe_failed:u64,pe_append:u64)
+  pe_opcode:u64 = const() {"value":4}
+  pe_zero:u64 = const() {"value":0}
+  jump emit(pe_output,pe_opcode,pe_index,pe_failed,pe_append,pe_zero)
+block complete(co_output:mutbuf)
+  co_zero:u64 = const() {"value":0}
+  jump emit(co_output,co_zero,co_zero,co_zero,co_zero,co_zero)
+block emit(em_output:mutbuf,em_opcode:u64,em_index:u64,em_failed:u64,em_append:u64,em_phase:u64)
+  em_p0:usize = const() {"value":0}
+  em_p8:usize = const() {"value":8}
+  em_p16:usize = const() {"value":16}
+  em_p24:usize = const() {"value":24}
+  em_p32:usize = const() {"value":32}
+  _ = buffer.store.u64.le(em_output,em_p0,em_opcode)
+  _ = buffer.store.u64.le(em_output,em_p8,em_index)
+  _ = buffer.store.u64.le(em_output,em_p16,em_failed)
+  _ = buffer.store.u64.le(em_output,em_p24,em_append)
+  _ = buffer.store.u64.le(em_output,em_p32,em_phase)
+  em_success:u32 = const() {"value":0}
+  ret(em_success)
+block invalid()
+  inv_status:u32 = const() {"value":4294967295}
+  ret(inv_status)
+block short_output()
+  short_status:u32 = const() {"value":4294967294}
+  ret(short_status)
+end
