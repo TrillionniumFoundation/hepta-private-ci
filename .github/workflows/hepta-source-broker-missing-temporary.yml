@@ -1,0 +1,209 @@
+name: Temporary fixed missing-source broker
+
+on:
+  push:
+    branches:
+      - integration/hepta-rust-validation-20261117-59d82
+    paths:
+      - .github/workflows/hepta-source-broker-missing-temporary.yml
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event_name == 'push' &&
+      github.event.deleted == false &&
+      github.ref == 'refs/heads/integration/hepta-rust-validation-20261117-59d82'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    steps:
+      - name: Fetch only three reviewed immutable controller objects
+        id: bootstrap
+        shell: bash
+        env:
+          BROKER_GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_PART: ${{ matrix.part }}
+        run: |
+          python3 -B - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import urllib.error
+          import urllib.request
+
+          repository = "TrillionniumFoundation/hepta-private-ci"
+          assert os.environ["GITHUB_REPOSITORY"] == repository
+          part = int(os.environ["SOURCE_PART"])
+          assert part in range(16)
+          descriptors = {"driver.py": {"bytes": 26013, "oid": "1c0b3578a6ffc1463805208c1c1b0047d37f0c0d", "sha256": "43d7fa529e50d22a480ff5cc92be1d6fa98b32cd7226c54efa5502cfdebceccf"}, "exporter.py": {"bytes": 43050, "oid": "aa6e1cc5e2f1d682fd05a2fbc0c310c38ff55842", "sha256": "b5c9532fa83ad72d53271eedc309f1c1128fe60a21b5992a3df31312431c97ae"}}
+          requests = {"0": {"bytes": 427216, "oid": "f45ed03f2034401c3a1857c38cdd8f6e4d738332", "sha256": "64888c1f3749639522b18619a3cd49fa552400355158d03277caaea10bfd4010"}, "1": {"bytes": 418928, "oid": "341a3b7495c90760f30bfd7494da78c509074e5e", "sha256": "114d0b2dffdfbc08e1d149a1e93884b18941cd1d31034f6ce0e8a8475310e6d4"}, "10": {"bytes": 424052, "oid": "9837aa792eefabf07d401eaff06093a95c09a8ca", "sha256": "5d339fb80eb345f85d2f525aaaddd61ba8ce8f267b73137c200dd4af92bf0b04"}, "11": {"bytes": 426714, "oid": "8b286f6404be9ab47b2506999fba97a1e78c64d4", "sha256": "faedcfda8ab2106c1774ceb0c28bd2eed4dd82e04d48c611dad27e371e514de6"}, "12": {"bytes": 425823, "oid": "69e07591621a66618c88f9e7b35a33adf9962112", "sha256": "ab768a495aaef4cc735fd769a0811436a107db84a90cda3638814546fdec9a93"}, "13": {"bytes": 423404, "oid": "e1ed99abc519c059bc2c98c7a403cb9b36b17b40", "sha256": "98e966a2163d50956fc78352fc169523849635b2dfee9373a5a59175babc92c6"}, "14": {"bytes": 425232, "oid": "91c7d9b120cd603c73b484291ffc5c15d7493ac6", "sha256": "73c2b0dcc5672bb43075e8275aa429136d9fb5c558c4a3d1ecb8c1c25bee695d"}, "15": {"bytes": 422936, "oid": "3a1935f868ecda8016034e46aee4b8f33a898b3f", "sha256": "4689982ab2c6a6a9768a67e725b0faba191db3537f1d202a9a74ef020626441d"}, "2": {"bytes": 425025, "oid": "bca3e5e40b246d237e5bb502fa3da3e317c4fcc6", "sha256": "244f281892bbef019c5ac9bb60c194547cfb773f2fe0c97cdd95412edb1f1d36"}, "3": {"bytes": 422274, "oid": "24ba5861c8d47b1b55a222c53fe7dd71ee262aba", "sha256": "7dac37938b269639d4ab77318f4c74679f2000c59b83530e039e64075fae797b"}, "4": {"bytes": 425392, "oid": "34b83f6db44c3c3f06d0c6e7b81fb761c37702ae", "sha256": "c9bc70591cd31fccde11500c7274a61119668e0a646adfb461033dfc1769dc21"}, "5": {"bytes": 422655, "oid": "99698150eb9dc1695858b956fb4b90689df1752c", "sha256": "a670afb24f86d1502c2b2b157fea354ef375d3614e44be10f6959f27f7954239"}, "6": {"bytes": 427222, "oid": "8778268ca6cccbce3ba73fe7087e5d71e2beed82", "sha256": "4f99eba9ae0ec7d5d12f0226c8b08e51e0a3a85c2acfe3397a95011abe7471db"}, "7": {"bytes": 424134, "oid": "96f4afc84550711e5d05b2d2d4bda7959fd92ffd", "sha256": "2b86bd5f953edbef3ca2a92fe19d08a09e4ef3661f8d7725fa9ea75c9b8a67ec"}, "8": {"bytes": 425638, "oid": "cd5563faf10d2e1489e57512cee0c20e4e0f2209", "sha256": "afb8ca1d0429c34ac15ad317c626907a8315d083cd2443ef63c9d03fbb0e6439"}, "9": {"bytes": 423580, "oid": "40e649753fc0b51380fd166db8e7234e22de3d07", "sha256": "165d1e6e69f6e3cf707868b00b740273155f8f8d1e7825013d8ce449ffe4e6b9"}}
+          descriptors["request.json.gz"] = requests[str(part)]
+          root = Path(os.environ["RUNNER_TEMP"]) / "hepta-missing-source-bootstrap"
+          root.mkdir(exist_ok=False)
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect())
+          token = os.environ["BROKER_GITHUB_TOKEN"]
+          rows = []
+          for name, expected in descriptors.items():
+              url = "https://api.github.com/repos/" + repository + "/git/blobs/" + expected["oid"]
+              request = urllib.request.Request(url, headers={"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
+              try:
+                  with opener.open(request, timeout=60) as response:
+                      raw_response = response.read(2 * 1024 * 1024 + 1)
+                      assert len(raw_response) <= 2 * 1024 * 1024
+                      assert response.status == 200 and response.url == url
+              except Exception as error:
+                  (root / "bootstrap-failure.json").write_text(json.dumps({"name": name, "oid": expected["oid"], "type": type(error).__name__, "message": str(error), "retries": 0}) + "\n")
+                  raise
+              (root / (name + ".api.json")).write_bytes(raw_response)
+              value = json.loads(raw_response)
+              assert value["sha"] == expected["oid"] and value["encoding"] == "base64"
+              data = base64.b64decode("".join(value["content"].split()), validate=True)
+              assert value["size"] == len(data) == expected["bytes"]
+              assert hashlib.sha256(data).hexdigest() == expected["sha256"]
+              assert hashlib.sha1(("blob " + str(len(data)) + "\0").encode() + data).hexdigest() == expected["oid"]
+              (root / name).write_bytes(data)
+              rows.append({"filename": name, **expected, "api_response_bytes": len(raw_response), "api_response_sha256": hashlib.sha256(raw_response).hexdigest()})
+          (root / "bootstrap-receipt.json").write_text(json.dumps({"part": part, "runtime_head": os.environ["GITHUB_SHA"], "repository": repository, "descriptors": rows, "verified": True, "redirects": False, "retries": 0}, indent=2) + "\n")
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as stream:
+              stream.write("request_sha256=" + requests[str(part)]["sha256"] + "\n")
+          print(json.dumps({"part": part, "verified_controller_files": len(rows)}))
+          PY
+
+      - name: Retrieve only fixed missing blobs without ref destinations
+        id: collect
+        shell: bash
+        env:
+          BROKER_GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_PART: ${{ matrix.part }}
+          REQUEST_SHA256: ${{ steps.bootstrap.outputs.request_sha256 }}
+        run: |
+          set -euo pipefail
+          code="$RUNNER_TEMP/hepta-missing-source-bootstrap"
+          echo "43d7fa529e50d22a480ff5cc92be1d6fa98b32cd7226c54efa5502cfdebceccf  $code/driver.py" | sha256sum --check --strict
+          PYTHONDONTWRITEBYTECODE=1 python3 -B "$code/driver.py" collect \
+            --part "$SOURCE_PART" \
+            --request "$code/request.json.gz" --request-sha256 "$REQUEST_SHA256" \
+            --exporter "$code/exporter.py" \
+            --repository "$RUNNER_TEMP/hepta-missing-source-bare" \
+            --output "$RUNNER_TEMP/hepta-missing-source-originals"
+
+      - name: Retain every original file in volumes bounded by actual byte totals
+        if: always() && steps.bootstrap.outcome == 'success'
+        id: finalize
+        shell: bash
+        env:
+          SOURCE_PART: ${{ matrix.part }}
+        run: |
+          set -euo pipefail
+          code="$RUNNER_TEMP/hepta-missing-source-bootstrap"
+          echo "43d7fa529e50d22a480ff5cc92be1d6fa98b32cd7226c54efa5502cfdebceccf  $code/driver.py" | sha256sum --check --strict
+          PYTHONDONTWRITEBYTECODE=1 python3 -B "$code/driver.py" finalize \
+            --part "$SOURCE_PART" \
+            --output "$RUNNER_TEMP/hepta-missing-source-originals" \
+            --bootstrap "$code" \
+            --artifacts "$RUNNER_TEMP/hepta-missing-source-artifacts"
+
+      - name: Preserve controller identity even if source retrieval fails
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-bootstrap-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}
+          path: ${{ runner.temp }}/hepta-missing-source-bootstrap/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 0
+        if: always() && steps.finalize.outputs.volume_0 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-0
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-0/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 1
+        if: always() && steps.finalize.outputs.volume_1 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-1
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-1/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 2
+        if: always() && steps.finalize.outputs.volume_2 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-2
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-2/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 3
+        if: always() && steps.finalize.outputs.volume_3 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-3
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-3/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 4
+        if: always() && steps.finalize.outputs.volume_4 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-4
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-4/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 5
+        if: always() && steps.finalize.outputs.volume_5 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-5
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-5/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 6
+        if: always() && steps.finalize.outputs.volume_6 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-6
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-6/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Preserve measured source volume 7
+        if: always() && steps.finalize.outputs.volume_7 == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-missing-source-${{ github.sha }}-${{ github.run_attempt }}-${{ matrix.part }}-volume-7
+          path: ${{ runner.temp }}/hepta-missing-source-artifacts/volume-7/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
