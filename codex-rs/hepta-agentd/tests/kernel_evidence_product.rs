@@ -645,7 +645,7 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     current_store.close().await;
 
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
-        external.path(),
+        &external.path().canonicalize()?,
         "store:kernel-evidence-recovery-old",
         current_snapshot,
     )?;

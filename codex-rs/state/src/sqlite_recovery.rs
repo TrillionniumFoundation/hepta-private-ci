@@ -322,8 +322,7 @@ impl RetainedObject {
         let before = std::fs::symlink_metadata(path)
             .map_err(indeterminate)
             .map_err(|error| (error, "path_metadata"))?;
-        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateFile)
-            .map_err(|error| (error, "path_identity"))?;
+        let snapshot = FileSnapshot::validated_with_subphase(&before, ObjectKind::PrivateFile)?;
         let descriptor = openat_read_only(parent, file_name).map_err(|error| (error, "open"))?;
         let opened = FileSnapshot::validated(
             &descriptor
@@ -412,6 +411,13 @@ struct FileSnapshot {
 #[cfg(unix)]
 impl FileSnapshot {
     fn validated(metadata: &Metadata, kind: ObjectKind) -> Result<Self, SqliteRecoveryError> {
+        Self::validated_with_subphase(metadata, kind).map_err(|(error, _)| error)
+    }
+
+    fn validated_with_subphase(
+        metadata: &Metadata,
+        kind: ObjectKind,
+    ) -> Result<Self, (SqliteRecoveryError, &'static str)> {
         let mode = metadata.mode() & 0o7777;
         // SAFETY: `geteuid` has no preconditions and does not dereference memory.
         let effective_user = unsafe { libc::geteuid() };
@@ -423,15 +429,27 @@ impl FileSnapshot {
                     && mode == 0o700
             }
             ObjectKind::PrivateFile => {
-                metadata.is_file()
-                    && !metadata.file_type().is_symlink()
-                    && metadata.uid() == effective_user
-                    && mode == 0o600
-                    && metadata.nlink() == 1
+                // Preserve the original short-circuit order and return the same error.
+                if !metadata.is_file() {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.file"));
+                }
+                if metadata.file_type().is_symlink() {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.non_symlink"));
+                }
+                if metadata.uid() != effective_user {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.uid"));
+                }
+                if mode != 0o600 {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.mode"));
+                }
+                if metadata.nlink() != 1 {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.nlink"));
+                }
+                true
             }
         };
         if !valid {
-            return Err(SqliteRecoveryError::Indeterminate);
+            return Err((SqliteRecoveryError::Indeterminate, "path_identity"));
         }
         Ok(Self {
             device: metadata.dev(),
