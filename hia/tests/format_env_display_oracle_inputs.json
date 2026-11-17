@@ -1,0 +1,446 @@
+{
+  "schema": "codex.hia.format-env-display-oracle-inputs.v1",
+  "status": "SOURCE_ONLY_PARTIAL_REVIEW_STAGE_NOT_RUNNABLE_OR_QUALIFIED",
+  "source": {
+    "path": "hia/format_env_display.hepta",
+    "bytes": 58467,
+    "sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+    "git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc"
+  },
+  "contract": {
+    "path": "hia/format_env_display_buffer_contract.json",
+    "bytes": 21926,
+    "sha256": "984eb93cf8f70f41a293b2d3214119aac343db57e2908203c97d36a785009ce2"
+  },
+  "reference": "Manually specified complete byte frames and complete expected output prefixes; source authoring serializes explicit words/bytes only, without executing any sort/mask/join model or candidate.",
+  "qualification": {
+    "candidate_executed": false,
+    "algorithm_model_executed": false,
+    "native_executed": false,
+    "original_rust_oracle_executed": false,
+    "performance_qualified": false,
+    "whole_codex_rewritten": false,
+    "default_release_migrated": false
+  },
+  "case_defaults": {
+    "output_initial_fill_hex": "a5",
+    "guard_bytes_each_side": 33,
+    "workspace_policy": "Every supplied workspace byte and both guards must remain unchanged."
+  },
+  "logical_length_boundary": "logical_continuation_only cases supply tiny bounded fragments with >4GiB/u64 metadata; no preceding giant byte sequence, allocation or complete giant workload is supplied or executed. Valid private state shapes are not authenticated histories.",
+  "counts": {
+    "streams": 4,
+    "stream_calls": 7,
+    "raw_cases": 0,
+    "literal_frames": 7
+  },
+  "streams": [
+    {
+      "id": "sort-empty",
+      "kind": "sort",
+      "keys_hex": [],
+      "expected_original_indices": [],
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000000000000000000000000000000000000",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "0",
+            "0"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "0",
+            "2",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "4",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0200000000000000010000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "id": "sort-single",
+      "kind": "sort",
+      "keys_hex": [
+        "61"
+      ],
+      "expected_original_indices": [
+        0
+      ],
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000000000000000000000100000000000000",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "0",
+            "1"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "4",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "id": "sort-two-descending",
+      "kind": "sort",
+      "keys_hex": [
+        "42",
+        "41"
+      ],
+      "expected_original_indices": [
+        1,
+        0
+      ],
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000000000000000000000200000000000000",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "0",
+            "2"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "2",
+            "0",
+            "0",
+            "2",
+            "0",
+            "1",
+            "1",
+            "1",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0000000000000000010000000000000002000000000000000000000000000000000000000000000002000000000000000000000000000000010000000000000001000000000000000100000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 210,
+          "source_hex": "010000000000000001000000000000000100000000000000020000000000000000000000000000000000000000000000020000000000000000000000000000000100000000000000010000000000000001000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000100000000000000010000000000000001000000000000004241",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "1",
+            "1",
+            "2",
+            "0",
+            "0",
+            "2",
+            "0",
+            "1",
+            "1",
+            "1",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "source_payload_hex": "4241",
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "2",
+            "1",
+            "0",
+            "2",
+            "0",
+            "0",
+            "0",
+            "3",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0100000000000000010000000000000002000000000000000100000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 208,
+          "source_hex": "01000000000000000100000000000000010000000000000002000000000000000100000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "1",
+            "1",
+            "2",
+            "1",
+            "0",
+            "2",
+            "0",
+            "0",
+            "0",
+            "3",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "2",
+            "2",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "4",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0200000000000000010000000000000002000000000000000200000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "id": "sort-two-ascending",
+      "kind": "sort",
+      "keys_hex": [
+        "41",
+        "42"
+      ],
+      "expected_original_indices": [
+        0,
+        1
+      ],
+      "calls": [
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 24,
+          "source_hex": "010000000000000000000000000000000200000000000000",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "0",
+            "2"
+          ],
+          "source_payload_hex": "",
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "2",
+            "0",
+            "0",
+            "2",
+            "0",
+            "1",
+            "1",
+            "1",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0000000000000000010000000000000002000000000000000000000000000000000000000000000002000000000000000000000000000000010000000000000001000000000000000100000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "purpose": "",
+          "logical_continuation_only": false,
+          "source_bytes": 210,
+          "source_hex": "010000000000000001000000000000000100000000000000020000000000000000000000000000000000000000000000020000000000000000000000000000000100000000000000010000000000000001000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000100000000000000010000000000000001000000000000004142",
+          "output_capacity": 169,
+          "workspace_hex": "00a5ff",
+          "expected_core_return": 152,
+          "expected_written_bytes": 152,
+          "source_words_le": [
+            "1",
+            "1",
+            "1",
+            "2",
+            "0",
+            "0",
+            "2",
+            "0",
+            "1",
+            "1",
+            "1",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "source_payload_hex": "4142",
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "2",
+            "0",
+            "0",
+            "2",
+            "0",
+            "1",
+            "1",
+            "2",
+            "0",
+            "1",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_payload_hex": "",
+          "expected_output_prefix_hex": "0100000000000000010000000000000002000000000000000000000000000000000000000000000002000000000000000000000000000000010000000000000001000000000000000200000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    }
+  ],
+  "raw_cases": [],
+  "staging": {
+    "final_corpus": {
+      "bytes": 560082,
+      "sha256": "9ed01ce7c5aad87677ad21a20e8bdf9442cdd5588ac2ff13fbdd4138325aacd1",
+      "git_blob": "74c32ad1829b2e5e7bf963a44236c2d502fb60c0"
+    },
+    "included_whole_frames": 7,
+    "final_whole_frames": 231,
+    "complete_streams": 3,
+    "partial_stream": {
+      "id": "sort-two-ascending",
+      "included_calls": 2,
+      "complete_calls": 4
+    },
+    "not_runnable": "The final harness pins only the complete final corpus; incomplete streams and this partial JSON are review stages, never a qualification input."
+  }
+}
