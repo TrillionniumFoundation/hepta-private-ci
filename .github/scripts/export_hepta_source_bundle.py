@@ -598,6 +598,7 @@ def pack_objects(git, output, oids, values, exported, packs, required):
                 "pack-objects",
                 "--stdout",
                 "--window=0",
+                "--no-reuse-delta",
                 "--threads=1",
                 "--compression=6",
             ],

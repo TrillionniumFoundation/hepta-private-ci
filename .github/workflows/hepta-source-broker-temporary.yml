@@ -70,7 +70,7 @@ jobs:
             throw 'The checkout differs from the exact push head.'
           }
           $script = '.github/scripts/export_hepta_source_bundle.py'
-          $expectedScript = 'ea3fd4f791bf2bc85ce28bd21b96946947ade9475635499252b44fd4f0148b44'
+          $expectedScript = 'b5c9532fa83ad72d53271eedc309f1c1128fe60a21b5992a3df31312431c97ae'
           if ((Get-FileHash -Algorithm SHA256 $script).Hash.ToLowerInvariant() -ne $expectedScript) {
             throw 'Exporter bytes differ from the reviewed script.'
           }
@@ -101,7 +101,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $script = '.github/scripts/export_hepta_source_bundle.py'
-          if ((Get-FileHash -Algorithm SHA256 $script).Hash.ToLowerInvariant() -ne 'ea3fd4f791bf2bc85ce28bd21b96946947ade9475635499252b44fd4f0148b44') {
+          if ((Get-FileHash -Algorithm SHA256 $script).Hash.ToLowerInvariant() -ne 'b5c9532fa83ad72d53271eedc309f1c1128fe60a21b5992a3df31312431c97ae') {
             throw 'Exporter bytes changed between phases.'
           }
           python $script --phase history --expected-head $env:GITHUB_SHA --current-capsule (Join-Path $env:RUNNER_TEMP 'hepta-source-broker-head') --output (Join-Path $env:RUNNER_TEMP 'hepta-source-broker-history')
