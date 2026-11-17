@@ -1,6 +1,65 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: citation streaming
+## Current source increment: proposed plan parsing
+
+The complete `proposed_plan_parser` source unit moves line-based plan parsing
+into HIA under the existing opt-in feature. HIA owns UTF-8 admission, the pinned
+25 whitespace scalars, LF line decisions, both marker-prefix candidates,
+normal/plan channels, pending counters, Start/End barriers and EOF reset.
+Explicit continuation commands preserve segments across internal frames while
+keeping distinct public calls separate.
+
+The current source configures **34 modules and 31 opt-in caller kernels**:
+32 borrowed-buffer and two unchanged scalar profiles. Seven Cargo build owners
+account for the links (9 + 7 + 3 + 8 + 1 + 1 + 2). The stream-parser owner adds
+its second link through the existing Core and CLI feature route. Installed CLI
+admission requires 30 symbols, with one library-only and three retained
+oracle-only modules kept distinct.
+
+Kernel source origin: `da3817ebea57da1a940c12abc57999ce3d50706a`.
+The [buffer contract](proposed_plan_parser_buffer_contract.json) binds the
+complete source. Push, Finish and readonly Inspect use an 88-byte request
+header and at most 4096 payload bytes, always ending at a complete UTF-8 scalar.
+An 80-byte output header precedes 32-byte commands. Required capacities are
+80 + 96*N, 176 and 80. The native wrapper's entire u64 result is checked before
+interpreting its bounded Core u32 extent.
+
+Rust retains the unbounded pending String and original segment Vec. It
+validates every command and the complete returned state before applying a
+frame's mechanical effects. The original `map_segments` runs exactly once
+per public call. Inspect supplies the exact original Debug fields without
+consuming pending input. The default parser and both generic parser tests
+remain; original method bodies and the streaming/finalization order are
+preserved.
+
+The raw gate has 204 literal templates and 713 planned native invocations:
+six streams with 532 calls plus 181 standalone cases. Two streams prescribe
+257 chunks of 4096 whitespace bytes each. These are authored fixtures and do
+not claim executed performance or a workload above 4 GiB. The corpus is below
+the unchanged 512000-byte limit; no reference parser computed its expectations.
+
+Five original ProposedPlan methods and two original generic methods are
+preserved. Thirteen added public methods run under both feature selections.
+Eleven native decoder methods check malformed frames and validation before
+effects. Two additional native-only public witnesses exceed 1 MiB; matching
+small literal cases cover the default path without claiming large default
+execution. Existing complete owner, strict lint and eight Core consumer gates
+cover the composition with Citation. Their commands and budgets remain intact.
+
+Current raw gates select full-native34. Historical exact29/30/31/32/33 profiles
+retain their closed module sets and defaults. Fresh B1/B2/B3, all 34 module
+bindings and every static-link receipt are required. Earlier receipts cannot
+qualify this source increment.
+
+This increment has not been compiled or executed. Runtime, default release,
+whole workspace/product, required platforms, performance, independent artifact
+custody and retirement remain unqualified. The thirteen pending and two partial
+capability groups remain open.
+
+## Earlier source increment: citation streaming
+
+The following 33-module description records the earlier source increment.
+Its evidence is revision-bound and does not qualify the current 34-module tree.
 
 The complete citation_stream_parser source unit moves the literal, non-nested
 citation parser into HIA under the existing opt-in feature. HIA owns matching,
@@ -16,7 +75,8 @@ that owner; the CLI already forwards Core, so no duplicate CLI route is added.
 Installed CLI admission requires 29 symbols, with one library-only and three
 retained oracle-only modules kept distinct.
 
-Kernel source origin: `ee3d7d62c0c28a39b9d7c99073bfe68eff6a71a0`.
+Kernel source origin after the fixed-compiler result-count repair:
+`20c7ce19ae5775c50e3999ba7fcca424939a8078`.
 The [buffer contract](citation_stream_parser_buffer_contract.json) binds its
 complete bytes. Push, Finish and readonly Inspect use a 40-byte request header
 and at most 4096 payload bytes. HIA returns packed records after a 48-byte
@@ -46,10 +106,10 @@ profiles retain their original closed module sets and defaults. Fresh B1/B2/B3,
 all33 module/artifact bindings and all seven-owner static-link receipts are
 required; earlier receipts cannot qualify this source increment.
 
-This source increment has not been compiled or executed. Current runtime,
-default release, complete workspace/product, performance, independent artifact
-custody and retirement remain unqualified. The thirteen pending and two partial
-capability groups remain open; no legacy implementation is retired here.
+The source-preparation record for this earlier increment is retained here.
+Later execution evidence applies only to its exact source revision. It does
+not qualify the current increment, default release, complete workspace/product,
+performance, independent artifact custody or retirement.
 
 ## Earlier source increment: bounded environment display
 
@@ -225,13 +285,14 @@ The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
 nineteen-name branch with the HIA scope of
 `74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
 names. The later source increments add `output_lines`, `output_item_budget`,
-`format_env_display` and `citation_stream_parser` for 33 modules. Seven Cargo
-build entries configure 30 opt-in links (9 + 7 + 3 + 8 + 1 + 1 + 1) when
+`format_env_display`, `citation_stream_parser` and `proposed_plan_parser` for
+34 modules. Seven Cargo build entries configure 31 opt-in links
+(9 + 7 + 3 + 8 + 1 + 1 + 2) when
 `hia-native` is enabled.
 `utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
 kernels; their current production replacements are `utf8_prefix`, `uuid_find`
 and `template_parse`. There are two scalar profiles, `token_budget` and
-`prefix_admission`; the other 31 entries retain the borrowed
+`prefix_admission`; the other 32 entries retain the borrowed
 buffer profile. See `joint_module_roles.json` for source, role, replacement and
 link sites. Names, configured links, algorithms and observed calls are distinct
 counts.

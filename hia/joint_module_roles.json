@@ -3,7 +3,7 @@
   "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
   "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
   "audited_name_union": 29,
-  "current_opt_in_linked_kernels": 30,
+  "current_opt_in_linked_kernels": 31,
   "retained_oracle_only_kernels": 3,
   "entry_profiles": {
     "token_budget": "u64-pair-to-u64-v1",
@@ -505,6 +505,23 @@
       "production_entry": "codex_utils_stream_parser::CitationStreamParser push_str/finish and strip_citations; AssistantTextStreamParser and Core streaming/finalization callers through codex-core/hia-native and the existing CLI feature",
       "runtime_qualified_on_joint_tree": false,
       "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "proposed_plan_parser",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/proposed_plan_parser.hepta",
+      "source_revision": "da3817ebea57da1a940c12abc57999ce3d50706a",
+      "source_git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6",
+      "source_sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "codex_utils_stream_parser::ProposedPlanParser push_str/finish, strip_proposed_plan_blocks and extract_proposed_plan_text; existing AssistantTextStreamParser and Core streaming/finalization callers through the existing codex-core and CLI hia-native feature route",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -570,11 +587,12 @@
   },
   "count_is_not_a_production_coverage_claim": true,
   "current_build_or_runtime_executed": false,
-  "current_build_module_count": 33,
+  "current_build_module_count": 34,
   "modules_added_after_audited_union": [
     "output_lines",
     "output_item_budget",
     "format_env_display",
-    "citation_stream_parser"
+    "citation_stream_parser",
+    "proposed_plan_parser"
   ]
 }
