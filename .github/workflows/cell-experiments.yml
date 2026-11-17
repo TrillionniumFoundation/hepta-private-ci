@@ -3,16 +3,16 @@ name: Cell experiments engineering integrity
 on:
   pull_request:
     paths:
-      - 'scripts/cell_experiments/**'
-      - 'scripts/hepta_cells/**'
-      - 'qualification/cell-experiments-v2-20261116/task-fixtures/**'
-      - '.github/workflows/cell-experiments.yml'
+      - "scripts/cell_experiments/**"
+      - "scripts/hepta_cells/**"
+      - "qualification/cell-experiments-v2-20261116/task-fixtures/**"
+      - ".github/workflows/cell-experiments.yml"
   push:
     paths:
-      - 'scripts/cell_experiments/**'
-      - 'scripts/hepta_cells/**'
-      - 'qualification/cell-experiments-v2-20261116/task-fixtures/**'
-      - '.github/workflows/cell-experiments.yml'
+      - "scripts/cell_experiments/**"
+      - "scripts/hepta_cells/**"
+      - "qualification/cell-experiments-v2-20261116/task-fixtures/**"
+      - ".github/workflows/cell-experiments.yml"
   workflow_dispatch:
 
 permissions:
@@ -29,12 +29,12 @@ jobs:
     timeout-minutes: 10
     env:
       PYTHONPATH: scripts
-      PYTHONDONTWRITEBYTECODE: '1'
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      HF_HUB_OFFLINE: '1'
-      TRANSFORMERS_OFFLINE: '1'
-      HF_DATASETS_OFFLINE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
     steps:
       - name: Check out reviewed code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -43,7 +43,7 @@ jobs:
       - name: Set up Python 3.12
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Install the numerical test dependency in an isolated environment
         run: |
           python -m venv "$RUNNER_TEMP/cell-integrity-venv"

@@ -2,23 +2,23 @@ name: Cell HIA joint candidate
 on:
   pull_request:
     paths:
-      - 'scripts/hepta_cells/**'
-      - 'scripts/hepta_pred1/**'
-      - 'scripts/hepta_cell_joint_worker.py'
-      - 'scripts/hepta_cell_campaign_worker.py'
-      - 'scripts/qualify_runtime_campaign.py'
-      - 'scripts/package_hia_cell_candidate.py'
-      - 'scripts/verify_hepta_maintenance_cycle.py'
-      - 'scripts/review_hepta_maintenance_snapshot.py'
-      - 'scripts/qualify_hia_cell_joint.py'
-      - 'scripts/runtime_process_bridge.py'
-      - 'scripts/runtime_stdio.py'
-      - 'scripts/runtime_process_contract.py'
-      - 'scripts/refreeze_joint_worker.py'
-      - 'scripts/qualify_runtime_process_bridge.py'
-      - 'scripts/test*cell*'
-      - 'scripts/test_runtime_process_bridge.py'
-      - '.github/workflows/cell-hia-joint.yml'
+      - "scripts/hepta_cells/**"
+      - "scripts/hepta_pred1/**"
+      - "scripts/hepta_cell_joint_worker.py"
+      - "scripts/hepta_cell_campaign_worker.py"
+      - "scripts/qualify_runtime_campaign.py"
+      - "scripts/package_hia_cell_candidate.py"
+      - "scripts/verify_hepta_maintenance_cycle.py"
+      - "scripts/review_hepta_maintenance_snapshot.py"
+      - "scripts/qualify_hia_cell_joint.py"
+      - "scripts/runtime_process_bridge.py"
+      - "scripts/runtime_stdio.py"
+      - "scripts/runtime_process_contract.py"
+      - "scripts/refreeze_joint_worker.py"
+      - "scripts/qualify_runtime_process_bridge.py"
+      - "scripts/test*cell*"
+      - "scripts/test_runtime_process_bridge.py"
+      - ".github/workflows/cell-hia-joint.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      CARGO_BUILD_JOBS: '2'
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      CARGO_BUILD_JOBS: "2"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,7 +49,7 @@ jobs:
           path: runtime
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Prepare numerical dependency and disposable SSH fixture
         run: |
           python -m pip install numpy==2.3.5
