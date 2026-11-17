@@ -1,0 +1,372 @@
+name: Temporary fixed HEAD artifact shards
+
+on:
+  push:
+    branches:
+      - integration/hepta-rust-validation-20261117-59d82
+    paths:
+      - .github/workflows/hepta-source-broker-head-reshard-temporary.yml
+
+permissions:
+  actions: read
+
+jobs:
+  head-shard:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event_name == 'push' &&
+      github.event.deleted == false &&
+      github.ref == 'refs/heads/integration/hepta-rust-validation-20261117-59d82'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3]
+    env:
+      SHARD_PART: ${{ matrix.part }}
+    steps:
+      - name: Verify the exact source artifact and runtime push
+        shell: python {0}
+        env:
+          ARTIFACT_READ_TOKEN: ${{ github.token }}
+        run: |
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import urllib.request
+
+          REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+          REF = "refs/heads/integration/hepta-rust-validation-20261117-59d82"
+          HEAD = "eef4d2afed5f9176de4aaf790f74f5ca93d7151f"
+          RUN = 44109517447
+          ARTIFACT = 14340645938
+          NAME = "hepta-source-broker-head-" + HEAD + "-1"
+          DIGEST = "sha256:bdf7a8cd1266ae526f71b9ce0982b18241d81c76f72c4af07f40262b18423ae6"
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, request, file, code, message, headers, url):
+                  raise ValueError("Unexpected API redirect")
+
+          def require(condition, message):
+              if not condition:
+                  raise ValueError(message)
+
+          def api(path):
+              request = urllib.request.Request(
+                  "https://api.github.com/repos/" + REPOSITORY + path,
+                  headers={
+                      "Authorization": "Bearer " + os.environ["ARTIFACT_READ_TOKEN"],
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                  },
+              )
+              with urllib.request.build_opener(NoRedirect()).open(request, timeout=60) as response:
+                  raw = response.read(2 * 1024 * 1024 + 1)
+              require(len(raw) <= 2 * 1024 * 1024, "API response bound")
+              return raw, json.loads(raw)
+
+          event_bytes = Path(os.environ["GITHUB_EVENT_PATH"]).read_bytes()
+          require(len(event_bytes) <= 2 * 1024 * 1024, "Event response bound")
+          event = json.loads(event_bytes)
+          require(
+              os.environ["GITHUB_EVENT_NAME"] == "push"
+              and os.environ["GITHUB_REPOSITORY"] == REPOSITORY
+              and os.environ["GITHUB_REF"] == REF
+              and event.get("deleted") is False
+              and event.get("ref") == REF
+              and event.get("after") == os.environ["GITHUB_SHA"]
+              and event.get("repository", {}).get("full_name") == REPOSITORY
+              and event.get("repository", {}).get("id") == 1320694176,
+              "Runtime push identity differs",
+          )
+          artifact_bytes, artifact = api(f"/actions/artifacts/{ARTIFACT}")
+          run_bytes, run = api(f"/actions/runs/{RUN}")
+          require(
+              artifact.get("id") == ARTIFACT
+              and artifact.get("name") == NAME
+              and artifact.get("digest") == DIGEST
+              and artifact.get("size_in_bytes") == 1213523199
+              and artifact.get("expired") is False
+              and artifact.get("workflow_run", {}).get("id") == RUN
+              and artifact.get("workflow_run", {}).get("head_sha") == HEAD
+              and artifact.get("workflow_run", {}).get("repository_id") == 1320694176
+              and artifact.get("workflow_run", {}).get("head_repository_id") == 1320694176,
+              "Fixed source artifact identity differs",
+          )
+          require(
+              run.get("id") == RUN
+              and run.get("head_sha") == HEAD
+              and run.get("head_branch") == REF.removeprefix("refs/heads/")
+              and run.get("repository", {}).get("full_name") == REPOSITORY,
+              "Fixed source run identity differs",
+          )
+          proof = Path(os.environ["RUNNER_TEMP"]) / "hepta-head-reshard-proof"
+          proof.mkdir()
+          (proof / "original-artifact-api.json").write_bytes(artifact_bytes)
+          (proof / "original-run-api.json").write_bytes(run_bytes)
+          (proof / "runtime-identity.json").write_text(
+              json.dumps({
+                  "repository": REPOSITORY,
+                  "ref": REF,
+                  "push_head": os.environ["GITHUB_SHA"],
+                  "run_id": os.environ["GITHUB_RUN_ID"],
+                  "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "part": int(os.environ["SHARD_PART"]),
+                  "original_artifact_id": ARTIFACT,
+                  "original_run_id": RUN,
+                  "original_head": HEAD,
+                  "event_sha256": hashlib.sha256(event_bytes).hexdigest(),
+              }, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps({"original_artifact_id": ARTIFACT, "original_head": HEAD, "identity": "verified"}))
+
+      - name: Download only the fixed completed HEAD artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: "14340645938"
+          run-id: "44109517447"
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          digest-mismatch: error
+          path: ${{ runner.temp }}/hepta-head-original
+
+      - name: Verify every original byte and select complete pack groups
+        shell: python {0}
+        run: |
+          import gzip
+          import hashlib
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import re
+          import shutil
+          import stat
+
+          HEAD = "eef4d2afed5f9176de4aaf790f74f5ca93d7151f"
+          TREE = "ab5bbb3dfbd98b3ab56a9321fa3c6925bc3b87e3"
+          OBJECTS = 33075
+          PARTS = 4
+          MAX_PAYLOAD = 383 * 1024 * 1024
+          OID = re.compile(r"[0-9a-f]{40}")
+          SHA = re.compile(r"[0-9a-f]{64}")
+
+          def require(condition, message):
+              if not condition:
+                  raise ValueError(message)
+
+          def digest(path):
+              value = hashlib.sha256()
+              with path.open("rb") as stream:
+                  for block in iter(lambda: stream.read(1024 * 1024), b""):
+                      value.update(block)
+              return value.hexdigest()
+
+          def safe_relative(value):
+              require(isinstance(value, str) and "\\" not in value and ":" not in value, "Invalid member path")
+              path = PurePosixPath(value)
+              require(
+                  not path.is_absolute() and path.parts
+                  and all(part not in (".", "..") for part in path.parts)
+                  and path.as_posix() == value,
+                  "Non-canonical member path",
+              )
+              return path
+
+          def files_under(root):
+              require(root.is_dir() and not root.is_symlink(), "Input directory identity")
+              result = {}
+              for path in sorted(root.rglob("*")):
+                  mode = path.lstat().st_mode
+                  require(stat.S_ISREG(mode) or stat.S_ISDIR(mode), "Non-regular artifact member")
+                  if stat.S_ISREG(mode):
+                      relative = path.relative_to(root).as_posix()
+                      safe_relative(relative)
+                      result[relative] = path
+              return result
+
+          def read_json(path):
+              require(path.stat().st_size <= 16 * 1024 * 1024, "JSON member bound")
+              return json.loads(path.read_bytes())
+
+          def split(source, proof, destination, part, head, tree, object_count):
+              require(type(part) is int and 0 <= part < PARTS, "Fixed four-part matrix")
+              physical = files_under(source)
+              capsule = source / "hepta-source-broker-head"
+              original = files_under(capsule)
+              require(
+                  set(physical) == {"hepta-source-broker-head/" + name for name in original}
+                  | {"hepta-source-broker-preflight/preflight.json"},
+                  "Unexpected original artifact member",
+              )
+              receipt = read_json(capsule / "artifact-files.json")
+              require(receipt.get("exit_status") == 0, "Original current phase did not complete")
+              rows = receipt["files"]
+              require(isinstance(rows, list) and len(rows) <= 10000, "Original member count")
+              inventory = {}
+              for row in rows:
+                  name = safe_relative(row["path"]).as_posix()
+                  require(name != "artifact-files.json" and name not in inventory, "Duplicate inventory member")
+                  require(type(row["bytes"]) is int and row["bytes"] >= 0 and SHA.fullmatch(row["sha256"]), "Invalid inventory identity")
+                  require(name in original, "Missing inventory member")
+                  path = original[name]
+                  require(path.stat().st_size == row["bytes"] and digest(path) == row["sha256"], "Original member bytes differ: " + name)
+                  inventory[name] = row
+              require(set(original) == set(inventory) | {"artifact-files.json"}, "Original inventory is not exhaustive")
+              record = read_json(capsule / "current-head-complete.json")
+              manifest = read_json(capsule / "manifest.json")
+              require(record["head"] == head and record["tree"] == tree and record["unique_objects"] == object_count, "Current head manifest identity")
+              require(
+                  manifest["schema"] == "hepta.current-head-object-store.v1"
+                  and manifest["expected_head"] == head and manifest["tree"] == tree
+                  and manifest["current_head_tracked_tree_complete"] is True
+                  and manifest["historical_tip_export"] == "not started"
+                  and manifest["full_bundle"] is None
+                  and manifest["packs"] == record["packs"],
+                  "Original current phase manifest differs",
+              )
+              preflight = read_json(source / "hepta-source-broker-preflight/preflight.json")
+              require(preflight["expected_head"] == head, "Original preflight head")
+              with gzip.open(capsule / "current-head-exported-objects.jsonl.gz", "rt", encoding="utf-8") as stream:
+                  objects = {}
+                  for line in stream:
+                      require(len(line) <= 4096, "Object inventory row bound")
+                      row = json.loads(line)
+                      require(OID.fullmatch(row["oid"]) and row["oid"] not in objects, "Duplicate or invalid object")
+                      require(row["type"] in ("commit", "tree", "blob") and type(row["bytes"]) is int and row["bytes"] >= 0, "Object inventory type or size")
+                      objects[row["oid"]] = row
+                      require(len(objects) <= object_count, "Object inventory count exceeded")
+              require(len(objects) == object_count and objects[head]["type"] == "commit" and objects[tree]["type"] == "tree", "Object inventory identity or count")
+              groups = []
+              packed_names = set()
+              declared_objects = 0
+              for pack in record["packs"]:
+                  name = pack["path"]
+                  require(re.fullmatch(r"objects-[0-9]{5}\.pack", name) is not None, "Pack name")
+                  stem = name.removesuffix(".pack")
+                  require(pack["index_path"] == stem + ".idx", "Pack index pairing")
+                  members = [name, pack["index_path"]]
+                  if stem + ".rev" in original:
+                      members.append(stem + ".rev")
+                  for member, length, sha in ((name, pack["bytes"], pack["sha256"]), (pack["index_path"], pack["index_bytes"], pack["index_sha256"])):
+                      require(member in inventory and inventory[member]["bytes"] == length and inventory[member]["sha256"] == sha, "Declared pack identity differs")
+                  require(not packed_names.intersection(members), "Pack group duplicated")
+                  packed_names.update(members)
+                  require(type(pack["objects"]) is int and pack["objects"] > 0, "Pack object count")
+                  declared_objects += pack["objects"]
+                  groups.append({"name": stem, "bytes": sum(inventory[name]["bytes"] for name in members), "members": sorted(members)})
+              require(declared_objects == object_count and len(groups) >= PARTS, "Empty or incomplete pack groups")
+              require({name for name in original if PurePosixPath(name).suffix in (".pack", ".idx", ".rev")} == packed_names, "Unassigned pack or index")
+              metadata = {name: path for name, path in physical.items() if name.removeprefix("hepta-source-broker-head/") not in packed_names}
+              for name, path in files_under(proof).items():
+                  require(name in ("original-artifact-api.json", "original-run-api.json", "runtime-identity.json"), "Unexpected identity proof")
+                  metadata[f"reshard-identity/part-{part}/" + name] = path
+              require(len(files_under(proof)) == 3, "Missing identity proof")
+              metadata_rows = [{"path": name, "bytes": path.stat().st_size, "sha256": digest(path)} for name, path in sorted(metadata.items())]
+              sizes = [sum(row["bytes"] for row in metadata_rows)] * PARTS
+              allocations = [[] for _ in range(PARTS)]
+              for group in sorted(groups, key=lambda row: (-row["bytes"], row["name"])):
+                  selected = min(range(PARTS), key=lambda index: (sizes[index], index))
+                  allocations[selected].append(group)
+                  sizes[selected] += group["bytes"]
+              require(all(allocations), "Empty shard")
+              mapping = {
+                  "schema": "hepta.current-head-artifact-shards.v1",
+                  "original_repository": "TrillionniumFoundation/hepta-private-ci",
+                  "original_run_id": 44109517447,
+                  "original_artifact_id": 14340645938,
+                  "original_artifact_sha256": "bdf7a8cd1266ae526f71b9ce0982b18241d81c76f72c4af07f40262b18423ae6",
+                  "original_head": head,
+                  "original_tree": tree,
+                  "original_unique_objects": object_count,
+                  "original_inventory_sha256": digest(capsule / "artifact-files.json"),
+                  "original_current_manifest_sha256": digest(capsule / "current-head-complete.json"),
+                  "part_count": PARTS,
+                  "part": part,
+                  "group_allocation": allocations,
+                  "copied_metadata": metadata_rows,
+                  "original_pack_bytes_unchanged": True,
+                  "scope": "Complete current tracked Git tree; no claim of historical closure or full bundle.",
+              }
+              mapping_bytes = (json.dumps(mapping, indent=2, sort_keys=True) + "\n").encode()
+              require(all(size + len(mapping_bytes) <= MAX_PAYLOAD for size in sizes), "Four shards exceed the fixed payload bound")
+              require(not destination.exists() and not destination.is_symlink(), "Output already exists")
+              destination.mkdir(mode=0o700)
+              selected_files = dict(metadata)
+              for group in allocations[part]:
+                  for name in group["members"]:
+                      selected_files["hepta-source-broker-head/" + name] = original[name]
+              for name, source_path in sorted(selected_files.items()):
+                  output = destination.joinpath(*safe_relative(name).parts)
+                  output.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(source_path, output)
+                  require(output.stat().st_size == source_path.stat().st_size and digest(output) == digest(source_path), "Copied member bytes differ")
+              (destination / "reshard-manifest.json").write_bytes(mapping_bytes)
+              payload_bytes = sum(path.stat().st_size for path in files_under(destination).values())
+              require(payload_bytes <= MAX_PAYLOAD, "Final payload exceeds bound")
+              print(json.dumps({"part": part, "groups": len(allocations[part]), "payload_bytes": payload_bytes, "original_objects": object_count, "original_head": head}))
+
+          temporary = Path(os.environ["RUNNER_TEMP"])
+          split(
+              temporary / "hepta-head-original",
+              temporary / "hepta-head-reshard-proof",
+              temporary / ("hepta-head-shard-" + os.environ["SHARD_PART"]),
+              int(os.environ["SHARD_PART"]), HEAD, TREE, OBJECTS,
+          )
+
+      - name: Preserve this bounded shard
+        id: upload
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-source-broker-head-eef4-part-${{ matrix.part }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-head-shard-${{ matrix.part }}/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7
+          compression-level: 0
+
+      - name: Confirm the uploaded artifact stays within the fixed size bound
+        shell: python {0}
+        env:
+          ARTIFACT_READ_TOKEN: ${{ github.token }}
+          UPLOADED_ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+          UPLOADED_ARTIFACT_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+        run: |
+          import json
+          import os
+          import urllib.request
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, request, file, code, message, headers, url):
+                  raise ValueError("Unexpected API redirect")
+
+          identifier = os.environ["UPLOADED_ARTIFACT_ID"]
+          if not identifier.isdecimal():
+              raise ValueError("Missing uploaded artifact identifier")
+          request = urllib.request.Request(
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/" + identifier,
+              headers={
+                  "Authorization": "Bearer " + os.environ["ARTIFACT_READ_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.build_opener(NoRedirect()).open(request, timeout=60) as response:
+              raw = response.read(1024 * 1024 + 1)
+          if len(raw) > 1024 * 1024:
+              raise ValueError("Uploaded artifact metadata bound")
+          artifact = json.loads(raw)
+          expected_name = "hepta-source-broker-head-eef4-part-" + os.environ["SHARD_PART"] + "-" + os.environ["GITHUB_RUN_ATTEMPT"]
+          if not (
+              artifact["id"] == int(identifier)
+              and artifact["name"] == expected_name
+              and artifact["size_in_bytes"] <= 384 * 1024 * 1024
+              and artifact["workflow_run"]["id"] == int(os.environ["GITHUB_RUN_ID"])
+              and artifact["workflow_run"]["head_sha"] == os.environ["GITHUB_SHA"]
+              and artifact["digest"] == "sha256:" + os.environ["UPLOADED_ARTIFACT_DIGEST"]
+          ):
+              raise ValueError("Uploaded shard identity or size differs")
+          print(json.dumps({key: artifact[key] for key in ("id", "name", "size_in_bytes", "digest", "workflow_run")}, sort_keys=True))
