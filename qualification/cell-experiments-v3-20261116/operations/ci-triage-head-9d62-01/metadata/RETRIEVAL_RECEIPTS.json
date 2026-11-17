@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.ci-read-only-retrieval-receipts.v3",
+  "notes": [
+    "Native operations only downloaded existing GitHub logs/metadata and compressed owned copies. No workflow reruns.",
+    "Only the first cargo prefix is published; suffix-range response was HTTP 200 with no Content-Range, so no tail claim.",
+    "Connector cargo log retrieval failed; full error body from this agent's earlier batch was not retained. Root separately reported Transport closed twice."
+  ],
+  "records": {
+    "ciCargoNative01": {
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "host": "mac",
+      "persistent_across_runtime_restart": true,
+      "reused": false,
+      "session_id": "dpty-232f716b8d3b3ca2790fecb4a4050cb12bd11bfeff6190d2677706770922d566",
+      "status": {
+        "boot": "{ sec = 1794536756, usec = 577082 } Fri Nov 13 10:25:56 2026",
+        "bytes_seen": 0,
+        "bytes_stored": 0,
+        "capture_error": null,
+        "created_unix_ms": 1794881355455,
+        "output_complete": false,
+        "owner_pid": 2052,
+        "pid": 2053,
+        "state": "running"
+      }
+    },
+    "ciCargoRead": {
+      "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-232f716b8d3b3ca2790fecb4a4050cb12bd11bfeff6190d2677706770922d566/output.log",
+      "available_end": 293,
+      "chunk_sha256": "34d44b96378788540ccd86d4f58ad8b67dbf33a431028ae6f3ca196a2c786633",
+      "host": "mac",
+      "next_offset": 293,
+      "offset": 0,
+      "output_complete": true,
+      "persistent_across_runtime_restart": true,
+      "session_id": "dpty-232f716b8d3b3ca2790fecb4a4050cb12bd11bfeff6190d2677706770922d566",
+      "status": {
+        "boot": "{ sec = 1794536756, usec = 577082 } Fri Nov 13 10:25:56 2026",
+        "bytes_seen": 293,
+        "bytes_stored": 293,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794881355455,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 2052,
+        "pid": 2053,
+        "state": "exited"
+      },
+      "storage": "target_archive",
+      "text": "{\"operation\": \"read existing GitHub cargo-deny job log only\", \"job_id\": 133743960601, \"gh_available\": true, \"workflow_rerun\": false, \"error\": \"TimeoutExpired(['/opt/homebrew/bin/gh', 'api', 'repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/133743960601/logs'], 59.99997558299219)\"}\r\n",
+      "text_is_lossy": false,
+      "truncated_before_offset": false,
+      "utf8_pending": false
+    },
+    "ciCargoExtra0": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 384,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/ci-triage-readonly-01/cargo.log",
+      "sha256": "420ee7afae417f1f8023f77d8ab79e25b505e2ffb817dc966ea2e069ff7b36c9",
+      "size": 1588359,
+      "version": "16777233:610878521:1588359:1794881415274750609:1794881415274750609"
+    },
+    "ciCargoExtra1": {
+      "chunk_sha256": "3d989e8bc29f16d3a0dfd21ace99f516a0e04d33b59dbf7e271d0d14632733d0",
+      "eof": true,
+      "next_offset": 303,
+      "offset": 0,
+      "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/operations/ci-triage-readonly-01/RESULT.json",
+      "size": 303,
+      "version": "16777233:610879048:303:1794881415493827902:1794881415493827902"
+    },
+    "ciCargoCompressRead": {
+      "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-585616d9fce02e0153411f7aae2752c066c536dc30331a0fd7dd4274ae8155cb/output.log",
+      "available_end": 1777,
+      "chunk_sha256": "d09af4f36dcff4fae0a2fd311d5a7b271049a091e057231fed86b67c979c8395",
+      "host": "mac",
+      "next_offset": 1777,
+      "offset": 0,
+      "output_complete": true,
+      "persistent_across_runtime_restart": true,
+      "session_id": "dpty-585616d9fce02e0153411f7aae2752c066c536dc30331a0fd7dd4274ae8155cb",
+      "status": {
+        "boot": "{ sec = 1794536756, usec = 577082 } Fri Nov 13 10:25:56 2026",
+        "bytes_seen": 1777,
+        "bytes_stored": 1777,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794881558091,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 6464,
+        "pid": 6465,
+        "state": "exited"
+      },
+      "storage": "target_archive",
+      "text": "{\"source_size\": 1588359, \"source_sha256\": \"420ee7afae417f1f8023f77d8ab79e25b505e2ffb817dc966ea2e069ff7b36c9\", \"retrieval_complete\": false, \"retrieval_error\": \"gh api log download timed out at 60 seconds; bytes retained as partial\", \"job_id\": 133743960601, \"compressed_size\": 137733, \"compressed_sha256\": \"1d47c689cb6be8e7fcc7f9d8b1814a98a72757e3bd610717396229c624a13f9f\"}\r\nFIRST [\"2026-11-17T01:27:01.0206407Z Current runner version: '2.338.2'\", '2026-11-17T01:27:01.0236495Z ##[group]Runner Image Provisioner']\r\nTAIL ['2026-11-17T01:28:29.2059016Z       │       │   │   │   │   └── codex-app-server v0.0.0 (*)', '2026-11-17T01:28:29.2059291Z       │       │   │   │   ├── codex-app-server v0.0.0 (*)', '2026-11-17T01:28:29.2059597Z       │       │   │   │   ├── codex-app-server-client v0.0.0 (*)', '2026-11-17T01:28:29.2059910Z       │       │   │   │   ├── codex-app-server-test-client v0.0.0', '2026-11-17T01:28:29.2060192Z       │       │   │   │   │   └── codex-cli v0.0.0 (*)', '2026-11-17T01:28:29.2060498Z       │       │   │   │   ├── codex-app-server-transport v0.0.0', '2026-11-17T01:28:29.2060787Z       │       │   │   │   │   ├── codex-app-server v0.0.0 (*)', '2026-11-17T01:28:29.2061073Z       │       │   │   │   │   └── codex-app-server-daemon v0.0.0', '2026-11-17T01:28:29.2061337Z       │       │   │   │   │       └── codex-cli v0.0.0 (*)', '2026-11-17T01:28:29.2061609Z       │       │   │   │   ├── codex-chatgpt v0.0.0', '2026-11-17T01:28:29.2061891Z       │       │   │   │   │   ├── codex-app-server v0.0.0 (*)', '2026-11-17T01:28:29.2062132Z       │       │   │   │   �']\r\n",
+      "text_is_lossy": false,
+      "truncated_before_offset": false,
+      "utf8_pending": false
+    },
+    "ciCargoTailRead": {
+      "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-b900addfa121ca3208ee26410904d613a1ed1c95fd4d98bee2266013860c8bfc/output.log",
+      "available_end": 552,
+      "chunk_sha256": "be5132f86ffe72724f3c75b914b2ba6c7c1bc0ad7108a4aeec61fd993e3f80d5",
+      "host": "mac",
+      "next_offset": 552,
+      "offset": 0,
+      "output_complete": true,
+      "persistent_across_runtime_restart": true,
+      "session_id": "dpty-b900addfa121ca3208ee26410904d613a1ed1c95fd4d98bee2266013860c8bfc",
+      "status": {
+        "boot": "{ sec = 1794536756, usec = 577082 } Fri Nov 13 10:25:56 2026",
+        "bytes_seen": 552,
+        "bytes_stored": 552,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794881675995,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 8295,
+        "pid": 8296,
+        "state": "exited"
+      },
+      "storage": "target_archive",
+      "text": "{\"job_id\": 133743960601, \"operation\": \"read existing log HTTP suffix range only\", \"requested_range\": \"bytes=-262144\", \"workflow_rerun\": false, \"error\": \"TimeoutExpired at 40 seconds\", \"status_code\": 200, \"content_range\": null, \"body_size\": 949383, \"body_sha256\": \"e32a790fba8df7dcdc791a7e88aff98e45dcea7a80577b3aed9fd9d8be466d79\", \"http_response_sha256\": \"6675d53cf7dde772ea89317a95b6106b0442cc86b45b2344507e170faf0c6808\", \"complete_range\": false, \"gzip_size\": 85088, \"gzip_sha256\": \"bf85d09a161cb4bfedbec56d36f8288a58aab509e797d087aaeb1f11d036d62e\"}\r\n",
+      "text_is_lossy": false,
+      "truncated_before_offset": false,
+      "utf8_pending": false
+    },
+    "ciCargoAnnotationsRead": {
+      "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-014e69a2f7c8d81ebc69e4e76feae12d6972bdd7c26c3890665fb789593b561a/output.log",
+      "available_end": 875,
+      "chunk_sha256": "4e4045e3ebeabd6f8cd9aee70aee0fc38160dba239e97a19157a9000918b5fd1",
+      "host": "mac",
+      "next_offset": 875,
+      "offset": 0,
+      "output_complete": true,
+      "persistent_across_runtime_restart": true,
+      "session_id": "dpty-014e69a2f7c8d81ebc69e4e76feae12d6972bdd7c26c3890665fb789593b561a",
+      "status": {
+        "boot": "{ sec = 1794536756, usec = 577082 } Fri Nov 13 10:25:56 2026",
+        "bytes_seen": 875,
+        "bytes_stored": 875,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794881804004,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 10735,
+        "pid": 10737,
+        "state": "exited"
+      },
+      "storage": "target_archive",
+      "text": "{\"operation\": \"read existing cargo job/check annotations only\", \"workflow_rerun\": false, \"job_id\": 133743960601, \"check_run_url\": \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/133743960601\", \"annotations_count\": 1, \"annotations_size\": 443, \"annotations_sha256\": \"9dd9b8560c262093c11696d6ee8eea5ffe6057dad3e220ab5499e1752c332d18\", \"possible_pagination\": false, \"annotations\": [{\"path\": \".github\", \"blob_href\": \"https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/.github\", \"start_line\": 1, \"start_column\": null, \"end_line\": 1, \"end_column\": null, \"annotation_level\": \"notice\", \"title\": \"\", \"message\": \"\\\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\\\"\", \"raw_details\": \"\"}]}\r\n",
+      "text_is_lossy": false,
+      "truncated_before_offset": false,
+      "utf8_pending": false
+    }
+  }
+}
