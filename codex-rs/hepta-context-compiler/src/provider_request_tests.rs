@@ -16,6 +16,9 @@ use crate::compile_v2;
 use crate::verify_admission_snapshot_v2;
 use crate::verify_admission_v2;
 
+#[path = "provider_request_union_tests.rs"]
+mod provider_request_union_tests;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id {value}: {error}"))
 }

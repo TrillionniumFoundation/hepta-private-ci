@@ -1044,6 +1044,18 @@ impl ProviderBoundDeliveryPreparationV2 {
         {
             return Err(ProviderRequestProofErrorV2::PreparationMismatch);
         }
+        let tokenization = self.final_request_proof.tokenization();
+        let identity = tokenization.tokenizer_identity();
+        if Digest32::of_bytes(identity.provider_id().as_bytes()) != profile.provider_id_digest
+            || Digest32::of_bytes(identity.model().as_bytes()) != profile.provider_model_digest
+        {
+            return Err(ProviderRequestProofErrorV2::Context(
+                ContextCompilerV2Error::ProviderModelProfileMismatch,
+            ));
+        }
+        if tokenization.token_count() > profile.maximum_context_tokens {
+            return Err(ProviderRequestProofErrorV2::InvalidTokenCount);
+        }
         Ok(())
     }
 
@@ -1097,6 +1109,9 @@ pub fn prepare_provider_bound_delivery_v2(
             != serialization.receipt().payload_digest()
     {
         return Err(ProviderRequestProofErrorV2::PreparationMismatch);
+    }
+    if snapshot_successor.predecessor_snapshot_digest() != attachment.admission_snapshot_digest() {
+        return Err(ProviderRequestProofErrorV2::SnapshotPredecessorMismatch);
     }
     let context_preparation = prepare_delivery_v2(
         compiled,
