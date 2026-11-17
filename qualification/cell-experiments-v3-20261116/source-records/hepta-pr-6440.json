@@ -1,0 +1,18 @@
+{
+  "capture_kind": "github-api-field-projection",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6440",
+  "number": 6440,
+  "state": "open",
+  "draft": true,
+  "body": "## 本轮结果\n\n第二轮已执行真实 LoRA 训练，但九个 B/C 评估分支的首次和两次内任务成功均为 0/3。两个采用分支均为 `NO_UPDATE`。本 PR 保存完整结果、已训练权重及重建证据，供逐项复核；工程完成不授予独立科学、原生 Cell 采用或 proof-of-useful-work 资格。\n\n## 收录内容\n\n- 12 个仓库函数测试补全要求，A/B/C 为 6/3/3，认证用户和外部教师均为 0。参考执行覆盖 27 个错误输出对照；重放和消融不增加原始任务或来源数量。\n- 六个 rank-4 LoRA 候选，每个实际更新 64 次，另有两个同底座专家的 rank-8 增量合成。原始输出、语义回执、冻结 B 选择和来源清单保持原字节。\n- E4 包含 14 次 Cell 与 12 次边消融：20 次改变 logits，0 次改变路由槽位或任务成功。分类 100% 来自全部失败时的回退标签。E5 完成 6 个设置、10 个因来源不足阻塞。\n- 42 个有效 ZIP 容器、973 个登记原件和 8 个模型 manifest。新目录恢复确认两个训练适配器的独立进程预测匹配；首次恢复失败及其预测、成本同时保留。\n- REPORT、SCORECARD、独立 E4/E5 审阅、计量成本、CI 观察、原始主运行结果及逐文件 Git/SHA256 索引。\n\n## 验证与边界\n\n冻结执行源码为 `507f04e20b6b9034d490b38a799eb32577ba5bbb`，44 个包内 Python 文件保持该身份，清单 SHA256 为 `fdcd9466664b6847bab4d4f547c5e8452a0eb5fe831452c9b4aa4607408aeae1`。源码专用 CI 实际通过 85 项工程测试；Codespell 与 blob policy 通过。归档恢复成功核验 973/973 原件、8/8 manifests 与两个 MATCH 探针。\n\n源码全仓 CI 有 cargo-deny、build-test 和部分 Bazel 失败；精确原因及与基线是否同因未建立。最终提交 CI 见本 PR checks。完整系统成本、用户增长收益、长期遗忘、原生分布式采用、HIA 通信收益与 foundation model 涌现均未获得资格。\n\n本层为原始自动生成证据与归档的机械发布，83 个文件的完整字节用于复核；人工报告为约 115 行。前置源码与归档工具修改位于依赖 PR #6417–#6439。\n\n## 阅读入口\n\n- [完整报告](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/42e32825ae20d460cb782856e00816661536853a/qualification/cell-experiments-v2-20261116/REPORT_V2.md)\n- [指标表](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/42e32825ae20d460cb782856e00816661536853a/qualification/cell-experiments-v2-20261116/SCORECARD.json)\n- [完整原始结果](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/42e32825ae20d460cb782856e00816661536853a/qualification/cell-experiments-v2-20261116/evidence-v2-01/run/RESULT.json)\n- [恢复说明](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/42e32825ae20d460cb782856e00816661536853a/qualification/cell-experiments-v2-20261116/RESTORE_V2.md)\n- [发布文件索引](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/42e32825ae20d460cb782856e00816661536853a/qualification/cell-experiments-v2-20261116/PUBLICATION_ARTIFACTS_V2.json)\n\n## 发布后独立核验（2026-11-16 15:55:46 UTC）\n\n读取实际 GitHub PR diff、证据子树和源码目录后，83/83 新增文件、42/42 ZIP 容器、33/33 保全文件及44/44 冻结源码的身份全部匹配，无删除、无范围外改动。每个新增 blob 均小于 512,000 字节。\n\n最终 head 的 Codespell 已通过，Architecture base-merge 已通过，其他检查以当前 Checks 页面为准。[Blob size policy job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43901038702/job/133417387166) 失败于 checkout 之前的 Fence 服务准备：`local_control_inventory_unavailable`。checkout、policy tests 和 changed blob check 都被跳过，因此不能标记该 CI 任务通过。一次仅针对该 job 的重试请求被 GitHub 403 拒绝，理由是所属 workflow 仍在运行，未启动新测试。\n\n最终 head 的 [cargo-deny job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43901038702/job/133417662555) 也失败；限定次数的日志读取返回 `Transport closed`，精确原因未建立。全仓 CI 尚未全绿。\n",
+  "title": "[E1–E6 v2 s24] 发布零增益实测、权重归档与恢复证据",
+  "base_sha": "8017119833636df14c842172fd124e166f91ce71",
+  "head_sha": "42e32825ae20d460cb782856e00816661536853a",
+  "created_at": "2026-11-16T15:51:46Z",
+  "updated_at": "2026-11-16T15:55:46Z",
+  "author": {
+    "login": "ProfHepta",
+    "id": 102159240
+  }
+}
