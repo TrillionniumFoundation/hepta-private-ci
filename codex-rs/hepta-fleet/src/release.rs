@@ -307,12 +307,31 @@ impl FleetRegistry {
                 .inspect_err(|_| report_release_install_failure("bin_seal"))?;
             sync_directory(&bin_root)
                 .inspect_err(|_| report_release_install_failure("bin_sync"))?;
+            #[cfg(not(target_os = "macos"))]
             sync_directory(&staging)
                 .inspect_err(|_| report_release_install_failure("staging_sync"))?;
+            #[cfg(target_os = "macos")]
+            let staging_directory = File::open(&staging)
+                .and_then(|directory| {
+                    directory.sync_all()?;
+                    Ok(directory)
+                })
+                .inspect_err(|_| report_release_install_failure("staging_sync"))?;
+            #[cfg(not(target_os = "macos"))]
             set_mode(&staging, /*mode*/ 0o555)
                 .inspect_err(|_| report_release_install_failure("staging_seal"))?;
             std::fs::rename(&staging, &final_root)
                 .inspect_err(|_| report_release_install_failure("publish_rename"))?;
+            #[cfg(target_os = "macos")]
+            {
+                use std::os::unix::fs::PermissionsExt;
+
+                // Darwin requires the source directory to remain writable for rename.
+                // Seal through the same handle used to sync before publication.
+                staging_directory
+                    .set_permissions(std::fs::Permissions::from_mode(/*mode*/ 0o555))
+                    .inspect_err(|_| report_release_install_failure("publish_seal"))?;
+            }
             sync_directory(self.layout().releases_root())
                 .inspect_err(|_| report_release_install_failure("catalog_sync"))?;
             Ok(())
