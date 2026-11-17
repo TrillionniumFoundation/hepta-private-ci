@@ -5,6 +5,28 @@
 //! view, and the original consumed FinalUse authority. The protected Control
 //! current remains independent. A supplied clock alone is no attestation claim.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -215,17 +237,21 @@ impl LiveGenerationCurrent {
     }
 
     fn check_live(&self) -> Result<(), CellGenerationErrorV2> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("generation.live_validation");
+        // HEPTA_PHASE_END
+
         // Lock order is artifact owner -> selected payload -> FinalUse owner.
         // The update coordinator temporarily rebinds its terminal old journal
         // to the concrete Control floor before it holds this artifact lock.
-        let artifacts = self
-            .authorities
-            .artifacts
-            .lock_initial()
-            .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        let mut selected = self
-            .selected
-            .lock()
+        let artifacts = phase_observe!(
+            sync,
+            "generation.artifact_mutex",
+            self.authorities.artifacts.lock_initial()
+        )
+        .map_err(|_| CellGenerationErrorV2::Unavailable)?;
+        let mut selected = phase_observe!(sync, "generation.selected_mutex", self.selected.lock())
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         artifacts
             .readback()
@@ -263,13 +289,26 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
         &self,
         binding: &CellGenerationOwnerBindingV1,
     ) -> Result<(), CellGenerationErrorV2> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("generation.current_validation");
+        // HEPTA_PHASE_END
+
         if binding != self.publication.target() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        self.current.check_current(binding)?;
+        phase_observe!(
+            sync,
+            "generation.control_current",
+            self.current.check_current(binding)
+        )?;
         self.check_live()?;
         // CURRENT/authority I/O cannot make an earlier Control sample fresh.
-        self.current.check_current(binding)
+        phase_observe!(
+            sync,
+            "generation.control_current",
+            self.current.check_current(binding)
+        )
     }
 }
 

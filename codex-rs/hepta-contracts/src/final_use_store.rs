@@ -4,6 +4,28 @@
 //! fixed-width append-only journal so the dispatch hot path does not rewrite an
 //! ever-growing JSON set.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(hepta_ci_phase_diagnostic)]
+use crate::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(hepta_ci_phase_diagnostic)]
+use crate::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(hepta_ci_phase_diagnostic))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use super::FinalUseAuthenticationProfile;
 use super::FinalUseError;
 use super::FinalUseRevocations;
@@ -107,14 +129,21 @@ struct ClaimJournal {
 #[cfg(unix)]
 impl ClaimJournal {
     fn revalidate(&self, root: &File) -> Result<(), FinalUseError> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let _phase_scope = phase::scope("final_use.journal_identity");
+        // HEPTA_PHASE_END
+
         use std::os::unix::fs::MetadataExt;
-        let retained = self
-            .file
-            .metadata()
+        let retained = phase_observe!(sync, "final_use.retained_metadata", self.file.metadata())
             .map_err(|_| FinalUseError::Unavailable)?;
-        let named = open_private(root, "authority.claims", Access::Read)?
-            .metadata()
-            .map_err(|_| FinalUseError::Unavailable)?;
+        let named = phase_observe!(
+            sync,
+            "final_use.named_open",
+            open_private(root, "authority.claims", Access::Read)
+        )?
+        .metadata()
+        .map_err(|_| FinalUseError::Unavailable)?;
         if retained.dev() != named.dev()
             || retained.ino() != named.ino()
             || retained.len() != self.durable_length
@@ -130,7 +159,13 @@ impl Store {
     /// Permanently fence a replaced or resized live journal.
     #[cfg(unix)]
     pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
-        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let _phase_scope = phase::scope("final_use.revalidate_owner");
+        // HEPTA_PHASE_END
+
+        let mut claims = phase_observe!(sync, "final_use.claims_mutex_wait", self.claims.lock())
+            .map_err(|_| FinalUseError::Unavailable)?;
         let journal = claims.take().ok_or(FinalUseError::Unavailable)?;
         journal.revalidate(&self.root)?;
         *claims = Some(journal);
@@ -362,7 +397,8 @@ impl Store {
             return Err(FinalUseError::InvalidTrust);
         }
         #[cfg(unix)]
-        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let mut claims = phase_observe!(sync, "final_use.claims_mutex_wait", self.claims.lock())
+            .map_err(|_| FinalUseError::Unavailable)?;
         #[cfg(unix)]
         let mut journal = claims.take().ok_or(FinalUseError::Unavailable)?;
         #[cfg(unix)]
@@ -450,7 +486,8 @@ impl Store {
                 durable_length: bytes.len() as u64,
             };
             journal.revalidate(&self.root)?;
-            *self.claims.lock().map_err(|_| FinalUseError::Unavailable)? = Some(journal);
+            *phase_observe!(sync, "final_use.claims_mutex_wait", self.claims.lock())
+                .map_err(|_| FinalUseError::Unavailable)? = Some(journal);
         }
         Ok(claims)
     }
@@ -464,7 +501,8 @@ impl Store {
             return Err(FinalUseError::InvalidTrust);
         }
         #[cfg(unix)]
-        let mut current = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let mut current = phase_observe!(sync, "final_use.claims_mutex_wait", self.claims.lock())
+            .map_err(|_| FinalUseError::Unavailable)?;
         #[cfg(unix)]
         if let Some(journal) = current.take() {
             journal.revalidate(&self.root)?;

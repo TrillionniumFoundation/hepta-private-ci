@@ -3,6 +3,28 @@
 //! Private clients select their own purpose-bound protocol; a learning client
 //! uses a separately transferred socket, never the original observation lane.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use std::fs::File;
 use std::io::Read;
 use std::os::fd::AsRawFd;
@@ -33,6 +55,10 @@ pub struct AgentdRootAuthorityPeer {
 /// can consume a late reply or obtain another connection. All Future polls use
 /// nonblocking I/O, including observation of the original root process lifetime.
 pub(crate) struct RootObservationStream {
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    phase_endpoint: phase::Endpoint,
+    // HEPTA_PHASE_END
     exchange: tokio::sync::Semaphore,
     stream: Mutex<Option<tokio::net::UnixStream>>,
     root: Arc<AsyncFd<OwnedFd>>,
@@ -93,6 +119,11 @@ impl RootObservationStream {
         end: Instant,
         uid: u32,
     ) -> Result<Self, AgentdRootAuthorityError> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let phase_endpoint = phase::take_endpoint(&stream);
+        // HEPTA_PHASE_END
+
         let remaining = end
             .checked_duration_since(Instant::now())
             .ok_or(AgentdRootAuthorityError::Refused)?;
@@ -145,6 +176,10 @@ impl RootObservationStream {
             return Err(AgentdRootAuthorityError::Refused);
         }
         Ok(Self {
+            // HEPTA_PHASE_BEGIN
+            #[cfg(all(test, hepta_ci_phase_diagnostic))]
+            phase_endpoint,
+            // HEPTA_PHASE_END
             exchange: tokio::sync::Semaphore::new(1),
             stream: Mutex::new(Some(stream)),
             root: Arc::new(root),
@@ -167,6 +202,16 @@ impl RootObservationStream {
         request: &impl serde::Serialize,
     ) -> Result<R, AgentdRootAuthorityError> {
         let request = serde_json::to_vec(request).map_err(|_| AgentdRootAuthorityError::Refused)?;
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let phase_context = self.phase_endpoint.request_bytes(&request, /*sender*/ true);
+        // HEPTA_PHASE_END
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let phase_read = phase::timer_at(phase_context, "evidence.read_total");
+        // HEPTA_PHASE_END
+
         if request.is_empty() || request.len() > 16_384 {
             return Err(AgentdRootAuthorityError::Refused);
         }
@@ -187,6 +232,14 @@ impl RootObservationStream {
         // the original slot empty. No reconnect or automatic retry exists.
         check_lifetime(self.root.get_ref())?;
         let deadline = (Instant::now() + self.timeout).min(self.end);
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        {
+            let _entered = phase::enter(phase_read.context());
+            phase::deadline("evidence.absolute_deadline", deadline);
+        }
+        // HEPTA_PHASE_END
+
         if deadline <= Instant::now() {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -194,13 +247,20 @@ impl RootObservationStream {
             biased;
             _ = self.root.readable() => return Err(AgentdRootAuthorityError::Unavailable),
             _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+                // HEPTA_PHASE_BEGIN
+                #[cfg(all(test, hepta_ci_phase_diagnostic))]
+                {
+                    phase::timer_at(phase_read.context(), "evidence.deadline_elapsed").finish();
+                }
+                // HEPTA_PHASE_END
+
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
-            response = framed_exchange(&mut stream, &request) => response?,
+            response = phase_observe!(future_at, phase_read.context(), "evidence.frame", framed_exchange(&mut stream, &request)) => response?,
         };
         check_lifetime(self.root.get_ref())?;
-        let parsed =
-            serde_json::from_slice(&response).map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        let parsed = phase_observe!(sync, "evidence.decode", serde_json::from_slice(&response))
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if Instant::now() >= deadline {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -212,6 +272,13 @@ impl RootObservationStream {
             .stream
             .try_lock()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        {
+            phase_read.finish();
+        }
+        // HEPTA_PHASE_END
         Ok(parsed)
     }
 }
@@ -220,22 +287,36 @@ async fn framed_exchange(
     stream: &mut tokio::net::UnixStream,
     request: &[u8],
 ) -> Result<Vec<u8>, AgentdRootAuthorityError> {
-    stream
-        .write_all(&(request.len() as u32).to_be_bytes())
+    phase_observe!(
+        future,
+        "evidence.write_prefix",
+        stream.write_all(&(request.len() as u32).to_be_bytes())
+    )
+    .await
+    .map_err(unavailable)?;
+    phase_observe!(future, "evidence.write_body", stream.write_all(request))
         .await
         .map_err(unavailable)?;
-    stream.write_all(request).await.map_err(unavailable)?;
     let mut prefix = [0; 4];
-    stream.read_exact(&mut prefix).await.map_err(unavailable)?;
+    phase_observe!(
+        future,
+        "evidence.read_prefix",
+        stream.read_exact(&mut prefix)
+    )
+    .await
+    .map_err(unavailable)?;
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > 16_384 {
         return Err(AgentdRootAuthorityError::Unavailable);
     }
     let mut response = vec![0; length];
-    stream
-        .read_exact(&mut response)
-        .await
-        .map_err(unavailable)?;
+    phase_observe!(
+        future,
+        "evidence.read_body",
+        stream.read_exact(&mut response)
+    )
+    .await
+    .map_err(unavailable)?;
     Ok(response)
 }
 

@@ -1,6 +1,28 @@
 //! Existing Selector evidence purpose only. No execute, attest or write route.
 //! Each request rereads the original Selector and its live task/Trainer peers.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
@@ -31,6 +53,11 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
     }
 
     fn evidence_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("selector.evidence_handler");
+        // HEPTA_PHASE_END
+
         let request: evidence_wire::Request = serde_json::from_slice(bytes)?;
         let snapshot_head: Digest32 = request
             .snapshot_head
@@ -51,17 +78,21 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         }
         self.context.authenticate(now()?)?;
         let (receipt, signed) = {
-            let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
+            let mut owner = phase_observe!(sync, "selector.owner_try_lock", self.owner.try_lock())
+                .map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
-            self.runtime
-                .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
+            self.runtime.block_on(phase_observe!(
+                future,
+                "selector.runtime_block_on",
+                OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
                     original,
                     OriginalCircuitSelectionRemoteSourcesV1 {
                         snapshot: &self.context.training,
                         live: &self.live,
                         trainer: &self.trainer,
                     },
-                ))?
+                )
+            ))?
         };
         let original = wire::authenticate_receipt(&self.context, receipt, signed, now()?)?;
         if request.receipt_digest != original.attestation.payload_digest.to_string() {

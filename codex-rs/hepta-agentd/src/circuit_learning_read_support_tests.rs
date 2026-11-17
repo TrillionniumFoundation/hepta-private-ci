@@ -2,6 +2,11 @@
 //! provide every successful response. Public custody constructors reject this
 //! process/UID, and no production constructor accepts a response fixture.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
@@ -76,6 +81,13 @@ pub(crate) fn client(
     HostAuthorityPeerChannel,
 )> {
     let (stream, server) = UnixStream::pair()?;
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    {
+        phase::register_pair(&stream, &server);
+    }
+    // HEPTA_PHASE_END
+
     let binding = wire::context_binding(&context, now()?)?;
     Ok((
         OriginalCircuitLearningReadClientV1 {
@@ -98,7 +110,15 @@ pub(crate) fn serve<
     owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    let phase_parent = phase::capture();
+    // HEPTA_PHASE_END
     std::thread::spawn(move || {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_context = phase::enter(phase_parent);
+        // HEPTA_PHASE_END
         let started = std::time::Instant::now();
         let result = owner.serve_channel(&mut channel);
         eprintln!(

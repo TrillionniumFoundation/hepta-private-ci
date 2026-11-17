@@ -2,6 +2,28 @@
 //! No writer, signer, publication grant or caller-supplied observation crosses
 //! this boundary. Every read consults the same original owners again.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Mutex;
@@ -155,21 +177,68 @@ impl OriginalCircuitLearningReadClientV1 {
         if channel.next_request_id > 128 {
             return Err(Error::Unavailable);
         }
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let phase_request = channel.peer.phase_request_context(channel.next_request_id);
+        // HEPTA_PHASE_END
         let request = wire::Request::new(&self.context, self.binding, channel.next_request_id)?;
         channel.next_request_id = channel
             .next_request_id
             .checked_add(1)
             .ok_or(Error::Unavailable)?;
         let bytes = serde_json::to_vec(&request)?;
-        let (channel, response) = tokio::task::spawn_blocking(move || {
-            let response = channel.peer.request(&bytes)?;
-            Ok::<_, Error>((channel, response))
-        })
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let phase_queue = phase::timer_at(phase_request, "published.blocking_queue");
+        // HEPTA_PHASE_END
+        let (channel, response) = phase_observe!(
+            future_at,
+            phase_request,
+            "published.blocking_join",
+            tokio::task::spawn_blocking(move || {
+                // HEPTA_PHASE_BEGIN
+                #[cfg(all(test, hepta_ci_phase_diagnostic))]
+                {
+                    phase_queue.finish();
+                }
+                // HEPTA_PHASE_END
+
+                // HEPTA_PHASE_BEGIN
+                #[cfg(all(test, hepta_ci_phase_diagnostic))]
+                let _phase_context = phase::enter(phase_request);
+                // HEPTA_PHASE_END
+
+                // HEPTA_PHASE_BEGIN
+                #[cfg(all(test, hepta_ci_phase_diagnostic))]
+                let _phase_body = phase::scope("published.blocking_body");
+                // HEPTA_PHASE_END
+
+                let response = channel.peer.request(&bytes)?;
+                Ok::<_, Error>((channel, response))
+            })
+        )
         .await
         .map_err(|_| Error::Unavailable)??;
-        let response: wire::Response = serde_json::from_slice(&response)?;
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        {
+            phase::timer_at(phase_request, "published.async_resumed").finish();
+        }
+        // HEPTA_PHASE_END
+
+        let response: wire::Response = phase_observe!(
+            sync,
+            "published.response_decode",
+            serde_json::from_slice(&response)
+        )?;
         response.require_request(&request)?;
-        let current = response.read.decode(&self.context)?;
+        let current = phase_observe!(
+            sync,
+            "published.original_decode",
+            response.read.decode(&self.context)
+        )?;
         channel.peer.check_peer_lifetime()?;
         let fresh = now()?;
         if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {

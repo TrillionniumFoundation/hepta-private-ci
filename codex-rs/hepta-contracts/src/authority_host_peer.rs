@@ -1,5 +1,27 @@
 //! Purpose-limited server framing shared by the protected authority lanes.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(hepta_ci_phase_diagnostic)]
+use crate::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(hepta_ci_phase_diagnostic)]
+use crate::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(hepta_ci_phase_diagnostic))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use super::HostIssuerPeer;
 use super::HostIssuerTransportError;
 use super::channel::OwnerChannel;
@@ -27,12 +49,23 @@ pub struct HostAuthorityPeerPolicy {
 /// One peer-pinned framed channel. Construction checks the existing SO_PEERCRED
 /// and pre-held pidfd. No discovery, authorization policy or issuer is created.
 pub struct HostAuthorityPeerChannel {
+    // HEPTA_PHASE_BEGIN
+    #[cfg(hepta_ci_phase_diagnostic)]
+    phase_endpoint: phase::Endpoint,
+    // HEPTA_PHASE_END
     stream: Option<UnixStream>,
     policy: HostAuthorityPeerPolicy,
     owner: OwnerChannel,
 }
 
 impl HostAuthorityPeerChannel {
+    // HEPTA_PHASE_BEGIN
+    #[cfg(hepta_ci_phase_diagnostic)]
+    pub fn phase_request_context(&self, request_id: u64) -> phase::Context {
+        self.phase_endpoint.request(request_id, /*sender*/ true)
+    }
+    // HEPTA_PHASE_END
+
     /// Sample the already pinned process lifetime without reading a frame.
     /// This creates no permission and never exposes or replaces its pidfd.
     pub fn check_peer_lifetime(&self) -> Result<(), HostIssuerTransportError> {
@@ -60,6 +93,11 @@ impl HostAuthorityPeerChannel {
         policy: HostAuthorityPeerPolicy,
         owner_pidfd: OwnedFd,
     ) -> Result<Self, HostIssuerTransportError> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let phase_endpoint = phase::take_endpoint(&stream);
+        // HEPTA_PHASE_END
+
         if policy.peer.pid == 0
             || policy.peer.pid > i32::MAX as u32
             || policy.timeout.is_zero()
@@ -78,6 +116,10 @@ impl HostAuthorityPeerChannel {
         let owner = OwnerChannel::new(owner_pidfd, policy.peer.pid, policy.lifetime)?;
         stream.set_nonblocking(true).map_err(io_error)?;
         Ok(Self {
+            // HEPTA_PHASE_BEGIN
+            #[cfg(hepta_ci_phase_diagnostic)]
+            phase_endpoint,
+            // HEPTA_PHASE_END
             stream: Some(stream),
             policy,
             owner,
@@ -89,26 +131,62 @@ impl HostAuthorityPeerChannel {
     /// response or any other uncertainty closes the channel permanently; this
     /// method never reconnects or retries a possibly delivered request.
     pub fn request(&mut self, request: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let _phase_context =
+            phase::enter(self.phase_endpoint.request_bytes(request, /*sender*/ true));
+        // HEPTA_PHASE_END
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let _phase_request = phase::scope("peer.request");
+        // HEPTA_PHASE_END
+
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let result = (|| {
             if request.is_empty() || request.len() > self.policy.request_bound {
                 return Err(HostIssuerTransportError::InvalidRequest);
             }
             let deadline = self.owner.deadline(self.policy.timeout);
-            self.owner.check(deadline)?;
-            self.owner
-                .write_until(&mut stream, &(request.len() as u32).to_be_bytes(), deadline)?;
-            self.owner.write_until(&mut stream, request, deadline)?;
+            // HEPTA_PHASE_BEGIN
+            #[cfg(hepta_ci_phase_diagnostic)]
+            {
+                phase::deadline("peer.client_deadline", deadline);
+            }
+            // HEPTA_PHASE_END
+
+            phase_observe!(sync, "peer.check", self.owner.check(deadline))?;
+            phase_observe!(
+                sync,
+                "peer.write_prefix",
+                self.owner.write_until(
+                    &mut stream,
+                    &(request.len() as u32).to_be_bytes(),
+                    deadline
+                )
+            )?;
+            phase_observe!(
+                sync,
+                "peer.write_body",
+                self.owner.write_until(&mut stream, request, deadline)
+            )?;
             let mut length = [0; 4];
-            self.owner.read_until(&mut stream, &mut length, deadline)?;
+            phase_observe!(
+                sync,
+                "peer.read_prefix",
+                self.owner.read_until(&mut stream, &mut length, deadline)
+            )?;
             let length = u32::from_be_bytes(length) as usize;
             if length == 0 || length > self.policy.response_bound {
                 return Err(HostIssuerTransportError::Unavailable);
             }
             let mut response = vec![0; length];
-            self.owner
-                .read_until(&mut stream, &mut response, deadline)?;
-            self.owner.check(deadline)?;
+            phase_observe!(
+                sync,
+                "peer.read_body",
+                self.owner.read_until(&mut stream, &mut response, deadline)
+            )?;
+            phase_observe!(sync, "peer.check", self.owner.check(deadline))?;
             Ok(response)
         })();
         match result {
@@ -172,22 +250,50 @@ impl HostAuthorityPeerChannel {
         }
         let deadline = self.owner.deadline(self.policy.timeout);
         self.owner.read_until(stream, &mut length[1..], deadline)?;
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let mut phase_receive = phase::timer_at(self.phase_endpoint.waiting(), "peer.receive_body");
+        // HEPTA_PHASE_END
+
         let length = u32::from_be_bytes(length) as usize;
         if length == 0 || length > self.policy.request_bound {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
         let mut bytes = vec![0; length];
         self.owner.read_until(stream, &mut bytes, deadline)?;
-        self.owner.check(deadline)?;
-        let response = handle(&bytes, deadline)?;
-        self.owner.check(deadline)?;
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        let _phase_context =
+            phase::enter(self.phase_endpoint.request_bytes(&bytes, /*sender*/ false));
+        // HEPTA_PHASE_END
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(hepta_ci_phase_diagnostic)]
+        {
+            phase_receive.correlate(phase::capture());
+            phase_receive.finish();
+            phase::deadline("peer.server_deadline", deadline);
+        }
+        // HEPTA_PHASE_END
+
+        phase_observe!(sync, "peer.check", self.owner.check(deadline))?;
+        let response = phase_observe!(sync, "peer.handler", handle(&bytes, deadline))?;
+        phase_observe!(sync, "peer.check", self.owner.check(deadline))?;
         if response.is_empty() || response.len() > self.policy.response_bound {
             return Err(HostIssuerTransportError::Unavailable);
         }
-        self.owner
-            .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
-        self.owner.write_until(stream, &response, deadline)?;
-        self.owner.check(deadline)?;
+        phase_observe!(
+            sync,
+            "peer.server_write_prefix",
+            self.owner
+                .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)
+        )?;
+        phase_observe!(
+            sync,
+            "peer.server_write_body",
+            self.owner.write_until(stream, &response, deadline)
+        )?;
+        phase_observe!(sync, "peer.check", self.owner.check(deadline))?;
         Ok(true)
     }
 }

@@ -1,6 +1,28 @@
 //! Actual same-owner reads. Journal/Source locks are dropped before encoding
 //! or writing any wire response; this service performs no claim or execution.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
@@ -58,7 +80,11 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         owner.require_task_input_current()?;
         let coordinator = wire::decision(&owner.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &owner.cell;
-        let observed = cell.read_learning_selection(&coordinator)?;
+        let observed = phase_observe!(
+            sync,
+            "published.selection_read",
+            cell.read_learning_selection(&coordinator)
+        )?;
         owner.require_original_selection(&observed)?;
         owner.require_task_input_current()?;
         let fresh = now()?;
@@ -132,6 +158,11 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("published.response");
+        // HEPTA_PHASE_END
+
         #[cfg(test)]
         let qualification_started = std::time::Instant::now();
         let started_at = now()?;
@@ -150,11 +181,24 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             return Err(Error::Binding("original read window after owner I/O"));
         }
         // read_original returned owned data; no Cell/Source mutex is held here.
-        let read = wire::OriginalRead::from_original(read)?;
-        let bytes = serde_json::to_vec(&wire::Response { request, read })?;
+        let read = phase_observe!(
+            sync,
+            "published.encode_original",
+            wire::OriginalRead::from_original(read)
+        )?;
+        let bytes = phase_observe!(
+            sync,
+            "published.encode_response",
+            serde_json::to_vec(&wire::Response { request, read })
+        )?;
         if bytes.is_empty() || bytes.len() > 16_384 {
             return Err(Error::Binding("bounded original published response"));
         }
+
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let phase_stderr = phase::timer("published.existing_stderr");
+        // HEPTA_PHASE_END
         #[cfg(test)]
         eprintln!(
             "HEPTA_PUBLISHED_ORIGINAL_READ request_id={request_id} cut_receipts={} owner_io_us={qualification_owner_us} total_handler_us={} bytes={}",
@@ -162,10 +206,22 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             qualification_started.elapsed().as_micros(),
             bytes.len(),
         );
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        {
+            phase_stderr.finish();
+        }
+        // HEPTA_PHASE_END
+
         Ok(bytes)
     }
 
     fn require_task_input_current(&self) -> Result<(), Error> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("published.task_current");
+        // HEPTA_PHASE_END
+
         self.cell.task.require_current()?;
         let input = self.cell.task.source();
         let request = &self.context.prefix.request;
@@ -187,6 +243,11 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         &self,
         observed: &codex_hepta_learning_artifacts::LearningIterationObservationV1,
     ) -> Result<(), Error> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("published.selection_validation");
+        // HEPTA_PHASE_END
+
         self.context.scope.validate_observation(observed)?;
         if wire::mode(&self.context)? == wire::Mode::NextUse
             && self.context.prefix.receipts[3].observation != *observed
@@ -197,10 +258,20 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("published.owner_io");
+        // HEPTA_PHASE_END
+
         self.require_task_input_current()?;
-        let coordinator = wire::decision(&self.context)?;
+        let coordinator =
+            phase_observe!(sync, "published.coordinator", wire::decision(&self.context))?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
-        let selection = cell.read_learning_selection(&coordinator)?;
+        let selection = phase_observe!(
+            sync,
+            "published.selection_read",
+            cell.read_learning_selection(&coordinator)
+        )?;
         self.require_original_selection(&selection)?;
         let Publication::Update { original, .. } = &self.cell.task.0.publication else {
             return Err(Error::Binding("original successor publication"));
@@ -211,17 +282,29 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         let (observation, source_publication) = match wire::mode(&self.context)? {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
-                let before = self
-                    .source
-                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?;
+                let before = phase_observe!(
+                    sync,
+                    "published.source_publication",
+                    self.source.read_run_publication(
+                        &self.identity,
+                        &self.cell.task.source().scope.run_id
+                    )
+                )?;
                 let prefix =
                     LearningIterationCoordinatorV1::from_snapshot(self.context.prefix.clone())?;
-                let observed =
-                    cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;
-                if self
-                    .source
-                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?
-                    != before
+                let observed = phase_observe!(
+                    sync,
+                    "published.next_use_read",
+                    cell.read_learning_next_use(&prefix, &self.source, &self.identity)
+                )?;
+                if phase_observe!(
+                    sync,
+                    "published.source_publication",
+                    self.source.read_run_publication(
+                        &self.identity,
+                        &self.cell.task.source().scope.run_id
+                    )
+                )? != before
                 {
                     return Err(Error::Binding("original C source changed during read"));
                 }
@@ -229,7 +312,12 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             }
         };
         self.require_task_input_current()?;
-        if cell.read_learning_selection(&coordinator)? != selection {
+        if phase_observe!(
+            sync,
+            "published.selection_read",
+            cell.read_learning_selection(&coordinator)
+        )? != selection
+        {
             return Err(Error::Binding("original selection changed during read"));
         }
         self.require_task_input_current()?;

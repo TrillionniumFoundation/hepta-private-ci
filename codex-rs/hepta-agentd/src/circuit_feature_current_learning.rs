@@ -2,6 +2,28 @@
 //! version owners. The separately enrolled Observer still authenticates and
 //! checkpoints this observation; this adapter issues no role attestation.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use codex_hepta_learning_artifacts::CellStatePartitionV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 
@@ -12,6 +34,11 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         &self,
         coordinator: &LearningIterationCoordinatorV1,
     ) -> Result<LearningIterationObservationV1, AgentdError> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("version.learning_selection");
+        // HEPTA_PHASE_END
+
         LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
             .map_err(invalid)?;
         self.task.require_current()?;
@@ -29,11 +56,13 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
                 "learning selection differs from original completed source",
             ));
         }
-        let result = self.task.0.original.lock().map_err(invalid)?.selection(
-            original,
-            coordinator,
-            &previous.manifest,
-        )?;
+        let result = phase_observe!(
+            sync,
+            "version.learning_mutex_wait",
+            self.task.0.original.lock()
+        )
+        .map_err(invalid)?
+        .selection(original, coordinator, &previous.manifest)?;
         self.task.require_current()?;
         Ok(result)
     }

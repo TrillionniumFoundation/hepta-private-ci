@@ -9,6 +9,23 @@
 //! caller's cached view. These checks precede the existing clock and effect
 //! callbacks; they do not revoke an effect that has already entered.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(hepta_ci_phase_diagnostic)]
+use crate::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(hepta_ci_phase_diagnostic))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::Inner;
@@ -30,7 +47,13 @@ impl Inner {
         #[cfg(unix)]
         {
             let mut state = state;
-            if self.store.revalidate_owner().is_err() {
+            if phase_observe!(
+                sync,
+                "final_use.live_journal",
+                self.store.revalidate_owner()
+            )
+            .is_err()
+            {
                 state.failed = true;
                 return Err(FinalUseError::Unavailable);
             }
@@ -48,14 +71,24 @@ impl Inner {
     ) -> Result<MutexGuard<'state, State>, FinalUseError> {
         let mut state = self.ensure_live_state(state)?;
         if let Some(frontier_store) = &self.frontier_store {
-            let trusted = match frontier_store.load(&self.signer_id) {
+            let trusted = match phase_observe!(
+                sync,
+                "final_use.frontier_load",
+                frontier_store.load(&self.signer_id)
+            ) {
                 Ok(trusted) => trusted,
                 Err(error) => {
                     state.failed = true;
                     return Err(map_trust_error(error));
                 }
             };
-            if trusted != frontier_for_state_with_profile(&state, self.profile) {
+            if trusted
+                != phase_observe!(
+                    sync,
+                    "final_use.frontier_compare",
+                    frontier_for_state_with_profile(&state, self.profile)
+                )
+            {
                 state.failed = true;
                 return Err(FinalUseError::AntiRollbackViolation);
             }

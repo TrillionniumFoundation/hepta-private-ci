@@ -1,5 +1,27 @@
 //! File-backed test custody, never a substitute for the production root store.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_observe;
+// HEPTA_PHASE_END
+
+// HEPTA_PHASE_BEGIN
+#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
+macro_rules! phase_observe {
+    ($kind:ident, $phase:literal, $value:expr) => {
+        $value
+    };
+    (future_at, $context:expr, $phase:literal, $value:expr) => {
+        $value
+    };
+}
+// HEPTA_PHASE_END
+
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -104,16 +126,20 @@ impl<T: DeserializeOwned + Serialize + PartialEq> FileCas<T> {
         owner: &str,
         body: impl FnOnce(&mut File) -> Result<R, AuthorityTrustError>,
     ) -> Result<R, AuthorityTrustError> {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_scope = phase::scope("file_cas.locked_body");
+        // HEPTA_PHASE_END
+
         if owner != self.owner {
             return Err(AuthorityTrustError::Invalid);
         }
-        let mut file = self
-            .file
-            .lock()
+        let mut file = phase_observe!(sync, "file_cas.mutex_wait", self.file.lock())
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        file.try_lock().map_err(|_| AuthorityTrustError::Conflict)?;
+        phase_observe!(sync, "file_cas.file_try_lock", file.try_lock())
+            .map_err(|_| AuthorityTrustError::Conflict)?;
         let result = body(&mut file);
-        file.unlock()
+        phase_observe!(sync, "file_cas.unlock", file.unlock())
             .map_err(|_| AuthorityTrustError::Unavailable)?;
         result
     }
@@ -141,7 +167,8 @@ impl<T: DeserializeOwned + Serialize + PartialEq> AuthorityFrontierStore<T> for 
             if failure == 1 {
                 return Err(AuthorityTrustError::Unavailable);
             }
-            write_value(file, next).map_err(|_| AuthorityTrustError::Unavailable)?;
+            phase_observe!(sync, "file_cas.write_value", write_value(file, next))
+                .map_err(|_| AuthorityTrustError::Unavailable)?;
             if let Some(callback) = self
                 .after_commit
                 .lock()
@@ -159,15 +186,26 @@ impl<T: DeserializeOwned + Serialize + PartialEq> AuthorityFrontierStore<T> for 
 }
 
 fn read_value<T: DeserializeOwned>(file: &mut File) -> std::io::Result<T> {
-    if !file.metadata()?.is_file() || file.metadata()?.len() > 65_536 {
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    let _phase_scope = phase::scope("file_cas.read_value");
+    // HEPTA_PHASE_END
+
+    if !phase_observe!(sync, "file_cas.metadata", file.metadata())?.is_file()
+        || phase_observe!(sync, "file_cas.metadata", file.metadata())?.len() > 65_536
+    {
         return Err(std::io::Error::other(
             "test frontier is not a bounded regular file",
         ));
     }
-    file.seek(SeekFrom::Start(0))?;
+    phase_observe!(sync, "file_cas.seek", file.seek(SeekFrom::Start(0)))?;
     let mut bytes = Vec::new();
-    file.read_to_end(&mut bytes)?;
-    Ok(serde_json::from_slice(&bytes)?)
+    phase_observe!(sync, "file_cas.read_bytes", file.read_to_end(&mut bytes))?;
+    Ok(phase_observe!(
+        sync,
+        "file_cas.decode",
+        serde_json::from_slice(&bytes)
+    )?)
 }
 
 fn write_value<T: Serialize>(file: &mut File, value: &T) -> std::io::Result<()> {
@@ -175,7 +213,7 @@ fn write_value<T: Serialize>(file: &mut File, value: &T) -> std::io::Result<()> 
     if bytes.len() > 65_536 {
         return Err(std::io::Error::other("test frontier exceeds its bound"));
     }
-    file.seek(SeekFrom::Start(0))?;
+    phase_observe!(sync, "file_cas.seek", file.seek(SeekFrom::Start(0)))?;
     file.write_all(&bytes)?;
     file.set_len(bytes.len() as u64)?;
     file.sync_all()

@@ -2,6 +2,11 @@
 //! still come from the actual original owner and Published Circuit read peer.
 //! Training metadata below is an enrolled fixture, not a native Training run.
 
+// HEPTA_PHASE_BEGIN
+#[cfg(all(test, hepta_ci_phase_diagnostic))]
+use codex_hepta_contracts::phase_diagnostic as phase;
+// HEPTA_PHASE_END
+
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -123,6 +128,13 @@ pub(crate) fn client(
     HostAuthorityPeerChannel,
 )> {
     let (stream, server) = UnixStream::pair()?;
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    {
+        phase::register_pair(&stream, &server);
+    }
+    // HEPTA_PHASE_END
+
     let binding = context.binding(now()?)?;
     if let Some(expected) = &retained {
         anyhow::ensure!(
@@ -176,6 +188,13 @@ pub(crate) fn evidence_client(
     context: &OriginalCircuitSelectionCommandContextV1,
 ) -> anyhow::Result<(LearningIterationEvidenceClientV1, HostAuthorityPeerChannel)> {
     let (stream, server) = UnixStream::pair()?;
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    {
+        phase::register_pair(&stream, &server);
+    }
+    // HEPTA_PHASE_END
+
     // SAFETY: the public custody constructors still refuse this same process.
     let uid = unsafe { libc::geteuid() };
     let transport = RootObservationStream::from_stream_for_uid(
@@ -205,13 +224,33 @@ pub(crate) fn serve<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitSelectionCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_command_channel(&mut channel))
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    let phase_parent = phase::capture();
+    // HEPTA_PHASE_END
+    std::thread::spawn(move || {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_context = phase::enter(phase_parent);
+        // HEPTA_PHASE_END
+        owner.serve_command_channel(&mut channel)
+    })
 }
 pub(crate) fn serve_evidence<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitSelectionCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_evidence_channel(&mut channel))
+    // HEPTA_PHASE_BEGIN
+    #[cfg(all(test, hepta_ci_phase_diagnostic))]
+    let phase_parent = phase::capture();
+    // HEPTA_PHASE_END
+    std::thread::spawn(move || {
+        // HEPTA_PHASE_BEGIN
+        #[cfg(all(test, hepta_ci_phase_diagnostic))]
+        let _phase_context = phase::enter(phase_parent);
+        // HEPTA_PHASE_END
+        owner.serve_evidence_channel(&mut channel)
+    })
 }
 
 pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(

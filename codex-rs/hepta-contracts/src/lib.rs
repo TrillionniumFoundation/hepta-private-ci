@@ -1,5 +1,10 @@
 #![forbid(unsafe_code)]
 
+// HEPTA_PHASE_BEGIN
+#[cfg(hepta_ci_phase_diagnostic)]
+pub mod phase_diagnostic;
+// HEPTA_PHASE_END
+
 mod agent_id;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
