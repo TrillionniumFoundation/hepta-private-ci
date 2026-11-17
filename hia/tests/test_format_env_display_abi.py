@@ -17,7 +17,7 @@ from test_network_host_abi import native_inputs, recheck_inputs
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_SHA = '984eb93cf8f70f41a293b2d3214119aac343db57e2908203c97d36a785009ce2'
-CORPUS_SHA = '9ed01ce7c5aad87677ad21a20e8bdf9442cdd5588ac2ff13fbdd4138325aacd1'
+CORPUS_SHA = '9e107735a6df7aedd6dbfa2deec40526f399c5ef1d32af413fb253ddf442b29a'
 GUARD = bytes(range(1, 34))
 INVALID, SHORT, OVERFLOW = 0xFFFFFFFF, 0xFFFFFFFE, 0xFFFFFFFD
 ERRORS = (INVALID, SHORT, OVERFLOW)
