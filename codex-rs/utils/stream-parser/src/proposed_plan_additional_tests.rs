@@ -106,29 +106,9 @@ fn empty_plan_barriers_keep_surrounding_normal_segments_separate() {
 #[test]
 fn all_pinned_unicode_whitespace_scalars_keep_original_line_rules() {
     let non_lf = [
-        '\t',
-        '\u{000b}',
-        '\u{000c}',
-        '\r',
-        ' ',
-        '\u{0085}',
-        '\u{00a0}',
-        '\u{1680}',
-        '\u{2000}',
-        '\u{2001}',
-        '\u{2002}',
-        '\u{2003}',
-        '\u{2004}',
-        '\u{2005}',
-        '\u{2006}',
-        '\u{2007}',
-        '\u{2008}',
-        '\u{2009}',
-        '\u{200a}',
-        '\u{2028}',
-        '\u{2029}',
-        '\u{202f}',
-        '\u{205f}',
+        '\t', '\u{000b}', '\u{000c}', '\r', ' ', '\u{0085}', '\u{00a0}', '\u{1680}', '\u{2000}',
+        '\u{2001}', '\u{2002}', '\u{2003}', '\u{2004}', '\u{2005}', '\u{2006}', '\u{2007}',
+        '\u{2008}', '\u{2009}', '\u{200a}', '\u{2028}', '\u{2029}', '\u{202f}', '\u{205f}',
         '\u{3000}',
     ];
     for space in non_lf {
@@ -189,7 +169,15 @@ fn whitespace_buffering_preserves_disproof_and_trailing_marker_recognition() {
     let trailing = parser.push_str("\t \u{3000}");
     let line = parser.push_str("\nstep\n</proposed_plan>\n");
     assert_eq!(
-        (leading, disproof, reset, marker, trailing, line, parser.finish()),
+        (
+            leading,
+            disproof,
+            reset,
+            marker,
+            trailing,
+            line,
+            parser.finish()
+        ),
         (
             StreamTextChunk::default(),
             chunk(" \tx", vec![ProposedPlanSegment::Normal(" \tx".to_owned())]),
@@ -216,7 +204,9 @@ fn only_lf_ends_a_marker_line() {
         parser.push_str("<proposed_plan>\rbody"),
         chunk(
             "<proposed_plan>\rbody",
-            vec![ProposedPlanSegment::Normal("<proposed_plan>\rbody".to_owned())],
+            vec![ProposedPlanSegment::Normal(
+                "<proposed_plan>\rbody".to_owned()
+            )],
         )
     );
     assert_eq!(parser.finish(), StreamTextChunk::default());
@@ -243,7 +233,14 @@ fn inactive_close_and_nested_open_wait_for_the_line_decision() {
     let nested_line = parser.push_str("\nstep\n");
     let tail = parser.finish();
     assert_eq!(
-        (close_prefix, close_line, start, nested_prefix, nested_line, tail),
+        (
+            close_prefix,
+            close_line,
+            start,
+            nested_prefix,
+            nested_line,
+            tail
+        ),
         (
             StreamTextChunk::default(),
             chunk(
@@ -282,7 +279,10 @@ fn eof_recognizes_whitespace_wrapped_marker_and_resets_for_reuse() {
                 ],
             ),
             StreamTextChunk::default(),
-            chunk("again", vec![ProposedPlanSegment::Normal("again".to_owned())]),
+            chunk(
+                "again",
+                vec![ProposedPlanSegment::Normal("again".to_owned())]
+            ),
             StreamTextChunk::default(),
         )
     );
@@ -301,7 +301,10 @@ fn empty_push_does_not_flush_an_unfinished_marker() {
         (
             StreamTextChunk::default(),
             StreamTextChunk::default(),
-            chunk("<prop", vec![ProposedPlanSegment::Normal("<prop".to_owned())]),
+            chunk(
+                "<prop",
+                vec![ProposedPlanSegment::Normal("<prop".to_owned())]
+            ),
             StreamTextChunk::default(),
         )
     );
@@ -366,7 +369,10 @@ fn debug_preserves_nested_fields_and_does_not_consume_pending_input() {
 fn strip_and_extract_preserve_the_last_plan_and_literal_order() {
     let text = "before\n<proposed_plan>\nfirst\n</proposed_plan>\nmiddle\n<proposed_plan>\nlast";
     assert_eq!(
-        (strip_proposed_plan_blocks(text), extract_proposed_plan_text(text)),
+        (
+            strip_proposed_plan_blocks(text),
+            extract_proposed_plan_text(text)
+        ),
         ("before\nmiddle\n".to_owned(), Some("last".to_owned()))
     );
 }

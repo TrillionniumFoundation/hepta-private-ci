@@ -216,7 +216,12 @@ pub(super) fn apply(
                 kind,
                 range,
                 continue_text,
-            } => append_text(segments, kind, continue_text, Cow::Borrowed(&payload[range])),
+            } => append_text(
+                segments,
+                kind,
+                continue_text,
+                Cow::Borrowed(&payload[range]),
+            ),
             Command::Start => segments.push(TaggedLineSegment::TagStart(PlanTag::ProposedPlan)),
             Command::End => segments.push(TaggedLineSegment::TagEnd(PlanTag::ProposedPlan)),
         }
