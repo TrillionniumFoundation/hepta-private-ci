@@ -101,9 +101,7 @@ prefix_rule(
 
     match error {
         Error::ExampleDidMatch {
-            example,
-            location,
-            ..
+            example, location, ..
         } => {
             assert_eq!(example, "git status");
             assert_eq!(
@@ -132,9 +130,7 @@ fn an_unrelated_rule_from_a_prior_parse_cannot_validate_new_examples() {
 
     match error {
         Error::ExampleDidNotMatch {
-            examples,
-            location,
-            ..
+            examples, location, ..
         } => {
             assert_eq!(examples, vec!["git"]);
             assert_eq!(
@@ -162,9 +158,7 @@ prefix_rule(pattern = ["echo"], match = [["missing-second"]])
 
     match error {
         Error::ExampleDidNotMatch {
-            examples,
-            location,
-            ..
+            examples, location, ..
         } => {
             assert_eq!(examples, vec!["missing-first"]);
             assert_eq!(
