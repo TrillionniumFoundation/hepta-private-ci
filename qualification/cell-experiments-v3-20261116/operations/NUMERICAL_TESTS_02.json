@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "cell_experiments.test_causal_train_v3",
+    "-v"
+  ],
+  "exit_code": 0,
+  "log_sha256": "3a992d6477ccb1b857a89e66d847ff0352098c01c7fe77544a8350a1ded6f191",
+  "prior_import_failure_job": "1a1e6d7935b-392-3c55",
+  "runtime": {
+    "numpy": "1.26.4",
+    "peft": "0.18.0",
+    "safetensors": "0.7.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "scope": "tiny-random-model numerical tests; not experiment fits or capability evidence",
+  "source_archive_sha256": "38a6f8bbc8a602befcd45ebd919bbcb2eca12d9f105798b29d72b2eb051c42d7",
+  "wall_seconds": 2.0676012239418924
+}

@@ -1,0 +1,12 @@
+test_empty_or_padding_supervision_is_rejected (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_empty_or_padding_supervision_is_rejected) ... ok
+test_lora_checkpointed_selected_loss_updates_adapter_and_reloads (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_lora_checkpointed_selected_loss_updates_adapter_and_reloads) ... /home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/peft/utils/save_and_load.py:295: UserWarning: Could not find a config file in  - will assume that the vocabulary was not modified.
+  warnings.warn(
+/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/peft/tuners/tuners_utils.py:282: UserWarning: Already found a `peft_config` attribute in the model. This will lead to having multiple adapters in the model. Make sure to know what you are doing!
+  warnings.warn(
+ok
+test_selected_causal_loss_and_all_parameter_gradients_match_dense (cell_experiments.test_causal_train_v3.TinyQwenNumericalTests.test_selected_causal_loss_and_all_parameter_gradients_match_dense) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.564s
+
+OK
