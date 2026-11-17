@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "identity": "hcsn-c2-current-budget-admission-hold-20261117-c06d-v1",
+  "status": "HOLD_INCOMPLETE_HISTORY",
+  "base_commit": "3665799158a8ca44e14ecad6f92d382905dfbbb3",
+  "constraints": {
+    "stdlib_only": true,
+    "synthetic_tests_only": true,
+    "model_executions": 0,
+    "torch_executions": 0,
+    "optimizer_calls": 0,
+    "native_jobs": 0,
+    "new_execution_keys": 0
+  },
+  "decision": {
+    "all_closed": false,
+    "replay_admitted": false,
+    "resource_admitted": false,
+    "execution_key": null,
+    "complete_attempt_history": false,
+    "complete_historical_cost_known": false,
+    "full_fit_replays_completed": 0,
+    "full_fit_replays_required": 6,
+    "lifetime_optimizer_calls": null,
+    "lifetime_optimizer_calls_status": "UNKNOWN",
+    "original_controller_terminal_status": "UNKNOWN"
+  },
+  "diagnostics": {
+    "successful_checkpoint_continuations": 12,
+    "known_optimizer_calls": 52,
+    "counts_as_full_training_replay": false
+  },
+  "frozen_lineage": [
+    {
+      "pr": 6252,
+      "commit": "5c423c372792105cfa32c6038f32d9c2bfa08974",
+      "path": "qualification/hcsn_ci_readbacks/c2-resource-hold-20261112/original-contract/CONTRACT.json",
+      "blob": "6c2d82d9a2b4fc8c3bbf9e97d5ec8c1b8794a3a6"
+    },
+    {
+      "pr": 6252,
+      "commit": "5c423c372792105cfa32c6038f32d9c2bfa08974",
+      "path": "qualification/hcsn_ci_readbacks/c2-resource-hold-20261112/original-contract/DECISION.json",
+      "blob": "ce6380eea9d27a9efb7315c98198effc2f646ea1"
+    },
+    {
+      "pr": 6309,
+      "commit": "55ee98291d1468408b49950ade8e3e1b21f01d7a",
+      "path": "qualification/hcsn_c2_parent_recovery_20261114_c06d/RECOVERY.json",
+      "blob": "8fd0d1a54ec1d179ca8c47ca29197e2b5b471ee9"
+    },
+    {
+      "pr": 6310,
+      "commit": "06f14aa1a182bf43b2dc4ba9e667f6af9e725947",
+      "path": "qualification/hcsn_c2_original_parent_state_audit_20261114_c06d/RESULT.json",
+      "blob": "0fc4f4cfadb3bd3e10670a45fcc3dcc0fcbd2913"
+    },
+    {
+      "pr": 6311,
+      "commit": "c6797a1a549e61ce47eda63b5d9027bfb3916ee1",
+      "path": "qualification/hcsn_c2_original_parent_boundary_audit_20261114_c06d/RESULT.json",
+      "blob": "99fd0538e3ff3c55d6a516c114d094899fed0f0f"
+    },
+    {
+      "pr": 6315,
+      "commit": "3665799158a8ca44e14ecad6f92d382905dfbbb3",
+      "path": "qualification/hcsn_c2_original_budget_ledger_20261114_c06d/LEDGER.json",
+      "blob": "15271360a3a42e095b266538aea977a01b2a1c75"
+    }
+  ],
+  "source_runtime_model_data": {
+    "training_source_sha256": "06cb85c7a0da85fb8d656526c2b07285979bc6c47c2e00c154e89f43bcfc1a22",
+    "source_capsule_sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102",
+    "runtime_identity_sha256": "dc6af342718078939396ec3eed1f438b0e769c892569b49a652b9a885948d0b8",
+    "runtime_identity_bytes_git_bound": false,
+    "model_identity_complete": false,
+    "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+    "coherent_current_admission_identity_complete": false
+  },
+  "fits": [
+    {
+      "fit": "hcsn-s101-lr0.001",
+      "parent_sha256": "e0c8c946aa8010bfcf4df5b9e155235d2fb6b12a9832e4eaa5db3d9afb154d78",
+      "epoch": 46,
+      "main_updates": 552,
+      "cursor": null,
+      "original_whole_process_wall_seconds": 14376.351586270845,
+      "original_decision_charged_remainder_before_reserve_seconds": 28823.648413729155,
+      "original_decision_worker_active_ceiling_after_reserve_seconds": 28223.648413729155
+    },
+    {
+      "fit": "hcsn-s101-lr0.003",
+      "parent_sha256": "bea446e64571e7cd424411036eff207bb6839af4495a7b60cf0f9df81181ba05",
+      "epoch": 47,
+      "main_updates": 564,
+      "cursor": null,
+      "original_whole_process_wall_seconds": 14378.026858798927,
+      "original_decision_charged_remainder_before_reserve_seconds": 28821.973141201073,
+      "original_decision_worker_active_ceiling_after_reserve_seconds": 28221.973141201073
+    },
+    {
+      "fit": "hcsn-s211-lr0.001",
+      "parent_sha256": "cdbca6e633c6aba5f72f08f259ab08b1c5c2c5745d1dbd2f323a78df876e1e79",
+      "epoch": 46,
+      "main_updates": 552,
+      "cursor": null,
+      "original_whole_process_wall_seconds": 14377.272928075166,
+      "original_decision_charged_remainder_before_reserve_seconds": 28822.727071924834,
+      "original_decision_worker_active_ceiling_after_reserve_seconds": 28222.727071924834
+    },
+    {
+      "fit": "hcsn-s211-lr0.003",
+      "parent_sha256": "b7d162101f18628fcfcabb21e9609499d62c8a26ad6d53b9c375ed2e0439d2f4",
+      "epoch": 47,
+      "main_updates": 564,
+      "cursor": null,
+      "original_whole_process_wall_seconds": 14376.949902404798,
+      "original_decision_charged_remainder_before_reserve_seconds": 28823.0500975952,
+      "original_decision_worker_active_ceiling_after_reserve_seconds": 28223.0500975952
+    },
+    {
+      "fit": "hcsn-s307-lr0.001",
+      "parent_sha256": "17d6ad363d82ba31b006d0a4f55ca9c63453fa2c9c34f7370f022e2ff66a4f5c",
+      "epoch": 46,
+      "main_updates": 552,
+      "cursor": null,
+      "original_whole_process_wall_seconds": 14375.544506336097,
+      "original_decision_charged_remainder_before_reserve_seconds": 28824.455493663903,
+      "original_decision_worker_active_ceiling_after_reserve_seconds": 28224.455493663903
+    },
+    {
+      "fit": "hcsn-s307-lr0.003",
+      "parent_sha256": "736ee7d7afe911a3cf5bb7f7ad97babff4dfb74e28a46ec9c148579160a5075c",
+      "epoch": 46,
+      "main_updates": 552,
+      "cursor": null,
+      "original_whole_process_wall_seconds": 14376.969628295861,
+      "original_decision_charged_remainder_before_reserve_seconds": 28823.03037170414,
+      "original_decision_worker_active_ceiling_after_reserve_seconds": 28223.03037170414
+    }
+  ],
+  "budget": {
+    "per_fit_cap_seconds": 43200,
+    "per_fit_exit_reserve_seconds": 600,
+    "original_decision_summed_charged_remainder_before_reserve_seconds": 172938.8845898183,
+    "original_decision_summed_worker_active_ceiling_after_reserve_seconds": 169338.8845898183,
+    "later_attempt_wall_seconds": null,
+    "per_fit_exit_overhead_seconds": null,
+    "current_charged_remainder_seconds": null,
+    "current_worker_active_ceiling_seconds": null,
+    "current_balance_status": "UNKNOWN"
+  }
+}
