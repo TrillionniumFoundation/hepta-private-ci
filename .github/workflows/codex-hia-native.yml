@@ -503,7 +503,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native31 \
+            --build-profile full-native32 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -513,8 +513,18 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native32 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
+
+      - name: Verify environment display literal frames and bounded native streams
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_format_env_display_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -592,6 +602,22 @@ jobs:
           python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-all-targets-cached.jsonl" \
             > "$RUNNER_TEMP/unified-all-targets-cached-admission.json"
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 and x["cargo_fresh"] for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-all-targets-cached-admission.json"
+
+      - name: Test environment display public oracles with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-utils-cli --features codex-utils-cli/hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-native.log"
+
+      - name: Test environment display public oracles with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-cli --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-default.log"
 
       - name: Compare actual native and original ASCII JSON callers
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -1024,7 +1050,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native31 \
+            --build-profile full-native32 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1037,7 +1063,7 @@ jobs:
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native31 \
+            --build-profile full-native32 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1386,6 +1412,10 @@ jobs:
             {0}/hia-output-lines-abi.log
             {0}/hia-output-item-budget-abi.json
             {0}/hia-output-item-budget-abi.log
+            {0}/hia-format-env-display-abi.json
+            {0}/hia-format-env-display-abi.log
+            {0}/hia-format-env-display-native.log
+            {0}/hia-format-env-display-default.log
             {0}/hia-output-item-budget-core-native.log
             {0}/hia-output-item-budget-core-default.log
             {0}/hia-metric-caller.json
