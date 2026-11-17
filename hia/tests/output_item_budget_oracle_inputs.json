@@ -25,8 +25,8 @@
   "counts": {
     "streams": 12,
     "stream_calls": 63,
-    "raw_cases": 44,
-    "literal_frames": 107
+    "raw_cases": 61,
+    "literal_frames": 124
   },
   "construction": "Manually specified numeric inputs and complete output words serialized little-endian. Only byte/word/chain consistency was checked by stdlib; no HIA/Rust oracle/VM/native call or cost evaluator ran. MAX numeric boundaries do not allocate strings or execute callbacks.",
   "coverage_limits": [
@@ -2947,6 +2947,436 @@
           "1",
           "0",
           "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "finish-await-snippet",
+      "reason": "Finish cannot bypass a pending text snippet.",
+      "call": {
+        "source_hex": "0300000000000000010000000000000001000000000000000000000000000000010000000000000001000000000000000100000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "3",
+          "1",
+          "1",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "snippet-ready",
+      "reason": "Snippet requires AwaitSnippet.",
+      "call": {
+        "source_hex": "02000000000000000100000000000000000000000000000000000000000000000100000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "2",
+          "1",
+          "0",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "unknown-phase",
+      "reason": "Unknown phase is rejected.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000300000000000000000000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "3",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "remaining-above-original",
+      "reason": "Remaining cannot exceed original budget.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000001000000000000000200000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "1",
+          "2",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "processed-above-total",
+      "reason": "Processed cannot exceed total.",
+      "call": {
+        "source_hex": "0300000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000020000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "3",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "2",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "text-above-processed",
+      "reason": "Reject before processed-text subtraction can underflow.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000001000000000000000200000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "2",
+          "1",
+          "2",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "audio-above-unomitted-processed",
+      "reason": "Text/audio omissions are disjoint.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000002000000000000000100000000000000020000000000000001000000000000000100000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "3",
+          "2",
+          "1",
+          "2",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "forged-sum-wrap",
+      "reason": "MAX text plus one audio cannot evade the subtraction bound.",
+      "call": {
+        "source_hex": "030000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff0100000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "3",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551615",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "forged-text-increment-wrap",
+      "reason": "Text==MAX with processed==MAX-1 is invalid before increment.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000fffffffffffffffffeffffffffffffffffffffffffffffff000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551614",
+          "18446744073709551615",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "forged-audio-increment-wrap",
+      "reason": "Audio==MAX with processed==MAX-1 is invalid before increment.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000fffffffffffffffffeffffffffffffff0000000000000000ffffffffffffffff01000000000000000100000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551614",
+          "0",
+          "18446744073709551615",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "initial-remaining-drift",
+      "reason": "Before the first item remaining must equal budget.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000002000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "2",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "item-after-total",
+      "reason": "No additional item when processed==total.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000001000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "snippet-after-total",
+      "reason": "Pending-shaped forged state still needs an unprocessed item.",
+      "call": {
+        "source_hex": "02000000000000000100000000000000010000000000000000000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "2",
+          "1",
+          "1",
+          "0",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "item-max-processed",
+      "reason": "Reject before MAX+1.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff0000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "snippet-max-processed",
+      "reason": "Reject before MAX+1 in Snippet.",
+      "call": {
+        "source_hex": "020000000000000001000000000000000100000000000000000000000000000001000000000000000100000000000000ffffffffffffffffffffffffffffffff000000000000000000000000000000000100000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "2",
+          "1",
+          "1",
+          "0",
+          "1",
+          "1",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0",
+          "0",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "snippet-with-zero-remaining",
+      "reason": "A real pending truncation requires positive remaining.",
+      "call": {
+        "source_hex": "02000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "2",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "finish-before-total",
+      "reason": "Finish requires all items processed.",
+      "call": {
+        "source_hex": "0300000000000000010000000000000000000000000000000000000000000000010000000000000001000000000000000100000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "3",
+          "1",
+          "0",
+          "0",
+          "1",
+          "1",
+          "1",
           "0",
           "0",
           "0"
