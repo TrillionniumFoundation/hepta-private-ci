@@ -63,7 +63,10 @@ pub(super) fn decode(
             terminal: None,
         });
     }
-    require(to_u64(response.record_count)? == added, "index record count")?;
+    require(
+        to_u64(response.record_count)? == added,
+        "index record count",
+    )?;
     let mut selected = Vec::with_capacity(response.record_count);
     let mut previous = if old[f::NEEDLE_CURSOR] == 0 {
         None
@@ -79,7 +82,10 @@ pub(super) fn decode(
         previous = Some(index);
     }
     if let Some(last) = selected.last() {
-        require(to_u64(*last)? == next[f::LAST_ORIGINAL], "last emitted index")?;
+        require(
+            to_u64(*last)? == next[f::LAST_ORIGINAL],
+            "last emitted index",
+        )?;
         if old[f::NEEDLE_CURSOR] == 0 {
             require(
                 selected.first().copied() == Some(to_usize(next[f::FIRST_ORIGINAL])?),

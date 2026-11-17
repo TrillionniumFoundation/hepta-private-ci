@@ -188,7 +188,10 @@ pub(super) fn decode(
     require(header[8] == to_u64(defined)?, "defined output size")?;
     require(defined <= output.len(), "output extent")?;
     // Invocation supplies a zero-filled buffer, so its unused tail must stay zero.
-    require(output[defined..].iter().all(|byte| *byte == 0), "output tail")?;
+    require(
+        output[defined..].iter().all(|byte| *byte == 0),
+        "output tail",
+    )?;
     let records = output[OUTPUT_PREFIX..defined]
         .chunks_exact(WORD_BYTES)
         .map(|chunk| {
@@ -216,11 +219,7 @@ fn read_words<const N: usize>(bytes: &[u8]) -> Result<[u64; N], Error> {
 }
 
 pub(super) fn require(condition: bool, error: Error) -> Result<(), Error> {
-    if condition {
-        Ok(())
-    } else {
-        Err(error)
-    }
+    if condition { Ok(()) } else { Err(error) }
 }
 
 pub(super) fn to_u64(value: usize) -> Result<u64, Error> {

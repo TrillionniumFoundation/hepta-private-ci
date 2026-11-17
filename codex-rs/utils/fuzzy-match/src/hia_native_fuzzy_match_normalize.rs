@@ -37,8 +37,7 @@ pub(super) fn decode_hay(
         "original hay count",
     )?;
     require(
-        next[f::HAY_LOWER].checked_sub(old[f::HAY_LOWER])
-            == Some(to_u64(response.record_count)?)
+        next[f::HAY_LOWER].checked_sub(old[f::HAY_LOWER]) == Some(to_u64(response.record_count)?)
             && response.record_count.checked_mul(wire::RECORD_WORDS)
                 == Some(response.records.len()),
         "hay output count",
@@ -179,8 +178,7 @@ pub(super) fn decode_needle(
         }
     }
     require(
-        next[f::NEEDLE_LOWER].checked_sub(old[f::NEEDLE_LOWER])
-            == Some(to_u64(appended.len())?)
+        next[f::NEEDLE_LOWER].checked_sub(old[f::NEEDLE_LOWER]) == Some(to_u64(appended.len())?)
             && appended.len() >= original_count
             && appended.len() <= original_count * wire::RECORD_WORDS,
         "needle lower count",

@@ -146,13 +146,17 @@ pub(super) fn validate(state: State) -> Result<(), Error> {
             "hit scan order",
         )?;
         if s[f::LAST_ORIGINAL] == s[f::SCANNED_ORIGINAL] {
-            require(
-                s[f::LAST_START] == s[f::SCANNED_START],
-                "hit scan identity",
-            )?;
+            require(s[f::LAST_START] == s[f::SCANNED_START], "hit scan identity")?;
         }
     }
-    for index in [f::SCORE, f::OVERFLOW_LHS, f::OVERFLOW_RHS, f::R1, f::R2, f::R3] {
+    for index in [
+        f::SCORE,
+        f::OVERFLOW_LHS,
+        f::OVERFLOW_RHS,
+        f::R1,
+        f::R2,
+        f::R3,
+    ] {
         require(s[index] <= u64::from(u32::MAX), "i32 word width")?;
     }
     require(
@@ -353,7 +357,10 @@ pub(super) fn validate_transition(request: &Request<'_>, response: &Response) ->
                     (f::NEEDLE_SEEN, wire::NEEDLE, wire::MATCHING)
                 };
             require(
-                next[seen] == old[seen].checked_add(count).ok_or("byte frontier overflow")?,
+                next[seen]
+                    == old[seen]
+                        .checked_add(count)
+                        .ok_or("byte frontier overflow")?,
                 "byte advance",
             )?;
             let phase = if request.flags == wire::END {
@@ -399,10 +406,7 @@ pub(super) fn validate_transition(request: &Request<'_>, response: &Response) ->
                         "new first hit",
                     )?;
                 } else {
-                    require(
-                        next[f::LAST_HIT] > old[f::LAST_HIT],
-                        "advancing last hit",
-                    )?;
+                    require(next[f::LAST_HIT] > old[f::LAST_HIT], "advancing last hit")?;
                 }
             }
             if old[f::NEEDLE_CURSOR] > 0 {

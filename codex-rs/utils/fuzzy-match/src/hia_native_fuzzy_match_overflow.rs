@@ -19,7 +19,14 @@ pub(super) fn validate(state: State, needle_len: usize) -> Result<(i32, Witness)
         "score needle length",
     )?;
     let low32 = u64::from(u32::MAX);
-    for index in [f::SCORE, f::OVERFLOW_LHS, f::OVERFLOW_RHS, f::R1, f::R2, f::R3] {
+    for index in [
+        f::SCORE,
+        f::OVERFLOW_LHS,
+        f::OVERFLOW_RHS,
+        f::R1,
+        f::R2,
+        f::R3,
+    ] {
         require(state[index] <= low32, "arithmetic word width")?;
     }
     let mask = state[f::OVERFLOW_MASK];
