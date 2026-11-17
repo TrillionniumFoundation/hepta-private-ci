@@ -1,0 +1,10 @@
+{
+  "content": "use super::*;\nuse crate::cell_test_support::checked;\nuse crate::cell_test_support::d;\nuse crate::perception_test_support::*;\nuse pretty_assertions::assert_eq;\n\n#[test]\nfn perception_cross_language_fixture_round_trips_and_binds_raw_evidence() {\n    let observation = observation();\n    checked(observation.validate(&binding(&observation), &[actor_source()]));\n    let bytes = checked(observation.encode());\n    assert_eq!(\n        bytes.as_slice(),\n        &PERCEPTION_FIXTURE[..PERCEPTION_FIXTURE.len() - 1]\n    );\n    assert_eq!(\n        Digest32::of_bytes(&bytes).to_string(),\n        \"e08fffef99344a9ff1bd0c70f715dfdf450ecf179732f6cd12e33fc0fa9cb454\"\n    );\n    assert_eq!(\n        observation\n            .evidence\n            .iter()\n            .map(|evidence| checked(evidence.digest()).to_string())\n            .collect::<Vec<_>>(),\n        vec![\n            \"196e6aa9f9741eeccb5d98a6be934d120ae250990dd43657782e936933ddd12a\",\n            \"f63d795e3a39f912dd50f8840a175029dbed31dd36b8846cf7870ba4dbd77fbc\",\n        ]\n    );\n}\n",
+  "encoding": "utf-8",
+  "sha": "72f584b2c22aaae339b20de6515693932414c6a1",
+  "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9d62fafa3713e25fa4c80eaab403e094ef4bc647/codex-rs/hepta-neuron/src/perception_tests.rs",
+  "display_title": "perception_tests.rs",
+  "requested_start_line": 1,
+  "requested_end_line": 32,
+  "full_file_contents": false
+}

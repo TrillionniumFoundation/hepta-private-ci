@@ -1,0 +1,177 @@
+{
+  "schema": "hepta.read-only-ci-triage.v3",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "evidence_head": "9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+  "source_stack_base": "42e32825ae20d460cb782856e00816661536853a",
+  "blocking_run_id": 43994639372,
+  "blocking_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372",
+  "blocking_run_conclusion": "failure",
+  "run_attempt": 1,
+  "bazel_tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+  "head_to_tested_merge_changed_paths": 0,
+  "source_change_evidence": "SOURCE_CHANGE_EVIDENCE.json",
+  "detailed_test_index": "TEST_FAILURES.json",
+  "log_archive_manifest": "LOG_MANIFEST.json",
+  "jobs": [
+    {
+      "job_id": 133743960601,
+      "platform": "cargo-deny",
+      "status": "failure",
+      "failed_step": "Run cargo-deny (7)",
+      "observed": [
+        "Job metadata marks failure; the tracked RustSec no-suppression policy step and final clean-worktree step passed.",
+        "Only 1,588,359 raw bytes from the beginning of the job log were recovered. The stream ended within a dependency tree; no fatal dependency/rule diagnostic was recovered.",
+        "A subsequent suffix-range GET was ignored (HTTP 200, no Content-Range) and timed out. Check-run annotations contain only one Ubuntu runner migration notice."
+      ],
+      "exact_failing_dependency": null,
+      "cause_status": "UNVERIFIED",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743960601"
+    },
+    {
+      "job_id": 133743961257,
+      "platform": "macOS ARM",
+      "status": "failure",
+      "final_failed_targets": [
+        "//codex-rs/app-server:app-server-all-test",
+        "//codex-rs/core:core-all-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+        "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test"
+      ],
+      "observed": [
+        "Both executor-skills tests report expected ident at line 1 column 3.",
+        "Seven core approval/zsh-related test names have FAILED entries: expected approval events did not occur, approved test commands did not create the expected output, one status assertion compares 1 with 0, and sandbox-denial validation instead saw os error 2. The log also records escalation session/socket errors. This is a symptom grouping, not a verified common cause.",
+        "hepta-agentd causal readback fixture returns Invalid; five research external-material/owner tests unwrap Not a directory (os error 20); another asserts require_unstarted(temp.path()).is_ok().",
+        "Encrypted store restart test reports Initialization."
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961257"
+    },
+    {
+      "job_id": 133743961512,
+      "platform": "macOS Intel",
+      "status": "failure",
+      "final_failed_targets": [
+        "//codex-rs/app-server:app-server-all-test",
+        "//codex-rs/code-mode-host:code-mode-host-grpc_notifications-test",
+        "//codex-rs/code-mode-host:code-mode-host-grpc_tcp-test",
+        "//codex-rs/code-mode-host:code-mode-host-websocket-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+        "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test"
+      ],
+      "observed": [
+        "Same two executor-skills JSON parse symptoms and the same seven hepta-agentd assertion/fixture failures as ARM.",
+        "code-mode-host gRPC notification, TCP and WebSocket tests time out waiting for the host endpoint or report that the endpoint was not published.",
+        "Encrypted store restart test reports Initialization."
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961512"
+    },
+    {
+      "job_id": 133743961396,
+      "platform": "Windows shard 1/4",
+      "status": "failure",
+      "final_failed_targets": [
+        "//codex-rs/exec-server:exec-server-exec_process-test"
+      ],
+      "final_flaky_targets": [
+        "//codex-rs/core:core-unit-tests"
+      ],
+      "observed": [
+        "remote_windows_sandbox_process_accepts_process_write receives exec-server error -32603: legacy Windows sandbox isolation is unavailable.",
+        "core unit attempts contain an early wait_agent timeout assertion and resume-context cleanup Elapsed(()). Bazel ultimately labels this target FLAKY, not FAILED."
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961396"
+    },
+    {
+      "job_id": 133743961532,
+      "platform": "Windows shard 2/4",
+      "status": "failure",
+      "final_failed_targets": [
+        "//codex-rs/cli:cli-sandbox_cloud_config-test",
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+        "//codex-rs/app-server:app-server-all-test"
+      ],
+      "observed": [
+        "CLI cloud-managed sandbox test reports disabled Windows sandbox level cannot launch a sandbox session.",
+        "Windows sandbox tests report unavailable legacy isolation; one capability assertion has None where PermissionDenied (OS code 5) was expected; two assertions see an isolation-unavailable message instead of the specific expected ACL/managed-network error; later tests report a poisoned process-test lock.",
+        "App-server worker-role resume and session file-change approval cases report deadline has elapsed. Attached-image edit wiremock expected one matching incoming request but matched zero; prior tool output reports the filesystem sandbox helper failed."
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961532"
+    },
+    {
+      "job_id": 133743961375,
+      "platform": "Windows shard 3/4",
+      "status": "failure",
+      "final_failed_targets": [
+        "//codex-rs/ext/queue:queue-queue_service-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+        "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+        "//codex-rs/tui:tui-unit-tests"
+      ],
+      "observed": [
+        "Queue caller-abort persistence case times out waiting for queue_blocking_prompt_hook.entered.",
+        "hepta-agentd causal fixture returns Invalid, signed-credit fixture returns Durable(Io(PermissionDenied)), and neuron evaluation/generation/runtime fixtures fail with Windows OS error 33 (part of a file locked by another process).",
+        "hepta-neuron perception fixture byte equality differs by a right-side decimal 13 before the final newline removal. Source lines 12-15 compare encoded bytes with fixture length minus one. A CRLF fixture explanation is an inference; the runner checkout bytes were not independently recovered.",
+        "TUI corruption-recovery path equality compares D:\\tmp\\... with \\\\?\\D:\\tmp\\...."
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961375"
+    },
+    {
+      "job_id": 133743961401,
+      "platform": "Windows shard 4/4",
+      "status": "failure",
+      "final_failed_targets": [
+        "//codex-rs/exec-server:exec-server-file_system_windows-test",
+        "//codex-rs/core:core-all-test"
+      ],
+      "observed": [
+        "17 filesystem test names have FAILED entries with the legacy Windows sandbox isolation-unavailable error.",
+        "Core subagent notifications show spawn communication logs Elapsed(()) and an expected-at-least-two hook entries assertion receiving one.",
+        "Two workspace-roots cases report OS error 2. The hard-link preservation case receives the isolation-unavailable helper message instead of its expected policy-specific outcome."
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961401"
+    },
+    {
+      "job_id": 133757105214,
+      "platform": "architecture evidence retry",
+      "status": "failure",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639113/job/133757105214",
+      "tested_checkout": "9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+      "observed": [
+        "Failed to fetch sha1-checked from crates.io index: [16] Error in the HTTP2 framing layer.",
+        "Dependency chain: codex-cli -> codex-git-utils -> gix 0.83.0 -> gix-hash 0.25.1 -> sha1-checked.",
+        "The script then prints Cargo.lock differs from the exact candidate manifests. Offline resolution subsequently reports no matching sha1-checked package and warns that cached dependencies could not be fully materialized."
+      ],
+      "lock_drift_proven": false,
+      "reason": "The recorded command failed during dependency retrieval. Neither successful locked resolution nor a concrete changed lockfile diff is present."
+    }
+  ],
+  "separate_formatter_failure": {
+    "job_id": 133743960656,
+    "failed_step": "Prettier",
+    "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743960656",
+    "owner": "root",
+    "scope_note": "Root handles the two quote-only YAML format fixes separately. No workflow or source fixes were made by this triage.",
+    "files": [
+      ".github/workflows/cell-experiments.yml",
+      ".github/workflows/cell-hia-joint.yml"
+    ],
+    "changed_base_to_evidence_head": false
+  },
+  "verified_scope": {
+    "source_code_or_workflow_edits": false,
+    "workflow_reruns_by_triage": 0,
+    "model_training_or_inference_calls": 0,
+    "source_stack_changed_paths": 161,
+    "rust_dependency_workflow_changes_by_source_stack": 0,
+    "head_to_tested_merge_changed_paths": 0,
+    "archive_full_byte_round_trip_verified": true
+  },
+  "limits": [
+    "No matched baseline run was examined, so unchanged files do not prove pre-existing failures reproduce or are harmless.",
+    "Cargo-deny fatal dependency and rule remain unknown because the complete log was not retrieved.",
+    "Runner environment, checkout line ending conversion, filesystem semantics, caches and races have not been isolated experimentally.",
+    "Observed failed test names are a diagnostic index, not independent samples or proof that every named case remained failed after retry. Final Bazel target status distinguishes FAILED from FLAKY.",
+    "Passing Linux jobs and a successful aggregate rust-ci status do not clear the recorded Mac/Windows/cargo-deny failures.",
+    "No Rust assertion, security boundary, workflow gate, or required check has been weakened or waived.",
+    "These CI records are engineering evidence only; they do not establish E1-E6 efficacy, independent evaluation, training value, useful work, user scaling, or a new foundation model."
+  ]
+}
