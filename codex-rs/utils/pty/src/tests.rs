@@ -290,6 +290,11 @@ async fn wait_for_marker_pid(
     timeout_ms: u64,
 ) -> anyhow::Result<i32> {
     let mut collected = Vec::new();
+    let started = std::time::Instant::now();
+    let mut received_chunks = 0_usize;
+    let mut last_chunk_bytes = 0;
+    let mut last_chunk_elapsed = None;
+    let mut marker_state = "not_observed";
     let deadline = tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
     loop {
         let now = tokio::time::Instant::now();
@@ -303,7 +308,16 @@ async fn wait_for_marker_pid(
         let remaining = deadline.saturating_duration_since(now);
         let chunk = tokio::time::timeout(remaining, output_rx.recv())
             .await
-            .map_err(|_| anyhow::anyhow!("timeout waiting for PTY output"))??;
+            .map_err(|_| {
+                let elapsed = started.elapsed();
+                let received_bytes = collected.len();
+                anyhow::anyhow!("timeout waiting for PTY output").context(format!(
+                    "PID marker receive: elapsed={elapsed:?}, received_chunks={received_chunks}, received_bytes={received_bytes}, last_chunk_bytes={last_chunk_bytes}, last_chunk_elapsed={last_chunk_elapsed:?}, marker_state={marker_state}; receiver_wait=elapsed, reader_task=unobserved"
+                ))
+            })??;
+        received_chunks = received_chunks.saturating_add(/*rhs*/ 1);
+        last_chunk_bytes = chunk.len();
+        last_chunk_elapsed = Some(started.elapsed());
         collected.extend_from_slice(&chunk);
 
         let text = String::from_utf8_lossy(&collected);
@@ -317,6 +331,7 @@ async fn wait_for_marker_pid(
                 .map(char::len_utf8)
                 .sum::<usize>();
             if digits_len == 0 {
+                marker_state = "marker_without_pid_digits";
                 offset = marker_start + marker.len();
                 continue;
             }
@@ -324,6 +339,7 @@ async fn wait_for_marker_pid(
             let pid_str = &suffix[..digits_len];
             let trailing = &suffix[digits_len..];
             if trailing.is_empty() {
+                marker_state = "pid_digits_waiting_for_delimiter";
                 break;
             }
             return Ok(pid_str.parse()?);
@@ -1117,8 +1133,14 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
     let script =
         "import signal, sys\nsignal.alarm(10)\nsys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))";
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
+        let backend = if inherited_fds.is_empty() {
+            "portable"
+        } else {
+            "preserved_fds"
+        };
+        let started = std::time::Instant::now();
         let SpawnedProcess {
-            session: _session,
+            session,
             stdout_rx,
             exit_rx,
             ..
@@ -1133,7 +1155,17 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
         )
         .await?;
         drop(stdout_rx);
-        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await??;
+        let exit_wait_started = std::time::Instant::now();
+        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx)
+            .await
+            .map_err(|error| {
+                let wait_elapsed = exit_wait_started.elapsed();
+                let total_elapsed = started.elapsed();
+                let child_exit_observed = session.has_exited();
+                anyhow::Error::new(error).context(format!(
+                    "PTY drain exit wait: backend={backend}, python={python}, wait_elapsed={wait_elapsed:?}, total_elapsed={total_elapsed:?}, child_exit_observed={child_exit_observed}; stdout_receiver=dropped, reader_task=unobserved"
+                ))
+            })??;
         assert_eq!(code, 0, "child should finish even when output is discarded");
     }
     Ok(())
@@ -1417,6 +1449,7 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
     let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
     let writer = session.writer_sender();
     let newline = "\n";
+    let readiness_started = std::time::Instant::now();
     let mut output = wait_for_python_repl_ready_via_probe(
         &writer,
         &mut output_rx,
@@ -1424,14 +1457,24 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
         newline,
     )
     .await?;
+    let readiness_elapsed = readiness_started.elapsed();
+    let readiness_bytes = output.len();
     let marker = "__codex_preserved_py_pid:";
+    let enqueue_started = std::time::Instant::now();
     writer
         .send(format!("import os; print('{marker}' + str(os.getpid())){newline}").into_bytes())
         .await?;
+    let enqueue_elapsed = enqueue_started.elapsed();
 
+    let pid_wait_started = std::time::Instant::now();
     let python_pid = match wait_for_marker_pid(&mut output_rx, marker, /*timeout_ms*/ 2_000).await {
         Ok(pid) => pid,
         Err(err) => {
+            let pid_wait_elapsed = pid_wait_started.elapsed();
+            let child_exit_observed = session.has_exited();
+            let err = err.context(format!(
+                "PTY preserved-FD Python PID marker: python={python}, readiness_elapsed={readiness_elapsed:?}, readiness_bytes={readiness_bytes}, enqueue_elapsed={enqueue_elapsed:?}, pid_wait_elapsed={pid_wait_elapsed:?}, child_exit_observed={child_exit_observed}; readiness=complete, pid_command=enqueued"
+            ));
             session.terminate();
             return Err(err);
         }

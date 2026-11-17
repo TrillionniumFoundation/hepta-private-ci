@@ -63,6 +63,10 @@ use crate::RetrievalRequest;
 #[path = "cognitive_runtime_identity.rs"]
 mod identity;
 
+#[cfg(test)]
+#[path = "cognitive_runtime_diagnostics.rs"]
+mod diagnostics;
+
 const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
 const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
 const PRODUCT_FEDERATION_PURPOSE: &[u8] = b"hepta.cognitive.federated-recall.product.v2";
@@ -491,8 +495,25 @@ async fn retrieve_federated_product(
         .checked_add(u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX))
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
+    #[cfg(test)]
+    let discovery_diagnostics = owner_layouts
+        .iter()
+        .enumerate()
+        .map(|(owner_index, owner_layout)| {
+            (
+                owner_layout.agent_id().as_str().to_string(),
+                diagnostics::Trace::new(owner_index, /*attempt_index*/ None, started_at),
+            )
+        })
+        .collect::<std::collections::BTreeMap<_, _>>();
+    #[cfg(test)]
+    let discovery_diagnostics = &discovery_diagnostics;
+
     let discovery = async {
         let outcomes = join_all(owner_layouts.iter().map(|owner_layout| async move {
+            #[cfg(test)]
+            let _phase = discovery_diagnostics[owner_layout.agent_id().as_str()]
+                .enter(diagnostics::Stage::Discovery);
             (
                 owner_layout.clone(),
                 FederatedMemoryReader::discover(
@@ -507,6 +528,9 @@ async fn retrieve_federated_product(
         let mut readers = Vec::new();
         let mut discovery_failures = 0usize;
         for (owner_layout, outcome) in outcomes {
+            #[cfg(test)]
+            discovery_diagnostics[owner_layout.agent_id().as_str()]
+                .finish_discovery(outcome.is_ok());
             match outcome {
                 Ok(discovered) => {
                     for reader in discovered {
@@ -529,6 +553,10 @@ async fn retrieve_federated_product(
         tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, discovery)
             .await
             .map_err(|_| {
+                #[cfg(test)]
+                for trace in discovery_diagnostics.values() {
+                    trace.report("discovery_deadline");
+                }
                 CognitiveStoreError::Unavailable(
                     "memory federation discovery timed out".to_string(),
                 )
@@ -565,8 +593,30 @@ async fn retrieve_federated_product(
     #[cfg(test)]
     let discovery_complete_at = Instant::now();
 
+    #[cfg(test)]
+    let attempt_diagnostics = readers
+        .iter()
+        .enumerate()
+        .map(|(attempt_index, (owner_layout, reader))| {
+            (
+                reader.capability().id().as_str().to_string(),
+                diagnostics::Trace::new(
+                    discovery_diagnostics[owner_layout.agent_id().as_str()].owner_index,
+                    Some(attempt_index),
+                    started_at,
+                ),
+            )
+        })
+        .collect::<std::collections::BTreeMap<_, _>>();
+    #[cfg(test)]
+    let attempt_diagnostics = &attempt_diagnostics;
+
     let attempts = join_all(readers.iter().map(|(owner_layout, reader)| async move {
+        #[cfg(test)]
+        let diagnostic = &attempt_diagnostics[reader.capability().id().as_str()];
         if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
+            #[cfg(test)]
+            diagnostic.finish_attempt(&Err(FederationV2Error::DeadlineExpired));
             return Ok((
                 Err(FederationV2Error::DeadlineExpired),
                 Arc::new(Mutex::new(None)),
@@ -585,11 +635,15 @@ async fn retrieve_federated_product(
             access,
             request,
             captured: Arc::clone(&captured),
+            #[cfg(test)]
+            diagnostic,
         };
         let authority = ProductReaderAuthority {
             owner_layout,
             consumer_agent_id,
             expected_capability: reader.capability(),
+            #[cfg(test)]
+            diagnostic,
             logical_start_ms,
             started_at,
         };
@@ -606,6 +660,8 @@ async fn retrieve_federated_product(
             &lease,
         )
         .await;
+        #[cfg(test)]
+        diagnostic.finish_attempt(&result);
         Ok::<_, CognitiveStoreError>((result, captured))
     }))
     .await;
@@ -697,6 +753,12 @@ async fn retrieve_federated_product(
             coverage.failed_peers,
             coverage.failures.deadline_or_cancelled
         );
+        for trace in discovery_diagnostics.values() {
+            trace.report("discovery_complete");
+        }
+        for trace in attempt_diagnostics.values() {
+            trace.report("attempt_complete");
+        }
     }
 
     Ok((
@@ -922,11 +984,15 @@ struct ProductReaderTransport<'a> {
     access: &'a FederationConsumerAccess,
     request: &'a RetrievalRequest,
     captured: Arc<Mutex<Option<FederatedRetrievalBatch>>>,
+    #[cfg(test)]
+    diagnostic: &'a diagnostics::Trace,
 }
 
 impl FederationTransportV2 for ProductReaderTransport<'_> {
     fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
         Box::pin(async move {
+            #[cfg(test)]
+            let phase = self.diagnostic.enter(diagnostics::Stage::Transport);
             let (batch, observed_frontier) = self
                 .reader
                 .retrieve_with_frontier(self.access, self.request)
@@ -963,6 +1029,8 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 .lock()
                 .map_err(|_| FederationV2Error::TransportRejected)?;
             *guard = Some(batch);
+            #[cfg(test)]
+            phase.finish(/*success*/ true);
             Ok(FederationTransportResultV2::Terminal(response))
         })
     }
@@ -972,6 +1040,8 @@ struct ProductReaderAuthority<'a> {
     owner_layout: &'a HeptaAgentLayout,
     consumer_agent_id: &'a AgentId,
     expected_capability: &'a FederationCapability,
+    #[cfg(test)]
+    diagnostic: &'a diagnostics::Trace,
     logical_start_ms: u64,
     started_at: Instant,
 }
@@ -983,6 +1053,8 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
         _lease: &'a FederatedLeaseV2,
     ) -> FederationAuthorityFuture<'a> {
         Box::pin(async move {
+            #[cfg(test)]
+            let phase = self.diagnostic.enter_authority();
             let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
             let now_unix_seconds = i64::try_from(observed_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
@@ -1007,6 +1079,8 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
                 current.map_or(self.expected_capability, |reader| reader.capability());
             let authority_expires_unix_ms = capability_expiry_ms(authority_capability)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            #[cfg(test)]
+            phase.finish(/*success*/ true);
             Ok(FederationAuthorityObservationV2 {
                 query_binding_digest: query.binding_digest(),
                 lease_epoch: query.lease_epoch,
