@@ -7,6 +7,11 @@ pub(crate) mod env;
 pub use env::is_wsl;
 
 #[cfg(windows)]
+mod file_identity_windows;
+#[cfg(windows)]
+pub use file_identity_windows::same_file_handles;
+
+#[cfg(windows)]
 mod private_state_windows;
 #[cfg(windows)]
 pub use private_state_windows::PrivateFileAccess;

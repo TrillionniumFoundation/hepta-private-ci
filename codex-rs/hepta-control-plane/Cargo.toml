@@ -18,6 +18,9 @@ codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
+
 [dev-dependencies]
 codex-hepta-contracts = { workspace = true }
 codex-hepta-operations = { workspace = true }

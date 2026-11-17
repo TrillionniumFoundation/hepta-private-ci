@@ -3628,6 +3628,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-cell-roles"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-bellman-operator",
+ "codex-hepta-control-plane",
+ "codex-hepta-intuition",
+ "codex-hepta-memory-retrieval",
+ "codex-hepta-ndu",
+ "codex-hepta-neuron",
+ "codex-hepta-plasticity",
+ "codex-hepta-types",
+ "codex-utils-path",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
@@ -3723,6 +3739,7 @@ dependencies = [
  "codex-hepta-types",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
+ "rustix 1.1.5",
  "tempfile",
  "tokio",
 ]
