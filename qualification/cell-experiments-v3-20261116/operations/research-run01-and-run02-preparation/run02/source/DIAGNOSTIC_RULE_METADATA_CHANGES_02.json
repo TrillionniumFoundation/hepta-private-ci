@@ -1,0 +1,64 @@
+{
+  "accepted_design_reference_unchanged": true,
+  "changed_top_level_fields": [
+    "created_at_ns",
+    "diagnostic_source",
+    "resource_reschedule"
+  ],
+  "diagnostic_source_sha256": "28d82e170ab0720fb6b453275a80b4bf1eebc1e987ed1ae3bd935bb00a77a071",
+  "field_changes": {
+    "created_at_ns": {
+      "after": 1794888895883754000,
+      "before": 1794886840761330000
+    },
+    "diagnostic_source": {
+      "after": {
+        "filename": "qwen_research_diagnostic_v1.py",
+        "sha256": "28d82e170ab0720fb6b453275a80b4bf1eebc1e987ed1ae3bd935bb00a77a071"
+      },
+      "before": {
+        "filename": "qwen_research_diagnostic_v1.py",
+        "sha256": "c43ff3c5f9bc99c5825a96e0f4b4020d361489d2ffa3ae31bffe49f03ddb6f91"
+      }
+    },
+    "resource_reschedule": {
+      "after": {
+        "automatic_retry": false,
+        "cumulative_cost_reporting_required": "retain operation01 and operation02; preserve all measured subtotals and unknown tails; never replace 01 with 02",
+        "four_research_runtime_modules_unchanged": true,
+        "fresh_resource_preflight_owner": "root; no GPU reservation or resource guarantee is asserted by this metadata",
+        "frozen_after_operation01_resource_failure": true,
+        "new_independent_sample_increment": 0,
+        "new_operation_directory": "research-sft-02",
+        "operation02_execution_at_this_freeze": "not executed by this source-preparation operation",
+        "operation_number": 2,
+        "prior_artifact_sha256": {
+          "owned-research-sft-01/EXIT.json": "cc5a9a23c899acf1dd2f92a2b24fee1e69f0018c9c246b57f7da154206e581b8",
+          "research-diagnostic-01/DIAGNOSTIC.json": "b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37",
+          "research-sft-01/FREEZE.json": "ff08f18b0479ae089303787ec71013d558cf057b685e9c93432504877364db41",
+          "research-sft-01/RESULT.json": "bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33"
+        },
+        "prior_completed_fits": 0,
+        "prior_fit_entries": 4,
+        "prior_full_archive_sha256": "3b6b10a9bfdcb2cf3c7df965dd45e5cac3143463b3b8a615ff544aeb417b437a",
+        "prior_global_ledger_totals_unknown": true,
+        "prior_measured_authored_reference_receipts": 36,
+        "prior_measured_generation_output_receipts": 6,
+        "prior_measured_optimizer_steps": 0,
+        "prior_operation_directory": "research-sft-01",
+        "prior_operation_id": "research-authored-sft-272c329f596295c6edca70eedd9192899d1d42b15b10609c653dd0d4f730a0a6",
+        "prior_outputs_overwritten": false,
+        "prior_owned_wait_returncode": 0,
+        "prior_status": "RESEARCH_PARTIAL_UNQUALIFIED",
+        "reason": "one explicitly numbered resource rescheduling after every prior primary failed its initial unchanged 4 GiB device admission",
+        "resource_admission_thresholds_unchanged": true,
+        "training_parameters_and_per_operation_budgets_unchanged": true
+      },
+      "before": null
+    }
+  },
+  "new_rule_sha256": "f50ced9146611fc07c4638a35f204e94f1ebf0b5e6c4ab70ac9667095135c1bc",
+  "old_rule_sha256": "93dff768e527af37551a71b3cf89c47b2b8ad83dae461e11d7a8214cfc0e5ddc",
+  "original_bytes_restored_here": false,
+  "rules_and_slots_unchanged": true
+}

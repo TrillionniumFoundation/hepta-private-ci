@@ -1,0 +1,17 @@
+--- launch_qwen_research_owned_v1.py
++++ operations/launch_qwen_research_owned_v1_02.py
+@@ -14,10 +14,10 @@
+ WORKSPACE = Path("/dev/shm/hepta-cell-experiments-v3-20261116-0c078a")
+ ROLES = {
+     "research": ("research-sft-v1-source/run_research_sft_v1.py",
+-                 "research-sft-01", "owned-research-sft-01", "RESEARCH_LAUNCH_FREEZE_01.json"),
+-    "postrun": ("research-diagnostic-v1-source/qwen_research_diagnostic_v1.py",
+-                "research-diagnostic-01", "owned-research-diagnostic-01",
+-                "RESEARCH_POSTRUN_LAUNCH_FREEZE_01.json"),
++                 "research-sft-02", "owned-research-sft-02", "RESEARCH_LAUNCH_FREEZE_02.json"),
++    "postrun": ("research-diagnostic-v1-source-02/qwen_research_diagnostic_v1.py",
++                "research-diagnostic-02", "owned-research-diagnostic-02",
++                "RESEARCH_POSTRUN_LAUNCH_FREEZE_02.json"),
+ }
+ DISQUALIFIED = {
+     "research_only": True, "scientific_confirmation_qualified": False,
