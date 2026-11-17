@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.research01-independent-review-execution.v1",
+  "scope": "Pure read-only closed-archive receipt inspection; not a model run, business verification, or engineering-test rerun.",
+  "review_script": {
+    "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-01/review_closed_research01.py",
+    "bytes": 28128,
+    "sha256": "265f77d60233e641bbe84b14ea7d01965bb28a4a7edd0884c20db5e233c39204"
+  },
+  "idempotency_key": "hepta-v3-0c078a-research01-closed-receipt-review01",
+  "pty_start": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "host": "mac",
+    "persistent_across_runtime_restart": true,
+    "reused": false,
+    "session_id": "dpty-6c09d0cfb5bb6b4bbf9c36ea1622e62e193ea4d7aa013a7317ad6c079ef897c2",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 612872 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 0,
+      "bytes_stored": 0,
+      "capture_error": null,
+      "created_unix_ms": 1794889224158,
+      "output_complete": false,
+      "owner_pid": 42891,
+      "pid": 42892,
+      "state": "running"
+    }
+  },
+  "pty_terminal": {
+    "archive_path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-6c09d0cfb5bb6b4bbf9c36ea1622e62e193ea4d7aa013a7317ad6c079ef897c2/output.log",
+    "available_end": 1463,
+    "chunk_sha256": "545c6ddfe0882854cb7574222f5785ed1b9a508c415b9d28677a5c03c0a615c3",
+    "host": "mac",
+    "next_offset": 1463,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-6c09d0cfb5bb6b4bbf9c36ea1622e62e193ea4d7aa013a7317ad6c079ef897c2",
+    "status": {
+      "boot": "{ sec = 1794536756, usec = 612872 } Fri Nov 13 10:25:56 2026",
+      "bytes_seen": 1463,
+      "bytes_stored": 1463,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794889224158,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 42891,
+      "pid": 42892,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"bytes\": 107676, \"checks\": {\"categories\": {\"binding\": 346, \"business\": 36, \"qualification\": 84, \"receipt\": 102, \"scope\": 36}, \"count\": 604, \"mismatches\": []}, \"operation\": {\"completed_fits\": 0, \"completed_optimizer_step_receipts\": 0, \"coordinator_wait_returncode\": 0, \"diagnostic_sha256\": \"b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37\", \"fit_entries\": 4, \"freeze_sha256\": \"ff08f18b0479ae089303787ec71013d558cf057b685e9c93432504877364db41\", \"result_sha256\": \"bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33\", \"status\": \"RESEARCH_PARTIAL_UNQUALIFIED\"}, \"path\": \"/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-01/CLOSED_RESULT_REVIEW_01.json\", \"read_files\": 242, \"reference_summary\": {\"all_business_success\": true, \"collector_rechecks\": 12, \"completed_original_subject_calls\": 54, \"control_observations\": 84, \"cost_scope\": \"Nested reference callbacks/measurements; do not add to worker or coordinator wall/CPU.\", \"fit_precheck_rechecks\": 24, \"full_repository_integration\": false, \"independent_sample_increment\": 0, \"independent_user_evidence\": false, \"new_individual_reference_executions\": 36, \"reference_callback_wall_seconds_subtotal\": 6.755185771, \"reference_measurement_wall_seconds_subtotal\": 6.836760047008283, \"student_success_claimed\": false, \"unique_original_A_tasks\": 6}, \"sha256\": \"f5ed93d4013baa560ef781ae2c36b0bd502841cb1d5be13a83f1f9c8a8f159a3\", \"status\": \"REVIEW_COMPLETE\"}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  },
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "new_training_steps": 0,
+  "new_C_read": false,
+  "reported_review_result": {
+    "bytes": 107676,
+    "checks": {
+      "categories": {
+        "binding": 346,
+        "business": 36,
+        "qualification": 84,
+        "receipt": 102,
+        "scope": 36
+      },
+      "count": 604,
+      "mismatches": []
+    },
+    "operation": {
+      "completed_fits": 0,
+      "completed_optimizer_step_receipts": 0,
+      "coordinator_wait_returncode": 0,
+      "diagnostic_sha256": "b623702d5611bd24bd3f9736300938c6e02f2ec75bed838962d33b05e6b7af37",
+      "fit_entries": 4,
+      "freeze_sha256": "ff08f18b0479ae089303787ec71013d558cf057b685e9c93432504877364db41",
+      "result_sha256": "bbb77cb25b2f7e28caa3a71f7112d549734b3ff8bbdd32b562fc2bbbf5bc0e33",
+      "status": "RESEARCH_PARTIAL_UNQUALIFIED"
+    },
+    "path": "/Users/qianqi/work/hepta-cell-experiments-v3-20261116-0c078a/research-results-review-01/CLOSED_RESULT_REVIEW_01.json",
+    "read_files": 242,
+    "reference_summary": {
+      "all_business_success": true,
+      "collector_rechecks": 12,
+      "completed_original_subject_calls": 54,
+      "control_observations": 84,
+      "cost_scope": "Nested reference callbacks/measurements; do not add to worker or coordinator wall/CPU.",
+      "fit_precheck_rechecks": 24,
+      "full_repository_integration": false,
+      "independent_sample_increment": 0,
+      "independent_user_evidence": false,
+      "new_individual_reference_executions": 36,
+      "reference_callback_wall_seconds_subtotal": 6.755185771,
+      "reference_measurement_wall_seconds_subtotal": 6.836760047008283,
+      "student_success_claimed": false,
+      "unique_original_A_tasks": 6
+    },
+    "sha256": "f5ed93d4013baa560ef781ae2c36b0bd502841cb1d5be13a83f1f9c8a8f159a3",
+    "status": "REVIEW_COMPLETE"
+  },
+  "repeated_analysis_runs": 0,
+  "interpretation": "Exit 0 means the read-only receipt analysis completed. 604 consistency checks are neither independent samples nor engineering/model-task successes."
+}
