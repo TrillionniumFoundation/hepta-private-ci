@@ -25,8 +25,8 @@
   "counts": {
     "streams": 12,
     "stream_calls": 63,
-    "raw_cases": 21,
-    "literal_frames": 84
+    "raw_cases": 44,
+    "literal_frames": 107
   },
   "construction": "Manually specified numeric inputs and complete output words serialized little-endian. Only byte/word/chain consistency was checked by stdlib; no HIA/Rust oracle/VM/native call or cost evaluator ran. MAX numeric boundaries do not allocate strings or execute callbacks.",
   "coverage_limits": [
@@ -2517,6 +2517,440 @@
         "workspace_hex": "00ff01",
         "expected_core_status": 4294967295,
         "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-1-wrong-frame-88",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-2-wrong-frame-40",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "02000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-2-wrong-frame-80",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "0200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-2-wrong-frame-96",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-3-wrong-frame-40",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "03000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-3-wrong-frame-88",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "03000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "op-3-wrong-frame-96",
+      "reason": "Exact opcode/frame match is required before state reads.",
+      "call": {
+        "source_hex": "030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "unknown-op-4",
+      "reason": "Unknown operation.",
+      "call": {
+        "source_hex": "04000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "unknown-op-18446744073709551615",
+      "reason": "Unknown operation.",
+      "call": {
+        "source_hex": "ffffffffffffffff0000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0
+      }
+    },
+    {
+      "id": "init-version-0",
+      "reason": "Version must be one.",
+      "call": {
+        "source_hex": "00000000000000000000000000000000000000000000000001000000000000000100000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "0",
+          "0",
+          "0",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "state-version-0",
+      "reason": "Version must be one.",
+      "call": {
+        "source_hex": "010000000000000000000000000000000000000000000000000000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "0",
+          "0",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "init-version-2",
+      "reason": "Version must be one.",
+      "call": {
+        "source_hex": "00000000000000000200000000000000000000000000000001000000000000000100000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "0",
+          "2",
+          "0",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "state-version-2",
+      "reason": "Version must be one.",
+      "call": {
+        "source_hex": "010000000000000002000000000000000000000000000000000000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "2",
+          "0",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "init-version-18446744073709551615",
+      "reason": "Version must be one.",
+      "call": {
+        "source_hex": "0000000000000000ffffffffffffffff000000000000000001000000000000000100000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "0",
+          "18446744073709551615",
+          "0",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "state-version-18446744073709551615",
+      "reason": "Version must be one.",
+      "call": {
+        "source_hex": "0100000000000000ffffffffffffffff0000000000000000000000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "18446744073709551615",
+          "0",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "init-mode-2",
+      "reason": "Mode must be bytes or tokens.",
+      "call": {
+        "source_hex": "00000000000000000100000000000000020000000000000001000000000000000100000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "0",
+          "1",
+          "2",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "state-mode-2",
+      "reason": "Mode must be bytes or tokens.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000020000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "2",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "init-mode-18446744073709551615",
+      "reason": "Mode must be bytes or tokens.",
+      "call": {
+        "source_hex": "00000000000000000100000000000000ffffffffffffffff01000000000000000100000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "0",
+          "1",
+          "18446744073709551615",
+          "1",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "state-mode-18446744073709551615",
+      "reason": "Mode must be bytes or tokens.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000ffffffffffffffff01000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "18446744073709551615",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "finished-state-op-1",
+      "reason": "Finished is terminal for every non-Init operation.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000200000000000000000000000000000001000000000000000100000000000000010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "2",
+          "0",
+          "1",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "finished-state-op-2",
+      "reason": "Finished is terminal for every non-Init operation.",
+      "call": {
+        "source_hex": "02000000000000000100000000000000020000000000000000000000000000000100000000000000010000000000000001000000000000000100000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "2",
+          "1",
+          "2",
+          "0",
+          "1",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "finished-state-op-3",
+      "reason": "Finished is terminal for every non-Init operation.",
+      "call": {
+        "source_hex": "0300000000000000010000000000000002000000000000000000000000000000010000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "3",
+          "1",
+          "2",
+          "0",
+          "1",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "item-await-snippet",
+      "reason": "An outstanding snippet must be resolved before a next Item.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000100000000000000000000000000000001000000000000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "1",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
       }
     }
   ]
