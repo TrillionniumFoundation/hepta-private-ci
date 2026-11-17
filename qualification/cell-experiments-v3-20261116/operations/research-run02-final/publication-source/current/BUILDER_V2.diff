@@ -1,0 +1,36 @@
+--- build_final_publication_02.py
++++ build_final_publication_v2_02.py
+@@ -174,7 +174,8 @@
+     group("Preserve previously unpublished "+path.name,[cp(path,"publication-source/prior/"+path.name)])
+ current_sources=[OUT/n for n in ["inventory_final_publication_02.py",
+     "inventory_final_publication_v2_02.py","inventory_final_publication_v3_02.py",
+-    "prepare_closed_artifacts_02.py","prepare_closed_artifacts_v2_02.py"]]+[Path(__file__).resolve()]
++    "prepare_closed_artifacts_02.py","prepare_closed_artifacts_v2_02.py",
++    "build_final_publication_02.py"]]+[Path(__file__).resolve()]
+ group("Preserve every final-package program including failed historical versions",
+     [cp(p,"publication-source/current/"+p.name) for p in current_sources],
+     "Failed inventory/preparation versions remain historical source; their actual terminals are retained. The final builder includes its own stable source, never its future outputs.")
+@@ -190,7 +191,10 @@
+     previous=tracked.get(blob,[])
+     target=PREFIX+"control-source/"+name
+     if not previous and target not in payload:
+-        raise ValueError("task-owned operations source has no exact published/new source: "+name)
++        document=next((v for v in config["documents"] if v["source_path"]==str(path.relative_to(ROOT))),None)
++        if document is None or document["sha256"]!=sha(raw):
++            raise ValueError("task-owned operations source has no exact published/new source: "+name)
++        target=PREFIX+document["target"]
+     coverage_rows.append({"source_path":str(path.relative_to(ROOT)),"sha256":sha(raw),
+         "git_blob":blob,"prior_exact_blob_paths":previous,
+         "new_published_path":None if previous else target})
+@@ -210,8 +214,9 @@
+     role=item["role"]
+     record={"source_path":item["source_path"],"target":target,"bytes":len(raw),"sha256":sha(raw),"role":role}
+     text_file=path.suffix in (".py",".md",".diff")
+-    direct=(len(raw)<512000 and len(raw.splitlines())<=800 and
+-            (not target.endswith((".zip",".bin")) or len(raw)<=PART))
++    binary=target.endswith((".zip",".bin"))
++    direct=(len(raw)<512000 and ((binary and len(raw)<=PART) or
++            (not binary and len(raw.splitlines())<=800)))
+     if text_file and not direct:
+         raise ValueError("reviewable source or narrative requires an explicit bounded arrangement")
+     if direct:
