@@ -13,6 +13,7 @@ env:
   CANDIDATE_TREE: 121cb9e5050c8d36e6130d178a38828b6d59bf57
 jobs:
   stage:
+    if: github.event.deleted == false
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:

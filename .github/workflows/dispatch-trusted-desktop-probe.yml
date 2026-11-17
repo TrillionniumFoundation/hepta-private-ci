@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   request-existing-probe:
+    if: github.event.deleted == false
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
