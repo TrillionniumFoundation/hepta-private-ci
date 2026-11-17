@@ -434,7 +434,10 @@ impl FileSnapshot {
                     return Err((SqliteRecoveryError::Indeterminate, "path_identity.file"));
                 }
                 if metadata.file_type().is_symlink() {
-                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.non_symlink"));
+                    return Err((
+                        SqliteRecoveryError::Indeterminate,
+                        "path_identity.non_symlink",
+                    ));
                 }
                 if metadata.uid() != effective_user {
                     return Err((SqliteRecoveryError::Indeterminate, "path_identity.uid"));
