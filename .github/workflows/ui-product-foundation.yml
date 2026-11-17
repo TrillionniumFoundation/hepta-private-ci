@@ -139,6 +139,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest discover -s apps/hepta-control-ui/test -p test_prepare_fonts.py -v
+          node --test apps/hepta-control-ui/test/generated-workspace-patches.test.mjs
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
@@ -438,6 +439,7 @@ jobs:
         run: |
           set -euo pipefail
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/junit-gate-tests.json" --minimum-tests 12 --timeout-seconds 60 -- python3 apps/hepta-control-ui/test/test_native_composition_junit.py
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/junit-location-test.json" --minimum-tests 1 --timeout-seconds 60 -- python3 scripts/test_run_nextest.py ScopedNextestTests.test_explicit_manifest_junit_uses_workspace_store
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
           python3 apps/hepta-control-ui/tools/check-native-composition-junit.py prepare --start "$RUNNER_TEMP/native-presentation-evidence/headless-junit-start.json" --junit "$GITHUB_WORKSPACE/apps/hepta-control-ui/rust/target/nextest/native-composition-headless/junit.xml" --mode headless --tested-sha "$(git rev-parse HEAD)"
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/native-presentation-evidence/headless.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --no-default-features --features native-presentation --lib --profile native-composition-headless
