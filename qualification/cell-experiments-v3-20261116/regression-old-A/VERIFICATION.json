@@ -1,0 +1,18 @@
+{
+  "frozen_v2_source_count": 44,
+  "frozen_v2_sources_changed": [],
+  "independent_sample_increment": 0,
+  "result": "OK",
+  "schema": "hepta.metrics-engineering-verification.v3",
+  "test_command": "python -B -m unittest cell_experiments.test_circuit_readiness_v3 cell_experiments.test_source_metrics_v3 -v",
+  "test_kind": "Mechanical receipt-binding and accounting fixtures; no model or repository-task execution.",
+  "tested_source_sha256": {
+    "circuit_readiness_v3.py": "173be5f317dfebc16e708ad347b794a757b0b13c501d28aacf3415c0877fb186",
+    "circuit_receipts_v3.py": "644a9ffec1b66791dc5dce4c019f219205f1fc807d427dbf1a3f805c2dfd470c",
+    "source_metrics_retention_v3.py": "32f634c8f2581d1b590fe9c9587c120f244e8586c62063729566be3d6a36a702",
+    "source_metrics_v3.py": "ff81f89f2421b731601c9097422eec12ec36d59b3be992b1d53010531e3e329d",
+    "test_circuit_readiness_v3.py": "a5f193ecab7465dd562c4973c7123caf644a5a9e1999776dab2d415305f3559e",
+    "test_source_metrics_v3.py": "39f2a5ac2b39e792c7cb5565abb79336c39e69554596798a389a1dedde8d8f63"
+  },
+  "tests_run": 17
+}
