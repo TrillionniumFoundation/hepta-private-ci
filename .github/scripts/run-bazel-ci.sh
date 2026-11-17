@@ -130,6 +130,21 @@ print_bazel_test_log_tails() {
     "${bazel_info_args[@]}" \
     bazel-testlogs 2>/dev/null || echo bazel-testlogs)"
 
+  if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+    # Preserve materialized attempts before a later Bazel invocation replaces
+    # them. Existing artifact uploads include this directory. Evidence errors
+    # must not replace the original Bazel result.
+    python3 "$(dirname "${BASH_SOURCE[0]}")/collect_bazel_test_logs.py" \
+      --console-log "$console_log" \
+      --testlogs-root "$testlogs_dir" \
+      --output-root "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR" \
+      --bazel-exit-code "$2" \
+      || echo "::warning::Bazel attempt evidence is incomplete; inspect collector stderr and any manifest."
+  fi
+  if [[ "$2" -eq 0 ]]; then
+    return
+  fi
+
   local failed_targets=()
   while IFS= read -r target; do
     failed_targets+=("$target")
@@ -474,12 +489,14 @@ run_bazel_with_startup_args \
 bazel_status=${PIPESTATUS[0]}
 set -e
 
-if [[ ${bazel_status:-0} -ne 0 ]]; then
-  if [[ $print_failed_bazel_action_summary -eq 1 ]]; then
-    print_bazel_action_failure_summary "$bazel_console_log"
-  fi
-  if [[ $print_failed_bazel_test_logs -eq 1 ]]; then
-    print_bazel_test_log_tails "$bazel_console_log"
-  fi
-  exit "$bazel_status"
+if [[ ${bazel_status:-0} -ne 0 && $print_failed_bazel_action_summary -eq 1 ]]; then
+  print_bazel_action_failure_summary "$bazel_console_log" \
+    || echo "::warning::Bazel action failure summary was unavailable."
 fi
+if [[ $print_failed_bazel_test_logs -eq 1 &&
+      ( $bazel_status -ne 0 || -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ) ]]; then
+  # Final success may include failed attempts recovered by the original retries.
+  print_bazel_test_log_tails "$bazel_console_log" "$bazel_status" \
+    || echo "::warning::Bazel attempt log reporting was unavailable."
+fi
+exit "$bazel_status"
