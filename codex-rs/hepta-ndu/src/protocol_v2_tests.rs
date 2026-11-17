@@ -287,7 +287,7 @@ fn v2_rejects_invalid_context_state_and_dimension() {
     );
     let changed = NduIterationContextV1 {
         subject_id: id("agent-b"),
-        ..context.clone()
+        ..context
     };
     assert_eq!(
         solve_preference_target_with_context_v2(
