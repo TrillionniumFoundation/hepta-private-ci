@@ -1,6 +1,7 @@
 //! Actual B/retention and original Evaluator mechanism fixture.
 //! Credentials, declared Product metadata, Root setup and future B time are
 //! synthetic test inputs. No ordinary deployment or positive gain is claimed.
+use anyhow::Context;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
@@ -124,7 +125,7 @@ impl HostFixture {
         bytes.extend(
             self.host
                 .as_ref()
-                .expect("original host")
+                .context("original host")?
                 .fixture_original_cohort_files()?,
         );
         Ok(bytes)
@@ -138,12 +139,12 @@ impl HostFixture {
     ) -> anyhow::Result<(OriginalCellEvaluationCommandClientV1, Peer)> {
         self.host
             .as_ref()
-            .expect("original host")
+            .context("original host")?
             .fixture_commands(readback_only, expected, fault)
     }
 
     pub(super) fn recover(&mut self) -> anyhow::Result<()> {
-        let host = Arc::try_unwrap(self.host.take().expect("original host")).map_err(|_| {
+        let host = Arc::try_unwrap(self.host.take().context("original host")?).map_err(|_| {
             anyhow::anyhow!("all original command peers must be closed before recovery")
         })?;
         let panel = host.fixture_take_original_panel()?;

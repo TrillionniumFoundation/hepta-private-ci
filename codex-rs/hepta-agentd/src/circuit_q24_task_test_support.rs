@@ -1,6 +1,7 @@
 //! Real native files and normal ObjectiveStart plumbing. The AuthBus issuer,
 //! calibration profile and CURRENT FileCAS are explicit engineering fixtures.
 
+use anyhow::Context;
 use std::fs::File;
 use std::path::Path;
 use std::time::Instant;
@@ -57,10 +58,10 @@ pub(super) struct Session {
 }
 
 impl Session {
-    pub(super) fn take_configuration(&mut self) -> AgentdConfig {
+    pub(super) fn take_configuration(&mut self) -> anyhow::Result<AgentdConfig> {
         self.config
             .take()
-            .expect("original configuration after bootstrap handoff")
+            .context("original configuration after bootstrap handoff")
     }
 
     pub async fn stop(&mut self) -> anyhow::Result<()> {

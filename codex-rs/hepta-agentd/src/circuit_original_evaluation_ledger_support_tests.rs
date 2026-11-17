@@ -2,6 +2,7 @@
 //! Values below are test measurements declared before inference; no model
 //! output or successful completion is converted into a reward.
 use super::*;
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 
 pub(in super::super) fn decision(
@@ -31,7 +32,7 @@ pub(in super::super) fn decision(
         selected_candidate_id: selected,
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id(&format!("B-actions:{}", episode)),
+            set_id: id(&format!("B-actions:{}", episode))?,
             state_digest: d("explicit-original-B-decision-state"),
             generator_id: credentials.generator.principal.principal_id.clone(),
             generator_code_digest: d("explicit-original-B-generator"),
@@ -52,13 +53,13 @@ pub(in super::super) fn decision(
         /*seed*/ 41,
         &decision_signing_payload_v2(&value)?,
         at,
-    );
+    )?;
     writer.append_decision(writer.snapshot()?.head_digest, value, &evidence, at)?;
     assert_eq!(
         writer
             .records()?
             .last()
-            .expect("actual Decision")
+            .context("actual Decision")?
             .event
             .record_id(),
         &input.scope.run_id
@@ -76,8 +77,8 @@ pub(in super::super) fn outcome(
     delay: Digest32,
 ) -> anyhow::Result<()> {
     let outcome = AuthenticatedOutcomeV1 {
-        record_id: id(&format!("B-outcome-record:{episode}")),
-        outcome_id: id(&format!("B-outcome:{episode}")),
+        record_id: id(&format!("B-outcome-record:{episode}"))?,
+        outcome_id: id(&format!("B-outcome:{episode}"))?,
         episode_id: episode.clone(),
         observer: credentials.observer.principal.clone(),
         observed_at: Some(at),
@@ -99,7 +100,7 @@ pub(in super::super) fn outcome(
         /*seed*/ 43,
         &outcome_signing_payload_v2(&outcome),
         at,
-    );
+    )?;
     writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;
     Ok(())
 }
@@ -116,5 +117,5 @@ pub(in super::super) fn freeze(
         /*seed*/ 42,
         &dataset_freeze_signing_payload_v2(&writer.snapshot()?, plan)?,
         at,
-    ))
+    )?)
 }

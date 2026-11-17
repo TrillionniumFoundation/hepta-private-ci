@@ -8,6 +8,7 @@ use crate::OriginalCircuitRetainedVersionHostV1;
 use crate::OriginalCircuitRetainedVersionReadbackV1;
 use crate::learning_iteration_evidence_client::command_test_support;
 use crate::learning_iteration_evidence_client::retained_version_dataset_fixture;
+use anyhow::Context;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use std::io::Read;
@@ -27,6 +28,7 @@ struct RetainedIssuerFixtureV1 {
     training_peer: std::thread::JoinHandle<anyhow::Result<usize>>,
     root_peer: Option<UnixStream>,
     _c: RuntimeFixture,
+    clock: FixtureClock,
 }
 
 impl RetainedIssuerFixtureV1 {
@@ -42,11 +44,11 @@ impl RetainedIssuerFixtureV1 {
         .await?;
         let (material, evidence) = metadata::rebuild_metadata(&mut original)?;
         let (dataset, dataset_peer) =
-            retained_version_dataset_fixture(material.clone(), original.dataset(), evidence)?;
+            retained_version_dataset_fixture(material.clone(), original.dataset()?, evidence)?;
         let (training, training_peer) = command_test_support::retained_version_training_connection(
             material.clone(),
             OriginalCellQ24TrainingCommandContextV1 {
-                dataset: original.dataset(),
+                dataset: original.dataset()?,
                 scope: material.scope.clone(),
                 verifier: material.verifier.clone(),
             },
@@ -61,7 +63,7 @@ impl RetainedIssuerFixtureV1 {
             Duration::from_secs(30),
             Duration::from_secs(300),
         )?;
-        let (task, runtime) = support::retained_version_task_inputs(
+        let (task, runtime, clock) = support::retained_version_task_inputs(
             original.c.take().context("one actual C admission")?,
             original.definition.clone(),
             original.source_c.clone(),
@@ -89,25 +91,29 @@ impl RetainedIssuerFixtureV1 {
             training_peer,
             root_peer: Some(root_peer),
             _c: runtime,
+            clock,
         })
     }
 
-    fn host(&self) -> Arc<OriginalCircuitRetainedVersionHostV1> {
-        Arc::clone(self.host.as_ref().expect("original host fixture"))
+    fn host(&self) -> anyhow::Result<Arc<OriginalCircuitRetainedVersionHostV1>> {
+        self.clock.check()?;
+        Ok(Arc::clone(
+            self.host.as_ref().context("original host fixture")?,
+        ))
     }
 
     async fn prepare(
         &self,
     ) -> anyhow::Result<(OriginalCircuitRetainedVersionReadbackV1, FinalUseBinding)> {
         let result =
-            OriginalCircuitRetainedVersionHostV1::prepare_original_version_fixture(self.host())
+            OriginalCircuitRetainedVersionHostV1::prepare_original_version_fixture(self.host()?)
                 .await?;
         anyhow::ensure!(
             result.publication().is_none(),
             "actual prepared Control only"
         );
         let binding =
-            OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(self.host())
+            OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(self.host()?)
                 .await?;
         anyhow::ensure!(
             binding.destination_id == "agentd.cell-generation.next-task-same-model",
@@ -133,7 +139,7 @@ impl RetainedIssuerFixtureV1 {
                 > 0,
             "actual Trainer codec was read"
         );
-        Ok(())
+        self.clock.check()
     }
 }
 

@@ -2,6 +2,7 @@
 //! stage credentials and CURRENT remain explicit test fixtures; these are
 //! component checks, not an ordinary full-loop or independent B acceptance.
 
+use anyhow::Context;
 use std::sync::Mutex;
 
 use codex_hepta_learning_ledger::*;
@@ -43,18 +44,18 @@ struct Dataset {
     signers: [TrustedLearningSignerV1; 3],
 }
 
-fn now() -> u64 {
-    SystemTime::now()
+fn now() -> anyhow::Result<u64> {
+    Ok(SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
+        .context("fixture wall clock")?
+        .as_secs())
 }
 
 fn sign(
     ledger: &LedgerWriter,
     role: LearningEvidenceRoleV1,
     payload: &[u8],
-) -> SignedLearningEvidenceV1 {
+) -> anyhow::Result<SignedLearningEvidenceV1> {
     let (name, seed) = match role {
         LearningEvidenceRoleV1::Generator => ("generator", 1),
         LearningEvidenceRoleV1::Observer => ("observer", 2),
@@ -69,15 +70,15 @@ fn sign(
         scope_digest: cell::d("fixture-dataset-scope"),
         objective_digest: ledger.verifier().objective_digest(),
         authority_epoch: 1,
-        issued_at: now() - 1,
-        expires_at: now() + 3_600,
+        issued_at: now()? - 1,
+        expires_at: now()? + 3_600,
         payload_digest: Digest32::of_bytes(payload),
         signature: [0; 64],
     };
     evidence.signature = SigningKey::from_bytes(&[seed; 32])
         .sign(&evidence.signing_bytes())
         .to_bytes();
-    evidence
+    Ok(evidence)
 }
 
 #[derive(Clone, Copy)]
@@ -142,39 +143,41 @@ impl Dataset {
             ("observer", 2, LearningEvidenceRoleV1::Observer),
             ("evaluator", 3, LearningEvidenceRoleV1::Evaluator),
         ]
-        .map(|(name, seed, role)| {
+        .map(|(name, seed, role)| -> anyhow::Result<_> {
             let key = SigningKey::from_bytes(&[seed; 32]);
-            TrustedLearningSignerV1 {
+            Ok(TrustedLearningSignerV1 {
                 principal: AuthenticatedPrincipalV1 {
                     principal_id: cell::id(name),
                     credential_chain_digest: cell::d(&format!("{name}-credential")),
                     signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
                     scope_digest: cell::d("fixture-dataset-scope"),
                     authority_epoch: 1,
-                    authenticated_at: now() - 10,
-                    expires_at: now() + 7_200,
+                    authenticated_at: now()? - 10,
+                    expires_at: now()? + 7_200,
                 },
                 controller_id: cell::id(&format!("{name}-controller")),
                 verifying_key: key.verifying_key().to_bytes(),
                 roles: vec![role],
                 revoked_at: None,
-            }
+            })
         });
+        let [generator, observer, evaluator] = signers;
+        let signers = [generator?, observer?, evaluator?];
         let observer = signers[1].principal.clone();
         let key = SigningKey::from_bytes(&[99; 32]);
         let root_trust = LearningTrustRootV1 {
             root_id: cell::id("fixture-root"),
             scope_digest: cell::d("fixture-dataset-scope"),
             verifying_key: key.verifying_key().to_bytes(),
-            valid_from: now() - 10,
-            expires_at: now() + 7_200,
+            valid_from: now()? - 10,
+            expires_at: now()? + 7_200,
             revoked_at: None,
         };
         let mut distribution = SignedLearningTrustDistributionV1 {
             distribution: LearningTrustDistributionV1 {
                 distribution_id: cell::id("fixture-distribution"),
                 generation: 1,
-                effective_at: now() - 1,
+                effective_at: now()? - 1,
                 trust: LearningEvidenceTrustV1 {
                     scope_digest: root_trust.scope_digest,
                     objective_digest: sources[0].1.input().objective_digest,
@@ -183,12 +186,12 @@ impl Dataset {
                 },
             },
             root_id: root_trust.root_id.clone(),
-            issued_at: now() - 1,
-            expires_at: now() + 3_600,
+            issued_at: now()? - 1,
+            expires_at: now()? + 3_600,
             signature: [0; 64],
         };
         distribution.signature = key.sign(&distribution.signing_bytes()?).to_bytes();
-        let trust = activate_learning_trust(&root_trust, distribution, None, now())?;
+        let trust = activate_learning_trust(&root_trust, distribution, None, now()?)?;
         #[cfg(windows)]
         let directory = {
             use std::os::windows::fs::OpenOptionsExt;
@@ -230,7 +233,7 @@ impl Dataset {
                         .position(|id| {
                             id != &receipt.selected_candidate && id != &cell::id("abstain")
                         })
-                        .expect("fixture has an unselected non-abstain candidate");
+                        .context("fixture has an unselected non-abstain candidate")?;
                     let removed = candidates.remove(index);
                     assert_ne!(removed, receipt.selected_candidate);
                     assert_ne!(removed, cell::id("abstain"));
@@ -273,37 +276,39 @@ impl Dataset {
                 &ledger,
                 LearningEvidenceRoleV1::Generator,
                 &decision_signing_payload_v2(&decision)?,
-            );
-            ledger.append_decision(ledger.snapshot()?.head_digest, decision, &evidence, now())?;
+            )?;
+            ledger.append_decision(ledger.snapshot()?.head_digest, decision, &evidence, now()?)?;
             let outcome = AuthenticatedOutcomeV1 {
                 record_id: cell::id(&format!("target-record-{i}")),
                 outcome_id: cell::id(&format!("target-{i}")),
                 episode_id: cell::id(&format!("episode-{i}")),
                 observer: observer.clone(),
-                observed_at: target.map(|_| now()),
+                observed_at: target.map(|_| now()).transpose()?,
                 value: target.map(FixedQ32::from_raw),
                 unit_profile_digest: outcome_unit,
                 support_digest: publication.publication_digest(),
                 watermark: OutcomeWatermarkV1 {
-                    latest_observable_at: now(),
+                    latest_observable_at: now()?,
                     expected_delay_profile_digest: cell::d("fixture-delay"),
                     terminality,
                     censoring_reason: (terminality == OutcomeTerminalityV1::Censored)
                         .then(|| cell::id("unobserved")),
                     correction_predecessor: None,
-                    finalized_at: (terminality != OutcomeTerminalityV1::Pending).then(now),
+                    finalized_at: (terminality != OutcomeTerminalityV1::Pending)
+                        .then(now)
+                        .transpose()?,
                 },
             };
             let evidence = sign(
                 &ledger,
                 LearningEvidenceRoleV1::Observer,
                 &outcome_signing_payload_v2(&outcome),
-            );
+            )?;
             ledger.append_outcome(
                 ledger.snapshot()?.head_digest,
                 outcome.clone(),
                 &evidence,
-                now(),
+                now()?,
             )?;
             outcomes.push(outcome);
         }
@@ -317,8 +322,8 @@ impl Dataset {
             &ledger,
             LearningEvidenceRoleV1::Evaluator,
             &dataset_freeze_signing_payload_v2(&frozen, &plan)?,
-        );
-        let receipt = ledger.freeze_dataset(plan, &evidence, now())?;
+        )?;
+        let receipt = ledger.freeze_dataset(plan, &evidence, now()?)?;
         Ok(Self {
             ledger: Arc::new(Mutex::new(ledger)),
             frozen,
@@ -343,7 +348,10 @@ impl Dataset {
     }
 
     fn refreeze(&mut self) -> anyhow::Result<()> {
-        let ledger = self.ledger.lock().unwrap();
+        let ledger = self
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?;
         self.frozen = ledger.snapshot()?;
         let plan = DatasetFreezePlanV2 {
             snapshot_id: self.receipt.snapshot.snapshot_id.clone(),
@@ -354,8 +362,8 @@ impl Dataset {
             &ledger,
             LearningEvidenceRoleV1::Evaluator,
             &dataset_freeze_signing_payload_v2(&self.frozen, &plan)?,
-        );
-        self.receipt = ledger.freeze_dataset(plan, &self.evidence, now())?;
+        )?;
+        self.receipt = ledger.freeze_dataset(plan, &self.evidence, now()?)?;
         Ok(())
     }
 
@@ -365,14 +373,17 @@ impl Dataset {
         outcome.outcome_id = cell::id("corrected-outcome");
         outcome.value = Some(FixedQ32::from_raw(0));
         outcome.watermark.correction_predecessor = Some(self.outcomes[0].outcome_id.clone());
-        let mut ledger = self.ledger.lock().unwrap();
+        let mut ledger = self
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?;
         let signed = sign(
             &ledger,
             LearningEvidenceRoleV1::Observer,
             &outcome_signing_payload_v2(&outcome),
-        );
+        )?;
         let head = ledger.snapshot()?.head_digest;
-        ledger.append_outcome(head, outcome, &signed, now())?;
+        ledger.append_outcome(head, outcome, &signed, now()?)?;
         Ok(())
     }
 }
@@ -786,7 +797,7 @@ async fn q24_dataset_expiry_is_an_error_for_a_no_update_target() -> anyhow::Resu
         &[(&a, &publication, Some(1_i64 << 32))],
         OutcomeTerminalityV1::Terminal,
     )?;
-    dataset.evidence.expires_at = now() + 1;
+    dataset.evidence.expires_at = now()? + 1;
     dataset.evidence.signature = SigningKey::from_bytes(&[3; 32])
         .sign(&dataset.evidence.signing_bytes())
         .to_bytes();
@@ -803,11 +814,12 @@ async fn q24_dataset_expiry_is_an_error_for_a_no_update_target() -> anyhow::Resu
     };
     let plan = plan(baseline, &prefix, &batch, rule)?;
     tokio::time::timeout(Duration::from_secs(5), async {
-        while now() <= dataset.evidence.expires_at {
+        while now()? <= dataset.evidence.expires_at {
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
+        Ok::<(), anyhow::Error>(())
     })
-    .await?;
+    .await??;
     assert!(matches!(
         plan.fit(batch, rule, &AtomicBool::new(false)),
         Err(CellQ24TrainingErrorV1::Dataset(

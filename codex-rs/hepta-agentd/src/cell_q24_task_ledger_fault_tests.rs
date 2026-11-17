@@ -13,8 +13,8 @@ async fn original_task_outcome_ack_loss_reopens_same_signature_and_appends_once(
         /*automatic*/ true,
     )
     .await?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     test_faults::save_outcome_before_ledger(&f.producer, &outcome, &signed)?;
     assert!(f.producer.readback().is_err());
     let recovered = f.reopen(/*read_only_witness*/ false).await?;
@@ -45,7 +45,7 @@ async fn original_task_unappended_expired_signatures_never_renew() -> anyhow::Re
     .await?;
     let original = test_faults::save_decision_before_ledger(&f.producer)?;
     let bytes = f.learning_bytes()?;
-    fixture::after_expiry(original.expires_at).await;
+    fixture::after_expiry(original.expires_at).await?;
     assert!(matches!(
         f.producer.resume_from_original_source(),
         Err(Error::Ledger(ProductionLedgerError::Evidence(
@@ -62,11 +62,11 @@ async fn original_task_unappended_expired_signatures_never_renew() -> anyhow::Re
         /*automatic*/ true,
     )
     .await?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 4);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 4)?;
     test_faults::save_outcome_before_ledger(&f.producer, &outcome, &signed)?;
     let bytes = f.learning_bytes()?;
-    fixture::after_expiry(signed.expires_at).await;
+    fixture::after_expiry(signed.expires_at).await?;
     assert!(matches!(
         f.producer.resume_from_original_source(),
         Err(Error::Ledger(ProductionLedgerError::Evidence(
@@ -120,8 +120,8 @@ async fn original_task_outcome_witness_write_failure_repairs_only_exact_retained
         /*automatic*/ true,
     )
     .await?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     let recovered = f.reopen(/*read_only_witness*/ true).await?;
     // The real Ledger append succeeds; this actual original readonly witness
     // descriptor makes its write fail. No fake store or frame is inserted.
@@ -177,8 +177,8 @@ async fn original_task_unwitnessed_expired_outcome_cannot_become_historical_read
         /*automatic*/ true,
     )
     .await?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 4);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 4)?;
     let recovered = f.reopen(/*read_only_witness*/ true).await?;
     assert!(matches!(
         recovered
@@ -192,7 +192,7 @@ async fn original_task_unwitnessed_expired_outcome_cannot_become_historical_read
     let ledger = recovered.context.bytes("ledger")?;
     let witness = recovered.context.bytes("ledger.witness")?;
     let signatures = recovered.context.bytes("signatures")?;
-    fixture::after_expiry(signed.expires_at).await;
+    fixture::after_expiry(signed.expires_at).await?;
     assert!(matches!(
         recovered.producer.resume_from_original_source(),
         Err(Error::Ledger(ProductionLedgerError::Evidence(

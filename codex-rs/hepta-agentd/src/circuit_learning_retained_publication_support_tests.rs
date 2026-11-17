@@ -144,11 +144,14 @@ impl RetainedPublicationFixture {
         })
     }
 
-    pub(super) fn dataset(&self) -> LearningIterationSnapshotV1 {
+    pub(super) fn dataset(&self) -> anyhow::Result<LearningIterationSnapshotV1> {
         let mut dataset = self.metadata.decision.snapshot().clone();
-        let training = dataset.receipts.pop().expect("explicit Training fixture");
+        let training = dataset
+            .receipts
+            .pop()
+            .context("explicit Training fixture")?;
         dataset.head_digest = training.predecessor;
-        dataset
+        Ok(dataset)
     }
 
     pub(super) async fn context(
@@ -180,7 +183,7 @@ impl RetainedPublicationFixture {
     )> {
         retained_publication_training_peer(
             OriginalCellQ24TrainingCommandContextV1 {
-                dataset: self.dataset(),
+                dataset: self.dataset()?,
                 scope: self.metadata.scope.clone(),
                 verifier: self.metadata.verifier.clone(),
             },

@@ -83,7 +83,7 @@ fn current_runtime(
 }
 
 #[tokio::test]
-async fn recovery_reads_each_historical_signature_against_original_current() {
+async fn recovery_reads_each_historical_signature_against_original_current() -> anyhow::Result<()> {
     for decision in [
         Decision::EvaluatedNoUpdate,
         Decision::ProposedNoUpdate,
@@ -91,7 +91,7 @@ async fn recovery_reads_each_historical_signature_against_original_current() {
     ] {
         let daemon = AgentdFixture::new();
         let inner = Arc::new(recovery_ports(decision, Trust::Independent));
-        let completed = completed_snapshot(iteration_request(&daemon), &inner, decision).await;
+        let completed = completed_snapshot(iteration_request(&daemon), &inner, decision).await?;
         let mut prefix = ok(LearningIterationCoordinatorV1::new(
             completed.request.clone(),
             completed.owners.clone(),
@@ -115,6 +115,7 @@ async fn recovery_reads_each_historical_signature_against_original_current() {
             assert_no_work_or_checkpoint(&inner, &snapshot);
         }
     }
+    Ok(())
 }
 
 #[tokio::test]
@@ -168,7 +169,8 @@ async fn trainer_no_update_recovery_keeps_frozen_scope_and_original_current() {
 }
 
 #[tokio::test]
-async fn completed_resume_uses_original_current_for_updated_and_retained_bundles() {
+async fn completed_resume_uses_original_current_for_updated_and_retained_bundles()
+-> anyhow::Result<()> {
     for decision in [
         Decision::EvaluatedNoUpdate,
         Decision::ProposedNoUpdate,
@@ -178,7 +180,7 @@ async fn completed_resume_uses_original_current_for_updated_and_retained_bundles
         let inner = Arc::new(recovery_ports(decision, Trust::Independent));
         let mut request = iteration_request(&daemon);
         request.envelope.expiry_unix_seconds = 55;
-        let snapshot = completed_snapshot(request, &inner, decision).await;
+        let snapshot = completed_snapshot(request, &inner, decision).await?;
         install_checkpoint(&inner, &snapshot);
         let ports = Arc::new(CurrentHeadPorts {
             inner: Arc::clone(&inner),
@@ -194,14 +196,15 @@ async fn completed_resume_uses_original_current_for_updated_and_retained_bundles
         assert_eq!(*observed, vec![snapshot.clone(); observed.len()]);
         assert_no_work_or_checkpoint(&inner, &snapshot);
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn recovery_refuses_a_checkpoint_behind_the_original_evidence_owner() {
+async fn recovery_refuses_a_checkpoint_behind_the_original_evidence_owner() -> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
     let decision = Decision::EvaluatedNoUpdate;
     let inner = Arc::new(recovery_ports(decision, Trust::Independent));
-    let completed = completed_snapshot(iteration_request(&daemon), &inner, decision).await;
+    let completed = completed_snapshot(iteration_request(&daemon), &inner, decision).await?;
     let mut prefix = ok(LearningIterationCoordinatorV1::new(
         completed.request.clone(),
         completed.owners.clone(),
@@ -225,4 +228,5 @@ async fn recovery_refuses_a_checkpoint_behind_the_original_evidence_owner() {
     assert_eq!(*ok(ports.observed.lock()), vec![stale.clone()]);
     assert!(ok(inner.attested.lock()).is_empty());
     assert_no_work_or_checkpoint(&inner, &stale);
+    Ok(())
 }

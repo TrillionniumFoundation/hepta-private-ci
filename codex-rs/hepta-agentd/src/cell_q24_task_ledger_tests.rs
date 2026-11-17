@@ -67,8 +67,8 @@ async fn ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reco
         f.producer.prepare_dataset(f.preparation()?, Vec::new()),
         Err(Error::PendingOutcome)
     ));
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     assert!(matches!(
         f.producer
             .submit_original_terminal_outcome(outcome.clone(), &signed)?,
@@ -127,7 +127,7 @@ async fn ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal()
     )
     .await?;
     let original = f.learning_bytes()?;
-    let valid = f.outcome();
+    let valid = f.outcome()?;
     let mut cases = Vec::new();
     let mut bad = valid.clone();
     bad.episode_id = cell::id("different-original-episode");
@@ -148,10 +148,10 @@ async fn ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal()
     bad.watermark.terminality = OutcomeTerminalityV1::Pending;
     cases.push(bad);
     let mut bad = valid.clone();
-    bad.observed_at = Some(fixture::now() + 600);
+    bad.observed_at = Some(fixture::now()? + 600);
     cases.push(bad);
     for bad in cases {
-        let signed = f.sign_outcome(&bad, /*lifetime*/ 300);
+        let signed = f.sign_outcome(&bad, /*lifetime*/ 300)?;
         assert!(
             f.producer
                 .submit_original_terminal_outcome(bad, &signed)
@@ -159,14 +159,14 @@ async fn ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal()
         );
         assert_eq!(f.learning_bytes()?, original);
     }
-    let mut wrong_key = f.sign_outcome(&valid, /*lifetime*/ 300);
+    let mut wrong_key = f.sign_outcome(&valid, /*lifetime*/ 300)?;
     wrong_key.signature[0] ^= 1;
     assert!(
         f.producer
             .submit_original_terminal_outcome(valid.clone(), &wrong_key)
             .is_err()
     );
-    let mut wrong_role = f.sign_outcome(&valid, /*lifetime*/ 300);
+    let mut wrong_role = f.sign_outcome(&valid, /*lifetime*/ 300)?;
     wrong_role.role = LearningEvidenceRoleV1::Generator;
     assert!(
         f.producer
@@ -177,7 +177,7 @@ async fn ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal()
     f.session
         .source
         .withdraw_for_dataset_test(&f.publication.original_record().snapshot.run_id)?;
-    let signed = f.sign_outcome(&valid, /*lifetime*/ 300);
+    let signed = f.sign_outcome(&valid, /*lifetime*/ 300)?;
     assert!(
         f.producer
             .submit_original_terminal_outcome(valid, &signed)
@@ -198,17 +198,17 @@ async fn ordinary_task_ledger_reads_witnessed_history_after_signature_expiry() -
     )
     .await?;
     let generator = test_faults::retained_decision(&f.producer)?;
-    fixture::after_expiry(generator.expires_at).await;
-    assert!(fixture::now() > generator.expires_at);
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 4);
+    fixture::after_expiry(generator.expires_at).await?;
+    assert!(fixture::now()? > generator.expires_at);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 4)?;
     assert!(matches!(
         f.producer
             .submit_original_terminal_outcome(outcome.clone(), &signed)?,
         Status::Complete { .. }
     ));
     let original = f.learning_bytes()?;
-    fixture::after_expiry(signed.expires_at).await;
+    fixture::after_expiry(signed.expires_at).await?;
     assert!(matches!(f.producer.readback()?, Status::Complete { .. }));
     assert!(matches!(
         f.producer
@@ -229,8 +229,8 @@ async fn ordinary_task_ready_rejects_same_run_changed_authentication_and_withdra
         /*automatic*/ true,
     )
     .await?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     f.producer
         .submit_original_terminal_outcome(outcome, &signed)?;
     let trace = f
@@ -297,8 +297,8 @@ async fn ordinary_q24_missing_installed_producer_never_falls_back_to_trace_only_
     f.reconcile().await?;
     f.no_outbox().await?;
     f.producer.resume_from_original_source()?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     assert!(matches!(
         f.producer
             .submit_original_terminal_outcome(outcome, &signed)?,
@@ -321,8 +321,8 @@ async fn original_task_preparation_recovers_retained_cut_without_new_freeze() ->
         /*automatic*/ true,
     )
     .await?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     f.producer
         .submit_original_terminal_outcome(outcome, &signed)?;
     let config = f.preparation()?;

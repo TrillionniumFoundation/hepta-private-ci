@@ -69,7 +69,12 @@ impl Fixture {
             OutcomeTerminalityV1::Terminal,
         )?;
         let mut config = preparation::config(&dataset, &publication, baseline, bundle)?;
-        let verifier = dataset.ledger.lock().unwrap().verifier().clone();
+        let verifier = dataset
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?
+            .verifier()
+            .clone();
         config.owners.evidence_trust_digest = verifier.trust_digest();
         config.owners.experience = dataset.signers[1].principal.principal_id.clone();
         config.owners.dataset = dataset.signers[1].principal.principal_id.clone();
@@ -234,20 +239,21 @@ async fn original_q24_training_readback_uses_same_hq2_owners_and_rejects_substit
     );
     let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
     let verifier = fixture.dataset.ledger.lock().unwrap().verifier().clone();
-    let generator = verifier.verify(LearningEvidenceRoleV1::Generator, &signed, &payload, now())?;
+    let generator =
+        verifier.verify(LearningEvidenceRoleV1::Generator, &signed, &payload, now()?)?;
     let evaluator_signature = sign(
         &fixture.dataset.ledger.lock().unwrap(),
         LearningEvidenceRoleV1::Evaluator,
         &payload,
-    );
+    )?;
     let evaluator = verifier.verify(
         LearningEvidenceRoleV1::Evaluator,
         &evaluator_signature,
         &payload,
-        now(),
+        now()?,
     )?;
-    verify_signed_actor_separation(&generator, &evaluator, now())?;
-    assert!(verify_signed_actor_separation(&generator, &generator, now()).is_err());
+    verify_signed_actor_separation(&generator, &evaluator, now()?)?;
+    assert!(verify_signed_actor_separation(&generator, &generator, now()?).is_err());
     assert_eq!(fixture.original_bytes()?, original);
     fixture.session.stop().await
 }

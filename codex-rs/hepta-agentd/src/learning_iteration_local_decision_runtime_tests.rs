@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::learning_iteration_channel_scoped_v2;
+use anyhow::Context;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningLocalDecisionV2;
 use codex_hepta_learning_artifacts::LearningLocalDispositionV2;
@@ -81,8 +82,8 @@ impl LearningIterationOwnerPortsV1 for LocalPorts {
 async fn cuts(
     request: LearningIterationRequestV1,
     ports: &IterationPorts,
-) -> Vec<LearningIterationSnapshotV1> {
-    let complete = completed_snapshot(request, ports, Decision::Update).await;
+) -> anyhow::Result<Vec<LearningIterationSnapshotV1>> {
+    let complete = completed_snapshot(request, ports, Decision::Update).await?;
     let mut prefix = complete.clone();
     prefix.receipts.truncate(5);
     prefix.head_digest = complete.receipts[5].predecessor;
@@ -91,7 +92,7 @@ async fn cuts(
     let retained_bundle = ok(c.snapshot().request.selected_bundle.digest());
     let local = LearningIterationObservationV1::LocalDecisionV2(LearningLocalDecisionV2 {
         proposal_head: c.snapshot().head_digest,
-        candidate_bundle: ok(c.candidate().unwrap().digest()),
+        candidate_bundle: ok(c.candidate().context("original candidate")?.digest()),
         selected_bundle: retained_bundle,
         policy_digest: digest("host-local-policy"),
         reason_digest: digest("host-local-reason"),
@@ -126,11 +127,12 @@ async fn cuts(
         },
     );
     cuts.push(c.snapshot().clone());
-    cuts
+    Ok(cuts)
 }
 
 #[tokio::test]
-async fn scoped_runtime_persists_local_decision_before_selection_and_recovers_lost_ack() {
+async fn scoped_runtime_persists_local_decision_before_selection_and_recovers_lost_ack()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
     let request = iteration_request(&daemon);
     let mut original = recovery_ports(Decision::Update, Trust::Independent);
@@ -141,7 +143,7 @@ async fn scoped_runtime_persists_local_decision_before_selection_and_recovers_lo
         digest("test-rule"),
     ));
     original.scope_binding = Some(scope.binding());
-    let cuts = cuts(request.clone(), &original).await;
+    let cuts = cuts(request.clone(), &original).await?;
     install_checkpoint(&original, &cuts[0]);
     let ports = Arc::new(LocalPorts {
         original: Arc::new(original),
@@ -192,10 +194,12 @@ async fn scoped_runtime_persists_local_decision_before_selection_and_recovers_lo
         completed
     );
     assert_no_work_or_checkpoint(&ports.original, &completed);
+    Ok(())
 }
 
 #[tokio::test]
-async fn invalidated_local_evidence_blocks_publication_before_owner_execution() {
+async fn invalidated_local_evidence_blocks_publication_before_owner_execution() -> anyhow::Result<()>
+{
     for cut in [6, 7] {
         let daemon = AgentdFixture::new();
         let request = iteration_request(&daemon);
@@ -207,7 +211,7 @@ async fn invalidated_local_evidence_blocks_publication_before_owner_execution() 
             digest("test-rule"),
         ));
         original.scope_binding = Some(scope.binding());
-        let cuts = cuts(request.clone(), &original).await;
+        let cuts = cuts(request.clone(), &original).await?;
         install_checkpoint(&original, &cuts[0]);
         let ports = Arc::new(LocalPorts {
             original: Arc::new(original),
@@ -237,10 +241,12 @@ async fn invalidated_local_evidence_blocks_publication_before_owner_execution() 
             vec![LearningIterationStageV1::Selection; cut - 5]
         );
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn local_decision_cannot_restore_with_legacy_owner_or_invalid_selector_authority() {
+async fn local_decision_cannot_restore_with_legacy_owner_or_invalid_selector_authority()
+-> anyhow::Result<()> {
     for fault in ["legacy", "selector-controller", "signature", "none"] {
         let daemon = AgentdFixture::new();
         let request = iteration_request(&daemon);
@@ -261,7 +267,7 @@ async fn local_decision_cannot_restore_with_legacy_owner_or_invalid_selector_aut
         if fault != "legacy" {
             original.scope_binding = Some(scope.binding());
         }
-        let complete = cuts(request.clone(), &original).await.pop().unwrap();
+        let complete = cuts(request.clone(), &original).await?.pop().unwrap();
         install_checkpoint(&original, &complete);
         if fault == "signature" {
             *ok(original.corrupt_stage.lock()) = Some(LearningIterationStageV1::Selection);
@@ -294,4 +300,5 @@ async fn local_decision_cannot_restore_with_legacy_owner_or_invalid_selector_aut
         }
         assert_no_work_or_checkpoint(&original, &complete);
     }
+    Ok(())
 }

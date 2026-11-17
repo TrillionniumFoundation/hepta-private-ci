@@ -1,6 +1,7 @@
 //! Actual SQLite outbox and live learning/delivery workers. Stage observations
 //! and signing keys are explicit fixtures, not production training evidence.
 
+use anyhow::Context;
 use std::sync::atomic::AtomicUsize;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -39,11 +40,11 @@ struct CurrentEvidencePorts {
 }
 
 impl CurrentEvidencePorts {
-    fn new() -> Arc<Self> {
+    fn new() -> anyhow::Result<Arc<Self>> {
         let mut inner = recovery_ports(Decision::EvaluatedNoUpdate, Trust::Independent);
         let expires = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .unwrap()
+            .context("live fixture wall clock")?
             .as_secs()
             + 300;
         for principal in &mut inner.signing.principals {
@@ -78,22 +79,23 @@ impl CurrentEvidencePorts {
                 })
                 .collect(),
         }));
-        Arc::new(Self {
+        Ok(Arc::new(Self {
             inner: Arc::new(inner),
             planned: Mutex::new(None),
             restores: AtomicUsize::new(0),
             restored: Notify::new(),
-        })
+        }))
     }
 
-    async fn wait_for_restores(&self, count: usize) {
+    async fn wait_for_restores(&self, count: usize) -> anyhow::Result<()> {
         tokio::time::timeout(Duration::from_secs(5), async {
             while self.restores.load(Ordering::SeqCst) < count {
                 self.restored.notified().await;
             }
         })
         .await
-        .expect("delivery reached original checkpoint owner");
+        .context("delivery reached original checkpoint owner")?;
+        Ok(())
     }
 }
 
@@ -170,7 +172,9 @@ impl LearningIterationOwnerPortsV1 for CurrentEvidencePorts {
                 .principals
                 .iter()
                 .position(|principal| principal.principal_id == signed.principal_id)
-                .expect("original fixture signer");
+                .ok_or(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                    "original fixture signer",
+                ))?;
             signed.issued_at = now;
             signed.expires_at = now + 60;
             signed.signature = self.inner.signing.keys[signer]
@@ -183,14 +187,14 @@ impl LearningIterationOwnerPortsV1 for CurrentEvidencePorts {
 
 async fn completed_circuit(
     daemon: &AgentdFixture,
-) -> (AutomationStore, LearningIterationRequestV1) {
+) -> anyhow::Result<(AutomationStore, LearningIterationRequestV1)> {
     completed_circuit_named(daemon, "ordinary-learning-run").await
 }
 
 async fn completed_circuit_named(
     daemon: &AgentdFixture,
     run_id: &str,
-) -> (AutomationStore, LearningIterationRequestV1) {
+) -> anyhow::Result<(AutomationStore, LearningIterationRequestV1)> {
     let store = ok(AutomationStore::open(&daemon.identity.layout).await);
     let mut request = iteration_request(daemon);
     let (mut definition, _) = crate::circuit_cell::tests::configuration();
@@ -227,7 +231,7 @@ async fn completed_circuit_named(
             event: CircuitEventV2::Advance { quantum: 1 },
         })
         .await);
-    let trace = ok(store.bounded_circuit_committed_trace(&start.run_id).await).expect("trace");
+    let trace = ok(store.bounded_circuit_committed_trace(&start.run_id).await).context("trace")?;
     let intent = ok(store
         .enqueue_circuit_learning(
             &trace,
@@ -239,7 +243,7 @@ async fn completed_circuit_named(
     request.source_run_id = id(&intent.source_run_id);
     request.operation_id = id(&intent.operation_id);
     request.completed_task_receipt = ok(intent.completed_task_receipt.as_str().parse());
-    (store, request)
+    Ok((store, request))
 }
 
 async fn admitted_state(
@@ -266,21 +270,21 @@ async fn admitted_state(
 async fn await_ack(
     store: &AutomationStore,
     request: &LearningIterationRequestV1,
-) -> CircuitLearningDeliveryV1 {
+) -> anyhow::Result<CircuitLearningDeliveryV1> {
     tokio::time::timeout(Duration::from_secs(5), async {
         loop {
             let row = ok(store
                 .circuit_learning_delivery(request.source_run_id.as_str())
                 .await)
-            .unwrap();
+            .context("original circuit learning delivery")?;
             if row.acknowledged_head.is_some() {
-                break row;
+                break Ok(row);
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
     .await
-    .expect("completed original learning snapshot acknowledged")
+    .context("completed original learning snapshot acknowledged")?
 }
 
 struct Services {
@@ -296,7 +300,7 @@ impl Services {
         store: &AutomationStore,
         request: LearningIterationRequestV1,
         ports: &Arc<CurrentEvidencePorts>,
-    ) -> Self {
+    ) -> anyhow::Result<Self> {
         let (external, bootstrap) = ok(learning_iteration_channel_v1(
             daemon.identity.agent_id.clone(),
             /*spawn_generation*/ 1,
@@ -309,32 +313,34 @@ impl Services {
         drop(external);
         let delivery = bootstrap
             .take_circuit_delivery()
-            .expect("configured delivery");
+            .context("configured delivery")?;
         assert!(bootstrap.take_circuit_delivery().is_none());
         let cancellation = CancellationToken::new();
-        Self {
+        Ok(Self {
             actor: tokio::spawn(bootstrap.run(Arc::clone(&state), cancellation.clone())),
             delivery: tokio::spawn(delivery.run(store.clone(), state, cancellation.clone())),
             cancellation,
-        }
+        })
     }
 
-    async fn stop(self) {
+    async fn stop(self) -> anyhow::Result<()> {
         self.cancellation.cancel();
         ok(ok(tokio::time::timeout(
             Duration::from_secs(5),
             self.delivery,
         )
         .await
-        .expect("delivery stop")));
+        .context("delivery stop")?));
         ok(ok(tokio::time::timeout(Duration::from_secs(5), self.actor)
             .await
-            .expect("actor stop")));
+            .context("actor stop")?));
+        Ok(())
     }
 }
 
 #[tokio::test]
-async fn expired_completed_learning_readback_can_finish_after_one_second_without_new_work() {
+async fn expired_completed_learning_readback_can_finish_after_one_second_without_new_work()
+-> anyhow::Result<()> {
     // Protocol-only synthetic owners. This exercises the real supervised
     // readback queue, not training, independent custody or product benefit.
     let daemon = AgentdFixture::new();
@@ -344,9 +350,9 @@ async fn expired_completed_learning_readback_can_finish_after_one_second_without
         .expect("wall clock")
         .as_secs()
         .saturating_sub(5);
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let completed =
-        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await;
+        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await?;
     install_checkpoint(&ports.inner, &completed);
 
     let (entered, entered_rx) = tokio::sync::oneshot::channel();
@@ -382,15 +388,17 @@ async fn expired_completed_learning_readback_can_finish_after_one_second_without
     cancellation.cancel();
     ok(ok(worker.await));
     cognitive.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn ordinary_delivery_authenticates_completed_snapshot_and_retains_required_service() {
+async fn ordinary_delivery_authenticates_completed_snapshot_and_retains_required_service()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, request) = completed_circuit(&daemon).await;
-    let ports = CurrentEvidencePorts::new();
+    let (store, request) = completed_circuit(&daemon).await?;
+    let ports = CurrentEvidencePorts::new()?;
     let snapshot =
-        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await;
+        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await?;
     install_checkpoint(&ports.inner, &snapshot);
     let expected = CircuitLearningDeliveryV1 {
         intent: ok(store
@@ -410,8 +418,8 @@ async fn ordinary_delivery_authenticates_completed_snapshot_and_retains_required
         acknowledged_head: Some(ok(Sha256Digest::parse(snapshot.head_digest.to_string()))),
     };
     let (state, cognitive) = admitted_state(&daemon).await;
-    let services = Services::start(&daemon, state, &store, request.clone(), &ports);
-    let actual = await_ack(&store, &request).await;
+    let services = Services::start(&daemon, state, &store, request.clone(), &ports)?;
+    let actual = await_ack(&store, &request).await?;
     assert_eq!(actual, expected);
     assert_no_work_or_checkpoint(&ports.inner, &snapshot);
     assert!(!ok(ports.inner.attested.lock()).is_empty());
@@ -424,30 +432,31 @@ async fn ordinary_delivery_authenticates_completed_snapshot_and_retains_required
         !services.actor.is_finished(),
         "dropped external sender does not disconnect owner"
     );
-    services.stop().await;
+    services.stop().await?;
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
 async fn ordinary_delivery_fresh_request_executes_one_fixture_iteration_and_acknowledges_next_use()
-{
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, mut request) = completed_circuit(&daemon).await;
+    let (store, mut request) = completed_circuit(&daemon).await?;
     request.envelope.expiry_unix_seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
         + 120;
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let planned =
-        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await;
+        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await?;
     *ok(ports.planned.lock()) = Some(planned.clone());
     ok(ports.inner.executed.lock()).clear();
     assert!(ok(ports.inner.checkpoint.lock()).is_none());
     let (state, cognitive) = admitted_state(&daemon).await;
-    let services = Services::start(&daemon, state, &store, request.clone(), &ports);
-    let row = await_ack(&store, &request).await;
+    let services = Services::start(&daemon, state, &store, request.clone(), &ports)?;
+    let row = await_ack(&store, &request).await?;
     assert_eq!(
         row.acknowledged_head,
         Some(ok(Sha256Digest::parse(planned.head_digest.to_string())))
@@ -475,17 +484,19 @@ async fn ordinary_delivery_fresh_request_executes_one_fixture_iteration_and_ackn
         expected_checkpoints
     );
     assert_eq!(ports.restores.load(Ordering::SeqCst), 1);
-    services.stop().await;
+    services.stop().await?;
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn ordinary_delivery_claimed_missing_or_partial_state_only_reads_back() {
+async fn ordinary_delivery_claimed_missing_or_partial_state_only_reads_back() -> anyhow::Result<()>
+{
     for partial in [false, true] {
         let daemon = AgentdFixture::new();
-        let (store, request) = completed_circuit(&daemon).await;
-        let ports = CurrentEvidencePorts::new();
+        let (store, request) = completed_circuit(&daemon).await?;
+        let ports = CurrentEvidencePorts::new()?;
         let initial = ok(LearningIterationCoordinatorV1::new(
             request.clone(),
             ports.inner.owners(),
@@ -509,9 +520,9 @@ async fn ordinary_delivery_claimed_missing_or_partial_state_only_reads_back() {
         let state = daemon.state();
         assert!(ok(state.plasticity_admission_ready()));
         assert!(!ok(state.automation_admission_ready()));
-        let services = Services::start(&daemon, state, &store, request, &ports);
-        ports.wait_for_restores(/*count*/ 2).await;
-        services.stop().await;
+        let services = Services::start(&daemon, state, &store, request, &ports)?;
+        ports.wait_for_restores(/*count*/ 2).await?;
+        services.stop().await?;
         assert_eq!(
             ok(store.pending_circuit_learning(/*limit*/ 1).await),
             claimed
@@ -524,19 +535,20 @@ async fn ordinary_delivery_claimed_missing_or_partial_state_only_reads_back() {
         assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
         store.close().await;
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn ordinary_delivery_absent_source_never_consumes_other_intents() {
+async fn ordinary_delivery_absent_source_never_consumes_other_intents() -> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, mut request) = completed_circuit(&daemon).await;
+    let (store, mut request) = completed_circuit(&daemon).await?;
     let pending = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     request.source_run_id = id("uncompleted-source");
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let (state, cognitive) = admitted_state(&daemon).await;
-    let services = Services::start(&daemon, state, &store, request, &ports);
+    let services = Services::start(&daemon, state, &store, request, &ports)?;
     tokio::time::sleep(Duration::from_millis(1100)).await;
-    services.stop().await;
+    services.stop().await?;
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
         pending
@@ -546,20 +558,21 @@ async fn ordinary_delivery_absent_source_never_consumes_other_intents() {
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn ordinary_delivery_app_ready_with_closed_admission_never_claims() {
+async fn ordinary_delivery_app_ready_with_closed_admission_never_claims() -> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, request) = completed_circuit(&daemon).await;
+    let (store, request) = completed_circuit(&daemon).await?;
     let pending = ok(store.pending_circuit_learning(/*limit*/ 1).await);
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let state = daemon.state();
     assert!(ok(state.plasticity_admission_ready()));
     assert!(!ok(state.automation_admission_ready()));
-    let services = Services::start(&daemon, state, &store, request, &ports);
+    let services = Services::start(&daemon, state, &store, request, &ports)?;
     tokio::time::sleep(Duration::from_millis(1100)).await;
-    services.stop().await;
+    services.stop().await?;
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
         pending
@@ -568,23 +581,24 @@ async fn ordinary_delivery_app_ready_with_closed_admission_never_claims() {
     assert!(ok(ports.inner.executed.lock()).is_empty());
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn ordinary_delivery_waits_for_app_server_readiness_before_claim() {
+async fn ordinary_delivery_waits_for_app_server_readiness_before_claim() -> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, request) = completed_circuit(&daemon).await;
+    let (store, request) = completed_circuit(&daemon).await?;
     let pending = ok(store.pending_circuit_learning(/*limit*/ 1).await);
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let state = Arc::new(ok(AgentdState::new(
         daemon.identity.clone(),
         daemon.registry.clone(),
         /*event_capacity*/ 16,
     )));
     ok(state.refresh_generation());
-    let services = Services::start(&daemon, state, &store, request, &ports);
+    let services = Services::start(&daemon, state, &store, request, &ports)?;
     tokio::time::sleep(Duration::from_millis(1100)).await;
-    services.stop().await;
+    services.stop().await?;
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
         pending
@@ -593,6 +607,7 @@ async fn ordinary_delivery_waits_for_app_server_readiness_before_claim() {
     assert!(ok(ports.inner.executed.lock()).is_empty());
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
     store.close().await;
+    Ok(())
 }
 
 #[test]
@@ -617,9 +632,10 @@ fn ordinary_delivery_bootstrap_rejects_duplicate_and_foreign_request() {
 }
 
 #[tokio::test]
-async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_work() {
+async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_work()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, request) = completed_circuit(&daemon).await;
+    let (store, request) = completed_circuit(&daemon).await?;
     let ports = Arc::new(recovery_ports(
         Decision::EvaluatedNoUpdate,
         Trust::Independent,
@@ -656,13 +672,15 @@ async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work() {
+async fn root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, request) = completed_circuit(&daemon).await;
-    let ports = CurrentEvidencePorts::new();
+    let (store, request) = completed_circuit(&daemon).await?;
+    let ports = CurrentEvidencePorts::new()?;
     let (handle, bootstrap) = ok(learning_iteration_channel_v1(
         daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
@@ -722,4 +740,5 @@ async fn root_learning_post_claim_source_refusal_keeps_original_claim_without_st
     drop(handle);
     drop(bootstrap);
     store.close().await;
+    Ok(())
 }

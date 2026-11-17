@@ -2,6 +2,7 @@
 //! Fixture selection/use observations are not production learning evidence, and
 //! Proposal data here does not prove the host's independent anchor obligation.
 
+use anyhow::Context;
 use codex_hepta_learning_artifacts::LearningProposalDispositionV1;
 use pretty_assertions::assert_eq;
 
@@ -113,7 +114,7 @@ async fn completed_snapshot(
     request: LearningIterationRequestV1,
     ports: &IterationPorts,
     decision: Decision,
-) -> LearningIterationSnapshotV1 {
+) -> anyhow::Result<LearningIterationSnapshotV1> {
     let mut coordinator = ok(LearningIterationCoordinatorV1::new(request, ports.owners()));
     for stage in [
         LearningIterationStageV1::Experience,
@@ -126,7 +127,7 @@ async fn completed_snapshot(
     }
     if !matches!(decision, Decision::EvaluatedNoUpdate) {
         let proposal = LearningIterationObservationV1::Proposal {
-            candidate_bundle: ok(coordinator.candidate().expect("candidate").digest()),
+            candidate_bundle: ok(coordinator.candidate().context("candidate")?.digest()),
             proposal_id: coordinator.snapshot().request.operation_id.clone(),
             composition_digest: digest("fixture-proposal-composition"),
             disposition: match decision {
@@ -139,7 +140,7 @@ async fn completed_snapshot(
     }
     let bundle = ok(coordinator
         .next_task_bundle()
-        .expect("selected bundle")
+        .context("selected bundle")?
         .digest());
     record_observation(
         &mut coordinator,
@@ -177,7 +178,7 @@ async fn completed_snapshot(
     };
     record_observation(&mut coordinator, observation);
     assert_eq!(coordinator.next_stage(), None);
-    coordinator.snapshot().clone()
+    Ok(coordinator.snapshot().clone())
 }
 
 fn install_checkpoint(ports: &IterationPorts, snapshot: &LearningIterationSnapshotV1) {
@@ -210,7 +211,7 @@ fn assert_no_work_or_checkpoint(ports: &IterationPorts, snapshot: &LearningItera
 
 #[tokio::test]
 async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposing_or_checkpointing()
-{
+-> anyhow::Result<()> {
     for decision in [
         Decision::EvaluatedNoUpdate,
         Decision::ProposedNoUpdate,
@@ -218,7 +219,7 @@ async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposin
     ] {
         let daemon = AgentdFixture::new();
         let ports = Arc::new(recovery_ports(decision, Trust::Independent));
-        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await;
+        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await?;
         install_checkpoint(&ports, &snapshot);
         let recovered = ok(runtime(&daemon, &ports)
             .process(&daemon.state(), snapshot.request.clone(), || Ok(60))
@@ -238,10 +239,12 @@ async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposin
             }
         }
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn completed_recovery_rejects_each_invalid_retained_signature_before_work() {
+async fn completed_recovery_rejects_each_invalid_retained_signature_before_work()
+-> anyhow::Result<()> {
     for stage in [
         LearningIterationStageV1::Experience,
         LearningIterationStageV1::Dataset,
@@ -253,7 +256,7 @@ async fn completed_recovery_rejects_each_invalid_retained_signature_before_work(
         let daemon = AgentdFixture::new();
         let decision = Decision::EvaluatedNoUpdate;
         let ports = Arc::new(recovery_ports(decision, Trust::Independent));
-        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await;
+        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await?;
         install_checkpoint(&ports, &snapshot);
         *ok(ports.corrupt_stage.lock()) = Some(stage);
         assert!(matches!(
@@ -267,10 +270,12 @@ async fn completed_recovery_rejects_each_invalid_retained_signature_before_work(
         assert_no_work_or_checkpoint(&ports, &snapshot);
         assert!(ok(ports.attested.lock()).contains(&stage));
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn completed_recovery_checks_current_revocation_controller_and_signature_expiry() {
+async fn completed_recovery_checks_current_revocation_controller_and_signature_expiry()
+-> anyhow::Result<()> {
     for (trust, now, expected) in [
         (
             Trust::SharedController,
@@ -283,7 +288,7 @@ async fn completed_recovery_checks_current_revocation_controller_and_signature_e
         let daemon = AgentdFixture::new();
         let decision = Decision::EvaluatedNoUpdate;
         let ports = Arc::new(recovery_ports(decision, trust));
-        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await;
+        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await?;
         install_checkpoint(&ports, &snapshot);
         let result = runtime(&daemon, &ports)
             .process(&daemon.state(), snapshot.request.clone(), || Ok(now))
@@ -302,16 +307,18 @@ async fn completed_recovery_checks_current_revocation_controller_and_signature_e
         );
         assert_no_work_or_checkpoint(&ports, &snapshot);
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn partial_and_completed_recovery_preserve_deadlines_and_only_resume_after_authentication() {
+async fn partial_and_completed_recovery_preserve_deadlines_and_only_resume_after_authentication()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
     let decision = Decision::EvaluatedNoUpdate;
     let ports = Arc::new(recovery_ports(decision, Trust::Independent));
     let mut request = iteration_request(&daemon);
     request.envelope.expiry_unix_seconds = 55;
-    let completed = completed_snapshot(request, &ports, decision).await;
+    let completed = completed_snapshot(request, &ports, decision).await?;
     install_checkpoint(&ports, &completed);
     assert_eq!(
         ok(runtime(&daemon, &ports)
@@ -369,16 +376,18 @@ async fn partial_and_completed_recovery_preserve_deadlines_and_only_resume_after
     );
     assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&partial));
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+    Ok(())
 }
 
 #[tokio::test]
-async fn completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestation() {
+async fn completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestation()
+-> anyhow::Result<()> {
     for change in [WhileWaiting::Drain, WhileWaiting::Expire] {
         let daemon = AgentdFixture::new();
         let state = daemon.state();
         let decision = Decision::EvaluatedNoUpdate;
         let ports = Arc::new(recovery_ports(decision, Trust::Independent));
-        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await;
+        let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await?;
         install_checkpoint(&ports, &snapshot);
         let (entered, receive_entered) = tokio::sync::oneshot::channel();
         let (resume, receive_resume) = tokio::sync::oneshot::channel();
@@ -423,6 +432,7 @@ async fn completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestat
             &[LearningIterationStageV1::Experience]
         );
     }
+    Ok(())
 }
 
 #[tokio::test]

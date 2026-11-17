@@ -1,5 +1,6 @@
 //! Consume an actual separate ordinary C admission, without creating RunStart.
 use super::*;
+use anyhow::Context;
 
 pub(in super::super) fn retained_version_task_inputs(
     admission: Admission,
@@ -9,7 +10,11 @@ pub(in super::super) fn retained_version_task_inputs(
     bundle: CellCompatibilityBundleV1,
     original_a: crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
     original_a_identity: crate::AgentdIdentity,
-) -> anyhow::Result<(crate::OriginalCircuitRetainedTaskInputsV1, RuntimeFixture)> {
+) -> anyhow::Result<(
+    crate::OriginalCircuitRetainedTaskInputsV1,
+    RuntimeFixture,
+    FixtureClock,
+)> {
     let Admission {
         runtime,
         config,
@@ -22,16 +27,16 @@ pub(in super::super) fn retained_version_task_inputs(
             .create_new(true)
             .open(runtime.identity.home_root.join(name))
     };
-    let witness = |name, label: &str| {
-        FileAnchorWitnessStore::open(
+    let witness = |name, label: &str| -> anyhow::Result<_> {
+        Ok(FileAnchorWitnessStore::open(
             file(name)?,
             JournalScope {
                 scope_digest: cell::d(label),
                 objective_digest: source.objective_digest,
             },
-            Generation::new(1).expect("generation"),
+            Generation::new(1).context("generation")?,
             64,
-        )
+        )?)
     };
     let (mut circuit, mut bindings) = super::super::super::configuration();
     bindings[0].cell = definition;
@@ -44,6 +49,8 @@ pub(in super::super) fn retained_version_task_inputs(
         max_work: 10_000_000,
     };
     let epoch = Instant::now();
+    let clock = FixtureClock::default();
+    let callback_clock = clock.clone();
     let files = CircuitQ24TaskFilesV1 {
         source_journal: file("q24-source.journal")?,
         source_witness: witness("q24-source.witness", "original-source-owner")?,
@@ -77,13 +84,13 @@ pub(in super::super) fn retained_version_task_inputs(
             maximum_cell_records: 16,
             queue_capacity: 4,
             clock: Arc::new(move || crate::CircuitCellTimeV1 {
-                circuit_millis: crate::authbus_ingress::now_ms().expect("live wall clock"),
-                cell_micros: 10
-                    + u64::try_from(epoch.elapsed().as_micros()).expect("live Cell clock"),
+                circuit_millis: callback_clock.wall_millis(),
+                cell_micros: callback_clock.elapsed_micros(epoch.elapsed()),
             }),
             original_a,
             original_a_identity,
         },
         runtime,
+        clock,
     ))
 }

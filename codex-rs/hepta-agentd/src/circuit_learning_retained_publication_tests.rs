@@ -111,7 +111,7 @@ async fn retained_publication_rejects_same_content_even_with_a_new_run_and_task_
 async fn retained_publication_never_converts_candidate_training_into_no_update()
 -> anyhow::Result<()> {
     let f = RetainedPublicationFixture::ready().await?;
-    let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(f.dataset())?;
+    let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(f.dataset()?)?;
     let source_bundle = f.bundle.digest()?;
     let mut candidate = f.bundle.clone();
     candidate.artifact_id = StableId::new("explicit-retained-negative-candidate")?;

@@ -37,7 +37,7 @@ struct Control {
 
 impl Control {
     async fn open(f: &mut Fixture) -> anyhow::Result<Self> {
-        let mut config = f.session.take_configuration();
+        let mut config = f.session.take_configuration()?;
         if let Some(producer) = config.take_original_q24_outcome_control() {
             AgentdState::attach_original_q24_outcome_control(&f.session.runtime.state, producer)?;
         }
@@ -118,8 +118,8 @@ async fn original_q24_outcome_control_commits_real_records_and_replays_exactly()
         Status::AwaitingOutcome { .. }
     ));
     let task_bytes = f.task_bytes()?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     let receipt = control
         .client
         .submit_original_q24_terminal_outcome(&outcome, &signed)
@@ -151,7 +151,7 @@ async fn original_q24_outcome_control_commits_real_records_and_replays_exactly()
     assert_eq!(f.learning_bytes()?, after);
     let mut changed = outcome.clone();
     changed.value = Some(FixedQ32::from_raw(3_i64 << 32));
-    let changed_signature = f.sign_outcome(&changed, /*lifetime*/ 600);
+    let changed_signature = f.sign_outcome(&changed, /*lifetime*/ 600)?;
     assert!(
         control
             .client
@@ -178,8 +178,8 @@ async fn original_q24_outcome_control_rejects_bad_evidence_without_file_changes(
     let control = Control::open(&mut f).await?;
     let before = f.learning_bytes()?;
     let task_bytes = f.task_bytes()?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     let original = encode(&outcome, &signed)?;
     let mut signature = signed.clone();
     signature.signature[0] ^= 1;
@@ -192,7 +192,7 @@ async fn original_q24_outcome_control_rejects_bad_evidence_without_file_changes(
     );
     let mut support = outcome.clone();
     support.support_digest = Digest32::of_bytes(b"unrelated task");
-    let support_signature = f.sign_outcome(&support, /*lifetime*/ 600);
+    let support_signature = f.sign_outcome(&support, /*lifetime*/ 600)?;
     assert!(
         control
             .client
@@ -203,7 +203,7 @@ async fn original_q24_outcome_control_rejects_bad_evidence_without_file_changes(
     let mut pending = outcome.clone();
     pending.watermark.terminality = OutcomeTerminalityV1::Pending;
     pending.watermark.finalized_at = None;
-    let pending_signature = f.sign_outcome(&pending, /*lifetime*/ 600);
+    let pending_signature = f.sign_outcome(&pending, /*lifetime*/ 600)?;
     assert!(
         control
             .client
@@ -212,8 +212,8 @@ async fn original_q24_outcome_control_rejects_bad_evidence_without_file_changes(
             .is_err()
     );
     let mut expired = signed.clone();
-    expired.issued_at = fixture::now() - 2;
-    expired.expires_at = fixture::now() - 1;
+    expired.issued_at = fixture::now()? - 2;
+    expired.expires_at = fixture::now()? - 1;
     expired.signature = SigningKey::from_bytes(&[2; 32])
         .sign(&expired.signing_bytes())
         .to_bytes();
@@ -259,9 +259,9 @@ async fn original_q24_outcome_control_generator_cannot_claim_fixed_observer() ->
     .await?;
     let control = Control::open(&mut f).await?;
     let before = f.learning_bytes()?;
-    let mut outcome = f.outcome();
+    let mut outcome = f.outcome()?;
     outcome.observer = f.signers[0].principal.clone();
-    let mut signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let mut signed = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     signed.principal_id = f.signers[0].principal.principal_id.clone();
     signed.signature = SigningKey::from_bytes(&[1; 32])
         .sign(&signed.signing_bytes())
@@ -298,8 +298,8 @@ async fn original_q24_outcome_control_requires_real_installed_owner() -> anyhow:
             .any(|capability| capability.id == AGENTD_Q24_ORIGINAL_OUTCOME_CAPABILITY)
     );
     let before = f.learning_bytes()?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     assert!(
         control
             .client
@@ -323,8 +323,8 @@ async fn original_q24_outcome_control_refuses_fenced_state_without_append() -> a
     .await?;
     let control = Control::open(&mut f).await?;
     let before = f.learning_bytes()?;
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     f.session.runtime.state.mark_fenced();
     assert!(
         control
@@ -350,8 +350,8 @@ async fn original_q24_outcome_control_refuses_actual_drain_without_append() -> a
     let control = Control::open(&mut f).await?;
     control.client.original_q24_task_observation().await?;
     let before = (f.task_bytes()?, f.learning_bytes()?);
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     let current = f.session.runtime.state.current_generation()?;
     assert_eq!(current, f.session.runtime.identity.spawn_generation + 1);
     f.session.runtime.registry.compare_and_transition(

@@ -1,6 +1,7 @@
 //! Actual native task/source/Cell with explicit test trust and role custody.
 //! Labels below are supplied by this fixture's independent Observer.
 
+use anyhow::Context;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Mutex;
@@ -29,11 +30,11 @@ pub(super) struct Fixture {
     pub(super) trust: ActivatedLearningTrustV1,
 }
 
-pub(super) fn now() -> u64 {
-    SystemTime::now()
+pub(super) fn now() -> anyhow::Result<u64> {
+    Ok(SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
+        .context("fixture wall clock")?
+        .as_secs())
 }
 
 pub(super) fn file(root: &Path, name: &str) -> anyhow::Result<File> {
@@ -82,38 +83,40 @@ impl Fixture {
             ("task-observer", 2, LearningEvidenceRoleV1::Observer),
             ("task-evaluator", 3, LearningEvidenceRoleV1::Evaluator),
         ]
-        .map(|(name, seed, role)| {
+        .map(|(name, seed, role)| -> anyhow::Result<_> {
             let key = SigningKey::from_bytes(&[seed; 32]);
-            TrustedLearningSignerV1 {
+            Ok(TrustedLearningSignerV1 {
                 principal: AuthenticatedPrincipalV1 {
                     principal_id: cell::id(name),
                     credential_chain_digest: cell::d(&format!("{name}-credential")),
                     signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
                     scope_digest: cell::d("original-task-ledger-fixture-scope"),
                     authority_epoch: 1,
-                    authenticated_at: now() - 10,
-                    expires_at: now() + 7_200,
+                    authenticated_at: now()? - 10,
+                    expires_at: now()? + 7_200,
                 },
                 controller_id: cell::id(&format!("{name}-controller")),
                 verifying_key: key.verifying_key().to_bytes(),
                 roles: vec![role],
                 revoked_at: None,
-            }
+            })
         });
+        let [generator, observer, evaluator] = signers;
+        let signers = [generator?, observer?, evaluator?];
         let key = SigningKey::from_bytes(&[99; 32]);
         let trust_root = LearningTrustRootV1 {
             root_id: cell::id("original-task-ledger-fixture-root"),
             scope_digest: signers[0].principal.scope_digest,
             verifying_key: key.verifying_key().to_bytes(),
-            valid_from: now() - 10,
-            expires_at: now() + 7_200,
+            valid_from: now()? - 10,
+            expires_at: now()? + 7_200,
             revoked_at: None,
         };
         let mut distribution = SignedLearningTrustDistributionV1 {
             distribution: LearningTrustDistributionV1 {
                 distribution_id: cell::id("original-task-ledger-fixture-distribution"),
                 generation: 1,
-                effective_at: now() - 1,
+                effective_at: now()? - 1,
                 trust: LearningEvidenceTrustV1 {
                     scope_digest: trust_root.scope_digest,
                     objective_digest: source.objective_digest,
@@ -122,13 +125,13 @@ impl Fixture {
                 },
             },
             root_id: trust_root.root_id.clone(),
-            issued_at: now() - 1,
-            expires_at: now() + 3_600,
+            issued_at: now()? - 1,
+            expires_at: now()? + 3_600,
             signature: [0; 64],
         };
         distribution.signature = key.sign(&distribution.signing_bytes()?).to_bytes();
         let trust =
-            activate_learning_trust(&trust_root, distribution, /*previous*/ None, now())?;
+            activate_learning_trust(&trust_root, distribution, /*previous*/ None, now()?)?;
         let directory = File::open(root.path())?;
         let binding = cell::d("original-task-ledger-fixture");
         let ledger = Arc::new(Mutex::new(LedgerWriter::from_durable(
@@ -155,7 +158,7 @@ impl Fixture {
             outcome_id: cell::id("original-business-outcome"),
             unit_profile_digest: cell::d("fixture-target-unit"),
             expected_delay_profile_digest: cell::d("fixture-business-delay"),
-            claim_deadline_unix_seconds: now() + 3_600,
+            claim_deadline_unix_seconds: now()? + 3_600,
             maximum_signature_lifetime_seconds: lifetime,
         };
         let inputs = crate::OriginalCellQ24TaskLedgerInputsV1 {
@@ -217,32 +220,32 @@ impl Fixture {
         })
     }
 
-    pub(super) fn outcome(&self) -> AuthenticatedOutcomeV1 {
-        AuthenticatedOutcomeV1 {
+    pub(super) fn outcome(&self) -> anyhow::Result<AuthenticatedOutcomeV1> {
+        Ok(AuthenticatedOutcomeV1 {
             record_id: self.config.outcome_record_id.clone(),
             outcome_id: self.config.outcome_id.clone(),
             episode_id: self.config.episode_id.clone(),
             observer: self.signers[1].principal.clone(),
-            observed_at: Some(now()),
+            observed_at: Some(now()?),
             value: Some(FixedQ32::from_raw(2_i64 << 32)),
             unit_profile_digest: self.config.unit_profile_digest,
             support_digest: self.publication.publication_digest(),
             watermark: OutcomeWatermarkV1 {
-                latest_observable_at: now(),
+                latest_observable_at: now()?,
                 expected_delay_profile_digest: self.config.expected_delay_profile_digest,
                 terminality: OutcomeTerminalityV1::Terminal,
                 censoring_reason: None,
                 correction_predecessor: None,
-                finalized_at: Some(now()),
+                finalized_at: Some(now()?),
             },
-        }
+        })
     }
 
     pub(super) fn sign_outcome(
         &self,
         outcome: &AuthenticatedOutcomeV1,
         lifetime: u64,
-    ) -> SignedLearningEvidenceV1 {
+    ) -> anyhow::Result<SignedLearningEvidenceV1> {
         let mut signed = SignedLearningEvidenceV1 {
             evidence_id: cell::id("original-observer-evidence"),
             principal_id: self.signers[1].principal.principal_id.clone(),
@@ -251,15 +254,15 @@ impl Fixture {
             scope_digest: self.signers[1].principal.scope_digest,
             objective_digest: self.publication.input().objective_digest,
             authority_epoch: self.signers[1].principal.authority_epoch,
-            issued_at: now(),
-            expires_at: now() + lifetime,
+            issued_at: now()?,
+            expires_at: now()? + lifetime,
             payload_digest: Digest32::of_bytes(&outcome_signing_payload_v2(outcome)),
             signature: [0; 64],
         };
         signed.signature = SigningKey::from_bytes(&[2; 32])
             .sign(&signed.signing_bytes())
             .to_bytes();
-        signed
+        Ok(signed)
     }
 
     pub(super) fn task_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
@@ -376,8 +379,9 @@ impl Fixture {
     }
 }
 
-pub(super) async fn after_expiry(expires_at: u64) {
-    while now() <= expires_at {
+pub(super) async fn after_expiry(expires_at: u64) -> anyhow::Result<()> {
+    while now()? <= expires_at {
         tokio::time::sleep(Duration::from_millis(25)).await;
     }
+    Ok(())
 }

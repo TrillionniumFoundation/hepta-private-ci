@@ -152,7 +152,7 @@ async fn abandoned_request_keeps_lane_and_queue_bounded_until_real_work_stops() 
     );
     assert!(f.runtime.state.circuit_task_drain_blockers().await? > 0);
     release.send(()).expect("finish the original model contact");
-    f.stop().await;
+    f.stop().await?;
     for call in queued {
         assert!(
             call.await?.is_err(),

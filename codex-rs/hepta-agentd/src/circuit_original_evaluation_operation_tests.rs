@@ -1,6 +1,7 @@
 //! Actual socket reads and original B/retention journals, with explicit fixture
 //! credentials and Product declarations. Both panels remain Ineligible; these
 //! are operation mechanisms, not ordinary adoption or daemon restart evidence.
+use anyhow::Context;
 use std::sync::Arc;
 
 use pretty_assertions::assert_eq;
@@ -19,8 +20,8 @@ fn install(
         fixture.config.signing.verifier.clone(),
         signatures,
     )?;
-    Arc::get_mut(fixture.host.as_mut().expect("original host"))
-        .expect("no external original host reference")
+    Arc::get_mut(fixture.host.as_mut().context("original host")?)
+        .context("no external original host reference")?
         .fixture_shared_training_operation(Arc::new(trainer))?;
     Ok(peer)
 }

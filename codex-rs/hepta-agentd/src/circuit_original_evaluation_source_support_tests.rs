@@ -5,6 +5,7 @@ use super::*;
 use crate::circuit_original_evaluation_provider::*;
 use crate::circuit_task::cell_q24_dataset_source_test_support as source_fixture;
 use crate::circuit_task::source_test_support as source_support;
+use anyhow::Context;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;
@@ -43,7 +44,7 @@ impl BFixture {
         )?;
         let identity = source_support::identity(&root)?;
         let episode = |name: &str| -> anyhow::Result<OriginalCircuitEvaluationEpisodeV1> {
-            let episode_id = id(&format!("{label}-{name}"));
+            let episode_id = id(&format!("{label}-{name}"))?;
             let behavior_run_id =
                 crate::circuit_learning_run_id_v1(&writer, &identity.agent_id, &episode_id)?;
             Ok(OriginalCircuitEvaluationEpisodeV1 {
@@ -59,14 +60,14 @@ impl BFixture {
                 let episode = episode(&format!("target-{index}"))?;
                 Ok(OriginalCircuitEvaluationTargetV1 {
                     baseline_run_id: episode.behavior_run_id.clone(),
-                    candidate_run_id: id(&format!("{label}-candidate-{index}")),
+                    candidate_run_id: id(&format!("{label}-candidate-{index}"))?,
                     episode,
                 })
             })
             .collect::<anyhow::Result<Vec<_>>>()?;
         let fold = TemporalFoldPlan {
             plan_digest: d(&format!("{label}-temporal-fold")),
-            fold_id: id(&format!("{label}-original-fold")),
+            fold_id: id(&format!("{label}-original-fold"))?,
             training_watermark: trust_time - 10,
             evaluation_start: trust_time + 120,
             minimum_per_action: 1,
@@ -74,7 +75,7 @@ impl BFixture {
         let temporal = |arm: &str| -> anyhow::Result<TemporalEvaluationPlan> {
             let mut plan = TemporalEvaluationPlan {
                 plan_digest: Digest32::ZERO,
-                evaluation_id: id(&format!("{label}-{arm}")),
+                evaluation_id: id(&format!("{label}-{arm}"))?,
                 objective_digest: objective,
                 fold: fold.clone(),
                 ope: OpePlan {
@@ -96,16 +97,16 @@ impl BFixture {
             Ok(plan)
         };
         let rule = OriginalCircuitEvaluationCohortRuleV1 {
-            plan_id: id(&format!("{label}-plan")),
+            plan_id: id(&format!("{label}-plan"))?,
             task_digest: d(&format!("{label}-original-task")),
             objective_digest: objective,
-            snapshot_id: id(&format!("{label}-original-dataset")),
+            snapshot_id: id(&format!("{label}-original-dataset"))?,
             unit_profile_digest: d("explicit-original-B-success-unit"),
             expected_delay_profile_digest: d("explicit-original-B-outcome-delay"),
             history_start_unix_seconds: trust_time - 30,
             evaluation_end_unix_seconds: trust_time + 123,
-            history_window_id: id(&format!("{label}-history-window")),
-            holdout_window_id: id(&format!("{label}-heldout-window")),
+            history_window_id: id(&format!("{label}-history-window"))?,
+            holdout_window_id: id(&format!("{label}-heldout-window"))?,
             candidate_plan: temporal("candidate")?,
             baseline_plan: temporal("baseline")?,
             history,
@@ -147,7 +148,7 @@ impl BFixture {
             let principal = d(&format!("{}-history-principal-{index}", rule.plan_id));
             let input = self.input(&episode.behavior_run_id, principal, index);
             material::evaluation_provider::decision(
-                self.writer.as_mut().expect("original B ledger"),
+                self.writer.as_mut().context("original B ledger")?,
                 &self.credentials,
                 &episode.episode_id,
                 &input,
@@ -162,7 +163,7 @@ impl BFixture {
                 FixedQ32::from_raw(1_i64 << 31),
             ][index];
             material::evaluation_provider::outcome(
-                self.writer.as_mut().expect("original B ledger"),
+                self.writer.as_mut().context("original B ledger")?,
                 &self.credentials,
                 &episode.episode_id,
                 history_at + 1,
@@ -175,7 +176,7 @@ impl BFixture {
             let principal = d(&format!("{}-heldout-principal-{index}", rule.plan_id));
             let input = self.input(&target.episode.behavior_run_id, principal, index + 10);
             material::evaluation_provider::decision(
-                self.writer.as_mut().expect("original B ledger"),
+                self.writer.as_mut().context("original B ledger")?,
                 &self.credentials,
                 &target.episode.episode_id,
                 &input,
@@ -210,7 +211,7 @@ impl BFixture {
             };
             let value = [FixedQ32::ONE, FixedQ32::from_raw(1_i64 << 31)][index];
             material::evaluation_provider::outcome(
-                self.writer.as_mut().expect("original B ledger"),
+                self.writer.as_mut().context("original B ledger")?,
                 &self.credentials,
                 &target.episode.episode_id,
                 rule.evaluation_end_unix_seconds,
@@ -296,7 +297,7 @@ impl BFixture {
         let writer = self
             .writer
             .as_ref()
-            .expect("original B ledger before transfer");
+            .context("original B ledger before transfer")?;
         assert_eq!(
             writer.verifier().trust_digest(),
             original.config.verifier.trust_digest()
@@ -319,12 +320,12 @@ impl BFixture {
         })
     }
 
-    pub(super) fn owners(&mut self) -> OriginalCircuitEvaluationSourceOwnersV1 {
-        OriginalCircuitEvaluationSourceOwnersV1 {
+    pub(super) fn owners(&mut self) -> anyhow::Result<OriginalCircuitEvaluationSourceOwnersV1> {
+        Ok(OriginalCircuitEvaluationSourceOwnersV1 {
             ledger: self
                 .writer
                 .take()
-                .expect("unique original B ledger transfer"),
+                .context("unique original B ledger transfer")?,
             sources: self
                 .sources
                 .iter()
@@ -336,7 +337,7 @@ impl BFixture {
                     },
                 )
                 .collect(),
-        }
+        })
     }
 
     pub(super) fn withdraw_target(&self) -> anyhow::Result<()> {

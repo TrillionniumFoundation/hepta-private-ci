@@ -47,7 +47,7 @@ async fn completed_member(
     )
     .await?;
     let config = b.config(original, registration)?;
-    let cohort = CohortAt::read(b.owners(), config, b.at)?;
+    let cohort = CohortAt::read(b.owners()?, config, b.at)?;
     let training = BFixture::training(original)?;
     let runner = ProviderPlanFixture::for_panel(
         &cohort.original,

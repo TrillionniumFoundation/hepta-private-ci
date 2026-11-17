@@ -2,6 +2,7 @@
 //! readiness and model observations are controlled fixtures, not serving proof.
 #![cfg(target_os = "linux")]
 
+use anyhow::Context;
 use std::collections::BTreeMap;
 use std::fs;
 use std::fs::OpenOptions;
@@ -34,6 +35,10 @@ use crate::CircuitTaskReceiptV1;
 use crate::CircuitTaskRequestV1;
 use crate::circuit_cell::tests::configuration;
 use crate::circuit_cell::tests::support as cell;
+
+#[path = "circuit_fixture_clock_test_support.rs"]
+mod clock_test_support;
+use clock_test_support::FixtureClock;
 
 const RUN: &str = "circuit.ingress.run.1";
 const ISSUER: &str = "circuit-objective-test-issuer";
@@ -70,8 +75,15 @@ impl AgentdCircuitTaskInvocationProviderV1 for Invocation {
             identity.agent_id.as_str(),
             cell::scope(RUN).agent_id.as_str()
         );
-        self.records.lock().expect("records").push(record.clone());
-        let gate = self.build_gate.lock().expect("build gate").clone();
+        self.records
+            .lock()
+            .map_err(|_| crate::AgentdError::Protocol("records".into()))?
+            .push(record.clone());
+        let gate = self
+            .build_gate
+            .lock()
+            .map_err(|_| crate::AgentdError::Protocol("build gate".into()))?
+            .clone();
         if let Some(gate) = gate {
             gate.wait()?;
         }
@@ -83,7 +95,7 @@ impl AgentdCircuitTaskInvocationProviderV1 for Invocation {
             start: CircuitStartV2 {
                 run_id: record.snapshot.run_id.to_string(),
                 scope_digest: crate::circuit_cell_scope_digest_v1(&cell::scope(RUN))
-                    .expect("fixture scope digest"),
+                    .map_err(|_| crate::AgentdError::Protocol("fixture scope digest".into()))?,
                 input_digest: Sha256Digest::for_bytes(&cell::input(RUN).observation),
                 created_at_ms: record.admission.observed_at_unix_micros / 1_000,
                 lease_duration_ms: 60_000,
@@ -103,13 +115,20 @@ impl AgentdCircuitTaskInvocationProviderV1 for Invocation {
             receipt.trace().run().run_id(),
             record.snapshot.run_id.as_str()
         );
-        let mut receipts = self.receipts.lock().expect("receipts");
+        let mut receipts = self
+            .receipts
+            .lock()
+            .map_err(|_| crate::AgentdError::Protocol("receipts".into()))?;
         if let Some(original) = receipts.first() {
             assert_eq!(receipt, original, "retry must publish the original result");
         }
         receipts.push(receipt.clone());
         drop(receipts);
-        let gate = self.result_gate.lock().expect("result gate").clone();
+        let gate = self
+            .result_gate
+            .lock()
+            .map_err(|_| crate::AgentdError::Protocol("result gate".into()))?
+            .clone();
         if let Some(gate) = gate {
             gate.wait()?;
         }
@@ -146,7 +165,9 @@ impl CircuitTaskInputProviderV1 for Inputs {
     }
 }
 
-fn cell_owner(fixture: &RuntimeFixture) -> CellOwnerJournalV1<FileAnchorWitnessStore> {
+fn cell_owner(
+    fixture: &RuntimeFixture,
+) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
     let file = |name| {
         OpenOptions::new()
             .read(true)
@@ -154,20 +175,20 @@ fn cell_owner(fixture: &RuntimeFixture) -> CellOwnerJournalV1<FileAnchorWitnessS
             .create(true)
             .truncate(false)
             .open(fixture.identity.home_root.join(name))
-            .expect("owner file")
+            .context("owner file")
     };
     let witness = FileAnchorWitnessStore::open(
-        file("circuit-cell.witness"),
+        file("circuit-cell.witness")?,
         JournalScope {
             scope_digest: cell::d("ingress-owner"),
             objective_digest: cell::d("journal"),
         },
-        Generation::new(1).expect("generation"),
+        Generation::new(1).context("generation")?,
         /*max_records*/ 64,
     )
-    .expect("independent durable witness");
+    .context("independent durable witness")?;
     CellOwnerJournalV1::open(
-        file("circuit-cell.journal"),
+        file("circuit-cell.journal")?,
         witness,
         vec![CellJournalPartitionV1 {
             scope: cell::scope(RUN),
@@ -177,7 +198,7 @@ fn cell_owner(fixture: &RuntimeFixture) -> CellOwnerJournalV1<FileAnchorWitnessS
         }],
         /*max_records*/ 64,
     )
-    .expect("real Cell owner")
+    .context("real Cell owner")
 }
 
 struct Fixture {
@@ -188,18 +209,20 @@ struct Fixture {
     calls: Arc<AtomicUsize>,
     cancellation: CancellationToken,
     worker: Option<tokio::task::JoinHandle<Result<(), crate::AgentdError>>>,
+    clock: FixtureClock,
 }
 
 impl Fixture {
-    async fn stop(&mut self) {
+    async fn stop(&mut self) -> anyhow::Result<()> {
         self.cancellation.cancel();
         if let Some(worker) = self.worker.take() {
             timeout(Duration::from_secs(5), worker)
                 .await
-                .expect("owner stopped")
-                .expect("owner task")
-                .expect("owner shutdown");
+                .context("owner stopped")?
+                .context("owner task")?
+                .context("owner shutdown")?;
         }
+        self.clock.check()
     }
 }
 
@@ -237,6 +260,8 @@ where
     let store = AutomationStore::open(&runtime.identity.layout).await?;
     runtime.state.attach_automation_store(store.clone())?;
     let clock_floor = Arc::new(AtomicU64::new(0));
+    let clock = FixtureClock::default();
+    let callback_clock = clock.clone();
     let invocation = Arc::new(Invocation {
         records: Mutex::new(Vec::new()),
         receipts: Mutex::new(Vec::new()),
@@ -250,7 +275,7 @@ where
     definition.limits.max_elapsed_ms = 60_000;
     let cells = crate::AgentdCircuitCellOwnerV1::new(
         crate::CircuitCellRegistryV1::new(definition, bindings)?,
-        cell_owner(&runtime),
+        cell_owner(&runtime)?,
         model,
         cell::Encoder,
     );
@@ -267,8 +292,8 @@ where
         cells,
         Inputs(BTreeMap::new()),
         move || crate::CircuitCellTimeV1 {
-            circuit_millis: crate::authbus_ingress::now_ms()
-                .expect("host clock")
+            circuit_millis: callback_clock
+                .wall_millis()
                 .max(clock_floor.load(Ordering::SeqCst)),
             cell_micros: 20,
         },
@@ -294,6 +319,7 @@ where
         calls,
         cancellation,
         worker: Some(worker),
+        clock,
     })
 }
 
@@ -489,8 +515,8 @@ async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result
         f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap(),
         pending
     );
-    f.stop().await;
-    let reopened = cell_owner(&f.runtime);
+    f.stop().await?;
+    let reopened = cell_owner(&f.runtime)?;
     let decision = &first
         .executions()
         .values()
@@ -547,8 +573,8 @@ async fn ordinary_ingress_rejects_invalid_trust_generation_and_deadline_before_c
         assert_eq!(f.calls.load(Ordering::SeqCst), 0, "{boundary}");
         assert!(f.invocation.receipts.lock().expect("receipts").is_empty());
         assert_eq!(f.store.bounded_circuit_run(RUN).await?, None, "{boundary}");
-        f.stop().await;
-        let owner = cell_owner(&f.runtime);
+        f.stop().await?;
+        let owner = cell_owner(&f.runtime)?;
         assert_eq!(owner.snapshot(&cell::scope(RUN))?.revision, 0);
         assert_eq!(owner.pending_inference(&cell::scope(RUN))?, None);
         f.store.close().await;
@@ -605,7 +631,7 @@ async fn historical_completion_repair_does_not_renew_revoked_objective_authority
         f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap(),
         pending
     );
-    f.stop().await;
+    f.stop().await?;
     f.store.close().await;
     Ok(())
 }
@@ -654,7 +680,7 @@ async fn ordinary_completion_without_matching_learning_source_does_not_enqueue()
                 .is_empty()
         );
         assert_eq!(f.calls.load(Ordering::SeqCst), 1);
-        f.stop().await;
+        f.stop().await?;
         f.store.close().await;
     }
     Ok(())

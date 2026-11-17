@@ -181,7 +181,7 @@ impl FeatureFixture {
             .into_circuit_feature_task(definition, source_c, previous)?;
         let mut session = support::start(c, published, model, bundle).await?;
         let installed = AgentdQ24CircuitTaskRuntimeV1 {
-            config: session.take_configuration(),
+            config: session.take_configuration()?,
             source: Arc::clone(&session.source),
             cell: session.cell.clone(),
         };

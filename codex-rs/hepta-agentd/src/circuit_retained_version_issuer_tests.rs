@@ -18,11 +18,12 @@ async fn retained_version_issuer_uses_actual_prepared_binding_and_installs_disti
         binding,
         RetainedIssuerReplyV1::Signed(grant),
     );
-    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()).await?;
+    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     peer.join()
         .map_err(|_| anyhow::anyhow!("original Root peer"))??;
     let actual =
-        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()).await?;
+        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()?)
+            .await?;
     let publication = actual
         .publication()
         .context("actual installed C publication")?;
@@ -57,9 +58,9 @@ async fn retained_version_issuer_uses_actual_prepared_binding_and_installs_disti
         fixture.original.version.authority.capacity()?.used_nonces,
         nonces + 1
     );
-    require_no_second_issuer(fixture.host()).await;
+    require_no_second_issuer(fixture.host()?).await;
     assert!(matches!(
-        OriginalCircuitRetainedVersionHostV1::prepare_original_version_fixture(fixture.host())
+        OriginalCircuitRetainedVersionHostV1::prepare_original_version_fixture(fixture.host()?)
             .await,
         Err(OriginalCircuitRetainedVersionErrorV1::ReadbackRequired)
     ));
@@ -85,19 +86,19 @@ async fn retained_version_issuer_denied_once_keeps_actual_prepared_operation_rea
         binding.clone(),
         RetainedIssuerReplyV1::Denied,
     );
-    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()).await?;
+    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     peer.join()
         .map_err(|_| anyhow::anyhow!("original Root denial"))??;
     assert!(matches!(
-        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()).await,
+        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()?).await,
         Err(OriginalCircuitRetainedVersionErrorV1::FinalUseDenied)
     ));
     assert_eq!(
-        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host())
+        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host()?)
             .await?,
         binding
     );
-    require_no_second_issuer(fixture.host()).await;
+    require_no_second_issuer(fixture.host()?).await;
     assert_eq!(fixture.original.publication_bytes()?, before);
     assert_eq!(
         fixture.original.version.authority.capacity()?.used_nonces,
@@ -118,19 +119,19 @@ async fn retained_version_issuer_lost_ack_never_reissues_original_intent() -> an
         binding.clone(),
         RetainedIssuerReplyV1::LoseAck,
     );
-    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()).await?;
+    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     peer.join()
         .map_err(|_| anyhow::anyhow!("original Root lost acknowledgement"))??;
     assert!(matches!(
-        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()).await,
+        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()?).await,
         Err(OriginalCircuitRetainedVersionErrorV1::CommitUncertain)
     ));
     assert_eq!(
-        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host())
+        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host()?)
             .await?,
         binding
     );
-    require_no_second_issuer(fixture.host()).await;
+    require_no_second_issuer(fixture.host()?).await;
     assert_eq!(fixture.original.publication_bytes()?, before);
     assert_eq!(
         fixture.original.version.authority.capacity()?.used_nonces,
@@ -155,19 +156,19 @@ async fn retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose() -
         binding.clone(),
         RetainedIssuerReplyV1::Signed(grant),
     );
-    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()).await?;
+    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     peer.join()
         .map_err(|_| anyhow::anyhow!("wrong-purpose Root fixture"))??;
     assert!(matches!(
-        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()).await,
+        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()?).await,
         Err(OriginalCircuitRetainedVersionErrorV1::CommitUncertain)
     ));
     assert_eq!(
-        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host())
+        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host()?)
             .await?,
         binding
     );
-    require_no_second_issuer(fixture.host()).await;
+    require_no_second_issuer(fixture.host()?).await;
     assert_eq!(fixture.original.publication_bytes()?, before);
     assert_eq!(
         fixture.original.version.authority.capacity()?.used_nonces,
@@ -185,14 +186,14 @@ async fn retained_version_issuer_withdrawal_before_root_request_sends_no_frame()
     let before = fixture.original.publication_bytes()?;
     let nonces = fixture.original.version.authority.capacity()?.used_nonces;
     fixture.original.version.withdraw()?;
-    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()).await?;
+    OriginalCircuitRetainedVersionHostV1::run_original_issuer_fixture(fixture.host()?).await?;
     no_root_frame(fixture.root_peer.take().context("original Root peer")?)?;
     assert!(
-        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host())
+        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()?)
             .await
             .is_err()
     );
-    require_no_second_issuer(fixture.host()).await;
+    require_no_second_issuer(fixture.host()?).await;
     assert_eq!(fixture.original.publication_bytes()?, before);
     assert_eq!(
         fixture.original.version.authority.capacity()?.used_nonces,
@@ -209,7 +210,7 @@ async fn retained_version_issuer_queued_cancellation_sends_no_frame_and_never_re
     let (prepared, binding) = fixture.prepare().await?;
     let before = fixture.original.publication_bytes()?;
     let nonces = fixture.original.version.authority.capacity()?.used_nonces;
-    let host = fixture.host();
+    let host = fixture.host()?;
     std::thread::spawn(move || -> anyhow::Result<()> {
         let runtime = tokio::runtime::Builder::new_multi_thread()
             .worker_threads(1)
@@ -243,14 +244,15 @@ async fn retained_version_issuer_queued_cancellation_sends_no_frame_and_never_re
     .join()
     .map_err(|_| anyhow::anyhow!("queued original issuer runtime"))??;
     no_root_frame(fixture.root_peer.take().context("original Root peer")?)?;
-    require_no_second_issuer(fixture.host()).await;
+    require_no_second_issuer(fixture.host()?).await;
     assert_eq!(
-        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host())
+        OriginalCircuitRetainedVersionHostV1::read_original_final_use_binding(fixture.host()?)
             .await?,
         binding
     );
     assert_eq!(
-        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()).await?,
+        OriginalCircuitRetainedVersionHostV1::read_original_version_fixture(fixture.host()?)
+            .await?,
         prepared
     );
     assert_eq!(fixture.original.publication_bytes()?, before);

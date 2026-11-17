@@ -1,6 +1,7 @@
 //! Actual original Evaluator host mechanisms with explicit synthetic custody.
 //! The underlying real B and nonempty retention both evaluate as Ineligible.
 //! These tests neither deploy B measurement nor authorize version adoption.
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
@@ -254,7 +255,7 @@ impl crate::OriginalCellEvaluationHostV1 {
             fixture.config.signing.verifier.clone(),
             &evaluation,
             signatures,
-            fixture.host.as_ref().expect("original Evaluator"),
+            fixture.host.as_ref().context("original Evaluator")?,
             [
                 material.experience_signer.clone(),
                 material.dataset_signer.clone(),

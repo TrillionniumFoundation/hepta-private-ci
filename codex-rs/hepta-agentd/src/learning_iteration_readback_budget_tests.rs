@@ -59,16 +59,18 @@ impl LearningIterationOwnerPortsV1 for DelayedOwnerPorts {
 }
 
 #[tokio::test]
-async fn expired_learning_readback_allows_multiple_bounded_original_owner_reads() {
+async fn expired_learning_readback_allows_multiple_bounded_original_owner_reads()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let original = CurrentEvidencePorts::new();
+    let original = CurrentEvidencePorts::new()?;
     let mut request = iteration_request(&daemon);
     request.envelope.expiry_unix_seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
         - 1;
-    let snapshot = completed_snapshot(request, &original.inner, Decision::EvaluatedNoUpdate).await;
+    let snapshot =
+        completed_snapshot(request, &original.inner, Decision::EvaluatedNoUpdate).await?;
     install_checkpoint(&original.inner, &snapshot);
     let ports = Arc::new(DelayedOwnerPorts {
         inner: Arc::clone(&original),
@@ -96,19 +98,22 @@ async fn expired_learning_readback_allows_multiple_bounded_original_owner_reads(
     assert_no_work_or_checkpoint(&original.inner, &snapshot);
     cancellation.cancel();
     ok(ok(worker.await));
+    Ok(())
 }
 
 #[tokio::test]
-async fn stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing() {
+async fn stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let original = CurrentEvidencePorts::new();
+    let original = CurrentEvidencePorts::new()?;
     let mut request = iteration_request(&daemon);
     request.envelope.expiry_unix_seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
         - 1;
-    let snapshot = completed_snapshot(request, &original.inner, Decision::EvaluatedNoUpdate).await;
+    let snapshot =
+        completed_snapshot(request, &original.inner, Decision::EvaluatedNoUpdate).await?;
     install_checkpoint(&original.inner, &snapshot);
     let ports = Arc::new(DelayedOwnerPorts {
         inner: Arc::clone(&original),
@@ -140,19 +145,22 @@ async fn stalled_learning_readback_exhausts_its_budget_without_repeating_or_writ
     assert_no_work_or_checkpoint(&original.inner, &snapshot);
     cancellation.cancel();
     ok(ok(worker.await));
+    Ok(())
 }
 
 #[tokio::test]
-async fn learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint() {
+async fn learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint() -> anyhow::Result<()>
+{
     let daemon = AgentdFixture::new();
-    let original = CurrentEvidencePorts::new();
+    let original = CurrentEvidencePorts::new()?;
     let mut request = iteration_request(&daemon);
     request.envelope.expiry_unix_seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
         + 5;
-    let snapshot = completed_snapshot(request, &original.inner, Decision::EvaluatedNoUpdate).await;
+    let snapshot =
+        completed_snapshot(request, &original.inner, Decision::EvaluatedNoUpdate).await?;
     install_checkpoint(&original.inner, &snapshot);
     let ports = Arc::new(DelayedOwnerPorts {
         inner: Arc::clone(&original),
@@ -184,4 +192,5 @@ async fn learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint() 
     assert_no_work_or_checkpoint(&original.inner, &snapshot);
     cancellation.cancel();
     ok(ok(worker.await));
+    Ok(())
 }

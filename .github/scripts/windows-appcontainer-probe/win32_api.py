@@ -209,9 +209,37 @@ class Api:
         if handle:
             self.checked(self.CloseHandle(handle), "CloseHandle")
 
+    def token_dword(self, token, information_class):
+        value, returned = DWORD(), DWORD()
+        self.checked(
+            self.GetTokenInformation(
+                token,
+                information_class,
+                C.byref(value),
+                C.sizeof(value),
+                C.byref(returned),
+            ),
+            f"GetTokenInformation({information_class}) DWORD query "
+            f"(returned_bytes={returned.value})",
+        )
+        require(
+            returned.value == C.sizeof(value),
+            f"Token class {information_class} returned {returned.value} bytes for DWORD",
+        )
+        return value.value
+
     def token_bytes(self, token, information_class):
         needed = DWORD()
-        self.GetTokenInformation(token, information_class, None, 0, C.byref(needed))
+        sized = self.GetTokenInformation(
+            token, information_class, None, 0, C.byref(needed)
+        )
+        error = 0 if sized else C.get_last_error()
+        if not sized and error != 122:
+            raise OSError(
+                error,
+                f"GetTokenInformation({information_class}) size query "
+                f"(returned_bytes={needed.value})",
+            )
         require(0 < needed.value <= 65536, "bounded token query size")
         buffer = C.create_string_buffer(needed.value)
         self.checked(
@@ -239,8 +267,8 @@ class Api:
         package = self.token_bytes(token, 31)
         integrity = self.token_bytes(token, 25)
         return {
-            "is_appcontainer": DWORD.from_buffer(self.token_bytes(token, 29)).value,
-            "is_lpac": DWORD.from_buffer(self.token_bytes(token, 46)).value,
+            "is_appcontainer": self.token_dword(token, 29),
+            "is_lpac": self.token_dword(token, 46),
             "package_sid": self.sid_text(PTR.from_buffer(package).value),
             "integrity_sid": self.sid_text(PTR.from_buffer(integrity).value),
             "user_sid": self.user_sid(token),

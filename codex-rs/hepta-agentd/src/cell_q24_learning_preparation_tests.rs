@@ -45,10 +45,13 @@ pub(super) fn prepare(
     )?;
     let payload = preparation.signing_payload()?;
     let authorization = sign(
-        &dataset.ledger.lock().unwrap(),
+        &*dataset
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?,
         LearningEvidenceRoleV1::Evaluator,
         &payload,
-    );
+    )?;
     Ok(preparation.materialize(authorization)?)
 }
 
@@ -67,8 +70,8 @@ fn dataset_cut(
     ] {
         let mut receipt = learning_test_receipt(&coordinator, observation);
         receipt.evidence_digest = evidence;
-        receipt.observed_unix_seconds = now();
-        coordinator.record(receipt, now())?;
+        receipt.observed_unix_seconds = now()?;
+        coordinator.record(receipt, now()?)?;
     }
     Ok(coordinator.snapshot().clone())
 }
@@ -212,7 +215,7 @@ async fn q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer() -> a
             "principal" => wrong.request.principal_id = cell::id("different-principal"),
             "objective" => wrong.request.envelope.objective_digest = cell::d("different-objective"),
             "baseline" => wrong.projection.baseline_bundle = cell::d("different-baseline"),
-            "expired" => wrong.request.envelope.expiry_unix_seconds = now() - 1,
+            "expired" => wrong.request.envelope.expiry_unix_seconds = now()? - 1,
             _ => unreachable!(),
         }
         assert!(
@@ -235,7 +238,7 @@ async fn q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer() -> a
         &dataset.ledger.lock().unwrap(),
         LearningEvidenceRoleV1::Observer,
         &payload,
-    );
+    )?;
     assert!(matches!(
         preparation.materialize(authorization),
         Err(Error::Ledger(_))
@@ -268,7 +271,7 @@ async fn q24_preparation_rejects_changed_freeze_cut_and_current_correction() -> 
         &dataset.ledger.lock().unwrap(),
         LearningEvidenceRoleV1::Evaluator,
         &payload,
-    );
+    )?;
     dataset.correct()?;
     assert!(matches!(
         pending.signing_payload(),

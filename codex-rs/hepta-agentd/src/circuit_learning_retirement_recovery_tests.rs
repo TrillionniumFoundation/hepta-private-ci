@@ -1,6 +1,7 @@
 //! Retain the ACK/retirement crash boundary on real SQLite. These fixture
 //! owners cannot execute or authenticate learning and grant no acceptance.
 
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use sqlx::SqlitePool;
 
@@ -61,18 +62,18 @@ impl LearningIterationOwnerPortsV1 for UnavailableLearningPorts {
 async fn acknowledged_before_retirement(
     daemon: &AgentdFixture,
     original: &CurrentEvidencePorts,
-) -> (
+) -> anyhow::Result<(
     AutomationStore,
     LearningIterationRequestV1,
     CircuitLearningDeliveryV1,
-) {
-    let (store, request) = completed_circuit_named(daemon, "ack-crash-window").await;
+)> {
+    let (store, request) = completed_circuit_named(daemon, "ack-crash-window").await?;
     let snapshot = completed_snapshot(
         request.clone(),
         &original.inner,
         Decision::EvaluatedNoUpdate,
     )
-    .await;
+    .await?;
     let initial = ok(LearningIterationCoordinatorV1::new(
         request.clone(),
         original.inner.owners(),
@@ -83,7 +84,7 @@ async fn acknowledged_before_retirement(
     let intent = ok(store
         .circuit_learning_delivery(request.source_run_id.as_str())
         .await)
-    .unwrap()
+    .context("original circuit learning intent")?
     .intent;
     assert!(ok(store
         .claim_circuit_learning(&intent, &request_digest)
@@ -98,7 +99,7 @@ async fn acknowledged_before_retirement(
     let acknowledged = ok(store
         .circuit_learning_delivery(request.source_run_id.as_str())
         .await)
-    .unwrap();
+    .context("original acknowledged circuit learning delivery")?;
     // Drop the only database owner before reopening the crash-boundary bytes.
     store.close().await;
     drop(store);
@@ -109,20 +110,20 @@ async fn acknowledged_before_retirement(
             .await),
         Some(acknowledged.clone())
     );
-    (reopened, request, acknowledged)
+    Ok((reopened, request, acknowledged))
 }
 
-async fn inspect(store: &AutomationStore) -> SqlitePool {
+async fn inspect(store: &AutomationStore) -> anyhow::Result<SqlitePool> {
     let sqlite_home = ok(codex_utils_absolute_path::AbsolutePathBuf::try_from(
         store
             .path()
             .parent()
-            .expect("the durable store has a parent directory")
+            .context("the durable store has a parent directory")?
             .to_path_buf(),
     ));
-    ok(codex_state::SqliteConfig::new_for_testing(sqlite_home)
+    Ok(ok(codex_state::SqliteConfig::new_for_testing(sqlite_home)
         .open_read_only_pool(store.path())
-        .await)
+        .await))
 }
 
 async fn retired(pool: &SqlitePool, request: &LearningIterationRequestV1) -> i64 {
@@ -136,11 +137,12 @@ async fn retired(pool: &SqlitePool, request: &LearningIterationRequestV1) -> i64
 }
 
 #[tokio::test]
-async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_owners() {
+async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_owners()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let original = CurrentEvidencePorts::new();
-    let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await;
-    let inspection = inspect(&store).await;
+    let original = CurrentEvidencePorts::new()?;
+    let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await?;
+    let inspection = inspect(&store).await?;
     assert_eq!(retired(&inspection, &request).await, 0);
     let write_attempt = sqlx::query(
         "UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?",
@@ -197,15 +199,17 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
     inspection.close().await;
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutation() {
+async fn ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutation()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let original = CurrentEvidencePorts::new();
+    let original = CurrentEvidencePorts::new()?;
     let owners = original.inner.owners();
-    let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await;
-    let inspection = inspect(&store).await;
+    let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await?;
+    let inspection = inspect(&store).await?;
     let mut changed = vec![request.clone(); 5];
     changed[0].source_run_id = id("other-source");
     changed[1].operation_id = id("other-operation");
@@ -254,4 +258,5 @@ async fn ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutati
     );
     inspection.close().await;
     store.close().await;
+    Ok(())
 }

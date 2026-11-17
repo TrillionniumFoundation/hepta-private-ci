@@ -11,6 +11,7 @@ use crate::CircuitTaskSourceInputV1;
 use crate::DurableCircuitTaskSourceV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::PublishedCircuitFeatureTaskV1;
+use anyhow::Context;
 use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use std::fs::File;
 
@@ -107,6 +108,7 @@ pub(super) struct Reopened {
     pub cell: crate::PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
     cancellation: CancellationToken,
     worker: Option<tokio::task::JoinHandle<Result<(), crate::AgentdError>>>,
+    clock: FixtureClock,
 }
 impl Reopened {
     pub async fn stop(&mut self) -> anyhow::Result<()> {
@@ -114,7 +116,7 @@ impl Reopened {
         if let Some(worker) = self.worker.take() {
             timeout(Duration::from_secs(5), worker).await???;
         }
-        Ok(())
+        self.clock.check()
     }
 }
 impl Drop for Reopened {
@@ -165,6 +167,8 @@ pub(super) async fn reopen(
     let circuit = self::registry(published_task.definition())?;
     let (_, bindings) = super::super::super::configuration();
     let cell_deadline = source.deadline_micros;
+    let clock = FixtureClock::default();
+    let callback_clock = clock.clone();
     let profile = CircuitQ24TaskProfileV1 {
         files: CircuitQ24TaskFilesV1 {
             source_journal: file(identity, "q24-source.journal")?,
@@ -194,7 +198,7 @@ pub(super) async fn reopen(
         // Advancing past the original Cell deadline must still read completed
         // work; it cannot authorize a new dispatch or recalculate its costs.
         clock: Arc::new(move || crate::CircuitCellTimeV1 {
-            circuit_millis: crate::authbus_ingress::now_ms().expect("wall clock"),
+            circuit_millis: callback_clock.wall_millis(),
             cell_micros: cell_deadline + 1,
         }),
     };
@@ -205,7 +209,7 @@ pub(super) async fn reopen(
     let (bootstrap, invocation) = installed
         .config
         .take_circuit_task_bootstrap()?
-        .expect("recovered ordinary profile");
+        .context("recovered ordinary profile")?;
     runtime
         .state
         .attach_automation_store(AutomationStore::open(&identity.layout).await?)?;
@@ -226,5 +230,6 @@ pub(super) async fn reopen(
         cell: installed.cell,
         cancellation,
         worker: Some(worker),
+        clock,
     })
 }

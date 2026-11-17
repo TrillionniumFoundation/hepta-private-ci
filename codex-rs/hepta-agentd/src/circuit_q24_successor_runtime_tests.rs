@@ -67,7 +67,7 @@ async fn pending_and_closed_views_refuse_a_real_authenticated_task_without_queui
         assert_eq!(handle.pending_count(), 0);
         assert_eq!(f.calls.load(Ordering::SeqCst), 1);
     }
-    f.stop().await;
+    f.stop().await?;
     f.store.close().await;
     Ok(())
 }
@@ -99,7 +99,7 @@ async fn successor_effect_gate_rechecks_actual_draining_and_full_identity() -> a
         crate::cell_q24_publication_driver::require_successor_admission(state, identity).is_err()
     );
     assert_eq!(f.calls.load(Ordering::SeqCst), 0);
-    f.stop().await;
+    f.stop().await?;
     f.store.close().await;
     Ok(())
 }

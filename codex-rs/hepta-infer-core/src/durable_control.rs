@@ -11,8 +11,19 @@ use std::io::BufReader;
 use std::io::Read;
 use std::io::Seek;
 use std::io::Write;
+#[cfg(unix)]
+use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Instant;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 
 #[path = "generation_control.rs"]
 pub mod generation;
@@ -187,6 +198,8 @@ pub struct DurableInferenceControl {
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
+    metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
 }
 
 impl Drop for DurableInferenceControl {
@@ -198,6 +211,106 @@ impl Drop for DurableInferenceControl {
 }
 
 impl DurableInferenceControl {
+    /// Production serving entrance: the WAL must reside in a pre-provisioned,
+    /// non-world-writable directory, with an owner-private, unaliased file.
+    ///
+    /// Callers must already control the complete directory namespace. These
+    /// checks inspect only the immediate parent and final file; they do not
+    /// verify ownership IDs or bind ancestors against concurrent replacement.
+    /// Opening may create an empty WAL before the final identity comparison.
+    ///
+    /// This is stricter than `open`, which remains available for migration,
+    /// repair and qualification. The read-only checks cannot authorize a
+    /// dispatch: the existing single-writer lock and effect owner still apply.
+    #[cfg(unix)]
+    pub fn open_production(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        let path = path.as_ref();
+        Self::check_production_path(path)?;
+        let opened = Self::open(path, capacity)?;
+        // Reject an observed final-path mismatch after open; callers retain
+        // responsibility for preventing namespace changes throughout opening.
+        Self::check_production_path(path)?;
+        let actual = opened.file.metadata()?;
+        let on_path = fs::symlink_metadata(path)?;
+        if !actual.is_file() || !on_path.file_type().is_file() {
+            return Err(Error::InvalidIdentity("unsafe production WAL file"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            use std::os::unix::fs::PermissionsExt;
+            if actual.permissions().mode() & 0o077 != 0
+                || on_path.permissions().mode() & 0o077 != 0
+                || actual.nlink() != 1
+                || actual.dev() != on_path.dev()
+                || actual.ino() != on_path.ino()
+            {
+                return Err(Error::InvalidIdentity("unsafe production WAL inode"));
+            }
+        }
+        Ok(opened)
+    }
+
+    /// The non-Unix implementation has no audited owner-only ACL and
+    /// directory-entry durability guarantee. Even direct callers of the core
+    /// API must not bypass the worker's fail-closed production startup.
+    #[cfg(not(unix))]
+    pub fn open_production(_path: impl AsRef<Path>, _capacity: usize) -> Result<Self, Error> {
+        Err(Error::InvalidIdentity(
+            "production WAL durability is unverified on this platform",
+        ))
+    }
+
+    #[cfg(unix)]
+    fn check_production_path(path: &Path) -> Result<(), Error> {
+        if !path.is_absolute()
+            || path.file_name().is_none()
+            || path
+                .components()
+                .any(|component| component == Component::ParentDir)
+        {
+            return Err(Error::InvalidIdentity(
+                "production WAL path must be absolute and free of parent traversal",
+            ));
+        }
+        let directory = path
+            .parent()
+            .ok_or(Error::InvalidIdentity("production WAL parent missing"))?;
+        let parent = fs::symlink_metadata(directory)?;
+        if !parent.is_dir() || parent.file_type().is_symlink() {
+            return Err(Error::InvalidIdentity("unsafe production WAL directory"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if parent.permissions().mode() & 0o022 != 0 {
+                return Err(Error::InvalidIdentity(
+                    "production WAL directory is writable by others",
+                ));
+            }
+        }
+        match fs::symlink_metadata(path) {
+            Ok(metadata) => {
+                if !metadata.file_type().is_file() {
+                    return Err(Error::InvalidIdentity("unsafe production WAL path"));
+                }
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::MetadataExt;
+                    use std::os::unix::fs::PermissionsExt;
+                    if metadata.permissions().mode() & 0o077 != 0 || metadata.nlink() != 1 {
+                        return Err(Error::InvalidIdentity(
+                            "production WAL file must be private",
+                        ));
+                    }
+                }
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(Error::from(error)),
+        }
+        Ok(())
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);
@@ -289,13 +402,6 @@ impl DurableInferenceControl {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
             if records.len() + native.records.len() + generation.records.len() > capacity
-                || records.keys().any(|id| {
-                    native.records.contains_key(id) || generation.records.contains_key(id)
-                })
-                || native
-                    .records
-                    .keys()
-                    .any(|id| generation.records.contains_key(id))
                 || journal_bytes
                     .checked_add(generation.reserved_bytes()?)
                     .ok_or(Error::ArithmeticOverflow)?
@@ -303,6 +409,18 @@ impl DurableInferenceControl {
             {
                 return Err(Error::CapacityExceeded);
             }
+        }
+        // Replay checks the three bounded namespaces once, after every
+        // event has been validated. No owner is returned for a colliding ID.
+        if records
+            .keys()
+            .any(|id| native.records.contains_key(id) || generation.records.contains_key(id))
+            || native
+                .records
+                .keys()
+                .any(|id| generation.records.contains_key(id))
+        {
+            return Err(Error::CapacityExceeded);
         }
         if journal_bytes
             .checked_add(generation.reserved_bytes()?)
@@ -320,7 +438,33 @@ impl DurableInferenceControl {
             capacity,
             journal_bytes,
             poisoned: false,
+            metrics: None,
+            failed_metrics: AtomicU64::new(0),
         })
+    }
+
+    /// Evidence owns WAL telemetry persistence; attaching a sink grants no authority.
+    pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metrics = Some(sink);
+        self
+    }
+
+    /// Strict qualification requires a healthy, non-lossy sink and a durable flush.
+    pub fn production_metrics_ready(&self) -> bool {
+        !self.poisoned
+            && self.metrics.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metrics else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     pub fn submit(
@@ -506,12 +650,20 @@ impl DurableInferenceControl {
         }
         // Reject invalid transitions before durable append; a rejected command
         // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        // Only the affected record is cloned/validated before durable append.
+        // A failed append leaves memory unchanged and poisons this owner.
+        let request_id = event.request_id().to_string();
+        let mut candidate = BTreeMap::new();
+        if let Some(current) = self.records.get(&request_id) {
+            candidate.insert(request_id.clone(), current.clone());
+        }
+        apply_event(&mut candidate, &event, /*replay*/ false)?;
+        let next_record = candidate
+            .remove(&request_id)
+            .ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), next_record);
         let record = self
             .records
             .get(&request_id)
@@ -552,11 +704,31 @@ impl DurableInferenceControl {
         generation_reserved: u64,
     ) -> Result<(), Error> {
         let next_bytes = self.ensure_append_capacity(encoded, generation_reserved)?;
+        let started = Instant::now();
+        // Unwinding from observational callbacks after an append must not
+        // leave a live writer whose in-memory history missed durable bytes.
+        self.poisoned = true;
         let persisted = self
             .file
             .write_all(encoded.as_bytes())
             .and_then(|()| self.file.flush())
             .and_then(|()| self.file.sync_all());
+        // WAL telemetry is observational only. An Evidence outage never masks a
+        // successfully fsynced event or makes the control owner retry its effect.
+        if let Some(sink) = &self.metrics
+            && sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(self.path.to_string_lossy().as_bytes()),
+                    operation_digest: Digest32::of_bytes(encoded.as_bytes()),
+                    phase: PhaseMetricKindV1::Wal,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: persisted.is_ok(),
+                })
+                .is_err()
+        {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+        }
         if let Err(error) = persisted {
             // A partial write or failed sync has an unknown durable outcome.
             // Keep this owner fenced until explicit inspection and reopen.
@@ -564,6 +736,7 @@ impl DurableInferenceControl {
             return Err(error.into());
         }
         self.journal_bytes = next_bytes;
+        self.poisoned = false;
         Ok(())
     }
 }
@@ -989,3 +1162,11 @@ mod history_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "durable_control_file_tests.rs"]
 mod file_tests;
+
+#[cfg(test)]
+#[path = "durable_scaling_tests.rs"]
+mod scaling_tests;
+
+#[cfg(test)]
+#[path = "durable_metrics_panic_tests.rs"]
+mod metrics_panic_tests;

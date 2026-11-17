@@ -70,7 +70,7 @@ async fn original_evaluation_provider_releases_actual_b_and_retention_only_after
         .await?;
         let config = b.config(&original, &registration)?;
         let source_before = b.source_bytes()?;
-        let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
+        let mut cohort = CohortAt::read(b.owners()?, config, b.at)?;
         let metadata = cohort.original.observed_manifest_digest()?;
         let ledger_before = cohort.bytes()?;
         assert_eq!(cohort.current()?, metadata);
@@ -143,7 +143,7 @@ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_re
         )
         .await?;
         let config = b.config(&original, &registration)?;
-        let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
+        let mut cohort = CohortAt::read(b.owners()?, config, b.at)?;
         let original_manifest = cohort.current()?;
         let mut restore = None;
         match mutation {
@@ -205,7 +205,7 @@ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_re
         )
         .await?;
         let config = b.config(&original, &registration)?;
-        let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
+        let mut cohort = CohortAt::read(b.owners()?, config, b.at)?;
         let before = cohort.bytes()?;
         let source_before = b.source_bytes()?;
         let mut runner = ProviderPlanFixture::new(
@@ -254,7 +254,7 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
             .await?;
         let config = b.config(&original, &registration)?;
         let bytes = b.source_bytes()?;
-        assert!(CohortAt::read(b.owners(), config, b.at).is_err());
+        assert!(CohortAt::read(b.owners()?, config, b.at).is_err());
         assert_eq!(b.source_bytes()?, bytes);
     }
     for mutation in ["freeze-renewal", "training-renewal", "expired-window"] {
@@ -266,7 +266,7 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
         )
         .await?;
         let config = b.config(&original, &registration)?;
-        let mut cohort = CohortAt::read(b.owners(), config, b.at)?;
+        let mut cohort = CohortAt::read(b.owners()?, config, b.at)?;
         let before = cohort.bytes()?;
         if mutation == "expired-window" {
             let expires_at = cohort.original_config().training_evidence.expires_at;
@@ -294,7 +294,7 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
                 cohort.original_config().training_evidence.clone()
             };
             signed.expires_at += 1;
-            signed.evidence_id = id(&format!("valid-original-{mutation}"));
+            signed.evidence_id = id(&format!("valid-original-{mutation}"))?;
             signed.signature =
                 SigningKey::from_bytes(&[if mutation == "freeze-renewal" { 42 } else { 41 }; 32])
                     .sign(&signed.signing_bytes())
@@ -339,7 +339,7 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
     )
     .await?;
     let config = b.config(&original, &registration)?;
-    let cohort = CohortAt::read(b.owners(), config, b.at)?;
+    let cohort = CohortAt::read(b.owners()?, config, b.at)?;
     let mut runner = ProviderPlanFixture::new(
         &cohort.original,
         &b.rule,

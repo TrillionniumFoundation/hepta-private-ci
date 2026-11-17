@@ -1,5 +1,6 @@
 //! Real control sockets exercise ownership; private receipts are never fabricated.
 
+use anyhow::Context;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -25,37 +26,43 @@ use crate::AgentdState;
 use crate::RuntimeTasks;
 use crate::runtime::source_capture::run_until_original_source_drain;
 
-async fn await_accepted(state: &Arc<AgentdState>) {
+async fn await_accepted(state: &Arc<AgentdState>) -> anyhow::Result<()> {
     timeout(Duration::from_secs(1), async {
         while Arc::strong_count(state) < 3 {
             tokio::task::yield_now().await;
         }
     })
     .await
-    .expect("the real control supervisor accepted the connection");
+    .context("the real control supervisor accepted the connection")?;
+    Ok(())
 }
 
-async fn finish_health(stream: &mut UnixStream) {
+async fn finish_health(stream: &mut UnixStream) -> anyhow::Result<()> {
     let request = AgentdRequest {
         schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
         request_id: 91,
         spawn_generation: 1,
         method: AgentdMethod::Health,
     };
-    let mut bytes = serde_json::to_vec(&request).expect("encode health");
+    let mut bytes = serde_json::to_vec(&request).context("encode health")?;
     bytes.push(b'\n');
-    stream.write_all(&bytes).await.expect("send real request");
+    stream
+        .write_all(&bytes)
+        .await
+        .context("send real request")?;
     let mut response = Vec::new();
     timeout(Duration::from_secs(1), stream.read_to_end(&mut response))
         .await
-        .expect("bounded real response")
-        .expect("read response");
-    let response: AgentdResponse = serde_json::from_slice(&response).expect("decode response");
+        .context("bounded real response")?
+        .context("read response")?;
+    let response: AgentdResponse = serde_json::from_slice(&response).context("decode response")?;
     assert_eq!(response.request_id, request.request_id);
+    Ok(())
 }
 
 #[tokio::test]
-async fn source_capture_control_waits_for_accepted_connection_before_join_receipt() {
+async fn source_capture_control_waits_for_accepted_connection_before_join_receipt()
+-> anyhow::Result<()> {
     let fixture = runtime_fixture();
     let cancellation = CancellationToken::new();
     let mut server = AgentdControlServer::bind(
@@ -70,7 +77,7 @@ async fn source_capture_control_waits_for_accepted_connection_before_join_receip
     let mut stream = UnixStream::connect(&fixture.identity.control_socket)
         .await
         .expect("connect");
-    await_accepted(&fixture.state).await;
+    await_accepted(&fixture.state).await?;
     cancellation.cancel();
     assert!(
         timeout(Duration::from_millis(20), &mut running)
@@ -78,7 +85,7 @@ async fn source_capture_control_waits_for_accepted_connection_before_join_receip
             .is_err(),
         "shutdown must wait for the already accepted request"
     );
-    finish_health(&mut stream).await;
+    finish_health(&mut stream).await?;
     running
         .await
         .expect("join supervisor")
@@ -87,10 +94,12 @@ async fn source_capture_control_waits_for_accepted_connection_before_join_receip
         .require_original_control_join()
         .expect("actual join receipt");
     assert_eq!(Arc::strong_count(&fixture.state), 1);
+    Ok(())
 }
 
 #[tokio::test]
-async fn source_capture_control_retains_connection_error_without_stopping_other_requests() {
+async fn source_capture_control_retains_connection_error_without_stopping_other_requests()
+-> anyhow::Result<()> {
     let fixture = runtime_fixture();
     let cancellation = CancellationToken::new();
     let mut server = AgentdControlServer::bind(
@@ -117,15 +126,16 @@ async fn source_capture_control_retains_connection_error_without_stopping_other_
     let mut valid = UnixStream::connect(&fixture.identity.control_socket)
         .await
         .expect("connect after failed request");
-    finish_health(&mut valid).await;
+    finish_health(&mut valid).await?;
     cancellation.cancel();
     assert!(running.await.expect("join supervisor").is_err());
     assert!(receipt.require_original_control_join().is_err());
     assert_eq!(Arc::strong_count(&fixture.state), 1);
+    Ok(())
 }
 
 #[tokio::test]
-async fn source_capture_control_supervisor_abort_cannot_acknowledge_join() {
+async fn source_capture_control_supervisor_abort_cannot_acknowledge_join() -> anyhow::Result<()> {
     let fixture = runtime_fixture();
     let cancellation = CancellationToken::new();
     let mut server = AgentdControlServer::bind(
@@ -146,7 +156,7 @@ async fn source_capture_control_supervisor_abort_cannot_acknowledge_join() {
     let mut stream = UnixStream::connect(&fixture.identity.control_socket)
         .await
         .expect("connect pending frame");
-    await_accepted(&fixture.state).await;
+    await_accepted(&fixture.state).await?;
     tasks
         .run_until(async { Ok(()) })
         .await
@@ -159,6 +169,7 @@ async fn source_capture_control_supervisor_abort_cannot_acknowledge_join() {
         .expect("read EOF");
     assert_eq!(bytes, Vec::<u8>::new());
     assert_eq!(Arc::strong_count(&fixture.state), 1);
+    Ok(())
 }
 
 #[tokio::test]

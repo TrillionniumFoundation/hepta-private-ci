@@ -61,7 +61,7 @@ async fn original_learning_source_joins_signed_objective_and_committed_circuit_w
         pending
     );
     assert_eq!(f.calls.load(Ordering::SeqCst), 1);
-    f.stop().await;
+    f.stop().await?;
     Ok(())
 }
 
@@ -92,7 +92,7 @@ async fn original_learning_source_rejects_foreign_operation_result_objective_and
     assert_eq!(pending[0].request_digest, None);
     assert_eq!(pending[0].acknowledged_head, None);
     assert_eq!(f.calls.load(Ordering::SeqCst), 1);
-    f.stop().await;
+    f.stop().await?;
     Ok(())
 }
 
@@ -116,7 +116,7 @@ async fn original_learning_source_revalidates_current_issuer_after_prior_success
     assert_eq!(pending[0].request_digest, None);
     assert_eq!(pending[0].acknowledged_head, None);
     assert_eq!(f.calls.load(Ordering::SeqCst), 1);
-    f.stop().await;
+    f.stop().await?;
     Ok(())
 }
 
@@ -125,7 +125,7 @@ async fn original_learning_source_survives_new_consumer_generation_without_readm
 -> anyhow::Result<()> {
     let (mut f, request) = completed_source().await?;
     let record = f.invocation.records.lock().expect("record")[0].clone();
-    f.stop().await;
+    f.stop().await?;
     let mut generation = f.runtime.state.current_generation()?;
     for lifecycle in [
         AgentLifecycle::Draining,

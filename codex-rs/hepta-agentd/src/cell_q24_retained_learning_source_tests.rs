@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::OriginalCellQ24RetainedLearningSourceV1;
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 
 async fn completed_prepared(
@@ -11,15 +12,15 @@ async fn completed_prepared(
     Arc<crate::CellQ24PreparedLearningV1>,
     codex_hepta_automation::AutomationStore,
 )> {
-    let outcome = f.outcome();
-    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    let outcome = f.outcome()?;
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
     f.producer
         .submit_original_terminal_outcome(outcome, &signed)?;
     let store = f.session.runtime.state.circuit_task_store()?;
     let trace = store
         .bounded_circuit_committed_trace(f.publication.input().scope.run_id.as_str())
         .await?
-        .expect("actual original committed task");
+        .context("actual original committed task")?;
     let intent = store
         .enqueue_circuit_learning(
             &trace,

@@ -17,11 +17,16 @@ pub(super) struct Credentials {
     dataset: TrustedLearningSignerV1,
 }
 
-fn signer(name: &str, role: LearningEvidenceRoleV1, seed: u8, at: u64) -> TrustedLearningSignerV1 {
+fn signer(
+    name: &str,
+    role: LearningEvidenceRoleV1,
+    seed: u8,
+    at: u64,
+) -> anyhow::Result<TrustedLearningSignerV1> {
     let key = SigningKey::from_bytes(&[seed; 32]);
-    TrustedLearningSignerV1 {
+    Ok(TrustedLearningSignerV1 {
         principal: AuthenticatedPrincipalV1 {
-            principal_id: id(name),
+            principal_id: id(name)?,
             credential_chain_digest: d(&format!("explicit-positive-{name}-credential")),
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
             scope_digest: d("explicit-positive-original-trust"),
@@ -29,11 +34,11 @@ fn signer(name: &str, role: LearningEvidenceRoleV1, seed: u8, at: u64) -> Truste
             authenticated_at: at - 60,
             expires_at: at + 2_400,
         },
-        controller_id: id(&format!("explicit-positive-{name}-controller")),
+        controller_id: id(&format!("explicit-positive-{name}-controller"))?,
         verifying_key: key.verifying_key().to_bytes(),
         roles: vec![role],
         revoked_at: None,
-    }
+    })
 }
 
 pub(super) fn sign(
@@ -42,12 +47,12 @@ pub(super) fn sign(
     seed: u8,
     payload: &[u8],
     at: u64,
-) -> SignedLearningEvidenceV1 {
+) -> anyhow::Result<SignedLearningEvidenceV1> {
     let mut evidence = SignedLearningEvidenceV1 {
         evidence_id: id(&format!(
             "explicit-positive-evidence:{}",
             Digest32::of_bytes(payload)
-        )),
+        ))?,
         principal_id: signer.principal.principal_id.clone(),
         role: signer.roles[0],
         trust_digest: verifier.trust_digest(),
@@ -62,7 +67,7 @@ pub(super) fn sign(
     evidence.signature = SigningKey::from_bytes(&[seed; 32])
         .sign(&evidence.signing_bytes())
         .to_bytes();
-    evidence
+    Ok(evidence)
 }
 
 pub(super) fn ledger(
@@ -84,37 +89,37 @@ pub(super) fn ledger_at(
             LearningEvidenceRoleV1::Generator,
             41,
             at,
-        ),
+        )?,
         evaluator: signer(
             "positive-evaluator",
             LearningEvidenceRoleV1::Evaluator,
             42,
             at,
-        ),
-        observer: signer("positive-outcome", LearningEvidenceRoleV1::Observer, 43, at),
+        )?,
+        observer: signer("positive-outcome", LearningEvidenceRoleV1::Observer, 43, at)?,
         experience: signer(
             "positive-experience",
             LearningEvidenceRoleV1::Observer,
             44,
             at,
-        ),
-        dataset: signer("positive-dataset", LearningEvidenceRoleV1::Observer, 45, at),
+        )?,
+        dataset: signer("positive-dataset", LearningEvidenceRoleV1::Observer, 45, at)?,
         selector: signer(
             "positive-selector",
             LearningEvidenceRoleV1::Selector,
             46,
             at,
-        ),
+        )?,
         unlearning: signer(
             "positive-unlearning",
             LearningEvidenceRoleV1::UnlearningAuthority,
             48,
             at,
-        ),
+        )?,
     };
     let mut distribution = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
-            distribution_id: id("explicit-positive-trust-distribution"),
+            distribution_id: id("explicit-positive-trust-distribution")?,
             generation: 1,
             effective_at: at - 40,
             trust: LearningEvidenceTrustV1 {
@@ -132,7 +137,7 @@ pub(super) fn ledger_at(
                 ],
             },
         },
-        root_id: id("explicit-positive-root"),
+        root_id: id("explicit-positive-root")?,
         issued_at: at - 45,
         expires_at: at + 3_000,
         signature: [0; 64],
@@ -174,7 +179,7 @@ pub(super) fn decision(
         .collect::<Vec<_>>();
     let record = ProductionDecisionV2 {
         record_id: source.scope.run_id.clone(),
-        episode_id: id("positive-original-episode"),
+        episode_id: id("positive-original-episode")?,
         run_snapshot_digest: source.ndu_snapshot_digest,
         objective_digest: source.objective_digest,
         policy_digest: d("explicit-positive-policy"),
@@ -182,7 +187,7 @@ pub(super) fn decision(
         selected_candidate_id: candidates[0].clone(),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id("explicit-positive-candidates"),
+            set_id: id("explicit-positive-candidates")?,
             state_digest: d("explicit-positive-decision-state"),
             generator_id: credentials.generator.principal.principal_id.clone(),
             generator_code_digest: d("explicit-positive-generator-code"),
@@ -204,7 +209,7 @@ pub(super) fn decision(
         41,
         &decision_signing_payload_v2(&record)?,
         at,
-    );
+    )?;
     writer.append_decision(Digest32::ZERO, record, &evidence, at)?;
     Ok(())
 }
@@ -226,9 +231,9 @@ pub(super) fn terminal_outcome_with_value(
     let at = now()?;
     // Explicit independent terminal target, fixed before any material read.
     let outcome = AuthenticatedOutcomeV1 {
-        record_id: id("positive-original-outcome-record"),
-        outcome_id: id("positive-original-outcome"),
-        episode_id: id("positive-original-episode"),
+        record_id: id("positive-original-outcome-record")?,
+        outcome_id: id("positive-original-outcome")?,
+        episode_id: id("positive-original-episode")?,
         observer: credentials.observer.principal.clone(),
         observed_at: Some(at),
         value: Some(value),
@@ -249,7 +254,7 @@ pub(super) fn terminal_outcome_with_value(
         43,
         &outcome_signing_payload_v2(&outcome),
         at,
-    );
+    )?;
     writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;
     Ok(())
 }
@@ -302,8 +307,8 @@ pub(super) fn unstarted_material_with_profile(
     let input = publication.input();
     let initial = LearningIterationCoordinatorV1::new(
         LearningIterationRequestV1 {
-            operation_id: id("positive-original-learning-operation"),
-            principal_id: id(&input.scope.principal_digest.to_string()),
+            operation_id: id("positive-original-learning-operation")?,
+            principal_id: id(&input.scope.principal_digest.to_string())?,
             agent_id: input.scope.agent_id.clone(),
             cell_id: input.scope.cell_id.clone(),
             source_run_id: input.scope.run_id.clone(),
@@ -312,7 +317,7 @@ pub(super) fn unstarted_material_with_profile(
             selected_bundle: bundle.clone(),
             evaluation_profile,
             envelope: IterationEnvelopeV1 {
-                envelope_id: id("positive-original-envelope"),
+                envelope_id: id("positive-original-envelope")?,
                 base_commit: d("0bfe47e53bae47977c4423362e4d3823edac99fd"),
                 base_tree: d("8663f89daca111ba7f681d2c36442f6f4ded97f5"),
                 objective_digest: input.objective_digest,
@@ -337,7 +342,7 @@ pub(super) fn unstarted_material_with_profile(
             dataset: credentials.dataset.principal.principal_id.clone(),
             trainer: credentials.generator.principal.principal_id.clone(),
             evaluator: credentials.evaluator.principal.principal_id.clone(),
-            proposal: id("positive-original-model"),
+            proposal: id("positive-original-model")?,
             selector: credentials.selector.principal.principal_id.clone(),
             next_use_observer,
         },
@@ -349,7 +354,7 @@ pub(super) fn unstarted_material_with_profile(
         unit_profile_digest: d("explicit-positive-terminal-unit"),
     };
     let freeze_plan = DatasetFreezePlanV2 {
-        snapshot_id: id("positive-original-dataset"),
+        snapshot_id: id("positive-original-dataset")?,
         objective_digest: input.objective_digest,
         inclusion_policy_digest: rule.inclusion_policy_digest(&initial)?,
     };
@@ -359,7 +364,7 @@ pub(super) fn unstarted_material_with_profile(
         42,
         &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?,
         now()?,
-    );
+    )?;
     let observed = crate::CellQ24DatasetReaderV1::new(source, identity, writer).read_current(
         &initial,
         baseline,
@@ -417,7 +422,7 @@ pub(super) fn material_with_profile(
         bundle,
         publication,
         evaluation_profile,
-        id("unused-positive-next-use-role"),
+        id("unused-positive-next-use-role")?,
     )?;
     let input = publication.input();
     let initial = config.initial.clone();

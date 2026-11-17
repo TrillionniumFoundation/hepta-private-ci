@@ -9,7 +9,8 @@ use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
-async fn scoped_readback_rechecks_training_for_every_completed_decision_without_work() {
+async fn scoped_readback_rechecks_training_for_every_completed_decision_without_work()
+-> anyhow::Result<()> {
     let mutations: [Option<fn(&mut CellCompatibilityBundleV1)>; 2] = [
         None,
         Some(|candidate| candidate.components.base = digest("outside-frozen-base")),
@@ -32,7 +33,7 @@ async fn scoped_readback_rechecks_training_for_every_completed_decision_without_
             ports.scope_binding = Some(scope.binding());
             ports.training_mutation = mutation;
             let ports = Arc::new(ports);
-            let snapshot = completed_snapshot(request.clone(), &ports, decision).await;
+            let snapshot = completed_snapshot(request.clone(), &ports, decision).await?;
             install_checkpoint(&ports, &snapshot);
             let (_, owner) = ok(learning_iteration_channel_scoped_v2(
                 daemon.identity.agent_id.clone(),
@@ -61,10 +62,12 @@ async fn scoped_readback_rechecks_training_for_every_completed_decision_without_
             assert_no_work_or_checkpoint(&ports, &snapshot);
         }
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn scoped_readback_and_delivery_refuse_a_rebound_request_before_owner_work() {
+async fn scoped_readback_and_delivery_refuse_a_rebound_request_before_owner_work()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
     let request = iteration_request(&daemon);
     let decision = Decision::EvaluatedNoUpdate;
@@ -81,7 +84,7 @@ async fn scoped_readback_and_delivery_refuse_a_rebound_request_before_owner_work
     changed.budget.maximum_training_steps += 1;
     // The checkpoint and requested input agree with each other, but neither
     // may replace the original frozen request admitted by this owner.
-    let snapshot = completed_snapshot(changed.clone(), &ports, decision).await;
+    let snapshot = completed_snapshot(changed.clone(), &ports, decision).await?;
     install_checkpoint(&ports, &snapshot);
     let (_, owner) = ok(learning_iteration_channel_scoped_v2(
         daemon.identity.agent_id.clone(),
@@ -103,4 +106,5 @@ async fn scoped_readback_and_delivery_refuse_a_rebound_request_before_owner_work
     assert!(owner.with_circuit_learning_delivery(changed).is_err());
     assert_no_work_or_checkpoint(&ports, &snapshot);
     assert!(ok(ports.attested.lock()).is_empty());
+    Ok(())
 }

@@ -92,10 +92,10 @@ fn explicit_registry_rejects_aliases_foreign_agents_and_capacity() {
 }
 
 #[tokio::test]
-async fn unavailable_or_full_actor_cannot_strand_a_fresh_delivery_claim() {
+async fn unavailable_or_full_actor_cannot_strand_a_fresh_delivery_claim() -> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, request) = completed_circuit(&daemon).await;
-    let ports = CurrentEvidencePorts::new();
+    let (store, request) = completed_circuit(&daemon).await?;
+    let ports = CurrentEvidencePorts::new()?;
     let (handle, bootstrap) = ok(learning_iteration_channel_v1(
         daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
@@ -139,17 +139,19 @@ async fn unavailable_or_full_actor_cannot_strand_a_fresh_delivery_claim() {
     assert!(ok(ports.inner.executed.lock()).is_empty());
     assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_original_tasks() {
+async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_original_tasks()
+-> anyhow::Result<()> {
     let daemon = AgentdFixture::new();
-    let (store, pending) = completed_circuit_named(&daemon, "registry-pending").await;
-    let (other_store, second) = completed_circuit_named(&daemon, "registry-second").await;
+    let (store, pending) = completed_circuit_named(&daemon, "registry-pending").await?;
+    let (other_store, second) = completed_circuit_named(&daemon, "registry-second").await?;
     other_store.close().await;
-    let (other_store, third) = completed_circuit_named(&daemon, "registry-third").await;
+    let (other_store, third) = completed_circuit_named(&daemon, "registry-third").await?;
     other_store.close().await;
-    let original = CurrentEvidencePorts::new();
+    let original = CurrentEvidencePorts::new()?;
     let mut snapshots = BTreeMap::new();
     for request in [&second, &third] {
         let snapshot = completed_snapshot(
@@ -157,7 +159,7 @@ async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_
             &original.inner,
             Decision::EvaluatedNoUpdate,
         )
-        .await;
+        .await?;
         snapshots.insert(request.operation_id.to_string(), snapshot);
     }
     ok(original.inner.executed.lock()).clear();
@@ -203,8 +205,8 @@ async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_
     let cancellation = CancellationToken::new();
     let actor = tokio::spawn(bootstrap.run(state.clone(), cancellation.clone()));
     let delivery = tokio::spawn(delivery.run(store.clone(), state, cancellation.clone()));
-    let second_ack = await_ack(&store, &second).await;
-    let third_ack = await_ack(&store, &third).await;
+    let second_ack = await_ack(&store, &second).await?;
+    let third_ack = await_ack(&store, &third).await?;
     for (request, ack) in [(&second, second_ack), (&third, third_ack)] {
         assert_eq!(
             ack.acknowledged_head,
@@ -241,4 +243,5 @@ async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_
         .unwrap()));
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }

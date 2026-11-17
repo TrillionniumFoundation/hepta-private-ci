@@ -1,6 +1,7 @@
 //! Complete mechanism fixture with actual ordinary A/C and original native
 //! Material, SourceBound Training, Evaluation, Model and Selection owners.
 //! Credentials, final authorization and heldout cohorts remain explicit tests.
+use anyhow::Context;
 use std::fs::File;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
@@ -55,8 +56,8 @@ type PeerThread = std::thread::JoinHandle<anyhow::Result<usize>>;
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
-fn id(label: &str) -> StableId {
-    StableId::new(label).expect("explicit positive fixture id")
+fn id(label: &str) -> anyhow::Result<StableId> {
+    StableId::new(label).context("explicit positive fixture id")
 }
 fn now() -> anyhow::Result<u64> {
     Ok(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs())
@@ -98,8 +99,12 @@ impl Peers {
         drop(self.evaluator);
         let [first, second] = self.threads;
         Ok([
-            first.join().expect("original Trainer transport")?,
-            second.join().expect("original Evaluator transport")?,
+            first
+                .join()
+                .map_err(|_| anyhow::anyhow!("original Trainer transport"))??,
+            second
+                .join()
+                .map_err(|_| anyhow::anyhow!("original Evaluator transport"))??,
         ])
     }
 }
@@ -166,7 +171,7 @@ impl PositiveFixture {
         let run = crate::circuit_credit::circuit_learning_run_id_v1(
             &writer,
             &a.runtime.identity.agent_id,
-            &id("positive-original-episode"),
+            &id("positive-original-episode")?,
         )?;
         // The envelope requestId and execution run_id are separate original
         // fields. Bind the actual run before Decision, issuance or execution;
@@ -573,10 +578,13 @@ impl PositiveFixture {
     }
 
     pub(super) fn withdraw_original_dataset(&self) -> anyhow::Result<()> {
-        let mut ledger = self.ledger.lock().expect("original Ledger owner");
+        let mut ledger = self
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original Ledger owner"))?;
         let request = UnlearningLineageRequestV1 {
-            record_id: id("positive-original-source-withdrawal"),
-            lineage_id: id("positive-original-unlearning"),
+            record_id: id("positive-original-source-withdrawal")?,
+            lineage_id: id("positive-original-unlearning")?,
             source_record_id: self.initial.request.source_run_id.clone(),
             dataset_snapshot_id: self.frozen.snapshot.snapshot_id.clone(),
             dataset_digest: self.frozen.snapshot.dataset_digest,
@@ -590,7 +598,7 @@ impl PositiveFixture {
             48,
             &unlearning_signing_payload_v1(&request),
             at,
-        );
+        )?;
         let before = ledger.snapshot()?.head_digest;
         ledger.append_unlearning(before, request, &self.frozen, &signed, at)?;
         assert_ne!(ledger.read_current_durable_snapshot()?.head_digest, before);
@@ -601,8 +609,18 @@ impl PositiveFixture {
         self.session.stop().await?;
         drop(self.stage);
         let [first, second] = self.source_threads;
-        assert!(first.join().expect("original Experience transport")? > 0);
-        assert!(second.join().expect("original Dataset transport")? > 0);
+        assert!(
+            first
+                .join()
+                .map_err(|_| anyhow::anyhow!("original Experience transport"))??
+                > 0
+        );
+        assert!(
+            second
+                .join()
+                .map_err(|_| anyhow::anyhow!("original Dataset transport"))??
+                > 0
+        );
         Ok(())
     }
 }

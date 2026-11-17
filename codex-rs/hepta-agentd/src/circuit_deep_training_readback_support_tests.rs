@@ -96,7 +96,7 @@ impl DeepFixture {
         let run = crate::circuit_credit::circuit_learning_run_id_v1(
             &ledger,
             &a.runtime.identity.agent_id,
-            &id("positive-original-episode"),
+            &id("positive-original-episode")?,
         )?;
         a.request.body.run_id = run.to_string();
         let source_a = support::source(&a, [Q, Q / 4])?;

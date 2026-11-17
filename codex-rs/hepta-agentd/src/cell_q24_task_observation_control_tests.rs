@@ -74,8 +74,8 @@ async fn q24_live_task_observation_reads_the_signed_decision_without_creating_ou
     ));
     // Independent fixture input remains required. The query supplies only
     // exact support/profile data; it never supplies the business value.
-    let outcome = f.outcome();
-    let signature = f.sign_outcome(&outcome, /*lifetime*/ 600);
+    let outcome = f.outcome()?;
+    let signature = f.sign_outcome(&outcome, /*lifetime*/ 600)?;
     control
         .client
         .submit_original_q24_terminal_outcome(&outcome, &signature)

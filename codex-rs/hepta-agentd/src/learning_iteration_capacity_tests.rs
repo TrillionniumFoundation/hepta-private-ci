@@ -10,17 +10,18 @@ use pretty_assertions::assert_eq;
 use super::*;
 
 #[tokio::test]
-async fn full_learning_actor_leaves_completion_unclaimed_then_delivers_once() {
+async fn full_learning_actor_leaves_completion_unclaimed_then_delivers_once() -> anyhow::Result<()>
+{
     let daemon = AgentdFixture::new();
-    let (store, mut request) = completed_circuit(&daemon).await;
+    let (store, mut request) = completed_circuit(&daemon).await?;
     request.envelope.expiry_unix_seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
         + 120;
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let planned =
-        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await;
+        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await?;
     *ok(ports.planned.lock()) = Some(planned.clone());
     ok(ports.inner.executed.lock()).clear();
     let pending = ok(store.pending_circuit_learning(/*limit*/ 1).await);
@@ -91,27 +92,29 @@ async fn full_learning_actor_leaves_completion_unclaimed_then_delivers_once() {
             .collect::<Vec<_>>()
     );
     assert_eq!(
-        await_ack(&store, &request).await.acknowledged_head,
+        await_ack(&store, &request).await?.acknowledged_head,
         Some(ok(Sha256Digest::parse(planned.head_digest.to_string())))
     );
     cancellation.cancel();
     ok(ok(worker.await));
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
-async fn lost_learning_delivery_response_reconciles_without_repeating_stages() {
+async fn lost_learning_delivery_response_reconciles_without_repeating_stages() -> anyhow::Result<()>
+{
     let daemon = AgentdFixture::new();
-    let (store, mut request) = completed_circuit(&daemon).await;
+    let (store, mut request) = completed_circuit(&daemon).await?;
     request.envelope.expiry_unix_seconds = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
         + 120;
-    let ports = CurrentEvidencePorts::new();
+    let ports = CurrentEvidencePorts::new()?;
     let planned =
-        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await;
+        completed_snapshot(request.clone(), &ports.inner, Decision::EvaluatedNoUpdate).await?;
     *ok(ports.planned.lock()) = Some(planned.clone());
     ok(ports.inner.executed.lock()).clear();
     let (entered, entered_rx) = tokio::sync::oneshot::channel();
@@ -173,11 +176,12 @@ async fn lost_learning_delivery_response_reconciles_without_repeating_stages() {
     assert_eq!(*ok(ports.inner.executed.lock()), executed);
     assert_eq!(*ok(ports.inner.checkpoint_calls.lock()), checkpoints);
     assert_eq!(
-        await_ack(&store, &request).await.acknowledged_head,
+        await_ack(&store, &request).await?.acknowledged_head,
         Some(ok(Sha256Digest::parse(planned.head_digest.to_string())))
     );
     cancellation.cancel();
     ok(ok(worker.await));
     cognitive.close().await;
     store.close().await;
+    Ok(())
 }

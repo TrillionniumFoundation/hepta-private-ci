@@ -24,7 +24,7 @@ async fn q24_dataset_pure_projection_matches_original_bytes_without_source_autho
         &[(&session, &publication, Some(-257))],
         OutcomeTerminalityV1::Terminal,
     )?;
-    let observed_at = now();
+    let observed_at = now()?;
     let records =
         LedgerSnapshot::read_dataset_records(&dataset.frozen, &dataset.receipt, observed_at)?;
     let tasks = vec![(publication.clone(), session.cell.committed(&publication)?)];

@@ -56,7 +56,13 @@ fn trainers(
             receipt_witness: original_witness(&root.join("generator"), cut)?,
             signer: fixture.dataset.signers[0].clone(),
             key: SigningKey::from_bytes(&[1; 32]),
-            verifier: fixture.dataset.ledger.lock().unwrap().verifier().clone(),
+            verifier: fixture
+                .dataset
+                .ledger
+                .lock()
+                .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?
+                .verifier()
+                .clone(),
             maximum_signature_lifetime_seconds: 600,
         },
     ))
@@ -64,7 +70,13 @@ fn trainers(
 
 fn initialize(root: &Path, fixture: &Fixture, mode: Mode) -> anyhow::Result<Initialized> {
     let inputs = sources(root, fixture)?;
-    let verifier = fixture.dataset.ledger.lock().unwrap().verifier().clone();
+    let verifier = fixture
+        .dataset
+        .ledger
+        .lock()
+        .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?
+        .verifier()
+        .clone();
     fixture
         .prepared
         .with_original_prepared_operation(|read| -> anyhow::Result<_> {

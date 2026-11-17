@@ -20,6 +20,7 @@ workspace = true
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-types = { path = "../hepta-types" }
+libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 

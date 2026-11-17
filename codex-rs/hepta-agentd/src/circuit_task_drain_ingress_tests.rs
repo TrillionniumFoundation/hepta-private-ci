@@ -26,7 +26,7 @@ impl Gate {
         self.entered.notify_one();
         self.release
             .lock()
-            .expect("callback release")
+            .map_err(|_| crate::AgentdError::Protocol("callback release".into()))?
             .recv_timeout(Duration::from_secs(10))
             .map_err(|_| crate::AgentdError::Protocol("fixture callback release timed out".into()))
     }
@@ -119,7 +119,7 @@ async fn closing_admission_counts_blocked_build_then_prevents_model_contact() ->
         f.invocation.records.lock().expect("build attempts").len(),
         1
     );
-    f.stop().await;
+    f.stop().await?;
     f.store.close().await;
     Ok(())
 }
@@ -184,7 +184,7 @@ async fn completed_circuit_keeps_drain_blocked_until_result_callback_returns() -
         f.store.bounded_circuit_committed_trace(RUN).await?,
         Some(committed)
     );
-    f.stop().await;
+    f.stop().await?;
     f.store.close().await;
     Ok(())
 }
@@ -236,7 +236,7 @@ async fn late_ready_and_generation_refresh_cannot_reopen_draining_ingress() -> a
         .load_agent(&f.runtime.identity.agent_id)?;
     assert_eq!(supervisor.lifecycle.lifecycle, AgentLifecycle::Running);
     assert_eq!(supervisor.lifecycle.generation, generation);
-    f.stop().await;
+    f.stop().await?;
     f.store.close().await;
     Ok(())
 }

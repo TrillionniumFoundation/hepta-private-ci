@@ -77,8 +77,8 @@ async fn historical_wire_budget_counts_actual_signed_ledger_and_source_component
 impl Closed {
     async fn original(run: &str) -> anyhow::Result<Self> {
         let mut f = Fixture::new(run, /*lifetime*/ 600, /*automatic*/ true).await?;
-        let outcome = f.outcome();
-        let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+        let outcome = f.outcome()?;
+        let signed = f.sign_outcome(&outcome, /*lifetime*/ 300)?;
         let Status::Complete { decision, outcome } = f
             .producer
             .submit_original_terminal_outcome(outcome, &signed)?
@@ -155,7 +155,7 @@ async fn task_ledger_history_verifies_actual_terminal_after_original_owners_clos
         &f.cell,
         &f.envelopes[0],
         &f.envelopes[1],
-        fixture::now(),
+        fixture::now()?,
     )?;
     assert_eq!(
         verified,
@@ -184,7 +184,7 @@ async fn task_ledger_history_rejects_wrong_context_signatures_and_incomplete_cut
                 &f.cell,
                 &f.envelopes[0],
                 &f.envelopes[1],
-                fixture::now(),
+                fixture::now()?,
             )
             .is_err()
     );
@@ -206,7 +206,7 @@ async fn task_ledger_history_rejects_wrong_context_signatures_and_incomplete_cut
                     &f.cell,
                     decision,
                     outcome,
-                    fixture::now(),
+                    fixture::now()?,
                 )
                 .is_err()
         );
@@ -220,7 +220,7 @@ async fn task_ledger_history_rejects_wrong_context_signatures_and_incomplete_cut
                 &f.cell,
                 &f.envelopes[0],
                 &f.envelopes[1],
-                fixture::now(),
+                fixture::now()?,
             )
             .is_err()
     );

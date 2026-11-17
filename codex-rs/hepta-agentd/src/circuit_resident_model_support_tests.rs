@@ -61,12 +61,12 @@ impl OriginalRootModelProjectionInputsV1 {
 fn registration() -> anyhow::Result<OriginalCellEvaluationPanelRegistrationV1> {
     Ok(OriginalCellEvaluationPanelRegistrationV1::new(
         OriginalCellEvaluationPanelTaskV1 {
-            plan_id: id("root-model-explicit-primary"),
+            plan_id: id("root-model-explicit-primary")?,
             task_digest: d("root-model-explicit-B"),
             cohort_rule_digest: d("root-model-explicit-primary-rule"),
         },
         vec![OriginalCellEvaluationPanelTaskV1 {
-            plan_id: id("root-model-explicit-retention"),
+            plan_id: id("root-model-explicit-retention")?,
             task_digest: d("root-model-explicit-retention-task"),
             cohort_rule_digest: d("root-model-explicit-retention-rule"),
         }],

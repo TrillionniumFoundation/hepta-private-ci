@@ -1,6 +1,7 @@
 //! Real native owner and Memory fixtures; locally scoped test keys are not
 //! production training or adoption evidence.
 
+use anyhow::Context;
 use std::future::Future;
 use std::future::poll_fn;
 use std::sync::Arc;
@@ -70,14 +71,23 @@ struct FixtureOwners {
 }
 
 impl FixtureOwners {
-    async fn new() -> Self {
+    async fn new() -> anyhow::Result<Self> {
         let daemon = AgentdFixture::new();
-        let root = tempfile::tempdir().unwrap();
-        let fleet = HeptaFleetRoot::parse(root.path().canonicalize().unwrap())
-            .unwrap()
-            .layout();
-        let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000011").unwrap();
-        let source = Arc::new(CognitiveStore::open(&fleet.agent(&owner_id)).await.unwrap());
+        let root = tempfile::tempdir().context("terminal fixture directory")?;
+        let fleet = HeptaFleetRoot::parse(
+            root.path()
+                .canonicalize()
+                .context("terminal fixture canonical root")?,
+        )
+        .context("terminal fixture fleet root")?
+        .layout();
+        let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000011")
+            .context("terminal fixture owner identity")?;
+        let source = Arc::new(
+            CognitiveStore::open(&fleet.agent(&owner_id))
+                .await
+                .context("terminal fixture cognitive store")?,
+        );
         let access = CognitiveAccess::agent_private(owner_id);
         let consumer = FederationConsumerAccess::new(
             daemon.identity.agent_id.clone(),
@@ -95,7 +105,7 @@ impl FixtureOwners {
                 },
             )
             .await
-            .unwrap();
+            .context("terminal fixture source")?;
         let memory = source
             .remember_memory(
                 &access,
@@ -113,10 +123,10 @@ impl FixtureOwners {
                 },
             )
             .await
-            .unwrap();
+            .context("terminal fixture memory")?;
         let real_now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
+            .context("terminal fixture wall clock")?
             .as_secs() as i64;
         let grant = source
             .grant_shared_experience(
@@ -134,8 +144,12 @@ impl FixtureOwners {
                 /*expected_revision*/ 0,
             )
             .await
-            .unwrap();
-        let support: Digest32 = grant.source_support_digest().as_str().parse().unwrap();
+            .context("terminal fixture shared experience grant")?;
+        let support: Digest32 = grant
+            .source_support_digest()
+            .as_str()
+            .parse()
+            .context("terminal fixture source support digest")?;
         let ledger_root = Fixture::new();
         let mut ledger = ledger_root.writer();
         collect(
@@ -144,14 +158,14 @@ impl FixtureOwners {
             "read",
             FixedQ32::ONE.raw(),
             support,
-        );
+        )?;
         collect(
             &mut ledger,
             "sample.stop",
             "abstain",
             /*value*/ 0,
             support,
-        );
+        )?;
         let dataset_plan = DatasetFreezePlanV2 {
             snapshot_id: id("terminal.dataset"),
             objective_digest: digest("objective"),
@@ -161,11 +175,17 @@ impl FixtureOwners {
             ledger.verifier(),
             "evaluator",
             LearningEvidenceRoleV1::Evaluator,
-            &dataset_freeze_signing_payload_v2(&ledger.snapshot().unwrap(), &dataset_plan).unwrap(),
+            &dataset_freeze_signing_payload_v2(
+                &ledger
+                    .snapshot()
+                    .context("terminal fixture Ledger snapshot")?,
+                &dataset_plan,
+            )
+            .context("terminal fixture dataset signing payload")?,
         );
         let dataset = ledger
             .freeze_dataset(dataset_plan.clone(), &evidence, /*now*/ 50)
-            .unwrap();
+            .context("terminal fixture dataset")?;
         let request = TerminalLearningRequestV1 {
             operation_id: id("terminal.operation"),
             source_policy_id: grant.policy_id().clone(),
@@ -176,7 +196,7 @@ impl FixtureOwners {
             profile: TerminalCellProfileV1 {
                 artifact_id: id("terminal.candidate"),
                 producer_id: id("operator.native.owner"),
-                generation: Generation::new(/*value*/ 1).unwrap(),
+                generation: Generation::new(/*value*/ 1).context("terminal fixture generation")?,
                 sensor_id: id("single-approved-state"),
                 objective_digest: digest("objective"),
                 run_snapshot_digest: digest("run-snapshot"),
@@ -199,9 +219,9 @@ impl FixtureOwners {
                 "terminal.local".into(),
                 daemon.identity.agent_id.clone(),
             )
-            .unwrap(),
+            .context("terminal fixture replay host")?,
         );
-        Self {
+        Ok(Self {
             _memory_root: root,
             ledger_root,
             daemon,
@@ -211,10 +231,10 @@ impl FixtureOwners {
             grant,
             replay,
             request,
-        }
+        })
     }
 
-    fn native_owner(&self) -> AgentdTerminalLearningOwnerV1 {
+    fn native_owner(&self) -> anyhow::Result<AgentdTerminalLearningOwnerV1> {
         AgentdTerminalLearningOwnerV1::new(
             self.daemon.identity.agent_id.clone(),
             id("operator.native.owner"),
@@ -222,11 +242,17 @@ impl FixtureOwners {
             Arc::clone(&self.replay),
             /*maximum_jobs*/ 4,
         )
-        .unwrap()
+        .context("terminal fixture learning owner")
     }
 }
 
-fn collect(ledger: &mut LedgerWriter, prefix: &str, selected: &str, value: i64, support: Digest32) {
+fn collect(
+    ledger: &mut LedgerWriter,
+    prefix: &str,
+    selected: &str,
+    value: i64,
+    support: Digest32,
+) -> anyhow::Result<()> {
     let mut request = decision();
     request.record_id = id(&format!("{prefix}.decision"));
     request.episode_id = id(&format!("{prefix}.episode"));
@@ -236,12 +262,17 @@ fn collect(ledger: &mut LedgerWriter, prefix: &str, selected: &str, value: i64, 
         ledger.verifier(),
         "generator",
         LearningEvidenceRoleV1::Generator,
-        &decision_signing_payload_v2(&request).unwrap(),
+        &decision_signing_payload_v2(&request)
+            .context("terminal fixture decision signing payload")?,
     );
-    let predecessor = ledger.witness_frontier().unwrap().anchor.chain_digest;
+    let predecessor = ledger
+        .witness_frontier()
+        .context("terminal fixture witness frontier")?
+        .anchor
+        .chain_digest;
     let decision = ledger
         .append_decision(predecessor, request, &signed, /*now*/ 50)
-        .unwrap();
+        .context("terminal fixture decision")?;
     let mut observed = outcome(
         &format!("{prefix}.record"),
         &format!("{prefix}.outcome"),
@@ -257,17 +288,19 @@ fn collect(ledger: &mut LedgerWriter, prefix: &str, selected: &str, value: i64, 
     );
     ledger
         .append_outcome(decision.chain_digest, observed, &signed, /*now*/ 50)
-        .unwrap();
+        .context("terminal fixture outcome")?;
+    Ok(())
 }
 
 #[tokio::test]
-async fn supervised_profile_freezes_fits_and_reads_back_actual_native_candidate() {
-    let fixtures = FixtureOwners::new().await;
+async fn supervised_profile_freezes_fits_and_reads_back_actual_native_candidate()
+-> anyhow::Result<()> {
+    let fixtures = FixtureOwners::new().await?;
     let before = fixtures.ledger.lock().unwrap().witness_frontier().unwrap();
     let (handle, bootstrap) = terminal_learning_channel_v1(
         fixtures.daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
-        fixtures.native_owner(),
+        fixtures.native_owner()?,
         /*capacity*/ 2,
     )
     .unwrap();
@@ -347,12 +380,13 @@ async fn supervised_profile_freezes_fits_and_reads_back_actual_native_candidate(
     ));
     cancellation.cancel();
     worker.await.unwrap().unwrap();
+    Ok(())
 }
 
 #[tokio::test]
-async fn exact_owner_evidence_and_dataset_budget_are_enforced() {
-    let fixtures = FixtureOwners::new().await;
-    let native = fixtures.native_owner();
+async fn exact_owner_evidence_and_dataset_budget_are_enforced() -> anyhow::Result<()> {
+    let fixtures = FixtureOwners::new().await?;
+    let native = fixtures.native_owner()?;
     assert_eq!(
         native
             .readback(fixtures.request.clone(), /*now*/ 50)
@@ -404,15 +438,17 @@ async fn exact_owner_evidence_and_dataset_budget_are_enforced() {
         denied.train(fixtures.request.clone(), /*now*/ 50).await,
         Err(TerminalLearningErrorV1::Owner(_))
     ));
+    Ok(())
 }
 
 #[tokio::test]
-async fn native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown() {
-    let fixtures = FixtureOwners::new().await;
+async fn native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown()
+-> anyhow::Result<()> {
+    let fixtures = FixtureOwners::new().await?;
     let (handle, bootstrap) = terminal_learning_channel_v1(
         fixtures.daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
-        fixtures.native_owner(),
+        fixtures.native_owner()?,
         /*capacity*/ 1,
     )
     .unwrap();
@@ -431,12 +467,13 @@ async fn native_queue_refuses_overflow_and_lost_acknowledgement_remains_unknown(
         queued.await.unwrap_err(),
         TerminalLearningErrorV1::CommitUncertain
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn recovered_ledger_does_not_invent_a_durable_iteration_checkpoint() {
-    let fixtures = FixtureOwners::new().await;
-    let native = fixtures.native_owner();
+async fn recovered_ledger_does_not_invent_a_durable_iteration_checkpoint() -> anyhow::Result<()> {
+    let fixtures = FixtureOwners::new().await?;
+    let native = fixtures.native_owner()?;
     let receipt = native
         .train(fixtures.request.clone(), /*now*/ 50)
         .await
@@ -468,4 +505,5 @@ async fn recovered_ledger_does_not_invent_a_durable_iteration_checkpoint() {
             .unwrap_err(),
         TerminalLearningErrorV1::CommitUncertain,
     );
+    Ok(())
 }

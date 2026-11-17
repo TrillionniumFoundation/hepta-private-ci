@@ -2,6 +2,7 @@
 //! Candidate is refused by the unchanged B comparison contract. A separate
 //! zero-gradient fit produces original TrainingNoUpdate, never a fake B result.
 
+use anyhow::Context;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::time::Instant;
@@ -14,6 +15,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+use super::FixtureClock;
 use super::fixture;
 use super::support;
 use crate::CellComparisonContractV1;
@@ -38,8 +40,8 @@ type Journal = CellGenerationJournalV2<FileAnchorWitnessStore>;
 fn digest(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
-fn id(label: &str) -> StableId {
-    StableId::new(label).expect("bounded component identity")
+fn id(label: &str) -> anyhow::Result<StableId> {
+    StableId::new(label).context("bounded component identity")
 }
 
 /// Actual native inference and original journal admission/commit/readback.
@@ -73,9 +75,10 @@ fn run_probe(
     ])
     .into_array();
     let clock_origin = Instant::now();
-    let clock: Arc<dyn Fn() -> u64 + Send + Sync> = Arc::new(move || {
-        10 + u64::try_from(clock_origin.elapsed().as_micros()).expect("bounded probe clock")
-    });
+    let clock_status = FixtureClock::default();
+    let callback_clock = clock_status.clone();
+    let clock: Arc<dyn Fn() -> u64 + Send + Sync> =
+        Arc::new(move || callback_clock.elapsed_micros(clock_origin.elapsed()));
     let worker = model.shared_worker(bundle, config.manifest.clone(), Arc::clone(&clock))?;
     let mut journal = CellGenerationJournalV2::open(
         fixture::file(fixture.task.root.path(), &format!("{name}.journal"))?,
@@ -88,6 +91,7 @@ fn run_probe(
         /*max_records*/ 64,
     )?;
     let admitted = clock();
+    clock_status.check()?;
     let request = CellGenerationRequestV2 {
         operation_id: format!("{name}-probe"),
         task_digest: config.task_digest,
@@ -100,12 +104,14 @@ fn run_probe(
     assert!(journal.admit(request.clone(), admitted)?.is_none());
     let proposal = worker.execute(&config.manifest, &request, &AtomicBool::new(/*val*/ false))?;
     assert_eq!(proposal.disposition, CellGenerationDispositionV2::Stopped);
-    let receipt = journal.commit(proposal, clock())?;
+    let completed_at = clock();
+    clock_status.check()?;
+    let receipt = journal.commit(proposal, completed_at)?;
     assert_eq!(journal.lookup(&request)?, Some(receipt));
     let chunk = journal
         .pending_output()?
         .cloned()
-        .expect("actual computed output");
+        .context("actual computed output")?;
     let output = chunk.bytes.clone();
     assert!(output.starts_with(b"HQ24O001"));
     journal.acknowledge(
@@ -115,17 +121,18 @@ fn run_probe(
     )?;
     journal.drain()?;
     assert!(journal.is_drained()?);
+    clock_status.check()?;
     Ok((journal, output))
 }
 
 fn temporal(name: &str, objective: Digest32) -> anyhow::Result<TemporalEvaluationPlan> {
     let mut plan = TemporalEvaluationPlan {
         plan_digest: Digest32::ZERO,
-        evaluation_id: id(name),
+        evaluation_id: id(name)?,
         objective_digest: objective,
         fold: TemporalFoldPlan {
             plan_digest: digest("component-frozen-temporal-fold"),
-            fold_id: id(name),
+            fold_id: id(name)?,
             training_watermark: 10,
             evaluation_start: 20,
             minimum_per_action: 2,
@@ -159,7 +166,7 @@ fn incomplete_registration(
         .training
         .receipts
         .last()
-        .expect("actual Generator receipt");
+        .context("actual Generator receipt")?;
     let metrics = &candidate.metrics;
     // Exact bytes in this fixture have 4 base + 4 encoder + 20 head coefficients.
     // A single selected head row has 2 trainable coefficients.
@@ -206,7 +213,7 @@ fn incomplete_registration(
     let objective = fixture.training.request.envelope.objective_digest;
     Ok(CellEvaluationRegistrationV1 {
         product: CrossFoldPlanV1 {
-            plan_id: id("original-a-candidate-comparison"),
+            plan_id: id("original-a-candidate-comparison")?,
             claim_scope: EvaluationClaimScopeV1::Qualification,
             candidate_id: candidate.bundle.artifact_id.clone(),
             baseline_id: fixture.task.bundle.artifact_id.clone(),
@@ -214,24 +221,24 @@ fn incomplete_registration(
             dataset_digest: fixture.dataset.head_digest,
             estimand_digest: digest("component-q24-comparison-estimand"),
             metric_contracts: vec![MetricContractV1 {
-                metric_id: id("task-success"),
+                metric_id: id("task-success")?,
                 direction: EvaluationDirectionV1::Maximize,
                 safety_floor: Some(FixedQ32::ZERO),
             }],
             family_alpha_ppm: 50_000,
             simultaneous_comparisons: 1,
             folds: Vec::new(),
-            final_holdout_window_id: id("component-unreleased-holdout"),
+            final_holdout_window_id: id("component-unreleased-holdout")?,
             final_holdout_digest: digest("component-unreleased-holdout"),
         },
         metric_roles: vec![MetricRoleContractV2 {
-            metric_id: id("task-success"),
+            metric_id: id("task-success")?,
             role: MetricRoleV2::PrimarySuperiority {
                 minimum_improvement: FixedQ32::ZERO,
             },
         }],
         metric_sources: vec![ProductMetricSourceContractV1 {
-            metric_id: id("task-success"),
+            metric_id: id("task-success")?,
             source: ProductMetricSourceV1::DoublyRobust,
         }],
         comparison: CellComparisonContractV1 {

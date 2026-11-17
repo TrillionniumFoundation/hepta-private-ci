@@ -94,7 +94,7 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
     let snapshot_c = c.cell.snapshot(&source_c.scope)?;
     let identity_c = c.runtime.identity.clone();
     let request_c = c.request.clone();
-    let configuration_c = c.take_configuration();
+    let configuration_c = c.take_configuration()?;
     #[cfg(target_os = "linux")]
     let configuration_c = {
         let mut original = configuration_c;

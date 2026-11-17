@@ -3,6 +3,7 @@
 //! This is engineering integration with test AuthBus/FinalUse issuer keys and
 //! CURRENT FileCAS custody, not an original Root deployment or quality claim.
 
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -64,7 +65,7 @@ fn read_receipt(
             &input.operation_id,
             canonical_cell_step_request_digest_v1(definition, input)?,
         )?
-        .expect("actual committed Cell decision");
+        .context("actual committed Cell decision")?;
     assert_eq!(
         crate::circuit_cell_output::encode_output(&receipt)?,
         publication.output()

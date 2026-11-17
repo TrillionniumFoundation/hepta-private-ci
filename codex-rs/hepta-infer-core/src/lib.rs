@@ -7,7 +7,10 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod generation_step;
+pub mod microbatch;
 mod neuron_feature;
+pub mod scoped_cache;
+pub mod shared_feature;
 pub mod shared_feature_v2;
 
 pub use generation_step::GENERATION_MAX_BYTES;
@@ -29,6 +32,7 @@ pub use neuron_feature::NeuronModelRuntimeTupleV1;
 pub use neuron_feature::build_neuron_feature_receipt_v1;
 pub use neuron_feature::neuron_feature_request_digest_v1;
 pub use neuron_feature::verify_neuron_feature_receipt_v1;
+pub use shared_feature::SharedFeatureBufferV1;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -260,6 +264,10 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(test)]
+#[path = "scaling_tests.rs"]
+mod scaling_tests;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]

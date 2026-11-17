@@ -12,12 +12,17 @@ use crate::OriginalCellQ24DatasetFreezeSigningConfigV1 as SigningConfig;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::WitnessStoreError;
 
-fn signing(dataset: &Dataset) -> SigningConfig {
-    SigningConfig {
+fn signing(dataset: &Dataset) -> anyhow::Result<SigningConfig> {
+    Ok(SigningConfig {
         signer: dataset.signers[2].clone(),
-        verifier: dataset.ledger.lock().unwrap().verifier().clone(),
+        verifier: dataset
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?
+            .verifier()
+            .clone(),
         maximum_signature_lifetime_seconds: 60,
-    }
+    })
 }
 
 fn freeze_witness(
@@ -61,7 +66,7 @@ async fn q24_freeze_owner_authorizes_once_and_cold_reopens_original_signature() 
         file(files.path(), "freeze")?,
         freeze_witness(files.path(), &phase, publication.input().objective_digest)?,
         &phase,
-        signing(&dataset),
+        signing(&dataset)?,
         SigningKey::from_bytes(&[3; 32]),
     )?;
     let prepared = phase.authorize_and_materialize(&mut owner)?;
@@ -80,7 +85,7 @@ async fn q24_freeze_owner_authorizes_once_and_cold_reopens_original_signature() 
         file(files.path(), "freeze")?,
         freeze_witness(files.path(), &phase, publication.input().objective_digest)?,
         &phase,
-        signing(&dataset),
+        signing(&dataset)?,
         SigningKey::from_bytes(&[3; 32]),
     )?;
     assert_eq!(owner.readback(&phase)?, original);
@@ -163,7 +168,7 @@ async fn q24_freeze_owner_lost_ack_keeps_pending_or_original_completed_window() 
                     fault,
                 },
                 &phase,
-                signing(&dataset),
+                signing(&dataset)?,
                 SigningKey::from_bytes(&[3; 32]),
             )?;
             assert!(matches!(
@@ -185,7 +190,7 @@ async fn q24_freeze_owner_lost_ack_keeps_pending_or_original_completed_window() 
                     publication.input().objective_digest,
                 )?,
                 &recovered,
-                signing(&dataset),
+                signing(&dataset)?,
                 SigningKey::from_bytes(&[3; 32]),
             )?;
             let saved = fs::read(files.path().join("freeze"))?;
@@ -237,7 +242,7 @@ async fn q24_freeze_owner_rejects_wrong_key_role_identity_and_withdrawn_source()
     )?;
     for case in ["key", "role"] {
         let attempt = tempfile::tempdir()?;
-        let mut signing = signing(&dataset);
+        let mut signing = signing(&dataset)?;
         let key = if case == "key" {
             SigningKey::from_bytes(&[8; 32])
         } else {
@@ -260,7 +265,7 @@ async fn q24_freeze_owner_rejects_wrong_key_role_identity_and_withdrawn_source()
         file(files.path(), "freeze")?,
         freeze_witness(files.path(), &phase, publication.input().objective_digest)?,
         &phase,
-        signing(&dataset),
+        signing(&dataset)?,
         SigningKey::from_bytes(&[3; 32]),
     )?;
     let mut changed = config;
@@ -296,7 +301,7 @@ async fn q24_freeze_owner_expired_signature_is_not_renewed() -> anyhow::Result<(
     )?;
     let config = preparation::config(&dataset, &publication, baseline, bundle)?;
     let phase = Phase::capture(config, Arc::clone(&dataset.ledger), dataset.tasks.clone())?;
-    let mut signing = signing(&dataset);
+    let mut signing = signing(&dataset)?;
     signing.maximum_signature_lifetime_seconds = 1;
     let mut owner = Owner::create(
         file(files.path(), "freeze")?,

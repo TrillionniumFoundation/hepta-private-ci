@@ -44,20 +44,30 @@ async fn source_fixture(
         OutcomeTerminalityV1::Terminal,
     )?;
     let mut config = preparation::config(&dataset, &publication, baseline, bundle)?;
-    config.owners.evidence_trust_digest = dataset.ledger.lock().unwrap().verifier().trust_digest();
+    config.owners.evidence_trust_digest = dataset
+        .ledger
+        .lock()
+        .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?
+        .verifier()
+        .trust_digest();
     config.owners.experience = dataset.signers[1].principal.principal_id.clone();
     config.owners.dataset = dataset.signers[1].principal.principal_id.clone();
     let prepared = Arc::new(preparation::prepare(config, &dataset)?);
     Ok((session, dataset, prepared, current))
 }
 
-fn signing(dataset: &Dataset, stage: Stage) -> SigningConfig {
-    SigningConfig {
+fn signing(dataset: &Dataset, stage: Stage) -> anyhow::Result<SigningConfig> {
+    Ok(SigningConfig {
         stage,
         signer: dataset.signers[1].clone(),
-        verifier: dataset.ledger.lock().unwrap().verifier().clone(),
+        verifier: dataset
+            .ledger
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original fixture Ledger owner lock"))?
+            .verifier()
+            .clone(),
         maximum_signature_lifetime_seconds: 3_600,
-    }
+    })
 }
 
 fn owner(
@@ -70,7 +80,7 @@ fn owner(
         file(root, "source")?,
         witness(root, prepared.initial())?,
         Arc::clone(prepared),
-        signing(dataset, stage),
+        signing(dataset, stage)?,
         SigningKey::from_bytes(&[2; 32]),
     )?)
 }
@@ -198,7 +208,7 @@ async fn source_dataset_requires_live_experience_witness_before_claiming() -> an
             fail_at_sequence: None,
         },
         Arc::clone(&prepared),
-        signing(&dataset, Stage::Experience),
+        signing(&dataset, Stage::Experience)?,
         SigningKey::from_bytes(&[2; 32]),
     )?;
     let mut dataset_owner = owner(d_root.path(), &prepared, &dataset, Stage::Dataset)?;
@@ -225,7 +235,7 @@ async fn source_dataset_requires_live_experience_witness_before_claiming() -> an
         file(e_root.path(), "source")?,
         witness(e_root.path(), prepared.initial())?,
         Arc::clone(&prepared),
-        signing(&dataset, Stage::Experience),
+        signing(&dataset, Stage::Experience)?,
         SigningKey::from_bytes(&[2; 32]),
     )?;
     assert_eq!(fs::read(e_root.path().join("source"))?, experience_bytes);
@@ -250,7 +260,7 @@ async fn original_source_lost_witness_ack_preserves_pending_and_completed_record
                 fail_at_sequence: Some(fail_at_sequence),
             },
             Arc::clone(&prepared),
-            signing(&dataset, Stage::Experience),
+            signing(&dataset, Stage::Experience)?,
             SigningKey::from_bytes(&[2; 32]),
         )?;
         assert!(matches!(
@@ -263,7 +273,7 @@ async fn original_source_lost_witness_ack_preserves_pending_and_completed_record
             file(files.path(), "source")?,
             witness(files.path(), prepared.initial())?,
             Arc::clone(&prepared),
-            signing(&dataset, Stage::Experience),
+            signing(&dataset, Stage::Experience)?,
             SigningKey::from_bytes(&[2; 32]),
         )?;
         if fail_at_sequence == 2 {
@@ -297,14 +307,14 @@ async fn original_source_rejects_wrong_key_role_and_foreign_predecessor_without_
             file(bad_key.path(), "source")?,
             witness(bad_key.path(), prepared.initial())?,
             Arc::clone(&prepared),
-            signing(&dataset, Stage::Experience),
+            signing(&dataset, Stage::Experience)?,
             SigningKey::from_bytes(&[9; 32]),
         )
         .is_err()
     );
     assert!(fs::read(bad_key.path().join("source"))?.is_empty());
     let bad_role = tempfile::tempdir()?;
-    let mut invalid = signing(&dataset, Stage::Experience);
+    let mut invalid = signing(&dataset, Stage::Experience)?;
     invalid.signer.roles = vec![LearningEvidenceRoleV1::Evaluator];
     assert!(
         Owner::create(
