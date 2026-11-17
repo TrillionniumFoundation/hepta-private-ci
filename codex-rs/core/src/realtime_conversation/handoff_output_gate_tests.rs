@@ -31,16 +31,9 @@ async fn backpressure_serializes_ack_progress_and_retirement_before_returning() 
         text: "complete".to_string(),
         phase: None,
     };
-    let progress = send_owned_handoff_output(
-        &state,
-        Some(update.clone()),
-        /*complete*/ false,
-    );
-    let retirement = send_owned_handoff_output(
-        &state,
-        Some(completed.clone()),
-        /*complete*/ true,
-    );
+    let progress = send_owned_handoff_output(&state, Some(update.clone()), /*complete*/ false);
+    let retirement =
+        send_owned_handoff_output(&state, Some(completed.clone()), /*complete*/ true);
     let late = send_owned_handoff_output(
         &state,
         Some(RealtimeOutbound::HandoffAppend {
@@ -112,11 +105,8 @@ async fn cancellation_releases_coordination_without_undoing_committed_retirement
                 phase: None,
             }
         };
-        let waiting = send_owned_handoff_output(
-            &state,
-            /*output*/ None,
-            /*complete*/ false,
-        );
+        let waiting =
+            send_owned_handoff_output(&state, /*output*/ None, /*complete*/ false);
         tokio::pin!(waiting);
         {
             let delivery = send_owned_handoff_output(&state, Some(original), complete);
@@ -136,13 +126,9 @@ async fn cancellation_releases_coordination_without_undoing_committed_retirement
             text: "next progress".to_string(),
             phase: None,
         };
-        send_owned_handoff_output(
-            &state,
-            Some(next.clone()),
-            /*complete*/ false,
-        )
-        .await
-        .expect("the next call observes the retained completion state");
+        send_owned_handoff_output(&state, Some(next.clone()), /*complete*/ false)
+            .await
+            .expect("the next call observes the retained completion state");
         if complete {
             assert!(rx.try_recv().is_err());
         } else {

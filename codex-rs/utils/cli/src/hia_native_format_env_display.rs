@@ -198,7 +198,8 @@ fn join(parts: &[String]) -> NativeResult<String> {
         if payload != b"-" {
             return Err("native empty display is invalid");
         }
-        return String::from_utf8(payload.to_vec()).map_err(|_| "native empty display is not UTF-8");
+        return String::from_utf8(payload.to_vec())
+            .map_err(|_| "native empty display is not UTF-8");
     }
     if !payload.is_empty() {
         return Err("native join started with unexpected bytes");
@@ -207,7 +208,9 @@ fn join(parts: &[String]) -> NativeResult<String> {
     let mut output = Vec::new();
     while state[6] == 0 {
         let index = wire::count(state[1])?;
-        let part = parts.get(index).ok_or("native join index is out of bounds")?;
+        let part = parts
+            .get(index)
+            .ok_or("native join index is out of bounds")?;
         let offset = wire::count(state[3])?;
         let remaining = part
             .len()
@@ -233,9 +236,7 @@ fn join(parts: &[String]) -> NativeResult<String> {
             .checked_add(expected_payload)
             .ok_or("joined display length overflow")?;
         let expected_state = if end == part.len() {
-            let next = index
-                .checked_add(/*rhs*/ 1)
-                .ok_or("join index overflow")?;
+            let next = index.checked_add(/*rhs*/ 1).ok_or("join index overflow")?;
             [
                 count,
                 next as u64,

@@ -226,7 +226,10 @@ pub(super) fn truncate(
                 }
             }
             FunctionCallOutputContentItem::EncryptedContent { encrypted_content } => {
-                assert_eq!(budget.item(ItemKind::Encrypted, /*value*/ 0), Decision::Keep);
+                assert_eq!(
+                    budget.item(ItemKind::Encrypted, /*value*/ 0),
+                    Decision::Keep
+                );
                 out.push(FunctionCallOutputContentItem::EncryptedContent {
                     encrypted_content: encrypted_content.clone(),
                 });

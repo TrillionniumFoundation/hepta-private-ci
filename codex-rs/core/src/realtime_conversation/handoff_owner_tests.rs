@@ -470,8 +470,14 @@ async fn server_managed_readmission_does_not_inherit_a_prior_client_managed_glob
     assert!(Arc::ptr_eq(&owner.handoff.identity, &server.identity));
     assert!(!Arc::ptr_eq(&owner.handoff.stream, &client.stream));
     assert!(!Arc::ptr_eq(&owner.handoff.stream, &server.stream));
-    assert!(!Arc::ptr_eq(&owner.handoff.output_gate, &client.output_gate));
-    assert!(!Arc::ptr_eq(&owner.handoff.output_gate, &server.output_gate));
+    assert!(!Arc::ptr_eq(
+        &owner.handoff.output_gate,
+        &client.output_gate
+    ));
+    assert!(!Arc::ptr_eq(
+        &owner.handoff.output_gate,
+        &server.output_gate
+    ));
     assert!(!owner.handoff.client_managed_handoffs);
     assert_eq!(
         client.stream.lock().await.active_handoff.as_deref(),

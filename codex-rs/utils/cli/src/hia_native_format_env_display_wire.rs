@@ -98,7 +98,10 @@ pub(super) fn decode<const N: usize>(bytes: &[u8]) -> NativeResult<([u64; N], &[
         return Err("native result header is incomplete");
     }
     let mut words = [0_u64; N];
-    for (word, chunk) in words.iter_mut().zip(bytes[..header].chunks_exact(WORD_BYTES)) {
+    for (word, chunk) in words
+        .iter_mut()
+        .zip(bytes[..header].chunks_exact(WORD_BYTES))
+    {
         let mut encoded = [0_u8; WORD_BYTES];
         encoded.copy_from_slice(chunk);
         *word = u64::from_le_bytes(encoded);

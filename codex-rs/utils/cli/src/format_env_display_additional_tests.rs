@@ -99,10 +99,7 @@ fn complete_joined_output_is_not_limited_to_one_borrowed_frame() {
     let second = "y".repeat(/*n*/ 524_288);
     let expected = format!("{first}=*****, {second}=*****");
     assert!(expected.len() > 1_048_576);
-    assert_eq!(
-        format_env_display(/*env*/ None, &[first, second]),
-        expected
-    );
+    assert_eq!(format_env_display(/*env*/ None, &[first, second]), expected);
 }
 
 struct Observed<'a> {
