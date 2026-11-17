@@ -1,0 +1,442 @@
+{
+  "schema": "codex.hia.fuzzy-match-buffer-contract.v1",
+  "module": "fuzzy_match",
+  "symbol": "codex_hia_fuzzy_match",
+  "status": "SOURCE_ONLY_UNEXECUTED",
+  "source": {
+    "path": "hia/fuzzy_match.hepta",
+    "bytes": 202030,
+    "sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+    "git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e"
+  },
+  "compiler_boundary": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "schema": "hepta.hia.program.v8",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "entry_function": "f0",
+    "core_signature": "(readbuf,mutbuf,mutbuf)->(u32)",
+    "core_return_type": "u32",
+    "maximum_function_results": 3,
+    "maximum_function_or_block_parameters": 16,
+    "native_return": "The six-argument foreign entry returns u64. Reject nonzero high32 wrapper status before interpreting low32 Core status; never truncate first. Core status is not a written extent or score.",
+    "seed_capacity_scope": "The one-MiB capacity is established only for the compiler-None foreign-wrapper build branch. These finite frames fit that branch; this is not a global B3 native-capacity claim.",
+    "fresh_build_required": true,
+    "source_origin_commit": null,
+    "origin_note": "An actual complete-source Git origin is assigned by the owning publication workflow. No commit identity is fabricated here."
+  },
+  "protocol_provenance": {
+    "wire": {
+      "name": "inventory-fuzzy-numeric-wire-candidate-v2/wire.json",
+      "bytes": 54012,
+      "sha256": "c7376442722babc50868e28e2a20e7d295e5c6c0a42ce88708a92028d48103ef",
+      "git_blob": "19f45d09f7d1fe11cba21fad5c9cd2072c102d75"
+    },
+    "root_freeze": {
+      "name": "fuzzy-wire-root-freeze-v2.json",
+      "bytes": 2812,
+      "sha256": "fde5c2c6da425176c8d5814655ffe1a5d0bac50d8bc30c6f940433a87bbf87e8",
+      "git_blob": "8db4a163424c629c0f7da5fce1a1e208441a672d"
+    },
+    "consistency_addendum": {
+      "name": "fuzzy-wire-consistency-clarification-v1.json",
+      "bytes": 2809,
+      "sha256": "3ed239ab8f803b54cc1a956a4ae30af2d66f34a57137c5a411332f46e8c9ee23",
+      "git_blob": "0504415f8eaadbe1af4edbc655d399ffb5126c5c",
+      "rule": "needle_previous_cased (word9) equals1 only if needle_original_scalars (word7) ispositive. Apply to every accepted state; reject forged zero-history context with INVALID before overflow, SHORT or any store.",
+      "compatibility": "No field, offset, reservation, result or valid fresh Host transition changes. Frozen wire V2 itself remains unchanged."
+    }
+  },
+  "unicode_provenance": {
+    "rust_release": "1.96.1",
+    "rust_repository": "rust-lang/rust",
+    "rust_commit": "31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd",
+    "unicode_version": "17.0.0",
+    "sources": [
+      {
+        "path": "library/core/src/unicode/unicode_data.rs",
+        "bytes": 76896,
+        "sha256": "e8b85cd9385ba25e8b40ab9d910eae4e7edd7af7472c61453de7f271fdd123fd",
+        "git_blob": "f602cd5c5b6b3c829f9897abb98dbbd7deca83b3"
+      },
+      {
+        "path": "library/core/src/char/methods.rs",
+        "bytes": 74654,
+        "sha256": "dc5b1d705ff74a22454153977763b2ff019917b96c094fbfd15db9baa8ad64f9",
+        "git_blob": "ce33fd1d8f9dfbc2955800899032e7087b49a79e"
+      },
+      {
+        "path": "library/core/src/char/mod.rs",
+        "bytes": 20654,
+        "sha256": "a8e5cd44429bdbf46ab270d9b8064d770c0249763e0852429be6cade57c94614",
+        "git_blob": "3231c4193064c4879a358e6fe77f5397b3654c96"
+      },
+      {
+        "path": "library/alloc/src/str.rs",
+        "bytes": 25485,
+        "sha256": "599f837e2f40d77eb9c3dd0da1ef19b968a7d8259b6c5fcde405f98634ac6e99",
+        "git_blob": "8a3326c7d76a72d1a2c5e4ac9b83e8445f06d6fd"
+      }
+    ],
+    "literal_bank": {
+      "packed_u64_words": 369,
+      "packed_bytes": 2952,
+      "bank_leaf_counts": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        49
+      ],
+      "bmp_single_ranges": 172,
+      "bmp_multi_mappings": 1,
+      "plane1_single_ranges": 12,
+      "case_ignorable_headers": 36,
+      "case_ignorable_offset_bytes": 919,
+      "cased_headers": 22,
+      "cased_offset_bytes": 313,
+      "field_map_sha256": "9f31ed3a5deb5c803aa0a660fc27836becdc5006d29e76595148e2c0ac934aae",
+      "source_forward_inverse_map_sha256": "216b442e8e5e9f0bb4d2fe7c50fcf836f31d92f1dfe8f745ace83e409ec0f616",
+      "proof_scope": "Mechanical transcription of every original literal and bit field, with an exact inverse. No Unicode lookup table was expanded by executing a reference classifier or model."
+    }
+  },
+  "wire_layout": {
+    "constants": {
+      "version": 1,
+      "word_bytes": 8,
+      "input_header_bytes": 64,
+      "state_words": 32,
+      "state_bytes": 256,
+      "input_state_offset": 64,
+      "input_payload_offset": 320,
+      "output_header_bytes": 128,
+      "output_state_offset": 128,
+      "output_records_offset": 384,
+      "utf8_frame_max_bytes": 4096,
+      "match_hay_max_records": 128,
+      "match_needle_max_scalars": 128,
+      "hay_record_bytes": 24,
+      "needle_command_bytes": 24,
+      "index_record_bytes": 8,
+      "scalar_max": 1114111,
+      "surrogate_first": 55296,
+      "surrogate_last": 57343,
+      "normal_sigma": 963,
+      "final_sigma": 962,
+      "i32_mask": 4294967295,
+      "i32_sign": 2147483648,
+      "i32_max": 2147483647
+    },
+    "scalar_encoding": "Every numeric field is one unsigned little-endian 64-bit word. An i32 word is its low32 bit pattern zero-extended to u64. Do not sign-extend it on the wire. All Unicode scalar words must be <=0x10ffff and outside 0xd800..0xdfff; zero is valid.",
+    "input": {
+      "header": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "version",
+          "meaning": "Exactly 1."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "operation",
+          "meaning": "One of the four operations."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "flags",
+          "meaning": "Zero except the exact END bit on normalization frames."
+        },
+        {
+          "word": 3,
+          "byte_offset": 24,
+          "bytes": 8,
+          "name": "payload_bytes",
+          "meaning": "Exact count of bytes following the 256-byte state; no trailing bytes are allowed."
+        },
+        {
+          "word": 4,
+          "byte_offset": 32,
+          "bytes": 8,
+          "name": "argument_a",
+          "meaning": "Begin: complete haystack byte length. Match: hay-record count. Normalization: zero."
+        },
+        {
+          "word": 5,
+          "byte_offset": 40,
+          "bytes": 8,
+          "name": "argument_b",
+          "meaning": "Begin: complete needle byte length. Match: needle-scalar count. Normalization: zero."
+        },
+        {
+          "word": 6,
+          "byte_offset": 48,
+          "bytes": 8,
+          "name": "reserved_6",
+          "meaning": "Zero."
+        },
+        {
+          "word": 7,
+          "byte_offset": 56,
+          "bytes": 8,
+          "name": "reserved_7",
+          "meaning": "Zero."
+        }
+      ],
+      "state": "The exact 32-word state table begins at source offset64.",
+      "payload": {
+        "Begin": "Empty; source length exactly320. All state words are zero.",
+        "LowerHaystack": "The original next whole-scalar UTF-8 substring, N=payload_bytes, immediately at offset320.",
+        "LowerNeedle": "The original next whole-scalar UTF-8 substring, N=payload_bytes, immediately at offset320.",
+        "Match": "argument_a H hay records at offset320, each24 bytes; argument_b K needle scalar words immediately at offset320+24H. payload_bytes=24H+8K. There is no padding."
+      },
+      "complete_size": "source_len must equal320+payload_bytes, checked without overflowing u64/host usize. No unknown flags, extra words or source tails are accepted."
+    },
+    "state": {
+      "word_count": 32,
+      "fields": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "phase",
+          "meaning": "Phase enum; zero only for the fresh Begin input."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "hay_bytes_total",
+          "meaning": "Original complete haystack byte length supplied at Begin."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "needle_bytes_total",
+          "meaning": "Original complete needle byte length supplied at Begin."
+        },
+        {
+          "word": 3,
+          "byte_offset": 24,
+          "bytes": 8,
+          "name": "hay_bytes_seen",
+          "meaning": "Number of original haystack bytes normalized."
+        },
+        {
+          "word": 4,
+          "byte_offset": 32,
+          "bytes": 8,
+          "name": "needle_bytes_seen",
+          "meaning": "Number of original needle bytes normalized."
+        },
+        {
+          "word": 5,
+          "byte_offset": 40,
+          "bytes": 8,
+          "name": "hay_original_scalars",
+          "meaning": "Number of original haystack Unicode scalars normalized."
+        },
+        {
+          "word": 6,
+          "byte_offset": 48,
+          "bytes": 8,
+          "name": "hay_lower_scalars",
+          "meaning": "Number of emitted normalized haystack scalar records."
+        },
+        {
+          "word": 7,
+          "byte_offset": 56,
+          "bytes": 8,
+          "name": "needle_original_scalars",
+          "meaning": "Number of original needle Unicode scalars normalized."
+        },
+        {
+          "word": 8,
+          "byte_offset": 64,
+          "bytes": 8,
+          "name": "needle_lower_scalars",
+          "meaning": "Number of emitted normalized needle scalar slots; replacements do not change it."
+        },
+        {
+          "word": 9,
+          "byte_offset": 72,
+          "bytes": 8,
+          "name": "needle_previous_cased",
+          "meaning": "Boolean Cased property of the nearest previous original non-Case_Ignorable scalar, or zero."
+        },
+        {
+          "word": 10,
+          "byte_offset": 80,
+          "bytes": 8,
+          "name": "sigma_pending",
+          "meaning": "Boolean: a preceding-cased-qualified Sigma slot is waiting for right context."
+        },
+        {
+          "word": 11,
+          "byte_offset": 88,
+          "bytes": 8,
+          "name": "sigma_slot",
+          "meaning": "Index in the normalized needle vector of the unresolved provisional normal sigma; zero when not pending."
+        },
+        {
+          "word": 12,
+          "byte_offset": 96,
+          "bytes": 8,
+          "name": "hay_cursor",
+          "meaning": "Next normalized haystack record to inspect while matching."
+        },
+        {
+          "word": 13,
+          "byte_offset": 104,
+          "bytes": 8,
+          "name": "needle_cursor",
+          "meaning": "Next normalized needle scalar to match."
+        },
+        {
+          "word": 14,
+          "byte_offset": 112,
+          "bytes": 8,
+          "name": "last_matched_original_lower_start",
+          "meaning": "First lowered slot of the original scalar containing the last actual matched lower slot; zero before any match."
+        },
+        {
+          "word": 15,
+          "byte_offset": 120,
+          "bytes": 8,
+          "name": "first_original_index",
+          "meaning": "Original scalar index of the first match; zero if has_match is zero."
+        },
+        {
+          "word": 16,
+          "byte_offset": 128,
+          "bytes": 8,
+          "name": "first_original_lower_start",
+          "meaning": "First normalized haystack slot of that first matched original scalar, not the first actual matched slot."
+        },
+        {
+          "word": 17,
+          "byte_offset": 136,
+          "bytes": 8,
+          "name": "last_lower_hit",
+          "meaning": "Position of the last actual normalized haystack match."
+        },
+        {
+          "word": 18,
+          "byte_offset": 144,
+          "bytes": 8,
+          "name": "last_matched_original_index",
+          "meaning": "Original scalar index of the last match; also the last unique index when any exists."
+        },
+        {
+          "word": 19,
+          "byte_offset": 152,
+          "bytes": 8,
+          "name": "unique_matches",
+          "meaning": "Count of unique original indices selected so far, including internal prefixes later discarded on None."
+        },
+        {
+          "word": 20,
+          "byte_offset": 160,
+          "bytes": 8,
+          "name": "outcome",
+          "meaning": "Outcome enum; Continue during all nonterminal phases."
+        },
+        {
+          "word": 21,
+          "byte_offset": 168,
+          "bytes": 8,
+          "name": "score_bits",
+          "meaning": "Zero-extended low32 representation of the final i32 score; zero except terminal Some."
+        },
+        {
+          "word": 22,
+          "byte_offset": 176,
+          "bytes": 8,
+          "name": "first_overflow_op",
+          "meaning": "Arithmetic-stage enum for the first original i32 overflow; zero if absent."
+        },
+        {
+          "word": 23,
+          "byte_offset": 184,
+          "bytes": 8,
+          "name": "overflow_lhs_bits",
+          "meaning": "Zero-extended low32 original operand for first_overflow_op; zero if absent."
+        },
+        {
+          "word": 24,
+          "byte_offset": 192,
+          "bytes": 8,
+          "name": "overflow_rhs_bits",
+          "meaning": "Zero-extended low32 original operand for first_overflow_op; zero if absent."
+        },
+        {
+          "word": 25,
+          "byte_offset": 200,
+          "bytes": 8,
+          "name": "r1_bits",
+          "meaning": "Zero-extended low32 wrapped result of last_i32 - first_i32; zero before terminal nonempty Some."
+        },
+        {
+          "word": 26,
+          "byte_offset": 208,
+          "bytes": 8,
+          "name": "r2_bits",
+          "meaning": "Zero-extended low32 wrapped result of r1 + 1; zero before terminal nonempty Some."
+        },
+        {
+          "word": 27,
+          "byte_offset": 216,
+          "bytes": 8,
+          "name": "r3_bits",
+          "meaning": "Zero-extended low32 wrapped result of r2 - needle_len_i32; zero before terminal nonempty Some."
+        },
+        {
+          "word": 28,
+          "byte_offset": 224,
+          "bytes": 8,
+          "name": "last_scanned_original_index",
+          "meaning": "Original index of the last consumed haystack record, including nonmatches."
+        },
+        {
+          "word": 29,
+          "byte_offset": 232,
+          "bytes": 8,
+          "name": "last_scanned_original_lower_start",
+          "meaning": "Original-character lower start carried by that last consumed haystack record."
+        },
+        {
+          "word": 30,
+          "byte_offset": 240,
+          "bytes": 8,
+          "name": "first_lower_hit",
+          "meaning": "The first actual matched lower slot; distinct from first_original_lower_start when the match begins inside an expansion."
+        },
+        {
+          "word": 31,
+          "byte_offset": 248,
+          "bytes": 8,
+          "name": "overflow_mask",
+          "meaning": "Bits 0,1,2 record overflow at arithmetic stages 1,2,3 after wrapped evaluation; zero elsewhere."
+        }
+      ],
+      "input_absolute_offset_rule": "Add64 to each relative state byte_offset.",
+      "output_absolute_offset_rule": "Add128 to each relative state byte_offset.",
+      "reserved_words": [],
+      "private_history_boundary": "Canonical shape and cross-binding are necessary checks, not authentication that a caller actually followed every prior frame. The public host creates fresh state and copies only validated HIA transitions.",
+      "derived_presence": {
+        "has_match": "needle_cursor != 0",
+        "has_scanned_hay": "hay_cursor != 0",
+        "wire_boolean_fields": [
+          "needle_previous_cased",
+          "sigma_pending"
+        ],
+        "note": "There are no has_match or has_scanned_hay wire words in V2. Their old words14/30 are repurposed without changing the32-word/256-byte layout."
+      }
+    }
+  }
+}
