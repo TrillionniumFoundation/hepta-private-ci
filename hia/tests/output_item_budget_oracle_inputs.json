@@ -25,8 +25,8 @@
   "counts": {
     "streams": 12,
     "stream_calls": 63,
-    "raw_cases": 61,
-    "literal_frames": 124
+    "raw_cases": 75,
+    "literal_frames": 138
   },
   "construction": "Manually specified numeric inputs and complete output words serialized little-endian. Only byte/word/chain consistency was checked by stdlib; no HIA/Rust oracle/VM/native call or cost evaluator ran. MAX numeric boundaries do not allocate strings or execute callbacks.",
   "coverage_limits": [
@@ -3381,6 +3381,450 @@
           "0",
           "0"
         ]
+      }
+    },
+    {
+      "id": "unknown-kind-4",
+      "reason": "Only four kinds are defined.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "4",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "unknown-kind-18446744073709551615",
+      "reason": "Only four kinds are defined.",
+      "call": {
+        "source_hex": "0100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000ffffffffffffffff0000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "opaque-2-nonzero-1",
+      "reason": "Opaque item metadata is canonical zero.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000100000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "2",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "opaque-2-nonzero-18446744073709551615",
+      "reason": "Opaque item metadata is canonical zero.",
+      "call": {
+        "source_hex": "01000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000ffffffffffffffff",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "2",
+          "18446744073709551615"
+        ]
+      }
+    },
+    {
+      "id": "opaque-3-nonzero-1",
+      "reason": "Opaque item metadata is canonical zero.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000003000000000000000100000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "3",
+          "1"
+        ]
+      }
+    },
+    {
+      "id": "opaque-3-nonzero-18446744073709551615",
+      "reason": "Opaque item metadata is canonical zero.",
+      "call": {
+        "source_hex": "01000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000300000000000000ffffffffffffffff",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967295,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "3",
+          "18446744073709551615"
+        ]
+      }
+    },
+    {
+      "id": "capacity-zero-valid-init",
+      "reason": "Output boundary zero.",
+      "call": {
+        "source_hex": "00000000000000000100000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 40,
+        "output_capacity": 0,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 4294967294,
+        "expected_written_bytes": 0,
+        "source_words_le": [
+          "0",
+          "1",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "exact-output-capacity",
+      "reason": "Exact output length writes all 88 bytes without guards.",
+      "call": {
+        "source_hex": "000000000000000001000000000000000000000000000000ffffffffffffffffffffffffffffffff",
+        "source_frame_bytes": 40,
+        "output_capacity": 88,
+        "workspace_hex": "",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "0",
+          "1",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "expected_output_prefix_hex": "010000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "last-text-counter-at-max",
+      "reason": "Valid boundary increment ends at MAX without wrap.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000fffffffffffffffffefffffffffffffffdffffffffffffff010000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551614",
+          "18446744073709551613",
+          "1",
+          "0",
+          "0"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551614",
+          "1",
+          "2",
+          "0"
+        ],
+        "expected_output_prefix_hex": "01000000000000000000000000000000000000000000000000000000000000000000000000000000fffffffffffffffffffffffffffffffffeffffffffffffff010000000000000002000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "last-audio-counter-at-max",
+      "reason": "Valid audio increment ends at MAX.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000fffffffffffffffffeffffffffffffff0000000000000000feffffffffffffff01000000000000000100000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551614",
+          "0",
+          "18446744073709551614",
+          "1",
+          "1"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0",
+          "18446744073709551615",
+          "2",
+          "0"
+        ],
+        "expected_output_prefix_hex": "01000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffff0000000000000000ffffffffffffffff02000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "last-keep-processed-at-max",
+      "reason": "Only processed increments at final valid item.",
+      "call": {
+        "source_hex": "010000000000000001000000000000000000000000000000000000000000000001000000000000000100000000000000fffffffffffffffffefffffffffffffffeffffffffffffff000000000000000000000000000000000100000000000000",
+        "source_frame_bytes": 96,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "1",
+          "1",
+          "0",
+          "0",
+          "1",
+          "1",
+          "18446744073709551615",
+          "18446744073709551614",
+          "18446744073709551614",
+          "0",
+          "0",
+          "1"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "0",
+          "0",
+          "1",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551614",
+          "0",
+          "1",
+          "0"
+        ],
+        "expected_output_prefix_hex": "01000000000000000000000000000000000000000000000001000000000000000000000000000000fffffffffffffffffffffffffffffffffeffffffffffffff000000000000000001000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "last-snippet-text-at-max",
+      "reason": "Empty snippet can validly take text/processed to MAX.",
+      "call": {
+        "source_hex": "020000000000000001000000000000000100000000000000000000000000000001000000000000000100000000000000fffffffffffffffffefffffffffffffffeffffffffffffff00000000000000000000000000000000",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "2",
+          "1",
+          "1",
+          "0",
+          "1",
+          "1",
+          "18446744073709551615",
+          "18446744073709551614",
+          "18446744073709551614",
+          "0",
+          "0"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "0",
+          "0",
+          "1",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0",
+          "2",
+          "0"
+        ],
+        "expected_output_prefix_hex": "01000000000000000000000000000000000000000000000001000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff000000000000000002000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "maximum-count-finish",
+      "reason": "Finish preserves maximum legal omission count.",
+      "call": {
+        "source_hex": "030000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000",
+        "source_frame_bytes": 80,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "3",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "2",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615",
+          "18446744073709551615",
+          "18446744073709551615",
+          "0",
+          "4",
+          "0"
+        ],
+        "expected_output_prefix_hex": "01000000000000000200000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff000000000000000004000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "numeric-snippet-length-max",
+      "reason": "A marker length is only tested for zero; not recharged or clamped.",
+      "call": {
+        "source_hex": "0200000000000000010000000000000001000000000000000000000000000000010000000000000001000000000000000100000000000000000000000000000000000000000000000000000000000000ffffffffffffffff",
+        "source_frame_bytes": 88,
+        "output_capacity": 104,
+        "workspace_hex": "00ff01",
+        "expected_core_status": 88,
+        "expected_written_bytes": 88,
+        "source_words_le": [
+          "2",
+          "1",
+          "1",
+          "0",
+          "1",
+          "1",
+          "1",
+          "0",
+          "0",
+          "0",
+          "18446744073709551615"
+        ],
+        "expected_output_words_le": [
+          "1",
+          "0",
+          "0",
+          "1",
+          "0",
+          "1",
+          "1",
+          "0",
+          "0",
+          "1",
+          "0"
+        ],
+        "expected_output_prefix_hex": "01000000000000000000000000000000000000000000000001000000000000000000000000000000010000000000000001000000000000000000000000000000000000000000000001000000000000000000000000000000"
       }
     }
   ]
