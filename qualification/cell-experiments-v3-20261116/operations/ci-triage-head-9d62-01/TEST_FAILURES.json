@@ -1,0 +1,3903 @@
+{
+  "schema": "hepta.ci-failure-index.v3",
+  "head": "9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+  "jobs": [
+    {
+      "job_id": 133743961257,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961257",
+      "tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+      "final_failed_or_flaky_targets": [
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "status": "FAILED",
+          "log_line": 13461,
+          "summary": "//codex-rs/app-server:app-server-all-test                 (14/20 cached) FAILED in 6 out of 20 in 81.8s"
+        },
+        {
+          "target": "//codex-rs/core:core-all-test",
+          "status": "FAILED",
+          "log_line": 13483,
+          "summary": "//codex-rs/core:core-all-test                             (10/28 cached) FAILED in 18 out of 28 in 106.8s"
+        },
+        {
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "status": "FAILED",
+          "log_line": 13687,
+          "summary": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 88.7s"
+        },
+        {
+          "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+          "status": "FAILED",
+          "log_line": 13689,
+          "summary": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test FAILED in 57.7s"
+        }
+      ],
+      "unique_test_names_with_observed_FAILED_lines": 17,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [
+        {
+          "name": "circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8291,
+            "end_line": 8296
+          },
+          "symptoms": [
+            {
+              "line": 8293,
+              "text": "thread 'circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact' (59120) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:"
+            },
+            {
+              "line": 8294,
+              "text": "fixture failed: Invalid"
+            },
+            {
+              "line": 8295,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 8296,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+              "line": 17,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "encrypted_state_identity_session_and_queues_survive_restart",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 7325,
+            "end_line": 7328
+          },
+          "symptoms": [
+            {
+              "line": 7326,
+              "text": "Error: Initialization"
+            },
+            {
+              "line": 7327,
+              "text": ""
+            },
+            {
+              "line": 7328,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8297,
+            "end_line": 8301
+          },
+          "symptoms": [
+            {
+              "line": 8299,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases' (59901) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:71:53:"
+            },
+            {
+              "line": 8300,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8301,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 71,
+              "column": 53,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8302,
+            "end_line": 8306
+          },
+          "symptoms": [
+            {
+              "line": 8304,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes' (59905) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:89:45:"
+            },
+            {
+              "line": 8305,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8306,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 89,
+              "column": 45,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8307,
+            "end_line": 8311
+          },
+          "symptoms": [
+            {
+              "line": 8309,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner' (59908) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:116:49:"
+            },
+            {
+              "line": 8310,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8311,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 116,
+              "column": 49,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8312,
+            "end_line": 8316
+          },
+          "symptoms": [
+            {
+              "line": 8314,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation' (59909) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:158:5:"
+            },
+            {
+              "line": 8315,
+              "text": "assertion failed: require_unstarted(temp.path()).is_ok()"
+            },
+            {
+              "line": 8316,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 158,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8317,
+            "end_line": 8321
+          },
+          "symptoms": [
+            {
+              "line": 8319,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced' (59910) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:146:62:"
+            },
+            {
+              "line": 8320,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8321,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 146,
+              "column": 62,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_publication_is_create_only_and_detects_directory_replacement",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8322,
+            "end_line": 8327
+          },
+          "symptoms": [
+            {
+              "line": 8324,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_publication_is_create_only_and_detects_directory_replacement' (59911) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:102:49:"
+            },
+            {
+              "line": 8325,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8326,
+              "text": ""
+            },
+            {
+              "line": 8327,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 102,
+              "column": 49,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::approvals::env_zsh_script_spawned_by_python_can_request_escalation_under_zsh_fork",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 10821,
+            "end_line": 10827
+          },
+          "symptoms": [
+            {
+              "line": 10823,
+              "text": "thread 'suite::approvals::env_zsh_script_spawned_by_python_can_request_escalation_under_zsh_fork' (88069) panicked at core/tests/suite/approvals.rs:2999:9:"
+            },
+            {
+              "line": 10824,
+              "text": "expected nested zsh script to request approval before completion"
+            },
+            {
+              "line": 10825,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/approvals.rs",
+              "line": 2999,
+              "column": 9,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::approvals::matched_prefix_rule_runs_unsandboxed_under_zsh_fork",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 9871,
+            "end_line": 9883
+          },
+          "symptoms": [
+            {
+              "line": 9873,
+              "text": "thread 'suite::approvals::matched_prefix_rule_runs_unsandboxed_under_zsh_fork' (82375) panicked at core/tests/suite/approvals.rs:3131:5:"
+            },
+            {
+              "line": 9874,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 9875,
+              "text": ""
+            },
+            {
+              "line": 9876,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 9877,
+              "text": "<1"
+            },
+            {
+              "line": 9878,
+              "text": ">0"
+            },
+            {
+              "line": 9879,
+              "text": ""
+            },
+            {
+              "line": 9880,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/approvals.rs",
+              "line": 3131,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::cyber_exec_policy::saved_prefix_only_bypasses_guardian_for_general_models::test_case_2_cyber_zsh_unified_exec_is_reviewed",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 9555,
+            "end_line": 9560
+          },
+          "symptoms": [
+            {
+              "line": 9557,
+              "text": "thread 'suite::cyber_exec_policy::saved_prefix_only_bypasses_guardian_for_general_models::test_case_2_cyber_zsh_unified_exec_is_reviewed' (68221) panicked at core/tests/suite/cyber_exec_policy.rs:179:5:"
+            },
+            {
+              "line": 9558,
+              "text": "approved test command should execute"
+            },
+            {
+              "line": 9559,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/cyber_exec_policy.rs",
+              "line": 179,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::skill_approval::shell_zsh_fork_still_enforces_workspace_write_sandbox",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 10188,
+            "end_line": 10285
+          },
+          "symptoms": [
+            {
+              "line": 10245,
+              "text": "Error: No such file or directory (os error 2)"
+            },
+            {
+              "line": 10246,
+              "text": " mcp_server= mcp_server_origin= event.timestamp=2026-11-17T01:39:50.239Z conversation.id=01a1e729-0d95-7394-aaec-39fb10521e3f app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+            },
+            {
+              "line": 10247,
+              "text": "2026-11-17T01:39:50.239996Z  INFO session_loop{thread_id=01a1e729-0d95-7394-aaec-39fb10521e3f}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1e729-0e6b-7740-88dc-914a62f97310\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1e729-0d95-7394-aaec-39fb10521e3f turn.id=01a1e729-0e6b-7740-88dc-914a62f97310 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1e729-0e6b-7740-88dc-914a62f97310 model=gpt-5.5 cwd=/var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/.tmpl1oFZD}:try_run_sampling_request{turn_id=01a1e729-0e6b-7740-88dc-914a62f97310 model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done:handle_tool_call:handle_tool_call_with_source:dispatch_tool_call_with_code_mode_result{otel.name=exec_command tool_name=exec_command call_id=\"zsh-fork-workspace-write-deny\" aborted=false}:dispatch_tool_call_with_terminal_outcome: codex_otel.trace_safe: event.name=\"codex.tool_result\" tool_result_seq=67 tool_name=exec_command tool_namespace=functions call_id=zsh-fork-workspace-write-deny duration_ms=155 success=true output_truncated=false arguments_length=80 output_length=149 output_line_count=6 tool_origin=\"builtin\" mcp_tool=false event.timestamp=2026-11-17T01:39:50.239Z conversation.id=01a1e729-0d95-7394-aaec-39fb10521e3f app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+            },
+            {
+              "line": 10281,
+              "text": "thread 'suite::skill_approval::shell_zsh_fork_still_enforces_workspace_write_sandbox' (95475) panicked at core/tests/suite/skill_approval.rs:282:5:"
+            },
+            {
+              "line": 10282,
+              "text": "expected sandbox denial, got output: \"Chunk ID: 021eea\\nWall time: 0.0000 seconds\\nProcess exited with code 1\\nOriginal token count: 12\\nOutput:\\nError: No such file or directory (os error 2)\\n\""
+            },
+            {
+              "line": 10283,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/skill_approval.rs",
+              "line": 282,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8474,
+            "end_line": 8744
+          },
+          "symptoms": [
+            {
+              "line": 8675,
+              "text": "Error: socket closed while receiving frame header"
+            },
+            {
+              "line": 8676,
+              "text": " mcp_server= mcp_server_origin= event.timestamp=2026-11-17T01:39:11.920Z conversation.id=01a1e728-78b9-7100-b437-2bca7251fab3 app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+            },
+            {
+              "line": 8677,
+              "text": "2026-11-17T01:39:11.920727Z  INFO session_loop{thread_id=01a1e728-78b9-7100-b437-2bca7251fab3}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1e728-78d2-77a4-8282-c75cfce1d8ac\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1e728-78b9-7100-b437-2bca7251fab3 turn.id=01a1e728-78d2-77a4-8282-c75cfce1d8ac model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1e728-78d2-77a4-8282-c75cfce1d8ac model=gpt-5.5 cwd=/var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/.tmpVCKt1z}:try_run_sampling_request{turn_id=01a1e728-78d2-77a4-8282-c75cfce1d8ac model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done:handle_tool_call:handle_tool_call_with_source:dispatch_tool_call_with_code_mode_result{otel.name=exec_command tool_name=exec_command call_id=\"uexec-zsh-fork-guardian-execve\" aborted=false}:dispatch_tool_call_with_terminal_outcome: codex_otel.trace_safe: event.name=\"codex.tool_result\" tool_result_seq=123 tool_name=exec_command tool_namespace=functions call_id=uexec-zsh-fork-guardian-execve duration_ms=187 success=true output_truncated=false arguments_length=263 output_length=153 output_line_count=6 tool_origin=\"builtin\" mcp_tool=false event.timestamp=2026-11-17T01:39:11.920Z conversation.id=01a1e728-78b9-7100-b437-2bca7251fab3 app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+            },
+            {
+              "line": 8725,
+              "text": "thread 'suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_intercepted_execve' (84038) panicked at core/tests/suite/unified_exec_zsh_fork_approvals.rs:479:5:"
+            },
+            {
+              "line": 8726,
+              "text": "Guardian-approved intercepted touch should create the out-of-workspace file"
+            },
+            {
+              "line": 8727,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+              "line": 479,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 9561,
+            "end_line": 9566
+          },
+          "symptoms": [
+            {
+              "line": 9563,
+              "text": "thread 'suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_guardian_reviews_persistent_terminal_in_current_turn' (74037) panicked at core/tests/suite/unified_exec_zsh_fork_approvals.rs:624:5:"
+            },
+            {
+              "line": 9564,
+              "text": "Guardian-approved command from the second turn should create the file"
+            },
+            {
+              "line": 9565,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+              "line": 624,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 11589,
+            "end_line": 11732
+          },
+          "symptoms": [
+            {
+              "line": 11676,
+              "text": "Error: socket closed while receiving frame header"
+            },
+            {
+              "line": 11677,
+              "text": " mcp_server= mcp_server_origin= event.timestamp=2026-11-17T01:41:09.816Z conversation.id=01a1e72a-4487-743c-845a-ac2992a1c2ec app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+            },
+            {
+              "line": 11678,
+              "text": "2026-11-17T01:41:09.816390Z  INFO session_loop{thread_id=01a1e72a-4487-743c-845a-ac2992a1c2ec}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1e72a-453e-7231-a112-e2c6b9586c2d\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1e72a-4487-743c-845a-ac2992a1c2ec turn.id=01a1e72a-453e-7231-a112-e2c6b9586c2d model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1e72a-453e-7231-a112-e2c6b9586c2d model=gpt-5.5 cwd=/var/folders/9d/l02zfgrs7c16twd3wbpdmhkc0000gn/T/.tmpjFRbJ4}:try_run_sampling_request{turn_id=01a1e72a-453e-7231-a112-e2c6b9586c2d model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done:handle_tool_call:handle_tool_call_with_source:dispatch_tool_call_with_code_mode_result{otel.name=exec_command tool_name=exec_command call_id=\"uexec-zsh-fork-parent-approval-explicit-prompt-rule\" aborted=false}:dispatch_tool_call_with_terminal_outcome: codex_otel.trace_safe: event.name=\"codex.tool_result\" tool_result_seq=99 tool_name=exec_command tool_namespace=functions call_id=uexec-zsh-fork-parent-approval-explicit-prompt-rule duration_ms=125 success=true output_truncated=false arguments_length=395 output_length=153 output_line_count=6 tool_origin=\"builtin\" mcp_tool=false event.timestamp=2026-11-17T01:41:09.816Z conversation.id=01a1e72a-4487-743c-845a-ac2992a1c2ec app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+            },
+            {
+              "line": 11724,
+              "text": "thread 'suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_keeps_explicit_prompt_rule' (120958) panicked at core/tests/suite/unified_exec_zsh_fork_approvals.rs:283:13:"
+            },
+            {
+              "line": 11725,
+              "text": "expected explicit prompt rule approval before completion"
+            },
+            {
+              "line": 11726,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+              "line": 283,
+              "column": 13,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 11165,
+            "end_line": 11201
+          },
+          "symptoms": [
+            {
+              "line": 11199,
+              "text": "Error: expected ident at line 1 column 3"
+            },
+            {
+              "line": 11200,
+              "text": ""
+            },
+            {
+              "line": 11201,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 12346,
+            "end_line": 12384
+          },
+          "symptoms": [
+            {
+              "line": 12382,
+              "text": "Error: expected ident at line 1 column 3"
+            },
+            {
+              "line": 12383,
+              "text": ""
+            },
+            {
+              "line": 12384,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        }
+      ],
+      "bazel_execution_summary": [
+        {
+          "line": 13692,
+          "text": "Executed 5 out of 584 tests: 408 tests pass, 4 fail locally, and 172 were skipped."
+        }
+      ]
+    },
+    {
+      "job_id": 133743961375,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961375",
+      "tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+      "final_failed_or_flaky_targets": [
+        {
+          "target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "status": "FAILED",
+          "log_line": 7797,
+          "summary": "//codex-rs/ext/queue:queue-queue_service-test                            FAILED in 64.4s"
+        },
+        {
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "status": "FAILED",
+          "log_line": 7799,
+          "summary": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 204.0s"
+        },
+        {
+          "target": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+          "status": "FAILED",
+          "log_line": 7801,
+          "summary": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests                          FAILED in 107.1s"
+        },
+        {
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "status": "FAILED",
+          "log_line": 7803,
+          "summary": "//codex-rs/tui:tui-unit-tests                                            FAILED in 3 out of 10 in 44.4s"
+        }
+      ],
+      "unique_test_names_with_observed_FAILED_lines": 23,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [
+        {
+          "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5396,
+            "end_line": 5402
+          },
+          "symptoms": [
+            {
+              "line": 5397,
+              "text": "Error: timed out waiting for `D:\\tmp\\.tmp0xNte7\\queue_blocking_prompt_hook.entered`"
+            },
+            {
+              "line": 5398,
+              "text": ""
+            },
+            {
+              "line": 5399,
+              "text": "Caused by:"
+            },
+            {
+              "line": 5400,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 5401,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5491,
+            "end_line": 5496
+          },
+          "symptoms": [
+            {
+              "line": 5493,
+              "text": "thread 'circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact' (6936) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:"
+            },
+            {
+              "line": 5494,
+              "text": "fixture failed: Invalid"
+            },
+            {
+              "line": 5495,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 5496,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+              "line": 17,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5497,
+            "end_line": 5502
+          },
+          "symptoms": [
+            {
+              "line": 5499,
+              "text": "thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (5840) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:"
+            },
+            {
+              "line": 5500,
+              "text": "fixture failed: Durable(Io(PermissionDenied))"
+            },
+            {
+              "line": 5501,
+              "text": ""
+            },
+            {
+              "line": 5502,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+              "line": 17,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5590,
+            "end_line": 5594
+          },
+          "symptoms": [
+            {
+              "line": 5592,
+              "text": "thread 'neuron_cell_evaluation::tests::actual_file_owners_compute_sign_and_publish_only_bound_comparison' (3604) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:"
+            },
+            {
+              "line": 5593,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5594,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+              "line": 25,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5595,
+            "end_line": 5599
+          },
+          "symptoms": [
+            {
+              "line": 5597,
+              "text": "thread 'neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison' (2632) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:"
+            },
+            {
+              "line": 5598,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5599,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+              "line": 25,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5600,
+            "end_line": 5604
+          },
+          "symptoms": [
+            {
+              "line": 5602,
+              "text": "thread 'neuron_cell_evaluation::tests::different_task_and_unknown_holdout_release_remain_fail_closed' (9264) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:"
+            },
+            {
+              "line": 5603,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5604,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+              "line": 25,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5585,
+            "end_line": 5589
+          },
+          "symptoms": [
+            {
+              "line": 5587,
+              "text": "thread 'neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown' (5040) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:"
+            },
+            {
+              "line": 5588,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5589,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+              "line": 25,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5605,
+            "end_line": 5609
+          },
+          "symptoms": [
+            {
+              "line": 5607,
+              "text": "thread 'neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider' (8392) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:"
+            },
+            {
+              "line": 5608,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5609,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+              "line": 25,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5615,
+            "end_line": 5619
+          },
+          "symptoms": [
+            {
+              "line": 5617,
+              "text": "thread 'neuron_cell_evaluation::tests::unfair_or_missing_training_declarations_never_consume_holdout' (5800) panicked at hepta-agentd/src\\neuron_cell_evaluation_test_support.rs:25:23:"
+            },
+            {
+              "line": 5618,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5619,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+              "line": 25,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5610,
+            "end_line": 5614
+          },
+          "symptoms": [
+            {
+              "line": 5612,
+              "text": "thread 'neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model' (7604) panicked at hepta-agentd/src\\neuron_generation_tests.rs:21:23:"
+            },
+            {
+              "line": 5613,
+              "text": "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5614,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+              "line": 21,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5620,
+            "end_line": 5622
+          },
+          "symptoms": [
+            {
+              "line": 5621,
+              "text": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5622,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5626,
+            "end_line": 5628
+          },
+          "symptoms": [
+            {
+              "line": 5627,
+              "text": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5628,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5623,
+            "end_line": 5625
+          },
+          "symptoms": [
+            {
+              "line": 5624,
+              "text": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5625,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5634,
+            "end_line": 5636
+          },
+          "symptoms": [
+            {
+              "line": 5635,
+              "text": "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5636,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5629,
+            "end_line": 5633
+          },
+          "symptoms": [
+            {
+              "line": 5631,
+              "text": "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (9580) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5632,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5633,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5637,
+            "end_line": 5642
+          },
+          "symptoms": [
+            {
+              "line": 5639,
+              "text": "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends' (776) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5640,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5641,
+              "text": ""
+            },
+            {
+              "line": 5642,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5732,
+            "end_line": 5736
+          },
+          "symptoms": [
+            {
+              "line": 5734,
+              "text": "thread 'neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation' (8184) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5735,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5736,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5726,
+            "end_line": 5731
+          },
+          "symptoms": [
+            {
+              "line": 5728,
+              "text": "thread 'neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome' (8904) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5729,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5730,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 5731,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5737,
+            "end_line": 5741
+          },
+          "symptoms": [
+            {
+              "line": 5739,
+              "text": "thread 'neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen' (10040) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5740,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5741,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5747,
+            "end_line": 5752
+          },
+          "symptoms": [
+            {
+              "line": 5749,
+              "text": "thread 'neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending' (2512) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5750,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5751,
+              "text": ""
+            },
+            {
+              "line": 5752,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 5742,
+            "end_line": 5746
+          },
+          "symptoms": [
+            {
+              "line": 5744,
+              "text": "thread 'neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost' (1440) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            },
+            {
+              "line": 5745,
+              "text": "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 5746,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+              "line": 39,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3101,
+            "end_line": 5301
+          },
+          "symptoms": [
+            {
+              "line": 3103,
+              "text": "thread 'perception::tests::perception_cross_language_fixture_round_trips_and_binds_raw_evidence' (5784) panicked at hepta-neuron/src\\perception_tests.rs:12:5:"
+            },
+            {
+              "line": 3104,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 3105,
+              "text": ""
+            },
+            {
+              "line": 3106,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 3107,
+              "text": " ["
+            },
+            {
+              "line": 3108,
+              "text": "     123,"
+            },
+            {
+              "line": 5295,
+              "text": ">    13,"
+            },
+            {
+              "line": 5296,
+              "text": " ]"
+            },
+            {
+              "line": 5297,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-neuron/src/perception_tests.rs",
+              "line": 12,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 6443,
+            "end_line": 6455
+          },
+          "symptoms": [
+            {
+              "line": 6445,
+              "text": "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (1312) panicked at tui/src/lib.rs:3265:9:"
+            },
+            {
+              "line": 6446,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 6447,
+              "text": ""
+            },
+            {
+              "line": 6448,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 6449,
+              "text": "<\"D:\\\\tmp\\\\.tmpatQ48y\\\\sqlite-home\\\\logs_2.sqlite\""
+            },
+            {
+              "line": 6450,
+              "text": ">\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpatQ48y\\\\sqlite-home\\\\logs_2.sqlite\""
+            },
+            {
+              "line": 6451,
+              "text": ""
+            },
+            {
+              "line": 6452,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/tui/src/lib.rs",
+              "line": 3265,
+              "column": 9,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        }
+      ],
+      "bazel_execution_summary": [
+        {
+          "line": 7814,
+          "text": "Executed 41 out of 147 tests: 98 tests pass, 4 fail locally, and 45 were skipped."
+        }
+      ]
+    },
+    {
+      "job_id": 133743961396,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961396",
+      "tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+      "final_failed_or_flaky_targets": [
+        {
+          "target": "//codex-rs/exec-server:exec-server-exec_process-test",
+          "status": "FAILED",
+          "log_line": 3793,
+          "summary": "//codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 1.9s"
+        },
+        {
+          "target": "//codex-rs/core:core-unit-tests",
+          "status": "FLAKY",
+          "log_line": 3795,
+          "summary": "//codex-rs/core:core-unit-tests                                           FLAKY, failed in 2 out of 10 in 157.8s"
+        }
+      ],
+      "unique_test_names_with_observed_FAILED_lines": 3,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [
+        {
+          "name": "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3358,
+            "end_line": 3363
+          },
+          "symptoms": [
+            {
+              "line": 3360,
+              "text": "thread 'agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context' (496) panicked at core/src\\agent\\control_tests.rs:395:14:"
+            },
+            {
+              "line": 3361,
+              "text": "terminal cleanup should finish before persisting resume context: Elapsed(())"
+            },
+            {
+              "line": 3362,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/src/agent/control_tests.rs",
+              "line": 395,
+              "column": 14,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "remote_windows_sandbox_process_accepts_process_write",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2877,
+            "end_line": 2880
+          },
+          "symptoms": [
+            {
+              "line": 2878,
+              "text": "Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2879,
+              "text": ""
+            },
+            {
+              "line": 2880,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3242,
+            "end_line": 3248
+          },
+          "symptoms": [
+            {
+              "line": 3244,
+              "text": "thread 'tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout' (4324) panicked at core/src\\tools\\handlers\\multi_agents_tests.rs:3155:5:"
+            },
+            {
+              "line": 3245,
+              "text": "wait_agent should not return before the configured default timeout"
+            },
+            {
+              "line": 3246,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/src/tools/handlers/multi_agents_tests.rs",
+              "line": 3155,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        }
+      ],
+      "bazel_execution_summary": [
+        {
+          "line": 3806,
+          "text": "Executed 34 out of 144 tests: 92 tests pass, 1 fails locally, and 51 were skipped."
+        }
+      ]
+    },
+    {
+      "job_id": 133743961401,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961401",
+      "tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+      "final_failed_or_flaky_targets": [
+        {
+          "target": "//codex-rs/exec-server:exec-server-file_system_windows-test",
+          "status": "FAILED",
+          "log_line": 5119,
+          "summary": "//codex-rs/exec-server:exec-server-file_system_windows-test              FAILED in 7.3s"
+        },
+        {
+          "target": "//codex-rs/core:core-all-test",
+          "status": "FAILED",
+          "log_line": 5121,
+          "summary": "//codex-rs/core:core-all-test                                            FAILED in 15 out of 27 in 107.4s"
+        }
+      ],
+      "unique_test_names_with_observed_FAILED_lines": 22,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [
+        {
+          "name": "file_system_operations_can_reject_junctions_in_any_path_component::test_case_1_local",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2860,
+            "end_line": 2862
+          },
+          "symptoms": [
+            {
+              "line": 2861,
+              "text": "Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2862,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "file_system_operations_can_reject_junctions_in_any_path_component::test_case_2_remote",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2863,
+            "end_line": 2865
+          },
+          "symptoms": [
+            {
+              "line": 2864,
+              "text": "Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2865,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "file_system_remote_fs_helper_respects_windows_sandbox_write_policy",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2866,
+            "end_line": 2868
+          },
+          "symptoms": [
+            {
+              "line": 2867,
+              "text": "Error: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2868,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_1_local",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2869,
+            "end_line": 2874
+          },
+          "symptoms": [
+            {
+              "line": 2870,
+              "text": "Error: mode=local"
+            },
+            {
+              "line": 2871,
+              "text": ""
+            },
+            {
+              "line": 2872,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2873,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2874,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_2_remote",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2875,
+            "end_line": 2880
+          },
+          "symptoms": [
+            {
+              "line": 2876,
+              "text": "Error: mode=remote"
+            },
+            {
+              "line": 2877,
+              "text": ""
+            },
+            {
+              "line": 2878,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2879,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2880,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2881,
+            "end_line": 2886
+          },
+          "symptoms": [
+            {
+              "line": 2882,
+              "text": "Error: mode=local, sandboxed=true"
+            },
+            {
+              "line": 2883,
+              "text": ""
+            },
+            {
+              "line": 2884,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2885,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2886,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2887,
+            "end_line": 2892
+          },
+          "symptoms": [
+            {
+              "line": 2888,
+              "text": "Error: mode=remote, sandboxed=true"
+            },
+            {
+              "line": 2889,
+              "text": ""
+            },
+            {
+              "line": 2890,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2891,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2892,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2893,
+            "end_line": 2898
+          },
+          "symptoms": [
+            {
+              "line": 2894,
+              "text": "Error: mode=local"
+            },
+            {
+              "line": 2895,
+              "text": ""
+            },
+            {
+              "line": 2896,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2897,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2898,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2899,
+            "end_line": 2904
+          },
+          "symptoms": [
+            {
+              "line": 2900,
+              "text": "Error: mode=remote"
+            },
+            {
+              "line": 2901,
+              "text": ""
+            },
+            {
+              "line": 2902,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2903,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2904,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2905,
+            "end_line": 2910
+          },
+          "symptoms": [
+            {
+              "line": 2906,
+              "text": "Error: mode=local, sandboxed=true"
+            },
+            {
+              "line": 2907,
+              "text": ""
+            },
+            {
+              "line": 2908,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2909,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2910,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2911,
+            "end_line": 2916
+          },
+          "symptoms": [
+            {
+              "line": 2912,
+              "text": "Error: mode=remote, sandboxed=true"
+            },
+            {
+              "line": 2913,
+              "text": ""
+            },
+            {
+              "line": 2914,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2915,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2916,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2917,
+            "end_line": 2922
+          },
+          "symptoms": [
+            {
+              "line": 2918,
+              "text": "Error: mode=local"
+            },
+            {
+              "line": 2919,
+              "text": ""
+            },
+            {
+              "line": 2920,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2921,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2922,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2923,
+            "end_line": 2928
+          },
+          "symptoms": [
+            {
+              "line": 2924,
+              "text": "Error: mode=remote"
+            },
+            {
+              "line": 2925,
+              "text": ""
+            },
+            {
+              "line": 2926,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2927,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2928,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_walk_honors_read_sandbox::test_case_1_local",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2929,
+            "end_line": 2934
+          },
+          "symptoms": [
+            {
+              "line": 2930,
+              "text": "Error: mode=local"
+            },
+            {
+              "line": 2931,
+              "text": ""
+            },
+            {
+              "line": 2932,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2933,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2934,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_walk_honors_read_sandbox::test_case_2_remote",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2935,
+            "end_line": 2940
+          },
+          "symptoms": [
+            {
+              "line": 2936,
+              "text": "Error: mode=remote"
+            },
+            {
+              "line": 2937,
+              "text": ""
+            },
+            {
+              "line": 2938,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2939,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2940,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2941,
+            "end_line": 2946
+          },
+          "symptoms": [
+            {
+              "line": 2942,
+              "text": "Error: mode=local, sandboxed=true"
+            },
+            {
+              "line": 2943,
+              "text": ""
+            },
+            {
+              "line": 2944,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2945,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2946,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2947,
+            "end_line": 2953
+          },
+          "symptoms": [
+            {
+              "line": 2948,
+              "text": "Error: mode=remote, sandboxed=true"
+            },
+            {
+              "line": 2949,
+              "text": ""
+            },
+            {
+              "line": 2950,
+              "text": "Caused by:"
+            },
+            {
+              "line": 2951,
+              "text": "    fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2952,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 4069,
+            "end_line": 4075
+          },
+          "symptoms": [
+            {
+              "line": 4071,
+              "text": "thread 'suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace' (1192) panicked at core/tests\\suite\\apply_patch_cli.rs:1216:9:"
+            },
+            {
+              "line": 4072,
+              "text": "Windows sandboxing intentionally rejects writes through existing hard links to files outside the workspace; tool output: apply_patch verification failed: Failed to read file to update D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpNpvzR6\\work\\hard-link.txt: fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 4073,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+              "line": 1216,
+              "column": 9,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::subagent_notifications::multi_agent_v2_spawn_sends_agent_message_to_child::test_case_2_plaintext",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3125,
+            "end_line": 3190
+          },
+          "symptoms": [
+            {
+              "line": 3186,
+              "text": "thread 'suite::subagent_notifications::multi_agent_v2_spawn_sends_agent_message_to_child::test_case_2_plaintext' (7468) panicked at core/tests\\suite\\subagent_notifications.rs:1962:6:"
+            },
+            {
+              "line": 3187,
+              "text": "spawn communication logs should be emitted: Elapsed(())"
+            },
+            {
+              "line": 3188,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+              "line": 1962,
+              "column": 6,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3285,
+            "end_line": 3443
+          },
+          "symptoms": [
+            {
+              "line": 3441,
+              "text": "Error: expected at least 2 entries in subagent_stop_hook_log.jsonl, got 1"
+            },
+            {
+              "line": 3442,
+              "text": ""
+            },
+            {
+              "line": 3443,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 4358,
+            "end_line": 4491
+          },
+          "symptoms": [
+            {
+              "line": 4489,
+              "text": "Error: The system cannot find the file specified. (os error 2)"
+            },
+            {
+              "line": 4490,
+              "text": ""
+            },
+            {
+              "line": 4491,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::workspace_roots::workspace_roots_allow_file_and_command_writes",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3780,
+            "end_line": 3783
+          },
+          "symptoms": [
+            {
+              "line": 3781,
+              "text": "Error: The system cannot find the file specified. (os error 2)"
+            },
+            {
+              "line": 3782,
+              "text": ""
+            },
+            {
+              "line": 3783,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        }
+      ],
+      "bazel_execution_summary": [
+        {
+          "line": 5148,
+          "text": "Executed 51 out of 143 tests: 108 tests pass, 2 fail locally, and 33 were skipped."
+        }
+      ]
+    },
+    {
+      "job_id": 133743961512,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961512",
+      "tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+      "final_failed_or_flaky_targets": [
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "status": "FAILED",
+          "log_line": 10209,
+          "summary": "//codex-rs/app-server:app-server-all-test                 (14/20 cached) FAILED in 6 out of 20 in 121.0s"
+        },
+        {
+          "target": "//codex-rs/code-mode-host:code-mode-host-grpc_notifications-test",
+          "status": "FAILED",
+          "log_line": 10405,
+          "summary": "//codex-rs/code-mode-host:code-mode-host-grpc_notifications-test         FAILED in 10.3s"
+        },
+        {
+          "target": "//codex-rs/code-mode-host:code-mode-host-grpc_tcp-test",
+          "status": "FAILED",
+          "log_line": 10407,
+          "summary": "//codex-rs/code-mode-host:code-mode-host-grpc_tcp-test                   FAILED in 10.5s"
+        },
+        {
+          "target": "//codex-rs/code-mode-host:code-mode-host-websocket-test",
+          "status": "FAILED",
+          "log_line": 10409,
+          "summary": "//codex-rs/code-mode-host:code-mode-host-websocket-test                  FAILED in 30.3s"
+        },
+        {
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "status": "FAILED",
+          "log_line": 10411,
+          "summary": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 158.1s"
+        },
+        {
+          "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+          "status": "FAILED",
+          "log_line": 10413,
+          "summary": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test FAILED in 68.9s"
+        }
+      ],
+      "unique_test_names_with_observed_FAILED_lines": 29,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [
+        {
+          "name": "circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8586,
+            "end_line": 8591
+          },
+          "symptoms": [
+            {
+              "line": 8588,
+              "text": "thread 'circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact' (59605) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:"
+            },
+            {
+              "line": 8589,
+              "text": "fixture failed: Invalid"
+            },
+            {
+              "line": 8590,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "line": 8591,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+              "line": 17,
+              "column": 23,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "completed_cells_drain_pending_notifications_before_completion",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 7979,
+            "end_line": 7984
+          },
+          "symptoms": [
+            {
+              "line": 7980,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 7981,
+              "text": ""
+            },
+            {
+              "line": 7982,
+              "text": "Caused by:"
+            },
+            {
+              "line": 7983,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 7984,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "completed_waits_drain_pending_notifications_before_returning",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 7973,
+            "end_line": 7978
+          },
+          "symptoms": [
+            {
+              "line": 7974,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 7975,
+              "text": ""
+            },
+            {
+              "line": 7976,
+              "text": "Caused by:"
+            },
+            {
+              "line": 7977,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 7978,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "encrypted_state_identity_session_and_queues_survive_restart",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 7903,
+            "end_line": 7906
+          },
+          "symptoms": [
+            {
+              "line": 7904,
+              "text": "Error: Initialization"
+            },
+            {
+              "line": 7905,
+              "text": ""
+            },
+            {
+              "line": 7906,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8592,
+            "end_line": 8596
+          },
+          "symptoms": [
+            {
+              "line": 8594,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases' (60196) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:71:53:"
+            },
+            {
+              "line": 8595,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8596,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 71,
+              "column": 53,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8597,
+            "end_line": 8601
+          },
+          "symptoms": [
+            {
+              "line": 8599,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes' (60198) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:89:45:"
+            },
+            {
+              "line": 8600,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8601,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 89,
+              "column": 45,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8602,
+            "end_line": 8606
+          },
+          "symptoms": [
+            {
+              "line": 8604,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner' (60200) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:116:49:"
+            },
+            {
+              "line": 8605,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8606,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 116,
+              "column": 49,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8607,
+            "end_line": 8611
+          },
+          "symptoms": [
+            {
+              "line": 8609,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation' (60201) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:158:5:"
+            },
+            {
+              "line": 8610,
+              "text": "assertion failed: require_unstarted(temp.path()).is_ok()"
+            },
+            {
+              "line": 8611,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 158,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8612,
+            "end_line": 8616
+          },
+          "symptoms": [
+            {
+              "line": 8614,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced' (60202) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:146:62:"
+            },
+            {
+              "line": 8615,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8616,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 146,
+              "column": 62,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "learning_iteration_research_external_material::tests::research_owner_publication_is_create_only_and_detects_directory_replacement",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8617,
+            "end_line": 8622
+          },
+          "symptoms": [
+            {
+              "line": 8619,
+              "text": "thread 'learning_iteration_research_external_material::tests::research_owner_publication_is_create_only_and_detects_directory_replacement' (60203) panicked at hepta-agentd/src/learning_iteration_research_external_material_tests.rs:102:49:"
+            },
+            {
+              "line": 8620,
+              "text": "called `Result::unwrap()` on an `Err` value: Not a directory (os error 20)"
+            },
+            {
+              "line": 8621,
+              "text": ""
+            },
+            {
+              "line": 8622,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "line": 102,
+              "column": 49,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "malformed_websocket_frame_does_not_stop_the_listener",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8087,
+            "end_line": 8092
+          },
+          "symptoms": [
+            {
+              "line": 8088,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8089,
+              "text": ""
+            },
+            {
+              "line": 8090,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8091,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8092,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "oversized_notification_text_is_delivered_unchanged",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 7967,
+            "end_line": 7972
+          },
+          "symptoms": [
+            {
+              "line": 7968,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 7969,
+              "text": ""
+            },
+            {
+              "line": 7970,
+              "text": "Caused by:"
+            },
+            {
+              "line": 7971,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 7972,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "production_websocket_client_runs_nested_tools_while_other_sessions_progress",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8069,
+            "end_line": 8074
+          },
+          "symptoms": [
+            {
+              "line": 8070,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8071,
+              "text": ""
+            },
+            {
+              "line": 8072,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8073,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8074,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 9098,
+            "end_line": 9134
+          },
+          "symptoms": [
+            {
+              "line": 9132,
+              "text": "Error: expected ident at line 1 column 3"
+            },
+            {
+              "line": 9133,
+              "text": ""
+            },
+            {
+              "line": 9134,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8727,
+            "end_line": 8765
+          },
+          "symptoms": [
+            {
+              "line": 8763,
+              "text": "Error: expected ident at line 1 column 3"
+            },
+            {
+              "line": 8764,
+              "text": ""
+            },
+            {
+              "line": 8765,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "tcp_listener_opens_a_grpc_session",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8013,
+            "end_line": 8018
+          },
+          "symptoms": [
+            {
+              "line": 8014,
+              "text": "Error: gRPC code-mode host did not publish its endpoint"
+            },
+            {
+              "line": 8015,
+              "text": ""
+            },
+            {
+              "line": 8016,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8017,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8018,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "tcp_listener_rejects_http1_grpc_requests",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8019,
+            "end_line": 8024
+          },
+          "symptoms": [
+            {
+              "line": 8020,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8021,
+              "text": ""
+            },
+            {
+              "line": 8022,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8023,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8024,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "tcp_listener_serves_http1_healthz",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8031,
+            "end_line": 8037
+          },
+          "symptoms": [
+            {
+              "line": 8032,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8033,
+              "text": ""
+            },
+            {
+              "line": 8034,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8035,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8036,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "tcp_listener_serves_http2_healthz",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8025,
+            "end_line": 8030
+          },
+          "symptoms": [
+            {
+              "line": 8026,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8027,
+              "text": ""
+            },
+            {
+              "line": 8028,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8029,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8030,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "termination_cancels_pending_notifications",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 7985,
+            "end_line": 7991
+          },
+          "symptoms": [
+            {
+              "line": 7986,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 7987,
+              "text": ""
+            },
+            {
+              "line": 7988,
+              "text": "Caused by:"
+            },
+            {
+              "line": 7989,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 7990,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_bulk_lane_rejects_control_messages",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8081,
+            "end_line": 8086
+          },
+          "symptoms": [
+            {
+              "line": 8082,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8083,
+              "text": ""
+            },
+            {
+              "line": 8084,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8085,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8086,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_bulk_pairing_rejects_unknown_tokens",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8075,
+            "end_line": 8080
+          },
+          "symptoms": [
+            {
+              "line": 8076,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8077,
+              "text": ""
+            },
+            {
+              "line": 8078,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8079,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8080,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_control_operations_bypass_an_incomplete_bulk_frame",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8099,
+            "end_line": 8104
+          },
+          "symptoms": [
+            {
+              "line": 8100,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8101,
+              "text": ""
+            },
+            {
+              "line": 8102,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8103,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8104,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_dual_connections_route_notifications_and_tool_callbacks_to_separate_lanes",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8093,
+            "end_line": 8098
+          },
+          "symptoms": [
+            {
+              "line": 8094,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8095,
+              "text": ""
+            },
+            {
+              "line": 8096,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8097,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8098,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_listener_accepts_frames_larger_than_default_websocket_limit",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8105,
+            "end_line": 8110
+          },
+          "symptoms": [
+            {
+              "line": 8106,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8107,
+              "text": ""
+            },
+            {
+              "line": 8108,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8109,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8110,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_listener_executes_cells_and_forwards_tool_callbacks",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8111,
+            "end_line": 8116
+          },
+          "symptoms": [
+            {
+              "line": 8112,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8113,
+              "text": ""
+            },
+            {
+              "line": 8114,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8115,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8116,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_listener_keeps_connections_and_session_ids_isolated",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8123,
+            "end_line": 8128
+          },
+          "symptoms": [
+            {
+              "line": 8124,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8125,
+              "text": ""
+            },
+            {
+              "line": 8126,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8127,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8128,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_listener_rejects_browser_origin_handshakes",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8117,
+            "end_line": 8122
+          },
+          "symptoms": [
+            {
+              "line": 8118,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8119,
+              "text": ""
+            },
+            {
+              "line": 8120,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8121,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8122,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "websocket_listener_serves_readiness_endpoint",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 8129,
+            "end_line": 8135
+          },
+          "symptoms": [
+            {
+              "line": 8130,
+              "text": "Error: timed out waiting for code-mode host endpoint"
+            },
+            {
+              "line": 8131,
+              "text": ""
+            },
+            {
+              "line": 8132,
+              "text": "Caused by:"
+            },
+            {
+              "line": 8133,
+              "text": "    deadline has elapsed"
+            },
+            {
+              "line": 8134,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        }
+      ],
+      "bazel_execution_summary": [
+        {
+          "line": 10416,
+          "text": "Executed 7 out of 584 tests: 406 tests pass, 6 fail locally, and 172 were skipped."
+        }
+      ]
+    },
+    {
+      "job_id": 133743961532,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639372/job/133743961532",
+      "tested_checkout": "477664d4dcbf40b5d65e2b56fdb31f7e7bee0178",
+      "final_failed_or_flaky_targets": [
+        {
+          "target": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+          "status": "FAILED",
+          "log_line": 4827,
+          "summary": "//codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 2.1s"
+        },
+        {
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "status": "FAILED",
+          "log_line": 4829,
+          "summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 54.3s"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "status": "FAILED",
+          "log_line": 4849,
+          "summary": "//codex-rs/app-server:app-server-all-test                                FAILED in 7 out of 21 in 114.7s"
+        }
+      ],
+      "unique_test_names_with_observed_FAILED_lines": 18,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [
+        {
+          "name": "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2946,
+            "end_line": 2948
+          },
+          "symptoms": [
+            {
+              "line": 2947,
+              "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2948,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 2949,
+            "end_line": 2952
+          },
+          "symptoms": [
+            {
+              "line": 2950,
+              "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 2951,
+              "text": ""
+            },
+            {
+              "line": 2952,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3278,
+            "end_line": 3285
+          },
+          "symptoms": [
+            {
+              "line": 3280,
+              "text": "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (9280) panicked at cli/tests/sandbox_cloud_config.rs:148:5:"
+            },
+            {
+              "line": 3281,
+              "text": "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session"
+            },
+            {
+              "line": 3282,
+              "text": "; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+              "line": 148,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3050,
+            "end_line": 3055
+          },
+          "symptoms": [
+            {
+              "line": 3052,
+              "text": "thread 'spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite' (4176) panicked at windows-sandbox-rs/src\\spawn_prep.rs:549:10:"
+            },
+            {
+              "line": 3053,
+              "text": "legacy env prep: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 3054,
+              "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+              "line": 549,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3921,
+            "end_line": 4095
+          },
+          "symptoms": [
+            {
+              "line": 3966,
+              "text": "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (9964) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:"
+            },
+            {
+              "line": 3967,
+              "text": "Verifications failed:"
+            },
+            {
+              "line": 3968,
+              "text": "- Mock #1."
+            },
+            {
+              "line": 3969,
+              "text": "\tExpected range of matching incoming requests: == 1"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "external/rules_rs++crate+crates__wiremock-0.6.5/src/mock_server/exposed_server.rs",
+              "line": 367,
+              "column": 17,
+              "external_dependency": true,
+              "changed_by_v3_stack": null
+            }
+          ]
+        },
+        {
+          "name": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_4_reapplies_an_implicitly_selected_configured_default_role",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3364,
+            "end_line": 3401
+          },
+          "symptoms": [
+            {
+              "line": 3399,
+              "text": "Error: deadline has elapsed"
+            },
+            {
+              "line": 3400,
+              "text": ""
+            },
+            {
+              "line": 3401,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3486,
+            "end_line": 3551
+          },
+          "symptoms": [
+            {
+              "line": 3549,
+              "text": "Error: deadline has elapsed"
+            },
+            {
+              "line": 3550,
+              "text": ""
+            },
+            {
+              "line": 3551,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3056,
+            "end_line": 3058
+          },
+          "symptoms": [
+            {
+              "line": 3057,
+              "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 3058,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3059,
+            "end_line": 3061
+          },
+          "symptoms": [
+            {
+              "line": 3060,
+              "text": "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 3061,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": []
+        },
+        {
+          "name": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3062,
+            "end_line": 3118
+          },
+          "symptoms": [
+            {
+              "line": 3078,
+              "text": "thread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (2960) panicked at windows-sandbox-rs/src\\token_tests.rs:499:5:"
+            },
+            {
+              "line": 3079,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 3080,
+              "text": ""
+            },
+            {
+              "line": 3081,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 3082,
+              "text": " ["
+            },
+            {
+              "line": 3083,
+              "text": "     ["
+            },
+            {
+              "line": 3084,
+              "text": "<        None,"
+            },
+            {
+              "line": 3085,
+              "text": "<        None,"
+            },
+            {
+              "line": 3086,
+              "text": ">        Some("
+            },
+            {
+              "line": 3087,
+              "text": ">            ("
+            },
+            {
+              "line": 3088,
+              "text": ">                PermissionDenied,"
+            },
+            {
+              "line": 3089,
+              "text": ">                Some("
+            },
+            {
+              "line": 3090,
+              "text": ">                    5,"
+            },
+            {
+              "line": 3091,
+              "text": ">                ),"
+            },
+            {
+              "line": 3092,
+              "text": ">            ),"
+            },
+            {
+              "line": 3093,
+              "text": ">        ),"
+            },
+            {
+              "line": 3094,
+              "text": ">        Some("
+            },
+            {
+              "line": 3095,
+              "text": ">            ("
+            },
+            {
+              "line": 3096,
+              "text": ">                PermissionDenied,"
+            },
+            {
+              "line": 3097,
+              "text": ">                Some("
+            },
+            {
+              "line": 3098,
+              "text": ">                    5,"
+            },
+            {
+              "line": 3099,
+              "text": ">                ),"
+            },
+            {
+              "line": 3100,
+              "text": ">            ),"
+            },
+            {
+              "line": 3101,
+              "text": ">        ),"
+            },
+            {
+              "line": 3102,
+              "text": "     ],"
+            },
+            {
+              "line": 3103,
+              "text": "     ["
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+              "line": 499,
+              "column": 5,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3119,
+            "end_line": 3136
+          },
+          "symptoms": [
+            {
+              "line": 3121,
+              "text": "thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (2620) panicked at windows-sandbox-rs/src\\unified_exec\\acl_setup_tests.rs:346:9:"
+            },
+            {
+              "line": 3122,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 3123,
+              "text": ""
+            },
+            {
+              "line": 3124,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 3125,
+              "text": " ("
+            },
+            {
+              "line": 3126,
+              "text": "<    \"legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy\","
+            },
+            {
+              "line": 3127,
+              "text": "<    None,"
+            },
+            {
+              "line": 3128,
+              "text": ">    \"apply legacy deny-write ACL to D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpj63Myw\\\\protected.txt\","
+            },
+            {
+              "line": 3129,
+              "text": ">    Some("
+            },
+            {
+              "line": 3130,
+              "text": ">        5,"
+            },
+            {
+              "line": 3131,
+              "text": ">    ),"
+            },
+            {
+              "line": 3132,
+              "text": "     false,"
+            },
+            {
+              "line": 3133,
+              "text": " )"
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+              "line": 346,
+              "column": 9,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3137,
+            "end_line": 3141
+          },
+          "symptoms": [
+            {
+              "line": 3139,
+              "text": "thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (5116) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+            },
+            {
+              "line": 3140,
+              "text": "legacy Windows sandbox process test lock poisoned: PoisonError { .. }"
+            },
+            {
+              "line": 3141,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 62,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3142,
+            "end_line": 3146
+          },
+          "symptoms": [
+            {
+              "line": 3144,
+              "text": "thread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (4712) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+            },
+            {
+              "line": 3145,
+              "text": "legacy Windows sandbox process test lock poisoned: PoisonError { .. }"
+            },
+            {
+              "line": 3146,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 62,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3147,
+            "end_line": 3151
+          },
+          "symptoms": [
+            {
+              "line": 3149,
+              "text": "thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (7696) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+            },
+            {
+              "line": 3150,
+              "text": "legacy Windows sandbox process test lock poisoned: PoisonError { .. }"
+            },
+            {
+              "line": 3151,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 62,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3152,
+            "end_line": 3156
+          },
+          "symptoms": [
+            {
+              "line": 3154,
+              "text": "thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (6704) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+            },
+            {
+              "line": 3155,
+              "text": "legacy Windows sandbox process test lock poisoned: PoisonError { .. }"
+            },
+            {
+              "line": 3156,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 62,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3157,
+            "end_line": 3162
+          },
+          "symptoms": [
+            {
+              "line": 3159,
+              "text": "thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (4396) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:"
+            },
+            {
+              "line": 3160,
+              "text": "legacy Windows sandbox process test lock poisoned: PoisonError { .. }"
+            },
+            {
+              "line": 3161,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 62,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3211,
+            "end_line": 3216
+          },
+          "symptoms": [
+            {
+              "line": 3213,
+              "text": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (5216) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:777:10:"
+            },
+            {
+              "line": 3214,
+              "text": "spawn legacy delete session: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 3215,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 777,
+              "column": 10,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        },
+        {
+          "name": "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn",
+          "independent_sample_count": null,
+          "first_failure_block": {
+            "start_line": 3199,
+            "end_line": 3210
+          },
+          "symptoms": [
+            {
+              "line": 3201,
+              "text": "thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (6748) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:263:9:"
+            },
+            {
+              "line": 3202,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 3203,
+              "text": ""
+            },
+            {
+              "line": 3204,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 3205,
+              "text": "<legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            },
+            {
+              "line": 3206,
+              "text": ">managed networking requires the elevated Windows sandbox backend"
+            },
+            {
+              "line": 3207,
+              "text": ""
+            },
+            {
+              "line": 3208,
+              "text": ""
+            }
+          ],
+          "symptom_excerpt_truncated": false,
+          "source_locations": [
+            {
+              "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+              "line": 263,
+              "column": 9,
+              "external_dependency": false,
+              "changed_by_v3_stack": false
+            }
+          ]
+        }
+      ],
+      "bazel_execution_summary": [
+        {
+          "line": 4872,
+          "text": "Executed 56 out of 151 tests: 106 tests pass, 3 fail locally, and 42 were skipped."
+        }
+      ]
+    },
+    {
+      "job_id": 133757105214,
+      "name": "architecture evidence retry",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43994639113/job/133757105214",
+      "tested_checkout": "9d62fafa3713e25fa4c80eaab403e094ef4bc647",
+      "final_failed_or_flaky_targets": [],
+      "unique_test_names_with_observed_FAILED_lines": 0,
+      "failed_test_names_note": "Deduplicated diagnostic names; attempts and repeated failed-log rendering are not independent tests, runs, users, or samples. Final target status is authoritative for FAILED versus FLAKY.",
+      "tests": [],
+      "bazel_execution_summary": []
+    }
+  ]
+}
