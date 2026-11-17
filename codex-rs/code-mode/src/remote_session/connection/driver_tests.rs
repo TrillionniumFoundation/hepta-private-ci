@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::atomic::AtomicBool;
@@ -759,6 +760,15 @@ async fn concurrent_large_delegate_results_do_not_disconnect_a_backpressured_bul
         }
     })
     .await
+    .inspect_err(|_| {
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "bulk result wait timed out: started={} queued={} alive={}",
+            delegate.started.load(Ordering::Acquire),
+            bulk_rx.len(),
+            harness.alive.load(Ordering::Acquire),
+        );
+    })
     .expect("concurrent large results should queue behind the blocked bulk writer");
 
     let _unrelated = harness.start_cell(session, /*request_id*/ 3, "2").await;
