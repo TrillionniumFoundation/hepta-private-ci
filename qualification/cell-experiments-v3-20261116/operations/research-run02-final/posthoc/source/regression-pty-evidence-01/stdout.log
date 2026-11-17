@@ -1,0 +1,12 @@
+test_candidate_and_budget_gates_reject (__main__.Regression) ... ok
+test_cold_identity_original_guard_rejects (__main__.Regression) ... ok
+test_every_non_diagnose_module_node_unchanged (__main__.Regression) ... ok
+test_missing_extra_duplicate_and_same_panel_reorder_reject (__main__.Regression) ... ok
+test_original_hash_and_reconstruction_equality_still_required (__main__.Regression) ... ok
+test_producer_roundtrip_original_rejects_fixed_accepts (__main__.Regression) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.010s
+
+OK
+{"regression_sha256": "2e531b414b72382e7afb265179088158142d0de287caba0a69d54e42dfbef62e", "schema": "hepta.diagnostic-order-fix-regression.v1", "tests_run": 6, "failures": [], "errors": [], "passed": true, "original_bytes_still_bound": true, "scope": "actual extracted context binding, evaluation prefix and cold guards with in-memory fixtures; no full diagnostic or semantic verifier", "candidate_sha256": "ce0b68cd98673bf15f170d1da7c42670f65320ba5c9d3cacc2f1c28696273821", "model_calls": 0, "verifier_calls": 0, "C_access": false}
