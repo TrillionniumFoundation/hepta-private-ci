@@ -1,4 +1,4 @@
-"""Record the original two-package gates; only the platform sets a job deadline."""
+"""Record the original three-package gates; only the platform sets a job deadline."""
 
 import argparse
 from datetime import datetime, timezone
@@ -18,15 +18,22 @@ import xml.etree.ElementTree as ET
 
 
 BASE = "5ec371387c47fe1af3cb511c076867ff2678f940"
-SOURCE = "d128dd2c1eb99a0635ccf8f3650bbb3431335b98"
-SOURCE_TREE = "742012dbb1d3f29cb44db463df3e5d642fec79db"
+SOURCE = "f143652bdfaf4b2b9ac2d4dc0b846aa62af81290"
+SOURCE_TREE = "973b4bb60cd154d51a786632488289e8498b8d82"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 REF = "refs/heads/integration/hepta-rust-validation-20261117-59d82"
 CI_PATHS = {
     ".github/workflows/hepta-optimizer-encoder-validation.yml",
     ".github/scripts/validate_optimizer_encoder.py",
 }
-PACKAGES = ["-p", "codex-hepta-context-compiler", "-p", "codex-hepta-prompt-optimizer"]
+PACKAGES = [
+    "-p",
+    "codex-hepta-context-compiler",
+    "-p",
+    "codex-hepta-prompt-optimizer",
+    "-p",
+    "codex-hepta-ndu",
+]
 COMMANDS = [
     ["just", "fmt"],
     ["just", "fmt", "--base", BASE],
@@ -153,6 +160,34 @@ def read_bounded(path, limit):
     if len(data) > limit:
         raise ValueError(f"record input exceeds {limit} bytes: {path}")
     return data
+
+
+def require_absent_junit(path):
+    if os.path.lexists(path):
+        raise ValueError(f"JUnit report already exists before the test command: {path}")
+    return {"path": str(path), "absent": True, "notBeforeNs": time.time_ns()}
+
+
+def read_fresh_junit(path, not_before_ns):
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode):
+        raise ValueError("JUnit report is not a regular file")
+    if before.st_size > MAX_LOG_BYTES or before.st_mtime_ns < not_before_ns:
+        raise ValueError("JUnit report exceeds the limit or predates this test command")
+    data = read_bounded(path, MAX_LOG_BYTES)
+    after = path.lstat()
+    fields = ("st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")
+    if any(getattr(before, key) != getattr(after, key) for key in fields):
+        raise ValueError("JUnit report changed during collection")
+    if len(data) != after.st_size:
+        raise ValueError("JUnit report length differs from its metadata")
+    return data, {
+        "path": str(path),
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "mtimeNs": after.st_mtime_ns,
+        "notBeforeNs": not_before_ns,
+    }
 
 
 def preflight(output):
@@ -354,7 +389,12 @@ def validate():
             }
         )
         save(output / "result.json", result)
+        # nextest 0.9.103 stores reports relative to the workspace root.
+        report = CWD / "target" / "nextest" / "local" / "junit.xml"
         for number, argv in enumerate(COMMANDS, 1):
+            if argv[:2] == ["just", "test"]:
+                result["junitBeforeTest"] = require_absent_junit(report)
+                save(output / "result.json", result)
             execution = command(output, number, argv)
             after, receipt = snapshot(output, f"source-after-{number}")
             execution["sourceAfter"] = receipt
@@ -392,11 +432,11 @@ def validate():
             if execution["exitCode"] or not execution["logComplete"]:
                 raise ValueError("command failed or complete output was not retained")
             save(output / "result.json", result)
-        report = (
-            Path(os.environ["CARGO_TARGET_DIR"]) / "nextest" / "local" / "junit.xml"
+        data, result["junitReport"] = read_fresh_junit(
+            report, result["junitBeforeTest"]["notBeforeNs"]
         )
-        data = read_bounded(report, MAX_LOG_BYTES)
         (output / "junit.xml").write_bytes(data)
+        save(output / "result.json", result)
         root = ET.fromstring(data)
         cases = [
             {
