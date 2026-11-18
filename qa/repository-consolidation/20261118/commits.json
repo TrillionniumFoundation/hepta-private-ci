@@ -1,0 +1,81 @@
+{
+  "cleanup": {
+    "cleanup_commit": "7dee7303044193b58e472cef73ad88e0d1c2a1e3",
+    "cleanup_operations": 65,
+    "cleanup_tree": "38da7b55673003371c6e911b4fd2d486219da621",
+    "deleted_diagnostic_paths": 40,
+    "native_qualification_claimed": false,
+    "original_integration": "5ec371387c47fe1af3cb511c076867ff2678f940",
+    "original_main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "protected_hia_cell_refs_modified": false,
+    "remote_ref_updated": false,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "restored_paths": 25,
+    "validation_source": "d2422433dccc232e10256973df68823331928a28"
+  },
+  "gate_fixes": [
+    {
+      "parent": "69ad8206f4341d04ec1a76ad329d468b390f40ae",
+      "path": "codex-rs/hepta-intelligence/tests/canonical_consumer_v1.rs",
+      "sha": "2fced057564ae129f2cb10dc87291002fe9f3b0b",
+      "stage": "consumer_lint",
+      "tree": "9c99aa015c3019faa6520f080e764722ac7c7f1c"
+    },
+    {
+      "parent": "2fced057564ae129f2cb10dc87291002fe9f3b0b",
+      "path": ".github/workflows/hepta-rbe-openssh-image.yml",
+      "sha": "3c44b57a5ff75d9321051202c7768672a0553255",
+      "stage": "rbe_helper_coverage",
+      "tree": "ebd406b6ac3c88d5d76ccf82407dcbd54eeea360"
+    }
+  ],
+  "reviewed_history_merge": {
+    "additional_parents": [
+      "04a580e0d302621c45d69a062264fede0717e757",
+      "6c25e0ec8bc35cfa1b8a4e317b8f5d97dd0e593d",
+      "94846b3a75c6322e86077208a071d7ead3d081da",
+      "ac5ecac7fe215d2ca7ea7f577f14ae3be8129ef6",
+      "bc1facac14bddae2ea83efa662d8200b8d56a080",
+      "dc3688877e8f979ffe704759255139cb714d87f5",
+      "e6cbdda4ea6c31682e50acc7c6935e076ce3945c",
+      "faa3d1cbd0cd7d64da6f4a7b228daee99a4df29d",
+      "4aa818ea782ae87c613d89d99af5dc3bc83fd521",
+      "9bee7081906e17ba5829d832b82bb4ec98d5b44f"
+    ],
+    "parent": "1a116535d5a3a0f8d7d6d00df8bd9f1b683337c3",
+    "remote_ref_updated": false,
+    "sha": "69ad8206f4341d04ec1a76ad329d468b390f40ae",
+    "tree": "662666b3b996ba4ce87bce5782aa22c99b96f25e"
+  },
+  "source_fixes": [
+    {
+      "parent": "7dee7303044193b58e472cef73ad88e0d1c2a1e3",
+      "paths": [
+        "codex-rs/hepta-intelligence/src/vertical.rs",
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
+      "sha": "877c485d74f352392267e222bd3edf947965fbed",
+      "stage": "normalization",
+      "tree": "fe625e9c74433e8b25976778b2125a5e852e53f4"
+    },
+    {
+      "parent": "877c485d74f352392267e222bd3edf947965fbed",
+      "paths": [
+        "codex-rs/hepta-prompt-optimizer/src/verified_validation.rs",
+        "codex-rs/hepta-prompt-optimizer/src/verified_tests.rs"
+      ],
+      "sha": "b505b8e176fe2f49b518e11dcea3de906f11bc9a",
+      "stage": "optimizer_integrity",
+      "tree": "a90a7bfff647daa6b6370190b37cf150fe9c903a"
+    },
+    {
+      "parent": "b505b8e176fe2f49b518e11dcea3de906f11bc9a",
+      "paths": [
+        "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs"
+      ],
+      "sha": "1a116535d5a3a0f8d7d6d00df8bd9f1b683337c3",
+      "stage": "model_material_cases",
+      "tree": "5750117bba632334570664d7618b3e1959e3c225"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "blob_content_reads_or_network_fetches": false,
+  "branch_name_counts": {
+    "requires_review": 1927
+  },
+  "candidate_sha": "d2422433dccc232e10256973df68823331928a28",
+  "candidate_tree": "49a43033a00ec66f6c54650560e966bb43ef0ec6",
+  "classification_counts": {
+    "requires_review": 1849
+  },
+  "classified_heads": 1849,
+  "coverage_limitation": "Exact-covered records only prove changed final paths already match candidate metadata. Evidence candidates still require content/provenance review. Metadata cannot qualify runtime behavior or validate arbitrary docs/scripts.",
+  "frontier_heads": 1849,
+  "multiple_merge_base_head_count": 190,
+  "no_repository_files_or_refs_modified": true,
+  "ordinary_marker_proof": {
+    "absent_parent_commits": [],
+    "all_parent_commits_present": true,
+    "graph_commit_count": 77392,
+    "graph_sha256": "040d7e98c52ebf5eb7501538f2ce2fb434042e20fc1f76227cd4f163aacb120d",
+    "marker_roots": [
+      "3aa1f85ba90c79d220a5cadf2261def176892867",
+      "f02bb9f3344cdff4e361cca4353540ca0193bd21"
+    ],
+    "method": "Forward descendant closure from each marker over every parent edge in the complete local commit graph; intersection with every classified ordinary tip.",
+    "ordinary_name_count": 7234,
+    "ordinary_tips_absent_from_graph": [],
+    "ordinary_unique_tip_count": 6847,
+    "scope": "Proves exclusion of these two protected marker commits, not an independent classification of cherry-picked HIA content.",
+    "status": "PROVED_NO_ORDINARY_TIP_DESCENDS_PROTECTED_MARKER",
+    "unknown_ordinary_names": [],
+    "violations": []
+  },
+  "path_index_summary": {
+    "already_covered_head_path_pairs": 121061,
+    "changed_head_path_pairs": 1793075,
+    "distinct_uncovered_paths": 131535,
+    "heads_with_some_new_passive_evidence_paths": 682,
+    "new_nonpassive_added_head_path_pairs_requiring_review": 1386538,
+    "new_passive_evidence_distinct_paths": 21516,
+    "new_passive_evidence_path_object_variants": 21558,
+    "new_passive_evidence_paths_with_multiple_branch_versions": 30,
+    "uncovered_head_path_pairs": 1672014
+  },
+  "status": "COMPLETE_METADATA_AUDIT",
+  "summary_format": "Compact indexes point to complete heads/<sha>.json. Passive evidence variants identify new regular non-executable data files only; content/provenance remains unverified.",
+  "uncovered_role_counts_across_heads": {
+    "ci_configuration": 893,
+    "code_or_executable": 769795,
+    "documentation_requires_review": 77780,
+    "evidence_location": 107315,
+    "governance_or_caller_manifest": 572,
+    "manifest_or_build": 20630,
+    "other_requires_review": 587057,
+    "runtime_or_build_tree": 83340,
+    "symlink": 7,
+    "workflow_or_action": 24625
+  },
+  "zero_changed_path_head_count": 0
+}

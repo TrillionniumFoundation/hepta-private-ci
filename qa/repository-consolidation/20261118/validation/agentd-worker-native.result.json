@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "scripts/hepta_ci_v8.py",
+    "--run",
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host"
+  ],
+  "source_commit": "69ad8206f4341d04ec1a76ad329d468b390f40ae",
+  "source_tree": "662666b3b996ba4ce87bce5782aa22c99b96f25e",
+  "cargo_lock_sha256": "3735942b85e35ab36efcdf8c1238ed10ae960f687955311d38bffdd372bec1a6",
+  "started_unix": 1794964776.2040348,
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "3",
+    "CMAKE": "cmake",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/14/include"
+  },
+  "exit_code": 1,
+  "elapsed_seconds": 0.8499710559844971
+}
