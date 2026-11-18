@@ -224,9 +224,17 @@ def evaluate_controls(
 
 
 def run_extended_circuit(
-    context, manifests, root, comparison, output_dir, protocol_digest
+    context,
+    manifests,
+    root,
+    comparison,
+    output_dir,
+    protocol_digest,
+    *,
+    pool_type=None,
+    expected_pool_source_sha256=None,
 ):
-    """Use the original shared pool, search and suite under an additional freeze."""
+    """Run original search and suite with an explicitly frozen pool implementation."""
     from .. import data, repo_execution
     from .circuit_contract import Budget, CellSpec
     from .circuit_router import RouterPlan, fit_router
@@ -238,11 +246,27 @@ def run_extended_circuit(
     directory.mkdir(parents=True, exist_ok=False)
     repo_execution.load_catalog("open")
     plan, binding = comparison["E4"], comparison["comparison_digest"]
-    pool = SharedAdapterPool(
-        {cell: manifests[mode] for cell, mode in CELL_MODES.items()}, root
-    )
+    if pool_type is None:
+        pool_type = SharedAdapterPool
+    pool = pool_type({cell: manifests[mode] for cell, mode in CELL_MODES.items()}, root)
     try:
-        write_new(directory / "POOL.json", pool.snapshot())
+        snapshot = pool.snapshot()
+        write_new(directory / "POOL.json", snapshot)
+        write_new(
+            directory / "POOL_BINDING.json",
+            {
+                "class_module": type(pool).__module__,
+                "class_name": type(pool).__name__,
+                "source_sha256": snapshot["inventory"]["source_sha256"],
+                "protocol_digest": protocol_digest,
+            },
+        )
+        require(type(pool) is pool_type, "constructed pool type differs")
+        if expected_pool_source_sha256 is not None:
+            require(
+                snapshot["inventory"]["source_sha256"] == expected_pool_source_sha256,
+                "frozen pool source differs",
+            )
         cells = {}
         for cell, mode in CELL_MODES.items():
             manifest, evidence = manifests[mode], pool.parameter_evidence(cell)
