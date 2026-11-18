@@ -55,3 +55,39 @@ probes, plus the prepared reference receipts. `NEGATIVE_CHECKS.json` retains
 the exact negative actions and original verifier results. There were 12
 reference verifier calls including builder probes and rechecks, plus 12
 negative verifier calls. Preparation alone demonstrates no learning gain.
+
+## Fixed inference runner
+
+`scripts/cell_experiments/diagnostic_run_v4.py` freezes FF, TT, CC, TF, CF,
+TF without the answer edge, TF without the feedback edge, and a single F call
+before generation. Four tasks require 60 actual model calls when the whole run
+completes. Each two-call arm pays for both calls even when the first succeeds;
+the retained result is the earliest business success, otherwise the last output.
+The report also preserves first and last success separately. This tests fixed
+graphs and message removal; it does not test learned routing.
+
+The provider is a separate process using the retained original core, research,
+helper04 and online modules. `SharedAdapterPool` performs its unchanged original
+model, source, training and actual tensor checks. The new verifier is imported
+only by the main process. No manifest is rewritten and no source gate is patched.
+The provider script and interpreter are explicit CLI paths, bound in `LAUNCH.json`
+and `FREEZE.json`; a model manifest cannot nominate executable code.
+
+Run from the new candidate checkout, using a fresh output path:
+
+```sh
+/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python -I -B \
+  scripts/cell_experiments/diagnostic_run_v4.py \
+  --provider-python /home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python \
+  --provider-script scripts/cell_experiments/diagnostic_provider_v4.py \
+  --artifact-root /dev/shm/hepta-cell-experiments-v3-20261116-0c078a \
+  --module-root /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/round03-source-20261118-392934-b \
+  --output /absolute/path/to/fresh-diagnostic-run
+```
+
+Every request, output, verification, error, graph cost, pool initialization,
+protocol message and actual child exit is retained. Failed runs stop without
+automatic retries; incomplete costs remain incomplete. Same caps do not establish
+matched actual cost, and energy and monetary costs remain unknown.
+`STDIO_TEST_OUTPUT.txt` records protocol-only fixture tests, with zero model calls
+and no inference evidence. Actual model results must come from the desktop run.
