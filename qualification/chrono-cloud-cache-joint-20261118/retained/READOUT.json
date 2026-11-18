@@ -1,0 +1,163 @@
+{
+  "execution_source": "616dccdbf8d68192aa984b676608a01d1a75e168",
+  "execution_tree": "3fc080258ea689675dedb0e6267b0157b400b11c",
+  "materialized_source_files": 11826,
+  "materialized_source_sha256": "feca10b13c29d43784be042198fdc54aeb8fc5597c77707967f8948a608de0c7",
+  "native": {
+    "source_head": "616dccdbf8d68192aa984b676608a01d1a75e168",
+    "source_tree": "3fc080258ea689675dedb0e6267b0157b400b11c",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-utils-time",
+      "-p",
+      "codex-cloud-config",
+      "--retries",
+      "0",
+      "--test-threads",
+      "2",
+      "--no-tests",
+      "fail",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "retries": 0,
+    "new_model_calls": 0,
+    "original_nextest_profile": "local",
+    "source_before_sha256": "feca10b13c29d43784be042198fdc54aeb8fc5597c77707967f8948a608de0c7",
+    "wait_returncode": 0,
+    "command_wall_seconds": 151.839976833,
+    "exit_source": "subprocess.Popen.wait",
+    "source_after_sha256": "feca10b13c29d43784be042198fdc54aeb8fc5597c77707967f8948a608de0c7",
+    "dirty": "",
+    "junit_sha256": "fcc6f1eaaadcdd6f5cc8ddf8d458b0bc9ea1553f4056e443657347c6247fc7a5",
+    "junit_original_path": "/Users/qianqi/work/hepta-chrono-cloud-cache-joint-20261118-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+    "junit_attributes": {
+      "name": "nextest-run",
+      "tests": "45",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "uuid": "0fecdf54-ae91-46b5-a46f-ba7db6cbef67",
+      "timestamp": "2026-11-19T04:08:22.526+08:00",
+      "time": "1.303"
+    },
+    "testcases": 45,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "unique_cases": 45,
+    "suites": [
+      "codex-cloud-config",
+      "codex-utils-time"
+    ],
+    "passed": true,
+    "owner_wall_seconds": 154.04471420800002
+  },
+  "suite_counts": {
+    "codex-utils-time": 10,
+    "codex-cloud-config": 35
+  },
+  "runtime_job": "1a1f043ffc2-ffbe-75a",
+  "runtime_terminal": {
+    "at_unix_ms": 1795032505011,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1f043ffc2-ffbe-75a",
+    "launch_nonce": "0c8faecc29cbf53765cf5f1d6357581f",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1347,
+        "stored": 1347
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "dual_lock": {
+    "cargo_lock_sha256": "eb050f4f0df4ca93175bcd5b3f361797aadcea116d55fedf41e3c4aa8bfdf187",
+    "bazel_lock_sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1",
+    "actual_update_exit": 0,
+    "actual_check_exit": 0,
+    "bazel_bytes_changed": false
+  },
+  "graph": {
+    "base": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+    "cargo_lock_sha256": "eb050f4f0df4ca93175bcd5b3f361797aadcea116d55fedf41e3c4aa8bfdf187",
+    "before": {
+      "package_count": 1523,
+      "source_less_candidate_roots": 193,
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 28,
+      "indirect_only_candidate_roots": 93
+    },
+    "after": {
+      "package_count": 1524,
+      "source_less_candidate_roots": 194,
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 27,
+      "indirect_only_candidate_roots": 94
+    },
+    "delta": {
+      "new_edges": [],
+      "remaining_edges": 35,
+      "retired_edges": [
+        [
+          "workspace_local",
+          "codex-cloud-config",
+          "0.0.0"
+        ]
+      ]
+    },
+    "cloud_config_path": {
+      "path": [
+        "codex-cloud-config@0.0.0",
+        "codex-agent-identity@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-cloud-config@0.0.0"
+    },
+    "require_zero_actual_exit": 2,
+    "cargo_deny_pass_claimed": false,
+    "chrono_retirement_closed": false
+  },
+  "archive": {
+    "path": "CHRONO_CACHE_ORIGINALS.tar.xz",
+    "bytes": 2268320,
+    "sha256": "1d46b479efdee5de223cb0d29047f2cb27b9715604a06d7a30d4a65c759f7eb1",
+    "index_sha256": "e8b3739cd1eb54942204641bfd487c12bc012503a2d9c44aae48cebfd04da1bb",
+    "original_files": 214
+  },
+  "limits": {
+    "all_platform_metadata_passed": false,
+    "all_workspace_tests_passed": false,
+    "all_chrono_retired": false,
+    "cargo_deny_passed": false,
+    "windows_qualified": false,
+    "rogs_previous_test_counts_inherited": false,
+    "new_model_calls": 0
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "base": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+  "cargo_lock_sha256": "eb050f4f0df4ca93175bcd5b3f361797aadcea116d55fedf41e3c4aa8bfdf187",
+  "before": {
+    "package_count": 1523,
+    "source_less_candidate_roots": 193,
+    "affected_candidate_roots": 121,
+    "direct_candidate_roots": 28,
+    "indirect_only_candidate_roots": 93
+  },
+  "after": {
+    "package_count": 1524,
+    "source_less_candidate_roots": 194,
+    "affected_candidate_roots": 121,
+    "direct_candidate_roots": 27,
+    "indirect_only_candidate_roots": 94
+  },
+  "delta": {
+    "new_edges": [],
+    "remaining_edges": 35,
+    "retired_edges": [
+      [
+        "workspace_local",
+        "codex-cloud-config",
+        "0.0.0"
+      ]
+    ]
+  },
+  "cloud_config_path": {
+    "path": [
+      "codex-cloud-config@0.0.0",
+      "codex-agent-identity@0.0.0",
+      "chrono@0.4.45"
+    ],
+    "root": "codex-cloud-config@0.0.0"
+  },
+  "require_zero_actual_exit": 2,
+  "cargo_deny_pass_claimed": false,
+  "chrono_retirement_closed": false
+}
