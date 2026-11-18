@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: hepta-cargo-deny-diagnostics-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   diagnostics:
@@ -21,10 +21,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: rmcp-upgrade
-            ref: aa1f5ea122d6c48f89489f7d484f544e43ce5bc2
-          - label: sqlite-upgrade
-            ref: 700d08b49b6f520b38aa429dab842da9e5e82e8c
+          - label: joint-rmcp-sqlite
+            ref: 7fc46c193a9ff8726e43fca2982d9b8f455e3dac
     steps:
       - name: Checkout exact diagnostic source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
