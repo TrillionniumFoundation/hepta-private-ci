@@ -2,7 +2,6 @@
 //! receipt; every later physical read is enclosed by live Root revalidation.
 
 use std::io;
-use std::io::Write;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
@@ -150,8 +149,10 @@ impl RootHistoricalTaskReadClientV1 {
             | Reply::History(_) => {
                 self.fence();
                 Err(refused()).inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.unexpected_reply\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.unexpected_reply\n",
+                    );
                 })
             }
         }
@@ -160,15 +161,20 @@ impl RootHistoricalTaskReadClientV1 {
     fn exchange(&self, operation: HistoricalReadOperationV1) -> io::Result<Reply> {
         if self.fenced.load(Ordering::Acquire) {
             return Err(refused()).inspect_err(|_| {
-                let _ = io::stderr()
-                    .write_all(b"daemon_stage=historical_client.fenced_before_exchange\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.fenced_before_exchange\n",
+                );
             });
         }
         let mut held = self
             .lane
             .try_lock()
             .inspect_err(|_| {
-                let _ = io::stderr().write_all(b"daemon_stage=historical_client.lane_busy\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.lane_busy\n",
+                );
             })
             .map_err(|_| {
                 self.fenced.store(true, Ordering::Release);
@@ -178,18 +184,23 @@ impl RootHistoricalTaskReadClientV1 {
             self.connection
                 .require_original_session()
                 .inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.session_before_exchange\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.session_before_exchange\n",
+                    );
                 })
                 .map_err(io::Error::other)?;
             let mut lane = held.take().ok_or_else(refused).inspect_err(|_| {
-                let _ = io::stderr().write_all(b"daemon_stage=historical_client.lane_missing\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.lane_missing\n",
+                );
             })?;
             let request_id = lane.sequence;
             if !(1..=MAX_READS).contains(&request_id) {
                 return Err(refused()).inspect_err(|_| {
-                    let _ = writeln!(io::stderr(),
-                        "daemon_stage=historical_client.read_limit request_id={request_id} maximum={MAX_READS}");
+                    let _ = std::io::Write::write_fmt(&mut io::stderr(),
+                        format_args!("daemon_stage=historical_client.read_limit request_id={request_id} maximum={MAX_READS}\n"));
                 });
             }
             let request = serde_json::to_vec(&HistoricalTaskReadRequestV1 {
@@ -200,20 +211,28 @@ impl RootHistoricalTaskReadClientV1 {
             })
             .map_err(io::Error::other)
             .inspect_err(|_| {
-                let _ = io::stderr().write_all(b"daemon_stage=historical_client.request_encode\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.request_encode\n",
+                );
             })?;
             let bytes = lane
                 .stream
                 .exchange_with_response_bound(&request, operation.response_bound())
                 .inspect_err(|_| {
-                    let _ = io::stderr().write_all(b"daemon_stage=historical_client.transport\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.transport\n",
+                    );
                 })?;
             let data = match operation {
                 HistoricalReadOperationV1::Task => Reply::Task(Box::new(
                     require_complete_reply(&bytes, request_id, &self.profile).inspect_err(
                         |_| {
-                            let _ = io::stderr()
-                                .write_all(b"daemon_stage=historical_client.decode_task\n");
+                            let _ = std::io::Write::write_all(
+                                &mut io::stderr(),
+                                b"daemon_stage=historical_client.decode_task\n",
+                            );
                         },
                     )?,
                 )),
@@ -226,22 +245,27 @@ impl RootHistoricalTaskReadClientV1 {
                         &self.initial,
                     )
                     .inspect_err(|_| {
-                        let _ = io::stderr()
-                            .write_all(b"daemon_stage=historical_client.decode_learning_trust\n");
+                        let _ = std::io::Write::write_all(
+                            &mut io::stderr(),
+                            b"daemon_stage=historical_client.decode_learning_trust\n",
+                        );
                     })?,
                 )),
                 HistoricalReadOperationV1::PostAFrozenLearning => Reply::PostAFrozenLearning(
                     require_post_a_learning_reply(&bytes, request_id, &self.profile).inspect_err(
                         |_| {
-                            let _ = io::stderr()
-                                .write_all(b"daemon_stage=historical_client.decode_post_a\n");
+                            let _ = std::io::Write::write_all(
+                                &mut io::stderr(),
+                                b"daemon_stage=historical_client.decode_post_a\n",
+                            );
                         },
                     )?,
                 ),
                 HistoricalReadOperationV1::AcceptCompletedLearning => Reply::Acceptance(
                     require_completed_acceptance_reply(&bytes, request_id, &self.profile)
                         .inspect_err(|_| {
-                            let _ = io::stderr().write_all(
+                            let _ = std::io::Write::write_all(
+                                &mut io::stderr(),
                                 b"daemon_stage=historical_client.decode_completed_acceptance\n",
                             );
                         })?,
@@ -250,7 +274,8 @@ impl RootHistoricalTaskReadClientV1 {
                 | HistoricalReadOperationV1::ReadCompletedHistory => Reply::History(
                     require_completed_history_reply(&bytes, request_id, &self.profile, operation)
                         .inspect_err(|_| {
-                        let _ = io::stderr().write_all(
+                        let _ = std::io::Write::write_all(
+                            &mut io::stderr(),
                             b"daemon_stage=historical_client.decode_completed_history\n",
                         );
                     })?,
@@ -259,22 +284,28 @@ impl RootHistoricalTaskReadClientV1 {
             self.connection
                 .require_original_session()
                 .inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.session_after_exchange\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.session_after_exchange\n",
+                    );
                 })
                 .map_err(io::Error::other)?;
             if self.fenced.load(Ordering::Acquire) {
                 return Err(refused()).inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.fenced_after_exchange\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.fenced_after_exchange\n",
+                    );
                 });
             }
             lane.sequence = request_id
                 .checked_add(1)
                 .ok_or_else(refused)
                 .inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.sequence_overflow\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.sequence_overflow\n",
+                    );
                 })?;
             *held = Some(lane);
             Ok(data)
@@ -344,21 +375,27 @@ impl OriginalHistoricalTaskReadReceiptV1 {
     )> {
         let result = (|| {
             let observed: HistoricalTaskReadDataV1 = self.client.observe().inspect_err(|_| {
-                let _ =
-                    io::stderr().write_all(b"daemon_stage=historical_client.publication_observe\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.publication_observe\n",
+                );
             })?;
             if observed != self.data {
                 return Err(refused()).inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.publication_receipt_differs\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.publication_receipt_differs\n",
+                    );
                 });
             }
             observed
                 .publication
                 .validate_against(&observed.ledger)
                 .inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.publication_decode\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.publication_decode\n",
+                    );
                 })
                 .map_err(io::Error::other)
         })();
@@ -380,26 +417,35 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         };
         let result = (|| {
             if self.client.observe().inspect_err(|_| {
-                let _ = io::stderr()
-                    .write_all(b"daemon_stage=historical_client.observe_before_action\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.observe_before_action\n",
+                );
             })? != self.data
             {
                 return Err(refused()).inspect_err(|_| {
-                    let _ = io::stderr().write_all(
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
                         b"daemon_stage=historical_client.receipt_before_action_differs\n",
                     );
                 });
             }
             let value = action(&self.data.ledger).inspect_err(|_| {
-                let _ = io::stderr().write_all(b"daemon_stage=historical_client.action\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.action\n",
+                );
             });
             if self.client.observe().inspect_err(|_| {
-                let _ = io::stderr()
-                    .write_all(b"daemon_stage=historical_client.observe_after_action\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.observe_after_action\n",
+                );
             })? != self.data
             {
                 return Err(refused()).inspect_err(|_| {
-                    let _ = io::stderr().write_all(
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
                         b"daemon_stage=historical_client.receipt_after_action_differs\n",
                     );
                 });
@@ -431,12 +477,17 @@ impl OriginalHistoricalTaskReadReceiptV1 {
                     ledger,
                 )
                 .inspect_err(|_| {
-                    let _ = io::stderr()
-                        .write_all(b"daemon_stage=historical_client.feature_publication_decode\n");
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.feature_publication_decode\n",
+                    );
                 })
                 .map_err(io::Error::other)?;
             action(&ledger.target, source, decision).inspect_err(|_| {
-                let _ = io::stderr().write_all(b"daemon_stage=historical_client.feature_action\n");
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.feature_action\n",
+                );
             })
         })
     }

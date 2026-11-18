@@ -3,7 +3,6 @@
 //! witnesses dispatch; prior Pending permits only the original Root readback.
 
 use std::fs::File;
-use std::io::Write;
 use std::sync::Mutex;
 use std::time::Instant;
 
@@ -76,7 +75,10 @@ impl RegisteredHistoricalLearningSourceV1 {
         source
             .require_current_historical_source(&source.identity)
             .inspect_err(|_| {
-                let _ = std::io::stderr().write_all(b"daemon_stage=historical.source.capture\n");
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.capture\n",
+                );
             })?;
         source.receipt.require_original_client(client, session)?;
         Ok(source)
@@ -138,8 +140,10 @@ impl LearningIterationRuntimeBootstrapV1 {
         source
             .require_prepared_historical_source(prepared)
             .inspect_err(|_| {
-                let _ = std::io::stderr()
-                    .write_all(b"daemon_stage=historical.source.bootstrap_prepared\n");
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.bootstrap_prepared\n",
+                );
             })?;
         let registry = self
             .circuit_delivery_registry
@@ -164,8 +168,10 @@ impl LearningIterationRuntimeBootstrapV1 {
         source
             .require_current_historical_source(identity)
             .inspect_err(|_| {
-                let _ = std::io::stderr()
-                    .write_all(b"daemon_stage=historical.source.bootstrap_before_journal\n");
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.bootstrap_before_journal\n",
+                );
             })?;
         let key = ProductEvaluationExecutionKeyV1 {
             plan_id: source.request().operation_id.clone(),
@@ -188,8 +194,10 @@ impl LearningIterationRuntimeBootstrapV1 {
         source
             .require_current_historical_source(identity)
             .inspect_err(|_| {
-                let _ = std::io::stderr()
-                    .write_all(b"daemon_stage=historical.source.bootstrap_after_journal\n");
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.bootstrap_after_journal\n",
+                );
             })?;
         self.historical_source = Some(Arc::clone(&source));
         self.historical_delivery = Some(OriginalHistoricalLearningDeliveryV1 {
