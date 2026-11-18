@@ -61,6 +61,7 @@ test = false
 [dependencies]
 rustix = { workspace = true, features = ["fs", "process"] }
 anyhow = { workspace = true }
+arc-swap = { workspace = true }
 base64 = { workspace = true }
 codex-app-server = { workspace = true }
 codex-app-server-client = { workspace = true }

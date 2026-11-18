@@ -31,7 +31,7 @@ struct Pause {
     binding: Digest32,
     owner: Weak<ResidentCheckpointV3>,
     expected: LearningIterationSnapshotV1,
-    expires_ms: u64,
+    expired_at_ms: u64,
     record_path: PathBuf,
     observed: Arc<Mutex<Option<Vec<u8>>>>,
 }
@@ -92,13 +92,13 @@ pub(in super::super) fn after_checkpoint_for_fixture(
         ));
     }
     let bytes = std::fs::read(&pause.record_path)?;
-    if wall_ms()? >= pause.expires_ms {
+    if wall_ms()? >= pause.expired_at_ms {
         return Err(io::Error::other(
             "fixture Observer expired before the post-CAS pause",
         ));
     }
     let started = Instant::now();
-    while wall_ms()? < pause.expires_ms {
+    while wall_ms()? < pause.expired_at_ms {
         if started.elapsed() >= Duration::from_millis(1_500) {
             return Err(io::Error::other("bounded post-CAS fixture pause elapsed"));
         }
@@ -147,7 +147,13 @@ async fn resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committe
     let at = wall_ms()?;
     let aligned = (at / 1_000 + 1) * 1_000 + 50;
     tokio::time::sleep(Duration::from_millis(aligned - at)).await;
-    let expires_at = wall_ms()? / 1_000 + 1;
+    // Signed evidence includes its expiry second. Issue this short original
+    // window once, then cross its first invalid millisecond after the CAS.
+    let expires_at = wall_ms()? / 1_000;
+    let expired_at_ms = expires_at
+        .checked_add(1)
+        .and_then(|second| second.checked_mul(1_000))
+        .ok_or_else(|| anyhow::anyhow!("fixture Observer expiry successor"))?;
     let (metadata_result, signatures) =
         metadata.completed_metadata_with_observer_expiry(expires_at)?;
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(metadata.initial.clone())?;
@@ -160,7 +166,7 @@ async fn resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committe
     let (before, before_ms) = original.read(&cancellation).await?;
     assert_eq!(before.snapshot.as_ref(), Some(&metadata.initial));
     assert!(before.dispatch_pending);
-    assert!(before_ms / 1_000 < expires_at);
+    assert!(before_ms < expired_at_ms);
     authentication::verify_original_evidence(
         &fixture.profile,
         &metadata.verifier,
@@ -193,7 +199,7 @@ async fn resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committe
         binding: armed.binding,
         owner: Arc::downgrade(&original.checkpoint),
         expected: next.clone(),
-        expires_ms: expires_at * 1_000,
+        expired_at_ms,
         record_path: record_path.clone(),
         observed,
     });
@@ -207,7 +213,7 @@ async fn resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committe
             .gate
             .checkpoint(&metadata.initial, next.clone())
             .await?;
-        assert!(committed_at >= expires_at * 1_000);
+        assert!(committed_at >= expired_at_ms);
         authentication::verify_checkpoint_evidence(
             &fixture.profile,
             &metadata.verifier,

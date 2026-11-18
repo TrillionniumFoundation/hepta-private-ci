@@ -326,7 +326,10 @@ pub(super) fn unstarted_material_with_profile(
                 maximum_diff_bytes: 4_096,
                 maximum_candidates: 1,
                 maximum_parallel_sandboxes: 1,
-                expiry_unix_seconds: now()? + 900,
+                // Fix the original request before any Material/Training/Evaluation
+                // signature. Resident Root's real 300s grant must cover this
+                // same window without renewing or rewriting original evidence.
+                expiry_unix_seconds: now()? + 240,
             },
             budget: LearningIterationBudgetV1 {
                 maximum_dataset_rows: 1,

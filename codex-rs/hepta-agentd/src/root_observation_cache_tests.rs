@@ -2,6 +2,27 @@ use super::*;
 use crate::root_writer_proof::tests::fixture;
 use crate::root_writer_proof::tests::observation;
 use pretty_assertions::assert_eq;
+use std::sync::Barrier;
+
+impl RootObservationCache {
+    fn accept_at(
+        &self,
+        observation: HostAuthorityObservationResponseV2,
+        started: u64,
+        ended: u64,
+        now: u64,
+    ) -> Result<(), AgentdRootAuthorityError> {
+        self.accept_with_clock(observation, started, ended, || Ok(now))
+    }
+
+    fn current_at(
+        &self,
+        now: u64,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+        self.current_with_clock(|| Ok(now))
+    }
+}
+
 const START: u64 = 1_000_000_000;
 fn value(elapsed_ms: u64) -> HostAuthorityObservationResponseV2 {
     let (_, proof) = fixture();
@@ -148,4 +169,93 @@ fn revocations_only_accumulate_and_update_barrier_does_not_publish_early() {
             )
             .is_err()
     );
+}
+
+#[test]
+fn refresh_and_parallel_readers_do_not_contend_on_retained_state() {
+    let cache = cache();
+    let original = value(0);
+    cache
+        .accept_at(original.clone(), START, START, START)
+        .unwrap();
+    let refreshing = Barrier::new(2);
+    let publish = Barrier::new(2);
+    let readers = Barrier::new(4);
+    let mut next = original.clone();
+    next.writer.store_revision += 1;
+    std::thread::scope(|scope| {
+        let refresh = scope.spawn(|| {
+            cache.accept_with_clock(next.clone(), START, START, || {
+                refreshing.wait();
+                publish.wait();
+                Ok(START)
+            })
+        });
+        refreshing.wait();
+        let reads: Vec<_> = (0..4)
+            .map(|_| {
+                scope.spawn(|| {
+                    cache.current_with_clock(|| {
+                        readers.wait();
+                        Ok(START + 1)
+                    })
+                })
+            })
+            .collect();
+        let results: Vec<_> = reads.into_iter().map(|read| read.join().unwrap()).collect();
+        publish.wait();
+        refresh.join().unwrap().unwrap();
+        for result in results {
+            let (observed, projected) = result.unwrap();
+            assert_eq!(*observed, original);
+            assert_eq!(projected, 2_001);
+        }
+    });
+    assert_eq!(*cache.current_at(START + 1).unwrap().0, next);
+    // Refresh cannot replace the newer watermark established by a reader.
+    assert!(cache.current_at(START).is_err());
+}
+
+#[test]
+fn overlapping_clock_samples_keep_the_maximum_without_false_rollback() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    let sampled = Barrier::new(2);
+    let finish = Barrier::new(2);
+    std::thread::scope(|scope| {
+        let earlier = scope.spawn(|| {
+            cache.current_with_clock(|| {
+                sampled.wait();
+                finish.wait();
+                Ok(START + 1)
+            })
+        });
+        sampled.wait();
+        let later = cache.current_at(START + 2);
+        finish.wait();
+        assert_eq!(earlier.join().unwrap().unwrap().1, 2_001);
+        assert_eq!(later.unwrap().1, 2_001);
+    });
+    // A subsequent, non-overlapping rollback still permanently fences.
+    assert!(cache.current_at(START + 1).is_err());
+    assert!(cache.current_at(START + 2).is_err());
+    assert!(cache.accept_at(value(0), START, START, START + 2).is_err());
+}
+
+#[test]
+fn a_complete_revocation_update_during_a_read_cannot_publish_the_old_head() {
+    let cache = cache();
+    cache.accept_at(value(0), START, START, START).unwrap();
+    let mut next = value(100);
+    next.revocations.revision += 1;
+    next.revocations.revoked_grant_ids.insert("revoked".into());
+    let now = START + 100_000_000;
+    let crossing = cache.current_with_clock(|| {
+        cache.begin_update();
+        cache.accept_at(next.clone(), now, now, now).unwrap();
+        cache.end_update();
+        Ok(now)
+    });
+    assert!(crossing.is_err());
+    assert_eq!(*cache.current_at(now).unwrap().0, next);
 }

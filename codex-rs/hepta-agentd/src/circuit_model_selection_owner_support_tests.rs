@@ -257,7 +257,9 @@ impl PositiveFixture {
                 scope: source_config.scope.clone(),
                 signer: credentials.generator.clone(),
                 verifier: source_config.verifier.clone(),
-                maximum_signature_lifetime_seconds: 600,
+                // Preserve a real signature-expiry interval inside the
+                // original 240s work window, after the B fixture at +124s.
+                maximum_signature_lifetime_seconds: 180,
             },
             SigningKey::from_bytes(&[41; 32]),
         )?;

@@ -3,10 +3,10 @@ name: Hepta Memory A-I matrix shadow contract
 on:
   pull_request:
     paths:
-      - 'qa/stem-bakeoff/memory_matrix_contract.py'
-      - 'qa/stem-bakeoff/test_memory_matrix_contract.py'
-      - 'docs/learning/MEMORY_A_I_MATRIX_V1.md'
-      - '.github/workflows/hepta-memory-ai-matrix-shadow.yml'
+      - "qa/stem-bakeoff/memory_matrix_contract.py"
+      - "qa/stem-bakeoff/test_memory_matrix_contract.py"
+      - "docs/learning/MEMORY_A_I_MATRIX_V1.md"
+      - ".github/workflows/hepta-memory-ai-matrix-shadow.yml"
   workflow_dispatch:
 
 permissions:

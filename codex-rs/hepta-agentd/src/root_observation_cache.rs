@@ -3,55 +3,66 @@
 use crate::AgentdRootAuthorityError;
 use crate::HOST_AUTHORITY_OBSERVATION_V2;
 use crate::HostAuthorityObservationResponseV2;
+use arc_swap::ArcSwapOption;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 pub(crate) const MAX_AGE_NS: u64 = 500_000_000;
 struct Retained {
     observation: Arc<HostAuthorityObservationResponseV2>,
     request_started_ns: u64,
-    last_checked_ns: u64,
 }
 pub(crate) struct RootObservationCache {
     boot_id: String,
-    retained: Mutex<Option<Retained>>,
+    retained: ArcSwapOption<Retained>,
+    // Only refresh writers serialize; authority readers retain an immutable
+    // snapshot without waiting for another reader or a validating refresh.
+    publisher: Mutex<()>,
+    last_checked_ns: AtomicU64,
     fenced: AtomicBool,
-    updating: AtomicBool,
+    // Odd while the new revocation head is being synchronized to consumers.
+    // A generation also detects an entire begin/end update during one read.
+    update_generation: AtomicU64,
 }
 impl RootObservationCache {
     pub(crate) fn new(boot_id: String) -> Self {
         Self {
             boot_id,
-            retained: Mutex::new(None),
+            retained: ArcSwapOption::empty(),
+            publisher: Mutex::new(()),
+            last_checked_ns: AtomicU64::new(0),
             fenced: AtomicBool::new(false),
-            updating: AtomicBool::new(false),
+            update_generation: AtomicU64::new(0),
         }
     }
     pub(crate) fn fence(&self) {
         self.fenced.store(true, Ordering::Release);
     }
     pub(crate) fn begin_update(&self) {
-        self.updating.store(true, Ordering::Release);
+        let previous = self.update_generation.fetch_add(1, Ordering::AcqRel);
+        if !previous.is_multiple_of(2) || previous == u64::MAX {
+            self.fence();
+        }
     }
     pub(crate) fn end_update(&self) {
-        self.updating.store(false, Ordering::Release);
+        let previous = self.update_generation.fetch_add(1, Ordering::AcqRel);
+        if previous % 2 != 1 || previous == u64::MAX {
+            self.fence();
+        }
     }
     pub(crate) fn revocations_match(
         &self,
         head: &codex_hepta_contracts::FinalUseRevocations,
     ) -> bool {
         self.retained
-            .lock()
-            .ok()
-            .and_then(|slot| {
-                slot.as_ref()
-                    .map(|value| value.observation.revocations == *head)
-            })
-            .unwrap_or(false)
+            .load()
+            .as_ref()
+            .is_some_and(|value| value.observation.revocations == *head)
     }
     pub(crate) fn accept(
         &self,
@@ -59,23 +70,27 @@ impl RootObservationCache {
         started: u64,
         ended: u64,
     ) -> Result<(), AgentdRootAuthorityError> {
-        self.accept_at(
-            observation,
-            started,
-            ended,
-            boottime_ns().inspect_err(|_error| {
-                #[cfg(test)]
-                eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=boottime-sample-failed");
-            })?,
-        )
+        self.accept_with_clock(observation, started, ended, boottime_ns)
     }
-    fn accept_at(
+    fn accept_with_clock(
         &self,
         observation: HostAuthorityObservationResponseV2,
         started: u64,
         ended: u64,
-        now: u64,
+        read_clock: impl FnOnce() -> Result<u64, AgentdRootAuthorityError>,
     ) -> Result<(), AgentdRootAuthorityError> {
+        let _publisher = self.publisher.lock().map_err(|_| {
+            self.fence();
+            AgentdRootAuthorityError::Unavailable
+        })?;
+        // Capture the prior watermark before sampling, so overlapping calls
+        // cannot turn scheduling order into a false clock rollback.
+        let checked_before_sample = self.last_checked_ns.load(Ordering::Acquire);
+        let now = read_clock().inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=boottime-sample-failed");
+            self.fence();
+        })?;
         if self.fenced.load(Ordering::Acquire) {
             #[cfg(test)]
             eprintln!(
@@ -84,11 +99,7 @@ impl RootObservationCache {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
         let result = (|| {
-            let mut slot = self.retained.lock().map_err(|_| {
-                #[cfg(test)]
-                eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned");
-                AgentdRootAuthorityError::Unavailable
-            })?;
+            let slot = self.retained.load();
             let clock = &observation.clock;
             let head = &observation.revocations;
             if observation.schema_version != 2
@@ -110,6 +121,7 @@ impl RootObservationCache {
                 || clock.ceiling_unix_ms < clock.anchor_unix_ms
                 || started > ended
                 || ended > now
+                || now < checked_before_sample
                 || now.checked_sub(started).is_none_or(|age| age > MAX_AGE_NS)
                 || clock.anchor_boottime_ns > ended
                 || observation.observed_unix_ms < clock.anchor_unix_ms
@@ -145,7 +157,6 @@ impl RootObservationCache {
                 if now
                     .checked_sub(previous.request_started_ns)
                     .is_none_or(|age| age > MAX_AGE_NS)
-                    || now < previous.last_checked_ns
                     || observation.authority_epoch != old.authority_epoch
                     || observation.registered_agent_id != old.registered_agent_id
                     || observation.spawn_generation != old.spawn_generation
@@ -171,9 +182,9 @@ impl RootObservationCache {
                     eprintln!(
                         "ROOT_OBSERVATION_CACHE phase=accept reason=retained-validation now={now} started={started} ended={ended} old_started={} old_last_checked={} old_age_ns={:?} time_regressed={} epoch_changed={} agent_changed={} spawn_changed={} lease_changed={} lease_digest_changed={} writer_digest_changed={} owner_changed={} local_lease_changed={} local_generation_changed={} old_store_revision={} new_store_revision={} old_head_revision={} new_head_revision={} equal_revision_changed_head={} revocations_shrunk={} old_observed_unix_ms={} new_observed_unix_ms={} projected_unix_ms={projected} old_anchor_boottime_ns={} old_anchor_unix_ms={}",
                         previous.request_started_ns,
-                        previous.last_checked_ns,
+                        checked_before_sample,
                         now.checked_sub(previous.request_started_ns),
-                        now < previous.last_checked_ns,
+                        now < checked_before_sample,
                         observation.authority_epoch != old.authority_epoch,
                         observation.registered_agent_id != old.registered_agent_id,
                         observation.spawn_generation != old.spawn_generation,
@@ -202,11 +213,14 @@ impl RootObservationCache {
                     return Err(AgentdRootAuthorityError::Unavailable);
                 }
             }
-            *slot = Some(Retained {
+            if self.fenced.load(Ordering::Acquire) {
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+            self.last_checked_ns.fetch_max(now, Ordering::AcqRel);
+            self.retained.store(Some(Arc::new(Retained {
                 observation: Arc::new(observation),
                 request_started_ns: started,
-                last_checked_ns: now,
-            });
+            })));
             Ok(())
         })();
         if result.is_err() {
@@ -221,76 +235,68 @@ impl RootObservationCache {
     pub(crate) fn current(
         &self,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        let now = boottime_ns().inspect_err(|_| {
+        self.current_with_clock(boottime_ns)
+    }
+    fn current_with_clock(
+        &self,
+        read_clock: impl FnOnce() -> Result<u64, AgentdRootAuthorityError>,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+        let generation = self.update_generation.load(Ordering::Acquire);
+        if self.fenced.load(Ordering::Acquire) || !generation.is_multiple_of(2) {
+            #[cfg(test)]
+            eprintln!("ROOT_OBSERVATION_CACHE phase=current reason=already-fenced-or-updating");
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        let slot = self.retained.load();
+        let checked_before_sample = self.last_checked_ns.load(Ordering::Acquire);
+        let now = read_clock().inspect_err(|_| {
             #[cfg(test)]
             eprintln!("ROOT_OBSERVATION_CACHE phase=current reason=boottime-sample-failed");
             self.fence();
         })?;
-        self.current_at(now)
-    }
-    fn current_at(
-        &self,
-        now: u64,
-    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {
-            #[cfg(test)]
-            eprintln!(
-                "ROOT_OBSERVATION_CACHE phase=current reason=already-fenced-or-updating now={now}"
-            );
+        if now < checked_before_sample {
+            self.fence();
             return Err(AgentdRootAuthorityError::Unavailable);
         }
-        // Contention is a local unavailable read, never a wait behind a writer.
-        // Unlike invalid evidence, contention alone does not destroy the feed.
-        let mut slot = self.retained.try_lock().map_err(|_error| {
-            #[cfg(test)]
-            match _error {
-                std::sync::TryLockError::WouldBlock => eprintln!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}"
-                ),
-                std::sync::TryLockError::Poisoned(_) => eprintln!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}"
-                ),
-            }
-            AgentdRootAuthorityError::Unavailable
-        })?;
         let result = (|| {
             let retained = slot
-                .as_mut()
+                .as_ref()
                 .ok_or(AgentdRootAuthorityError::Unavailable)
                 .inspect_err(|_error| {
                     #[cfg(test)]
                     eprintln!("ROOT_OBSERVATION_CACHE phase=current reason=cache-absent now={now}");
                 })?;
-            if now < retained.last_checked_ns
-                || now
-                    .checked_sub(retained.request_started_ns)
-                    .is_none_or(|age| age > MAX_AGE_NS)
+            if now
+                .checked_sub(retained.request_started_ns)
+                .is_none_or(|age| age > MAX_AGE_NS)
             {
                 #[cfg(test)]
                 eprintln!(
                     "ROOT_OBSERVATION_CACHE phase=current reason=retained-time now={now} last_checked={} request_started={} age_ns={:?} time_regressed={}",
-                    retained.last_checked_ns,
+                    checked_before_sample,
                     retained.request_started_ns,
                     now.checked_sub(retained.request_started_ns),
-                    now < retained.last_checked_ns,
+                    now < checked_before_sample,
                 );
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             let projected = project(&retained.observation, now)?;
-            retained.last_checked_ns = now;
-            if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {
-                #[cfg(test)]
-                eprintln!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=fenced-or-updating-after-projection now={now}"
-                );
-                return Err(AgentdRootAuthorityError::Unavailable);
-            }
+            self.last_checked_ns.fetch_max(now, Ordering::AcqRel);
             Ok((Arc::clone(&retained.observation), projected))
         })();
-        if result.is_err() && !self.updating.load(Ordering::Acquire) {
+        // Do not return a snapshot across a revocation synchronization, even
+        // if both begin_update and end_update completed during this read.
+        std::sync::atomic::fence(Ordering::Acquire);
+        if self.update_generation.load(Ordering::Acquire) != generation {
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        if result.is_err() {
             #[cfg(test)]
             eprintln!("ROOT_OBSERVATION_CACHE phase=current reason=original-error-fence now={now}");
             self.fence();
+        }
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(AgentdRootAuthorityError::Unavailable);
         }
         result
     }

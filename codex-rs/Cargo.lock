@@ -3278,7 +3278,6 @@ dependencies = [
 name = "codex-external-agent-migration"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-analytics",
  "codex-app-server-protocol",
  "codex-config",
@@ -3299,6 +3298,7 @@ dependencies = [
  "serde_json",
  "sha2 0.10.9",
  "tempfile",
+ "time",
  "tokio",
  "toml 0.9.12+spec-1.1.0",
  "tracing",
@@ -3477,6 +3477,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "app_test_support",
+ "arc-swap",
  "base64 0.22.1",
  "codex-app-server",
  "codex-app-server-client",
@@ -14014,13 +14015,10 @@ dependencies = [
 [[package]]
 name = "rmcp"
 version = "3.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d24a7e92f4bcaa36b97fa93c4fa7ca8f3e669eced949345b3462dba333c7f909"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
  "bytes",
- "chrono",
  "futures",
  "http 1.5.0",
  "http-body",
@@ -14040,6 +14038,7 @@ dependencies = [
  "sha2 0.11.1",
  "sse-stream",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tokio-stream",
  "tokio-util",
@@ -14608,7 +14607,6 @@ version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab508826f74a77ca9d5aba6ff19b522583ee3eaf28a19384ff3d0e5835fadf6e"
 dependencies = [
- "chrono",
  "dyn-clone",
  "ref-cast",
  "schemars_derive 1.2.3",

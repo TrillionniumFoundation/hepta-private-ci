@@ -191,6 +191,7 @@ members = [
 ]
 exclude = [
     "third_party/oauth2-5.0.0-time",
+    "third_party/rmcp-3.9.0-time",
     "third_party/i18n-config-0.4.8",
     "third_party/secret-service-6.0.0",
     "third_party/zbus-secret-service-keyring-store-1.0.1",
@@ -706,6 +707,8 @@ opt-level = 0
 [patch.crates-io]
 # Replace OAuth2 calendar arithmetic with maintained time, preserving NumericDate wire values.
 oauth2 = { path = "third_party/oauth2-5.0.0-time" }
+# Replace RMCP clocks with maintained time while retaining timestamp and timeout spellings.
+rmcp = { path = "third_party/rmcp-3.9.0-time" }
 # Preserve Starlark 0.14.2 API while accepting Matrix-compatible BLAKE3.
 starlark = { path = "third_party/starlark-0.14.2-blake3-backport" }
 # Backport Rama upstream time#783 resolution without changing its 0.3.0 API.

@@ -1,0 +1,31 @@
+{
+  "formatter": "Prettier 3.5.3",
+  "parser": "Babel parser bundled with Prettier 3.5.3",
+  "normalization": "Ignore source coordinates, literal spelling metadata and comments. Canonicalize noncomputed ObjectProperty/ObjectMethod Identifier or StringLiteral keys to the same property name; compare the complete remaining syntax tree.",
+  "files": [
+    {
+      "path": "tests/test_with_js/client.js",
+      "before_sha256": "1f1b26431e26706dc2d380f9fc3475bc78ada1c0c0ebe7302c1c59267a64b123",
+      "after_sha256": "920549dcddc346f2c8f154f53af0994f62cb9f22c506300936923d307ce72489",
+      "normalized_ast_equal": true
+    },
+    {
+      "path": "tests/test_with_js/server.js",
+      "before_sha256": "760f0721c1b9f44272cc3416a71172a9163044c12d2b58310c72d3286081df81",
+      "after_sha256": "8961e5b24d72b9310722191ca487eae1fdc97748d1b49df01d6bc7320abfe01f",
+      "normalized_ast_equal": true
+    },
+    {
+      "path": "tests/test_with_js/streamable_client.js",
+      "before_sha256": "af4ccaf89ec0b34cda1b2af71edf9acd04924410a4ed4f579a0ccbd1360ec18a",
+      "after_sha256": "b11ea11c6d62b1afa2495e4d3be8f0583946a312edac0b0bb20d464fc5a0d9e6",
+      "normalized_ast_equal": true
+    },
+    {
+      "path": "tests/test_with_js/streamable_server.js",
+      "before_sha256": "01074613ae942d99028c3f31b1ff35e64817c6de30ab8beabeb3823cb97e7498",
+      "after_sha256": "98353ca2578d23b07dfb7bd47b1656009097e8b92549fd5372a12695c856837b",
+      "normalized_ast_equal": true
+    }
+  ]
+}

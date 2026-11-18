@@ -1,0 +1,6 @@
+# rules_rs generates this excluded path patch with its resolved dependencies.
+alias(
+    name = "rmcp",
+    actual = "@crates//:rmcp-3.9.0",
+    visibility = ["//visibility:public"],
+)

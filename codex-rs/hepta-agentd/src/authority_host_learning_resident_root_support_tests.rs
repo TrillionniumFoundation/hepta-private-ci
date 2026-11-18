@@ -68,7 +68,7 @@ impl ResidentRootFixture {
         scope: FrozenLearningScopeV2,
         verifier: &LearningEvidenceVerifierV1,
     ) -> anyhow::Result<Self> {
-        Self::with_test_lifetime(initial, scope, verifier, /*lifetime_ms*/ 600_000)
+        Self::with_test_lifetime(initial, scope, verifier, /*lifetime_ms*/ 300_000)
     }
 
     /// Explicit test Root authorization covers the already-original request.
@@ -95,8 +95,8 @@ impl ResidentRootFixture {
             .ok_or_else(|| anyhow::anyhow!("original Evaluation fixture window expired"))?;
         let lifetime_ms = remaining
             .checked_add(60_000)
-            .filter(|lifetime| *lifetime <= 3_600_000)
-            .ok_or_else(|| anyhow::anyhow!("bounded explicit Root fixture window"))?;
+            .filter(|lifetime| *lifetime <= 300_000)
+            .ok_or_else(|| anyhow::anyhow!("original work exceeds the Root grant lifetime cap"))?;
         Self::with_test_lifetime(initial, scope, verifier, lifetime_ms)
     }
 
