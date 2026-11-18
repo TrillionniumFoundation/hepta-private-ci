@@ -1,0 +1,139 @@
+name: Hepta SQLite upgrade lock and compatibility qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-sqlite-upgrade-qualification.yml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/third_party/sqlx-sqlite-0.9.0-sys-backport/**"
+      - "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-sqlite-upgrade-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: Qualify committed SQLite 0.40 graph and real consumers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout exact source proposal
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: sqlite-upgrade
+      - name: Verify committed locks and bundled single-link graph
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          evidence="$RUNNER_TEMP/hepta-sqlite-upgrade"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          rustc -Vv > "$evidence/rustc.txt"
+          cargo --version > "$evidence/cargo.txt"
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          root = pathlib.Path("codex-rs/third_party/sqlx-sqlite-0.9.0-sys-backport")
+          record = json.loads((root / "HEPTA-PROVENANCE.json").read_text())
+          for name, expected in record["upstream_file_sha256"].items():
+              data = (root / name).read_bytes()
+              if name == "Cargo.toml":
+                  assert data.count(b'version = ">=0.30.1, <0.41.0"') == 1
+                  data = data.replace(b'version = ">=0.30.1, <0.41.0"', b'version = ">=0.30.1, <0.38.0"')
+              assert hashlib.sha256(data).hexdigest() == expected, name
+          PY
+          cargo tree --locked --manifest-path codex-rs/Cargo.toml -e features -i libsqlite3-sys 2>&1 | tee "$evidence/cargo-update.log"
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/dependency-metadata.json"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations --lib 2>&1 | tee "$evidence/operations-check.log"
+          just bazel-lock-update 2>&1 | tee "$evidence/bazel-lock-update.log"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          just bazel-lock-check 2>&1 | tee "$evidence/bazel-lock-check.log"
+          git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$evidence/locks.patch"
+          git diff --check
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, tomllib
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-sqlite-upgrade"
+          packages = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())["package"]
+          versions = [p["version"] for p in packages if p["name"] == "libsqlite3-sys"]
+          assert versions == ["0.40.0"], versions
+          assert [p["version"] for p in packages if p["name"] == "rusqlite"] == ["0.43.0"]
+          assert len([p for p in packages if p["name"] == "sqlx-sqlite" and "source" not in p]) == 1
+          metadata = json.loads((evidence / "dependency-metadata.json").read_text())
+          sqlite_links = [p for p in metadata["packages"] if p.get("links") == "sqlite3"]
+          assert len(sqlite_links) == 1, sqlite_links
+          assert sqlite_links[0]["name"] == "libsqlite3-sys"
+          assert sqlite_links[0]["version"] == "0.40.0"
+          by_id = {p["id"]: p for p in metadata["packages"]}
+          bindgen = next(p for p in metadata["packages"] if p["name"] == "bindgen" and p["version"] == "0.73.2")
+          bindgen_node = next(n for n in metadata["resolve"]["nodes"] if n["id"] == bindgen["id"])
+          syn = [by_id[d["pkg"]] for d in bindgen_node["deps"] if d["name"] == "syn"]
+          assert len(syn) == 1 and syn[0]["version"] == "2.0.119", syn
+          features = next(n["features"] for n in metadata["resolve"]["nodes"] if n["id"] == sqlite_links[0]["id"])
+          assert "bundled" in features, features
+          assert not any("sqlcipher" in f for f in features), features
+          changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          assert set(changed) <= {"MODULE.bazel.lock"}, changed
+          postimages = {}
+          for name in ["Cargo.lock", "MODULE.bazel.lock"]:
+              data = (evidence / name).read_bytes()
+              postimages[name] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+          (evidence / "source-and-locks.json").write_text(json.dumps({
+              "source_head": os.environ["EXPECTED_HEAD"],
+              "libsqlite3_sys_versions": versions,
+              "committed_locks": postimages,
+              "source_changes": changed,
+              "qualification_scope": "exact committed Cargo graph plus generated Bazel lock postimage; pending commit",
+          }, indent=2) + "\n")
+          PY
+      - name: Compile and clippy real SQLx and Matrix consumers
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy -- \
+            //codex-rs/state:state \
+            //codex-rs/hepta-matrix-store:hepta-matrix-store \
+            //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk \
+            2>&1 | tee "$RUNNER_TEMP/hepta-sqlite-upgrade/compile.log"
+      - name: Run unchanged SQLx and Matrix package tests
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
+            test --test_output=all --nocache_test_results -- \
+            //codex-rs/state/... \
+            //codex-rs/hepta-matrix-store/... \
+            //codex-rs/hepta-matrix-sdk/... \
+            2>&1 | tee "$RUNNER_TEMP/hepta-sqlite-upgrade/tests.log"
+      - name: Preserve source-bound postimages and native evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-sqlite-upgrade-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-sqlite-upgrade
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
