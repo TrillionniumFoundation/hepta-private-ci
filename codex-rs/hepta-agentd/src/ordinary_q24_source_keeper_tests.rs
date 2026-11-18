@@ -121,7 +121,13 @@ pub(super) fn spawn_original_source(
         input.len() <= INPUT_BOUND && !initial.is_zero(),
         "bounded fixed source inputs"
     );
-    let input = crate::authority_host_bootstrap_seal::seal_bytes(&input)?;
+    eprintln!(
+        "ORDINARY_Q24_SOURCE_INPUT_BYTES={} DATA_BOUND={} AUTHORITY_BOOTSTRAP_BOUND={}",
+        input.len(),
+        INPUT_BOUND,
+        crate::HOST_AUTHORITY_BOOTSTRAP_BOUND
+    );
+    let input = seal_original_source_input(&input)?;
     let result = tempfile::tempfile()?;
     let mut command = Command::new(format!("/proc/self/fd/{}", executable.as_raw_fd()));
     command
@@ -157,6 +163,61 @@ pub(super) fn spawn_original_source(
             process,
         },
     ))
+}
+
+// DATA uses the already-declared source input bound, not the authority
+// bootstrap's 64 KiB envelope. This private fixture helper grants no authority.
+fn seal_original_source_input(bytes: &[u8]) -> io::Result<File> {
+    // SAFETY: geteuid reads this actual producer's kernel identity.
+    if unsafe { libc::geteuid() } != 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "original source DATA producer requires Root",
+        ));
+    }
+    if bytes.is_empty() || bytes.len() > INPUT_BOUND {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "original source DATA exceeds its fixed input bound",
+        ));
+    }
+    // SAFETY: the static name is terminated; a successful call creates one
+    // fresh owned descriptor that has not been exposed to any receiver.
+    let raw = unsafe {
+        libc::memfd_create(
+            c"hepta-ordinary-source-data".as_ptr(),
+            libc::MFD_CLOEXEC | libc::MFD_ALLOW_SEALING,
+        )
+    };
+    if raw < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    // SAFETY: take unique ownership of exactly the fresh descriptor above.
+    let mut file = unsafe { File::from_raw_fd(raw) };
+    file.write_all(bytes)?;
+    let seals =
+        libc::F_SEAL_WRITE | libc::F_SEAL_GROW | libc::F_SEAL_SHRINK | libc::F_SEAL_SEAL;
+    // SAFETY: both operations act only on this live owned descriptor.
+    if unsafe { libc::fchmod(raw, 0o400) } != 0
+        || unsafe { libc::fcntl(raw, libc::F_ADD_SEALS, seals) } != 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    crate::authority_host_bootstrap_seal::validate_sealed(&file, bytes.len() as u64)?;
+    file.rewind()?;
+    let mut retained = Vec::with_capacity(bytes.len());
+    Read::by_ref(&mut file)
+        .take(INPUT_BOUND as u64 + 1)
+        .read_to_end(&mut retained)?;
+    if retained != bytes {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "original sealed source DATA readback differs",
+        ));
+    }
+    crate::authority_host_bootstrap_seal::validate_sealed(&file, bytes.len() as u64)?;
+    file.rewind()?;
+    Ok(file)
 }
 
 pub(super) fn run_original_source(
@@ -348,5 +409,46 @@ fn drop_original_source_credentials() -> io::Result<()> {
             return Err(io::Error::last_os_error());
         }
     }
+    Ok(())
+}
+
+#[test]
+#[ignore = "explicit actual Root source DATA descriptor custody qualification"]
+fn root_source_data_descriptor_preserves_its_bound_and_all_seals() -> anyhow::Result<()> {
+    use std::os::unix::fs::FileExt;
+
+    // This proves only DATA custody, never an issuer, receipt or successful B.
+    let bytes = vec![17; INPUT_BOUND];
+    anyhow::ensure!(
+        crate::authority_host_bootstrap_seal::seal_bytes(&bytes).is_err(),
+        "source DATA must not expand the authority bootstrap envelope"
+    );
+    let mut file = seal_original_source_input(&bytes)?;
+    crate::authority_host_bootstrap_seal::validate_sealed(&file, bytes.len() as u64)?;
+    let mut observed = Vec::new();
+    file.read_to_end(&mut observed)?;
+    pretty_assertions::assert_eq!(observed, bytes);
+    for error in [
+        file.write_at(b"x", 0).unwrap_err(),
+        file.set_len(0).unwrap_err(),
+        file.set_len(bytes.len() as u64 + 1).unwrap_err(),
+    ] {
+        pretty_assertions::assert_eq!(error.raw_os_error(), Some(libc::EPERM));
+    }
+    // SAFETY: this is the live original descriptor; all four seals are final.
+    pretty_assertions::assert_eq!(
+        unsafe { libc::fcntl(file.as_raw_fd(), libc::F_ADD_SEALS, 0) },
+        -1
+    );
+    pretty_assertions::assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EPERM));
+    crate::authority_host_bootstrap_seal::validate_sealed(&file, bytes.len() as u64)?;
+    anyhow::ensure!(
+        seal_original_source_input(&[]).is_err(),
+        "empty source DATA accepted"
+    );
+    anyhow::ensure!(
+        seal_original_source_input(&vec![0; INPUT_BOUND + 1]).is_err(),
+        "oversized source DATA accepted"
+    );
     Ok(())
 }
