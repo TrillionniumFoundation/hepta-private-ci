@@ -30,11 +30,12 @@ def main():
     if hashlib.sha256(raw).hexdigest() != args.protocol_sha:
         raise ValueError("frozen protocol differs")
     protocol = json.loads(raw)
-    root, circuit = args.run_root, args.run_root / "circuit"
+    root = args.run_root.resolve()
+    circuit = root / "circuit"
     issues, inventory = [], {}
 
     def read(path, optional=False):
-        if not path.is_file():
+        if not path.is_file() or path.is_symlink():
             if not optional:
                 issues.append("missing: " + str(path))
             return None
@@ -52,7 +53,7 @@ def main():
         target = root / relative
         if not target.resolve().is_relative_to(root.resolve()):
             raise ValueError("receipt reference escapes this run")
-        return target
+        return target.resolve()
 
     def same(value, expected, label):
         if value != expected:
@@ -60,11 +61,39 @@ def main():
 
     job, complete = read(circuit / "RESULT.json"), read(root / "COMPLETE.json")
     pool = read(circuit / "POOL.json")
+    worker_intent = read(root / "WORKER_INTENT.json")
+    if worker_intent is not None:
+        for key, expected in (
+            ("protocol_sha256", args.protocol_sha),
+            ("comparison_digest", protocol["original_comparison_digest"]),
+            ("source_inventory_sha256", protocol["original_B_source_inventory_sha256"]),
+        ):
+            same(worker_intent.get(key), expected, "worker " + key + " differs")
+    if complete is not None:
+        same(complete.get("status"), "COMPLETE", "worker completion status differs")
+        same(
+            complete.get("protocol_sha256"),
+            args.protocol_sha,
+            "worker completion protocol differs",
+        )
+    if pool is not None:
+        same(
+            pool["pool_identity"],
+            digest(pool["inventory"]),
+            "pool inventory identity differs",
+        )
+        actual_cells = pool["inventory"]["cells"]
+        same(set(actual_cells), set(protocol["models"]), "pool Cell inventory differs")
+        for cell, expected in protocol["models"].items():
+            same(
+                actual_cells.get(cell, {}).get("model_digest"),
+                expected["manifest_digest"],
+                "pool frozen model differs: " + cell,
+            )
     pool_binding = None
     repair = protocol.get("adapter_precision_repair")
     if repair is not None:
         pool_binding = read(circuit / "POOL_BINDING.json")
-        intent = read(root / "WORKER_INTENT.json")
         expected_source = protocol["source_sha256"]["shared_pool_v4.py"]
         if pool_binding is not None:
             for key, expected in (
@@ -82,19 +111,14 @@ def main():
                 expected_source,
                 "actual pool source differs",
             )
+        if worker_intent is not None:
             same(
-                pool["pool_identity"],
-                digest(pool["inventory"]),
-                "pool inventory identity differs",
-            )
-        if intent is not None:
-            same(
-                intent.get("actual_pool_source_sha256"),
+                worker_intent.get("actual_pool_source_sha256"),
                 expected_source,
                 "worker pool source differs",
             )
             same(
-                intent.get("actual_pool_class_module"),
+                worker_intent.get("actual_pool_class_module"),
                 repair["expected_pool_class_module"],
                 "worker pool module differs",
             )
@@ -131,7 +155,10 @@ def main():
                 )
     expected_results = {}
     for row in search["observations"] if search else []:
-        expected_results[str(rebase(row["result_path"]))] = row["result_digest"]
+        path = str(rebase(row["result_path"]))
+        if path in expected_results:
+            issues.append("duplicate result reference: " + path)
+        expected_results[path] = row["result_digest"]
     for name, study in studies.items():
         if study is None:
             continue
@@ -145,7 +172,9 @@ def main():
                         issues.append("duplicate result reference: " + path)
                     expected_results[path] = row["result_digest"]
     allowed_records = {
-        row["record_digest"] for rows in protocol["panels"].values() for row in rows
+        row["record_digest"]: row["task_id"]
+        for rows in protocol["panels"].values()
+        for row in rows
     }
     costs = (
         "model_calls",
@@ -156,8 +185,12 @@ def main():
         "output_tokens",
     )
     groups, graph_paths, all_rows = defaultdict(list), set(), []
+    call_paths, call_intents = set(), set()
+    observed_cost_integrity = True
     for path in sorted(circuit.rglob("RESULT.json")):
         value = read(path)
+        if value is None:
+            continue
         if value.get("schema") != "hepta.online-message-circuit.result.v4":
             continue
         graph_paths.add(str(path))
@@ -168,18 +201,68 @@ def main():
         )
         if value["record_digest"] not in allowed_records:
             issues.append("unknown task record: " + str(path))
+        same(
+            value["task_id"],
+            allowed_records.get(value["record_digest"]),
+            "frozen task identity differs: " + str(path),
+        )
+        same(value.get("status"), "COMPLETE", "graph status differs: " + str(path))
         contract = read(path.parent / "CONTRACT.json")
         same(
             digest(contract),
             value["contract_digest"],
             "graph contract differs: " + str(path),
         )
+        if contract is not None:
+            same(contract["budget"], protocol["budget"], "contract budget differs")
+            same(
+                contract["output_selection"],
+                protocol["output_selection"],
+                "contract output selection differs",
+            )
+            same(
+                contract["graph"]["graph_id"],
+                value["graph_id"],
+                "graph identity differs",
+            )
+            same(
+                [node["slot"] for node in value["nodes"]],
+                list(range(len(contract["graph"]["path"]))),
+                "graph slots differ",
+            )
+            same(
+                [node["cell_id"] for node in value["nodes"]],
+                contract["graph"]["path"],
+                "graph Cell path differs",
+            )
+            for cell, expected in protocol["models"].items():
+                same(
+                    contract["cells"].get(cell, {}).get("model_digest"),
+                    expected["manifest_digest"],
+                    "contract frozen model differs: " + cell,
+                )
+        if any(
+            type(node["slot"]) is not int
+            or node["status"] not in ("COMPLETE", "REMOVED")
+            for node in value["nodes"]
+        ):
+            issues.append("invalid graph node slot or status")
         nodes = [node for node in value["nodes"] if node["status"] == "COMPLETE"]
         outputs = []
         for node in nodes:
             items = {}
+            expected_call = (path.parent / ("node-" + str(node["slot"]))).resolve()
+            call = rebase(node["output_path"]).parent
+            if call != expected_call or call in call_paths:
+                issues.append("duplicate or misplaced call reference: " + str(call))
+                observed_cost_integrity = False
+            call_paths.add(call)
             for key in ("request", "output", "verification"):
-                item = read(rebase(node[key + "_path"]))
+                item_path = rebase(node[key + "_path"])
+                if item_path != expected_call / (key.upper() + ".json"):
+                    issues.append("call artifact slot differs: " + str(item_path))
+                    observed_cost_integrity = False
+                item = read(item_path)
                 items[key] = item
                 same(
                     digest(item),
@@ -189,7 +272,22 @@ def main():
                 if key != "request":
                     same(item, node[key], key + " embedded copy differs: " + str(path))
             outputs.append(items["output"])
-            call = rebase(node["output_path"]).parent
+            if items["output"] is not None:
+                for key, minimum, cap in (
+                    ("input_tokens", 1, "max_input_tokens_per_call"),
+                    ("output_tokens", 0, "max_output_tokens_per_call"),
+                ):
+                    count = items["output"][key]
+                    if (
+                        type(count) is not int
+                        or not minimum <= count <= protocol["budget"][cap]
+                    ):
+                        issues.append("call token budget differs: " + str(call))
+            same(
+                read(expected_call / "STEP.json"),
+                node,
+                "graph STEP differs: " + str(expected_call),
+            )
             same(
                 read(call / "POOL_RESULT.json"),
                 items["output"],
@@ -205,6 +303,10 @@ def main():
                 read(call / "POOL_RAW_OUTPUT.json"),
             )
             if intent and items["output"] and pool:
+                if digest(intent) in call_intents:
+                    issues.append("reused pool intent: " + str(call))
+                    observed_cost_integrity = False
+                call_intents.add(digest(intent))
                 same(
                     intent["request_digest"],
                     node["request_digest"],
@@ -225,6 +327,11 @@ def main():
                     intent["model_digest"],
                     items["output"]["loaded_model_digest"],
                     "loaded model differs",
+                )
+                same(
+                    items["output"]["loaded_model_digest"],
+                    protocol["models"].get(node["cell_id"], {}).get("manifest_digest"),
+                    "call frozen model differs",
                 )
             if raw_output and items["output"]:
                 for key, item in raw_output.items():
@@ -249,13 +356,37 @@ def main():
                 item["output_tokens"] for item in outputs if item is not None
             ),
         }
+        reported_cost = {key: value["cost"][key] for key in costs}
+        if observed != reported_cost:
+            observed_cost_integrity = False
         same(
             observed,
-            {key: value["cost"][key] for key in costs},
+            reported_cost,
             "graph counts differ: " + str(path),
         )
         first = nodes[0]["business"]["business_success"] if nodes else None
         last = nodes[-1]["business"]["business_success"] if nodes else None
+        selected = next(
+            (node for node in nodes if node["business"]["business_success"] is True),
+            nodes[-1] if nodes else None,
+        )
+        selected_success = (
+            selected["business"]["business_success"] if selected else False
+        )
+        for key, expected in (
+            ("output_selection", protocol["output_selection"]),
+            ("success", selected_success),
+            ("first_success", first if nodes else False),
+            ("final_slot", selected["slot"] if selected else None),
+            ("last_executed_slot", nodes[-1]["slot"] if nodes else None),
+            (
+                "final_answer_sha256",
+                hashlib.sha256(selected["output"]["answer"].encode()).hexdigest()
+                if selected
+                else None,
+            ),
+        ):
+            same(value.get(key), expected, "graph " + key + " differs: " + str(path))
         paired = len(nodes) == 2 and type(first) is bool and type(last) is bool
         parts = path.relative_to(circuit).parts
         group = (
@@ -267,7 +398,7 @@ def main():
             "task_id": value["task_id"],
             "result_path": path.relative_to(root).as_posix(),
             "result_digest": digest(value),
-            "selected_success": value["success"],
+            "selected_success": selected_success,
             "first_success": first,
             "last_success": last,
             "two_steps": len(nodes) == 2,
@@ -284,10 +415,22 @@ def main():
         "graph inventory differs from completed summaries",
     )
     totals = {key: sum(row["cost"][key] for row in all_rows) for key in costs}
-    coverage = {
-        name: len(list(circuit.rglob(name)))
-        for name in ("POOL_INTENT.json", "POOL_RAW_OUTPUT.json", "POOL_RESULT.json")
-    }
+    coverage = {}
+    for name in (
+        "POOL_INTENT.json",
+        "POOL_REQUEST.json",
+        "POOL_RAW_OUTPUT.json",
+        "POOL_RESULT.json",
+        "REQUEST.json",
+        "OUTPUT.json",
+        "VERIFICATION.json",
+        "STEP.json",
+    ):
+        paths = list(circuit.rglob(name))
+        coverage[name] = len(paths)
+        actual_calls = {path.parent.resolve() for path in paths}
+        same(actual_calls, call_paths, "call artifact coverage differs: " + name)
+        same(len(paths), len(actual_calls), "call artifact aliases differ: " + name)
     additional_routes = [
         row
         for name, plan in plans.items()
@@ -300,6 +443,14 @@ def main():
     }
     summaries = {}
     for group, rows in groups.items():
+        panel = "old_A" if group.startswith("search/") else group.split("/")[1]
+        task_ids = [row["task_id"] for row in rows]
+        same(len(task_ids), len(set(task_ids)), "duplicate group task: " + group)
+        same(
+            set(task_ids),
+            {row["task_id"] for row in protocol["panels"][panel]},
+            "group task coverage differs: " + group,
+        )
         summaries[group] = {
             "tasks": len(rows),
             **{
@@ -414,7 +565,10 @@ def main():
         "planned_counts_only": protocol["planned_counts_only"],
         "completed_graph_records": len(graph_paths),
         "pool_call_receipt_coverage": coverage,
-        "observed_completed_graph_cost_lower_bound": totals,
+        "observed_completed_graph_cost_integrity": observed_cost_integrity,
+        "observed_completed_graph_cost_lower_bound": totals
+        if observed_cost_integrity
+        else {key: None for key in costs},
         "complete_call_and_token_totals": totals
         if full
         else {key: None for key in costs},
