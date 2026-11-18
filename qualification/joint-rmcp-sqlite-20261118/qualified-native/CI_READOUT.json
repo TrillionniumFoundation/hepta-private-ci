@@ -1,0 +1,444 @@
+{
+  "schema": "hepta.actual-joint-ci-case-lock-audit.v1",
+  "execution_source": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+  "runtime_source_parent": "2b3642214ba5ff4aaac27de13322a354a69507e7",
+  "no_tests_reexecuted": true,
+  "scopes": {
+    "rmcp": {
+      "zip_sha256": "f8afadfbaf42a5305c7b5e22e5550f7f15ec728871ae42699f38840a21e08d29",
+      "run": 44359468610,
+      "job": 134996522149,
+      "artifact": 14456513074,
+      "passed": 278,
+      "ignored": 7,
+      "executed_targets": 24,
+      "skipped_targets": 18,
+      "sections": 34,
+      "prefix": "hepta-rmcp-upgrade",
+      "archive_bytes": 8938554,
+      "members": [
+        {
+          "path": "hepta-rmcp-upgrade/Cargo.lock",
+          "bytes": 421006,
+          "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/MODULE.bazel.lock",
+          "bytes": 1788366,
+          "sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/bazel-lock-check.log",
+          "bytes": 1202,
+          "sha256": "e77639c6e56cca8478e50436e02a7a73d2a6e616ed539abc6408e10d415a7ff1"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/bazel-lock-update.log",
+          "bytes": 2997,
+          "sha256": "972b0a7f391edc67024a1e0e3e9690a322cfca4c9a9ffb8e8eac022e07a16735"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/cargo-update.log",
+          "bytes": 118437,
+          "sha256": "1b19f26ff15ab5d7da6f22d968617f0338e3ece983ba022e5742d35660dd0aa1"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/cargo.txt",
+          "bytes": 36,
+          "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/compile.log",
+          "bytes": 53602,
+          "sha256": "fa150f5e8ce39f94997f9070685c5da01a163d44706c5c9099cfed286ced7518"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/locks.patch",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/operations-check.log",
+          "bytes": 44502,
+          "sha256": "741f11a9734c53ac234737aa4077418ea231fea32226ff1b0717c9c1bc86002f"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/rustc.txt",
+          "bytes": 196,
+          "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/source-and-locks.json",
+          "bytes": 535,
+          "sha256": "23e8efd9fd47784f77d5b92e4ebf39c27f235a934d55c59e3b029c39aab202ff"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/source-head.txt",
+          "bytes": 41,
+          "sha256": "d435ef6590a684483530c024bbad1ef5c8bde820398574d5c18145c1a61e23c7"
+        },
+        {
+          "path": "hepta-rmcp-upgrade/tests.log",
+          "bytes": 54530,
+          "sha256": "468a11ab14240b45c80edd3e05ba2a504cb4df6e442d25c8be77296a07241008"
+        },
+        {
+          "path": "bazel-execution-logs/execution-log-test-qualify-20280.zst",
+          "bytes": 834812,
+          "sha256": "cb42827db3b2d9c05bc21e5d88db45eef647256444017f40e68e7311a773a55f"
+        },
+        {
+          "path": "bazel-execution-logs/execution-log-build-qualify-12833.zst",
+          "bytes": 7739423,
+          "sha256": "76914fcd588e989c5c2bfdc25047fe104d2b41a4ad6514b0feaf1497e1a03405"
+        }
+      ],
+      "locks": {
+        "Cargo.lock": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7",
+        "MODULE.bazel.lock": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+      },
+      "both_locks_patch_bytes": 0,
+      "actual_case_pass_executions": 278,
+      "distinct_passing_target_case_identities": 273,
+      "ignored_registrations": [
+        {
+          "line": 410,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "name": "oauth::store_lock::tests::store_lock_is_released_when_holder_process_exits_child",
+          "status": "ignored, child process for store_lock_is_released_when_holder_process_exits"
+        },
+        {
+          "line": 574,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+          "name": "local_stdio_inherits_ca_certificate_variables_child",
+          "status": "ignored, child process for local_stdio_inherits_ca_certificate_variables"
+        },
+        {
+          "line": 600,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "expired_unrefreshable_startup_child",
+          "status": "ignored, spawned by identifies_expired_unrefreshable_token_startup_error"
+        },
+        {
+          "line": 601,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "issuer_startup_child",
+          "status": "ignored, spawned by issuer startup tests"
+        },
+        {
+          "line": 602,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "oauth_startup_child",
+          "status": "ignored, spawned by refreshes_expired_persisted_token_before_initialize"
+        },
+        {
+          "line": 603,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "persisted_credentials_auth_status_child",
+          "status": "ignored, spawned by reports_auth_status_for_persisted_credentials"
+        },
+        {
+          "line": 807,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "name": "auto_store_remains_pinned_across_session_recovery_child",
+          "status": "ignored, spawned by auto_store_remains_pinned_across_session_recovery"
+        }
+      ],
+      "test_summary_sections": 34,
+      "target_log_sections": 24,
+      "repeated_case_identities": [
+        {
+          "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "name": "oauth::tests::fallback_file_is_private_at_creation",
+          "observations": [
+            {
+              "line": 420,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+              "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+              "name": "oauth::tests::fallback_file_is_private_at_creation",
+              "status": "ok"
+            },
+            {
+              "line": 424,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+              "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+              "name": "oauth::tests::fallback_file_is_private_at_creation",
+              "status": "ok"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "expired_unrefreshable_startup_child",
+          "observations": [
+            {
+              "line": 600,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "expired_unrefreshable_startup_child",
+              "status": "ignored, spawned by identifies_expired_unrefreshable_token_startup_error"
+            },
+            {
+              "line": 619,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "expired_unrefreshable_startup_child",
+              "status": "ok"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "issuer_startup_child",
+          "observations": [
+            {
+              "line": 601,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "issuer_startup_child",
+              "status": "ignored, spawned by issuer startup tests"
+            },
+            {
+              "line": 612,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "issuer_startup_child",
+              "status": "ok"
+            },
+            {
+              "line": 624,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "issuer_startup_child",
+              "status": "ok"
+            },
+            {
+              "line": 640,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "issuer_startup_child",
+              "status": "ok"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "oauth_startup_child",
+          "observations": [
+            {
+              "line": 602,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "oauth_startup_child",
+              "status": "ignored, spawned by refreshes_expired_persisted_token_before_initialize"
+            },
+            {
+              "line": 631,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "oauth_startup_child",
+              "status": "ok"
+            },
+            {
+              "line": 645,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "oauth_startup_child",
+              "status": "ok"
+            },
+            {
+              "line": 649,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "oauth_startup_child",
+              "status": "ok"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "persisted_credentials_auth_status_child",
+          "observations": [
+            {
+              "line": 603,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "persisted_credentials_auth_status_child",
+              "status": "ignored, spawned by reports_auth_status_for_persisted_credentials"
+            },
+            {
+              "line": 655,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+              "name": "persisted_credentials_auth_status_child",
+              "status": "ok"
+            }
+          ]
+        },
+        {
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "name": "auto_store_remains_pinned_across_session_recovery_child",
+          "observations": [
+            {
+              "line": 807,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+              "name": "auto_store_remains_pinned_across_session_recovery_child",
+              "status": "ignored, spawned by auto_store_remains_pinned_across_session_recovery"
+            },
+            {
+              "line": 813,
+              "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+              "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+              "name": "auto_store_remains_pinned_across_session_recovery_child",
+              "status": "ok"
+            }
+          ]
+        }
+      ],
+      "case_index_sha256": "43aaf92422cdf2dd88da8b3ee9f3ccd21f292405a7282919604465c3707f14ea",
+      "native_windows_qualification": false,
+      "junit_artifacts_present": false,
+      "count_scope": "Pass counts include real spawned subprocess probes; distinct identities are also retained. Windows cross-target SKIPPED rows are not native executions.",
+      "published_git_blob": "c85e5ee905f677e3b9c7cb03c45969bc89f6d2e7",
+      "blob_upload_wall_seconds": 6.514435511955526
+    },
+    "sqlite": {
+      "zip_sha256": "a2af9f6c35daf91c047071845964a855ac763305f8a29b7f5faff4078fc53ecf",
+      "run": 44359468771,
+      "job": 134996523370,
+      "artifact": 14454168128,
+      "passed": 284,
+      "ignored": 2,
+      "executed_targets": 9,
+      "skipped_targets": 5,
+      "sections": 12,
+      "prefix": "hepta-sqlite-upgrade",
+      "archive_bytes": 7762562,
+      "members": [
+        {
+          "path": "hepta-sqlite-upgrade/MODULE.bazel.lock",
+          "bytes": 1788366,
+          "sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/bazel-lock-check.log",
+          "bytes": 1322,
+          "sha256": "cf2586f92e4f300f7701cafa74bced1bcc325b8d8941ade8f2973a38233c7d50"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/Cargo.lock",
+          "bytes": 421006,
+          "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/bazel-lock-update.log",
+          "bytes": 3177,
+          "sha256": "5ec8915170f48d4b5d82c9609b796a01660d55fce2770dfe1388d41d446ffb2c"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/cargo-update.log",
+          "bytes": 252299,
+          "sha256": "ade19a6f0fcd50456fc63a62dea995e9df5bc5ae5228cdfbb958bf12abe60f5d"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/cargo.txt",
+          "bytes": 36,
+          "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/compile.log",
+          "bytes": 29933,
+          "sha256": "4b0614dbb32b97127f2bb08d5463de0f6dbc6cf4dc13187789e5809b8456e1b5"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/dependency-metadata.json",
+          "bytes": 8317824,
+          "sha256": "476a45c1b436df8447ebbbc4e0245cd96080afd34018fb6f9b4489972a27f5d3"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/locks.patch",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/operations-check.log",
+          "bytes": 44502,
+          "sha256": "4130914ffa8c5a92de8e57aad58b06b54910d62b724af8f099c2d6f132172ca2"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/rustc.txt",
+          "bytes": 196,
+          "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/source-and-locks.json",
+          "bytes": 546,
+          "sha256": "76ca4c14f2a06896f8f1d7ebd18433e9282fc33303a034cfe7f54ce00837c3c7"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/source-head.txt",
+          "bytes": 41,
+          "sha256": "d435ef6590a684483530c024bbad1ef5c8bde820398574d5c18145c1a61e23c7"
+        },
+        {
+          "path": "hepta-sqlite-upgrade/tests.log",
+          "bytes": 35730,
+          "sha256": "e841cacd3dc94c7fc7c4142a2be5654869d6d1da05528c799eb4ef27c9732472"
+        },
+        {
+          "path": "bazel-execution-logs/execution-log-build-qualify-13099.zst",
+          "bytes": 6363353,
+          "sha256": "879e9e631cb184c042eb877124ad2ae1679cded8b1f8ffb86b7127de11c9d439"
+        },
+        {
+          "path": "bazel-execution-logs/execution-log-test-qualify-18506.zst",
+          "bytes": 429768,
+          "sha256": "9f15c6dcc90e2edf5340cce9c993ee47cfb3f397eec4fc0115f03d380bc985b7"
+        }
+      ],
+      "locks": {
+        "Cargo.lock": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7",
+        "MODULE.bazel.lock": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+      },
+      "both_locks_patch_bytes": 0,
+      "actual_case_pass_executions": 284,
+      "distinct_passing_target_case_identities": 284,
+      "ignored_registrations": [
+        {
+          "line": 392,
+          "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+          "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+          "name": "prepare_old_version_fixture",
+          "status": "ignored, requires the source-bound old-version fixture producer"
+        },
+        {
+          "line": 393,
+          "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+          "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+          "name": "reopen_old_version_fixture",
+          "status": "ignored, requires the independently retained old-version fixture"
+        }
+      ],
+      "test_summary_sections": 12,
+      "target_log_sections": 12,
+      "repeated_case_identities": [],
+      "case_index_sha256": "c90f033ec9709ce1abb1997f861c4d4e48b39111fd61291d35e7685ef5636746",
+      "native_windows_qualification": false,
+      "junit_artifacts_present": false,
+      "count_scope": "Pass counts include real spawned subprocess probes; distinct identities are also retained. Windows cross-target SKIPPED rows are not native executions.",
+      "published_git_blob": "c6bf4586937914359fbb3385ed082809dc29331a",
+      "blob_upload_wall_seconds": 5.512501841993071
+    }
+  },
+  "full_repository_qualification": false,
+  "energy_joules": null,
+  "monetary_cost": null
+}

@@ -1,0 +1,2189 @@
+{
+  "cases": [
+    {
+      "line": 43,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-qualification-marker-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-qualification-marker-test",
+      "name": "tests::exact_marker_is_consumed_once_after_synapse_event_id_exists",
+      "status": "ok"
+    },
+    {
+      "line": 53,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "duplicate_sync_event_is_exactly_idempotent",
+      "status": "ok"
+    },
+    {
+      "line": 54,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "exact_room_sender_and_mention_gate_precedes_persistence",
+      "status": "ok"
+    },
+    {
+      "line": 55,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "malformed_remote_event_is_nonfatal_and_does_not_block_the_next_event",
+      "status": "ok"
+    },
+    {
+      "line": 56,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "sdk_store_paths_are_private_and_per_agent",
+      "status": "ok"
+    },
+    {
+      "line": 57,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "expired_crash_lease_reuses_the_stable_transaction_after_reopen",
+      "status": "ok"
+    },
+    {
+      "line": 58,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id",
+      "status": "ok"
+    },
+    {
+      "line": 59,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "retry_preserves_stable_transaction_and_shutdown_is_bounded",
+      "status": "ok"
+    },
+    {
+      "line": 60,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "name": "transient_failures_use_bounded_backoff_and_then_become_terminal",
+      "status": "ok"
+    },
+    {
+      "line": 69,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "name": "repeated_observations_preserve_all_durable_evidence_and_survive_reopen",
+      "status": "ok"
+    },
+    {
+      "line": 70,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "name": "absent_stale_or_malformed_caller_fences_never_become_unchanged_success",
+      "status": "ok"
+    },
+    {
+      "line": 71,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "name": "observation_serializes_after_a_checkpoint_writer_and_rejects_the_old_token",
+      "status": "ok"
+    },
+    {
+      "line": 72,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "name": "every_ordinary_journal_ceiling_refuses_idle_readiness_without_breaking_v2_replay",
+      "status": "ok"
+    },
+    {
+      "line": 81,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "failed_mutation_rolls_back_prior_mutations_and_cursor",
+      "status": "ok"
+    },
+    {
+      "line": 82,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "journal_saturation_is_terminal_but_preserves_the_deletion_reserve",
+      "status": "ok"
+    },
+    {
+      "line": 83,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "durable_replay_precedes_a_reduced_runtime_capacity",
+      "status": "ok"
+    },
+    {
+      "line": 84,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "caller_persisted_outbox_attempt_survives_a_later_room_leave",
+      "status": "ok"
+    },
+    {
+      "line": 85,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "kicked_room_rebind_preserves_the_account_cursor_and_resumes_sync",
+      "status": "ok"
+    },
+    {
+      "line": 86,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "one_room_rebind_does_not_fence_another_room_or_the_account_cursor",
+      "status": "ok"
+    },
+    {
+      "line": 87,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "redacted_v1_source_cannot_be_reused_in_another_room",
+      "status": "ok"
+    },
+    {
+      "line": 88,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "redaction_ignores_another_rooms_active_dispatch",
+      "status": "ok"
+    },
+    {
+      "line": 89,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "redaction_ignores_a_hidden_dispatch_from_an_old_room_fence",
+      "status": "ok"
+    },
+    {
+      "line": 90,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "room_leave_fences_an_active_dispatch_without_blocking_the_cursor",
+      "status": "ok"
+    },
+    {
+      "line": 91,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "room_tombstone_is_a_logical_fence_above_the_physical_scrub_bound",
+      "status": "ok"
+    },
+    {
+      "line": 92,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "room_leave_and_replacement_tombstones_prevent_replay",
+      "status": "ok"
+    },
+    {
+      "line": 93,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "redaction_missing_target_and_cancellation_remain_distinct",
+      "status": "ok"
+    },
+    {
+      "line": 94,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "tombstoned_v1_source_cannot_gain_a_new_v2_meaning",
+      "status": "ok"
+    },
+    {
+      "line": 95,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "v2_validation_rejects_wrong_schema",
+      "status": "ok"
+    },
+    {
+      "line": 96,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "startup_rejects_same_name_counterfeit_v2_schema_objects",
+      "status": "ok"
+    },
+    {
+      "line": 97,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "tombstone_refuses_to_orphan_an_active_dispatch",
+      "status": "ok"
+    },
+    {
+      "line": 98,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "v1_and_v2_timeline_identity_matches_exact_semantics_only",
+      "status": "ok"
+    },
+    {
+      "line": 99,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "name": "v1_source_hidden_by_leave_cannot_be_reused_after_rebind",
+      "status": "ok"
+    },
+    {
+      "line": 108,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::event_msg_image_only_user_message_sets_image_placeholder_preview",
+      "status": "ok"
+    },
+    {
+      "line": 109,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::event_msg_user_messages_set_title_and_first_user_message",
+      "status": "ok"
+    },
+    {
+      "line": 110,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::diff_fields_detects_changes",
+      "status": "ok"
+    },
+    {
+      "line": 111,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::turn_context_does_not_override_session_cwd",
+      "status": "ok"
+    },
+    {
+      "line": 112,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::tests::flush_waits_for_queue_capacity_and_receiver_processing",
+      "status": "ok"
+    },
+    {
+      "line": 113,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "model::thread_metadata::tests::paginated_rollout_git_info_keeps_rollout_values_until_sqlite_mode_is_paginated",
+      "status": "ok"
+    },
+    {
+      "line": 114,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "model::thread_metadata::tests::thread_row_parses_reasoning_effort",
+      "status": "ok"
+    },
+    {
+      "line": 115,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "model::thread_metadata::tests::thread_row_rejects_unknown_history_mode",
+      "status": "ok"
+    },
+    {
+      "line": 116,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::thread_section_order_migration_backfills_stably",
+      "status": "ok"
+    },
+    {
+      "line": 117,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::backfill::tests::backfill_state_persists_progress_and_completion",
+      "status": "ok"
+    },
+    {
+      "line": 118,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::filter_tests::sqlite_sink_filters_noisy_targets_without_dropping_useful_diagnostics",
+      "status": "ok"
+    },
+    {
+      "line": 119,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::thread_section_migration_preserves_legacy_pin_compatibility",
+      "status": "ok"
+    },
+    {
+      "line": 120,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::recency_migration_backfills_and_seeds_old_binary_inserts",
+      "status": "ok"
+    },
+    {
+      "line": 121,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::insert_thread_goal_does_not_replace_existing_goal",
+      "status": "ok"
+    },
+    {
+      "line": 122,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::usage_accounting_ignores_replaced_goal_version",
+      "status": "ok"
+    },
+    {
+      "line": 123,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::replace_thread_goal_applies_budget_limit_immediately",
+      "status": "ok"
+    },
+    {
+      "line": 124,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::stopped_usage_accounting_promotes_paused_goal_over_budget",
+      "status": "ok"
+    },
+    {
+      "line": 125,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::usage_limit_active_thread_goal_updates_active_or_budget_limited_goals",
+      "status": "ok"
+    },
+    {
+      "line": 126,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_excludes_threadless_rows_from_prior_processes",
+      "status": "ok"
+    },
+    {
+      "line": 127,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_returns_newest_lines_within_limit_in_order",
+      "status": "ok"
+    },
+    {
+      "line": 128,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_logs_filters_level_set_without_rewriting_stored_level",
+      "status": "ok"
+    },
+    {
+      "line": 129,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::list_stage1_outputs_for_global_includes_paginated_and_skips_polluted_threads",
+      "status": "ok"
+    },
+    {
+      "line": 130,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::list_stage1_outputs_for_global_skips_empty_payloads",
+      "status": "ok"
+    },
+    {
+      "line": 131,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_threadless_rows_per_process_uuid_only",
+      "status": "ok"
+    },
+    {
+      "line": 132,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_global_phase2_job_succeeded_updates_selected_snapshot_timestamp",
+      "status": "ok"
+    },
+    {
+      "line": 133,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::claim_stage1_jobs_enforces_global_running_cap",
+      "status": "ok"
+    },
+    {
+      "line": 134,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_stage1_job_succeeded_enqueues_global_consolidation",
+      "status": "ok"
+    },
+    {
+      "line": 135,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_thread_memory_mode_polluted_enqueues_phase2_when_already_polluted",
+      "status": "ok"
+    },
+    {
+      "line": 136,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::stage1_concurrent_claim_for_same_thread_is_conflict_safe",
+      "status": "ok"
+    },
+    {
+      "line": 137,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::stage1_retry_exhaustion_does_not_block_newer_watermark",
+      "status": "ok"
+    },
+    {
+      "line": 138,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_list_rejects_malformed_cursors",
+      "status": "ok"
+    },
+    {
+      "line": 139,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_updates_preserve_omitted_fields_across_concurrent_writers",
+      "status": "ok"
+    },
+    {
+      "line": 140,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::binding_schema_rejects_malformed_digest_owner_revision_turn_and_time",
+      "status": "ok"
+    },
+    {
+      "line": 141,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::competing_exact_reservations_finalize_one_queue_row",
+      "status": "ok"
+    },
+    {
+      "line": 142,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::recovery::tests::runtime_db_path_for_corruption_error_returns_failed_database_path",
+      "status": "ok"
+    },
+    {
+      "line": 143,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::expired_dispatch_rollout_evidence_closes_without_resubmission",
+      "status": "ok"
+    },
+    {
+      "line": 144,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::fresh_reconcile_only_missing_removes_its_reservation",
+      "status": "ok"
+    },
+    {
+      "line": 145,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::expired_time_cannot_take_over_a_live_owner_and_old_revision_is_rejected",
+      "status": "ok"
+    },
+    {
+      "line": 146,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::raw_enqueue_cannot_cross_an_exact_reservation",
+      "status": "ok"
+    },
+    {
+      "line": 147,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::tests::init_restores_independent_thread_timestamp_maxima",
+      "status": "ok"
+    },
+    {
+      "line": 148,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_section_order::tests::section_moves_preserve_entry_order_and_renumber_exhausted_ranks",
+      "status": "ok"
+    },
+    {
+      "line": 149,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::apply_rollout_items_preserves_existing_git_branch_and_fills_missing_git_fields",
+      "status": "ok"
+    },
+    {
+      "line": 150,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::insert_thread_if_absent_preserves_existing_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 151,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::thread_spawn_children_without_status_filter_lists_all_statuses",
+      "status": "ok"
+    },
+    {
+      "line": 152,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy",
+      "status": "ok"
+    },
+    {
+      "line": 153,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::apply_rollout_items_uses_override_updated_at_when_provided",
+      "status": "ok"
+    },
+    {
+      "line": 154,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::thread_updated_at_uses_unique_epoch_millis_and_reads_legacy_seconds",
+      "status": "ok"
+    },
+    {
+      "line": 155,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::touch_thread_recency_at_is_monotonic_and_survives_stale_upsert",
+      "status": "ok"
+    },
+    {
+      "line": 165,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::response_item_user_messages_do_not_set_title_or_first_user_message",
+      "status": "ok"
+    },
+    {
+      "line": 166,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::event_msg_blank_user_message_without_images_keeps_first_user_message_empty",
+      "status": "ok"
+    },
+    {
+      "line": 167,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::turn_context_sets_model_and_reasoning_effort",
+      "status": "ok"
+    },
+    {
+      "line": 168,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::completed_user_message_items_set_title_and_first_user_message",
+      "status": "ok"
+    },
+    {
+      "line": 169,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::thread_item_update_ordinals_allow_older_writers",
+      "status": "ok"
+    },
+    {
+      "line": 170,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::budget_updates_immediately_stop_active_goals_already_over_budget",
+      "status": "ok"
+    },
+    {
+      "line": 171,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::active_status_only_usage_accounting_does_not_update_budget_limited_goals",
+      "status": "ok"
+    },
+    {
+      "line": 172,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::insert_thread_goal_applies_budget_limit_immediately",
+      "status": "ok"
+    },
+    {
+      "line": 173,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::deleting_thread_deletes_goal",
+      "status": "ok"
+    },
+    {
+      "line": 174,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::blocking_budget_limited_goal_preserves_terminal_status",
+      "status": "ok"
+    },
+    {
+      "line": 175,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::backfill::tests::get_backfill_state_succeeds_while_another_connection_holds_writer_slot",
+      "status": "ok"
+    },
+    {
+      "line": 176,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::usage_accounting_can_finalize_completed_goal_for_completing_turn",
+      "status": "ok"
+    },
+    {
+      "line": 177,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::replace_update_and_get_thread_goal",
+      "status": "ok"
+    },
+    {
+      "line": 178,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::init_configures_logs_db_with_incremental_auto_vacuum",
+      "status": "ok"
+    },
+    {
+      "line": 179,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::init_migrates_message_only_logs_db_to_feedback_log_body_schema",
+      "status": "ok"
+    },
+    {
+      "line": 180,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_single_thread_row_when_it_exceeds_size_limit",
+      "status": "ok"
+    },
+    {
+      "line": 181,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_logs_with_search_matches_rendered_body_substring",
+      "status": "ok"
+    },
+    {
+      "line": 182,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_old_threadless_rows_when_process_exceeds_row_limit",
+      "status": "ok"
+    },
+    {
+      "line": 183,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::claim_stage1_jobs_filters_by_age_idle_and_current_thread",
+      "status": "ok"
+    },
+    {
+      "line": 184,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::claim_stage1_jobs_bounds_state_scan_before_memory_probes",
+      "status": "ok"
+    },
+    {
+      "line": 185,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::enqueue_global_consolidation_keeps_phase2_input_watermark_monotonic",
+      "status": "ok"
+    },
+    {
+      "line": 186,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::clear_memory_data_clears_rows_and_preserves_thread_memory_modes",
+      "status": "ok"
+    },
+    {
+      "line": 187,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_excludes_stale_used_memories_but_keeps_fresh_never_used",
+      "status": "ok"
+    },
+    {
+      "line": 188,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_global_phase2_job_succeeded_only_marks_exact_selected_snapshots",
+      "status": "ok"
+    },
+    {
+      "line": 189,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_keeps_newest_suffix_across_thread_and_threadless_logs",
+      "status": "ok"
+    },
+    {
+      "line": 190,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_stage1_job_succeeded_no_output_enqueues_phase2_when_deleting_output",
+      "status": "ok"
+    },
+    {
+      "line": 191,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::stage1_concurrent_claims_respect_running_cap",
+      "status": "ok"
+    },
+    {
+      "line": 192,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::prune_stage1_outputs_for_retention_respects_batch_limit",
+      "status": "ok"
+    },
+    {
+      "line": 193,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::phase2_global_lock_can_be_claimed_after_retry_budget_is_exhausted",
+      "status": "ok"
+    },
+    {
+      "line": 194,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::stage1_claim_skips_when_up_to_date",
+      "status": "ok"
+    },
+    {
+      "line": 195,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::claim_stage1_jobs_processes_two_full_batches_across_startup_passes",
+      "status": "ok"
+    },
+    {
+      "line": 196,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_idempotency_keys_replay_and_survive_deletion",
+      "status": "ok"
+    },
+    {
+      "line": 197,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_list_cursor_round_trips_across_pages",
+      "status": "ok"
+    },
+    {
+      "line": 198,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::close_absent::close_absent_preserves_already_queued_or_observed_turn",
+      "status": "ok"
+    },
+    {
+      "line": 199,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_move_reorders_projects_and_preserves_no_op_timestamp",
+      "status": "ok"
+    },
+    {
+      "line": 200,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::cross_process_dispatch_lock_requires_kernel_owner_release",
+      "status": "ok"
+    },
+    {
+      "line": 201,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::dispatch_lock_root_is_canonical_anchored_and_replacement_fails_closed",
+      "status": "ok"
+    },
+    {
+      "line": 202,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::tests::sqlite_integrity_check_reports_ok_for_valid_db",
+      "status": "ok"
+    },
+    {
+      "line": 203,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::reserved_binding_survives_runtime_crash_and_retry",
+      "status": "ok"
+    },
+    {
+      "line": 204,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::raw_update_is_blocked_and_raw_delete_leaves_a_cancelled_tombstone",
+      "status": "ok"
+    },
+    {
+      "line": 205,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::queue_revisions_identify_changed_threads_after_updates_and_deletions",
+      "status": "ok"
+    },
+    {
+      "line": 206,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::tests::init_records_successful_sqlite_init_phases_to_explicit_telemetry",
+      "status": "ok"
+    },
+    {
+      "line": 207,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::apply_rollout_items_restores_memory_mode_from_session_meta",
+      "status": "ok"
+    },
+    {
+      "line": 208,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::database_capacity_retains_the_per_thread_limit",
+      "status": "ok"
+    },
+    {
+      "line": 209,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::list_threads_orders_and_pages_by_recency_at",
+      "status": "ok"
+    },
+    {
+      "line": 210,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_section_order::tests::thread_section_moves_round_trip_and_survive_rollout_reconciliation",
+      "status": "ok"
+    },
+    {
+      "line": 211,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size",
+      "status": "ok"
+    },
+    {
+      "line": 212,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::tests::symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged",
+      "status": "ok"
+    },
+    {
+      "line": 213,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::delete_thread_keeps_retry_graph_on_cleanup_failure",
+      "status": "ok"
+    },
+    {
+      "line": 214,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::list_threads_uses_indexes_matching_cwd_filters",
+      "status": "ok"
+    },
+    {
+      "line": 215,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::upsert_thread_keeps_creation_memory_mode_for_existing_rows",
+      "status": "ok"
+    },
+    {
+      "line": 216,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::thread_spawn_edges_track_directional_status",
+      "status": "ok"
+    },
+    {
+      "line": 217,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::upsert_thread_preserves_existing_git_fields_atomically",
+      "status": "ok"
+    },
+    {
+      "line": 226,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::event_msg_audio_only_user_message_sets_audio_placeholder_preview",
+      "status": "ok"
+    },
+    {
+      "line": 227,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "model::thread_metadata::tests::thread_row_preserves_model_defined_reasoning_effort_values",
+      "status": "ok"
+    },
+    {
+      "line": 228,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::turn_context_sets_cwd_when_session_cwd_missing",
+      "status": "ok"
+    },
+    {
+      "line": 229,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::tests::event_queue_drops_new_entries_when_full",
+      "status": "ok"
+    },
+    {
+      "line": 230,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::format_feedback_log_line_matches_feedback_formatter_shape",
+      "status": "ok"
+    },
+    {
+      "line": 231,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::agent_job_tables_are_dropped_when_upgrading",
+      "status": "ok"
+    },
+    {
+      "line": 232,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::update_thread_goal_objective_preserves_usage_and_created_at",
+      "status": "ok"
+    },
+    {
+      "line": 233,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::usage_accounting_updates_active_goals_and_accounts_budget_limited_in_flight_usage",
+      "status": "ok"
+    },
+    {
+      "line": 234,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::backfill::tests::backfill_claim_is_singleton_until_stale_and_blocked_when_complete",
+      "status": "ok"
+    },
+    {
+      "line": 235,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_old_rows_when_thread_exceeds_row_limit",
+      "status": "ok"
+    },
+    {
+      "line": 236,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_use_dedicated_log_database",
+      "status": "ok"
+    },
+    {
+      "line": 237,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_single_threadless_null_process_row_when_it_exceeds_limit",
+      "status": "ok"
+    },
+    {
+      "line": 238,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_threadless_rows_with_null_process_uuid",
+      "status": "ok"
+    },
+    {
+      "line": 239,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_single_threadless_process_row_when_it_exceeds_size_limit",
+      "status": "ok"
+    },
+    {
+      "line": 240,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_excludes_oversized_newest_row",
+      "status": "ok"
+    },
+    {
+      "line": 241,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_for_threads_returns_empty_for_empty_thread_list",
+      "status": "ok"
+    },
+    {
+      "line": 242,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_includes_threadless_rows_from_same_process",
+      "status": "ok"
+    },
+    {
+      "line": 243,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_prefers_recent_thread_updates_over_recent_generation",
+      "status": "ok"
+    },
+    {
+      "line": 244,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_returns_current_selected_rows",
+      "status": "ok"
+    },
+    {
+      "line": 245,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::list_stage1_outputs_for_global_returns_latest_outputs",
+      "status": "ok"
+    },
+    {
+      "line": 246,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_stage1_job_succeeded_no_output_skips_phase2_when_output_was_already_absent",
+      "status": "ok"
+    },
+    {
+      "line": 247,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::mark_thread_memory_mode_polluted_enqueues_phase2_for_selected_threads",
+      "status": "ok"
+    },
+    {
+      "line": 248,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::phase2_global_lock_allows_only_one_fresh_runner",
+      "status": "ok"
+    },
+    {
+      "line": 249,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::prune_stage1_outputs_for_retention_prunes_stale_unselected_rows_only",
+      "status": "ok"
+    },
+    {
+      "line": 250,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::record_stage1_output_usage_updates_usage_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 251,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::stage1_recall_candidate_is_exact_thread_workspace_bounded_and_race_closed",
+      "status": "ok"
+    },
+    {
+      "line": 252,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_import_rejects_unknown_thread_without_partial_project",
+      "status": "ok"
+    },
+    {
+      "line": 253,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::initial_project_assignment_is_inserted_with_thread_row",
+      "status": "ok"
+    },
+    {
+      "line": 254,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::projects::tests::project_lifecycle_preserves_order_and_clears_assignments",
+      "status": "ok"
+    },
+    {
+      "line": 255,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::competing_runtimes_preserve_fifo_queue_order",
+      "status": "ok"
+    },
+    {
+      "line": 256,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::delete_seal_fences_current_and_legacy_queue_writers",
+      "status": "ok"
+    },
+    {
+      "line": 257,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::concurrent_writers_never_exceed_database_capacity_across_threads",
+      "status": "ok"
+    },
+    {
+      "line": 258,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::durable_delete_operation_recovers_exact_closure_across_presealed_overlap",
+      "status": "ok"
+    },
+    {
+      "line": 259,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::concurrent_inserts_enforce_the_queue_limit",
+      "status": "ok"
+    },
+    {
+      "line": 260,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::mixed_allow_and_reconcile_only_runtimes_never_duplicate_a_row",
+      "status": "ok"
+    },
+    {
+      "line": 261,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::recovery::tests::backup_replaces_blocking_sqlite_home_file",
+      "status": "ok"
+    },
+    {
+      "line": 262,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::recovery::tests::sqlite_error_detail_classifies_corruption_and_lock_errors",
+      "status": "ok"
+    },
+    {
+      "line": 263,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::replacing_a_bound_dispatch_lock_file_fails_closed",
+      "status": "ok"
+    },
+    {
+      "line": 264,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::isolated_queue_databases_have_independent_capacities",
+      "status": "ok"
+    },
+    {
+      "line": 265,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::subtree_delete_seal_is_atomic_across_threads_and_idempotent",
+      "status": "ok"
+    },
+    {
+      "line": 266,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::remote_control::tests::delete_remote_control_enrollment_removes_only_matching_entry",
+      "status": "ok"
+    },
+    {
+      "line": 267,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::ordinary_queue_limit_remains_per_thread_not_database_wide",
+      "status": "ok"
+    },
+    {
+      "line": 268,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::remote_control::tests::remote_control_enrollment_round_trips_by_target_and_account",
+      "status": "ok"
+    },
+    {
+      "line": 269,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::tests::open_state_sqlite_tolerates_newer_applied_migrations",
+      "status": "ok"
+    },
+    {
+      "line": 270,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::tests::init_creates_private_home_and_rejects_existing_shared_home",
+      "status": "ok"
+    },
+    {
+      "line": 271,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_sections::tests::concurrent_section_deletion_and_membership_moves_preserve_thread_invariants",
+      "status": "ok"
+    },
+    {
+      "line": 272,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_sections::tests::deleting_custom_section_preserves_threads_and_clears_section_ordering",
+      "status": "ok"
+    },
+    {
+      "line": 273,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_section_order::tests::concurrent_section_moves_preserve_unique_positions",
+      "status": "ok"
+    },
+    {
+      "line": 274,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::list_threads_by_relation_filters_spawn_graph_with_keyset_pagination",
+      "status": "ok"
+    },
+    {
+      "line": 275,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::list_threads_filters_sections_before_recency_pagination_and_uses_index",
+      "status": "ok"
+    },
+    {
+      "line": 276,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::delete_thread_cleans_associated_state",
+      "status": "ok"
+    },
+    {
+      "line": 277,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::tests::rename_replacement_is_indeterminate_without_mutation_or_reconnect",
+      "status": "ok"
+    },
+    {
+      "line": 278,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::list_threads_updated_after_returns_oldest_changes_first",
+      "status": "ok"
+    },
+    {
+      "line": 279,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::tests::validated_file_set_is_unavailable_without_mutation_or_reconnect",
+      "status": "ok"
+    },
+    {
+      "line": 280,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "telemetry::tests::classifies_extended_sqlite_codes",
+      "status": "ok"
+    },
+    {
+      "line": 281,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::tests::wal_byte_drift_after_binding_is_indeterminate_before_materialization",
+      "status": "ok"
+    },
+    {
+      "line": 282,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::section_position_listing_uses_stable_indexed_keyset_pagination",
+      "status": "ok"
+    },
+    {
+      "line": 283,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::touch_thread_updated_at_updates_only_updated_at",
+      "status": "ok"
+    },
+    {
+      "line": 284,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::set_thread_preview_if_empty_only_fills_blank_preview",
+      "status": "ok"
+    },
+    {
+      "line": 293,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::session_meta_does_not_set_model_or_reasoning_effort",
+      "status": "ok"
+    },
+    {
+      "line": 294,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::event_msg_thread_goal_sets_preview_only_and_later_user_sets_message_title",
+      "status": "ok"
+    },
+    {
+      "line": 295,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::thread_settings_applied_updates_resume_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 296,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "extract::tests::turn_context_sets_permission_profile_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 297,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::repair_recency_migration_succeeds_while_another_connection_holds_writer_slot",
+      "status": "ok"
+    },
+    {
+      "line": 298,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::tests::sqlite_feedback_logs_match_feedback_formatter_shape",
+      "status": "ok"
+    },
+    {
+      "line": 299,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::tests::flush_persists_logs_for_query",
+      "status": "ok"
+    },
+    {
+      "line": 300,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::tests::configured_batch_size_flushes_without_explicit_flush",
+      "status": "ok"
+    },
+    {
+      "line": 301,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "migrations::tests::repairs_recency_migration_that_was_applied_as_version_38",
+      "status": "ok"
+    },
+    {
+      "line": 302,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "log_db::tests::configured_flush_interval_persists_buffered_logs",
+      "status": "ok"
+    },
+    {
+      "line": 303,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::backfill::tests::get_backfill_state_repairs_a_missing_singleton_row",
+      "status": "ok"
+    },
+    {
+      "line": 304,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::external_agent_config_imports::tests::reads_all_history_records",
+      "status": "ok"
+    },
+    {
+      "line": 305,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::activating_goal_already_over_budget_keeps_it_budget_limited",
+      "status": "ok"
+    },
+    {
+      "line": 306,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::external_agent_config_imports::tests::records_completion_by_import_id",
+      "status": "ok"
+    },
+    {
+      "line": 307,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::concurrent_partial_updates_preserve_independent_fields",
+      "status": "ok"
+    },
+    {
+      "line": 308,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::pause_active_thread_goal_does_not_clobber_terminal_status",
+      "status": "ok"
+    },
+    {
+      "line": 309,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::format_feedback_log_line_preserves_existing_trailing_newline",
+      "status": "ok"
+    },
+    {
+      "line": 310,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::pausing_budget_limited_goal_preserves_terminal_status",
+      "status": "ok"
+    },
+    {
+      "line": 311,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::update_thread_goal_ignores_replaced_goal_version",
+      "status": "ok"
+    },
+    {
+      "line": 312,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::usage_accounting_adds_concurrent_token_deltas",
+      "status": "ok"
+    },
+    {
+      "line": 313,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::goals::tests::usage_accounting_can_finalize_stopped_goal_for_in_flight_turn",
+      "status": "ok"
+    },
+    {
+      "line": 314,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_old_rows_when_thread_exceeds_size_limit",
+      "status": "ok"
+    },
+    {
+      "line": 315,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::query_feedback_logs_for_threads_merges_requested_threads_and_threadless_rows",
+      "status": "ok"
+    },
+    {
+      "line": 316,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::claim_stage1_jobs_skips_threads_without_enabled_memory",
+      "status": "ok"
+    },
+    {
+      "line": 317,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::logs::tests::insert_logs_prunes_old_threadless_null_process_rows_when_row_limit_exceeded",
+      "status": "ok"
+    },
+    {
+      "line": 318,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::delete_thread_removes_stage1_output_and_enqueues_phase2_when_selected",
+      "status": "ok"
+    },
+    {
+      "line": 319,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_uses_current_ranking_after_refreshes",
+      "status": "ok"
+    },
+    {
+      "line": 320,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_prioritizes_usage_count_then_recent_usage",
+      "status": "ok"
+    },
+    {
+      "line": 321,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_excludes_polluted_previous_selection",
+      "status": "ok"
+    },
+    {
+      "line": 322,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::get_phase2_input_selection_returns_regenerated_selected_rows",
+      "status": "ok"
+    },
+    {
+      "line": 323,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::phase2_failure_fallback_updates_unowned_running_job",
+      "status": "ok"
+    },
+    {
+      "line": 324,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::phase2_global_lock_creates_missing_job_row",
+      "status": "ok"
+    },
+    {
+      "line": 325,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::phase2_global_lock_stale_lease_allows_takeover",
+      "status": "ok"
+    },
+    {
+      "line": 326,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::stage1_running_stale_can_be_stolen_but_fresh_running_is_skipped",
+      "status": "ok"
+    },
+    {
+      "line": 327,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::memories::tests::phase2_global_lock_respects_success_cooldown",
+      "status": "ok"
+    },
+    {
+      "line": 328,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::cancel_vs_submit_is_fenced_across_state_runtimes",
+      "status": "ok"
+    },
+    {
+      "line": 329,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::deleting_a_thread_removes_its_queue",
+      "status": "ok"
+    },
+    {
+      "line": 330,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::close_absent::original_close_absent_survives_reopen_and_fences_late_admission",
+      "status": "ok"
+    },
+    {
+      "line": 331,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::fifo_dispatch_preserves_edits_reordering_and_pagination",
+      "status": "ok"
+    },
+    {
+      "line": 332,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::exact_reservation_rejects_conflicting_compatibility_row_in_one_snapshot",
+      "status": "ok"
+    },
+    {
+      "line": 333,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::migrating_existing_queue_backfills_thread_revisions",
+      "status": "ok"
+    },
+    {
+      "line": 334,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::recovery::tests::backup_moves_only_requested_runtime_db_files_to_backup_folder",
+      "status": "ok"
+    },
+    {
+      "line": 335,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::recovery::tests::runtime_db_path_for_corruption_error_ignores_corrupt_word_in_path",
+      "status": "ok"
+    },
+    {
+      "line": 336,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::persisted_binding_deletes_queue_row_and_blocks_resurrection",
+      "status": "ok"
+    },
+    {
+      "line": 337,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::queue_operations_cannot_mutate_another_threads_messages",
+      "status": "ok"
+    },
+    {
+      "line": 338,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::raw_enqueue_without_exact_binding_succeeds",
+      "status": "ok"
+    },
+    {
+      "line": 341,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::queued_items::tests::sigkill_releases_exact_dispatch_lock_but_requires_durable_recovery",
+      "status": "ok"
+    },
+    {
+      "line": 342,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::remote_control::tests::migration_preserves_legacy_remote_control_preference_as_null",
+      "status": "ok"
+    },
+    {
+      "line": 343,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::list_threads_filters_by_cwd",
+      "status": "ok"
+    },
+    {
+      "line": 344,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_section_order::tests::thread_sections_paginate_and_require_registered_identities",
+      "status": "ok"
+    },
+    {
+      "line": 345,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::thread_section_order::tests::thread_section_ordering_batches_persisted_positions_and_entry_times",
+      "status": "ok"
+    },
+    {
+      "line": 346,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite::pool_tests::refused_commit_keeps_reused_pool_readable_without_reopening_write_gate",
+      "status": "ok"
+    },
+    {
+      "line": 347,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "sqlite_recovery::tests::sidecar_appearance_after_binding_is_indeterminate_and_unchanged",
+      "status": "ok"
+    },
+    {
+      "line": 348,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::thread_metadata_history_mode_does_not_downgrade",
+      "status": "ok"
+    },
+    {
+      "line": 349,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::update_thread_git_info_can_clear_fields",
+      "status": "ok"
+    },
+    {
+      "line": 350,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::upsert_thread_preserves_existing_preview_when_incoming_preview_is_empty",
+      "status": "ok"
+    },
+    {
+      "line": 351,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "target": "//codex-rs/state:state-unit-tests",
+      "name": "runtime::threads::tests::update_thread_git_info_preserves_newer_non_git_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 361,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::invalid_plan_cannot_start_or_manufacture_zero_length_completion",
+      "status": "ok"
+    },
+    {
+      "line": 362,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::duplicate_or_null_scope_fields_are_rejected_in_both_raw_page_vectors",
+      "status": "ok"
+    },
+    {
+      "line": 363,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::empty_page_continues_and_exact_target_preserves_page_and_event_order",
+      "status": "ok"
+    },
+    {
+      "line": 364,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::chunk_and_state_identity_scope_failures_leave_accepted_evidence_unchanged",
+      "status": "ok"
+    },
+    {
+      "line": 365,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::request_scope_drift_and_discontinuous_or_cyclic_pages_are_atomic_rejections",
+      "status": "ok"
+    },
+    {
+      "line": 366,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::visibility_and_page_limit_are_terminal_incomplete_observations",
+      "status": "ok"
+    },
+    {
+      "line": 367,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sdk::tests::bounded_sync_keeps_ciphertext_needed_for_sdk_decryption",
+      "status": "ok"
+    },
+    {
+      "line": 368,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sdk::tests::logical_stream_revision_uses_matrix_replace_content",
+      "status": "ok"
+    },
+    {
+      "line": 369,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sdk::tests::missing_hepta_checkpoint_never_reuses_the_sdk_cursor",
+      "status": "ok"
+    },
+    {
+      "line": 370,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sdk::tests::send_status_classification_bounds_permanent_and_transient_errors",
+      "status": "ok"
+    },
+    {
+      "line": 371,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::transcript_binds_scope_limits_order_raw_bytes_state_and_terminal_evidence",
+      "status": "ok"
+    },
+    {
+      "line": 372,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::exact_total_event_limit_can_reach_target_without_truncation",
+      "status": "ok"
+    },
+    {
+      "line": 373,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::message_policy_and_repeated_page_keep_exact_ingress_counts",
+      "status": "ok"
+    },
+    {
+      "line": 374,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::nested_redaction_and_missing_target_never_reenter_ingress",
+      "status": "ok"
+    },
+    {
+      "line": 375,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::membership_and_tombstone_state_fence_without_enrolling_replacements",
+      "status": "ok"
+    },
+    {
+      "line": 376,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::redaction_room_version_and_decision_payload_identity_are_enforced",
+      "status": "ok"
+    },
+    {
+      "line": 377,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::unchanged_observation_requires_full_normalization_and_current_durable_checkpoint",
+      "status": "ok"
+    },
+    {
+      "line": 378,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::v1_redaction_commits_before_replay_and_survives_reopen",
+      "status": "ok"
+    },
+    {
+      "line": 379,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::page_and_accumulated_count_and_byte_limits_include_ancillary_state",
+      "status": "ok"
+    },
+    {
+      "line": 380,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "gap_fill::tests::sdk_bundled_thread_events_are_retained_only_within_raw_byte_bounds",
+      "status": "ok"
+    },
+    {
+      "line": 381,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "name": "sync::tests::incomplete_or_conflicting_response_leaves_all_rooms_and_cursor_unchanged",
+      "status": "ok"
+    },
+    {
+      "line": 392,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "name": "prepare_old_version_fixture",
+      "status": "ignored, requires the source-bound old-version fixture producer"
+    },
+    {
+      "line": 393,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "name": "reopen_old_version_fixture",
+      "status": "ignored, requires the independently retained old-version fixture"
+    },
+    {
+      "line": 394,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "target": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "name": "encrypted_state_identity_session_and_queues_survive_restart",
+      "status": "ok"
+    },
+    {
+      "line": 404,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "canonical_transaction_type_is_used_by_public_store_models",
+      "status": "ok"
+    },
+    {
+      "line": 405,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "control_cursor_gap_resets_to_snapshot_and_active_turn_is_paired",
+      "status": "ok"
+    },
+    {
+      "line": 406,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "cursor_gap_requires_snapshot_then_resumes_exactly",
+      "status": "ok"
+    },
+    {
+      "line": 407,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "crash_reopen_reconciles_dispatch_and_expired_outbox_lease",
+      "status": "ok"
+    },
+    {
+      "line": 408,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "duplicate_event_and_transaction_are_exact_or_conflict",
+      "status": "ok"
+    },
+    {
+      "line": 409,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "server_resolved_notification_closes_local_completion_crash_window",
+      "status": "ok"
+    },
+    {
+      "line": 410,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "stable_matrix_plane_recovers_across_agentd_generation_rollover",
+      "status": "ok"
+    },
+    {
+      "line": 411,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "pending_approval_is_owner_local_fenced_and_restart_safe",
+      "status": "ok"
+    },
+    {
+      "line": 412,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "sync_checkpoint_and_inbox_batch_commit_atomically_with_exact_replay",
+      "status": "ok"
+    },
+    {
+      "line": 413,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "two_agents_never_share_stream_or_owner_database",
+      "status": "ok"
+    },
+    {
+      "line": 414,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "token_burst_is_one_bounded_final_and_later_updates_replace_the_root",
+      "status": "ok"
+    },
+    {
+      "line": 415,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "capped_delta_replacement_renders_the_complete_prefix",
+      "status": "ok"
+    },
+    {
+      "line": 416,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "name": "ten_thousand_deltas_are_bounded_and_final_is_exact",
+      "status": "ok"
+    }
+  ],
+  "result_sections": [
+    {
+      "line": 36,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-unit-tests",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 45,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-qualification-marker-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 62,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 74,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 101,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "passed": 19,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 157,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 2 of 4)",
+      "passed": 48,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 169
+    },
+    {
+      "line": 219,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 3 of 4)",
+      "passed": 53,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 164
+    },
+    {
+      "line": 286,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 4 of 4)",
+      "passed": 59,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 158
+    },
+    {
+      "line": 353,
+      "target_section": "//codex-rs/state:state-unit-tests (shard 1 of 4)",
+      "passed": 57,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 160
+    },
+    {
+      "line": 383,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "passed": 21,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 396,
+      "target_section": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 2,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 418,
+      "target_section": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  ],
+  "target_results": [
+    {
+      "name": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test",
+      "status": "PASSED",
+      "wall_seconds": 0.2
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-qualification-marker-test",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+      "status": "PASSED",
+      "wall_seconds": 10.2
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 2.4
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test",
+      "status": "PASSED",
+      "wall_seconds": 11.1
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+      "status": "PASSED",
+      "wall_seconds": 0.4
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test",
+      "status": "PASSED",
+      "wall_seconds": 0.3
+    },
+    {
+      "name": "//codex-rs/hepta-matrix-store:hepta-matrix-store-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/state:state-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 1.6
+    }
+  ],
+  "repeated_case_identities": []
+}

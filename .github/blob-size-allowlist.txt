@@ -87,3 +87,12 @@ sha256:f69fcda55c226e6cbe3c790209e7c41b07cfd0609d7ed9ffa7dddf338d65f87b archive/
 # Complete joint RMCP/SQLite lock and source preflight originals: before/after
 # locks, actual metadata, failure receipts, format receipts and current chrono graph.
 sha256:5bf67c7fb0b67459ad0b0be7ffd7146ed8829dda07a6acda1932ab3bef701c7b qualification/joint-rmcp-sqlite-20261118/PREFLIGHT_ORIGINALS.tar.xz
+
+# Complete retained native Mac preparation and original runs, including failures.
+# This exact reviewed archive is bound to its bytes; replacement regains the global limit.
+sha256:47db68782b3d13983749221886d74d8e04e195f1ba403f0a31aeebe2e13be548 qualification/joint-rmcp-sqlite-20261118/qualified-native/MAC_ORIGINALS.tar.xz
+
+# Original GitHub-hosted qualification artifacts for the frozen joint RMCP/SQLite graph.
+# Preserve complete source/lock/test/execution records; only these verified bytes qualify.
+sha256:f8afadfbaf42a5305c7b5e22e5550f7f15ec728871ae42699f38840a21e08d29 qualification/joint-rmcp-sqlite-20261118/qualified-native/RMCP_ORIGINAL_ARTIFACT.zip
+sha256:a2af9f6c35daf91c047071845964a855ac763305f8a29b7f5faff4078fc53ecf qualification/joint-rmcp-sqlite-20261118/qualified-native/SQLITE_ORIGINAL_ARTIFACT.zip

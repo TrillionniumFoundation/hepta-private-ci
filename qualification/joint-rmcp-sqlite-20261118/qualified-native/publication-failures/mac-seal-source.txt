@@ -1,0 +1,77 @@
+import pathlib,subprocess,os,json,hashlib,tarfile,io,base64,stat,time,xml.etree.ElementTree as ET
+root=pathlib.Path("/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b")
+out=root/"sealed-evidence-1";out.mkdir(exist_ok=False)
+dirs=["recovery-1","recovery-2","recovery-3","logs","compile-input-materialization-1","compile-input-materialization-2","compile-input-materialization-3","joint-preparation-1","locked-fetch-1","joint-locked-fetch-1","native-validation-1","native-validation-2","native-validation-3","native-validation-3-recovered","native-report-location-1","joint-native-validation-1"]
+files=["PREPARATION.json","native-3-preparation.json","locked_fetch.py","native_validate.py","native_validate_2.py","native_validate_3.py","joint_native_validate_1.py"]
+sources=[]
+for d in dirs:
+    p=root/d
+    assert p.is_dir(),p
+    for f in sorted(p.rglob("*")):
+        if f.is_file() and not f.is_symlink():sources.append(("evidence/"+str(f.relative_to(root)),f))
+for n in files:
+    p=root/n
+    assert p.is_file() and not p.is_symlink()
+    sources.append(("evidence/"+n,p))
+heads={"9aa":"9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f","2b":"2b3642214ba5ff4aaac27de13322a354a69507e7"}
+for tag,src in [("9aa",root/"source"),("2b",root/"joint-source-2b364221")]:
+    assert subprocess.check_output(["git","rev-parse","HEAD"],cwd=src,text=True).strip()==heads[tag]
+    targetpaths=subprocess.check_output(["git","ls-files","*research_external_material*","*circuit_cell_causal_tests*"],cwd=src,text=True).splitlines()
+    targetpaths+=["justfile","scripts/run-nextest.py","codex-rs/.config/nextest.toml","codex-rs/Cargo.lock","MODULE.bazel.lock","docs/modules/MODULES.json","qualification/neuron-v13-generation/proposal_worker.py"]
+    for rel in sorted(set(targetpaths)):
+        p=src/rel
+        assert p.is_file() and not p.is_symlink(),p
+        b=p.read_bytes()
+        expected=subprocess.check_output(["git","rev-parse",heads[tag]+":"+rel],cwd=src,text=True).strip()
+        assert hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()==expected
+        sources.append(("source-snapshots/"+tag+"/"+rel,p))
+jobids=["1a1efb163e3-ffbe-5a9","1a1efb48370-ffbe-5b3","1a1efc0c852-ffbe-5d8","1a1efbf5c54-ffbe-5d4","1a1efc722a5-ffbe-5e2","1a1efccfc66-ffbe-5f6","1a1efd0f227-ffbe-601","1a1efd441a4-ffbe-610","1a1efdc129f-ffbe-639","1a1efe301b5-ffbe-660","1a1efe51808-ffbe-669"]
+runtime=pathlib.Path("/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs")
+runtime_index={}
+for job in jobids:
+    d=runtime/job
+    assert d.is_dir(),d
+    names=[]
+    for p in sorted(d.rglob("*")):
+        if p.is_file() and not p.is_symlink() and not p.name.endswith(".lock"):
+            name="runtime-jobs/"+job+"/"+str(p.relative_to(d))
+            sources.append((name,p));names.append(str(p.relative_to(d)))
+    assert "exit.json" in names
+    runtime_index[job]=names
+assert len({n for n,p in sources})==len(sources)
+index=[]
+for name,p in sources:
+    data=p.read_bytes()
+    index.append({"path":name,"source_path":str(p),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()})
+indexdata=(json.dumps({"schema":"hepta.macos-originals-index.v1","members":index,"source_scope":"All owned preparation/recovery/native-result directories and selected source snapshots; complete source trees and compiled target caches remain referenced by immutable Git identities and full inventories."},indent=2)+"\n").encode()
+(out/"INDEX.json").write_bytes(indexdata)
+archive=out/"MAC_ORIGINALS.tar.xz"
+start=time.monotonic()
+with tarfile.open(archive,"w:xz",preset=6) as t:
+    for (name,p),entry in zip(sources,index):
+        data=p.read_bytes()
+        assert len(data)==entry["bytes"] and hashlib.sha256(data).hexdigest()==entry["sha256"]
+        ti=tarfile.TarInfo(name);ti.size=len(data);ti.mode=0o644;ti.mtime=0
+        t.addfile(ti,io.BytesIO(data))
+    ti=tarfile.TarInfo("INDEX.json");ti.size=len(indexdata);ti.mode=0o644;ti.mtime=0
+    t.addfile(ti,io.BytesIO(indexdata))
+with tarfile.open(archive,"r:xz") as t:
+    members=t.getmembers()
+    assert len(members)==len(index)+1 and len({m.name for m in members})==len(members)
+    for entry in index:
+        m=t.getmember(entry["path"]);assert m.isfile()
+        data=t.extractfile(m).read()
+        assert len(data)==entry["bytes"] and hashlib.sha256(data).hexdigest()==entry["sha256"]
+    assert t.extractfile("INDEX.json").read()==indexdata
+summary={"schema":"hepta.macos-originals-seal.v1","archive_bytes":archive.stat().st_size,"archive_sha256":hashlib.sha256(archive.read_bytes()).hexdigest(),"index_sha256":hashlib.sha256(indexdata).hexdigest(),"original_members":len(index),"uncompressed_original_bytes":sum(e["bytes"] for e in index),"all_members_reopened_and_verified":True,"source_heads":heads,"runtime_jobs":runtime_index,"no_native_reruns_for_archive":True,"archive_wall_seconds":time.monotonic()-start,"omitted_target_caches":True,"full_platform_qualification":False}
+data=archive.read_bytes()
+payload=out/"blob-request.json";payload.write_text(json.dumps({"content":base64.b64encode(data).decode(),"encoding":"base64"}))
+p=subprocess.run(["/opt/homebrew/bin/gh","api","--method","POST","repos/TrillionniumFoundation/hepta-private-ci/git/blobs","--input",str(payload)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+(out/"blob-response.json").write_bytes(p.stdout);(out/"blob.stderr").write_bytes(p.stderr)
+assert p.returncode==0
+uploaded=json.loads(p.stdout)
+expected=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+assert uploaded["sha"]==expected
+summary["published_git_blob"]=expected;payload.unlink()
+(out/"SUMMARY.json").write_text(json.dumps(summary,indent=2)+"\n")
+print(json.dumps(summary),flush=True)

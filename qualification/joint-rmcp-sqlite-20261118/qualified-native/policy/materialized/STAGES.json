@@ -1,0 +1,151 @@
+[
+  {
+    "label": "initial-missing-blob-diagnostic",
+    "command": [
+      "git",
+      "cat-file",
+      "-s",
+      "3af71fd8d3f3bfb1350ac4514e0fbfa08093c543:qualification/joint-rmcp-sqlite-20261118/qualified-native/SOURCE_RELATION.json"
+    ],
+    "exit_code": 128,
+    "wall_seconds": 0.010221583000000003
+  },
+  {
+    "label": "fetch-exact-0",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/189c0f1d076b5fa60de007681703c48b9d8b2093"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.241572833
+  },
+  {
+    "label": "fetch-exact-1",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3fd66c37d274c6a71e99b3d7e487d2bcb72d012b"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.25477775
+  },
+  {
+    "label": "fetch-exact-2",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/7069b16caea92f97702498afb9a695c23351e828"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.981358417
+  },
+  {
+    "label": "fetch-exact-3",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c6bf4586937914359fbb3385ed082809dc29331a"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 3.8963711669999994
+  },
+  {
+    "label": "fetch-exact-4",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4c282cc944f4e7cc6d142a9e6a5006bd859a4252"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.0082086250000009
+  },
+  {
+    "label": "fetch-exact-5",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/dd25516429d85e1074f3adcf85dd8e8bdba2b33d"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.0272988329999997
+  },
+  {
+    "label": "fetch-exact-6",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/293614bdffc79af65a76a86aa16b63cdbab88a0c"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.996175333
+  },
+  {
+    "label": "fetch-exact-7",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/43bab59fdbcfe60408430740a0ac9caf9695df23"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.01490525
+  },
+  {
+    "label": "fetch-exact-8",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f1f115a202f084a786ec80aa8c1e078b7c63d7f8"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.9921762909999998
+  },
+  {
+    "label": "fetch-exact-9",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0030a23f7a440f94f07f4d7b38365275949b154a"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.011234
+  },
+  {
+    "label": "fetch-exact-10",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b7c2d0a5675976bf3ded7ea75f6a832c3c645263"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.012527500000001
+  },
+  {
+    "label": "original-changed-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+      "--head",
+      "3af71fd8d3f3bfb1350ac4514e0fbfa08093c543",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.49092520900000025
+  },
+  {
+    "label": "status-after",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.09657466600000042
+  }
+]
