@@ -9,12 +9,60 @@ import unittest
 
 from .. import data
 from .circuit_contract import Budget, CellSpec, Graph, digest
-from .circuit_controls_v4 import evaluate_controls, select_static, task_random_graph
+from .circuit_controls_v4 import (
+    evaluate_controls,
+    run_extended_circuit,
+    select_static,
+    task_random_graph,
+)
 from .circuit_router import FrozenRouter, RouterPlan
 from .test_circuit_runtime import STRONG, WEAK, WRONG, task
 
 
 class CircuitControlTests(unittest.TestCase):
+    def test_explicit_pool_source_mismatch_fails_before_any_generation(self):
+        instances = []
+
+        class PoolFixture:
+            def __init__(self, manifests, root):
+                self.closed = False
+                instances.append(self)
+
+            def snapshot(self):
+                return {"inventory": {"source_sha256": "a" * 64}}
+
+            def close(self):
+                self.closed = True
+
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp) / "candidate"
+            with self.assertRaisesRegex(ValueError, "frozen pool source differs"):
+                run_extended_circuit(
+                    {},
+                    {
+                        mode: {}
+                        for mode in (
+                            "final_answer",
+                            "trajectory",
+                            "controlled_correction",
+                        )
+                    },
+                    Path(temp),
+                    {"E4": {}, "comparison_digest": "b" * 64},
+                    directory,
+                    "c" * 64,
+                    pool_type=PoolFixture,
+                    expected_pool_source_sha256="d" * 64,
+                )
+            self.assertEqual(len(instances), 1)
+            self.assertTrue(instances[0].closed)
+            self.assertEqual(
+                json.loads((directory / "POOL_BINDING.json").read_text())[
+                    "source_sha256"
+                ],
+                "a" * 64,
+            )
+
     def run_fixture(self, first, last, selected="tf", mismatch_route=False):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
