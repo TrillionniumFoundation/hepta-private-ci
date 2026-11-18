@@ -2,6 +2,7 @@
 //! callback cannot return this lifetime, and the token cannot cross threads.
 //! Pure checks may repeat inside it; another operation must query Root again.
 
+use std::io::Write;
 use std::marker::PhantomData;
 use std::rc::Rc;
 
@@ -23,17 +24,30 @@ impl OriginalHistoricalLearningTrustV1 {
     ) -> io::Result<Result<T, E>> {
         let result =
             OriginalHistoricalTaskReadReceiptV1::with_current_read(&self.receipt, |data| {
-                self.current_operation_activation()?;
+                self.current_operation_activation().inspect_err(|_| {
+                    let _ = std::io::stderr()
+                        .write_all(b"daemon_stage=historical.operation.activation_before\n");
+                })?;
                 let operation = OriginalHistoricalOperationV1 {
                     trust: self,
                     data,
                     local: PhantomData,
                 };
-                let value = action(&operation);
-                self.current_operation_activation()?;
+                let value = action(&operation).inspect_err(|_| {
+                    let _ =
+                        std::io::stderr().write_all(b"daemon_stage=historical.operation.action\n");
+                });
+                self.current_operation_activation().inspect_err(|_| {
+                    let _ = std::io::stderr()
+                        .write_all(b"daemon_stage=historical.operation.activation_after\n");
+                })?;
                 Ok(value)
+            })
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"daemon_stage=historical.operation.result\n");
             });
         if !matches!(&result, Ok(Ok(_))) {
+            let _ = std::io::stderr().write_all(b"daemon_stage=historical.operation.fence\n");
             self.receipt.client.fence();
         }
         result
@@ -42,11 +56,21 @@ impl OriginalHistoricalLearningTrustV1 {
     fn current_operation_activation(
         &self,
     ) -> io::Result<(ActivatedLearningTrustV1, TrustedLearningSignerV1, u64)> {
-        let now = OriginalHistoricalLearningTrustV1::original_unix_seconds(self)?;
+        let now =
+            OriginalHistoricalLearningTrustV1::original_unix_seconds(self).inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"daemon_stage=historical.activation.clock\n");
+            })?;
         let (activated, evaluator) = self
             .payload
-            .activate_for_recipient(self.initial_snapshot(), now)?;
-        self.require_same_activation(&activated, &evaluator)?;
+            .activate_for_recipient(self.initial_snapshot(), now)
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"daemon_stage=historical.activation.activate\n");
+            })?;
+        self.require_same_activation(&activated, &evaluator)
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"daemon_stage=historical.activation.pin\n");
+            })?;
         Ok((activated, evaluator, now))
     }
 }
@@ -68,14 +92,32 @@ impl OriginalHistoricalOperationV1<'_> {
     ) -> io::Result<T> {
         let result = (|| {
             if !std::ptr::eq(self.trust, trust) || !Arc::ptr_eq(&self.trust.receipt, receipt) {
-                return Err(refused());
+                return Err(refused()).inspect_err(|_| {
+                    let _ =
+                        std::io::stderr().write_all(b"daemon_stage=historical.read_for.identity\n");
+                });
             }
-            let (activated, evaluator, now) = self.trust.current_operation_activation()?;
-            let value = action(self.data, activated.verifier(), &evaluator, now);
-            self.trust.current_operation_activation()?;
+            let (activated, evaluator, now) =
+                self.trust.current_operation_activation().inspect_err(|_| {
+                    let _ = std::io::stderr()
+                        .write_all(b"daemon_stage=historical.read_for.activation_before\n");
+                })?;
+            let value =
+                action(self.data, activated.verifier(), &evaluator, now).inspect_err(|_| {
+                    let _ =
+                        std::io::stderr().write_all(b"daemon_stage=historical.read_for.action\n");
+                });
+            self.trust.current_operation_activation().inspect_err(|_| {
+                let _ = std::io::stderr()
+                    .write_all(b"daemon_stage=historical.read_for.activation_after\n");
+            })?;
             value
-        })();
+        })()
+        .inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"daemon_stage=historical.read_for.result\n");
+        });
         if result.is_err() {
+            let _ = std::io::stderr().write_all(b"daemon_stage=historical.read_for.fence\n");
             self.trust.receipt.client.fence();
         }
         result
