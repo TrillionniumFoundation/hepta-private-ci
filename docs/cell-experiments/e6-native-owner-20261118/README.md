@@ -28,3 +28,13 @@ Publication uses an explicit safe whitelist. No private keys, SourceInputs, auth
 The complete safe raw archive is `native-owner-c9-public-evidence.tar.xz` (359,744 bytes, SHA-256 `b1289711c1ba52ca39980fb534ec034610c4630ec647e88eb2c47ee470699ba0`). All 351 regular members were checked against the enclosed manifest. `ARCHIVE.json` also binds the manifest itself. The archive retains every selected compiler JSONL, stdout/stderr, JUnit result and adapter; the readable files beside it are copies for review.
 
 Extract into a new directory with `tar -xJf native-owner-c9-public-evidence.tar.xz -C NEW_DIRECTORY`; members are under `docs/cell-experiments/e6-native-owner-20261118/`. This evidence-only commit is a direct child of c9. It contains no production or test source changes, and does not inherit model or owner execution under its own commit identity.
+
+## v7: static recovery stage diagnostic
+
+The exact tested source is 7ae4ed4bd03c1ddd4e2202c2e0feee06401b38a7, tree 475a1668333bae4a6af9c2583070104ce9568006, direct child of evidence-only 85ecd9fb1f0770e35da0b6bc5b4d7c5f73c33e5e. It changes three production files only to retain fixed stage labels while preserving the original Err, predicates, ordering and deadlines. The existing original NoUpdate cold-profile attempt remains blocked. Observed static error stages: root_stage=cli.historical_route. These labels identify actual returning stages and do not by themselves prove a deeper failure cause.
+
+Both actual product binaries were rebuilt and pinned before execution. The authority ELF was required to differ from v6 and contain five expected static labels, spanning CLI and recovery functions; libtest Source/Observer identity is recorded separately in the archive's component-executable-bindings.json. The exact original parent executes once with retries zero. No 843 source-gate, 74a pair-test or c9 descriptor-test result is inherited by this candidate.
+
+The safe v7 archive is native-owner-v7-public-evidence.tar.xz (102,040 bytes, SHA-256 a0223d4b2063341b8dcd59661169fd7df9cf0fa731a9097a9e0d9e2dd59e4082). All 75 regular members were independently checked against its manifest before this publication. v7-SUMMARY.json, v7-MANIFEST.json, v7-ARCHIVE.json and v7-compiler-products.json provide readable result, source, binary and byte bindings. This evidence commit is a direct child of the actual tested source and makes no production/test source changes.
+
+Wall-clock stages, failed execution and original stdout/stderr are retained. CPU/GPU/energy/API/monetary costs remain unknown where unmeasured. Full E6 independent adoption, fresh D, FinalUse and settlement qualification remain unestablished; the existing cold profile only checks retained C.
