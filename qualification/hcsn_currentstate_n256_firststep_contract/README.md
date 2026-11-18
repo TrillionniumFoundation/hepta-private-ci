@@ -18,10 +18,18 @@ matrix-exponential actions and one independent oracle step with at most two
 dense matrix exponentials.  It requires all 69,728 coordinates to agree and a
 canonical dump/fresh-load/dump byte roundtrip.
 
-The existing corrected sparse source and stdlib oracle adapter are inherited
-only as pinned inputs to future implementation review.  The N128 first-step
-lineage is structural precedent only; none of its numerical qualification is
-transferred to N256.
+The inherited canonical serializer is **not** sufficient for this first-step
+full-state target: its packet schema stores `alpha` and `operator` bytes but no
+`output` bytes. Warm-1 contains 264 output coordinates (eight scalar outputs
+plus the new 256-vector), all of which are part of the 67,128 packet-coordinate
+denominator and are required for later continuation. A future separately
+frozen serializer revision must retain those coordinates and prove both byte
+and full coordinate-row roundtrips before any numerical admission can exist.
+
+The existing corrected sparse source, stdlib oracle adapter and insufficient
+serializer are inherited only as pinned inputs to future implementation
+review. The N128 first-step lineage is structural precedent only; none of its
+numerical qualification is transferred to N256.
 
 Draft #6295 remains authoritative for the full N256 roster: 18,225,028
 coordinates, a 27,553,312-byte largest capsule and a 291,600,448-byte

@@ -14,6 +14,9 @@ STATE_COORDINATES = 2_600
 PACKET_COORDINATES = 67_128
 COORDINATE_DENOMINATOR = 69_728
 PACKETS = 9
+PACKET_ALPHA_COORDINATES = 1_320
+PACKET_GENERATOR_COORDINATES = 65_544
+PACKET_OUTPUT_COORDINATES = 264
 
 
 class ContractError(ValueError):
@@ -48,6 +51,18 @@ def expected_envelope():
     }
 
 
+def expected_serializer_requirements():
+    return {
+        "state_coordinates": STATE_COORDINATES,
+        "packet_alpha_coordinates": PACKET_ALPHA_COORDINATES,
+        "packet_generator_coordinates": PACKET_GENERATOR_COORDINATES,
+        "packet_output_coordinates": PACKET_OUTPUT_COORDINATES,
+        "packet_coordinates": PACKET_COORDINATES,
+        "inherited_serializer_fullstate_ready": False,
+        "future_serializer_revision_required": True,
+    }
+
+
 def validate_request(request):
     if request.get("schema") != SCHEMA or request.get("identity") != IDENTITY:
         raise ContractError("source identity mismatch")
@@ -59,6 +74,15 @@ def validate_request(request):
         raise ContractError("internal coordinate denominator mismatch")
     if request.get("future_execution_envelope") != expected_envelope():
         raise ContractError("future execution envelope mismatch")
+    if request.get("serializer_requirements") != expected_serializer_requirements():
+        raise ContractError("full-state serializer requirements mismatch")
+    if (
+        PACKET_ALPHA_COORDINATES
+        + PACKET_GENERATOR_COORDINATES
+        + PACKET_OUTPUT_COORDINATES
+        != PACKET_COORDINATES
+    ):
+        raise ContractError("internal packet coordinate denominator mismatch")
     if set(request.get("future_sources", {}).values()) != {None}:
         raise ContractError("future numerical sources are already populated")
     if set(request.get("required_future_admission", {}).values()) != {None}:
@@ -125,6 +149,10 @@ def validate_future_receipt(receipt):
         raise ContractError("future candidate/oracle comparison is not exact")
     if receipt.get("canonical_roundtrip_bytes_equal") is not True:
         raise ContractError("future canonical roundtrip is not exact")
+    if receipt.get("canonical_roundtrip_coordinate_rows_equal") is not True:
+        raise ContractError("future canonical full-state rows are not exact")
+    if receipt.get("serialized_packet_output_coordinates") != PACKET_OUTPUT_COORDINATES:
+        raise ContractError("future serializer omits packet output coordinates")
     size = receipt.get("capsule_bytes")
     if type(size) is not int or not 0 < size <= envelope["capsule_max_bytes"]:
         raise ContractError("future capsule size exceeds the frozen bound")

@@ -48,6 +48,42 @@ def inspect(package_root, repository_root):
     for field, relative in bound_paths.items():
         if request["bindings"][field] != _sha(repository_root / relative):
             raise ValueError(f"binding mismatch: {field}")
+    serializer_tree = ast.parse(
+        (repository_root / bound_paths["canonical_serializer_source_sha256"]).read_text()
+    )
+    packet_classes = [
+        node
+        for node in serializer_tree.body
+        if isinstance(node, ast.ClassDef) and node.name == "Packet"
+    ]
+    if len(packet_classes) != 1:
+        raise ValueError("inherited serializer packet schema")
+    packet_fields = {
+        node.target.id
+        for node in packet_classes[0].body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    if packet_fields != {
+        "identity",
+        "generation",
+        "origin",
+        "target",
+        "start",
+        "end",
+        "alpha",
+        "operator",
+    }:
+        raise ValueError("inherited serializer schema changed; re-review required")
+    if request["serializer_requirements"] != {
+        "state_coordinates": 2600,
+        "packet_alpha_coordinates": 1320,
+        "packet_generator_coordinates": 65544,
+        "packet_output_coordinates": 264,
+        "packet_coordinates": 67128,
+        "inherited_serializer_fullstate_ready": False,
+        "future_serializer_revision_required": True,
+    }:
+        raise ValueError("future full-state serializer requirement mismatch")
     capsules = json.loads((repository_root / bound_paths["roster_capsules_sha256"]).read_text())
     matches = [item for item in capsules if item["capsule_identity"] == request["target"]["capsule_identity"]]
     if matches != [{
@@ -69,6 +105,10 @@ def inspect(package_root, repository_root):
         "contract_sha256": _sha(contract_path),
         "bound_originals": len(bound_paths),
         "target_coordinates": 69728,
+        "inherited_serializer_packet_fields": sorted(packet_fields),
+        "inherited_serializer_fullstate_ready": False,
+        "missing_serialized_output_coordinates": 264,
+        "future_serializer_revision_required": True,
         "authentic_firststep_capsules": 0,
         "authentic_firststep_coordinates": 0,
         "dynamic_steps": 0,

@@ -32,6 +32,7 @@
   "future_sources": {
     "candidate_step_sha256": null,
     "independent_oracle_step_sha256": null,
+    "serializer_step_sha256": null,
     "comparator_sha256": null,
     "runner_sha256": null
   },
@@ -46,6 +47,15 @@
     "capsule_max_bytes": 8388608,
     "torch_calls": 0,
     "optimizer_steps": 0
+  },
+  "serializer_requirements": {
+    "state_coordinates": 2600,
+    "packet_alpha_coordinates": 1320,
+    "packet_generator_coordinates": 65544,
+    "packet_output_coordinates": 264,
+    "packet_coordinates": 67128,
+    "inherited_serializer_fullstate_ready": false,
+    "future_serializer_revision_required": true
   },
   "required_future_admission": {
     "admission_sha256": null,

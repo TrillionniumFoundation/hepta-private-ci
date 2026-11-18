@@ -39,6 +39,8 @@ def valid_receipt():
         },
         "candidate_oracle_bitwise_equal": True,
         "canonical_roundtrip_bytes_equal": True,
+        "canonical_roundtrip_coordinate_rows_equal": True,
+        "serialized_packet_output_coordinates": 264,
         "capsule_bytes": 600000,
         "historical_negative_and_unknown_preserved": True,
         "full_roster_qualification": False,
@@ -112,12 +114,20 @@ class ContractControls(unittest.TestCase):
                     contract.validate_future_receipt(receipt)
 
     def test_exact_comparison_and_roundtrip_reject(self):
-        for field in ("candidate_oracle_bitwise_equal", "canonical_roundtrip_bytes_equal"):
+        for field in (
+            "candidate_oracle_bitwise_equal",
+            "canonical_roundtrip_bytes_equal",
+            "canonical_roundtrip_coordinate_rows_equal",
+        ):
             with self.subTest(field=field):
                 receipt = valid_receipt()
                 receipt[field] = False
                 with self.assertRaises(contract.ContractError):
                     contract.validate_future_receipt(receipt)
+        receipt = valid_receipt()
+        receipt["serialized_packet_output_coordinates"] = 0
+        with self.assertRaisesRegex(contract.ContractError, "omits packet output"):
+            contract.validate_future_receipt(receipt)
 
     def test_source_intent_cannot_self_admit(self):
         request = json.loads((ROOT / "REQUEST.json").read_text())
