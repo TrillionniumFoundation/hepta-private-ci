@@ -1,0 +1,100 @@
+{
+  "source_base": "9a96facdfb878162bb0427b5313fd53a6996a5d4",
+  "source_base_tree": "c7466f82606d312551a1266b131ad5e28e71e4ab",
+  "workflow_only_tree": "b57158ec41d2c663a131d441449bb51ab3ce0574",
+  "workflow": {
+    "path": ".github/workflows/hepta-memory-lifecycle-windows-diagnostic.yml",
+    "bytes": 14067,
+    "sha256": "0e71e2890c16b970fa7e38d9766cd71b42529ab32087345cc649ad9690f5aa71",
+    "git_blob": "7c4265c9bb68c13d11320490fc1e46a2a23166de"
+  },
+  "original_source_file": "codex-rs/ext/hepta-memory/src/local_lifecycle.rs",
+  "original_source_blob": "bf8721d9c2b719dce24f4f571ab3a7bf57d160de",
+  "production_source_changes": 0,
+  "existing_workflow_changes": 0,
+  "native_windows_result": "NOT YET RUN; this publication requests the first isolated baseline.",
+  "validation": {
+    "static_receipt_controls": 17,
+    "static_pipeline_controls": 4,
+    "static_controls_result": "PASS before maintenance; not native Rust execution",
+    "prettier": "3.5.3 PASS; exact original source unchanged",
+    "codespell": "2.4.3 PASS with original ignore file",
+    "native_just_fmt_job": "1a1ef8a4507-ffbe-535",
+    "native_just_fmt_exit": 0,
+    "native_just_fmt_seconds": 0.077,
+    "tests_after_maintenance": 0
+  },
+  "protected_boundary_snapshot_at_utc": "2026-11-18T16:19:41.240223+00:00",
+  "protected_boundary": {
+    "snapshot_sha256": "7509cc48c03ccefae77cd4c2ca0dd7c4c6b1aa5929c734dce996ee8d17ef7cac",
+    "protected_count": 370,
+    "published_integration_head": "9a96facdfb878162bb0427b5313fd53a6996a5d4",
+    "complete_ancestor_commit_count": 40872,
+    "complete_parent_graph_sha256": "d60ea5d8ea4ba40f726237807295773542e23fe79e686a75a22daff4e6ee6315",
+    "missing_parent_records": [],
+    "protected_tip_intersection": [],
+    "hia_root_and_anchor_intersection": [],
+    "ordinary_names_contained": 2070,
+    "incoming_branch_tips_in_history": [
+      "59d05538c9a2be1d1240e328648935832fac7cf4",
+      "307dced98e8b40c1e8321a357e1af1cde3400fef",
+      "60eb1a36e4e59291698a9652e9d5276d957f6678",
+      "d5af612c3c04f9bd7f4555411edb94341fe4553a",
+      "0e378dd351e0fca99d32f67613639b37c85605da",
+      "7fd4b93c6fd917ad5e07115a6b2a929ea62b8964"
+    ],
+    "ordinary_total": 7224,
+    "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "scope": "Actual published integration history, not a proposed union; historical source qualification is separately archived."
+  },
+  "publication_contract": "One new commit with the sole parent source_base; no imported branch ancestry. Only the existing integration ref is updated with an expected-head lease. No main or protected ref writes or branch deletions.",
+  "archives": [
+    {
+      "file": "windows-memory-baseline-review.tar.gz",
+      "bytes": 338891,
+      "sha256": "2c37b9c5da8f9d26af8dc99b3164878df509221ac8fcfc8aebb2e8244168af8e",
+      "regular_member_count": 320,
+      "manifest": "MEMBERS.sha256.json",
+      "manifest_sha256": "8089e15e5f0800fa63b985f583d237e91e0ef36f61b4e9a5a4347a40ae80b4fe",
+      "all_member_sizes_and_sha256": "PASS",
+      "safe_unique_regular_paths": "PASS"
+    },
+    {
+      "file": "windows-required-8cases-originals.tar.gz",
+      "bytes": 205728,
+      "sha256": "64f1f37e68091bbac7a19fd0ed39f3119c28d2c065f1eb4fe21271d1928c5ce4",
+      "regular_member_count": 14,
+      "manifest": "MEMBERS.json",
+      "manifest_sha256": "44f23592946a25ec5be33d7ca7f2d747f3776b70407138d59cecf122dffe0b36",
+      "all_member_sizes_and_sha256": "PASS",
+      "safe_unique_regular_paths": "PASS",
+      "nested_full_job_logs": {
+        "regular_member_count": 6,
+        "manifest": "MEMBERS.json",
+        "manifest_sha256": "0c6d76e80437073ca8cf7d24dd7f74080647868c2f7f08948b6f2898ae89434e",
+        "all_member_sizes_and_sha256": "PASS",
+        "safe_unique_regular_paths": "PASS"
+      }
+    },
+    {
+      "file": "memory-lifecycle-static-review.tar.gz",
+      "bytes": 224612,
+      "sha256": "1034cc5bfa9d432d1f0d89f72532e43d30812766b128ce70c3261749c54d0bde",
+      "regular_member_count": 34,
+      "manifest": "package-index.json",
+      "manifest_sha256": "49c0665abe555dbab70c29eba51dd3e2ab3ede3cd83887c6bfa175646d964a56",
+      "all_member_sizes_and_sha256": "PASS",
+      "safe_unique_regular_paths": "PASS"
+    },
+    {
+      "file": "branch-boundary-7595-originals.tar.gz",
+      "bytes": 355636,
+      "sha256": "e9b65bbddeeacc0ae28c58c06720af88da8eed7051af36ea6993b9969b081cdc",
+      "regular_member_count": 11,
+      "manifest": "index.json",
+      "manifest_sha256": "3bce186b212ec9db325630724bae70fc6d1c1c256c72eb68704460a22abecc6b",
+      "all_member_sizes_and_sha256": "PASS",
+      "safe_unique_regular_paths": "PASS"
+    }
+  ]
+}
