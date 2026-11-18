@@ -1,0 +1,1050 @@
+{
+  "schema": "hepta.current-policy-credit-paired-results.v1",
+  "source_readout_sha256": "9448a6bef0064086d3b126cb11d7ee62a0243217acbe222b7d9323214add45f9",
+  "rows": [
+    {
+      "panel": "A_retention",
+      "task_id": "test-completion:A-counter",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 282,
+          "output_tokens": 41,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 414,
+          "output_tokens": 63,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 282,
+          "output_tokens": 41,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 414,
+          "output_tokens": 63,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 282,
+          "output_tokens": 41,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 414,
+          "output_tokens": 63,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "A_retention",
+      "task_id": "test-completion:A-mse",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 262,
+          "output_tokens": 59,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 412,
+          "output_tokens": 88,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 262,
+          "output_tokens": 59,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 412,
+          "output_tokens": 88,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 262,
+          "output_tokens": 59,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 405,
+          "output_tokens": 88,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "A_retention",
+      "task_id": "test-completion:A-readout-score",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 303,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 501,
+          "output_tokens": 116,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 303,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 501,
+          "output_tokens": 116,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 303,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 501,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "A_retention",
+      "task_id": "test-completion:A-clipped-metrics",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 306,
+          "output_tokens": 81,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 471,
+          "output_tokens": 134,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 306,
+          "output_tokens": 81,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 471,
+          "output_tokens": 134,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 306,
+          "output_tokens": 81,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 471,
+          "output_tokens": 81,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "A_retention",
+      "task_id": "test-completion:A-pair-map",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 250,
+          "output_tokens": 53,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 387,
+          "output_tokens": 81,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 250,
+          "output_tokens": 53,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 387,
+          "output_tokens": 81,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 250,
+          "output_tokens": 53,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 387,
+          "output_tokens": 53,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "A_retention",
+      "task_id": "test-completion:A-colon-repair",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 324,
+          "output_tokens": 59,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 474,
+          "output_tokens": 99,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 324,
+          "output_tokens": 59,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 474,
+          "output_tokens": 99,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 324,
+          "output_tokens": 37,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 465,
+          "output_tokens": 51,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B2_blind_future",
+      "task_id": "test-completion:blind-b2-django-is-same-domain",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 373,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 496,
+          "output_tokens": 61,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 373,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 496,
+          "output_tokens": 61,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 373,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 496,
+          "output_tokens": 61,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B2_blind_future",
+      "task_id": "test-completion:blind-b2-django-escape-leading-slashes",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 315,
+          "output_tokens": 38,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 450,
+          "output_tokens": 39,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 315,
+          "output_tokens": 38,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 450,
+          "output_tokens": 39,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 315,
+          "output_tokens": 37,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 435,
+          "output_tokens": 36,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B2_blind_future",
+      "task_id": "test-completion:blind-b2-pydantic-to-pascal",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 328,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 444,
+          "output_tokens": 47,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 328,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 444,
+          "output_tokens": 45,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 328,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 444,
+          "output_tokens": 45,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B2_blind_future",
+      "task_id": "test-completion:blind-b2-pydantic-to-snake",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 526,
+          "output_tokens": 33,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 643,
+          "output_tokens": 61,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 526,
+          "output_tokens": 33,
+          "hit_output_limit": false
+        },
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 643,
+          "output_tokens": 63,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 526,
+          "output_tokens": 32,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 642,
+          "output_tokens": 42,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B2_blind_future",
+      "task_id": "test-completion:blind-b2-more-itertools-first-true",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 377,
+          "output_tokens": 33,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 494,
+          "output_tokens": 59,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 377,
+          "output_tokens": 35,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 517,
+          "output_tokens": 50,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 377,
+          "output_tokens": 35,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 517,
+          "output_tokens": 35,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B2_blind_future",
+      "task_id": "test-completion:blind-b2-more-itertools-quantify",
+      "NoUpdate": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 316,
+          "output_tokens": 33,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 433,
+          "output_tokens": 62,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 316,
+          "output_tokens": 33,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 433,
+          "output_tokens": 62,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": true,
+          "reason": "business_tests_passed",
+          "executed": true,
+          "input_tokens": 316,
+          "output_tokens": 33,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 433,
+          "output_tokens": 62,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B_exposed_development",
+      "task_id": "test-completion:upstream-requests-unquote-header-value",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 507,
+          "output_tokens": 43,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 655,
+          "output_tokens": 58,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 507,
+          "output_tokens": 44,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 660,
+          "output_tokens": 58,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 507,
+          "output_tokens": 44,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 660,
+          "output_tokens": 66,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B_exposed_development",
+      "task_id": "test-completion:upstream-requests-unquote-unreserved",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 432,
+          "output_tokens": 384,
+          "hit_output_limit": true
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 927,
+          "output_tokens": 384,
+          "hit_output_limit": true
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 432,
+          "output_tokens": 49,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 590,
+          "output_tokens": 49,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 432,
+          "output_tokens": 57,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 594,
+          "output_tokens": 57,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B_exposed_development",
+      "task_id": "test-completion:upstream-requests-parse-header-links",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 443,
+          "output_tokens": 68,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 617,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 443,
+          "output_tokens": 115,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 665,
+          "output_tokens": 115,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 443,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 664,
+          "output_tokens": 114,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B_exposed_development",
+      "task_id": "test-completion:upstream-werkzeug-is-entity-header",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 401,
+          "output_tokens": 29,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 521,
+          "output_tokens": 39,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 401,
+          "output_tokens": 62,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 569,
+          "output_tokens": 63,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 401,
+          "output_tokens": 62,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 569,
+          "output_tokens": 62,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B_exposed_development",
+      "task_id": "test-completion:upstream-werkzeug-is-byte-range-valid",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 417,
+          "output_tokens": 35,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 557,
+          "output_tokens": 117,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 417,
+          "output_tokens": 34,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 556,
+          "output_tokens": 76,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 417,
+          "output_tokens": 41,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 563,
+          "output_tokens": 41,
+          "hit_output_limit": false
+        }
+      ]
+    },
+    {
+      "panel": "B_exposed_development",
+      "task_id": "test-completion:upstream-click-split-opt",
+      "NoUpdate": [
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 286,
+          "output_tokens": 37,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "business_tests_failed",
+          "executed": true,
+          "input_tokens": 428,
+          "output_tokens": 74,
+          "hit_output_limit": false
+        }
+      ],
+      "all_observed": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 286,
+          "output_tokens": 70,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 456,
+          "output_tokens": 71,
+          "hit_output_limit": false
+        }
+      ],
+      "verified_credit": [
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 286,
+          "output_tokens": 50,
+          "hit_output_limit": false
+        },
+        {
+          "success": false,
+          "reason": "invalid_test_patch",
+          "executed": false,
+          "input_tokens": 431,
+          "output_tokens": 50,
+          "hit_output_limit": false
+        }
+      ]
+    }
+  ]
+}
