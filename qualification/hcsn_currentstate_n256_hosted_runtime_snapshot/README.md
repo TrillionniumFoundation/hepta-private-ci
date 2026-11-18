@@ -25,3 +25,17 @@ or CUDA qualification and cannot admit the separately frozen N256 dense oracle.
 Allocation, calendar, N256 numerical admission, C2 full replay 0/6, HPCA
 NoUpdate/external custody, equal-budget benefit, asynchronous complete cost,
 historical RED/UNKNOWN, and `all_closed=false` remain unchanged.
+
+## Attempt 001 RED and launch-only repair
+
+The first hosted run `44252369558`, job `134625865070`, installed the exact
+wheels and passed the source verifier plus five normal and five optimized
+controls.  The capture step then failed before any observation output because
+direct file execution did not put the repository root on `sys.path`:
+`ModuleNotFoundError: No module named 'qualification'`.  Upload was skipped.
+The complete job log bytes are preserved as base64 under `evidence/attempt001`;
+the terminal receipt binds both the encoded file and decoded original SHA-256.
+
+`REQUEST_V2.json` changes only the launch form to Python module execution.
+Runtime versions, capture bytes, observation scope, zero numerical counts, and
+the HOLD gates are unchanged.  The failed run is not relabelled or discarded.

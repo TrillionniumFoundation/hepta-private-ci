@@ -1,4 +1,5 @@
 import ast
+import base64
 import hashlib
 import json
 import unittest
@@ -12,11 +13,22 @@ WORKFLOW = REPO / ".github/workflows/hcsn-currentstate-n256-hosted-runtime-snaps
 
 class HostedRuntimeSnapshotSourceTests(unittest.TestCase):
     def test_request_is_zero_model_and_preserves_failures(self):
-        request = json.loads((ROOT / "REQUEST.json").read_text())
+        request = json.loads((ROOT / "REQUEST_V2.json").read_text())
         self.assertFalse(request["n256_numerical_execution_allowed"])
         self.assertFalse(request["runtime_admitted"])
         self.assertFalse(request["resource_admitted"])
         self.assertEqual(len(request["prior_desktop_failures_preserved"]), 3)
+        self.assertEqual(request["prior_hosted_failures_preserved"], [44252369558])
+        terminal = json.loads((ROOT / "evidence/attempt001/TERMINAL.json").read_text())
+        self.assertEqual(terminal["workflow_conclusion"], "failure")
+        self.assertEqual(
+            terminal["job_log_sha256"],
+            hashlib.sha256(
+                base64.b64decode(
+                    (ROOT / "evidence/attempt001/JOB_LOG.txt.b64").read_bytes()
+                )
+            ).hexdigest(),
+        )
         for name in (
             "n256_input_reads",
             "n256_serializer_calls",
@@ -28,7 +40,7 @@ class HostedRuntimeSnapshotSourceTests(unittest.TestCase):
             self.assertEqual(request[name], 0)
 
     def test_runtime_versions_are_exact(self):
-        request = json.loads((ROOT / "REQUEST.json").read_text())
+        request = json.loads((ROOT / "REQUEST_V2.json").read_text())
         self.assertEqual(request["python_version"], "3.12.3")
         self.assertEqual(
             (ROOT / "requirements.txt").read_text().splitlines(),
@@ -57,7 +69,7 @@ class HostedRuntimeSnapshotSourceTests(unittest.TestCase):
         self.assertIn("--only-binary=:all:", text)
         self.assertEqual(
             text.count(
-                "python qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/capture.py"
+                "python -m qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.capture"
             ),
             1,
         )
@@ -66,7 +78,7 @@ class HostedRuntimeSnapshotSourceTests(unittest.TestCase):
             self.assertNotIn(forbidden, text)
 
     def test_request_hashes_bind_execution_sources(self):
-        request = json.loads((ROOT / "REQUEST.json").read_text())
+        request = json.loads((ROOT / "REQUEST_V2.json").read_text())
         observed = {
             "capture_sha256": hashlib.sha256((ROOT / "capture.py").read_bytes()).hexdigest(),
             "snapshot_source_sha256": hashlib.sha256(

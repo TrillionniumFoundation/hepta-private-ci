@@ -5,6 +5,8 @@ on:
     paths:
       - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/REQUEST.json"
       - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/SOURCE_FREEZE.json"
+      - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/REQUEST_V2.json"
+      - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/SOURCE_FREEZE_V2.json"
       - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/capture.py"
       - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/requirements.txt"
       - "qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/test_source.py"
@@ -44,7 +46,7 @@ jobs:
         run: python -O -m unittest qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.test_source -v
       - name: Capture one observation
         run: >-
-          python qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/capture.py
+          python -m qualification.hcsn_currentstate_n256_hosted_runtime_snapshot.capture
           > qualification/hcsn_currentstate_n256_hosted_runtime_snapshot/HOSTED_OBSERVATION.json
       - name: Upload raw observation
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
