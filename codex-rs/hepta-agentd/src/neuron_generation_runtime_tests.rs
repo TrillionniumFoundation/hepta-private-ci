@@ -681,3 +681,43 @@ async fn retirement_waits_for_exact_ack_and_only_then_permits_same_owner_success
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn queued_byte_observation_serializes_with_step_and_preserves_replay() {
+    let fixture = Fixture::new().await;
+    let (handle, bootstrap) = checked(neuron_generation_channel_v2(
+        &fixture.identity,
+        fixture.journal(),
+        fixture.control.clone(),
+        fixture.clock(),
+        /*capacity*/ 4,
+    ));
+    let (mut tasks, lifetime) = host();
+    checked(spawn_neuron_generation_service(
+        &mut tasks,
+        bootstrap,
+        Arc::clone(fixture.state()),
+        lifetime,
+    ));
+    let before = fixture.journal_bytes(&handle).await;
+    let original = request("concurrent-byte-observation", fixture.config.initial.clone());
+    let (receipt, observations) = tokio::join!(
+        handle.step(original.clone()),
+        async {
+            let mut observations = Vec::new();
+            for _ in 0..32 {
+                observations.push(fixture.journal_bytes(&handle).await);
+                tokio::task::yield_now().await;
+            }
+            observations
+        }
+    );
+    let receipt = checked(receipt);
+    let after = fixture.journal_bytes(&handle).await;
+    assert_ne!(after, before);
+    assert!(observations.iter().all(|bytes| bytes == &before || bytes == &after));
+    assert_eq!(checked(handle.step(original).await), receipt);
+    assert_eq!(fixture.journal_bytes(&handle).await, after);
+    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+    tasks.shutdown().await;
+}
