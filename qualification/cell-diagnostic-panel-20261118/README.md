@@ -67,8 +67,11 @@ The report also preserves first and last success separately. This tests fixed
 graphs and message removal; it does not test learned routing.
 
 The provider is a separate process using the retained original core, research,
-helper04 and online modules. `SharedAdapterPool` performs its unchanged original
-model, source, training and actual tensor checks. The new verifier is imported
+and helper04 modules, plus the explicitly frozen current online modules. The
+shared pool includes the reviewed FP32 preservation repair from PR #6680; its
+source SHA-256 is `110b33222dc620ce5fb61b1e4ff9fb4b4e5f7bb03ee25a4c9c726e99f7476d3c`.
+It performs the unchanged original model, source, training and actual tensor
+checks. The old online directory is preserved. The new verifier is imported
 only by the main process. No manifest is rewritten and no source gate is patched.
 The provider script and interpreter are explicit CLI paths, bound in `LAUNCH.json`
 and `FREEZE.json`; a model manifest cannot nominate executable code.
@@ -81,7 +84,7 @@ Run from the new candidate checkout, using a fresh output path:
   --provider-python /home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python \
   --provider-script scripts/cell_experiments/diagnostic_provider_v4.py \
   --artifact-root /dev/shm/hepta-cell-experiments-v3-20261116-0c078a \
-  --module-root /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/round03-source-20261118-392934-b \
+  --module-root scripts/cell_experiments \
   --output /absolute/path/to/fresh-diagnostic-run
 ```
 

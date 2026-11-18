@@ -1,0 +1,17 @@
+test_bfloat16_base_keeps_all_float32_adapters_exact_and_rejects_tampering (cell_experiments.online_v4.test_shared_pool_precision.SharedPoolPrecisionTests.test_bfloat16_base_keeps_all_float32_adapters_exact_and_rejects_tampering) ... /workspace/scratch/556e5fc18a5b/cell-test-venv/lib/python3.12/site-packages/peft/utils/save_and_load.py:295: UserWarning: Could not find a config file in  - will assume that the vocabulary was not modified.
+  warnings.warn(
+ok
+test_actual_A_B_A_switch_has_stable_identity_and_one_base (cell_experiments.online_v4.test_shared_pool_v4.SharedPoolTensorTests.test_actual_A_B_A_switch_has_stable_identity_and_one_base) ... ok
+test_adapter_install_failure_closes_the_initialized_view (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_adapter_install_failure_closes_the_initialized_view) ... ok
+test_cache_only_failure_is_reported_after_references_are_cleared (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_cache_only_failure_is_reported_after_references_are_cleared) ... ok
+test_cleanup_notes_work_without_python_311_add_note (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_cleanup_notes_work_without_python_311_add_note) ... ok
+test_close_failure_cannot_leave_reusable_model_or_mask_original_error (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_close_failure_cannot_leave_reusable_model_or_mask_original_error) ... ok
+test_constructor_error_survives_close_and_cache_errors (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_constructor_error_survives_close_and_cache_errors) ... ok
+test_invalid_cell_ids_are_rejected_before_legacy_model_access (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_invalid_cell_ids_are_rejected_before_legacy_model_access) ... ok
+test_partial_constructor_is_retained_and_closed (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_partial_constructor_is_retained_and_closed) ... ok
+test_successful_close_is_idempotent (cell_experiments.online_v4.test_shared_pool_cleanup.PoolCleanupTests.test_successful_close_is_idempotent) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 9.640s
+
+OK
