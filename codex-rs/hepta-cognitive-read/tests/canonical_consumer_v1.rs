@@ -10,7 +10,7 @@ fn assert_binding<T: CognitiveContractV1>(flow: SchemaFlowV1) {
     let profile = CONSUMER_CONVERGENCE_PROFILES_V1
         .iter()
         .find(|profile| profile.consumer == CognitiveConsumerV1::CognitiveRead)
-        .expect("cognitive.read profile");
+        .unwrap_or_else(|| panic!("cognitive.read profile"));
     assert!(profile.canonical_bindings.iter().any(|binding| {
         binding.flow == flow
             && binding.schema_id == T::SCHEMA_ID
