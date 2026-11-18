@@ -145,3 +145,26 @@ The adapter permits one original NoUpdate case with retries zero; the original A
 The safe v12 archive is native-owner-v12-public-evidence.tar.xz (96,700 bytes, SHA-256 94cc06fb09a3d6f7557cc3439fc1d9e5aa94319f509e9def93b5c8af66efac8f). Each of its 57 regular members was checked against its manifest before publication. v12-SUMMARY.json and v12-ARCHIVE.json distinguish tested source, execution and this evidence-only child.
 
 All command timings and cost gaps are retained. Unmeasured CPU/GPU/energy/API/monetary costs remain unknown. Existing cold profiles inspect retained C; they do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
+
+## v13: repair diagnostic trait scope without changing the original reader
+
+The exact source is 978719e6137cc1fe9a64bcde7795cd478b2f293e, tree 51814cb530c723c7544f6eda763f28d9fa228fcf, direct child of evidence-only 5a5d9c5256cd3ce390b2442474224ab98ea2efcc. The previous source 30b4e260 failed during helper compilation with E0034: a newly imported diagnostic Write trait reached an original child module through its existing super glob and made the original Read::by_ref call ambiguous. That actual failed preparation took 14.717660 seconds and produced no product manifest or business result; all of it remains in the v12 archive.
+
+This successor removes the diagnostic Write trait import from the main historical client and from the historical source parent that also has a child super glob. Its 29 fixed write_all calls and one numeric write_fmt call use fully qualified std::io::Write instead. The two leaf diagnostic modules remain unchanged. The original inputs module, its Read::by_ref call and every reader predicate remain byte-identical; the diagnostic bytes, including the numeric line's final newline, are preserved. The original parent review and post-format mechanical audit are archived. The additional independent frozen-source audit is retained byte-for-byte as v13-INDEPENDENT-REVIEW.json (SHA-256 56af8a97d7965c9efd1d79a99ca44862bd26c0260f15fab3ecea9c9fbc674a53). The publication-only builder adds that completed review to the planned evidence files; it does not modify the frozen run adapter or source.
+
+The underlying v12 diagnostic observations remain at the original client, operation, Dataset and source-caller error boundaries. Original Results, postcheck priority, fence/drop, identity/authentication, deadlines, MAX_READS=64 and all frame/component bounds remain unchanged. No extra wire exchange or trial business execution was added. v11's 9/9 related codec/frame results and its measured 19,114-byte first Task reply remain attached to e21ca2d9 and are not inherited as passes or byte measurements on this candidate.
+
+| Exact selected original case | Actual outcome |
+|---|---|
+| ordinary-whole-cold-no-update | retained failure |
+| ordinary-whole-cold-adopt | not attempted |
+
+Observed Root error stages: root_stage=cli.serve, root_stage=post_a.worker. Observed daemon stages: daemon_stage=historical.dataset.operation, daemon_stage=historical.operation.fence, daemon_stage=historical.operation.result, daemon_stage=historical_client.observe_before_action, daemon_stage=historical_client.read_limit. First Task numeric observations from this candidate: [{"bound": 28933, "bytes": 19118, "origin": "/tmp/ordinary-q24-original-process-meXGYy/stderr.log"}]. Read-limit observations: [{"maximum": 64, "origin": "/tmp/ordinary-q24-original-process-VOgp5r/stderr.log", "request_id": 65}]. The complete selected stderr originals remain in the explicit archive and bounded safe projections in v13-SUMMARY.json. Per-process order is preserved; separate process files do not establish global temporal order. Missing tags cannot prove every unlabelled condition passed.
+
+Both products were prepared and pinned by the original compiler-artifact route on this exact candidate. See v13-compiler-products.json for actual SHA-256 values. Where component-executable-bindings.json exists, it also checks all eight selected daemon labels and the actual Source/Observer libtest. A changed Root hash is not assumed for client-side edits.
+
+The adapter permits one original evaluated-NoUpdate whole-cold profile with retries zero; it permits the original Adopt cold profile once only after NoUpdate passes. The unchanged v11 codec/frame regressions were not rerun here. Earlier source-specific qualifications stay with their original source and actual binary records.
+
+The safe v13 archive is native-owner-v13-public-evidence.tar.xz, 106,920 bytes, SHA-256 bff48544b40faee865e8b5d136f2497d320da0526f8bce220d84d82f235a3888; all 77 regular members were checked against the original manifest before publication. This evidence-only child is separately identified from the actually attempted source.
+
+All real command timings and failed preparation or business costs are retained. Unknown CPU/GPU/energy/API/monetary costs remain null, not zero. Existing cold profiles inspect retained C; they do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.

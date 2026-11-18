@@ -1,0 +1,62 @@
+{
+  "started": "2026-11-18T16:55:38.159313+00:00",
+  "parent": "5a5d9c5256cd3ce390b2442474224ab98ea2efcc",
+  "patch_sha256": "b3c0e9855b748654cfe77917e3230568075ec8e624b80cea015bcebcbf965be8",
+  "stages": [
+    {
+      "name": "client-v13-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.003559721866622567
+    },
+    {
+      "name": "client-v13-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.009179448010399938
+    },
+    {
+      "name": "client-v13-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Keep diagnostic Write calls out of original reader trait scopes"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.013421718031167984
+    }
+  ],
+  "files": [
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+  ],
+  "original_inputs_sha256": "7559a42a6d96bb99da19c237ce55e45474fe44ce4260b744c07b38f3d219d470",
+  "independent_review_sha256": "4476e00950a2db0063e30a6eb9ffaa60242df3a23c4b96645f417c231200c73a",
+  "template_sha256": {
+    "run_native_v13": "9544ecd7c244126d45238b9b3cc9d73324179f9e79aec7c6f1b046f979d6a4b0",
+    "archive_native_v13": "f55c94914737096407342402a7d5c8cd5cb0ffeea338636d51e1b58b74b5522a",
+    "prepare_v13_publication": "dec86195259b61f3ffd4c89a8704f788a42cfd5b60744a1e376f4d2ab15d53ec"
+  },
+  "scope": "Repair only v12 diagnostic Write scope leaking through two original child super globs. Original inputs/by_ref unchanged, same log bytes, no error/predicate/order/deadline/budget change. All v12 compilation failure evidence remains with 30b4e260. No new case has yet run; previous tests are not inherited or repeated.",
+  "status": "frozen",
+  "head": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "tree": "51814cb530c723c7544f6eda763f28d9fa228fcf",
+  "source_status": "",
+  "run_adapter_sha256": "bb550b734c69e7ed96257fc5fa26461965494b226a5877659b1128d2847687ea",
+  "finished": "2026-11-18T16:55:38.210146+00:00"
+}
