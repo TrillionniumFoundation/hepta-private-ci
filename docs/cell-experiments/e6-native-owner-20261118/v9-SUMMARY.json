@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "source_head": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+  "source_tree": "b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0",
+  "source_unchanged": true,
+  "status": "completed",
+  "all_attempted_stages_passed": false,
+  "checks": {
+    "helper-build": {
+      "started": "2026-11-18T15:19:48.588501+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T15:20:25.312834+00:00",
+      "elapsed_seconds": 36.7242699759081
+    },
+    "helper-verify-and-load": {
+      "started": "2026-11-18T15:20:25.312907+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T15:20:26.521186+00:00",
+      "elapsed_seconds": 1.2082371730357409
+    },
+    "product-build-and-pin": {
+      "started": "2026-11-18T15:20:26.521445+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T15:20:47.407164+00:00",
+      "elapsed_seconds": 20.88571925694123
+    },
+    "library-binaries-build-uid1000": {
+      "started": "2026-11-18T15:20:47.407819+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T15:22:31.299999+00:00",
+      "elapsed_seconds": 103.89210315514356
+    },
+    "root-mount-setup": {
+      "started": "2026-11-18T15:22:33.419194+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T15:22:33.451591+00:00",
+      "elapsed_seconds": 0.032227709889411926
+    },
+    "ordinary-whole-cold-no-update": {
+      "started": "2026-11-18T15:22:33.451796+00:00",
+      "status": "failed",
+      "passed": false,
+      "finished": "2026-11-18T15:23:40.011385+00:00",
+      "elapsed_seconds": 66.55953498301096
+    }
+  },
+  "original_no_update": {
+    "command_exit_code": 100,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "ordinary-whole-cold-no-update.json",
+      "execution_sha256": "fde4cb25a29806b7a7247cfd5082a3890110047a19a57a3e18f26817dc44269e",
+      "failures": 1,
+      "job": null,
+      "junit_bytes": 4443,
+      "junit_mtime_ns": 1795015416109325227,
+      "junit_sha256": "fb3e2a11e67ab39201353a06041ff49475433fe55cb0e548ca215c646fc0c34f",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+      "source_tree": "b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0",
+      "status": "retained-failed",
+      "total_testcases": 1,
+      "collector_exit_code": 1,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+      "tree": "b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0",
+      "status": "",
+      "tracked_files": 15532,
+      "tracked_sha256": "fe36ae537e5bd24976a341ffa7d0df205d2d8c6d1743bd2c9078a1ef4bb3fcb5"
+    },
+    "source_unchanged": true
+  },
+  "original_adopt": null,
+  "observed_static_stages": [
+    "root_stage=cli.serve",
+    "root_stage=historical.observe_complete_task",
+    "root_stage=historical.worker"
+  ],
+  "cost": {
+    "observed_wall_seconds": 236.32061227993108,
+    "cpu_seconds": null,
+    "gpu_seconds": null,
+    "energy_kwh": null,
+    "api_cost": null,
+    "monetary_cost": null,
+    "qualification": "incomplete; null means unmeasured, not zero; nested command and check elapsed times overlap"
+  },
+  "scope": "Static worker-stage diagnostic candidate and single original evaluated-NoUpdate cold-profile attempt; Adopt cold runs only after NoUpdate passes; no inherited earlier-source pass. Existing cold profile checks retained C, not fresh D. Independent-controller certification/FinalUse/settlement/full-cost remain unestablished."
+}

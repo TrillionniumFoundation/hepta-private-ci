@@ -58,3 +58,22 @@ Both products were rebuilt and pinned at this exact source. The authority ELF wa
 The safe v8 archive is native-owner-v8-public-evidence.tar.xz (106,888 bytes, SHA-256 e2e8bf5a3f58884e78ff4c394a65b7bb50a213925e1a33dc34da1c8ec8e277de). Every one of its 88 regular members was checked against its manifest before this publication. v8-SUMMARY.json and v8-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
 
 All command timings and cost gaps are retained. CPU/GPU/energy/API/monetary business costs remain unknown when unmeasured; independent checker CPU time is not total execution cost. Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
+
+## v9: original worker error boundaries
+
+The exact tested source is ad21d6401fa307831b629b3e71ea1b9c3a350f83, tree b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0, direct child of evidence-only 7df70f327ef95dfa72f3036c3ec0f648e19f50f4. This candidate adds only fixed error-stage diagnostics at service worker returns and before original publication/historical error reduction. The original errors, predicates, ordering, stop/refuse behavior and deadlines remain unchanged. Diagnostic output failures are ignored. No input value, configuration payload or key is included in a stage.
+
+The labels are emitted at the worker or original failing operation rather than after a fixed-order join. They identify observed failure boundaries; concurrent cleanup can still produce secondary failures, so a label does not by itself certify a complete causal explanation or an earlier successful business stage. Absence of a narrow callee error label does not prove that every later comparison or missing-record branch passed. In particular, entry to serve does not establish that its ready/handoff closure completed.
+
+| Exact selected stage | Actual outcome |
+|---|---|
+| ordinary-whole-cold-no-update | retained failure |
+| ordinary-whole-cold-adopt | not attempted |
+
+Observed original Root error stages: root_stage=cli.serve, root_stage=historical.observe_complete_task, root_stage=historical.worker. The original errors and all failed outputs remain in the raw archive. These stages are execution evidence; a stage label alone is not an assertion about an unobserved deeper cause.
+
+Both products were rebuilt and pinned at this exact source. The actual authority ELF was required to differ from v8, and fixed new worker labels were verified inside its bytes before the test. The archive contains compiler output, product-manifest.json and component-executable-bindings.json. The original NoUpdate case executes once with retries zero. The original Adopt cold case is attempted once only if the NoUpdate case passes. The earlier f7 Root namespace regression and all earlier-source gates remain attached to their actually tested commits.
+
+The safe v9 archive is native-owner-v9-public-evidence.tar.xz (104,876 bytes, SHA-256 f8e478dcd60a00d3e5d612d008452582a07922858cb4a66d0a98f0ad354b9a2d). Every one of its 77 regular members was checked against its manifest before this publication. v9-SUMMARY.json and v9-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
+
+All command timings and cost gaps are retained. CPU/GPU/energy/API/monetary business costs remain unknown when unmeasured; Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
