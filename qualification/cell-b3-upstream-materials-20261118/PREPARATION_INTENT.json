@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.B3.native-preparation-intent.v1",
+  "observed_at_utc": "2026-11-18 18:51:29 UTC",
+  "original_acquisition_source": "3b5aac3996e3773ebf057e5567a3cae5f4558600",
+  "original_replay_source": "c8f30714c26999095f9b392a0fd759612c513574",
+  "original_replay_job": "1a1efe98358-ffbe-675",
+  "original_replay_sha256": "1861aac95879f5640ebd135cac6594d1cda5bdc9822da9c2b2672b7ebdbd44de",
+  "source_inventory_sha256": "38575e04211a2e4fc888456f4501de780e9acdb5f92f2f41fca42f66c6af219a",
+  "verifier_sha256": "90c1ff7130ad20f775fdeb926703bb9cc8f0c3c83bc36da4bb66fa294e587109",
+  "builder_sha256": "05fe7c83f10d540f41deb2641b0b5231f31d779cbca636b35454550e31f06a1e",
+  "selected_project_count": 4,
+  "selection_before_any_B3_model_call": true,
+  "planned_original_native_children": 8,
+  "planned_original_case_executions": 60,
+  "planned_admission_negative_controls": 6,
+  "planned_model_calls": 0,
+  "planned_training_updates": 0,
+  "outer_interpreter": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+  "inner_pytest_environment": "own material/venv; exact wheel identity recorded in acquisition",
+  "tokenizer": "Qwen/Qwen2.5-Coder-1.5B-Instruct@2e1fd397ee46e1388853d2af2c993145b0f1098a",
+  "tokenizer_weights_loaded": false,
+  "native_context": 32768,
+  "generation_output_cap_for_later_study": 2048,
+  "generation_input_cap_for_later_study": 8192,
+  "first_input_reserves_tokens": 3072,
+  "no_prompt_truncation": true,
+  "no_model_calls_for_task_or_interface_tuning": true,
+  "interfaces": [
+    "verify(project_id, raw_answer, new_output_dir)",
+    "feedback(receipt)"
+  ],
+  "release_rule": "Only hashes, count and loader interface reach training owner until exact new adapter manifests, parameter digests and timestamps are frozen.",
+  "independent_controller_authenticated": false,
+  "independent_custody_certified": false,
+  "pretraining_contamination_excluded": false,
+  "full_repository_suite_executed": false,
+  "full_upstream_environment_reproduced": false,
+  "environment_deviation": "Common research pytest 9.2 exceeds semver upstream test extra upper bound 9.1.1; retained explicitly. Tests themselves and all parameter cases remain byte-bound and unchanged.",
+  "root_original_replay_audit": [
+    {
+      "project": "pypa/packaging",
+      "before_passed": 4,
+      "before_failed": 4,
+      "after_passed": 8,
+      "cases_match": true
+    },
+    {
+      "project": "python-semver/python-semver",
+      "before_passed": 8,
+      "before_failed": 9,
+      "after_passed": 17,
+      "cases_match": true
+    },
+    {
+      "project": "mahmoud/boltons",
+      "before_passed": 0,
+      "before_failed": 4,
+      "after_passed": 4,
+      "cases_match": true
+    },
+    {
+      "project": "python-hyper/h11",
+      "before_passed": 0,
+      "before_failed": 1,
+      "after_passed": 1,
+      "cases_match": true
+    }
+  ],
+  "cost_scope": "Real preparation wall/child CPU and attempted subprocess receipts; no inference, training, authenticated-user, native-adoption, full-energy or monetary-cost claim."
+}

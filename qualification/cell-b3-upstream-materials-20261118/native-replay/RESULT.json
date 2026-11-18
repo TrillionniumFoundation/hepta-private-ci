@@ -1,0 +1,706 @@
+{
+  "actual_owned_children": 8,
+  "authenticated_user_count": 0,
+  "by_source": [
+    {
+      "after_passed": 8,
+      "authenticated_user_count": 0,
+      "before_failed": 4,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "pypa/packaging",
+      "source_id": "github:pypa/packaging:pull:1531",
+      "test_case_count_per_revision": 8
+    },
+    {
+      "after_passed": 17,
+      "authenticated_user_count": 0,
+      "before_failed": 9,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "python-semver/python-semver",
+      "source_id": "github:python-semver/python-semver:pull:489",
+      "test_case_count_per_revision": 17
+    },
+    {
+      "after_passed": 4,
+      "authenticated_user_count": 0,
+      "before_failed": 4,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "mahmoud/boltons",
+      "source_id": "github:mahmoud/boltons:pull:475",
+      "test_case_count_per_revision": 4
+    },
+    {
+      "after_passed": 1,
+      "authenticated_user_count": 0,
+      "before_failed": 1,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "python-hyper/h11",
+      "source_id": "github:python-hyper/h11:pull:181",
+      "test_case_count_per_revision": 1
+    }
+  ],
+  "completed_child_cpu_seconds": 4.781688999999999,
+  "fatal_error": null,
+  "finished_at_ns": 1795026428596535780,
+  "full_repository_suite_executed": false,
+  "full_system_cost_known": false,
+  "full_upstream_environment_reproduced": false,
+  "gpu_energy_joules": null,
+  "independent_controller_authenticated": false,
+  "monetary_cost": null,
+  "native_adoption": false,
+  "nested_windows_are_not_additive": true,
+  "network_energy_joules": null,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "owner_wall_seconds": 6.562404430005699,
+  "passed": true,
+  "pretraining_overlap_known": false,
+  "runner_sha256": "3713cd32ff33dbebd2805377cdc89363380afa880c4df4db6f8a8e54faf2dafd",
+  "schema": "hepta.b3.original_replay.v1",
+  "selection_sha256": "8bb2d80098639a649a1498d8190c800947f2ed287caf4ec44964c5b2ab03fb10",
+  "source_commit": "c8f30714c26999095f9b392a0fd759612c513574",
+  "sources_sha256": "38575e04211a2e4fc888456f4501de780e9acdb5f92f2f41fca42f66c6af219a",
+  "stages": [
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===bar===]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring,>=1]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[>=1,===arbitrarystring]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": "packaging.requirements.InvalidRequirement: Expected comma (within version specifier), semicolon (after version specifier) or end\n    foo===arbitrarystring,>= 1\n       ~~~~~~~~~~~~~~~~~~~~~~^",
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring,>= 1]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": "packaging.requirements.InvalidRequirement: Expected comma (within version specifier), semicolon (after version specifier) or end\n    foo===arbitrarystring, >=1\n       ~~~~~~~~~~~~~~~~~~~~^",
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring, >=1]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring , != 1.0]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": "packaging.requirements.InvalidRequirement: Expected matching RIGHT_PARENTHESIS for LEFT_PARENTHESIS, after version specifier\n    foo (===arbitrarystring,>= 1)\n        ~~~~~~~~~~~~~~~~~~~~~~~^",
+          "name": "test_nonempty_arbitrary_version[ (===arbitrarystring,>= 1)]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-before.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": "packaging.requirements.InvalidRequirement: Expected comma (within version specifier), semicolon (after version specifier) or end\n    foo===arbitrarystring,>= 1 ; python_version >= '3'\n       ~~~~~~~~~~~~~~~~~~~~~~^",
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring,>= 1 ; python_version >= '3']",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.070045,
+      "child_user_cpu_seconds": 0.8465459999999999,
+      "errors": 0,
+      "exit_code": 1,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 4,
+      "junit_present": true,
+      "junit_sha256": "8051071d03f7927824a26158f8b97a255add6a69773418b1798869193603afce",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "a00861f4cb12f5705a95e277862cdcd7387abfde",
+      "passed": 4,
+      "project_id": "pypa/packaging",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1b38e09551bda4c635512001185725be7fafc4bb860cc5341308538a193bb361",
+      "tests": 8,
+      "timed_out": false,
+      "variant": "before",
+      "wall_seconds": 0.9722120390506461
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===bar===]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring,>=1]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[>=1,===arbitrarystring]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring,>= 1]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring, >=1]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring , != 1.0]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[ (===arbitrarystring,>= 1)]",
+          "skipped": false
+        },
+        {
+          "class": "packaging-after.case.tests.test_requirements.TestRequirementParsing",
+          "error": null,
+          "failure": null,
+          "name": "test_nonempty_arbitrary_version[===arbitrarystring,>= 1 ; python_version >= '3']",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.06914200000000001,
+      "child_user_cpu_seconds": 0.695431,
+      "errors": 0,
+      "exit_code": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_present": true,
+      "junit_sha256": "af153bf103a310ee2f13c778d494ba0c43e887b0aa78a986ca4708acdac58abe",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "5a7d3386d2777180a381eb947f21293124ce8df5",
+      "passed": 8,
+      "project_id": "pypa/packaging",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0699f27a57117a61856dac022656af0fc9d7e745c5c8f8af3ea444beaf9036c6",
+      "tests": 8,
+      "timed_out": false,
+      "variant": "after",
+      "wall_seconds": 0.8219537740224041
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "AssertionError: assert '1.2.3-alpha.beta.1' == '1.2.3-alpha.beta.2'\n  \n  - 1.2.3-alpha.beta.2\n  ?                  ^\n  + 1.2.3-alpha.beta.1\n  ?                  ^",
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-alpha.beta.1+build.7-alpha.beta-1.2.3-alpha.beta.2]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-alpha.beta.gamma.1-alpha-1.2.3-alpha.beta.gamma.2]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-rc3-rc-1.2.3-rc4]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-rc.3-rc-1.2.3-rc.4]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "AssertionError: assert '1.2.3-alpha.beta10' == '1.2.3-alpha.beta.1'\n  \n  - 1.2.3-alpha.beta.1\n  ?                 -\n  + 1.2.3-alpha.beta10\n  ?                  +",
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-alphaXbeta9-alpha.beta-1.2.3-alpha.beta.1]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "re.error: unterminated character set at position 1",
+          "name": "test_next_version_rejects_invalid_prerelease_token[[]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE ValueError",
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc.]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE ValueError",
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc+build]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE ValueError",
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc..next]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE ValueError",
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc.01]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE ValueError",
+          "name": "test_next_version_rejects_invalid_prerelease_token[01]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE ValueError",
+          "name": "test_next_version_rejects_invalid_prerelease_token[r\\xe9]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_preserves_empty_token_semantics[None]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_preserves_empty_token_semantics[]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_ignores_token_for_main_parts[major-rc.-2.0.0]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_ignores_token_for_main_parts[minor-rc+build-1.3.0]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-before.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_ignores_token_for_main_parts[patch-rc..next-1.2.4]",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.07219999999999999,
+      "child_user_cpu_seconds": 0.5705799999999999,
+      "errors": 0,
+      "exit_code": 1,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 9,
+      "junit_present": true,
+      "junit_sha256": "55e86253d44024d19aa3e03cbcb1cc4292fa0f2b0045c9d8fa823ec623681eb5",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "1d515915d50b31f23fd1fb0f572ef608453e80e3",
+      "passed": 8,
+      "project_id": "python-semver/python-semver",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "db30b41adc0a0fedb00ca52460813b4f98f9ff380c636afd8c9788e3d9d1bd1b",
+      "tests": 17,
+      "timed_out": false,
+      "variant": "before",
+      "wall_seconds": 0.7219247539760545
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-alpha.beta.1+build.7-alpha.beta-1.2.3-alpha.beta.2]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-alpha.beta.gamma.1-alpha-1.2.3-alpha.beta.gamma.2]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-rc3-rc-1.2.3-rc4]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-rc.3-rc-1.2.3-rc.4]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_matches_literal_prerelease_token_family[1.2.3-alphaXbeta9-alpha.beta-1.2.3-alpha.beta.1]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[[]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc.]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc+build]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc..next]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[rc.01]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[01]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_rejects_invalid_prerelease_token[r\\xe9]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_preserves_empty_token_semantics[None]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_preserves_empty_token_semantics[]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_ignores_token_for_main_parts[major-rc.-2.0.0]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_ignores_token_for_main_parts[minor-rc+build-1.3.0]",
+          "skipped": false
+        },
+        {
+          "class": "python-semver-after.case.tests.test_bump",
+          "error": null,
+          "failure": null,
+          "name": "test_next_version_ignores_token_for_main_parts[patch-rc..next-1.2.4]",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.04403099999999999,
+      "child_user_cpu_seconds": 0.41529799999999994,
+      "errors": 0,
+      "exit_code": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_present": true,
+      "junit_sha256": "673f9f371bda27043128dbd1ef94230d82e1b89a8faefd11bee26cce3f7a53be",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "37ae009c7cacab8f1a87157ca2b484b8e18a0a78",
+      "passed": 17,
+      "project_id": "python-semver/python-semver",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "55edd56c0eccfcf8072c4acb116f54fe16913c3f9a3632fd2e04010dac72002b",
+      "tests": 17,
+      "timed_out": false,
+      "variant": "after",
+      "wall_seconds": 0.520728577976115
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "boltons-before.case.tests.test_strutils",
+          "error": null,
+          "failure": "AssertionError: assert ['\\u2028first...second\\u2028'] == ['', 'first', 'second', '']\n  \n  At index 0 diff: '\\u2028first\\u2028second\\u2028' != ''\n  Right contains 3 more items, first extra item: 'first'\n  Use -v to get more diff",
+          "name": "test_iter_splitlines_unicode_line_endings[\\u2028]",
+          "skipped": false
+        },
+        {
+          "class": "boltons-before.case.tests.test_strutils",
+          "error": null,
+          "failure": "AssertionError: assert ['\\u2029first...second\\u2029'] == ['', 'first', 'second', '']\n  \n  At index 0 diff: '\\u2029first\\u2029second\\u2029' != ''\n  Right contains 3 more items, first extra item: 'first'\n  Use -v to get more diff",
+          "name": "test_iter_splitlines_unicode_line_endings[\\u2029]",
+          "skipped": false
+        },
+        {
+          "class": "boltons-before.case.tests.test_strutils",
+          "error": null,
+          "failure": "AssertionError: assert ['February', ... a leap year'] == ['February 28... a leap year']\n  \n  At index 0 diff: 'February' != 'February 28, or February 29 in a leap year'\n  Left contains 2 more items, first extra item: ', or February'\n  Use -v to get more diff",
+          "name": "test_iter_splitlines_preserves_numbers_after_spaces",
+          "skipped": false
+        },
+        {
+          "class": "boltons-before.case.tests.test_strutils",
+          "error": null,
+          "failure": "AssertionError: assert '  February\\n... 1\\n  March 2' == '  February 2... 1\\n  March 2'\n  \n  -   February 28\n  ?           ---\n  +   February\n  +   \n  \n  -   February 29...\n  \n  ...Full output truncated, use '-vv' to show",
+          "name": "test_indent_unicode_line_endings",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.058101000000000014,
+      "child_user_cpu_seconds": 0.5058730000000002,
+      "errors": 0,
+      "exit_code": 1,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 4,
+      "junit_present": true,
+      "junit_sha256": "c1063e8c9276ff03d2441cbf2e6c917172ec5741995f5d1edd6f1af4a7da9126",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "1cdc0e9d36f3eb32608f3b34885717697643e9b8",
+      "passed": 0,
+      "project_id": "mahmoud/boltons",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "37a3d1e8d58c554229f8eb2285b5b936b0f110296d1c792db7c089494d5605da",
+      "tests": 4,
+      "timed_out": false,
+      "variant": "before",
+      "wall_seconds": 0.6216846930328757
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "boltons-after.case.tests.test_strutils",
+          "error": null,
+          "failure": null,
+          "name": "test_iter_splitlines_unicode_line_endings[\\u2028]",
+          "skipped": false
+        },
+        {
+          "class": "boltons-after.case.tests.test_strutils",
+          "error": null,
+          "failure": null,
+          "name": "test_iter_splitlines_unicode_line_endings[\\u2029]",
+          "skipped": false
+        },
+        {
+          "class": "boltons-after.case.tests.test_strutils",
+          "error": null,
+          "failure": null,
+          "name": "test_iter_splitlines_preserves_numbers_after_spaces",
+          "skipped": false
+        },
+        {
+          "class": "boltons-after.case.tests.test_strutils",
+          "error": null,
+          "failure": null,
+          "name": "test_indent_unicode_line_endings",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.046072999999999975,
+      "child_user_cpu_seconds": 0.47775599999999985,
+      "errors": 0,
+      "exit_code": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_present": true,
+      "junit_sha256": "f5ab1c7611b7343058004355c68c5a97d3abb5bdafdc50ba4cb0328e09f1ee2f",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "45a251181fba4c5a4ecc05e838da1c394e1ed0e4",
+      "passed": 4,
+      "project_id": "mahmoud/boltons",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "452fada82e1df58d7f89fa99128aea691c519ad7daf4915a4bece62bd06ecbdf",
+      "tests": 4,
+      "timed_out": false,
+      "variant": "after",
+      "wall_seconds": 0.5712336300057359
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "h11-before.case.h11.tests.test_headers",
+          "error": null,
+          "failure": "Failed: DID NOT RAISE LocalProtocolError",
+          "name": "test_normalize_and_validate",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.06601699999999999,
+      "child_user_cpu_seconds": 0.4271100000000003,
+      "errors": 0,
+      "exit_code": 1,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 1,
+      "junit_present": true,
+      "junit_sha256": "193753c5782805797394b618ffe93c15b4a9031798ff537c1ddc54330b8bc12a",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "31e626c64e1e28db3cd73a6aa0ac057f1b915c18",
+      "passed": 0,
+      "project_id": "python-hyper/h11",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "dc86477b557f0245cd00368cfde35d0bc25e46459e47d332181c17d97840e371",
+      "tests": 1,
+      "timed_out": false,
+      "variant": "before",
+      "wall_seconds": 0.5711188610293902
+    },
+    {
+      "actual_pytest_return_present": true,
+      "case_files_unchanged": true,
+      "cases": [
+        {
+          "class": "h11-after.case.h11.tests.test_headers",
+          "error": null,
+          "failure": null,
+          "name": "test_normalize_and_validate",
+          "skipped": false
+        }
+      ],
+      "child_system_cpu_seconds": 0.037953000000000015,
+      "child_user_cpu_seconds": 0.37953299999999945,
+      "errors": 0,
+      "exit_code": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_present": true,
+      "junit_sha256": "de9a2debb886c18023b64572ead72a4e428e02fedb7045b93f150d0c41c8e1ab",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "original_material_unchanged": true,
+      "original_package_commit": "70a96bea8e55403e5d92db14c111432c6d7a8685",
+      "passed": 1,
+      "project_id": "python-hyper/h11",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "35d86279d96ed65491ba8ff0748e1c8e7891711531404dc5d4b9cd6ae33de3ec",
+      "tests": 1,
+      "timed_out": false,
+      "variant": "after",
+      "wall_seconds": 0.4708845909917727
+    }
+  ]
+}
