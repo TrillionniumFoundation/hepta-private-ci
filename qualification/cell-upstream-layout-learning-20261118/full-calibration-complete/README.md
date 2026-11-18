@@ -1,0 +1,11 @@
+# Actual full-length gate and prospective training admission
+
+The original job `1a1f05cbf17-ffbe-78b` ran execution source `02b3fb49ac00ccb7ad28e5d803af5675fbd28e26`. Its delayed h acknowledgement was recovered through a supported persistent terminal; it was never resubmitted. Original request, start, exit and matching exit witness are retained in the archive. The earlier environment-unavailable ledger remains an accurate record of what was unknown at that time.
+
+Both fixed maximum groups completed five full 3584-position forward/backward pairs. Each retained all 1196 supervised positions. Actual attention registry, callable/module hashes, original eager mask, 28 layer implementations and per-chunk execution counters were checked. Each layout recorded 3920 original forward softmax entries plus 3920 backward original and 3920 backward recompute entries. Early-stop start/completion differences are preserved. The original parent parameters remained unchanged; this gate performed no optimizer updates or generations.
+
+Peak allocated/reserved CUDA memory was 4,801,211,392 / 5,131,730,944 bytes under the unchanged 70% limit. Owner child wall time was 116.774 seconds, with 118.340 measured child CPU seconds including energy reads. Seven RAPL samples cover whole-host CPU-package windows, including unrelated activity; they are not model-only energy. GPU/network energy and monetary cost remain unknown. Extra checkpoint recomputation is actual work and is not equated with the old eager budget.
+
+`TRAINING_ADMISSION.json` was created after the real gate and before either fit. Its exact SHA is `6e17e6b1fcc13cfad448448c871c9c15f09bb970334bfc060d47e24cd746a04d`. The next authorized phase uses separate new processes, identical cold P initialization and fresh empty AdamW, 32 updates per arm. At this evidence commit those updates have not started. Native feedback remains the prospective primary arm, and B3 remains sealed until both real weight manifests are frozen.
+
+The short-A exact-logit and full-LoRA-gradient calibration, all previous OOM attempts, the rejected SDPA comparison and the earlier full-gate wiring failure retain their original source identities and costs. This memory/execution gate is not evidence of learning gain, independent confirmation, authentic users or adoption. Existing NoUpdate decisions are unchanged.
