@@ -38,7 +38,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     let ledger_fixture = LedgerFixture::new();
     let mut writer = ledger_fixture.writer(false);
     let decision = append_decision(&mut writer, &frozen);
-    let ledger_before = ledger_fixture.bytes();
+    let ledger_before = writer.bytes();
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
         fixture.journal(),
@@ -65,7 +65,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
             "generation not settled and delivered"
         ))
     ));
-    assert_eq!(ledger_fixture.bytes(), ledger_before);
+    assert_eq!(writer.bytes(), ledger_before);
     let chunk = checked(undelivered.pending_output().cloned().ok_or("outbox"));
     let ack_cost = checked(CellTaskCostV2::new(undelivered.cost().identity()));
     checked(handle.acknowledge(chunk, [91; 32], ack_cost).await);
@@ -79,7 +79,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     );
     assert_eq!(appended.disposition, AppendDisposition::Appended);
     assert_eq!(checked(writer.records()).len(), 2);
-    let ledger_after = ledger_fixture.bytes();
+    let ledger_after = writer.bytes();
     let generation_after = checked(std::fs::read(
         fixture.directory.path().join("generation-journal"),
     ));
@@ -109,7 +109,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(replay.chain_digest, appended.chain_digest);
     assert_eq!(checked(writer.records()).len(), 2);
-    assert_eq!(ledger_fixture.bytes(), ledger_after);
+    assert_eq!(writer.bytes(), ledger_after);
     assert_eq!(
         checked(std::fs::read(
             fixture.directory.path().join("generation-journal")
@@ -156,7 +156,7 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
     );
     let sampled = checked(handle.observe_generation().await);
     let stale = signed_request(&writer, &frozen, Some(&sampled), decision.chain_digest);
-    let ledger_before = ledger_fixture.bytes();
+    let ledger_before = writer.bytes();
     let head_before = checked(writer.snapshot());
     checked(
         handle
@@ -180,7 +180,7 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
         ))
     ));
     assert_eq!(checked(writer.snapshot()), head_before);
-    assert_eq!(ledger_fixture.bytes(), ledger_before);
+    assert_eq!(writer.bytes(), ledger_before);
     let valid = signed_request(&writer, &frozen, Some(&current), decision.chain_digest);
     let mut bad_signature = valid.clone();
     bad_signature.evidence.signature[0] ^= 1;
@@ -190,7 +190,7 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
             .is_err()
     );
     assert_eq!(checked(writer.snapshot()), head_before);
-    assert_eq!(ledger_fixture.bytes(), ledger_before);
+    assert_eq!(writer.bytes(), ledger_before);
     let receipt = checked(
         append_neuron_generation_outcome_v1(&handle, &mut writer, &frozen, valid, 50).await,
     );
@@ -198,4 +198,32 @@ async fn fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation() 
     assert_eq!(checked(writer.records()).len(), 2);
     assert_eq!(control.calls.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
+}
+
+#[tokio::test]
+async fn episode_ledger_readback_serializes_with_append_without_losing_locks() {
+    let mut fixture = host::Fixture::new().await;
+    let frozen = freeze(&mut fixture);
+    let ledger_fixture = LedgerFixture::new();
+    let writer = std::sync::Mutex::new(ledger_fixture.writer(false));
+    std::thread::scope(|scope| {
+        let reader = scope.spawn(|| {
+            for _ in 0..32 {
+                let mut writer = checked(writer.lock());
+                assert!(writer.bytes().iter().all(|bytes| !bytes.is_empty()));
+                writer.assert_both_locks_held();
+            }
+        });
+        let appender = scope.spawn(|| {
+            let mut writer = checked(writer.lock());
+            let before = writer.bytes();
+            append_decision(&mut writer, &frozen);
+            let after = writer.bytes();
+            assert_ne!(after[0], before[0]);
+            assert_ne!(after[1], before[1]);
+            writer.assert_both_locks_held();
+        });
+        reader.join().expect("episode ledger reader");
+        appender.join().expect("episode ledger appender");
+    });
 }
