@@ -1,0 +1,106 @@
+{
+  "actual_cost_matching_claim": false,
+  "complete_call_and_token_totals": {
+    "business_executions": null,
+    "format_rejections": null,
+    "input_tokens": null,
+    "model_calls": null,
+    "output_tokens": null,
+    "verifier_calls": null
+  },
+  "completed_graph_records": 0,
+  "energy_joules": null,
+  "failures": [
+    {
+      "path": "FAILED.json",
+      "receipt": {
+        "automatic_retry": false,
+        "call_totals_complete": false,
+        "error": "active adapter tensors differ from its actual training after hash",
+        "error_type": "ValueError",
+        "status": "FAILED_PRESERVED",
+        "worker_wall_seconds": 50.508930402982514
+      }
+    }
+  ],
+  "full_system_cost_known": false,
+  "gpu_active_seconds": null,
+  "independent_sample_increment": 0,
+  "issues": [
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/RESULT.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/COMPLETE.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/POOL.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/search/SEARCH.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/STATIC_SELECTION.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/original/old_A/STUDY.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/original/old_A/PLAN.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/original/old_B/STUDY.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/original/old_B/PLAN.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/additional/old_A/STUDY.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/additional/old_A/PLAN.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/additional/old_B/STUDY.json",
+    "missing: /dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-e4-controls-20261118-392934/circuit/additional/old_B/PLAN.json"
+  ],
+  "monetary_cost": null,
+  "nested_cost_scopes_do_not_add": {
+    "extra_route_validation_wall_seconds": null,
+    "observed_graph_wall_seconds_sum": 0,
+    "observed_provider_seconds_sum": 0,
+    "observed_verifier_wall_seconds_sum": 0,
+    "pool_initialization": null,
+    "router_fit_wall_seconds": null,
+    "search_total_wall_seconds": null,
+    "worker_after_admission_wall_seconds": null
+  },
+  "observed_completed_graph_cost_lower_bound": {
+    "business_executions": 0,
+    "format_rejections": 0,
+    "input_tokens": 0,
+    "model_calls": 0,
+    "output_tokens": 0,
+    "verifier_calls": 0
+  },
+  "original_file_inventory": {
+    "FAILED.json": {
+      "bytes": 226,
+      "canonical_digest": "cbbecad26547d5a5a58d77213538483d2e8f692bddf196a4c24803db81c77218",
+      "sha256": "e3afc4c428805a4e8f5ee8c273d5880bca0405bf4b49784979ca5da48e73ff92"
+    }
+  },
+  "paired_controls": {
+    "additional/old_A/best_static": [],
+    "additional/old_A/replace_non_F": [],
+    "additional/old_A/single_C": [],
+    "additional/old_A/single_T": [],
+    "additional/old_A/task_random": [],
+    "additional/old_B/best_static": [],
+    "additional/old_B/replace_non_F": [],
+    "additional/old_B/single_C": [],
+    "additional/old_B/single_T": [],
+    "additional/old_B/task_random": [],
+    "original/old_A/fixed": [],
+    "original/old_A/single": [],
+    "original/old_B/fixed": [],
+    "original/old_B/single": []
+  },
+  "planned_counts_only": {
+    "additional_control_model_calls": 90,
+    "graph_results": 162,
+    "original_suite_model_calls": 144,
+    "search_model_calls": 72,
+    "total_model_calls": 306,
+    "verifier_opportunities": 306
+  },
+  "pool_call_receipt_coverage": {
+    "POOL_INTENT.json": 0,
+    "POOL_RAW_OUTPUT.json": 0,
+    "POOL_RESULT.json": 0
+  },
+  "protocol_sha256": "951c24b55bf1afcc9e4e6dc57aaf746bf52f7c4836da0d57c3f9acd386612b8e",
+  "rows": {},
+  "schema": "hepta.extended-e4-readout.v1",
+  "scientific_qualification": false,
+  "static_selection": null,
+  "status": "INCOMPLETE",
+  "summaries": {}
+}
