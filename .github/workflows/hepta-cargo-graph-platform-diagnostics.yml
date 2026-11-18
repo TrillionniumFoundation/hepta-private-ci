@@ -7,7 +7,7 @@ permissions:
   contents: read
 concurrency:
   group: hepta-cargo-graph-platforms-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   graph:
     name: Cargo graph and operations (${{ matrix.proposal.label }}, ${{ matrix.platform.target }})
@@ -21,13 +21,11 @@ jobs:
             ref: 4f9cd13376463b9544639e309330bb2c5126249a
           - label: sqlite
             ref: 9685742f3a66c7e3b5f1e1e9fc95978934341206
+        # Replay only the Windows validator fix. Existing run 44303578262
+        # retains Linux results and both pending macOS jobs at these same refs.
         platform:
-          - os: ubuntu-24.04
-            target: x86_64-unknown-linux-gnu
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-          - os: macos-15
-            target: aarch64-apple-darwin
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -55,7 +53,7 @@ jobs:
           python - <<'PY'
           import json, os, pathlib, subprocess
           root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-platform-graph"
-          metadata = json.loads((root / "metadata.json").read_text())
+          metadata = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
           packages = {p["id"]: p for p in metadata["packages"]}
           nodes = {n["id"]: n for n in metadata["resolve"]["nodes"]}
           bindgen = next(p for p in packages.values() if p["name"] == "bindgen" and p["version"] == "0.73.2")
@@ -71,7 +69,7 @@ jobs:
               "bindgen_syn": syn[0]["version"],
               "formatter_same_syn_identity": True,
               "scope": "native Cargo graph and operations library compilation; not full product tests",
-          }, indent=2) + "\n")
+          }, indent=2) + "\n", encoding="utf-8")
           PY
       - name: Preserve graph and real failure output
         if: always() && !cancelled()
