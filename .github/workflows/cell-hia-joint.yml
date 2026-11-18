@@ -8,6 +8,7 @@ on:
       - "scripts/hepta_cell_campaign_worker.py"
       - "scripts/hepta_cell_semantic_campaign_worker.py"
       - "scripts/qualify_cell_updates.py"
+      - "scripts/qualify_cell_effect_faults.py"
       - "scripts/verify_hepta_semantic_cycle.py"
       - "scripts/test_hepta_maintenance_semantics.py"
       - "scripts/test_hepta_joint_source_identity.py"
@@ -130,6 +131,12 @@ jobs:
               archive.extractall(target, filter="data")
           PYCODE
           python -B -m hepta_cells.research_trial_history --capsule "$RUNNER_TEMP/historical-capsule/history-replay" --output "$RUNNER_TEMP/cell-joint-evidence/historical-development-trial"
+      - name: Run actual owner and receiver process faults
+        working-directory: cells
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python -B scripts/qualify_cell_effect_faults.py --output "$RUNNER_TEMP/cell-joint-evidence/effect-faults"
       - name: Freeze and run actual HIA and GRU cold processes
         working-directory: cells
         run: |
