@@ -1,0 +1,369 @@
+{
+  "all_flagged_files_identical_to_executed_candidate": true,
+  "ci_rerun": false,
+  "classification": "Python source formatting failure observed in CI",
+  "command": "uv run --frozen --project scripts ruff format --check scripts .github",
+  "conclusion": "failure",
+  "diff_text_in_ci_log": false,
+  "failure_stage": "Check formatting (run just fmt to fix)",
+  "format_file_count": 24,
+  "format_files": [
+    "scripts/cell_experiments/online_v4/circuit_contract.py",
+    "scripts/cell_experiments/online_v4/circuit_router.py",
+    "scripts/cell_experiments/online_v4/circuit_runtime.py",
+    "scripts/cell_experiments/online_v4/circuit_study.py",
+    "scripts/cell_experiments/online_v4/onpolicy_backend.py",
+    "scripts/cell_experiments/online_v4/onpolicy_contract.py",
+    "scripts/cell_experiments/online_v4/onpolicy_feedback.py",
+    "scripts/cell_experiments/online_v4/onpolicy_loop.py",
+    "scripts/cell_experiments/online_v4/onpolicy_rollout.py",
+    "scripts/cell_experiments/online_v4/onpolicy_train.py",
+    "scripts/cell_experiments/online_v4/reporting_v4.py",
+    "scripts/cell_experiments/online_v4/round03_cli.py",
+    "scripts/cell_experiments/online_v4/round03_jobs.py",
+    "scripts/cell_experiments/online_v4/round03_plan.py",
+    "scripts/cell_experiments/online_v4/round03_report.py",
+    "scripts/cell_experiments/online_v4/test_circuit_router.py",
+    "scripts/cell_experiments/online_v4/test_circuit_runtime.py",
+    "scripts/cell_experiments/online_v4/test_onpolicy_cache.py",
+    "scripts/cell_experiments/online_v4/test_onpolicy_flow.py",
+    "scripts/cell_experiments/online_v4/test_onpolicy_tensor.py",
+    "scripts/cell_experiments/online_v4/test_reporting_v4.py",
+    "scripts/cell_experiments/online_v4/test_round03_plan.py",
+    "scripts/cell_experiments/online_v4/test_round03_report.py",
+    "scripts/cell_experiments/online_v4/test_shared_pool_cleanup.py"
+  ],
+  "formatter_result": "24 files would be reformatted, 488 files already formatted",
+  "formatter_run_by_inspector": false,
+  "job_id": 134860547887,
+  "pr": 6701,
+  "raw_stdout_bytes": 240803,
+  "raw_stdout_sha256": "6ca7080a6e209b117c7abea975e36fbd1292360540ccf1c48836fdacfb13f2af",
+  "read_receipt": {
+    "argv": [
+      "/opt/homebrew/bin/gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/134860547887/logs"
+    ],
+    "automatic_retry": false,
+    "ci_rerun": false,
+    "job_id": 134860547887,
+    "log_read_timeout_seconds": 55,
+    "model_or_verifier_execution": false,
+    "observed_ci_conclusion_remains": "failure",
+    "outputs": {
+      "STDERR.bin": {
+        "bytes": 0,
+        "path": "/Users/qianqi/work/e1e6-joint-20261118-556e-transfer/build6701-readonly-556e/STDERR.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "STDOUT.bin": {
+        "bytes": 240803,
+        "path": "/Users/qianqi/work/e1e6-joint-20261118-556e-transfer/build6701-readonly-556e/STDOUT.bin",
+        "sha256": "6ca7080a6e209b117c7abea975e36fbd1292360540ccf1c48836fdacfb13f2af"
+      }
+    },
+    "read_only": true,
+    "read_status": "COMPLETE",
+    "returncode": 0,
+    "run_id": 44319657521,
+    "source_commit": "74bf3fdea6ff77d253212e623ce3a619c35c2983",
+    "started_unix_ns": 1795012257096391000,
+    "timed_out": false,
+    "wall_seconds": 18.026953333
+  },
+  "run_id": 44319657521,
+  "schema": "hepta.build-test-formatting-readout.v1",
+  "source_file_comparison": [
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "35f3ad7a89f18de39c17173a2ed59bf81b9c2a79a15fc9644c9a4677d9009893"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "35f3ad7a89f18de39c17173a2ed59bf81b9c2a79a15fc9644c9a4677d9009893"
+      },
+      "path": "scripts/cell_experiments/online_v4/circuit_contract.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "d63456d4b5fe104f5f75297783ad18cf0aa78c77741353cdf93f6649a3b48bdb"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "d63456d4b5fe104f5f75297783ad18cf0aa78c77741353cdf93f6649a3b48bdb"
+      },
+      "path": "scripts/cell_experiments/online_v4/circuit_router.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "91f61fafc96425fc1d6cb3b5cdb049ed8ac84fcae145ad8ddd573d5ca9dd096d"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "91f61fafc96425fc1d6cb3b5cdb049ed8ac84fcae145ad8ddd573d5ca9dd096d"
+      },
+      "path": "scripts/cell_experiments/online_v4/circuit_runtime.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "1f9e52a6ee716171468e8018277f712e95ca4e55db890683457540c0d7d7b127"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "1f9e52a6ee716171468e8018277f712e95ca4e55db890683457540c0d7d7b127"
+      },
+      "path": "scripts/cell_experiments/online_v4/circuit_study.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "fc3e4c66f36f352e89359a406c8c8d8ff1a8f607b1930e2d00f9b802aa1db566"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "fc3e4c66f36f352e89359a406c8c8d8ff1a8f607b1930e2d00f9b802aa1db566"
+      },
+      "path": "scripts/cell_experiments/online_v4/onpolicy_backend.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "e79cf7f17d06cf57451415b51c54d596536bfb018113c67a9da70ef1bf194a10"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "e79cf7f17d06cf57451415b51c54d596536bfb018113c67a9da70ef1bf194a10"
+      },
+      "path": "scripts/cell_experiments/online_v4/onpolicy_contract.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "c04307a1cc384a1045f95b3388a24d0d7fd0dfc965de072298370114ca92a1d2"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "c04307a1cc384a1045f95b3388a24d0d7fd0dfc965de072298370114ca92a1d2"
+      },
+      "path": "scripts/cell_experiments/online_v4/onpolicy_feedback.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "fd0d9706838736bffe8e5980b272ebe3dd918f6a7e4c5a20a7dcd0777a3a13c2"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "fd0d9706838736bffe8e5980b272ebe3dd918f6a7e4c5a20a7dcd0777a3a13c2"
+      },
+      "path": "scripts/cell_experiments/online_v4/onpolicy_loop.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "957ca60ad66dc578da405734a6060068a4d551af5a157642942810eafa8797b7"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "957ca60ad66dc578da405734a6060068a4d551af5a157642942810eafa8797b7"
+      },
+      "path": "scripts/cell_experiments/online_v4/onpolicy_rollout.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "64db149bee43242e68703a30ce090c3c2a3eb38f3d0347ac8c152d63898255f8"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "64db149bee43242e68703a30ce090c3c2a3eb38f3d0347ac8c152d63898255f8"
+      },
+      "path": "scripts/cell_experiments/online_v4/onpolicy_train.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "3cec672653806d7559d0f428b3f66bdba9947320469b64b3551d869973c3b430"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "3cec672653806d7559d0f428b3f66bdba9947320469b64b3551d869973c3b430"
+      },
+      "path": "scripts/cell_experiments/online_v4/reporting_v4.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "9fe7c44c9882f74b66174978da190984f8a6e48d633cd7bffcb141ec0d8b5fff"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "9fe7c44c9882f74b66174978da190984f8a6e48d633cd7bffcb141ec0d8b5fff"
+      },
+      "path": "scripts/cell_experiments/online_v4/round03_cli.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "bd45e297b2e14fbefad4ca7847079b59e4ecb82632218f1ec44aafc257b425ef"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "bd45e297b2e14fbefad4ca7847079b59e4ecb82632218f1ec44aafc257b425ef"
+      },
+      "path": "scripts/cell_experiments/online_v4/round03_jobs.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "3768b4de5b8a29d6696b8658f19fdeaf3183e72dc279355de7a7f38bff4dabc5"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "3768b4de5b8a29d6696b8658f19fdeaf3183e72dc279355de7a7f38bff4dabc5"
+      },
+      "path": "scripts/cell_experiments/online_v4/round03_plan.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "af1849bcdf62be71aad0af3c50729eeeca54d431372777f792a62e7e94daec7a"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "af1849bcdf62be71aad0af3c50729eeeca54d431372777f792a62e7e94daec7a"
+      },
+      "path": "scripts/cell_experiments/online_v4/round03_report.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "451b97c9a65b357513de53cdd99a47d91f8a1bcea7323156c895873611efff85"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "451b97c9a65b357513de53cdd99a47d91f8a1bcea7323156c895873611efff85"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_circuit_router.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "e19ec01285f547dd0a58ae9fb10c54540f7a0c2783554e12547e7096262a9ba8"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "e19ec01285f547dd0a58ae9fb10c54540f7a0c2783554e12547e7096262a9ba8"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_circuit_runtime.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "a13104521f1837ff81739ca3707ab9a4af10d89a7387a4c3b590d6387a69b43a"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "a13104521f1837ff81739ca3707ab9a4af10d89a7387a4c3b590d6387a69b43a"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_onpolicy_cache.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "fa0e03074f7c2218626811c8ca3dac62425a95a05fda9b1b5203ee4792c0978c"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "fa0e03074f7c2218626811c8ca3dac62425a95a05fda9b1b5203ee4792c0978c"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_onpolicy_flow.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "e2455b5d219a2da5175406324c3abd16b71dc2c6c749a4b3229d38cf8d32f998"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "e2455b5d219a2da5175406324c3abd16b71dc2c6c749a4b3229d38cf8d32f998"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_onpolicy_tensor.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "621e400f69dfde45c56cdbb2d983a2112fd4408f47dcff9b5a2c108128a22914"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "621e400f69dfde45c56cdbb2d983a2112fd4408f47dcff9b5a2c108128a22914"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_reporting_v4.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "50a5b87a8ed81b3cf71fee30aacbe01b55564fe19166f272cdbfd9159a9b1025"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "50a5b87a8ed81b3cf71fee30aacbe01b55564fe19166f272cdbfd9159a9b1025"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_round03_plan.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "6f1837809f105e0cd82502f6d4cec3ab287a3358774cfbc414ba5bb08df64d9a"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "6f1837809f105e0cd82502f6d4cec3ab287a3358774cfbc414ba5bb08df64d9a"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_round03_report.py",
+      "same_bytes_in_available_commits": true
+    },
+    {
+      "evidence_head": {
+        "available": true,
+        "sha256": "5fee971d8affb9c084b016bfc620340469f7b1387c1458540b1d0f2355776e54"
+      },
+      "executed_candidate": {
+        "available": true,
+        "sha256": "5fee971d8affb9c084b016bfc620340469f7b1387c1458540b1d0f2355776e54"
+      },
+      "path": "scripts/cell_experiments/online_v4/test_shared_pool_cleanup.py",
+      "same_bytes_in_available_commits": true
+    }
+  ],
+  "source_head": "74bf3fdea6ff77d253212e623ce3a619c35c2983",
+  "worktree_modified": false
+}

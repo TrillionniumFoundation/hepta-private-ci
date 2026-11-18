@@ -16,10 +16,18 @@ class WarmStartTensorTests(unittest.TestCase):
 
         torch.set_num_threads(1)
         torch.manual_seed(1729)
-        base = Qwen2ForCausalLM(Qwen2Config(
-            vocab_size=32, hidden_size=16, intermediate_size=32,
-            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=2,
-            max_position_embeddings=32, tie_word_embeddings=True))
+        base = Qwen2ForCausalLM(
+            Qwen2Config(
+                vocab_size=32,
+                hidden_size=16,
+                intermediate_size=32,
+                num_hidden_layers=1,
+                num_attention_heads=2,
+                num_key_value_heads=2,
+                max_position_embeddings=32,
+                tie_word_embeddings=True,
+            )
+        )
         base.requires_grad_(False)
         initial_base = copy.deepcopy(base.state_dict())
         ids = torch.tensor([[1, 3, 5, 7, 9, 11]])
@@ -44,9 +52,15 @@ class WarmStartTensorTests(unittest.TestCase):
             second_base = Qwen2ForCausalLM(first.config)
             second_base.load_state_dict(initial_base)
             second_base.requires_grad_(False)
-            second = attach_adapter(second_base, {
-                "schema": "hepta.current-policy-sft-model.v1",
-                "adapter_directory": "first-adapter"}, root, trainable=True)
+            second = attach_adapter(
+                second_base,
+                {
+                    "schema": "hepta.current-policy-sft-model.v1",
+                    "adapter_directory": "first-adapter",
+                },
+                root,
+                trainable=True,
+            )
             second_parameters, loaded = checked_parameter_hash(second, torch, after)
             self.assertEqual(loaded, after)
             with self.assertRaisesRegex(ValueError, "previous actual after hash"):
@@ -60,7 +74,9 @@ class WarmStartTensorTests(unittest.TestCase):
             self.assertEqual(selected, 4)
             loss.backward()
             fresh.step()
-            self.assertNotEqual(numeric._parameter_hash(second_parameters, torch), after)
+            self.assertNotEqual(
+                numeric._parameter_hash(second_parameters, torch), after
+            )
 
 
 if __name__ == "__main__":
