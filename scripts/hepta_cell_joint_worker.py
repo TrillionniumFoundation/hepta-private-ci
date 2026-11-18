@@ -9,9 +9,11 @@ import importlib.util
 import json
 from pathlib import Path
 import platform
+import re
 import sys
 import time
 import numpy as np
+from package_hia_cell_candidate import git, read_file, relative
 from hepta_cells.bundle import Bundle
 from hepta_cells.component_types import (
     Budget,
@@ -72,6 +74,120 @@ def device():
         "numeric_profile": "float64",
         "byteorder": sys.byteorder,
     }
+
+
+def verify_candidate_source_closure(value, roots):
+    """Admit only a complete execution closure; optional provenance stays scoped."""
+    required = {
+        ("cells", "scripts/" + name)
+        for name in (
+            "hepta_cell_joint_worker.py",
+            "hepta_cell_campaign_worker.py",
+            "hepta_cell_semantic_campaign_worker.py",
+            "runtime_stdio.py",
+            "runtime_process_contract.py",
+            "runtime_process_bridge.py",
+            "qualify_runtime_process_bridge.py",
+            "qualify_runtime_campaign.py",
+            "refreeze_joint_worker.py",
+            "package_hia_cell_candidate.py",
+            "qualify_hia_cell_joint.py",
+            "qualify_cell_updates.py",
+            "verify_hepta_maintenance_cycle.py",
+            "verify_hepta_semantic_cycle.py",
+            "review_hepta_maintenance_snapshot.py",
+        )
+    }
+    for group, prefixes in (
+        ("cells", ("scripts/hepta_cells", "scripts/hepta_pred1")),
+        ("hia", ("hepta",)),
+    ):
+        root = roots[group]
+        names = {
+            str(path.relative_to(root))
+            for prefix in prefixes
+            for path in (root / prefix).rglob("*.py")
+        }
+        # Portable Cell bundles need not carry a checkout. When one is present,
+        # missing tracked sources remain required even under skip-worktree.
+        if (root / ".git").exists():
+            names.update(
+                name
+                for name in git(
+                    root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", *prefixes
+                )
+                .decode()
+                .split("\0")
+                if name.endswith(".py")
+            )
+        required.update((group, name) for name in names)
+    listed = {}
+    for item in value["files"]:
+        if item["root"] not in ("cells", "hia"):
+            continue
+        key = (item["root"], str(relative(item["path"])))
+        if key in listed:
+            raise ValueError("duplicate source in execution closure")
+        listed[key] = item["sha256"]
+    if not required <= listed.keys():
+        raise ValueError("candidate lacks required execution source closure")
+    # Old v1 records without this optional field still need the complete source
+    # closure. Reading them does not invent an original HEAD/tree qualification.
+    if "source_identity" not in value:
+        return
+    identities = value["source_identity"]
+    if type(identities) is not dict or set(identities) != {"cells", "hia"}:
+        raise ValueError("source identity must cover the Cell and HIA execution roots")
+    for group, identity in identities.items():
+        if (
+            identity.get("schema") != "hepta.joint-source-identity.v1"
+            or identity.get("object_format") not in {"sha1", "sha256"}
+            or type(identity.get("exact_head_source")) is not bool
+            or type(identity.get("allow_dirty")) is not bool
+            or type(identity.get("git_status_porcelain")) is not str
+        ):
+            raise ValueError("invalid execution source identity")
+        width = 40 if identity["object_format"] == "sha1" else 64
+        if any(
+            not re.fullmatch("[0-9a-f]{" + str(width) + "}", identity.get(key, ""))
+            for key in ("head", "tree")
+        ):
+            raise ValueError("invalid original Git identity")
+        rows = identity["files"]
+        names = [str(relative(row["path"])) for row in rows]
+        expected = {name for source_group, name in listed if source_group == group}
+        if len(set(names)) != len(names) or set(names) != expected:
+            raise ValueError(
+                "source identity scope differs from execution file closure"
+            )
+        for row in rows:
+            raw, mode = read_file(roots[group], row["path"])
+            checksum = hashlib.sha256(raw).hexdigest()
+            blob = hashlib.new(
+                identity["object_format"],
+                b"blob " + str(len(raw)).encode() + b"\0" + raw,
+            ).hexdigest()
+            if (
+                checksum != row["sha256"]
+                or checksum != listed[(group, row["path"])]
+                or len(raw) != row["bytes"]
+                or blob != row["git_blob"]
+                or format(mode | 0o100000, "o") != row["mode"]
+            ):
+                raise ValueError("execution bytes or mode differ from source identity")
+            if identity["exact_head_source"] and (
+                blob != row["head_blob"] or row["mode"] != row["head_mode"]
+            ):
+                raise ValueError(
+                    "execution source differs from its claimed original HEAD"
+                )
+        if identity["exact_head_source"] and identity["git_status_porcelain"]:
+            raise ValueError("dirty source cannot claim exact original HEAD bytes")
+    cells = identities["cells"]
+    if value["source_bases"]["cells"] != (
+        cells["head"] if cells["exact_head_source"] else None
+    ):
+        raise ValueError("Cell source base differs from execution identity")
 
 
 def load_candidate(path):
@@ -145,6 +261,7 @@ def load_candidate(path):
         )
     if not required <= observed:
         raise ValueError("candidate lacks required source closure")
+    verify_candidate_source_closure(value, roots)
     native = value["native"]
     build = strict_json((roots["artifacts"] / "native/build.json").read_bytes())
     if (

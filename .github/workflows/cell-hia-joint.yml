@@ -11,6 +11,8 @@ on:
       - 'scripts/verify_hepta_semantic_cycle.py'
       - 'scripts/test_hepta_maintenance_semantics.py'
       - 'scripts/test_hepta_joint_source_identity.py'
+      - 'scripts/test_hepta_joint_candidate_closure.py'
+      - 'scripts/test_hepta_runtime_campaign_binding.py'
       - 'scripts/qualify_runtime_campaign.py'
       - 'scripts/package_hia_cell_candidate.py'
       - 'scripts/verify_hepta_maintenance_cycle.py'
@@ -101,7 +103,7 @@ jobs:
         env:
           PYTHONPATH: scripts
         run: |
-          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
       - name: Freeze and run actual HIA and GRU cold processes
         working-directory: cells
         run: |
@@ -116,6 +118,8 @@ jobs:
         run: |
           python -B scripts/review_hepta_maintenance_snapshot.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-worker/campaign" --snapshot-dir "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/review-snapshot" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-readonly-review.json"
           python -B scripts/review_hepta_maintenance_snapshot.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-campaign-worker/campaign" --snapshot-dir "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-review-snapshot" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-readonly-review.json" --semantic
+          python -B scripts/qualify_runtime_campaign.py --runtime-report "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-runtime.json" --review "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-readonly-review.json" > "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-review-binding.json"
+          python -B scripts/qualify_runtime_campaign.py --runtime-report "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-campaign-runtime.json" --review "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-readonly-review.json" > "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-review-binding.json"
       - name: Retain original evidence including failures
         if: always()
         uses: actions/upload-artifact@v4

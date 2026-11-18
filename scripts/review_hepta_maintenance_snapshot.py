@@ -21,9 +21,9 @@ import sys
 import time
 
 EMPTY_WAL = {"memory/owner.sqlite-wal", "predictor/owner.sqlite-wal"}
-VERIFIER_SHA256 = "0901262d5ef3fdc2612acd2f5b00e4f1d098f80bf4fae59d348462126e68c0a2"
+VERIFIER_SHA256 = "526d959dee1e7729d9097fc728556aa7395d0c993f0dcd4041a4f35c6a92d68f"
 SEMANTIC_VERIFIER_SHA256 = (
-    "8b68b808b29b30aa70ae4fea3452c17114309fa0fd28487bd02d5bdc0558ae4c"
+    "9263dea8f2bddb35b5ae6255fe8969ac5c2538911a95878f31a4091a9a2f19dd"
 )
 
 
