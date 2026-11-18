@@ -1,0 +1,85 @@
+name: Hepta pinned cargo-deny diagnostics
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-cargo-deny-diagnostics.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cargo-deny-diagnostics-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  diagnostics:
+    name: Pinned cargo-deny diagnostic (${{ matrix.label }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: candidate
+            ref: ${{ github.event.pull_request.head.sha }}
+          - label: pre-snapshot-baseline
+            ref: 572cdaf90db4b5b8611737f222e9794b5e87d495
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.ref }}
+          persist-credentials: false
+      - name: Build the unchanged pinned official action image
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ matrix.ref }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          evidence="$RUNNER_TEMP/hepta-cargo-deny"
+          action="$RUNNER_TEMP/cargo-deny-action"
+          mkdir -p "$evidence" "$RUNNER_TEMP/deny-home"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          git init "$action"
+          git -C "$action" remote add origin https://github.com/EmbarkStudios/cargo-deny-action.git
+          git -C "$action" fetch --depth=1 origin 82eb9f621fbc699dd0918f3ea06864c14cc84246
+          git -C "$action" checkout --detach FETCH_HEAD
+          test "$(git -C "$action" rev-parse HEAD)" = 82eb9f621fbc699dd0918f3ea06864c14cc84246
+          cp "$action/Dockerfile" "$action/entrypoint.sh" "$evidence/"
+          sha256sum "$action/Dockerfile" "$action/entrypoint.sh" > "$evidence/action-files.sha256"
+          docker build -t hepta-pinned-cargo-deny "$action" 2>&1 | tee "$evidence/image-build.log"
+          docker image inspect hepta-pinned-cargo-deny --format '{{.Id}}' > "$evidence/image-id.txt"
+          docker run --rm --entrypoint cargo-deny hepta-pinned-cargo-deny --version | tee "$evidence/cargo-deny-version.txt"
+          grep -Fx 'cargo-deny 0.19.0' "$evidence/cargo-deny-version.txt"
+      - name: Run the exact gate command and retain its failing exit
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/hepta-cargo-deny"
+          args=(1.96.0 "" "" "" false --log-level warn --manifest-path ./codex-rs/Cargo.toml --all-features check "")
+          printf '%q ' /entrypoint.sh "${args[@]}" > "$evidence/command.txt"
+          printf '\n' >> "$evidence/command.txt"
+          set +e
+          docker run --rm \
+            -e HOME=/github/home \
+            -v "$RUNNER_TEMP/deny-home:/github/home" \
+            -v "$GITHUB_WORKSPACE:/github/workspace" \
+            -w /github/workspace \
+            hepta-pinned-cargo-deny "${args[@]}" \
+            2>&1 | tee "$evidence/cargo-deny.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$status" > "$evidence/exit-code.txt"
+          exit "$status"
+      - name: Verify unchanged tracked source
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+      - name: Preserve complete raw diagnostic evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-cargo-deny-${{ matrix.label }}-${{ matrix.ref }}
+          path: ${{ runner.temp }}/hepta-cargo-deny
+          if-no-files-found: error
