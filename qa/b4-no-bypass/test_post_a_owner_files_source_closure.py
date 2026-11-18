@@ -56,7 +56,7 @@ class PostAOwnerFilesSourceTests(unittest.TestCase):
             ".with_original_prepared_operation(", "self.experience.open_original(",
             "self.dataset.open_original(",
             "JournalData::open(&self.training, files, objective, self.mode)?",
-            "self.training_receipt.open_original(", "self.local",
+            "self.training_receipt.open_original(", "self.local\n                        .open_original(",
             ".map_err(refused)??;", "experience.open_witness()?", "dataset.open_witness()?",
             "training.open_witness()?", "receipts.open_witness()?", "local.open_witness()?",
             "prepared.revalidate_source()"))
