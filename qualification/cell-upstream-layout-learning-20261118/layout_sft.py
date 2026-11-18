@@ -18,7 +18,7 @@ PARENT = "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786"
 PARENT_PARAMETERS = "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f"
 SETTINGS = {
     "steps": 32,
-    "sequence_tokens": 4096,
+    "sequence_tokens": 3584,
     "head_chunk_positions": 256,
     "learning_rate": 0.0001,
     "rank": 4,
@@ -123,11 +123,74 @@ def encode_groups(tokenizer, records, limit, mode):
     return groups
 
 
-def backward_group(torch, model, turns, mode, pad_token_id, limit, device):
+def backward_group(
+    torch,
+    model,
+    turns,
+    mode,
+    pad_token_id,
+    limit,
+    device,
+    trace_path=None,
+    trace_context=None,
+):
+    """The inherited mean-target objective with durable partial-compute events."""
     require(mode in MODES, "unknown evidence layout")
-    return matched.backward_group(
-        torch, model, turns, "all_actions", pad_token_id, limit, device
-    )
+    counts = [sum(value != -100 for value in row["labels"][1:]) for row in turns]
+    denominator = sum(counts)
+    require(denominator > 0, "nonempty objective required")
+    observed_loss, positions, inputs = 0.0, 0, 0
+
+    def emit(event, chunk, count):
+        if trace_path is not None:
+            record = {
+                **(trace_context or {}),
+                "event": event,
+                "chunk": chunk,
+                "target_positions": count,
+                "padded_positions": limit,
+                "at_ns": time.time_ns(),
+                "monotonic_ns": time.monotonic_ns(),
+                "optimizer_update_in_this_chunk": False,
+            }
+            if torch.cuda.is_available() and str(device).startswith("cuda"):
+                record["cuda_allocated_bytes"] = torch.cuda.memory_allocated(device)
+                record["cuda_reserved_bytes"] = torch.cuda.memory_reserved(device)
+            with Path(trace_path).open("ab") as stream:
+                stream.write(data.canonical(record) + b"\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+
+    for chunk, (row, count) in enumerate(zip(turns, counts)):
+        padding = limit - len(row["input_ids"])
+        require(padding >= 0, "complete transcript exceeds frozen context")
+        ids = torch.tensor([row["input_ids"] + [pad_token_id] * padding], device=device)
+        labels = torch.tensor([row["labels"] + [-100] * padding], device=device)
+        mask = torch.tensor(
+            [[1] * len(row["input_ids"]) + [0] * padding], device=device
+        )
+        emit("forward_started", chunk, count)
+        loss, actual_count = numeric.selected_token_loss(model, ids, mask, labels)
+        require(
+            actual_count == count and bool(torch.isfinite(loss)), "invalid matched loss"
+        )
+        emit("forward_completed", chunk, actual_count)
+        weighted = loss * (count / denominator)
+        emit("backward_started", chunk, count)
+        weighted.backward()
+        observed_loss += float(weighted.detach())
+        emit("backward_completed", chunk, actual_count)
+        positions += actual_count
+        inputs += len(row["input_ids"])
+    return {
+        "loss": observed_loss,
+        "model_forwards": len(turns),
+        "model_backwards": len(turns),
+        "head_positions": positions,
+        "supervised_positions": denominator,
+        "input_tokens": inputs,
+        "padded_positions": limit * len(turns),
+    }
 
 
 def verified_references(records):
@@ -316,6 +379,18 @@ def train(
         torch.manual_seed(SETTINGS["seed"])
         torch.cuda.manual_seed_all(SETTINGS["seed"])
         predictor = matched.Predictor(parent, artifact_root, old_code_root)
+        write_new(
+            output / "MODEL_LOADED.json",
+            {
+                "actual_parent_model_digest": predictor.model_digest,
+                "parameter_digest_verified_by_loader": PARENT_PARAMETERS,
+                "at_ns": time.time_ns(),
+                "wall_seconds_since_stage_entry": time.perf_counter() - started,
+                "device": predictor.device_report,
+                "optimizer_updates": 0,
+                "scope": "stage entry through actual cold load, including imports and byte verification",
+            },
+        )
         groups = encode_groups(
             predictor.tokenizer, records, SETTINGS["sequence_tokens"], mode
         )
@@ -375,6 +450,13 @@ def train(
                 predictor.tokenizer.pad_token_id,
                 SETTINGS["sequence_tokens"],
                 device,
+                trace_path=output / "COMPUTE.jsonl",
+                trace_context={
+                    "phase": "training",
+                    "mode": mode,
+                    "step": index + 1,
+                    "group": group,
+                },
             )
             norm = torch.nn.utils.clip_grad_norm_(
                 [value for _, value in parameters],
@@ -584,6 +666,18 @@ def calibrate(records, parent, artifact_root, old_code_root, freeze, output):
         torch.cuda.reset_peak_memory_stats(device)
         torch.manual_seed(SETTINGS["seed"])
         predictor = matched.Predictor(parent, artifact_root, old_code_root)
+        write_new(
+            output / "MODEL_LOADED.json",
+            {
+                "actual_parent_model_digest": predictor.model_digest,
+                "parameter_digest_verified_by_loader": PARENT_PARAMETERS,
+                "at_ns": time.time_ns(),
+                "wall_seconds_since_stage_entry": time.perf_counter() - started,
+                "device": predictor.device_report,
+                "optimizer_updates": 0,
+                "scope": "stage entry through actual cold load, including imports and byte verification",
+            },
+        )
         model = predictor.model
         for name, value in model.named_parameters():
             value.requires_grad_("lora_" in name)
@@ -625,6 +719,12 @@ def calibrate(records, parent, artifact_root, old_code_root, freeze, output):
                 predictor.tokenizer.pad_token_id,
                 SETTINGS["sequence_tokens"],
                 device,
+                trace_path=output / "COMPUTE.jsonl",
+                trace_context={
+                    "phase": "calibration",
+                    "mode": mode,
+                    "optimizer_updates": 0,
+                },
             )
             require(
                 all(

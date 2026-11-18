@@ -198,7 +198,31 @@ def build(source_commit):
         "prepared/ENCODING.json",
         "prepared/INPUT_INDEX.json",
     )
+    prior_root = ctx.WORK.parent / "hepta-upstream-layout-learning-20261118-2e9b"
+    prior_failure = prior_root / "retained/calibration/FAILED.json"
+    prior_exit = prior_root / "owned-training-1/calibration/EXIT.json"
+    layout.require(
+        ctx.sha(prior_failure)
+        == "1a30a38f05d36d0a276e18d1dddb6181cc6933c0df0362c38f30ae1e6205d6c1"
+        and ctx.sha(prior_exit)
+        == "b8b4ebdd3b27193564c535ba732f209fbdc676f2b0bdff36692055147ae30f36",
+        "original failed calibration must remain retained",
+    )
     protocol = {
+        "prior_failed_calibration": {
+            "source_commit": "a764cca4e303f8acd10bf62629a3fc63a7cbb276",
+            "job_id": "1a1f011ca61-ffbe-6ec",
+            "failure_path": str(prior_failure),
+            "failure_sha256": ctx.sha(prior_failure),
+            "owner_exit_sha256": ctx.sha(prior_exit),
+            "optimizer_updates": 0,
+            "generation_calls": 0,
+            "actual_model_computation": "real P cold load and parameter verification; at least one attempted eager forward; exact completed F/B counts unknown without old chunk events",
+            "costs_retained": True,
+            "old_source_and_output_overwritten": False,
+        },
+        "padding_revision": "4096 to 3584 = ceil(3471/128)*128, after real OOM; removes only masked padding; full evidence and identical targets retained",
+        "partial_compute_accounting": "durable start/complete events for every real selected-head forward and backward",
         "schema": "hepta.upstream-layout-protocol.v1",
         "prepared_at_ns": time.time_ns(),
         "builder_source_commit": source_commit,
@@ -216,7 +240,7 @@ def build(source_commit):
         "calibration_index": calibration_index,
         "information_match": "same original task, actual first P/C answer, exact actual feedback, identical verified maintainer target",
         "layout_difference": "single user evidence document versus actual user-assistant-tool turns; native tool wire stays original labeled user observation",
-        "compute_match": "same P tensors, empty AdamW, 32 updates, example order, target tokens, selected head positions, full padded 4096-token forwards/backwards",
+        "compute_match": "same P tensors, empty AdamW, 32 updates, example order, target tokens, selected head positions, full padded 3584-token forwards/backwards",
         "unpadded_token_counts_can_differ": True,
         "physical_compute_time_energy_equal": False,
         "target_partition": "at most 256 selected head positions per full causal forward/backward; weighted target-count mean; no token truncation",

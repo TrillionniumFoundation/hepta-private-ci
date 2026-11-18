@@ -23,7 +23,7 @@ sequence. The inherited native chat wire renders tool observations as labeled
 user observations. This changes serialization and labels, not raw evidence.
 Both arms learn exactly the same target token IDs and see the same record order.
 
-Each arm performs 32 actual updates with a 4096-token padded sequence shape.
+Each arm performs 32 actual updates with a 3584-token padded sequence shape.
 Targets are partitioned into at most 256 selected output-head positions per
 full causal forward/backward; target-count weighting preserves the original
 mean target loss. Every chunk retains the full input and masked prefix.
@@ -35,6 +35,24 @@ is retained and is not silently retried with a different budget.
 Actual unpadded input lengths and wall times may differ. Matching target
 positions, padded forward/backward shapes, update counts and initialization
 does not establish identical physical energy or whole-system cost.
+
+## Retained first calibration failure
+
+The published 4096-token candidate a764cca4 was actually cold-loaded and entered
+eager attention, then exhausted its existing 70% CUDA allocator budget.
+It made zero optimizer updates and zero generation calls, but consumed real
+model loading, attempted forward computation, host CPU time and energy.
+Its exact completed forward/backward counts are unknown because the old
+chunk helper did not persist partial events. All original failure receipts
+remain published and the original execution directory is unchanged.
+
+This separate candidate uses 3584 padded positions, the next 128-token multiple
+above the actual longest complete 3471-token A sequence. No evidence or target
+token is removed. Eager attention, the 70% cap, target chunks of 256, the common
+parent and the 32-update budgets remain fixed. A new durable trace records
+every attempted/completed forward and backward so partial failures retain
+their observed computation. The real CPU numerical equivalence test is rerun
+for this accounting implementation before the new freeze.
 
 ## Prospective evaluation
 

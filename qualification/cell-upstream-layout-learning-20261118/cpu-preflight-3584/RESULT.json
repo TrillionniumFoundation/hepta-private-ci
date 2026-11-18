@@ -1,0 +1,99 @@
+{
+  "B3_content_read": false,
+  "after_sha256": {
+    "build_dataset.py": "d2d17081a573045f99ec8a748093426f29304c55d4384e712f899469db734176",
+    "layout_context.py": "29b9dc03914c106bc737d84756566cabc99033e74175d1d9550688b533f519a3",
+    "layout_sft.py": "75027968cb0b06e4c9bed94748744f5f94be3717f139eec9515cd4e556f79a69",
+    "owner.py": "64147ee9b0fcbcde0a2fe8c4c68f209a729590088611a8201dc5b0843d601e20",
+    "run_layout.py": "268f2619925745c8d5e90dc4c823954e62e2e2fc39a5d1ac3a91301c72384b67",
+    "test_layout_sft.py": "33f3f6f433ad86770ddea150f1854ea3d6798b1a9ec47c99ded1fb4213173b4e"
+  },
+  "before_sha256": {
+    "build_dataset.py": "299946a0aeb1d0c18d35b9da66f9ab6f9a3f50ae4712b7e15f8ce37b39b2404f",
+    "layout_context.py": "29b9dc03914c106bc737d84756566cabc99033e74175d1d9550688b533f519a3",
+    "layout_sft.py": "99ce5e175523784eccdefc920b1654040f7dbe4314da2f43487ba286a89e83d3",
+    "owner.py": "64147ee9b0fcbcde0a2fe8c4c68f209a729590088611a8201dc5b0843d601e20",
+    "run_layout.py": "268f2619925745c8d5e90dc4c823954e62e2e2fc39a5d1ac3a91301c72384b67",
+    "test_layout_sft.py": "33f3f6f433ad86770ddea150f1854ea3d6798b1a9ec47c99ded1fb4213173b4e"
+  },
+  "format_ast_equivalent": true,
+  "model_generation_calls": 0,
+  "research_training_updates": 0,
+  "stages": [
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/build_dataset.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/layout_context.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/run_layout.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/test_layout_sft.py"
+      ],
+      "exit_code": 0,
+      "name": "format",
+      "wall_seconds": 0.054377850028686225
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/build_dataset.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/layout_context.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/run_layout.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/test_layout_sft.py"
+      ],
+      "exit_code": 0,
+      "name": "format-check",
+      "wall_seconds": 0.030538104998413473
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "check",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/build_dataset.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/layout_context.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/run_layout.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/test_layout_sft.py"
+      ],
+      "exit_code": 0,
+      "name": "lint",
+      "wall_seconds": 0.033874107990413904
+    },
+    {
+      "argv": [
+        "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+        "-B",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584/source/qualification/cell-upstream-layout-learning-20261118/test_layout_sft.py"
+      ],
+      "exit_code": 0,
+      "name": "numeric-test",
+      "wall_seconds": 2.855656985018868
+    }
+  ],
+  "status": "PASS"
+}

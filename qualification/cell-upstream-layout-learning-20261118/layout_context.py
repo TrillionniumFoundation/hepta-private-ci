@@ -12,8 +12,8 @@ OLD_CODE = Path("/home/qian-qi/work/hepta-e1-matched-info-20261118-2e9b/source")
 PREVIOUS = Path("/home/qian-qi/work/hepta-e2-current-credit-20261118-2e9b")
 COLLECTION = Path("/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b")
 ARTIFACT = Path("/dev/shm/hepta-cell-experiments-v3-20261116-0c078a")
-WORK = Path("/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b")
-FIT_ROOT = ARTIFACT / "research-upstream-layout-learning-20261118-2e9b"
+WORK = Path("/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-3584")
+FIT_ROOT = ARTIFACT / "research-upstream-layout-learning-20261118-2e9b-3584"
 PYTHON = "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python"
 PROJECTS = (
     "python-attrs/attrs",
