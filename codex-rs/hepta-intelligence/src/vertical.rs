@@ -45,6 +45,7 @@ use codex_hepta_objective::SoftPreference;
 use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 use crate::AbstentionReason;
@@ -252,7 +253,7 @@ pub fn run_read_only_vertical(
     let scalarization = derive_scalarization(
         ndu_scalarization_profile_id,
         &objective.objective.soft_preferences,
-    );
+    )?;
     let policy = derive_evaluation_policy(&ndu_profile)?;
     let ndu = evaluate_candidates_with_policy(
         ContributionSet {
@@ -363,23 +364,66 @@ fn validate_soft_dimensions(
     Ok(())
 }
 
+/// Objective baselines are independent weights in [0, 1], not a unit-mass
+/// vector. Derive NDU's unit-mass Q32 weights without changing the admitted
+/// objective. Allocate rounding units by largest remainder, then by axis ID,
+/// so the result is exact and independent of input order.
 fn derive_scalarization(
     profile_id: StableId,
     preferences: &[SoftPreference],
-) -> Option<ScalarizationProfile> {
+) -> Result<Option<ScalarizationProfile>, ReadOnlyVerticalError> {
     if preferences.is_empty() {
-        return None;
+        return Ok(None);
     }
-    Some(ScalarizationProfile {
-        profile_id,
-        weights: preferences
-            .iter()
-            .map(|preference| AxisValue {
-                axis: preference.dimension.clone(),
-                value: preference.weight,
+
+    let mut total = 0_i128;
+    for preference in preferences {
+        if !(FixedQ32::ZERO..=FixedQ32::ONE).contains(&preference.weight) {
+            return Err(ReadOnlyVerticalError::Ndu(NduError::InvalidWeight(
+                preference.dimension.to_string(),
+            )));
+        }
+        total += i128::from(preference.weight.raw());
+    }
+    if total == 0 {
+        return Err(ReadOnlyVerticalError::Ndu(
+            NduError::IncompleteScalarization,
+        ));
+    }
+
+    let scale = i128::from(FixedQ32::ONE.raw());
+    // Each admitted weight is at most 2^32; its scaled product fits in i128.
+    // The floor allocations sum to at most `scale`.
+    let mut shares = preferences
+        .iter()
+        .map(|preference| {
+            let scaled = i128::from(preference.weight.raw()) * scale;
+            (preference.dimension.clone(), scaled / total, scaled % total)
+        })
+        .collect::<Vec<_>>();
+    let allocated = shares.iter().map(|(_, raw, _)| raw).sum::<i128>();
+    let remaining = usize::try_from(scale - allocated)
+        .map_err(|_| ReadOnlyVerticalError::Ndu(NduError::Arithmetic))?;
+    shares.sort_by(|left, right| right.2.cmp(&left.2).then_with(|| left.0.cmp(&right.0)));
+    for (_, raw, _) in shares.iter_mut().take(remaining) {
+        *raw += 1;
+    }
+    shares.sort();
+    let weights = shares
+        .into_iter()
+        .map(|(axis, raw, _)| {
+            let raw =
+                i64::try_from(raw).map_err(|_| ReadOnlyVerticalError::Ndu(NduError::Arithmetic))?;
+            Ok(AxisValue {
+                axis,
+                value: FixedQ32::from_raw(raw),
             })
-            .collect(),
-    })
+        })
+        .collect::<Result<Vec<_>, ReadOnlyVerticalError>>()?;
+    Ok(Some(ScalarizationProfile {
+        profile_id,
+        weights,
+    }))
 }
 
 /// Bind the read-only vertical's deterministic aggregation semantics explicitly.
