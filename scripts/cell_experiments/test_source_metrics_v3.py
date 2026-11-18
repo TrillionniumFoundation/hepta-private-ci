@@ -145,6 +145,31 @@ class SourceMetricsTests(unittest.TestCase):
         bad_cold["cold"]["prediction"]["answer"] = "different retained behavior"
         with self.assertRaisesRegex(ValueError, "cold prediction differs"):
             adoption_metrics([bad_cold])
+        no_c = copy.deepcopy(report)
+        no_c["C"] = []
+        no_c["cold"] = None
+        with self.assertRaisesRegex(ValueError, "terminal decision requires C use"):
+            adoption_metrics([no_c])
+
+        no_cold = copy.deepcopy(report)
+        no_cold["cold"] = None
+        with self.assertRaisesRegex(ValueError, "terminal decision requires C use"):
+            adoption_metrics([no_cold])
+
+        unverified_c = copy.deepcopy(report)
+        receipt = unverified_c["C"][0]["outcome"]
+        self.assertTrue(receipt["success"])
+        del receipt["result"]["result"]["observations"]
+        receipt["receipt_sha256"] = digest(
+            {
+                key: value
+                for key, value in receipt.items()
+                if key not in ("receipt_sha256", "success")
+            }
+        )
+        with self.assertRaisesRegex(ValueError, "missing verified C business evidence"):
+            adoption_metrics([unverified_c])
+
         report["C"][0]["prediction"]["loaded_model_digest"] = MODELS[1]
         with self.assertRaisesRegex(ValueError, "different selected model"):
             adoption_metrics([report])
