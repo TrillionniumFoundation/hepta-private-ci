@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+    "run",
+    "--frozen",
+    "--project",
+    "/home/qian-qi/work/hepta-e5-format-20261118-2e9b/source/scripts",
+    "ruff",
+    "format",
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/teacher-source/run_teacher.py",
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/teacher-source/teacher_connection.py"
+  ],
+  "files": {
+    "run_teacher.py": {
+      "bytes": 14710,
+      "sha256": "29e86adde645a712812dbf20a325f86f412ec3ec7462928b282647a0b1cca82d"
+    },
+    "teacher_connection.py": {
+      "bytes": 12266,
+      "sha256": "8bf0895c14ed0204677338c6214e3c315d2c6c8e14969e81e0fd0a613f4f16cc"
+    }
+  },
+  "model_calls": 0,
+  "returncode": 0,
+  "stderr": "",
+  "stdout": "2 files reformatted\n",
+  "wall_seconds": 0.029797470953781158
+}
