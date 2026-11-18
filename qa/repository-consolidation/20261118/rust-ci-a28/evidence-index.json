@@ -1,0 +1,519 @@
+{
+  "format_version": 1,
+  "archives": [
+    {
+      "path": "core-originals.tar.gz",
+      "bytes": 318868,
+      "sha256": "a5259bb3a3139a42de2480ddc33e4d0b7b5b4f13484a71b81614b9e996938265",
+      "files": [
+        {
+          "path": "core-guardian-fixtures-a911-20261118/ARTIFACT_MANIFEST.json",
+          "bytes": 11053,
+          "sha256": "8fddcc2019a1926aea9acda8cbf6681450764410c36b292b87bedbb6cdf12a25"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/CORE_GUARDIAN_FIXTURE_REPORT.md",
+          "bytes": 7765,
+          "sha256": "d11616c95de674512da68e936e0bc38dfee9eed604768ba5bd7000b64467d312"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline/AGENTS.md",
+          "bytes": 22519,
+          "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline/codex-rs/core/src/guardian/review_session.rs",
+          "bytes": 99774,
+          "sha256": "b89ba0957ffd901be96535ec9150ff6f3cfd98c82fb60cdf42d03137c5ab2d38"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline/codex-rs/core/tests/common/responses.rs",
+          "bytes": 59401,
+          "sha256": "fc02e5a0e225638d74cfcb366933ab7435076566e3fc6b4ef4611daf87637cc2"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline/codex-rs/core/tests/common/test_codex.rs",
+          "bytes": 52848,
+          "sha256": "1d2b7f3763ad4cb4c926752c7d8a231515424379103580d17b4c9fa9d6db49c7"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline/codex-rs/core/tests/suite/code_mode.rs",
+          "bytes": 220754,
+          "sha256": "28d631913b9cbcdabe37f6f0ec7f4f3400c65a9905d5124f2407aa2ea8c60b5b"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline/codex-rs/core/tests/suite/network_approval.rs",
+          "bytes": 106204,
+          "sha256": "121b1b8b5ec8d9b3306acff248233e49fac8cc284d53d3506961720910d843bc"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/baseline-manifest.json",
+          "bytes": 903,
+          "sha256": "9aa7260f9f4ce3621e02534e3ff01b623b09901b98df75e9308fb9ea4f568252"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/candidate/codex-rs/core/tests/suite/network_approval.rs",
+          "bytes": 109804,
+          "sha256": "f2fef13a524e041bd9eb9f200f03f4211da2c8f5e95dbf9efaf2ba785bc0ccfc"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/checkpoint.json",
+          "bytes": 3096,
+          "sha256": "cf238910a063da341f6d3544751b336625e35ed6a721d8e59ce52c0578e950c7"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/core-fixture-root-causes.json",
+          "bytes": 31003,
+          "sha256": "05ec17031a09e37397435241fe9fd8e81c166db0eb7973b7f1d593c67119dea4"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/baseline-tests/invocation.json",
+          "bytes": 2015,
+          "sha256": "d3c8af45ee039aa71238b40096b82dd991c36eb5c45789c31e61d801563d8512"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/baseline-tests/recovered-report.json",
+          "bytes": 3587,
+          "sha256": "c7e7b7f066d5843a2c2046f5a1c9559a09ea0cd29a5ebcbe5c4b1a553dca80dc"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/baseline-tests/tests.log",
+          "bytes": 57278,
+          "sha256": "9f551fbd6c2c6cf02871a41f896911f94242952a09f22b24461fa1039c913a36"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/baseline-with-helper/invocation.json",
+          "bytes": 1896,
+          "sha256": "54836244cbc15602c6892aa1032235c6daab794cbdda36bf34e4701360d405cf"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/baseline-with-helper/report.json",
+          "bytes": 3447,
+          "sha256": "9ee966cb22af87f7875cbbec01122403945fd98c58e7ab799c74b5e6da935b9d"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/baseline-with-helper/tests.log",
+          "bytes": 48169,
+          "sha256": "69ee5f490defbc55fc1279e82430e8b02e27f4021d99d99e82a8091eccc1137c"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization/PAUSED-before-lint.json",
+          "bytes": 671,
+          "sha256": "8551ff8fbda2a029a0194eb3754f7664875d781678f9009c07313b8e651d0d2c"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization-v2/fix.log",
+          "bytes": 59233,
+          "sha256": "e9784dc46619dfae8489607647c7f737aaaeec11597e7173871273fc07e3be2c"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization-v2/fmt.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization-v2/guardian-core-fixtures.final.patch",
+          "bytes": 8624,
+          "sha256": "dedbc664b85b1027e566335a74710009d14db0c5ce778c04166330805f03c743"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization-v2/guardian-multimodal-registration.final.patch",
+          "bytes": 1307,
+          "sha256": "71f76fd9f991015b00cd5f1f2db1824287514d219bec39ffadfcbe3d1441b6f4"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization-v2/guardian-network-routing.final.patch",
+          "bytes": 7317,
+          "sha256": "000d38719807a315597b18ffe332c5054ae5c843b74fd64b5b9785b4c8cf1e5b"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/finalization-v2/report.json",
+          "bytes": 1240,
+          "sha256": "66a645cb34246dfb982e9af582da1e5bab15ed74e90326edcdf4f66b33d60736"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/harness-registration-before/report.json",
+          "bytes": 3567,
+          "sha256": "2417c72065feed4bdec7fd2c41851804d7a943ec4dda983d95983645a242bbd6"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/helper-bundle/report.json",
+          "bytes": 2392,
+          "sha256": "7dc3b5467c2a392e7cc7d618a25b02c042ae104185595dd3eb6e16988641aa68"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/lock-owner-observation.json",
+          "bytes": 405,
+          "sha256": "2ed9c3f54f96b99e4fc40fcec54d82765f8852305bcc60867fa5baedcdf8e55e"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/macro-provenance/macro-order-review.json",
+          "bytes": 2115,
+          "sha256": "01c255be0e66f140bff808535dc68540cc31933cf7cddd01f5bd8dcac9c53602"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/macro-provenance/macro-primary-source-lines.json",
+          "bytes": 99526,
+          "sha256": "b603b608de6b179e5455a7d21165aeaae313f2f31c2fd00816c0ea50c710e893"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-real-helpers/invocation.json",
+          "bytes": 2115,
+          "sha256": "99fbdfddb7837250a3b4879af6aa04f2aefb09451c728c58b9b7739558cabe0f"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-real-helpers/phase.json",
+          "bytes": 43,
+          "sha256": "7c895db708005b3c28fd7ae02b62486bb4955d08414fcdadb739753d732ba717"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-real-helpers/report.json",
+          "bytes": 3233,
+          "sha256": "e4cc527df7d7d6febf019a7bf75ee832b297f5a5dc2eed3f7a984bcb1cbad430"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-real-helpers/tests.log",
+          "bytes": 48042,
+          "sha256": "5a63d5cfdc695370c047ae0c3513fc55540cf627fc385c01e52f9a390e4be601"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-registration-fixed/invocation.json",
+          "bytes": 4202,
+          "sha256": "5f9a0649a02a732426c2e359d58c6343790ce5576a09745e050b564a129ab914"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-registration-fixed/registration-report.json",
+          "bytes": 4910,
+          "sha256": "08d440b3ba1ccd6c06d111517598c45a118030a399a56aaf31fd2144d3a2973f"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-registration-fixed/test-report.json",
+          "bytes": 7261,
+          "sha256": "72f3d4d5c12f9fa705b8ddfd1e2838727d1de38af33d77ecaef6bcf3f2a8d940"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/multimodal-registration-fixed/tests.log",
+          "bytes": 48927,
+          "sha256": "04c7f65a486a4795d44c101f3a8ed293cad8b3a2c697a0948c37cea945ff8a82"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/network-red-green-v2/green-routed/tests.log",
+          "bytes": 46567,
+          "sha256": "f8e0aeabcb6d69093b76b4a96b3dce43013bf63f0ad29baedad0a50b8e4b815e"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/network-red-green-v2/red-delayed-original/tests.log",
+          "bytes": 48233,
+          "sha256": "eec0aeadb911ec8bb4bee8d0151bf700725bd07a3790024f08bf9df4baa737f5"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/network-red-green-v2/report.json",
+          "bytes": 3342,
+          "sha256": "0a5a05a092f599c0e553b11dddd0c29f4d5199abec47aba2757e79b75f3e5e98"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/prepare-hydrate.json",
+          "bytes": 2191,
+          "sha256": "c738e485979fc4fc61c933b27417ed14bc9aa02f97a49c0d691169916a2146fa"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/prepare.json",
+          "bytes": 2592,
+          "sha256": "f03cff398c294e727d08b519ff3c743020cde13414d63b7f665d406c31ccb433"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/shared-helper-sha-guard.json",
+          "bytes": 422,
+          "sha256": "e7df1629521bc828ad6e9c2927d5d0515ad66df66cfeebb2160e2b940a27f729"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/tested-to-formatted-code_mode.diff",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/tested-to-formatted-network_approval.diff",
+          "bytes": 1488,
+          "sha256": "d34ed24077e5cd63a0237eb31275d32480716963d2bf41e3afd7a9bb2c8cbcc7"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/evidence/tested-to-formatted.json",
+          "bytes": 1098,
+          "sha256": "405bebc7b014fc3c34a67e90d6994fe6a9da37850233b57cf37b4ac86df5a8dc"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/final-source/codex-rs/core/tests/suite/code_mode.rs",
+          "bytes": 220754,
+          "sha256": "cbe0e322b9a6b3a3a804d1f1810adb9e5baa5c3afe1ebb14b4cc650b8e09cd84"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/final-source/codex-rs/core/tests/suite/network_approval.rs",
+          "bytes": 109722,
+          "sha256": "cfd9384fc9119d72db531bc6a4e487ecf6439772294266c04cc1ff16c35ed4ab"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/guardian-multimodal-registration.json",
+          "bytes": 3882,
+          "sha256": "f15f6436dbdbfed002a5b18fd3a6c3c616ab9446d176f15a2c77ca4653730b9a"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/guardian-multimodal-registration.patch",
+          "bytes": 1016,
+          "sha256": "91a183bff9931be7a37ba7534b2687e141e3417d591a0b343a3b148a7039974d"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/guardian-network-red-control.json",
+          "bytes": 518,
+          "sha256": "99ddff20af744b05501fa3f692b14fbc124919d8c69f53b871c6ef1ce7b56784"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/guardian-network-red-control.patch",
+          "bytes": 783,
+          "sha256": "4ac79e4d35621ffc2fc44682c01c60df3faa6255ce862be7c51f2073da17b06f"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/guardian-network-routing.json",
+          "bytes": 821,
+          "sha256": "cdb935e1e0e348677283cdda539548f245cdd7ecb05191e949feee9dd5b16dd1"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/guardian-network-routing.patch",
+          "bytes": 7100,
+          "sha256": "d5809a1aa2419fea39c609413a0cd23ca90bd1afb61aca10ef5786bc8ec911fd"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/local-candidate-ancestry.json",
+          "bytes": 880,
+          "sha256": "092417d1ee30c807958e3fa12b9f7f89a2dd274d257f7e83c654d69c710252da"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/macro-candidate/codex-rs/core/tests/suite/code_mode.rs",
+          "bytes": 220754,
+          "sha256": "cbe0e322b9a6b3a3a804d1f1810adb9e5baa5c3afe1ebb14b4cc650b8e09cd84"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/multimodal-ci-timing-audit.json",
+          "bytes": 3072,
+          "sha256": "eb47bb3be5221247347cdb64ea2b0fcbf21390d49d856a15157ec2e941c740d0"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/native-scripts/helper_bundle.py",
+          "bytes": 2830,
+          "sha256": "f4013968b8f08e3830a4a9d768276414d40c1789683d10c1fd82350cafdc43a7"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/native-scripts/macro_finalize.py",
+          "bytes": 10428,
+          "sha256": "bd9e61a515c88f4ccffba4cb35cc3c4d86968c661a6266e1df270965b0ea476e"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/native-scripts/multimodal_finalizer.py",
+          "bytes": 5677,
+          "sha256": "00134af553738c3f031b297ba85624df522e7cb81451ba0f4a0ca719a714ec03"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/native-scripts/red_green_v2.py",
+          "bytes": 14726,
+          "sha256": "66f55df3716a5dbaf8cf116e84fcacf371759592b1b1c49f2c5008860a4998f6"
+        },
+        {
+          "path": "core-guardian-fixtures-a911-20261118/red-control/codex-rs/core/tests/suite/network_approval.rs",
+          "bytes": 106213,
+          "sha256": "9d00bb19509730c045f6eb76faa3849a611d9ae01ae88a36e55943962435de26"
+        }
+      ]
+    },
+    {
+      "path": "pty-originals.tar.gz",
+      "bytes": 29117,
+      "sha256": "ceb7abf5d3abf50a7fc67cc21e0b989a67d7cd2c378e205c044fb2c67280bdeb",
+      "files": [
+        {
+          "path": "README.md",
+          "bytes": 1956,
+          "sha256": "f213e03001d40c61f9f8fa36f6e8fed161ced6363a51125e6a93f1e2e643c937"
+        },
+        {
+          "path": "final-readback.json",
+          "bytes": 973,
+          "sha256": "0c807760e1a38298a41f3caa27371bd8bd9d1a00da447602daccab1b46dd37d8"
+        },
+        {
+          "path": "native-file-readback.json",
+          "bytes": 26987,
+          "sha256": "6289bc5569d7a922d0f5c1eac10f7e008af897b8bc1ced359d4dd367df59bfe2"
+        },
+        {
+          "path": "native-originals/baseline.invocation.json",
+          "bytes": 418,
+          "sha256": "09c57815b1688ffd12fd5a32952ed94752b63dae5d1ea30cb3061f92a31a911f"
+        },
+        {
+          "path": "native-originals/baseline.result.json",
+          "bytes": 500,
+          "sha256": "cb82ebf46be3aedf01a0a414fcfac1fbc7b1fa317f3ba05fcd30cb4f87b2be4b"
+        },
+        {
+          "path": "native-originals/baseline.stderr.log",
+          "bytes": 5508,
+          "sha256": "d7fb5604c737ae41ce57ba5e045ca3c828b49d672a70e5024297ca2fc7ec769c"
+        },
+        {
+          "path": "native-originals/baseline.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "native-originals/final.patch",
+          "bytes": 737,
+          "sha256": "9dd231c0878ca93b4dfdecdb5906f6eeeaee659e8113974fc37c378bb1f03236"
+        },
+        {
+          "path": "native-originals/fmt.invocation.json",
+          "bytes": 290,
+          "sha256": "0133d60eccb81d1669922404579b990072db9d79db07ccc684420db571df2161"
+        },
+        {
+          "path": "native-originals/fmt.result.json",
+          "bytes": 307,
+          "sha256": "08cf63aa14e7b02b86baae4c6b4e3bfb59ce4c15872ea1f9764bfc10ae66ae0b"
+        },
+        {
+          "path": "native-originals/fmt.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "native-originals/fmt.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "native-originals/patched.invocation.json",
+          "bytes": 417,
+          "sha256": "c29bee3d2b8e89ce6fd78e1f980c93e5d4f1b5749d16eedb1bd6fd9e76d7be8a"
+        },
+        {
+          "path": "native-originals/patched.result.json",
+          "bytes": 498,
+          "sha256": "bcd15e22ee263ad4090068573bc36e83dee5b84701c54eee40d859d0f4441a14"
+        },
+        {
+          "path": "native-originals/patched.stderr.log",
+          "bytes": 4603,
+          "sha256": "08a58e04df90ceab0233694c4d650aaca37dcaf5ed404a83f92e720501aa20a8"
+        },
+        {
+          "path": "native-originals/patched.stdout.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "native-originals/report.json",
+          "bytes": 2442,
+          "sha256": "fa3028134d1900dd71f28db40a9a1207e016a837b441db914f5d2a91528d8ca2"
+        },
+        {
+          "path": "native-originals/source/codex-rs/utils/pty/src/unix_io.rs",
+          "bytes": 4570,
+          "sha256": "12d1ac4a43b9c36a4c9dceb97473de7dd82bedb429ac4151353f54439c69482f"
+        },
+        {
+          "path": "native-originals-index.json",
+          "bytes": 2143,
+          "sha256": "ab6f0ab090497267a060dc1da37c814492e714da3dfc620d8061b6e1d6465edc"
+        },
+        {
+          "path": "native-probes/mac-cache.json",
+          "bytes": 2252,
+          "sha256": "60ad5bf9bd6092ff06292112c53c60acfce84d10479996cc8489961fde869f01"
+        },
+        {
+          "path": "native-probes/mac-environment-terminal.json",
+          "bytes": 731,
+          "sha256": "6145847b19c4c914740b08bcc0ddb78f810dbc0152577e942e0b709faa51c51b"
+        },
+        {
+          "path": "native-probes/mac-environment.json",
+          "bytes": 3954,
+          "sha256": "9e6ad4a96091a7fa7b3825ab540422429e77d9cd112f59dee9e58b9a3cdebc83"
+        },
+        {
+          "path": "native-probes/mac-github-source-cancelled.json",
+          "bytes": 730,
+          "sha256": "f15af660ea88f974997439096ce8502f86b7e9021d280b514439b4ce34a196b4"
+        },
+        {
+          "path": "native-probes/mac-github-source-start.json",
+          "bytes": 3691,
+          "sha256": "7dd76c12b8f3dc12d06d7acd70c5f2bbe0d102b17ebca5243f95b279cfaf85a5"
+        },
+        {
+          "path": "native-probes/mac-paths.json",
+          "bytes": 1537,
+          "sha256": "b80872d911fa0705a10c9c81a6c6b443dc368f5004b3f585688577ad5ec03025"
+        },
+        {
+          "path": "native-probes/mac-pty-test-console.json",
+          "bytes": 3865,
+          "sha256": "dbfa2f2fdc6298b7b3958e73bddf0f0258266c62ab1ce384cf55509ffae2a3a5"
+        },
+        {
+          "path": "native-probes/mac-pty-test-start.json",
+          "bytes": 6291,
+          "sha256": "fcc713b0c70de2e7e700acb449f18b0311e19392bd39fc25d6dfeb4a6e95b4c8"
+        },
+        {
+          "path": "native-probes/mac-pty-test-terminal.json",
+          "bytes": 731,
+          "sha256": "0561c4f79fe4ca6e51d93d94d67b35a27fbed8d5fc83e7c831bad26b1bf5acaa"
+        },
+        {
+          "path": "native-probes/mac-source-first-verification-terminal.json",
+          "bytes": 730,
+          "sha256": "e476e3dae9307adfbaaf7cd5ad904e1edd49838c9805071c81d225eca5cae067"
+        },
+        {
+          "path": "native-probes/mac-source-first-verification.json",
+          "bytes": 1086,
+          "sha256": "808c0402457fec0098a5936b0157149ebf229fd6706ad40896e34d70a7c085e8"
+        },
+        {
+          "path": "native-probes/source-pack-result.json",
+          "bytes": 800,
+          "sha256": "981196939371b17e6ecaf68a5d433051282093a57c3f2c754ee958ef979d9823"
+        },
+        {
+          "path": "native-probes/source-pack-terminal.json",
+          "bytes": 729,
+          "sha256": "f0de864adeb8d67b4ae46fb3e283abbdd39ce69be6afba3ed1c503da0ab41c3e"
+        },
+        {
+          "path": "pty-closed-receiver-drain.patch",
+          "bytes": 737,
+          "sha256": "9dd231c0878ca93b4dfdecdb5906f6eeeaee659e8113974fc37c378bb1f03236"
+        },
+        {
+          "path": "qualification.json",
+          "bytes": 6335,
+          "sha256": "125d62163580b3cceadffe369a5b6b772eeeb0cdb504ae8420554195ae00dcb9"
+        },
+        {
+          "path": "source-review.json",
+          "bytes": 1507,
+          "sha256": "381762ab291fac23a6f3c3861d2b82769679ba4e1af23bc156c9bc3f9369b456"
+        },
+        {
+          "path": "tests.original.rs",
+          "bytes": 55137,
+          "sha256": "ab267d9ac2f7ea6f7a62274c18f03c7ed5077c6f04c7fd41cfe07b936e702f6f"
+        },
+        {
+          "path": "unix_io.original.rs",
+          "bytes": 4285,
+          "sha256": "47896eb04ba66a2081479a6366abe380f3af4237d00de4c4c1de566d12586603"
+        }
+      ]
+    }
+  ]
+}

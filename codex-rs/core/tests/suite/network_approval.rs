@@ -1823,45 +1823,97 @@ async fn guardian_receives_exact_triggers_for_concurrent_network_requests() -> R
     Ok(())
 }
 
+#[derive(Clone, Copy)]
+enum SingleNetworkRequestTiming {
+    Immediate,
+    AfterInitialYield,
+}
+
+#[test_case(SingleNetworkRequestTiming::Immediate; "before_initial_yield")]
+#[test_case(SingleNetworkRequestTiming::AfterInitialYield; "after_initial_yield")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[cfg_attr(
     not(target_os = "linux"),
     ignore = "requires the trusted Linux proxy bridge"
 )]
-async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<()> {
+async fn guardian_receives_exact_trigger_for_single_network_request(
+    timing: SingleNetworkRequestTiming,
+) -> Result<()> {
     skip_if_target_windows!(Ok(()), "uses the POSIX/Python network fixture");
     skip_if_host_windows!(Ok(()));
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
 
-    let server = start_mock_server().await;
-    let test = managed_network_unified_exec_test(&server).await?;
+    let call_id = "exec-network-single";
     let command = "python3 -c \"import urllib.request; opener = urllib.request.build_opener(urllib.request.ProxyHandler()); print('OK:' + opener.open('http://1.1.1.1', timeout=10).read().decode(errors='replace'))\"".to_string();
-    let responses = mount_sse_sequence(
-        &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-network-single"),
-                ev_function_call(
-                    "exec-network-single",
-                    "exec_command",
-                    &serde_json::to_string(&network_exec_args(&command))?,
-                ),
-                ev_completed("resp-network-single"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-network-guardian"),
-                ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
-                ev_completed("resp-network-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-network-done"),
-                ev_assistant_message("msg-network-done", "done"),
-                ev_completed("resp-network-done"),
-            ]),
-        ],
-    )
+    let command = match timing {
+        SingleNetworkRequestTiming::Immediate => command,
+        SingleNetworkRequestTiming::AfterInitialYield => {
+            format!("while [ ! -f network-request-release ]; do sleep 0.01; done; {command}")
+        }
+    };
+    let parent_requested = Arc::new(tokio::sync::Notify::new());
+    let parent_requested_for_match = Arc::clone(&parent_requested);
+    let (parent_release_tx, parent_release_rx) = oneshot::channel();
+    let (server, _completions, responses) = start_matching_streaming_sse_server(vec![
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request) && !request_body_contains(request, call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-network-single"),
+                        ev_function_call(
+                            call_id,
+                            "exec_command",
+                            &serde_json::to_string(&network_exec_args(&command))?,
+                        ),
+                        ev_completed("resp-network-single"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(is_guardian_request),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-network-guardian"),
+                        ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
+                        ev_completed("resp-network-guardian"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                let matched =
+                    !is_guardian_request(request) && request_body_contains(request, call_id);
+                if matched {
+                    parent_requested_for_match.notify_one();
+                }
+                matched
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(parent_release_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-network-done"),
+                        ev_assistant_message("msg-network-done", "done"),
+                        ev_completed("resp-network-done"),
+                    ]),
+                }],
+            },
+        },
+    ])
     .await;
+    let test = managed_network_unified_exec_test_with_features(server.uri(), &[]).await?;
 
     submit_managed_network_turn(
         &test,
@@ -1871,12 +1923,38 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
         AskForApproval::OnRequest,
     )
     .await?;
-    wait_for_turn_complete(&test).await;
+    tokio::time::timeout(Duration::from_secs(10), async {
+        if matches!(timing, SingleNetworkRequestTiming::AfterInitialYield) {
+            // The original exec result has reached the parent while its process
+            // still waits. Only then may it request Guardian approval.
+            parent_requested.notified().await;
+            fs::write(test.config.cwd.join("network-request-release"), "release")?;
+        }
+        let terminal = wait_for_event(&test.codex, |event| match event {
+            EventMsg::ExecCommandEnd(end) => end.call_id == call_id,
+            EventMsg::ExecApprovalRequest(_) | EventMsg::TurnComplete(_) => true,
+            _ => false,
+        })
+        .await;
+        anyhow::ensure!(
+            matches!(&terminal, EventMsg::ExecCommandEnd(end) if end.call_id == call_id),
+            "expected the original exec terminal event without user approval: {terminal:?}"
+        );
+        parent_release_tx
+            .send(())
+            .map_err(|_| anyhow::anyhow!("original parent response closed"))?;
+        wait_for_turn_complete(&test).await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("timed out waiting for original network review and turn completion")??;
 
+    assert_eq!(responses.requests().len(), 3);
     assert_eq!(
         guardian_network_triggers(&[&responses])?,
-        vec![("exec-network-single".to_string(), command)]
+        vec![(call_id.to_string(), command)]
     );
+    server.shutdown().await;
 
     Ok(())
 }

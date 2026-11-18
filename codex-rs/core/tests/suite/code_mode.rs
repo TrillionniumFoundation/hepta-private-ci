@@ -4431,7 +4431,6 @@ await tools.exec_command({ cmd: "true", sandbox_permissions: "require_escalated"
 }
 
 #[cfg_attr(windows, ignore = "no exec_command on Windows")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[test_case("node_repl", false, false, false, None; "disabled")]
 #[test_case("node_repl", true, false, false, None; "manually_enabled_text_only")]
 #[test_case("node_repl", true, true, false, None; "manually_enabled_multimodal")]
@@ -4448,6 +4447,7 @@ await tools.exec_command({ cmd: "true", sandbox_permissions: "require_escalated"
 #[test_case("cua_repl", true, true, false, Some("unbounded"); "cua_text_fallback_without_context_bound")]
 #[test_case("cua_repl", true, true, false, Some("small"); "cua_text_fallback_with_insufficient_context")]
 #[test_case("cua_repl", true, true, false, Some("large_prompt"); "cua_images_resume_after_prompt_pressure")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn code_mode_node_repl_text_evidence_is_visible_only_to_guardian(
     repl_server: &'static str,
     enhanced_transcripts: bool,

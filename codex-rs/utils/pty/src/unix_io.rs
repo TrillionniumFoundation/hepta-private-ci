@@ -62,6 +62,11 @@ impl PtyIo {
                     Ok(0) => break,
                     Ok(count) => {
                         // Output caps may close the receiver before the child exits.
+                        // Keep draining without allocating a message or polling a send
+                        // that can no longer succeed once the channel is closed.
+                        if stdout_tx.is_closed() {
+                            continue;
+                        }
                         let _ = stdout_tx.send(buf[..count].to_vec()).await;
                     }
                     Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
