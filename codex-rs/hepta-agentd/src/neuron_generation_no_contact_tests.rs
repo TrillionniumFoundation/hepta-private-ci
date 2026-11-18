@@ -464,4 +464,3 @@ async fn control_snapshot_serializes_with_real_owner_and_preserves_locks() {
         std::io::ErrorKind::BrokenPipe
     );
 }
-
