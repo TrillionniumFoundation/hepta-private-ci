@@ -135,6 +135,14 @@ def analyze_paths(lock_bytes: bytes, workspace_bytes: bytes) -> dict:
             elif new_depth == depth[dep] and node < parent_from_root.get(dep, node):
                 parent_from_root[dep] = node
 
+    # Count reverse-reachable source-less candidate roots for each immediate
+    # external importer. Coverage overlaps: it is not a partition of roots.
+    reverse: dict[Node, set[Node]] = defaultdict(set)
+    for parent, dependencies in graph.items():
+        for dependency in dependencies:
+            reverse[dependency].add(parent)
+    root_set = set(roots)
+
     external = []
     for importer in sorted(direct_importers):
         if importer.source:
@@ -143,6 +151,15 @@ def analyze_paths(lock_bytes: bytes, workspace_bytes: bytes) -> dict:
             kind = "vendored_external"
         else:
             continue
+        visited = {importer}
+        scan = deque([importer])
+        while scan:
+            for parent in sorted(reverse[scan.popleft()]):
+                if parent not in visited:
+                    visited.add(parent)
+                    scan.append(parent)
+        covered_roots = sorted(visited & root_set)
+
         path = [importer]
         cur = importer
         while cur in parent_from_root:
@@ -152,6 +169,7 @@ def analyze_paths(lock_bytes: bytes, workspace_bytes: bytes) -> dict:
         external.append({
             "importer": importer.label(),
             "kind": kind,
+            "candidate_root_coverage": len(covered_roots),
             "reachable_from_source_less_root": importer in depth,
             "root_to_importer_path": [p.label() for p in path] if importer in depth else None,
         })
