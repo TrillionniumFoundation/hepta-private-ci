@@ -239,6 +239,7 @@ mod token_budget;
 pub(crate) mod turn;
 pub(crate) mod turn_context;
 mod turn_input;
+mod turn_recovery;
 mod turn_suspension;
 mod world_state;
 use self::code_mode_warning::unsupported_code_mode_warning;
@@ -1207,32 +1208,6 @@ impl Session {
 
     pub(crate) fn mark_interrupted(&self) {
         self.agent_status.send_replace(AgentStatus::Interrupted);
-    }
-
-    /// Captures a recovery token only for the exact idle model-turn candidate.
-    pub(crate) async fn recovery_epoch_if_idle(&self, turn_id: &str) -> Option<u64> {
-        if !self.enabled(Feature::HeptaTurnRecovery)
-            || self.shutdown_started()
-            || self.has_pending_task_terminalization()
-        {
-            return None;
-        }
-        let active_turn = self.active_turn.lock().await;
-        if active_turn.is_some() {
-            return None;
-        }
-        let epoch = self.turn_epoch.load(Ordering::Acquire);
-        let persistence_failure_generation = self.rollout_persistence_failure_generation();
-        self.recovery_candidate
-            .lock()
-            .unwrap_or_else(|error| panic!("recovery candidate mutex poisoned: {error:?}"))
-            .as_ref()
-            .filter(|candidate| {
-                candidate.turn_id == turn_id
-                    && candidate.epoch == epoch
-                    && candidate.persistence_failure_generation == persistence_failure_generation
-            })
-            .map(|candidate| candidate.epoch)
     }
 
     /// Durably consumes recovery authority before a different task, rollback,

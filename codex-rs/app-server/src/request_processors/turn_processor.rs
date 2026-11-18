@@ -1610,10 +1610,12 @@ impl TurnRequestProcessor {
             return Err(error);
         }
 
-        // Capture Core's idle/interrupted generation before reading history.
+        // TurnAborted can reach the listener before its owner publishes recovery.
+        // Wait for only that current owner, then capture its generation before
+        // reading history. A later attempt must never satisfy the same request.
         // Any intervening real turn changes the epoch, so the final Core
         // reservation fails closed instead of sampling a stale logical tail.
-        let expected_epoch = thread.recovery_epoch_if_idle(&turn_id).await;
+        let expected_epoch = thread.recovery_epoch_after_terminalization(&turn_id).await;
 
         let active_turn = self
             .thread_state_manager

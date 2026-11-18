@@ -698,6 +698,18 @@ impl CodexThread {
         self.session.recovery_epoch_if_idle(turn_id).await
     }
 
+    /// Observes recovery authority after the current terminalizer retires.
+    ///
+    /// This waits only for the owner and epoch captured when called. A running
+    /// task or any intervening task, mutation, or shutdown invalidates recovery.
+    pub async fn recovery_epoch_after_terminalization(&self, turn_id: &str) -> Option<u64> {
+        tokio::select! {
+            biased;
+            () = self.wait_until_terminated() => None,
+            epoch = self.session.recovery_epoch_after_terminalization(turn_id) => epoch,
+        }
+    }
+
     /// Resumes an interrupted regular turn only when the thread is idle.
     ///
     /// Recovery starts no new user input and preserves the turn ID that was
