@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-18T15:34:49Z",
+  "observed_at_utc": "2026-11-18T16:00:17Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18T10:34:49-05:00",
+  "observed_at_user_timezone": "2026-11-18T11:00:17.000-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -160,7 +160,7 @@
     "generalizable_gain_established": false
   },
   "E2": {
-    "status": "ACTUAL_EVALUATION_RUNNING",
+    "status": "COMPLETE_ORIGINALS_AND_INDEPENDENT_READBACK_PUBLISHED",
     "training_source": "6a7696b0c0c5a0a2ba0fb52160aabb191850b2d3",
     "evaluation_source": "048014f8634059b65b24f49da7f00d5b1bb85737",
     "training_evidence_commit": "1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d",
@@ -241,7 +241,8 @@
       },
       "calls_per_task": 2,
       "selection_rule": "A-only fewer regressions without fewer recoveries or final successes versus all_observed; no B/B2 selection; research NoUpdate retained",
-      "scientific_gain_established": false
+      "scientific_gain_established": false,
+      "status": "COMPLETE"
     },
     "B2": {
       "pr": 6710,
@@ -259,6 +260,202 @@
       "reference_checks": 6,
       "negative_control_checks": 6,
       "qualification_limits": "Material release after observed weight freeze; shared-workspace operational blinding, not authenticated independent custody. No learning success claim."
+    },
+    "evidence_commit": "e11c75e1d6c3902a7118d76794804e8aaf1f7d7f",
+    "completed_readout_sha256": "9448a6bef0064086d3b126cb11d7ee62a0243217acbe222b7d9323214add45f9",
+    "independent_audit_sha256": "afdf9eb3bd3816a815b6f63d732ce8fbc6578565f5340019b0a70a981cb9521e",
+    "outcomes": {
+      "NoUpdate": {
+        "A_retention": {
+          "first": 3,
+          "last": 2,
+          "recovered": 2,
+          "regressed": 3,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B2_blind_future": {
+          "first": 4,
+          "last": 2,
+          "recovered": 1,
+          "regressed": 3,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B_exposed_development": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "all_observed": {
+        "A_retention": {
+          "first": 3,
+          "last": 2,
+          "recovered": 2,
+          "regressed": 3,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B2_blind_future": {
+          "first": 3,
+          "last": 3,
+          "recovered": 1,
+          "regressed": 1,
+          "selected": 4,
+          "tasks": 6
+        },
+        "B_exposed_development": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "verified_credit": {
+        "A_retention": {
+          "first": 4,
+          "last": 5,
+          "recovered": 1,
+          "regressed": 0,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B2_blind_future": {
+          "first": 4,
+          "last": 3,
+          "recovered": 1,
+          "regressed": 2,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B_exposed_development": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      }
+    },
+    "evaluation_costs": {
+      "NoUpdate": {
+        "completed_children_cpu_seconds": 4.70918,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "hit_output_limit": 2,
+        "input_tokens": 15772,
+        "load_wall_seconds": 21.21441978699295,
+        "model_calls": 36,
+        "output_tokens": 2900,
+        "scope": "load, all actual calls, verifiers and close; nested generation windows are not additive",
+        "self_cpu_seconds": 227.765830646,
+        "verifier_calls": 36,
+        "wall_seconds": 228.91157568397466
+      },
+      "all_observed": {
+        "completed_children_cpu_seconds": 4.019794999999999,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "hit_output_limit": 0,
+        "input_tokens": 15586,
+        "load_wall_seconds": 21.53693697898416,
+        "model_calls": 36,
+        "output_tokens": 2317,
+        "scope": "load, all actual calls, verifiers and close; nested generation windows are not additive",
+        "self_cpu_seconds": 190.073547937,
+        "verifier_calls": 36,
+        "wall_seconds": 191.1414414899773
+      },
+      "verified_credit": {
+        "completed_children_cpu_seconds": 4.870706,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "hit_output_limit": 0,
+        "input_tokens": 15539,
+        "load_wall_seconds": 21.2286355390097,
+        "model_calls": 36,
+        "output_tokens": 2075,
+        "scope": "load, all actual calls, verifiers and close; nested generation windows are not additive",
+        "self_cpu_seconds": 191.498485851,
+        "verifier_calls": 36,
+        "wall_seconds": 193.5979450980085
+      }
+    },
+    "total_calls": {
+      "business_verifier_executions": 71,
+      "format_rejections": 37,
+      "generation_wall_seconds": 534.824645515182,
+      "input_tokens": 46897,
+      "model_calls": 108,
+      "observed_subject_calls": 270,
+      "output_limit_hits": 2,
+      "output_tokens": 7292,
+      "verifier_calls": 108,
+      "verifier_wall_seconds": 13.904571124999999
+    },
+    "disjoint_stage_cost": {
+      "wall_seconds": 1431.6778659840347,
+      "child_cpu_seconds": 1448.901724,
+      "nested_windows_not_additive": true,
+      "full_system_cost_known": false
+    },
+    "original_advancement_criterion_met": false,
+    "research_decision": "NoUpdate retained; report mechanism and external-task results without native promotion",
+    "recovery_opportunities": {
+      "NoUpdate": {
+        "A_failures": 3,
+        "recovered": 2,
+        "initial_successes": 3,
+        "retained": 0
+      },
+      "all_observed": {
+        "A_failures": 3,
+        "recovered": 2,
+        "initial_successes": 3,
+        "retained": 0
+      },
+      "verified_credit": {
+        "A_failures": 2,
+        "recovered": 1,
+        "initial_successes": 4,
+        "retained": 4
+      }
+    },
+    "recovery_count_interpretation": "MSE changes F->P into P->P, removing one recovery opportunity; common failed tasks counter and colon retain the same outcomes. Original absolute-count advancement gate remains failed.",
+    "artifact": {
+      "archive_sha256": "95beda262721a747aeb3180b7d7f37a245735870b3ee0c8c58e80e45857b9bb6",
+      "archive_bytes": 4511826,
+      "index_sha256": "a97062044b5252b98ea983f7e1107741ba49697aff2055c27d21c703e903c099",
+      "readout_sha256": "9448a6bef0064086d3b126cb11d7ee62a0243217acbe222b7d9323214add45f9",
+      "original_files": 586,
+      "actual_new_adapters_included": 2
+    },
+    "followup": {
+      "status": "FROZEN_PUBLISHED_AND_ACTUAL_JOB_RUNNING",
+      "kind": "Common historical-prefix mechanism diagnostic on exposed A",
+      "models": "same three frozen models",
+      "planned_calls": 33,
+      "training": false,
+      "original_NoUpdate_rejudged": false,
+      "independent_confirmation": false,
+      "pr": 6712,
+      "source": "0d1e9d9e24f2f1d569585adb3a6203a9114f850d",
+      "tree": "800a82febeb15fd1c2a393d7af3b4e30df28b230",
+      "protocol_sha256": "b2894184e497663f52fc01cafe7b1d86e32c247248d339ded8b1ad75f62a5e1e",
+      "cases_sha256": "6b759706ee2970d824c864c1a6d7dc947e1cb75b2622af3dda6a60f11b28b1c9",
+      "historical_failure_prefixes": 6,
+      "historical_success_prefixes": 5,
+      "host": "desktop",
+      "job_id": "1a1ef5fa542-ffbe-4a4",
+      "idempotency_key": "e123-fixed-prefix-33-desktop-2e9b-001",
+      "input_tokens_per_model_all_cases": 5828
     }
   },
   "E3": {
@@ -567,7 +764,46 @@
     "archive_sha256": "cdd49201d8c62217ad2777cece0c33e3ec7043edb3a50718edf7527ad150d042",
     "negative_transfer_scope": "One exposed TF versus TF_no_answer comparison; no population-effect claim.",
     "retrieval_copy_scope": "22 of 24 retrieval outputs match unrelated A-reference AST; two are unparseable.",
-    "Circuit_necessity_established": false
+    "Circuit_necessity_established": false,
+    "next_pair_hypothesis": {
+      "parent_selected": 5,
+      "credit_selected": 5,
+      "union": 6,
+      "parent_only": [
+        "test-completion:blind-b2-more-itertools-first-true"
+      ],
+      "credit_only": [
+        "test-completion:blind-b2-django-escape-leading-slashes"
+      ],
+      "scope": "Oracle union of separate two-call arms on already exposed B2; not a same-budget two-call Circuit result"
+    },
+    "followup": {
+      "status": "PROTOCOL_PREPARATION_ONLY",
+      "panel": "already exposed B2",
+      "models": [
+        "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+        "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1"
+      ],
+      "planned_arms": [
+        "PP",
+        "CC",
+        "PC",
+        "CP",
+        "PC_no_answer",
+        "PC_no_feedback",
+        "PP_retrieval",
+        "CC_retrieval",
+        "PC_retrieval"
+      ],
+      "planned_primary_calls": 108,
+      "planned_A_calibration_calls": 4,
+      "training": false,
+      "policy": "Fixed order; no task-specific route chosen from B2 outcomes; preserve strong two-call controls and equal retrieval information.",
+      "planned_A_reference_verifier_calls": 6,
+      "planned_total_model_calls": 112,
+      "planned_total_verifier_calls": 118,
+      "oracle_union_scope": "Two separately executed two-call arms, six already-exposed tasks and original controls only. The parent first_true test relies on Python bool/int equality and passed the original two controls; no stronger semantic claim is made."
+    }
   },
   "E5": {
     "authenticated_new_users": 0,
@@ -763,7 +999,80 @@
     "native_adopt": false,
     "cold_case_checks_retained_C_only": true,
     "fresh_D_executed": false,
-    "independent_controller_authentication": false
+    "independent_controller_authentication": false,
+    "v10": {
+      "source": "82b1fadbdd77906ae28a46d6d26c378a70947c73",
+      "tree": "98057b24dfa633e6e7eb25a8b989391f1548fdfb",
+      "finished": "2026-11-18T15:46:38.621906+00:00",
+      "source_unchanged": true,
+      "tracked_files": 15538,
+      "whole_cold_NoUpdate": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ],
+        "errors": 0,
+        "execution_file": "ordinary-whole-cold-no-update.json",
+        "execution_sha256": "595aaa9b1ebea7702440616378d14a83ee2262712f700459e77912867f4f55ea",
+        "failures": 1,
+        "job": null,
+        "junit_bytes": 6601,
+        "junit_sha256": "82d02288566aebf2e7216f242c307f7162e041b541bdb0ef592b83ebc5fbae87",
+        "kind": "native-junit-collection",
+        "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "skipped_in_xml": 0,
+        "source_sha": "82b1fadbdd77906ae28a46d6d26c378a70947c73",
+        "source_tree": "98057b24dfa633e6e7eb25a8b989391f1548fdfb",
+        "status": "retained-failed",
+        "total_testcases": 1,
+        "collector_exit_code": 1,
+        "exact_parent_coverage": true,
+        "timestamp_precision_note": "Read exact nanosecond timestamps from the byte-preserved original RESULT.json; derived status does not reproduce them as floating-point numbers."
+      },
+      "stages_observed": [
+        "historical.reply_bound",
+        "historical.recipient_service",
+        "historical_task.recipient_action",
+        "historical_ledger.recipient_action",
+        "historical.route_task",
+        "historical.observe_complete_task",
+        "historical.worker",
+        "cli.serve"
+      ],
+      "error": "Complete historical reply rejected by the fixed 16384-byte response bound",
+      "exact_reply_bytes": null,
+      "cleanup_passed": true,
+      "cost": {
+        "observed_wall_seconds": 660.113116947934,
+        "full_system_cost_known": false
+      },
+      "interpretation": "The original complete-task operation hit its reply-size guard. The exact payload size and a qualified protocol repair are not established by this failure; no bound or poll guard was changed."
+    },
+    "published_v10_history": "1f4bdb211f0fb80fef89f25aef0f969053998b84"
   },
   "Chain": {
     "repository": "TrillionniumFoundation/Trillionnium-Chain",
@@ -920,7 +1229,10 @@
       "tree": "af911ad472b7820f8c6c7d4c9a425097263d80ac",
       "F0_run": 44335832525,
       "business_result": "pending",
-      "scope": "Complete deltas from actual native authenticated execution on eligible path; full normalized readback and original other-path union retained."
+      "scope": "Complete deltas from actual native authenticated execution on eligible path; full normalized readback and original other-path union retained.",
+      "F0_status": "in_progress",
+      "F0_job": 134912190949,
+      "runner_allocated_at": "2026-11-18T15:55:19Z"
     },
     "full_physical_cost_closed": false
   },
@@ -983,6 +1295,18 @@
       "bytes": 4443,
       "sha256": "fb3e2a11e67ab39201353a06041ff49475433fe55cb0e548ca215c646fc0c34f",
       "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v9/ordinary-whole-cold-no-update.xml"
+    },
+    {
+      "path": "native-v10/RESULT.json",
+      "bytes": 13072,
+      "sha256": "8e0b6ee87b9442003255568694f297b58f2f20ce0958cbdd6653328441a19eec",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v10/result.json"
+    },
+    {
+      "path": "native-v10/ordinary-whole-cold-no-update.xml",
+      "bytes": 6601,
+      "sha256": "82d02288566aebf2e7216f242c307f7162e041b541bdb0ef592b83ebc5fbae87",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v10/ordinary-whole-cold-no-update.xml"
     }
   ]
 }

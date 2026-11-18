@@ -1,6 +1,6 @@
 # E1–E6 continuation: actual results and remaining gates
 
-Observation: 18 November 2026, America/New_York. The original prospective
+Observation: 2026-11-18T11:00:17.000-05:00 (America/New_York). The original prospective
 `SOURCE_FREEZE.json` remains unchanged. The 216-test joint engineering source is
 `e52c4f67cb58a65409256f7be263cfb49ac22557`. Each follow-up retains its actual
 source, model and protocol; the complete identities and original-file SHA256
@@ -63,18 +63,64 @@ establish authenticated independent evaluator custody, absence of pretraining
 overlap or real-user adoption. B2 is prohibited for training and candidate
 selection.
 
-The predeclared **108-call actual evaluation is running** on desktop job
-`1a1ef401640-ffbe-455`: unchanged parent plus both updated students, two attempts
-each on A, exposed B and B2. The original source is
-`048014f8634059b65b24f49da7f00d5b1bb85737`; training retains source
-`6a7696b0c0c5a0a2ba0fb52160aabb191850b2d3`. Selection uses the registered A-only
-recovery/regression/final-success rule. No learning benefit is claimed before
-the real executions and original readback finish.
+The predeclared **108-call actual evaluation completed** on desktop job
+`1a1ef401640-ffbe-455`. Its [complete evidence](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/e11c75e1d6c3902a7118d76794804e8aaf1f7d7f/qualification/cell-current-policy-credit-20261118)
+contains 586 original files and the two actual adapters. A second executor
+independently rechecked every call, receipt, feedback and B2 release binding
+without additional model or verifier calls. Evaluation retains source
+`048014f8634059b65b24f49da7f00d5b1bb85737`; training retains
+`6a7696b0c0c5a0a2ba0fb52160aabb191850b2d3`.
+
+| Panel and arm | First | Final | Selected | Recoveries | Regressions |
+| --- | --- | --- | --- | --- | --- |
+| A / parent NoUpdate | 3/6 | 2/6 | 5/6 | 2 | 3 |
+| A / all-observed | 3/6 | 2/6 | 5/6 | 2 | 3 |
+| A / verified-credit | 4/6 | 5/6 | 5/6 | 1 | 0 |
+| Exposed B / each arm | 0/6 | 0/6 | 0/6 | 0 | 0 |
+| B2 / parent NoUpdate | 4/6 | 2/6 | 5/6 | 1 | 3 |
+| B2 / all-observed | 3/6 | 3/6 | 4/6 | 1 | 1 |
+| B2 / verified-credit | 4/6 | 3/6 | 5/6 | 1 | 2 |
+
+Verified credit improves final success and retention on exposed A. Its raw
+recovery count decreases because MSE changes from fail-then-pass to
+pass-then-pass; recovery opportunities change from three to two. Counter still
+recovers and colon still fails. This does not satisfy the originally registered
+absolute-count requirement. **Research NoUpdate remains unchanged.** The result
+does not demonstrate a unique credit advantage on B2: both updated arms finish
+at 3/6, and credit's selected 5/6 equals the parent.
+
+All 108 calls use 46,897 input and 7,292 output tokens, with 37 format rejections
+and two output caps. Across eight disjoint owned child stages, measured wall
+time is 1,431.678 seconds and completed child CPU is 1,448.902 seconds.
+The nested 534.825-second generation total is not added again. Additional
+reference checks and unmeasured physical costs remain explicit in the original
+readout.
+
+[The separately frozen 33-call follow-up, Draft #6712](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6712),
+published source `0d1e9d9e24f2f1d569585adb3a6203a9114f850d`, is now running
+as original desktop job `1a1ef5fa542-ffbe-4a4`. Six real historical A failure
+prefixes and five success prefixes are identical for all three already frozen
+models. The complete protocol and every prefix/token hash were published before
+inference. This exposed-A mechanism diagnostic does not change the original
+NoUpdate decision or supply independent confirmation. No additional training is
+performed.
+
+B2 also supplies a specific E4 hypothesis: parent and credit each select 5/6,
+but their separate two-call trajectories jointly cover six tasks. Parent alone
+covers `first_true`; credit alone covers `escape_leading_slashes`. This
+oracle union is not a two-call Circuit result. A prospective E4 follow-up is
+being prepared with fixed PP/CC/PC/CP orders, message ablations and equally
+available A-only retrieval controls. All nine arms and their costs will be
+retained; B2 is now exposed development material. The prospective total is
+112 model calls (108 primary plus four A calibration) and 118 verifier calls
+(including six A reference checks). The parent `first_true` test uses Python
+boolean/integer equality and passes the original two controls; the union claim
+is limited to those existing controls, not a stronger semantic assessment.
 
 ## E6: namespace regression passes; original complete NoUpdate still fails
 
 [The original native owner's Draft #6700](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6700)
-has published its exact v8 history and originals. That lineage differs from the
+has published its exact v8–v10 history and originals. That lineage differs from the
 joint research source; its results are not relabelled as joint-source execution.
 
 Native-v8 source `f7e58512021c7481fa51809bb349f63d93bb1d6c` fixes a concrete
@@ -95,6 +141,16 @@ then `historical.worker` and `cli.serve`. The publication client sees
 `POLLIN|POLLHUP` after that historical-operation error. This does not justify
 weakening the poll guard. The [complete v9 record](native-v9/RESULT.json) retains
 the failed attempt and exact source identity.
+
+Native-v10 source `82b1fadbdd77906ae28a46d6d26c378a70947c73` adds deeper
+static diagnostics. Its [original NoUpdate JUnit](native-v10/ordinary-whole-cold-no-update.xml)
+still fails after 60.691 seconds and locates the first failure at
+`historical.reply_bound`: complete task data exceeds the fixed 16,384-byte
+historical reply contract. Exact reply size is not yet recorded. The
+[original run record](native-v10/RESULT.json) retains all preparation costs,
+source identity and cleanup. A protocol repair must preserve original identity,
+complete data, bounded transport and negative controls; increasing a global
+bound or ignoring the refusal would not establish qualification.
 
 Complete native NoUpdate and Adopt remain unqualified. The existing cold case
 authenticates retained C, not fresh D. D requires an actual newly admitted task
@@ -121,7 +177,8 @@ The next [actual native-delta candidate, Draft #960](https://github.com/Trillion
 retains full normalized before/after readback, cancellation rollback, identity
 and permission checks, and the original task-output fallback. Its original
 [F0 run](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44335832525)
-is pending. Unit/adversarial controls and strict Clippy do not replace that run.
+is in progress after runner allocation at 15:55:19 UTC. Unit/adversarial controls
+and strict Clippy do not replace that run.
 Energy, provider, network, storage-time and other unmeasured costs remain unknown.
 
 ## Platform gates and continued execution
@@ -135,7 +192,7 @@ Windows' original positive business case and dependency advisory gates remain
 failed. No assertion, denial rule or sandbox boundary was weakened.
 
 The shared scratch executor became unavailable while the actual desktop
-evaluation continued. This checkpoint was reconstructed from hash-matched
+evaluation continued and completed. This checkpoint was reconstructed from hash-matched
 published originals and original remote native records; experiments were not
 repeated because of that outage. Continue the same experiment IDs and original
 business gates. Every unknown and valid research NoUpdate remains explicit.
