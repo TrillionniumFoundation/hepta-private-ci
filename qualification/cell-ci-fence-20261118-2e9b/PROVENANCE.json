@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.fence-ci-compatibility-candidate.v1",
+  "actual_failed_source": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
+  "actual_failed_run": 44334659828,
+  "actual_failed_job": 134918558084,
+  "original_error": "local_control_inventory_unavailable",
+  "original_log_sha256": "5baab65da1331361b9cbcdd2c116ba550ce3934d7832ffd98463eed5e1aac41a",
+  "failure_stage": "Fence resident startup before checkout and before any blob checker",
+  "previous_action": {
+    "commit": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "version": "v0.10.0"
+  },
+  "selected_upstream_release": {
+    "version": "v0.13.1",
+    "published_at": "2026-11-16T18:46:24Z",
+    "action_commit": "7cba9082252803421a0e433f29198de6d0063221",
+    "reviewed_source_commit": "5147ae27ad19bacd5ab14c76a2ff003afca6fd9a",
+    "release_url": "https://github.com/openai/fence/releases/tag/v0.13.1",
+    "bundled_binary_sha256": "3dff5b1c3fa65ef620869fbad30b46a77954b985c6d810f8ce914f897c333e51"
+  },
+  "relevant_primary_source_changes": [
+    {
+      "commit": "636341609964d5c77fef8de56878a403c886dca2",
+      "scope": "Discard an incomplete listener dump and use existing acquisition retry for correctly identified kernel errors; retain malformed and persistent-failure rejection."
+    },
+    {
+      "commit": "a2c93fc6c340a457ff5137b5d6980b18500493d6",
+      "scope": "Retain bounded first-failed-scan reason codes without turning rejected evidence into a pass."
+    },
+    {
+      "commit": "cfcd27dd323616888df1a808c1c3ae67a699121f",
+      "scope": "Reject incomplete Snap ownership during process exit."
+    }
+  ],
+  "exact_original_scan_cause": "not observable from the retained v0.10.0 job log",
+  "workflow_change": "One immutable action version pin only",
+  "preserved": {
+    "audit_mode": true,
+    "permissions": "contents: read",
+    "checkout_order": true,
+    "credential_persistence": false,
+    "blob_checker": true,
+    "blob_checker_tests": true,
+    "max_blob_bytes": 512000,
+    "allowlist_unchanged": true,
+    "clean_worktree_check": true
+  },
+  "workflow_before_sha256": "8740d3752737705d7257c3711d5e4b3df3cd2eadacf050f8dabb1c9e6f17cb0c",
+  "workflow_after_sha256": "6acb94ab93c4d302986b72d9e376520f10fab7be2cbe5022f82a15130ca7636b",
+  "validation": "Actual candidate CI pending. Upstream release evidence does not qualify this repository run."
+}
