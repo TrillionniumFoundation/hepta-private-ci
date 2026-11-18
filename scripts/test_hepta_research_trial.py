@@ -3,6 +3,7 @@
 import copy
 import json
 from pathlib import Path
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -250,8 +251,23 @@ class DevelopmentTrialTests(unittest.TestCase):
             trial.report()
         final.write_bytes(original)
         trial.plan["tools"]["success"][-1] = "fail"
-        with self.assertRaisesRegex(ValueError, "in-memory frozen plan"):
-            trial.execute("two")
+        self.assertEqual(trial.execute("two")["outcome"], "success")
+        self.assertEqual(trial.plan["tools"]["success"][-1], "success")
+
+    def test_cold_observer_plan_must_match_frozen_trial_schedule(self):
+        trial = self.create()
+        path = trial.root / "tasks.sqlite"
+        with sqlite3.connect(path) as db:
+            plan = json.loads(db.execute("SELECT body FROM plan").fetchone()[0])
+            plan["tasks"][0]["arm"] = "reassigned"
+            db.execute(
+                "UPDATE plan SET body=?",
+                (json.dumps(plan, sort_keys=True, separators=(",", ":")),),
+            )
+        original = path.read_bytes()
+        with self.assertRaisesRegex(ValueError, "plan.*digest|digest.*plan"):
+            DevelopmentTrial(trial.root, expected_plan_sha256=trial.ledger.plan_sha256)
+        self.assertEqual(path.read_bytes(), original)
 
 
 if __name__ == "__main__":
