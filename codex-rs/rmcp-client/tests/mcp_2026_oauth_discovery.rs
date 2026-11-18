@@ -239,11 +239,13 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
                 let error = discovery
                     .err()
                     .context("a mismatched issuer must not be accepted")?;
+                // The SDK binds the error to the original discovery request,
+                // even when its same-origin redirect delivered the bad issuer.
                 assert!(
                     matches!(
                         error.downcast_ref::<AuthError>(),
                         Some(AuthError::DiscoveryRequestFailed { url, source })
-                            if url.as_str() == format!("{}{authorization_metadata_path}", authorization_server.uri())
+                            if url.as_str() == format!("{}/.well-known/oauth-authorization-server", authorization_server.uri())
                                 && source.to_string().contains("issuer does not match authorization metadata origin")
                     ),
                     "expected the original authorization-server issuer to remain bound: {error:#}",
