@@ -103,16 +103,28 @@ jobs:
         env:
           PYTHONPATH: scripts
         run: |
-          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics test_hepta_temporal_native_probe 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
       - name: Freeze and run actual HIA and GRU cold processes
         working-directory: cells
         run: |
           python -B scripts/qualify_hia_cell_joint.py --hia-root "$GITHUB_WORKSPACE/hia" --output "$RUNNER_TEMP/cell-joint-evidence/local-joint"
           python -B -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"cell-joint-evidence/request.json"; p.write_text(json.dumps({"request_id":"runtime-MEM-observe","cell_id":"MEM","operation":"step","payload":{"operation":"observe","cursor":0,"observation":[0.25,-0.5,0.75]}}))'
+      - name: Trained temporal kernels through one native HIA image
+        working-directory: cells
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python -B -m hepta_cells.temporal_native_probe --hia-root "$GITHUB_WORKSPACE/hia" --output "$RUNNER_TEMP/cell-joint-evidence/temporal-kernels"
       - name: Actual runtime entry and cold original-job observation
         working-directory: cells
         run: |
           python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 73b5c33d5762eefc0554a86750094350f18ae6a0 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance --with-semantic-updates
+      - name: Actual runtime entry for each trained kernel candidate
+        working-directory: cells
+        run: |
+          for kind in gru cfc diag_ssm; do
+            python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 73b5c33d5762eefc0554a86750094350f18ae6a0 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/temporal-kernels/$kind/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/temporal-runtime-$kind" --allow-disposable-sshd
+          done
       - name: Independently check retained maintenance records
         working-directory: cells
         run: |
