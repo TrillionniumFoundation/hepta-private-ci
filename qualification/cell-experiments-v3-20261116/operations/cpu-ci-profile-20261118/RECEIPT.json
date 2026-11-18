@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.cell-cpu-ci-profile-repair.20261118",
+  "base_commit": "1b0f2a428cf51d1dcdb35dccd49c4405ae828747",
+  "status_at_delivery": "READY_FOR_ACTUAL_CI",
+  "original_failures": {
+    "engineering_job": 134744139808,
+    "engineering_summary": [
+      "2026-11-18T10:41:08.1043044Z ModuleNotFoundError: No module named 'torch'",
+      "2026-11-18T10:41:08.1046306Z ModuleNotFoundError: No module named 'torch'",
+      "2026-11-18T10:41:08.1047069Z Ran 185 tests in 26.977s",
+      "2026-11-18T10:41:08.1064061Z FAILED (errors=2, skipped=3)"
+    ],
+    "codespell_job": 134744123099,
+    "binary_error_count": 161,
+    "binary_paths": [
+      "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-00018.bin",
+      "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-00024.bin",
+      "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-00062.bin",
+      "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-00071.bin",
+      "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-00076.bin",
+      "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-00083.bin"
+    ]
+  },
+  "cpu_test_profile": {
+    "python": "3.12",
+    "torch": "2.9.1+cpu",
+    "numpy": "2.3.5",
+    "transformers": "4.57.3",
+    "peft": "0.18.0",
+    "tokenizers": "0.22.2",
+    "accelerate": "1.16.0",
+    "safetensors": "0.7.0",
+    "huggingface-hub": "0.36.2"
+  },
+  "gpu_research_profile_unchanged": true,
+  "fixture_patch_commit": "9801487a07834ca9c2d1c11ca9d47672913c0a60",
+  "fixture_sha256": "d6836f2ed6dfec2fbaf1470a01dd0c5bb22a1033abbd50f898b84c11854e9200",
+  "new_test_skip_rules": 0,
+  "discovery_scope_changed": false,
+  "pretrained_weights_downloaded": false,
+  "binary_archive_bytes_changed": false,
+  "codespell_added_skip": "./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-*.bin",
+  "actual_ci_result": "Read this PR's new workflow jobs; the baseline failure logs are not evidence that the repaired CI passed.",
+  "scientific_qualification": false
+}
