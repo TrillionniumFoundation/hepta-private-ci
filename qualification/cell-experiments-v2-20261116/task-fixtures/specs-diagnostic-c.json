@@ -1,0 +1,18 @@
+[
+  {
+    "assertions": "    assert subject(\"AMD64\") == \"x86_64\"\n    assert subject(\"ARM64\") == \"aarch64\"\n    assert subject(\"RISCv64\") == \"riscv64\"",
+    "domain": "repository-packaging",
+    "family": "repo-contract:packaging:normalize_machine",
+    "fixture_id": "diagnostic-C-machine",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nNormalize a machine name by lowercasing it, mapping amd64/x86_64 to x86_64 and aarch64/arm64 to aarch64; otherwise preserve the lowercase name. Cover both architecture families and an unknown name.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef normalize_machine(machine: str) -> str:\n    machine = machine.lower()\n    if machine in (\"amd64\", \"x86_64\"):\n        return \"x86_64\"\n    if machine in (\"aarch64\", \"arm64\"):\n        return \"aarch64\"\n    return machine\n",
+    "split": "confirmation"
+  },
+  {
+    "assertions": "    assert subject(0) == \"0.0 KiB\"\n    assert subject(1024) == \"1.0 KiB\"\n    assert subject(1536) == \"1.5 KiB\"",
+    "domain": "repository-packaging",
+    "family": "repo-contract:packaging:format_kib",
+    "fixture_id": "diagnostic-C-kib",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nFormat a byte count as binary kibibytes (divide by 1024), with exactly one decimal place, one space, and the KiB suffix. Cover zero, a whole kibibyte and a fractional kibibyte.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef format_kib(size_bytes: int) -> str:\n    return f\"{size_bytes / 1024:.1f} KiB\"\n",
+    "split": "confirmation"
+  }
+]

@@ -46,7 +46,7 @@ def _observed(result):
 
 def build(panel, output):
     """Execute authored reference assertions; never invent external agent traces."""
-    if panel not in ("open", "confirmation", "warmup"):
+    if panel not in ("open", "confirmation", "warmup", "diagnostic-c", "diagnostic-d"):
         raise ValueError("unknown task panel")
     specs = json.loads((repo_execution.FIXTURES / f"specs-{panel}.json").read_bytes())
     if panel == "confirmation":
@@ -54,6 +54,8 @@ def build(panel, output):
         # selection. It grants no candidate evaluation access or independent role.
         repo_execution._CONFIRMATION = {"custodian_reference_preparation": True}
         repo_execution.load_catalog("confirmation")
+    elif panel in ("diagnostic-c", "diagnostic-d"):
+        repo_execution.load_catalog("diagnostic")
     else:
         repo_execution.load_catalog()
     output = Path(output)
@@ -272,7 +274,9 @@ def build(panel, output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--panel", choices=("open", "confirmation", "warmup"), required=True
+        "--panel",
+        choices=("open", "confirmation", "warmup", "diagnostic-c", "diagnostic-d"),
+        required=True,
     )
     parser.add_argument("--output", required=True)
     options = parser.parse_args()

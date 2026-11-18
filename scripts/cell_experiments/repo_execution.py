@@ -24,6 +24,7 @@ FIXTURES = ROOT / "qualification/cell-experiments-v2-20261116/task-fixtures"
 CATALOG_PINS = {
     "open": "d57dc0c7cc8e3b54aabbc473b5e9ced596d48afa556a182e9e18b1eb085e5040",
     "confirmation": "0a24e531367fbca187c4750cf7068f37e1e0228c96e4a6a2b282dd9c3ab57bcb",
+    "diagnostic": "edb783a8be7c484f2c96fe19edba8aeca67d9be98d4aa91df7f9450d72b80d88",
 }
 _CATALOG = {}
 _CONFIRMATION = None
@@ -33,7 +34,11 @@ def load_catalog(name="open"):
     """Load an exact reviewed catalog; confirmation needs an explicit B binding."""
     if name == "confirmation" and _CONFIRMATION is None:
         raise ValueError("confirmation catalog requires a frozen selection receipt")
-    filename = {"open": "catalog.json", "confirmation": "catalog-C.sealed.json"}[name]
+    filename = {
+        "open": "catalog.json",
+        "confirmation": "catalog-C.sealed.json",
+        "diagnostic": "catalog-diagnostic-20261118.json",
+    }[name]
     raw = (FIXTURES / filename).read_bytes()
     if hashlib.sha256(raw).hexdigest() != CATALOG_PINS.get(name):
         raise ValueError("reviewed fixture catalog changed")
@@ -207,6 +212,7 @@ def _subject(fixture):
         math=math,
         re=re,
         json=json,
+        Path=Path,
         dataclass=dataclass,
         CellError=ValueError,
         ReplayImportError=ValueError,
@@ -241,6 +247,8 @@ def _subject(fixture):
         return lambda value: function(value).hex()
     if entry == "strict_int":
         return lambda value, minimum: function(value, "contract", minimum)
+    if entry == "path_string":
+        return lambda value: function(Path(value))
     return function
 
 

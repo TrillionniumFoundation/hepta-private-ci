@@ -1,0 +1,18 @@
+[
+  {
+    "assertions": "    assert subject(\"dev\") == \"debug\"\n    assert subject(\"release\") == \"release\"\n    assert subject(\"profiling\") == \"profiling\"",
+    "domain": "repository-packaging",
+    "family": "repo-contract:packaging:cargo_profile_dirname",
+    "fixture_id": "diagnostic-D-profile",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nMap the exact Cargo profile dev to the output directory debug. The release profile stays release; every other profile name is returned unchanged. Cover dev, release and a custom profile.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef cargo_profile_dirname(profile: str) -> str:\n    if profile == \"dev\":\n        return \"debug\"\n    if profile == \"release\":\n        return \"release\"\n    return profile\n",
+    "split": "confirmation"
+  },
+  {
+    "assertions": "    assert subject(\"codex.tar.gz\") == \"tar.gz\"\n    assert subject(\"codex.tgz\") == \"tar.gz\"\n    assert subject(\"codex.tar.zst\") == \"tar.zst\"\n    assert subject(\"codex.zip\") == \"zip\"",
+    "domain": "repository-packaging",
+    "family": "repo-contract:packaging:archive_format_for_path",
+    "fixture_id": "diagnostic-D-archive",
+    "input": "Complete a regression test for this pinned repository function. Only edit test_contract.py.\nIdentify archive format from its path suffix: .tar.gz and .tgz mean tar.gz, .tar.zst means tar.zst, and .zip means zip. The harness converts the one input string to pathlib.Path before calling the exact function. Cover all four supported suffixes; use only supported paths, not exception tests.\nThe harness exposes the reviewed function as subject. Write assertions that pass original behavior and fail wrong-output controls. Return only JSON {\"edits\":[{\"path\":\"test_contract.py\",\"old\":\"    pass\",\"new\":\"    assert ...\"}]}. No imports, assignments, attributes, loops or helper definitions.\nCurrent test_contract.py:\ndef test_contract():\n    pass\nReviewed subject code:\ndef archive_format_for_path(path: Path) -> str:\n    suffixes = path.suffixes\n    if suffixes[-2:] == [\".tar\", \".gz\"] or path.suffix == \".tgz\":\n        return \"tar.gz\"\n    if suffixes[-2:] == [\".tar\", \".zst\"]:\n        return \"tar.zst\"\n    if path.suffix == \".zip\":\n        return \"zip\"\n    raise RuntimeError(\n        f\"Unsupported archive suffix for {path}. Use .tar.gz, .tgz, .tar.zst, or .zip.\"\n    )\n",
+    "split": "confirmation"
+  }
+]
