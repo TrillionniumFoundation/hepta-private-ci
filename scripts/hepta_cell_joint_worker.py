@@ -23,7 +23,6 @@ from hepta_cells.component_types import (
     PendingExecution,
 )
 from hepta_cells.hia_component import HiaCellComponent
-from hepta_cells.joint_concurrency import wait_joint_phase
 from hepta_cells.lifecycle import CellOwner
 from hepta_cells.temporal import TemporalConfig, TemporalKernel
 from hepta_cells.temporal_component import TemporalComponent
@@ -304,8 +303,13 @@ def execute(candidate_path, database, request, *, admission_directory=None):
         "payload",
     }:
         raise ValueError("one exact bounded worker request required")
-    if admission_directory is not None and request["operation"] != "readback":
-        raise ValueError("qualification admission is restricted to original readback")
+    if admission_directory is not None:
+        if request["operation"] != "readback":
+            raise ValueError(
+                "qualification admission is restricted to original readback"
+            )
+        # Keep qualification-only imports out of ordinary maintenance source identity.
+        from hepta_cells.joint_concurrency import wait_joint_phase
     value, candidate_hash, roots, native = load_candidate(candidate_path)
     model = value["models"][request["cell_id"]]
     kernel, _ = TemporalKernel.restore_checkpoint(
