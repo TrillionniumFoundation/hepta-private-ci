@@ -1,5 +1,8 @@
 use std::fs;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -33,7 +36,7 @@ impl Fixture {
         checked(fs::create_dir(&path));
         Self(path)
     }
-    fn owner(&self, model: Model) -> AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model> {
+    fn owner(&self, model: Model) -> ObservedOwner {
         let file = |name: &str| {
             checked(
                 OpenOptions::new()
@@ -44,8 +47,11 @@ impl Fixture {
                     .open(self.0.join(name)),
             )
         };
+        let witness_file = file("witness");
+        let journal_file = file("journal");
+        let readback = [checked(journal_file.try_clone()), checked(witness_file.try_clone())];
         let witness = checked(FileAnchorWitnessStore::open(
-            file("witness"),
+            witness_file,
             JournalScope {
                 scope_digest: Digest32::of_bytes(b"host"),
                 objective_digest: Digest32::of_bytes(b"task"),
@@ -97,7 +103,7 @@ impl Fixture {
             stopped: false,
         };
         let journal = checked(CellGenerationJournalV2::open(
-            file("journal"),
+            journal_file,
             witness,
             CellGenerationConfigV2 {
                 manifest,
@@ -107,9 +113,63 @@ impl Fixture {
             },
             /*max_records*/ 64,
         ));
-        AgentdNeuronGenerationOwnerV2::new(journal, model)
+        ObservedOwner {
+            owner: AgentdNeuronGenerationOwnerV2::new(journal, model),
+            readback,
+            directory: self.0.clone(),
+        }
     }
 }
+
+struct ObservedOwner {
+    owner: AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model>,
+    readback: [std::fs::File; 2],
+    directory: PathBuf,
+}
+
+impl std::ops::Deref for ObservedOwner {
+    type Target = AgentdNeuronGenerationOwnerV2<FileAnchorWitnessStore, Model>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.owner
+    }
+}
+
+impl std::ops::DerefMut for ObservedOwner {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.owner
+    }
+}
+
+impl ObservedOwner {
+    fn bytes(&mut self) -> [Vec<u8>; 2] {
+        let bytes = self.readback.each_mut().map(|file| {
+            let position = checked(file.stream_position());
+            checked(file.seek(SeekFrom::Start(0)));
+            let mut bytes = Vec::new();
+            let read = file.read_to_end(&mut bytes);
+            let restored = file.seek(SeekFrom::Start(position));
+            assert_eq!(checked(restored), position);
+            checked(read);
+            assert_eq!(checked(file.stream_position()), position);
+            bytes
+        });
+        for name in ["journal", "witness"] {
+            let contender = checked(
+                OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .open(self.directory.join(name)),
+            );
+            assert!(matches!(
+                contender.try_lock(),
+                Err(std::fs::TryLockError::WouldBlock)
+            ));
+        }
+        bytes
+    }
+}
+
 impl Drop for Fixture {
     fn drop(&mut self) {
         let _ = fs::remove_dir_all(&self.0);
@@ -307,24 +367,24 @@ fn expiration_during_admission_settles_known_no_contact_without_calling_model() 
     );
     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = owner.bytes();
     assert_eq!(
         checked(owner.step(req.clone(), || panic!(
             "exact replay must not sample a clock"
         ))),
         receipt
     );
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(owner.bytes(), journal_bytes);
     assert!(checked(owner.drain()));
     drop(owner);
     let mut owner = fixture.owner(model.clone());
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let journal_bytes = owner.bytes();
     assert_eq!(
         checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
         receipt
     );
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(owner.bytes(), journal_bytes);
     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
 }
 
@@ -412,5 +472,32 @@ fn lost_response_retains_precontact_clock_floor_across_host_reopen() {
         checked(owner.step(req, || 91)).disposition,
         CellGenerationDispositionV2::Advanced
     );
+    assert_eq!(model.calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn synchronous_owner_bytes_serialize_with_step_and_preserve_replay() {
+    let fixture = Fixture::new();
+    let model = Model::default();
+    let mut owner = fixture.owner(model.clone());
+    let original = request(&owner);
+    let before = owner.bytes();
+    let owner = Mutex::new(owner);
+    let receipt = std::thread::scope(|scope| {
+        let observations = scope.spawn(|| {
+            for _ in 0..32 {
+                checked(owner.lock()).bytes();
+                std::thread::yield_now();
+            }
+        });
+        let receipt = checked(checked(owner.lock()).step(original.clone(), || 11));
+        checked(observations.join());
+        receipt
+    });
+    let mut owner = checked(owner.into_inner());
+    let after = owner.bytes();
+    assert_ne!(after, before);
+    assert_eq!(checked(owner.step(original, || 11)), receipt);
+    assert_eq!(owner.bytes(), after);
     assert_eq!(model.calls.load(Ordering::SeqCst), 1);
 }
