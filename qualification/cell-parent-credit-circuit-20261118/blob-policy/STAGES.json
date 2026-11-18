@@ -1,0 +1,92 @@
+[
+  {
+    "label": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2",
+      "80cb4dc2da01e100d8f68384cd12a9d6bb752eed"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 7.385833700012881
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+      "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.017122088000178337
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+    "exit_code": 0,
+    "wall_seconds": 0.005054791981820017
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+    "exit_code": 0,
+    "wall_seconds": 5.931447342038155
+  },
+  {
+    "label": "policy-tests",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+    "exit_code": 0,
+    "wall_seconds": 2.421210644999519
+  },
+  {
+    "label": "changed-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+      "--head",
+      "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+    "exit_code": 0,
+    "wall_seconds": 7.184005293995142
+  }
+]
