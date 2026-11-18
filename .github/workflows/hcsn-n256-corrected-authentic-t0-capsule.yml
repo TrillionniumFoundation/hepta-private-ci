@@ -1,58 +1,16 @@
-name: HCSN N256 corrected authentic t0 capsule
+name: HCSN N256 corrected authentic t0 capsule (consumed)
 
 on:
-  pull_request:
-    paths:
-      - "qualification/hcsn_currentstate_n256_corrected_t0_capsule_v1/**"
-      - ".github/workflows/hcsn-n256-corrected-authentic-t0-capsule.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  corrected-authentic-t0-capsule:
+  consumed-execution-key:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      HCSN_EXECUTION_KEY: hcsn-n256-corrected-t0-capsule-20261117-c06d-002
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Verify frozen source, admission, and originals
-        run: python qualification/hcsn_currentstate_n256_corrected_t0_capsule_v1/verify_source.py
-      - name: Run zero-execution controls normally
-        run: python -m unittest qualification.hcsn_currentstate_n256_corrected_t0_capsule_v1.test_capsule -v
-      - name: Run zero-execution controls optimized
-        run: python -O -m unittest qualification.hcsn_currentstate_n256_corrected_t0_capsule_v1.test_capsule -v
-      - name: Build once and independently audit once
-        run: |
-          set -euo pipefail
-          package=qualification/hcsn_currentstate_n256_corrected_t0_capsule_v1
-          output="$RUNNER_TEMP/hcsn-n256-corrected-t0"
-          mkdir -p "$output"
-          /usr/bin/time -v timeout 15s bash -c '
-            set -euo pipefail
-            test -n "$HCSN_EXECUTION_KEY"
-            prlimit --as=268435456 --cpu=6 -- \
-              python -m qualification.hcsn_currentstate_n256_corrected_t0_capsule_v1.builder \
-                --root . --output "'$output'/capsule.bin" --receipt "'$output'/BUILD.json"
-            prlimit --as=268435456 --cpu=6 -- \
-              python -m qualification.hcsn_currentstate_n256_corrected_t0_capsule_v1.cold_audit \
-                --root . --capsule "'$output'/capsule.bin" \
-                --build-receipt "'$output'/BUILD.json" --receipt "'$output'/RECEIPT.json"
-          ' > "$output/EXECUTION_STDOUT.txt" 2> "$output/EXECUTION_STDERR.txt"
-          cp "$package/ADMISSION.json" "$output/ADMISSION.json"
-          cp "$package/SOURCE_FREEZE.json" "$output/SOURCE_FREEZE.json"
-          sha256sum "$output"/* > "$output/SHA256SUMS.txt"
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: hcsn-n256-corrected-authentic-t0-${{ github.run_id }}
-          path: ${{ runner.temp }}/hcsn-n256-corrected-t0
-          if-no-files-found: error
-          retention-days: 30
+      - run: |
+          echo "attempt002 completed at source commit 4b6fcf153375fb58e5a77c87c21d27569b3689c0"
+          echo "execution key is consumed; no rerun"
