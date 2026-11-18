@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn-n256-hosted-runtime-snapshot-independent-review-v1",
+  "status": "PASS_ZERO_EXECUTION_INDEPENDENT_READBACK",
+  "review_execution_counts": {
+    "candidate_imports": 0,
+    "n256_input_reads": 0,
+    "dynamic_steps": 0,
+    "matrix_exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "checks": {
+    "artifact_zip_sha256_matches_github_digest": true,
+    "zip_crc_passed": true,
+    "zip_member_set_exact": true,
+    "extracted_json_matches_zip_member_bytes": true,
+    "run_job_and_attempt_match": true,
+    "runtime_versions_match_request": true,
+    "distribution_record_hashes_present": true,
+    "module_anchor_hashes_present": true,
+    "thread_environment_single_threaded": true,
+    "all_observation_execution_counts_zero": true,
+    "allocation_and_calendar_contracts_null": true,
+    "runtime_and_resource_admission_false": true,
+    "historical_red_unchanged": true
+  },
+  "runtime": {
+    "python_version": "3.12.3",
+    "python_executable_sha256": "2ce74da59bd24c1301a77e90b94abfe52bc14d54c0f79f565665b5a59d62734b",
+    "numpy_version": "2.3.5",
+    "numpy_record_sha256": "81412454021a86a9199d8c3ae4b5e1312e7498437ba9e3fdcc6f5919c0a6482c",
+    "numpy_init_sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+    "scipy_version": "1.17.0",
+    "scipy_record_sha256": "d98e3cc57253f7f8c6ca4f5b775a4747815edc9b1bcd5295c9dacc3c8d49c7b0",
+    "scipy_init_sha256": "335bc6e0a9909dc7534f9569a3685a92dc8001cb8c63a6da4c239849ff02d4d0",
+    "runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06"
+  },
+  "resource_observation": {
+    "mem_total_kib": 16367524,
+    "mem_available_kib": 15186820,
+    "swap_total_kib": 3145724,
+    "swap_free_kib": 3145724,
+    "ancestor_cgroup_levels": 3,
+    "finite_memory_max_entries": 0,
+    "allocation_contract": null,
+    "calendar_contract": null
+  },
+  "scope": {
+    "hosted_runtime_identity_observed": true,
+    "point_in_time_resource_observed": true,
+    "n256_runtime_admitted": false,
+    "n256_resource_admitted": false,
+    "n256_numerical_execution_allowed": false,
+    "dense_oracle_executed": false,
+    "production_adoption_allowed": false,
+    "all_closed": false
+  }
+}
