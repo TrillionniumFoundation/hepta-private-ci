@@ -1,0 +1,58 @@
+{
+  "B_tasks_sent": false,
+  "baseline": {
+    "archive_sha256": "bb42d6353d4865c92790948473dcacedd626d160dd2e50cf2e94f7a66f258476",
+    "calls": 12,
+    "digest": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+    "model": "Qwen2.5-Coder-1.5B-Instruct",
+    "path": "retained/evaluation/frozen/A_retention",
+    "source_commit": "992f2b3de51902448abf5743f94179bf40e11b6d"
+  },
+  "calls_per_task": 2,
+  "complementarity_scope": "paired selected/first/final coverage; no unmeasured negative-transfer or student-learning claim",
+  "feedback_source_sha256": "5b901cc781eb9ee2087b11f7a244c6edf234f64486859564be612c57a5420e05",
+  "independent_users": 0,
+  "logical_observation_encoding": "same native_chat_v2 Tool observation prefix as pinned baseline",
+  "matching_scope": "same logical inputs, output-token caps, two calls and verifier opportunities; hardware/active parameters/runtime differ and all actual costs remain separate",
+  "maximum_observed_input_tokens": 4096,
+  "native_adoption": false,
+  "physical_compute_equal": false,
+  "planned_model_calls": 12,
+  "purpose": "internal research: actual different existing teacher outputs on authorized A",
+  "request_parameters": {
+    "cache_prompt": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "max_tokens": 384,
+    "min_p": 0.0,
+    "n": 1,
+    "seed": 1729,
+    "stream": false,
+    "temperature": 0.0,
+    "top_k": 1,
+    "top_p": 1.0
+  },
+  "schema": "hepta.local-two-teacher-diagnostic.v1",
+  "scientific_confirmation_qualified": false,
+  "scoring": "strict original repo_patch v1; no stripping fences, repair, response substitution or retries",
+  "second_stage": "real first-output verification feedback, then second output even after success",
+  "source_commit_for_verification": "992f2b3de51902448abf5743f94179bf40e11b6d",
+  "task_records_digest": "f3206c37a200890561b47b3823a39a5419189d06861c161f5c92ca7de5c6d644",
+  "tasks": 6,
+  "teacher": {
+    "base_model": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+    "embedded_gguf_license": "apache-2.0",
+    "embedded_license_conflicts_with_current_upstream": true,
+    "family": "Qwen; different checkpoint and architecture, not independent vendors",
+    "license": "qwen-community-1.0",
+    "license_source": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/main/LICENSE",
+    "model_alias": "qwen38-flash-next-uc",
+    "source": "https://huggingface.co/cygnal/Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4-GGUF",
+    "use_scope": "user-authorized private internal research; no external deployment or commercial license qualification",
+    "weight_hash_recomputed": true,
+    "weight_sha256": "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e"
+  },
+  "training_on_new_outputs": false,
+  "verifier_source_sha256": "64fcc25e4ccf82f31c2549f5d4c1a5c4af1831c5bed4219c0aac2283b213a020"
+}
