@@ -1,0 +1,31 @@
+{
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "cell_experiments.test_source_metrics_v3",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "VALIDATION_1.txt",
+      "log_sha256": "84aebb0fcd9e01724eb37d993709df945ff3c8e83695ea530022c985dd17b13b",
+      "wall_seconds": 0.23463229100161698
+    },
+    {
+      "command": [
+        "python3",
+        "qualification/cell-experiments-v3-20261116/operations/e5-source-readout-20261118/replay_readout.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "VALIDATION_2.txt",
+      "log_sha256": "db93d5fedf3338249c0f1d1ee13d01339558e22b1a3b59cf0ec983aff25c8c86",
+      "wall_seconds": 0.14236102299764752
+    }
+  ],
+  "pre_format_ast_sha256": "23076c416fb5a47b91d6a4235b0759c832fd3476d19821bb2ebb6346ff7deb73",
+  "scope": "Protocol tests and retained-data replay only; no model experiment or new scientific sample",
+  "source_commit": "eb56c51e4e73b0d466795b257a547ab93a0baa63"
+}
