@@ -122,3 +122,26 @@ Both production binaries were rebuilt and pinned at this exact source. Each actu
 The safe v11 archive is native-owner-v11-public-evidence.tar.xz (134,836 bytes, SHA-256 4284ea198b63055aafda2696d7e19ffb829801dfe7b37d1cabae3a3481372dbb). Every one of its 90 regular members was checked against its manifest before publication. v11-SUMMARY.json and v11-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
 
 All command timings and cost gaps are retained. Unmeasured CPU/GPU/energy/API/monetary costs remain unknown. Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
+
+## v12: diagnostic candidate preparation failure
+
+The exact tested source is 30b4e260accbc0d81f6a17e106854c41c61c3346, tree f0764fd91e5aff3921b9b20fc274f422516c8fd2, direct child of evidence-only b01b277b7c887a65a2159b37074eb7e0564e09e0. v11 passed its nine related codec/frame regressions and recorded a real 19,114-byte Task reply under its 28,933-byte bound, but the original NoUpdate still failed later with a generic historical Dataset/client refusal. Those v11 byte counts and tests remain attached to source e21ca2d9; they are not inherited as v12 passes.
+
+The actual attempt stopped during helper compilation after 14.718 seconds: Rust E0034 reported ambiguous Read/Write `by_ref` in the original historical bootstrap inputs module. The newly imported Write trait had propagated through its existing super glob. This source produced no per-run product manifest and executed no NoUpdate or Adopt case. The original reader and all gates remain unchanged; the failure is retained. v12-compiler-products.json explicitly records the missing product stage instead of reusing older binaries.
+
+This candidate adds only diagnostic observations at existing client rejection branches, transport/decoder boundaries, receipt comparisons, operation callbacks before error fencing, original activation checks, Dataset callbacks and original source callers. Original callback Results are still stored without a new early return; original postcheck priority, question marks, error conversions, Drop/fence, identity predicates, deadlines, MAX_READS and all frame/component bounds remain unchanged. Only the existing read-limit rejection may print the local sequence and fixed maximum; other new labels contain no values, payload, configuration or key. Mechanical stripping restores all original tokens and strings, with two explicitly reviewed rustfmt match-arm style normalizations.
+
+| Exact selected stage | Actual outcome |
+|---|---|
+| ordinary-whole-cold-no-update | not attempted |
+| ordinary-whole-cold-adopt | not attempted |
+
+Observed original Root error stages: none recorded. Observed daemon stages: none recorded. Numeric Task response observations: []. Read-limit observations: []. The complete short original diagnostic stderr files are projected into v12-SUMMARY.json from the whitelist and remain byte-preserved in the raw archive. Per-process line order is retained; separate process outputs do not establish a total ordering. Missing labels do not prove that every uncovered condition passed.
+
+The adapter would require a new actual daemon containing all eight selected labels before business execution, and would record both products plus the actual Source/Observer libtest. Those preparation stages were not reached in this attempt. Compiler stdout/stderr and the execution record preserve the actual failure and elapsed time.
+
+The adapter permits one original NoUpdate case with retries zero; the original Adopt cold case is attempted once only if NoUpdate passes. No v11 codec/frame tests were repeated on this diagnostic-only candidate. All earlier tests remain attached to their actually tested sources.
+
+The safe v12 archive is native-owner-v12-public-evidence.tar.xz (96,700 bytes, SHA-256 94cc06fb09a3d6f7557cc3439fc1d9e5aa94319f509e9def93b5c8af66efac8f). Each of its 57 regular members was checked against its manifest before publication. v12-SUMMARY.json and v12-ARCHIVE.json distinguish tested source, execution and this evidence-only child.
+
+All command timings and cost gaps are retained. Unmeasured CPU/GPU/energy/API/monetary costs remain unknown. Existing cold profiles inspect retained C; they do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
