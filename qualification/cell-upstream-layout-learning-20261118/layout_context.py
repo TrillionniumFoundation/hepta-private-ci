@@ -13,9 +13,9 @@ PREVIOUS = Path("/home/qian-qi/work/hepta-e2-current-credit-20261118-2e9b")
 COLLECTION = Path("/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b")
 ARTIFACT = Path("/dev/shm/hepta-cell-experiments-v3-20261116-0c078a")
 WORK = Path(
-    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint"
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2"
 )
-FIT_ROOT = ARTIFACT / "research-upstream-layout-learning-20261118-2e9b-checkpoint"
+FIT_ROOT = ARTIFACT / "research-upstream-layout-learning-20261118-2e9b-checkpoint2"
 PYTHON = "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python"
 PROJECTS = (
     "python-attrs/attrs",

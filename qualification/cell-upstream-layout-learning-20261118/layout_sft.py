@@ -3,6 +3,8 @@
 import copy
 import checkpoint_softmax
 import gc
+import hashlib
+import inspect
 import importlib.util
 import os
 from pathlib import Path
@@ -43,34 +45,77 @@ SETTINGS = {
 require = matched.require
 
 
-def configure_training_attention(model, output):
+def observe_training_attention(model, expected):
+    from transformers.models.qwen2 import modeling_qwen2 as qwen
+    from transformers.masking_utils import ALL_MASK_ATTENTION_FUNCTIONS, eager_mask
+
+    name = SETTINGS["training_attention"]
+    installed = qwen.ALL_ATTENTION_FUNCTIONS[name]
+    function_sha = hashlib.sha256(inspect.getsource(installed).encode()).hexdigest()
+    module_sha = file_hash(Path(inspect.getfile(installed)))
+    layers = [
+        module
+        for module in model.modules()
+        if type(module).__name__ == "Qwen2Attention"
+    ]
+    require(
+        installed is checkpoint_softmax.eager_checkpointed_softmax
+        and ALL_MASK_ATTENTION_FUNCTIONS[name] is eager_mask
+        and function_sha == expected["function_sha256"]
+        and module_sha == expected["module_sha256"]
+        and name == expected["name"]
+        and len(layers) == 28
+        and model.config._attn_implementation == name
+        and all(
+            module.config._attn_implementation == name
+            and module.forward.__func__ is qwen.Qwen2Attention.forward
+            for module in layers
+        ),
+        "actual installed attention function, mask, class, source or layer configuration differs",
+    )
+    return {
+        "engine": name,
+        "function_module": installed.__module__,
+        "function_qualname": installed.__qualname__,
+        "function_sha256": function_sha,
+        "module_sha256": module_sha,
+        "installed_callable_is_frozen_candidate": True,
+        "installed_callable_identity_in_this_process": str(id(installed)),
+        "mask_callable_module": eager_mask.__module__,
+        "mask_callable_qualname": eager_mask.__qualname__,
+        "installed_mask_is_original_eager": True,
+        "actual_attention_layer_count": len(layers),
+        "actual_layer_forward_class_identity_checked": True,
+    }
+
+
+def configure_training_attention(model, output, freeze):
     checkpoint_softmax.register()
     base = model.get_base_model()
     require(
         base.config._attn_implementation == "eager",
         "cold parent inference engine differs",
     )
+    expected = freeze["training_engine_identity"]
+    for path, digest in expected["runtime_files"].items():
+        require(
+            file_hash(Path(path)) == digest,
+            "frozen installed attention runtime changed: " + path,
+        )
     base.set_attn_implementation(checkpoint_softmax.NAME)
-    require(
-        base.config._attn_implementation == SETTINGS["training_attention"]
-        and all(
-            module.config._attn_implementation == SETTINGS["training_attention"]
-            for module in base.modules()
-            if type(module).__name__ == "Qwen2Attention"
-        ),
-        "actual inner checkpoint engine differs",
-    )
+    proof = observe_training_attention(model, expected)
+    model._hepta_expected_training_engine = copy.deepcopy(expected)
     write_new(
         Path(output) / "TRAINING_ENGINE.json",
         {
-            "engine": SETTINGS["training_attention"],
+            **proof,
             "query_rows": checkpoint_softmax.QUERY_ROWS,
-            "eager_mask_preserved": True,
             "complete_QK_AV_matrix_shapes_preserved": True,
             "FP32_softmax_then_original_dtype_preserved": True,
             "extra_recomputation_is_not_free": True,
             "inference_engine": "eager",
             "installed_library_files_changed": False,
+            "installed_and_verified_before_first_forward": True,
         },
     )
 
@@ -226,6 +271,13 @@ def backward_group(
                 "at_ns": time.time_ns(),
                 "monotonic_ns": time.monotonic_ns(),
                 "optimizer_update_in_this_chunk": False,
+                "actual_attention_implementation": getattr(
+                    getattr(model, "config", None), "_attn_implementation", None
+                ),
+                "installed_function_sha256": getattr(
+                    model, "_hepta_expected_training_engine", {}
+                ).get("function_sha256"),
+                "inner_checkpoint_counts": checkpoint_softmax.TRACKER.snapshot(),
             }
             if torch.cuda.is_available() and str(device).startswith("cuda"):
                 record["cuda_allocated_bytes"] = torch.cuda.memory_allocated(device)
@@ -243,6 +295,12 @@ def backward_group(
         mask = torch.tensor(
             [[1] * len(row["input_ids"]) + [0] * padding], device=device
         )
+        if str(device).startswith("cuda"):
+            require(
+                hasattr(model, "_hepta_expected_training_engine"),
+                "training engine was not installed before forward",
+            )
+            observe_training_attention(model, model._hepta_expected_training_engine)
         checkpoint_softmax.TRACKER.phase = "forward"
         emit("forward_started", chunk, count)
         loss, actual_count = numeric.selected_token_loss(model, ids, mask, labels)
@@ -486,7 +544,7 @@ def train(
         )
         write_new(output / "ENCODED_GROUPS.json", groups)
         model = predictor.model
-        configure_training_attention(model, output)
+        configure_training_attention(model, output, freeze)
         # The parent loader validates FP32 adapter bytes before enabling gradients.
         # No adapter is reinitialized and no parent optimizer state is invented.
         for name, value in model.named_parameters():
@@ -778,6 +836,7 @@ def calibrate(records, parent, artifact_root, old_code_root, freeze, output):
             },
         )
         model = predictor.model
+        configure_training_attention(model, output, freeze)
         for name, value in model.named_parameters():
             value.requires_grad_("lora_" in name)
         model.gradient_checkpointing_enable(

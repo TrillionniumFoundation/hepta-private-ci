@@ -3,6 +3,8 @@
 import argparse
 import copy
 import importlib
+import hashlib
+import inspect
 import time
 
 import layout_context as ctx
@@ -225,7 +227,10 @@ def build(source_commit):
         == "d3ccfdea6d8eb895d0159906e58d1e8867be127424a8395621d18757ba6255ff",
         "actual allocator control or second failure changed",
     )
-    short_gate = ctx.WORK / "probe-result-1/RESULT.json"
+    short_gate = (
+        ctx.WORK.parent
+        / "hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe-result-1/RESULT.json"
+    )
     layout.require(
         ctx.sha(short_gate)
         == "22e9642729084223acf0058606ef01132c7e8b5f707eafb8e37c3002eb87586a",
@@ -240,6 +245,33 @@ def build(source_commit):
         "short numerical gate not passed",
     )
     protocol = {
+        "training_engine_identity": {
+            "name": layout.checkpoint_softmax.NAME,
+            "module_sha256": ctx.sha(ctx.HERE / "checkpoint_softmax.py"),
+            "function_sha256": hashlib.sha256(
+                inspect.getsource(
+                    layout.checkpoint_softmax.eager_checkpointed_softmax
+                ).encode()
+            ).hexdigest(),
+            "runtime_files": {
+                "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/models/qwen2/modeling_qwen2.py": "08742a7c82a8713bc22f632f01c97b7eca3ef0e947180e7d6c9beec4897c4ff8",
+                "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/masking_utils.py": "7a963feed8173b8265298dd24350c166222ce6b4719442fce48ab414d0478a6a",
+                "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/utils/checkpoint.py": "431b229da53972d79bed7e5dbfb6ace2922fff30192ea103208f484e59490f23",
+            },
+        },
+        "prior_full_gate_wiring_failure": {
+            "source_commit": "96990368541053f982bec074fda36e5d0ae2f1d7",
+            "job_id": "1a1f04f4906-ffbe-77c",
+            "failed_sha256": "812251aabc6fb1c1cf46a793971adb66d6169ddb9cab101019e83904e32add2b",
+            "owner_exit_sha256": "95676cabd49acc0337dc03d4de8bc18dd7640a3d287d24eb92c2a2c970c26e0a",
+            "actual_engine": "original eager; calibrate omitted installation call",
+            "inner_checkpoint_full_length_tested": False,
+            "completed_forwards": 1,
+            "attempted_backwards": 1,
+            "completed_backwards": 0,
+            "optimizer_updates": 0,
+            "generation_calls": 0,
+        },
         "training_attention_revision": {
             "engine": "eager_checkpointed_softmax",
             "inner_softmax_query_rows": 128,

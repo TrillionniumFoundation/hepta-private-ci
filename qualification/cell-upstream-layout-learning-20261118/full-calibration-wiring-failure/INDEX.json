@@ -1,0 +1,95 @@
+{
+  "actual_attention_engine": "original eager: missing configure_training_attention call in calibrate",
+  "files": [
+    {
+      "bytes": 1339,
+      "path": "DEPLOYMENT.json",
+      "sha256": "6235678f2e412e8ca1557b63056f087afc96eafc314cfb4f2a751ce058cc8ecc"
+    },
+    {
+      "bytes": 882,
+      "path": "owned-calibration_only-1/ENERGY-0.json",
+      "sha256": "3588ca718a0fee0c4eaaff0237b370261adca778d8334fa333ae7e8b2555c91b"
+    },
+    {
+      "bytes": 881,
+      "path": "owned-calibration_only-1/ENERGY-1.json",
+      "sha256": "5bcd21dc6617c9443b18cc04336c21ecdf66e153a9d2a90c5fc4cb5539620e03"
+    },
+    {
+      "bytes": 882,
+      "path": "owned-calibration_only-1/ENERGY-2.json",
+      "sha256": "eedf207cb12869da5573b3c54215bea264b059ec4ecb40d250d56d367a621b65"
+    },
+    {
+      "bytes": 429,
+      "path": "owned-calibration_only-1/FAILED.json",
+      "sha256": "95676cabd49acc0337dc03d4de8bc18dd7640a3d287d24eb92c2a2c970c26e0a"
+    },
+    {
+      "bytes": 541,
+      "path": "owned-calibration_only-1/INTENT.json",
+      "sha256": "6cad7c2b3d0949e0507f89136400a6ba662d9de492f0477589c671dddfbc975b"
+    },
+    {
+      "bytes": 429,
+      "path": "owned-calibration_only-1/calibration/EXIT.json",
+      "sha256": "95676cabd49acc0337dc03d4de8bc18dd7640a3d287d24eb92c2a2c970c26e0a"
+    },
+    {
+      "bytes": 162,
+      "path": "owned-calibration_only-1/calibration/GPU_ADMISSION.json",
+      "sha256": "677d492fe5d745e7e9067cfb20cb4a8b26b7cf3818b06d8193a9cfd37a591205"
+    },
+    {
+      "bytes": 424,
+      "path": "owned-calibration_only-1/calibration/STARTED.json",
+      "sha256": "1ac6623307881df7d00710d34527d1575bf2a265cd567c20cbafc7b22a3cea5f"
+    },
+    {
+      "bytes": 2319,
+      "path": "owned-calibration_only-1/calibration/STDERR.txt",
+      "sha256": "28e24325e9af52cb5a3f505c1ce9096d536d7d8289050f6dacd34731a494236e"
+    },
+    {
+      "bytes": 0,
+      "path": "owned-calibration_only-1/calibration/STDOUT.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 629,
+      "path": "retained/calibration/ALLOCATOR.json",
+      "sha256": "7b4f88deff729d70a2b763311f06f87e363b7331c62bb3599cc7b9f0da71a06f"
+    },
+    {
+      "bytes": 966,
+      "path": "retained/calibration/COMPUTE.jsonl",
+      "sha256": "fe1862e226e9ecd6dbe34cbc62d4caca8370fc220b8015abecf2ad777716e389"
+    },
+    {
+      "bytes": 771,
+      "path": "retained/calibration/FAILED.json",
+      "sha256": "812251aabc6fb1c1cf46a793971adb66d6169ddb9cab101019e83904e32add2b"
+    },
+    {
+      "bytes": 569,
+      "path": "retained/calibration/MODEL_LOADED.json",
+      "sha256": "2975259bb98a9d5ceedee409b9387d268e52f2e3564c1fa35726dc387ed03edb"
+    },
+    {
+      "bytes": 113,
+      "path": "retained/calibration/STARTED.json",
+      "sha256": "fabf531056263eb7e7a9dbbcabf50a075ee41fb856db9760fec12c8956b97f9d"
+    },
+    {
+      "bytes": 28787,
+      "path": "source/qualification/cell-upstream-layout-learning-20261118/prepared/PROTOCOL.json",
+      "sha256": "a5f2a8654f6d4a86636874f5ab3bb189afc83a95649ea4f1a0f24da2c7aa1e90"
+    }
+  ],
+  "generation_calls": 0,
+  "inner_checkpoint_tested": false,
+  "optimizer_updates": 0,
+  "schema": "hepta.actual-full-calibration-wiring-failure.v1",
+  "source_commit": "96990368541053f982bec074fda36e5d0ae2f1d7"
+}
