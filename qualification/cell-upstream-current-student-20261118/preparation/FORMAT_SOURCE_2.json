@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+    "run",
+    "--frozen",
+    "--project",
+    "/home/qian-qi/work/hepta-e5-format-20261118-2e9b/source/scripts",
+    "ruff",
+    "format",
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/code-2/native_sandbox.py",
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/code-2/prepare.py"
+  ],
+  "files": {
+    "native_sandbox.py": {
+      "bytes": 26011,
+      "sha256": "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c"
+    },
+    "prepare.py": {
+      "bytes": 15898,
+      "sha256": "0df7e3f970b819fd51b82e8756fed8e810c622ea213f94278c5c6380ad86248d"
+    }
+  },
+  "model_calls": 0,
+  "native_test_calls": 0,
+  "preformat_commit": "e643359bbe780fef149053536c43e30fbda4f871",
+  "returncode": 0,
+  "stderr": "Using CPython 3.13.12\nCreating virtual environment at: work/hepta-e5-format-20261118-2e9b/source/scripts/.venv\nInstalled 1 package in 1ms\n",
+  "stdout": "2 files reformatted\n",
+  "wall_seconds": 0.0425520219723694
+}
