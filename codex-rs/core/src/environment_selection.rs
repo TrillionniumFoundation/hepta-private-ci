@@ -681,7 +681,13 @@ impl ThreadEnvironments {
                 environments.push(environment);
             }
         }
-        TurnEnvironmentSnapshot { environments }
+        TurnEnvironmentSnapshot {
+            ordinary_selections_complete: environments.len() == selected.len()
+                && selected.iter().all(|environment| {
+                    environment.config_origin == EnvironmentConfigOrigin::Thread
+                }),
+            environments,
+        }
     }
 
     pub(crate) fn environment_manager(&self) -> Arc<EnvironmentManager> {
@@ -731,6 +737,8 @@ impl TurnEnvironmentState {
 
 #[derive(Clone, Debug, Default)]
 pub(crate) struct TurnEnvironmentSnapshot {
+    // True only when every selected environment is captured and thread-owned.
+    pub(crate) ordinary_selections_complete: bool,
     // Keep ready and starting environments in their original selection order.
     pub(crate) environments: Vec<TurnEnvironmentState>,
 }
@@ -752,8 +760,12 @@ impl TurnEnvironmentSnapshot {
                     )
                 }
             })
-            .collect();
-        Self { environments }
+            .collect::<Vec<_>>();
+        Self {
+            ordinary_selections_complete: self.ordinary_selections_complete
+                && environments.len() == self.environments.len(),
+            environments,
+        }
     }
 
     pub(crate) fn turn_environments(&self) -> impl Iterator<Item = &TurnEnvironment> {
@@ -1220,6 +1232,31 @@ url = "ws://127.0.0.1:8765"
     }
 
     #[tokio::test]
+    async fn failed_owner_selection_cannot_be_an_ordinary_snapshot() {
+        let cwd = PathUri::from_abs_path(&AbsolutePathBuf::current_dir().expect("cwd"));
+        let resolved = resolve_turn_environments(
+            Arc::new(EnvironmentManager::default_for_tests()),
+            &[TurnEnvironmentSelection {
+                environment_id: LOCAL_ENVIRONMENT_ID.to_string(),
+                cwd,
+                workspace_roots: Vec::new(),
+                config: EnvironmentConfigState::Failed("owner unavailable".to_string()),
+            }],
+        )
+        .await;
+        let snapshot = resolved.snapshot().await;
+        assert!(snapshot.environments.is_empty());
+        assert!(!snapshot.ordinary_selections_complete);
+        assert!(!snapshot.refresh_readiness().ordinary_selections_complete);
+
+        resolved.update_selections(&[], &test_environment_config());
+        let empty = resolved.snapshot().await;
+        assert!(empty.environments.is_empty());
+        assert!(empty.ordinary_selections_complete);
+        assert!(empty.refresh_readiness().ordinary_selections_complete);
+    }
+
+    #[tokio::test]
     async fn blocking_snapshot_waits_for_starting_environment() {
         let buffer: &'static std::sync::Mutex<Vec<u8>> =
             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
@@ -1230,6 +1267,9 @@ url = "ws://127.0.0.1:8765"
             .with_writer(MockWriter::new(buffer))
             .finish();
         let _subscriber_guard = tracing::subscriber::set_default(subscriber);
+        // Keep callsite interest aggregation on the registered-subscriber path
+        // when parallel tests encounter shared spans without this subscriber.
+        let _callsite_guard = tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
 
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1262,7 +1302,7 @@ url = "ws://127.0.0.1:8765"
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            async move { environments.snapshot().await }.with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
@@ -1673,6 +1713,7 @@ url = "ws://127.0.0.1:8765"
             child_config.clone(),
             ShellSnapshot::disabled(),
             TurnEnvironmentSnapshot {
+                ordinary_selections_complete: false,
                 environments: vec![TurnEnvironmentState::Ready(inherited)],
             },
             /*non_blocking_snapshots*/ false,
@@ -1797,6 +1838,7 @@ url = "ws://127.0.0.1:8765"
                 .expect("remote environment"),
         );
         let remote = TurnEnvironmentSnapshot {
+            ordinary_selections_complete: false,
             environments: vec![TurnEnvironmentState::Ready(TurnEnvironment::new(
                 TurnEnvironmentSelection {
                     environment_id: REMOTE_ENVIRONMENT_ID.to_string(),
@@ -1810,6 +1852,7 @@ url = "ws://127.0.0.1:8765"
             ))],
         };
         let multiple = TurnEnvironmentSnapshot {
+            ordinary_selections_complete: false,
             environments: vec![
                 TurnEnvironmentState::Ready(TurnEnvironment::new(
                     TurnEnvironmentSelection {
@@ -1838,6 +1881,7 @@ url = "ws://127.0.0.1:8765"
             .expect("cwd")
             .join("starting-local");
         let snapshot = TurnEnvironmentSnapshot {
+            ordinary_selections_complete: false,
             environments: vec![TurnEnvironmentState::Starting(StartingTurnEnvironment {
                 selection: TurnEnvironmentSelection {
                     environment_id: LOCAL_ENVIRONMENT_ID.to_string(),

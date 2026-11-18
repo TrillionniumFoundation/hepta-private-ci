@@ -15,6 +15,7 @@ use super::thread_settings;
 use super::turn::TurnRunOrigin;
 use super::turn_context::TurnContext;
 use super::turn_input_retry::FinishRetryState;
+use crate::realtime_conversation::RealtimeHandoffRequest;
 use crate::state::ActiveTurn;
 use crate::state::StartReservationHandle;
 use crate::state::TaskTerminalizationKind;
@@ -49,6 +50,8 @@ use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
+use tokio::sync::oneshot;
+use tokio_util::sync::CancellationToken;
 use uuid::Uuid;
 
 /// Releases a caller-owned start reservation after a pre-context failure.
@@ -112,6 +115,7 @@ struct SteerInputContext<'a> {
     responsesapi_client_metadata: Option<HashMap<String, String>>,
     incoming_root_turn_id: Option<Option<String>>,
     retry_submission_id: Option<&'a str>,
+    realtime_handoff: Option<&'a RealtimeHandoffRequest>,
 }
 
 /// Thread settings and start-only options prepared before Core knows whether
@@ -217,7 +221,13 @@ pub(super) async fn handle(
     // selected branch keeps polling `handle` within Tokio's default worker stack.
     match mode {
         TurnInputMode::StartOrSteer => {
-            Box::pin(start_or_steer(session, request, submission_id)).await
+            Box::pin(start_or_steer(
+                session,
+                request,
+                submission_id,
+                /*realtime_handoff*/ None,
+            ))
+            .await
         }
         TurnInputMode::StartIfIdle => {
             Box::pin(start_if_idle(
@@ -256,10 +266,11 @@ pub(super) async fn handle_recovery(
     clippy::await_holding_invalid_type,
     reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
 )]
-async fn start_or_steer(
+pub(super) async fn start_or_steer(
     session: &Arc<Session>,
     request: TurnInputRequest,
     submission_id: String,
+    realtime_handoff: Option<&RealtimeHandoffRequest>,
 ) -> CodexResult<TurnInputSubmission> {
     let TurnInputRequest {
         input,
@@ -296,6 +307,7 @@ async fn start_or_steer(
                 responsesapi_client_metadata: responsesapi_client_metadata.clone(),
                 incoming_root_turn_id,
                 retry_submission_id: Some(&submission_id),
+                realtime_handoff,
             },
         )
         .await
@@ -385,6 +397,9 @@ async fn start_or_steer(
                     content: items,
                     client_id,
                 });
+            }
+            if let Some(handoff) = realtime_handoff {
+                handoff.prepare(&turn_context).await.commit();
             }
             let start_outcome = session
                 .start_task_owned(
@@ -643,7 +658,11 @@ async fn start_if_idle(
         turn_context
             .turn_metadata_state
             .apply_recovery_start_state(&replay.start);
-        if turn_context.to_turn_context_item() != *expected_context
+        let mut current_item = turn_context.to_turn_context_item();
+        if expected_context.environments.is_none() {
+            current_item.environments = None;
+        }
+        if current_item != *expected_context
             || super::turn::turn_recovery_environment_selections(&turn_context.environments)
                 .as_ref()
                 != Some(&replay.environments)
@@ -780,7 +799,11 @@ async fn recovery_reference_context(
     // below remain strict comparisons against the resumed session.
     current_mut.current_date = expected.current_date.clone();
     current_mut.timezone = expected.timezone.clone();
-    let current_item = current.to_turn_context_item();
+    let mut current_item = current.to_turn_context_item();
+    // Older Ready records omit native paths; the replay environment binding below stays exact.
+    if expected.environments.is_none() {
+        current_item.environments = None;
+    }
     if expected != current_item {
         return None;
     }
@@ -836,6 +859,7 @@ async fn steer(
                 responsesapi_client_metadata,
                 incoming_root_turn_id,
                 retry_submission_id: None,
+                realtime_handoff: None,
             },
         )
         .await
@@ -855,18 +879,31 @@ async fn steer(
 }
 
 impl Session {
-    pub(crate) async fn route_realtime_text_input(self: &Arc<Self>, text: String) {
+    pub(crate) async fn route_realtime_text_input(
+        self: &Arc<Self>,
+        text: String,
+        handoff: Option<RealtimeHandoffRequest>,
+        stop: &CancellationToken,
+        mut first_decision: Option<oneshot::Sender<()>>,
+    ) {
         let submission_id = Uuid::now_v7().to_string();
-        let submission = handle(
-            self,
-            TurnInputRequest::user_input(vec![UserInput::Text {
-                text,
-                text_elements: Vec::new(),
-            }]),
-            TurnInputMode::StartOrSteer,
-            submission_id.clone(),
-        )
-        .await;
+        let submission = self
+            .route_realtime_after_finish(
+                TurnInputRequest::user_input(vec![UserInput::Text {
+                    text,
+                    text_elements: Vec::new(),
+                }]),
+                submission_id.clone(),
+                handoff.as_ref(),
+                stop,
+                &mut first_decision,
+            )
+            .await;
+        if let Some(handoff) = handoff
+            && let Err(error) = handoff.flush_admitted().await
+        {
+            tracing::debug!("failed to acknowledge realtime handoff: {error}");
+        }
         match submission {
             Ok(TurnInputSubmission::Started { .. } | TurnInputSubmission::Steered { .. }) => {}
             Ok(TurnInputSubmission::NotSubmitted { reason }) => {
@@ -886,6 +923,9 @@ impl Session {
                 })
                 .await;
             }
+        }
+        if let Some(first_decision) = first_decision {
+            let _ = first_decision.send(());
         }
     }
 
@@ -947,6 +987,7 @@ impl Session {
             responsesapi_client_metadata,
             incoming_root_turn_id,
             retry_submission_id,
+            realtime_handoff,
         } = context;
         let mut active = self.active_turn.lock().await;
         let Some(active_turn) = active.as_mut() else {
@@ -1063,12 +1104,19 @@ impl Session {
                 .turn_metadata_state
                 .mark_root_turn_ambiguous();
         }
+        let handoff = match realtime_handoff {
+            Some(handoff) => Some(handoff.prepare(&active_task.turn_context).await),
+            None => None,
+        };
         self.input_queue
             .extend_pending_input_and_accept_mailbox_delivery_for_turn_state(
                 active_turn.turn_state.as_ref(),
                 pending_input,
             )
             .await;
+        if let Some(handoff) = handoff {
+            handoff.commit();
+        }
         Ok(Arc::clone(&active_task.turn_context))
     }
 }

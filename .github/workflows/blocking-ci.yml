@@ -82,6 +82,46 @@ jobs:
     uses: ./.github/workflows/bazel.yml
     secrets: inherit
 
+  bazel-lock-candidate:
+    name: Bazel lock candidate
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare Bazel lock tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: diagnostic-lock
+
+      - name: Generate and verify the lock candidate
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_SHA: ${{ github.sha }}
+        shell: bash
+        run: >-
+          python3 -I .github/scripts/generate_bazel_lock_candidate.py
+          --output "$RUNNER_TEMP/bazel-lock-candidate"
+
+      - name: Retain the actual lock and diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bazel-lock-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-lock-candidate
+          if-no-files-found: error
+          retention-days: 1
+
   blob-size-policy:
     name: Blob size policy
     uses: ./.github/workflows/blob-size-policy.yml

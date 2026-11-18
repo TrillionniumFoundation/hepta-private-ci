@@ -1,0 +1,298 @@
+hia-asm.v1 hepta.hia.program.v8 codex_output_item_budget
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  size:usize = buffer.len(source)
+  init_size:usize = const() {"value":40}
+  finish_size:usize = const() {"value":80}
+  snippet_size:usize = const() {"value":88}
+  item_size:usize = const() {"value":96}
+  is_init_size:bool = compare.eq(size,init_size)
+  is_finish_size:bool = compare.eq(size,finish_size)
+  is_snippet_size:bool = compare.eq(size,snippet_size)
+  is_item_size:bool = compare.eq(size,item_size)
+  size_pair_a:bool = bool.or(is_init_size,is_finish_size)
+  size_pair_b:bool = bool.or(is_snippet_size,is_item_size)
+  size_ok:bool = bool.or(size_pair_a,size_pair_b)
+  branch size_ok capacity(source,output,size) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf,c_size:usize)
+  capacity_size:usize = buffer.len(c_output)
+  required_size:usize = const() {"value":88}
+  capacity_ok:bool = compare.ge(capacity_size,required_size)
+  branch capacity_ok opcode(c_source,c_output,c_size) short_output()
+block opcode(o_source:readbuf,o_output:mutbuf,o_size:usize)
+  op_offset:usize = const() {"value":0}
+  operation:u64 = call(o_source,op_offset) {"function":"read_word"}
+  op_zero:u64 = const() {"value":0}
+  is_init:bool = compare.eq(operation,op_zero)
+  branch is_init init_shape(o_source,o_output,o_size) event_shape(o_source,o_output,o_size,operation)
+block init_shape(iz_source:readbuf,iz_output:mutbuf,iz_size:usize)
+  init_exact:usize = const() {"value":40}
+  init_shape_ok:bool = compare.eq(iz_size,init_exact)
+  branch init_shape_ok init_header(iz_source,iz_output) invalid()
+block init_header(ih_source:readbuf,ih_output:mutbuf)
+  ih_offset8:usize = const() {"value":8}
+  ih_offset16:usize = const() {"value":16}
+  ih_offset24:usize = const() {"value":24}
+  ih_offset32:usize = const() {"value":32}
+  init_version:u64 = call(ih_source,ih_offset8) {"function":"read_word"}
+  init_mode:u64 = call(ih_source,ih_offset16) {"function":"read_word"}
+  init_budget:u64 = call(ih_source,ih_offset24) {"function":"read_word"}
+  init_total:u64 = call(ih_source,ih_offset32) {"function":"read_word"}
+  init_one:u64 = const() {"value":1}
+  init_zero:u64 = const() {"value":0}
+  init_version_ok:bool = compare.eq(init_version,init_one)
+  init_mode_ok:bool = compare.le(init_mode,init_one)
+  init_header_ok:bool = bool.and(init_version_ok,init_mode_ok)
+  branch init_header_ok commit(ih_output,init_zero,init_mode,init_budget,init_budget,init_total,init_zero,init_zero,init_zero,init_zero,init_zero) invalid()
+block event_shape(es_source:readbuf,es_output:mutbuf,es_size:usize,es_op:u64)
+  es_one:u64 = const() {"value":1}
+  es_two:u64 = const() {"value":2}
+  es_three:u64 = const() {"value":3}
+  es_96:usize = const() {"value":96}
+  es_88:usize = const() {"value":88}
+  es_80:usize = const() {"value":80}
+  es_is_item:bool = compare.eq(es_op,es_one)
+  es_is_snippet:bool = compare.eq(es_op,es_two)
+  es_is_finish:bool = compare.eq(es_op,es_three)
+  es_item_size:bool = compare.eq(es_size,es_96)
+  es_snippet_size:bool = compare.eq(es_size,es_88)
+  es_finish_size:bool = compare.eq(es_size,es_80)
+  es_item_ok:bool = bool.and(es_is_item,es_item_size)
+  es_snippet_ok:bool = bool.and(es_is_snippet,es_snippet_size)
+  es_finish_ok:bool = bool.and(es_is_finish,es_finish_size)
+  es_pair_ok:bool = bool.or(es_item_ok,es_snippet_ok)
+  es_shape_ok:bool = bool.or(es_pair_ok,es_finish_ok)
+  branch es_shape_ok state_header(es_source,es_output,es_op) invalid()
+block state_header(sh_source:readbuf,sh_output:mutbuf,sh_op:u64)
+  sh_offset8:usize = const() {"value":8}
+  sh_offset16:usize = const() {"value":16}
+  sh_offset24:usize = const() {"value":24}
+  sh_offset32:usize = const() {"value":32}
+  sh_offset40:usize = const() {"value":40}
+  sh_offset48:usize = const() {"value":48}
+  sh_offset56:usize = const() {"value":56}
+  sh_offset64:usize = const() {"value":64}
+  sh_offset72:usize = const() {"value":72}
+  version:u64 = call(sh_source,sh_offset8) {"function":"read_word"}
+  phase:u64 = call(sh_source,sh_offset16) {"function":"read_word"}
+  mode:u64 = call(sh_source,sh_offset24) {"function":"read_word"}
+  budget:u64 = call(sh_source,sh_offset32) {"function":"read_word"}
+  remaining:u64 = call(sh_source,sh_offset40) {"function":"read_word"}
+  total:u64 = call(sh_source,sh_offset48) {"function":"read_word"}
+  processed:u64 = call(sh_source,sh_offset56) {"function":"read_word"}
+  text:u64 = call(sh_source,sh_offset64) {"function":"read_word"}
+  audio:u64 = call(sh_source,sh_offset72) {"function":"read_word"}
+  header_one:u64 = const() {"value":1}
+  header_zero:u64 = const() {"value":0}
+  header_two:u64 = const() {"value":2}
+  version_ok:bool = compare.eq(version,header_one)
+  mode_ok:bool = compare.le(mode,header_one)
+  pending_event:bool = compare.eq(sh_op,header_two)
+  expected_phase:u64 = select(pending_event,header_one,header_zero)
+  phase_ok:bool = compare.eq(phase,expected_phase)
+  header_pair_ok:bool = bool.and(version_ok,mode_ok)
+  header_ok:bool = bool.and(header_pair_ok,phase_ok)
+  branch header_ok bounds(sh_source,sh_output,sh_op,mode,budget,remaining,total,processed,text,audio) invalid()
+block bounds(b_source:readbuf,b_output:mutbuf,b_op:u64,b_mode:u64,b_budget:u64,b_remaining:u64,b_total:u64,b_processed:u64,b_text:u64,b_audio:u64)
+  remaining_ok:bool = compare.le(b_remaining,b_budget)
+  processed_ok:bool = compare.le(b_processed,b_total)
+  text_ok:bool = compare.le(b_text,b_processed)
+  bounds_pair_ok:bool = bool.and(remaining_ok,processed_ok)
+  bounds_ok:bool = bool.and(bounds_pair_ok,text_ok)
+  branch bounds_ok omission_bounds(b_source,b_output,b_op,b_mode,b_budget,b_remaining,b_total,b_processed,b_text,b_audio) invalid()
+block omission_bounds(ob_source:readbuf,ob_output:mutbuf,ob_op:u64,ob_mode:u64,ob_budget:u64,ob_remaining:u64,ob_total:u64,ob_processed:u64,ob_text:u64,ob_audio:u64)
+  not_omitted_text:u64 = int.sub.checked(ob_processed,ob_text)
+  audio_ok:bool = compare.le(ob_audio,not_omitted_text)
+  branch audio_ok initial_bound(ob_source,ob_output,ob_op,ob_mode,ob_budget,ob_remaining,ob_total,ob_processed,ob_text,ob_audio) invalid()
+block initial_bound(ib_source:readbuf,ib_output:mutbuf,ib_op:u64,ib_mode:u64,ib_budget:u64,ib_remaining:u64,ib_total:u64,ib_processed:u64,ib_text:u64,ib_audio:u64)
+  ib_zero:u64 = const() {"value":0}
+  already_processed:bool = compare.ne(ib_processed,ib_zero)
+  initial_remaining_ok:bool = compare.eq(ib_remaining,ib_budget)
+  initial_ok:bool = bool.or(already_processed,initial_remaining_ok)
+  branch initial_ok event(ib_source,ib_output,ib_op,ib_mode,ib_budget,ib_remaining,ib_total,ib_processed,ib_text,ib_audio) invalid()
+block event(e_source:readbuf,e_output:mutbuf,e_op:u64,e_mode:u64,e_budget:u64,e_remaining:u64,e_total:u64,e_processed:u64,e_text:u64,e_audio:u64)
+  finish_op:u64 = const() {"value":3}
+  finishing:bool = compare.eq(e_op,finish_op)
+  branch finishing finish(e_output,e_mode,e_budget,e_remaining,e_total,e_processed,e_text,e_audio) item_available(e_source,e_output,e_op,e_mode,e_budget,e_remaining,e_total,e_processed,e_text,e_audio)
+block finish(f_output:mutbuf,f_mode:u64,f_budget:u64,f_remaining:u64,f_total:u64,f_processed:u64,f_text:u64,f_audio:u64)
+  all_processed:bool = compare.eq(f_processed,f_total)
+  finished_phase:u64 = const() {"value":2}
+  finish_action:u64 = const() {"value":4}
+  finish_operand:u64 = const() {"value":0}
+  branch all_processed commit(f_output,finished_phase,f_mode,f_budget,f_remaining,f_total,f_processed,f_text,f_audio,finish_action,finish_operand) invalid()
+block item_available(ia_source:readbuf,ia_output:mutbuf,ia_op:u64,ia_mode:u64,ia_budget:u64,ia_remaining:u64,ia_total:u64,ia_processed:u64,ia_text:u64,ia_audio:u64)
+  item_remaining:bool = compare.lt(ia_processed,ia_total)
+  branch item_remaining item_or_snippet(ia_source,ia_output,ia_op,ia_mode,ia_budget,ia_remaining,ia_total,ia_processed,ia_text,ia_audio) invalid()
+block item_or_snippet(is_source:readbuf,is_output:mutbuf,is_op:u64,is_mode:u64,is_budget:u64,is_remaining:u64,is_total:u64,is_processed:u64,is_text:u64,is_audio:u64)
+  snippet_op:u64 = const() {"value":2}
+  is_snippet:bool = compare.eq(is_op,snippet_op)
+  branch is_snippet snippet_guard(is_source,is_output,is_mode,is_budget,is_remaining,is_total,is_processed,is_text,is_audio) kind(is_source,is_output,is_mode,is_budget,is_remaining,is_total,is_processed,is_text,is_audio)
+block kind(k_source:readbuf,k_output:mutbuf,k_mode:u64,k_budget:u64,k_remaining:u64,k_total:u64,k_processed:u64,k_text:u64,k_audio:u64)
+  k_offset80:usize = const() {"value":80}
+  k_offset88:usize = const() {"value":88}
+  item_kind:u64 = call(k_source,k_offset80) {"function":"read_word"}
+  item_value:u64 = call(k_source,k_offset88) {"function":"read_word"}
+  maximum_kind:u64 = const() {"value":3}
+  kind_ok:bool = compare.le(item_kind,maximum_kind)
+  branch kind_ok choose_kind(k_output,k_mode,k_budget,k_remaining,k_total,k_processed,k_text,k_audio,item_kind,item_value) invalid()
+block choose_kind(ck_output:mutbuf,ck_mode:u64,ck_budget:u64,ck_remaining:u64,ck_total:u64,ck_processed:u64,ck_text:u64,ck_audio:u64,ck_kind:u64,ck_value:u64)
+  text_kind:u64 = const() {"value":0}
+  ck_is_text:bool = compare.eq(ck_kind,text_kind)
+  branch ck_is_text text_budget(ck_output,ck_mode,ck_budget,ck_remaining,ck_total,ck_processed,ck_text,ck_audio,ck_value) audio_or_opaque(ck_output,ck_mode,ck_budget,ck_remaining,ck_total,ck_processed,ck_text,ck_audio,ck_kind,ck_value)
+block audio_or_opaque(ao_output:mutbuf,ao_mode:u64,ao_budget:u64,ao_remaining:u64,ao_total:u64,ao_processed:u64,ao_text:u64,ao_audio:u64,ao_kind:u64,ao_value:u64)
+  audio_kind:u64 = const() {"value":1}
+  ao_is_audio:bool = compare.eq(ao_kind,audio_kind)
+  branch ao_is_audio audio_cost(ao_output,ao_mode,ao_budget,ao_remaining,ao_total,ao_processed,ao_text,ao_audio,ao_value) opaque(ao_output,ao_mode,ao_budget,ao_remaining,ao_total,ao_processed,ao_text,ao_audio,ao_value)
+block opaque(oq_output:mutbuf,oq_mode:u64,oq_budget:u64,oq_remaining:u64,oq_total:u64,oq_processed:u64,oq_text:u64,oq_audio:u64,oq_value:u64)
+  opaque_zero:u64 = const() {"value":0}
+  opaque_ok:bool = compare.eq(oq_value,opaque_zero)
+  branch opaque_ok keep(oq_output,oq_mode,oq_budget,oq_remaining,oq_total,oq_processed,oq_text,oq_audio) invalid()
+block text_budget(tb_output:mutbuf,tb_mode:u64,tb_budget:u64,tb_remaining:u64,tb_total:u64,tb_processed:u64,tb_text:u64,tb_audio:u64,tb_value:u64)
+  text_zero:u64 = const() {"value":0}
+  text_budget_empty:bool = compare.eq(tb_remaining,text_zero)
+  branch text_budget_empty omit_text(tb_output,tb_mode,tb_budget,tb_remaining,tb_total,tb_processed,tb_text,tb_audio) text_cost(tb_output,tb_mode,tb_budget,tb_remaining,tb_total,tb_processed,tb_text,tb_audio,tb_value)
+block text_cost(tc_output:mutbuf,tc_mode:u64,tc_budget:u64,tc_remaining:u64,tc_total:u64,tc_processed:u64,tc_text:u64,tc_audio:u64,tc_value:u64)
+  token_mode:u64 = const() {"value":1}
+  count_tokens:bool = compare.eq(tc_mode,token_mode)
+  branch count_tokens text_tokens(tc_output,tc_mode,tc_budget,tc_remaining,tc_total,tc_processed,tc_text,tc_audio,tc_value) compare_text(tc_output,tc_mode,tc_budget,tc_remaining,tc_total,tc_processed,tc_text,tc_audio,tc_value)
+block text_tokens(tt_output:mutbuf,tt_mode:u64,tt_budget:u64,tt_remaining:u64,tt_total:u64,tt_processed:u64,tt_text:u64,tt_audio:u64,tt_value:u64)
+  text_max:u64 = const() {"value":18446744073709551615}
+  text_threshold:u64 = const() {"value":18446744073709551612}
+  text_three:u64 = const() {"value":3}
+  text_four:u64 = const() {"value":4}
+  text_overflows:bool = compare.gt(tt_value,text_threshold)
+  text_added:u64 = int.add.wrap(tt_value,text_three)
+  text_saturated:u64 = select(text_overflows,text_max,text_added)
+  text_token_cost:u64 = int.div.checked(text_saturated,text_four)
+  jump compare_text(tt_output,tt_mode,tt_budget,tt_remaining,tt_total,tt_processed,tt_text,tt_audio,text_token_cost)
+block compare_text(ct_output:mutbuf,ct_mode:u64,ct_budget:u64,ct_remaining:u64,ct_total:u64,ct_processed:u64,ct_text:u64,ct_audio:u64,ct_cost:u64)
+  text_fits:bool = compare.le(ct_cost,ct_remaining)
+  branch text_fits charge(ct_output,ct_mode,ct_budget,ct_remaining,ct_total,ct_processed,ct_text,ct_audio,ct_cost) truncate(ct_output,ct_mode,ct_budget,ct_remaining,ct_total,ct_processed,ct_text,ct_audio)
+block audio_cost(ac_output:mutbuf,ac_mode:u64,ac_budget:u64,ac_remaining:u64,ac_total:u64,ac_processed:u64,ac_text:u64,ac_audio:u64,ac_value:u64)
+  bytes_mode:u64 = const() {"value":0}
+  count_bytes:bool = compare.eq(ac_mode,bytes_mode)
+  branch count_bytes audio_bytes(ac_output,ac_mode,ac_budget,ac_remaining,ac_total,ac_processed,ac_text,ac_audio,ac_value) compare_audio(ac_output,ac_mode,ac_budget,ac_remaining,ac_total,ac_processed,ac_text,ac_audio,ac_value)
+block audio_bytes(ab_output:mutbuf,ab_mode:u64,ab_budget:u64,ab_remaining:u64,ab_total:u64,ab_processed:u64,ab_text:u64,ab_audio:u64,ab_value:u64)
+  audio_max:u64 = const() {"value":18446744073709551615}
+  audio_threshold:u64 = const() {"value":4611686018427387903}
+  audio_four:u64 = const() {"value":4}
+  audio_overflows:bool = compare.gt(ab_value,audio_threshold)
+  audio_multiplied:u64 = int.mul.wrap(ab_value,audio_four)
+  audio_byte_cost:u64 = select(audio_overflows,audio_max,audio_multiplied)
+  jump compare_audio(ab_output,ab_mode,ab_budget,ab_remaining,ab_total,ab_processed,ab_text,ab_audio,audio_byte_cost)
+block compare_audio(ca_output:mutbuf,ca_mode:u64,ca_budget:u64,ca_remaining:u64,ca_total:u64,ca_processed:u64,ca_text:u64,ca_audio:u64,ca_cost:u64)
+  audio_fits:bool = compare.le(ca_cost,ca_remaining)
+  branch audio_fits charge(ca_output,ca_mode,ca_budget,ca_remaining,ca_total,ca_processed,ca_text,ca_audio,ca_cost) omit_audio(ca_output,ca_mode,ca_budget,ca_remaining,ca_total,ca_processed,ca_text,ca_audio)
+block charge(ch_output:mutbuf,ch_mode:u64,ch_budget:u64,ch_remaining:u64,ch_total:u64,ch_processed:u64,ch_text:u64,ch_audio:u64,ch_cost:u64)
+  charged_remaining:u64 = int.sub.checked(ch_remaining,ch_cost)
+  jump keep(ch_output,ch_mode,ch_budget,charged_remaining,ch_total,ch_processed,ch_text,ch_audio)
+block truncate(tr_output:mutbuf,tr_mode:u64,tr_budget:u64,tr_remaining:u64,tr_total:u64,tr_processed:u64,tr_text:u64,tr_audio:u64)
+  pending_phase:u64 = const() {"value":1}
+  truncate_action:u64 = const() {"value":3}
+  jump commit(tr_output,pending_phase,tr_mode,tr_budget,tr_remaining,tr_total,tr_processed,tr_text,tr_audio,truncate_action,tr_remaining)
+block snippet_guard(sg_source:readbuf,sg_output:mutbuf,sg_mode:u64,sg_budget:u64,sg_remaining:u64,sg_total:u64,sg_processed:u64,sg_text:u64,sg_audio:u64)
+  snippet_zero:u64 = const() {"value":0}
+  snippet_budget_ok:bool = compare.gt(sg_remaining,snippet_zero)
+  branch snippet_budget_ok snippet(sg_source,sg_output,sg_mode,sg_budget,sg_total,sg_processed,sg_text,sg_audio) invalid()
+block snippet(sn_source:readbuf,sn_output:mutbuf,sn_mode:u64,sn_budget:u64,sn_total:u64,sn_processed:u64,sn_text:u64,sn_audio:u64)
+  snippet_offset:usize = const() {"value":80}
+  snippet_length:u64 = call(sn_source,snippet_offset) {"function":"read_word"}
+  exhausted:u64 = const() {"value":0}
+  snippet_empty:bool = compare.eq(snippet_length,exhausted)
+  branch snippet_empty omit_text(sn_output,sn_mode,sn_budget,exhausted,sn_total,sn_processed,sn_text,sn_audio) keep(sn_output,sn_mode,sn_budget,exhausted,sn_total,sn_processed,sn_text,sn_audio)
+block keep(kp_output:mutbuf,kp_mode:u64,kp_budget:u64,kp_remaining:u64,kp_total:u64,kp_processed:u64,kp_text:u64,kp_audio:u64)
+  keep_one:u64 = const() {"value":1}
+  keep_zero:u64 = const() {"value":0}
+  kept_processed:u64 = int.add.checked(kp_processed,keep_one)
+  jump commit(kp_output,keep_zero,kp_mode,kp_budget,kp_remaining,kp_total,kept_processed,kp_text,kp_audio,keep_one,keep_zero)
+block omit_text(ot_output:mutbuf,ot_mode:u64,ot_budget:u64,ot_remaining:u64,ot_total:u64,ot_processed:u64,ot_text:u64,ot_audio:u64)
+  text_one:u64 = const() {"value":1}
+  next_text:u64 = int.add.checked(ot_text,text_one)
+  jump omit(ot_output,ot_mode,ot_budget,ot_remaining,ot_total,ot_processed,next_text,ot_audio)
+block omit_audio(oa_output:mutbuf,oa_mode:u64,oa_budget:u64,oa_remaining:u64,oa_total:u64,oa_processed:u64,oa_text:u64,oa_audio:u64)
+  audio_one:u64 = const() {"value":1}
+  next_audio:u64 = int.add.checked(oa_audio,audio_one)
+  jump omit(oa_output,oa_mode,oa_budget,oa_remaining,oa_total,oa_processed,oa_text,next_audio)
+block omit(om_output:mutbuf,om_mode:u64,om_budget:u64,om_remaining:u64,om_total:u64,om_processed:u64,om_text:u64,om_audio:u64)
+  omit_one:u64 = const() {"value":1}
+  omit_zero:u64 = const() {"value":0}
+  omit_action:u64 = const() {"value":2}
+  omitted_processed:u64 = int.add.checked(om_processed,omit_one)
+  jump commit(om_output,omit_zero,om_mode,om_budget,om_remaining,om_total,omitted_processed,om_text,om_audio,omit_action,omit_zero)
+block commit(co_output:mutbuf,co_phase:u64,co_mode:u64,co_budget:u64,co_remaining:u64,co_total:u64,co_processed:u64,co_text:u64,co_audio:u64,co_action:u64,co_operand:u64)
+  co_version:u64 = const() {"value":1}
+  word0:usize = const() {"value":0}
+  word8:usize = const() {"value":8}
+  word16:usize = const() {"value":16}
+  word24:usize = const() {"value":24}
+  word32:usize = const() {"value":32}
+  word40:usize = const() {"value":40}
+  word48:usize = const() {"value":48}
+  word56:usize = const() {"value":56}
+  word64:usize = const() {"value":64}
+  word72:usize = const() {"value":72}
+  word80:usize = const() {"value":80}
+  _ = call(co_output,word0,co_version) {"function":"write_word"}
+  _ = call(co_output,word8,co_phase) {"function":"write_word"}
+  _ = call(co_output,word16,co_mode) {"function":"write_word"}
+  _ = call(co_output,word24,co_budget) {"function":"write_word"}
+  _ = call(co_output,word32,co_remaining) {"function":"write_word"}
+  _ = call(co_output,word40,co_total) {"function":"write_word"}
+  _ = call(co_output,word48,co_processed) {"function":"write_word"}
+  _ = call(co_output,word56,co_text) {"function":"write_word"}
+  _ = call(co_output,word64,co_audio) {"function":"write_word"}
+  _ = call(co_output,word72,co_action) {"function":"write_word"}
+  _ = call(co_output,word80,co_operand) {"function":"write_word"}
+  success:u32 = const() {"value":88}
+  ret(success)
+block invalid()
+  invalid_code:u32 = const() {"value":4294967295}
+  ret(invalid_code)
+block short_output()
+  short_code:u32 = const() {"value":4294967294}
+  ret(short_code)
+end
+fn read_word(source:readbuf,position:usize) -> (u64) effects(read,trap) entry(entry)
+block entry(source:readbuf,position:usize)
+  first:usize = const() {"value":0}
+  initial:u64 = const() {"value":0}
+  jump loop(source,position,first,initial)
+block loop(l_source:readbuf,l_position:usize,l_index:usize,l_value:u64)
+  limit:usize = const() {"value":8}
+  more:bool = compare.lt(l_index,limit)
+  branch more byte(l_source,l_position,l_index,l_value) done(l_value)
+block byte(b_source:readbuf,b_position:usize,b_index:usize,b_value:u64)
+  address:usize = int.add.checked(b_position,b_index)
+  octet:u8 = buffer.load(b_source,address)
+  wide:u64 = int.cast(octet) {"mode":"wrap"}
+  index_word:u64 = int.cast(b_index) {"mode":"wrap"}
+  eight:u64 = const() {"value":8}
+  shift:u64 = int.mul.wrap(index_word,eight)
+  shifted:u64 = int.shl.checked(wide,shift)
+  result:u64 = bit.or(b_value,shifted)
+  one:usize = const() {"value":1}
+  next:usize = int.add.checked(b_index,one)
+  jump loop(b_source,b_position,next,result)
+block done(value:u64)
+  ret(value)
+end
+fn write_word(output:mutbuf,position:usize,value:u64) -> () effects(write,trap) entry(entry)
+block entry(output:mutbuf,position:usize,value:u64)
+  first:usize = const() {"value":0}
+  jump loop(output,position,value,first)
+block loop(l_output:mutbuf,l_position:usize,l_value:u64,l_index:usize)
+  limit:usize = const() {"value":8}
+  more:bool = compare.lt(l_index,limit)
+  branch more byte(l_output,l_position,l_value,l_index) done()
+block byte(b_output:mutbuf,b_position:usize,b_value:u64,b_index:usize)
+  octet:u8 = int.cast(b_value) {"mode":"wrap"}
+  address:usize = int.add.checked(b_position,b_index)
+  _ = buffer.store(b_output,address,octet)
+  eight:u64 = const() {"value":8}
+  next_value:u64 = int.shr.checked(b_value,eight)
+  one:usize = const() {"value":1}
+  next_index:usize = int.add.checked(b_index,one)
+  jump loop(b_output,b_position,next_value,next_index)
+block done()
+  ret()
+end

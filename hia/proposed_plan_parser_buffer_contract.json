@@ -1,0 +1,511 @@
+{
+  "schema": "codex.hia.proposed-plan-parser-buffer-contract.v1",
+  "module": "proposed_plan_parser",
+  "symbol": "codex_hia_proposed_plan_parser",
+  "source": {
+    "path": "hia/proposed_plan_parser.hepta",
+    "bytes": 43411,
+    "sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755",
+    "git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6"
+  },
+  "abi_design_sha256": "b738ed02b492d2404c64b5310317948f4347c38b847282484a4425ae10db81bb",
+  "compiler_boundary": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "schema": "hepta.hia.program.v8",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "core_return_type": "u32",
+    "maximum_function_results": 3,
+    "maximum_function_or_block_parameters": 16,
+    "native_return": "The six-argument foreign entry returns u64. Reject nonzero high32 wrapper status before interpreting low32 Core extent or error; never truncate first.",
+    "seed_capacity_scope": "The 1 MiB capacity is established only for the compiler-None foreign-wrapper build branch. These individual frames fit it; this is not a global native-capacity claim.",
+    "fresh_build_required": true
+  },
+  "signature": {
+    "entry": "f0",
+    "parameters": [
+      "readbuf source",
+      "mutbuf output",
+      "mutbuf workspace"
+    ],
+    "returns": [
+      "u32"
+    ],
+    "f0_first": true,
+    "workspace_minimum": 0,
+    "workspace_read_or_write": false
+  },
+  "integer_encoding": "All fields are complete unsigned 64-bit little-endian words. Validate before narrowing. There is no version word. v8 byte loads/stores assemble words; no v9 word-memory instruction is used.",
+  "source_frame": {
+    "header_bytes": 88,
+    "fields": [
+      {
+        "name": "op",
+        "byte_offset": 0
+      },
+      {
+        "name": "flags",
+        "byte_offset": 8
+      },
+      {
+        "name": "payload_bytes",
+        "byte_offset": 16
+      },
+      {
+        "name": "active",
+        "byte_offset": 24
+      },
+      {
+        "name": "detect",
+        "byte_offset": 32
+      },
+      {
+        "name": "prefix_id",
+        "byte_offset": 40
+      },
+      {
+        "name": "leading_bytes",
+        "byte_offset": 48
+      },
+      {
+        "name": "trailing_bytes",
+        "byte_offset": 56
+      },
+      {
+        "name": "pending_bytes",
+        "byte_offset": 64
+      },
+      {
+        "name": "call_open",
+        "byte_offset": 72
+      },
+      {
+        "name": "last_text_kind",
+        "byte_offset": 80
+      }
+    ],
+    "payload_offset": 88,
+    "payload_range_inclusive": [
+      0,
+      4096
+    ],
+    "exact_source_bytes": "88+payload_bytes",
+    "maximum_source_bytes": 4184,
+    "payload_encoding": "Complete valid UTF-8. A frame may not begin or end inside a codepoint. Validation covers the entire payload before any store."
+  },
+  "state": {
+    "fields": [
+      "active",
+      "detect",
+      "prefix_id",
+      "leading_bytes",
+      "trailing_bytes",
+      "pending_bytes",
+      "call_open",
+      "last_text_kind"
+    ],
+    "initial": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "prefix_id": {
+      "zero": "0: empty trimmed candidate",
+      "one": "1: shared '<' prefix",
+      "open": "2..15: exact open marker prefix length=id",
+      "close": "16..30: exact close marker prefix length=id-14",
+      "open_complete": 15,
+      "close_complete": 30
+    },
+    "validation": [
+      "Each field is a full unsigned 64-bit word. active/detect/call_open must be 0 or 1; last_text_kind is 0 none/barrier, 1 Normal, 2 Delta.",
+      "Between public calls call_open=0 and last_text_kind=0. With call_open=1, nonzero last_text_kind must agree with active (1 with inactive, 2 with active).",
+      "detect=0 requires prefix_id=leading_bytes=trailing_bytes=pending_bytes=0.",
+      "detect=1 requires prefix_id in 0..30 and checked leading_bytes+prefix_length+trailing_bytes=pending_bytes. prefix_id=0 requires trailing_bytes=0, so all pending bytes are leading whitespace.",
+      "Push source extent must equal 88+payload_bytes, length<=4096, flags in 0..3; first flag requires call_open=0, non-first requires call_open=1. Complete valid UTF-8 is validated before any store.",
+      "Push requires pending_bytes+payload_bytes to fit u64. This ensures all possible per-frame leading/trailing/pending increments fit; no aggregate application limit is imposed on the Host String domain.",
+      "Finish/Inspect require source extent=88, flags=0, payload_bytes=0, call_open=0 and last_text_kind=0.",
+      "At the end of a final Push frame clear call_open/last_text_kind; otherwise return call_open=1 with HIA-owned last_text_kind. Empty Push with first|final is legal, does not finish or release buffered input.",
+      "These validate structural state, not historical authenticity of arbitrary raw supplied state. Host binds pending_bytes to its complete pending container on every call."
+    ],
+    "history_authentication": false,
+    "pending_container": "The Host retains the entire unbounded pending String. Each frame binds its byte length to pending_bytes. HIA retains only the numeric prefix/whitespace state; no Host recognizer or historical-authenticity claim is introduced."
+  },
+  "operations": [
+    {
+      "op": 0,
+      "name": "Push",
+      "flags": {
+        "first_public_push_frame": 1,
+        "final_public_push_frame": 2
+      },
+      "payload": "0..4096 complete UTF-8 bytes, all consumed in order exactly once.",
+      "public_call": "First flag requires call_open=0; absent first requires call_open=1. Final flag clears call_open and last_text_kind after all records; otherwise preserve HIA last and return call_open=1. Empty first|final is legal without flushing.",
+      "required_capacity": "80+96*payload_bytes"
+    },
+    {
+      "op": 1,
+      "name": "Finish",
+      "flags": 0,
+      "payload_bytes": 0,
+      "call_open": 0,
+      "last_text_kind": 0,
+      "required_capacity": 176,
+      "effect": "Resolve any nonempty pending line without appending LF, then emit End if still active. Reset all state to the exact initial vector. Repeated Finish is empty; later Push remains valid."
+    },
+    {
+      "op": 2,
+      "name": "Inspect",
+      "flags": 0,
+      "payload_bytes": 0,
+      "call_open": 0,
+      "last_text_kind": 0,
+      "required_capacity": 80,
+      "effect": "Return exactly the same eight logical state words, with zero commands and reserved zero. Preserve the Host pending String; no parsing or state transition."
+    }
+  ],
+  "output_frame": {
+    "header_bytes": 80,
+    "fields": [
+      {
+        "name": "active",
+        "byte_offset": 0
+      },
+      {
+        "name": "detect",
+        "byte_offset": 8
+      },
+      {
+        "name": "prefix_id",
+        "byte_offset": 16
+      },
+      {
+        "name": "leading_bytes",
+        "byte_offset": 24
+      },
+      {
+        "name": "trailing_bytes",
+        "byte_offset": 32
+      },
+      {
+        "name": "pending_bytes",
+        "byte_offset": 40
+      },
+      {
+        "name": "call_open",
+        "byte_offset": 48
+      },
+      {
+        "name": "last_text_kind",
+        "byte_offset": 56
+      },
+      {
+        "name": "command_count",
+        "byte_offset": 64
+      },
+      {
+        "name": "reserved_zero",
+        "byte_offset": 72
+      }
+    ],
+    "command_bytes": 32,
+    "command_fields": [
+      {
+        "name": "kind",
+        "byte_offset": 0
+      },
+      {
+        "name": "offset",
+        "byte_offset": 8
+      },
+      {
+        "name": "length",
+        "byte_offset": 16
+      },
+      {
+        "name": "continue_text",
+        "byte_offset": 24
+      }
+    ],
+    "commands_start": 80,
+    "return_value": "Exact written extent 80+32*command_count; every byte beyond that extent retains its original fill.",
+    "reserved_zero": 0
+  },
+  "commands": [
+    {
+      "kind": 0,
+      "name": "AppendInput",
+      "fields": "offset/length identify a nonempty whole-scalar range in this payload; continue_text=0",
+      "effect": "Append bytes to Host pending container, no public output."
+    },
+    {
+      "kind": 1,
+      "name": "FlushNormal",
+      "fields": "offset=0,length=entire nonempty pending container,continue_text=0 or1",
+      "effect": "Move all pending bytes into original TaggedLineSegment::Normal, then clear pending. Do not construct visible_text here."
+    },
+    {
+      "kind": 2,
+      "name": "FlushDelta",
+      "fields": "offset=0,length=entire nonempty pending container,continue_text=0 or1",
+      "effect": "Move all pending bytes into original TaggedLineSegment::TagDelta(PlanTag::ProposedPlan, text), then clear pending."
+    },
+    {
+      "kind": 3,
+      "name": "DropPending",
+      "fields": "offset=0,length=entire nonempty pending container,continue_text=0",
+      "effect": "Discard only the explicitly commanded pending bytes."
+    },
+    {
+      "kind": 4,
+      "name": "InputNormal",
+      "fields": "offset/length identify a nonempty whole-scalar range in this payload;continue_text=0 or1",
+      "effect": "Append explicit input bytes into original TaggedLineSegment::Normal. Do not construct visible_text here."
+    },
+    {
+      "kind": 5,
+      "name": "InputDelta",
+      "fields": "offset/length identify a nonempty whole-scalar range in this payload;continue_text=0 or1",
+      "effect": "Append explicit input bytes into original TaggedLineSegment::TagDelta(PlanTag::ProposedPlan, text)."
+    },
+    {
+      "kind": 6,
+      "name": "Start",
+      "fields": "offset=length=continue_text=0",
+      "effect": "Append original TaggedLineSegment::TagStart(PlanTag::ProposedPlan)."
+    },
+    {
+      "kind": 7,
+      "name": "End",
+      "fields": "offset=length=continue_text=0",
+      "effect": "Append original TaggedLineSegment::TagEnd(PlanTag::ProposedPlan)."
+    }
+  ],
+  "command_canonicalization": "Each whole input UTF-8 scalar emits exactly one AppendInput or InputNormal/InputDelta record. Flush/Drop/Start/End each occupy their own record. Never coalesce adjacent command records. Only HIA continue_text controls public Normal/Delta segment merging.",
+  "input_partition": "AppendInput and InputNormal/InputDelta offsets start at zero and advance continuously, without omission, overlap or replay, over the entire payload. Other commands consume no input. Each range covers one complete scalar.",
+  "capacity": {
+    "Push_required": "80+96*payload_bytes",
+    "Push_maximum": 393296,
+    "Finish_required": 176,
+    "Inspect_required": 80,
+    "rule": "These conservative thresholds are normative even when the actual record count is smaller. Full invalidity preflight precedes SHORT. Success returns exact output EOF, not reserved capacity.",
+    "proof": "Push emits at most Append+Drop+Start/End, three commands per scalar and therefore at most 3*N commands. Finish emits at most Drop+Start+End. Each command is 32 bytes after the 80-byte header.",
+    "maximum_commands_per_push": 12288,
+    "maximum_commands_per_finish": 3,
+    "aggregate_input_or_pending_or_calls_limit": null
+  },
+  "statuses": {
+    "INVALID": 4294967295,
+    "SHORT": 4294967294,
+    "success": "Exact output extent at least80 and at most393296."
+  },
+  "validation_and_errors": {
+    "precedence": [
+      "complete structural and UTF-8 INVALID checks",
+      "operation-specific SHORT check",
+      "success writes"
+    ],
+    "INVALID_conditions": [
+      "Source shorter than the complete header, incorrect exact source extent, unknown op, noncanonical full-width flags/state/prefix/call fields, payload over 4096, Finish/Inspect payload or flags, malformed UTF-8, and any required state/count overflow.",
+      "Validate full u64 values before every narrowing or address calculation. Guard leading+prefix+trailing and pending+N with safe comparison/subtraction before checked additions, returning INVALID rather than allowing a checked-arithmetic trap.",
+      "Input byte length must be between88 and4184 before any header load. Known op, canonical flags/state words and N<=4096 precede any narrowing.",
+      "For detect=1, compare leading<=pending, subtract leading, compare prefix_length<=remainder, then require trailing equals the residual. No overflowing sum is evaluated.",
+      "For Push, compare payload_bytes<=u64::MAX-pending_bytes before incrementing any pending/whitespace count. Finish/Inspect have zero payload, so the same guarded comparison is harmless.",
+      "Reject isolated continuation bytes, C0/C1/F5..FF leads, truncated sequences, malformed continuation bytes, overlong encodings, surrogate scalars and values above U+10FFFF."
+    ],
+    "SHORT_condition": "Every source/state/UTF-8 check succeeded and supplied output capacity is below the normative threshold.",
+    "error_buffers": "The entire source, output capacity and workspace, including all guards, stay byte-for-byte unchanged on INVALID or SHORT.",
+    "workspace": "Never read, written or retained.",
+    "bounded_emission": "After preflight, pending increments fit u64; offsets stay within 4096 payload bytes, prefix constants stay within15 bytes, and record indices fit the reserved output. Source must remain unchanged during the synchronous call."
+  },
+  "markers": {
+    "open": "<proposed_plan>",
+    "open_bytes": 15,
+    "close": "</proposed_plan>",
+    "close_bytes": 16,
+    "matching": "Case-sensitive exact standalone tag line after pinned Unicode trim_start/trim_end; only LF ends a line. Opening while already active and closing while inactive remain ordinary text after the original buffering decision point.",
+    "dual_prefixes": "Both prefixes remain eligible regardless of active. Prefix0 is empty, prefix1 is shared less-than,2..15 are open lengths,16..30 are close lengths=id-14."
+  },
+  "unicode_whitespace": {
+    "rust_revision": "31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd",
+    "rust_version": "1.96.1",
+    "unicode_version": "17.0.0",
+    "unicode_data_blob": "f602cd5c5b6b3c829f9897abb98dbbd7deca83b3",
+    "unicode_data_sha256": "e8b85cd9385ba25e8b40ab9d910eae4e7edd7af7472c61453de7f271fdd123fd",
+    "scalar_ranges_inclusive": [
+      [
+        9,
+        13
+      ],
+      [
+        32,
+        32
+      ],
+      [
+        133,
+        133
+      ],
+      [
+        160,
+        160
+      ],
+      [
+        5760,
+        5760
+      ],
+      [
+        8192,
+        8202
+      ],
+      [
+        8232,
+        8232
+      ],
+      [
+        8233,
+        8233
+      ],
+      [
+        8239,
+        8239
+      ],
+      [
+        8287,
+        8287
+      ],
+      [
+        12288,
+        12288
+      ]
+    ],
+    "scalar_count": 25,
+    "line_termination": "U+000A only. CR, NEL, line separator and paragraph separator are trim whitespace but do not independently finish a line.",
+    "source_of_truth": "Pinned Rust char::is_whitespace and str trim methods; no locale/Python classification or executed reference model."
+  },
+  "transition_rules": [
+    "When detect=1, emit AppendInput for the whole scalar and add its UTF-8 width to pending. LF immediately finishes the candidate line; no other scalar ends a line.",
+    "On LF with prefix_id=15 and active=0, DropPending then Start; set active=1. With prefix_id=30 and active=1, DropPending then End; set active=0. Otherwise Flush to the current active channel. Reset candidate counts and detect=1.",
+    "Other whitespace increases leading_bytes if prefix_id=0, otherwise trailing_bytes; preserve all original bytes in pending.",
+    "A non-whitespace scalar after nonzero trailing_bytes disproves the candidate. With trailing_bytes=0, advance only through exact finite open/close prefix bytes; failed advancement disproves it.",
+    "On disproof, Flush the complete pending bytes to the current active channel, clear candidate counts and set detect=0.",
+    "When detect=0, emit direct Input text command for each whole scalar in the current active channel. LF sets detect=1. Non-LF leaves it false.",
+    "A text command uses continue_text=1 exactly when HIA's last_text_kind matches its channel; it then stores that kind. Start/End set last_text_kind=0, creating a barrier.",
+    "Finish handles a nonempty pending candidate exactly as LF does without appending LF. It then emits End if still active, resets to the initial parser state, and is reusable. A complete opening marker at EOF may emit DropPending, Start, End in one call.",
+    "Inspect emits no commands and returns the exact current logical state, without mutation.",
+    "All 25 Unicode White_Space scalars come from the exact Rust1.96.1 Unicode17 reference. No Python/locale classification may define expected values."
+  ],
+  "ownership": {
+    "HIA": [
+      "Full UTF-8 scalar validation and exact pinned Unicode whitespace classification.",
+      "LF-only line termination, both marker prefix candidates regardless of active, all recognition and active/detect transitions.",
+      "Every append/flush/drop/input channel/Start/End command.",
+      "Whether explicit text command starts or continues a segment across internal frames of the same public call.",
+      "Finish line recognition, EOF auto-End, reusable reset and Inspect state."
+    ],
+    "Host": [
+      "Unbounded original String and Vec storage; no shadow recognizer.",
+      "UTF-8 boundary slicing for <=4096-byte transport only, without whitespace or marker classification.",
+      "Checked structural command extents, pending-container lengths, text continuation destination kinds and output state decoding.",
+      "Apply commands in exact order; continuation=1 requires existing matching segment and continuation=0 creates a new segment without deciding by adjacent content.",
+      "The native child returns only the original Vec<TaggedLineSegment<PlanTag>>. The unchanged public map_segments is called exactly once after all internal frames, producing visible_text and mapped extracted output once.",
+      "Exact original Debug nesting/TagSpec order/active_tag/detect_tag/full line_buffer through Inspect; unexpected Inspect failure returns fmt::Error."
+    ]
+  },
+  "host_structural_admission": [
+    "Decode the full u64 native return; reject high32 wrapper status before considering low32 errors/extent.",
+    "Check returned extent is at least80, at most allocation and exactly80+32*command_count with checked arithmetic. Bound count by3*N for Push,3 for Finish,0 for Inspect before allocation; reserved_zero must equal0.",
+    "Validate all returned state words and the expected public-call boundary. Finish must return the exact initial state; Inspect must return exactly the input state and no commands.",
+    "Start a frame-local input cursor at0. Every AppendInput/InputNormal/InputDelta range must have offset==cursor, nonzero length, checked in-bounds end and whole UTF-8 scalar boundaries. Advance the cursor; no other kind consumes new input. Require final cursor==payload_bytes.",
+    "Track only mechanical pending length: Append adds its explicit range length; Flush/Drop must name the entire current nonempty pending length and clear it. The final length must equal returned pending_bytes. All offset/length/continue fields must satisfy the exact kind shape; unknown kinds fail.",
+    "Finish/Inspect may not contain Append/Input commands. All complete command records must reach exact EOF without trailing or omitted bytes.",
+    "Validate continuation destinations against the existing final original segment in this public result Vec. Apply continuation only when explicitly commanded; never infer merging by recognizing text.",
+    "Host may slice input only at UTF-8 boundaries for transport. No whitespace, delimiter, prefix, line/EOF recognizer or generic Rust parser fallback belongs in the native path."
+  ],
+  "public_host_contract": {
+    "owner": "ProposedPlanParser specialization only; no expansion of generic TaggedLineParser<T>.",
+    "framing": "Split public &str at complete UTF-8 scalar boundaries into frames of at most4096 bytes. Retain one result Vec for every public call; map_segments remains unchanged and runs exactly once after all frames.",
+    "merging": "The Host follows continue_text and validates its destination segment kind. It does not decide adjacent-content merging, tag recognition, whitespace, channel selection, EOF or completion.",
+    "pending": "Append explicit input bytes; Flush/Drop must equal the complete current nonempty pending String length. No total pending/body/application cap and no Rust fallback.",
+    "state_acceptance": "Validate the complete command list, exact EOF, state and mechanical pending-length chain before changing the Host pending container or result Vec.",
+    "UTF8_wrapper": "Existing Utf8StreamParser rollback of the whole new invalid chunk, incomplete-EOF rejection and callback timing remain unchanged outside this specialization.",
+    "routes": "Streaming AssistantText remains citation then plan; finalized Core extraction remains raw plan then citation stripping.",
+    "reuse": "Finish does not make a permanent EOF state; repeated Finish and subsequent Push keep original behavior.",
+    "errors": "Public API stays infallible. Internal ABI disagreement fails its invariant without a Rust parsing fallback or user-content log. Inspect error returns fmt::Error."
+  },
+  "Debug_contract": {
+    "source_blobs": {
+      "proposed_plan.rs": "cd3a2a35296c4a61de1e76fb7b9a09ea74b9c26a",
+      "tagged_line_parser.rs": "dadc77ec345af4c3f521ec6466dff9bca47b1562"
+    },
+    "projection": {
+      "ProposedPlanParser": [
+        "parser"
+      ],
+      "TaggedLineParser": [
+        "specs",
+        "active_tag",
+        "detect_tag",
+        "line_buffer"
+      ],
+      "TagSpec": [
+        "open",
+        "close",
+        "tag"
+      ],
+      "PlanTag_variant": "ProposedPlan"
+    },
+    "values": {
+      "specs": "The original one-element TagSpec with exact open/close strings and PlanTag.",
+      "active_tag": "None for Inspect active0; Some(PlanTag::ProposedPlan) for active1.",
+      "detect_tag": "Inspect detect==1.",
+      "line_buffer": "The complete original Host pending String, whose byte length equals Inspect pending_bytes."
+    },
+    "formatting": "Use standard Formatter debug_struct, Vec/Option/string formatting and original TagSpec/PlanTag values with exact names and field order, preserving compact and alternate formatting. No handwritten escaping, shadow generic parser or hidden parse call.",
+    "Inspect": "Observational op2 with identical state and zero commands; no mutation, flush, hidden callback or log."
+  },
+  "buffer_observations": [
+    "Input and its guards unchanged for every result.",
+    "Workspace and its guards unchanged for every result.",
+    "Output guards unchanged for every result.",
+    "On errors the complete output allocation remains its original fill.",
+    "On success compare the entire exact literal written prefix and every remaining byte to the original fill."
+  ],
+  "original_oracles": {
+    "owner_blob": "cd3a2a35296c4a61de1e76fb7b9a09ea74b9c26a",
+    "generic_blob": "dadc77ec345af4c3f521ec6466dff9bca47b1562",
+    "five_owner_method_bodies_unchanged": true,
+    "two_generic_method_bodies_unchanged": true,
+    "all_existing_citation_and_consumer_oracles_unchanged": true,
+    "assertions_timeouts_skips_changed": false
+  },
+  "raw_gate": {
+    "path": "hia/tests/test_proposed_plan_parser_abi.py",
+    "corpus": "hia/tests/proposed_plan_parser_oracle_inputs.json",
+    "planned_build_profile": "full-native34",
+    "required_admission_before_CDLL": {
+      "full34_manifest_verified": true,
+      "module_count": 34
+    },
+    "integration_status": "Planned gate for the complete next module. This contract does not alter current33 metadata or inherit its qualifications.",
+    "literal_expected_bytes_only": true,
+    "model_or_parser_executed_to_create_expectations": false,
+    "affine_data": "Explicit literal record/state templates may encode a declared byte sequence and integer offsets. This is data expansion, not parser behavior; each runtime return and state chain must be compared independently.",
+    "large_stream_scope": "Two real future >1MiB whitespace/trailing-whitespace witnesses may span fixed4096-byte frames. Raw huge logical pending words are not a >4GiB runtime test or a performance result."
+  },
+  "qualification": {
+    "source_only": true,
+    "compiler_executed": false,
+    "native_executed": false,
+    "reference_model_executed": false,
+    "original_public_oracles_executed": false,
+    "default_dispatch_changed": false,
+    "production_dispatch_migrated": false,
+    "whole_codex_rewritten": false,
+    "performance_qualified": false,
+    "workspace_qualified": false
+  }
+}

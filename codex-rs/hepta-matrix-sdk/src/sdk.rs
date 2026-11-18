@@ -1,6 +1,9 @@
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -11,8 +14,11 @@ use codex_hepta_matrix_store::MatrixSyncCheckpoint;
 use codex_hepta_matrix_store::OutboxRecord;
 use codex_hepta_paths::HeptaAgentLayout;
 use matrix_sdk::Client;
+use matrix_sdk::ClientBuildError;
 use matrix_sdk::Error as MatrixSdkTransportError;
 use matrix_sdk::HttpError;
+use matrix_sdk::SqliteStoreConfig;
+use matrix_sdk::SqliteStoreOpenDiagnostics;
 use matrix_sdk::config::SyncSettings;
 use matrix_sdk::config::SyncToken;
 use matrix_sdk::ruma::OwnedRoomId;
@@ -44,6 +50,78 @@ const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
 const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
 
+#[repr(u8)]
+enum MatrixBuildPhase {
+    Unpolled,
+    Paths,
+    ClientBuilder,
+    SyncToken,
+    Callbacks,
+    VerifyHomeserver,
+    Complete,
+}
+
+struct MatrixBuildDiagnostics {
+    call: usize,
+    entry: &'static str,
+    caller: &'static str,
+    phase: AtomicU8,
+    stores: OnceLock<SqliteStoreOpenDiagnostics>,
+}
+
+impl MatrixBuildDiagnostics {
+    fn new(entry: &'static str) -> Self {
+        static NEXT_CALL: AtomicUsize = AtomicUsize::new(/*v*/ 0);
+
+        // Only recognize fixed test names; never emit an arbitrary thread name.
+        let caller = match std::thread::current().name() {
+            Some("legacy_encrypted_storage_migrates_and_reopens_with_the_same_identity") => {
+                "legacy_storage"
+            }
+            Some("wrong_passphrase_preserves_the_existing_encrypted_store") => "wrong_passphrase",
+            _ => "unattributed",
+        };
+        Self {
+            call: NEXT_CALL.fetch_add(/*val*/ 1, Ordering::Relaxed),
+            entry,
+            caller,
+            phase: AtomicU8::new(MatrixBuildPhase::Unpolled as u8),
+            stores: OnceLock::new(),
+        }
+    }
+
+    fn enter(&self, phase: MatrixBuildPhase) {
+        self.phase.store(phase as u8, Ordering::Relaxed);
+    }
+
+    fn report(&self, event: &'static str, kind: &'static str) {
+        let phase = match self.phase.load(Ordering::Relaxed) {
+            0 => "unpolled",
+            1 => "paths",
+            2 => "client_builder",
+            3 => "sync_token",
+            4 => "callbacks",
+            5 => "verify_homeserver",
+            6 => "complete",
+            _ => "unknown",
+        };
+        // Store roles are state, crypto, event-cache, media; values are observations
+        // at reporting time, not phase durations or a simultaneous deadline snapshot.
+        let (owner, worker) = self
+            .stores
+            .get()
+            .map(SqliteStoreOpenDiagnostics::snapshot)
+            .unwrap_or((["unobserved"; 4], ["unobserved"; 4]));
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "[matrix-init] {event} call={} entry={} caller={} phase={phase} kind={kind} owner={owner:?} worker={worker:?}",
+            self.call,
+            self.entry,
+            self.caller
+        );
+    }
+}
+
 pub struct MatrixSdkClient {
     client: Client,
     config: MatrixSidecarConfig,
@@ -59,18 +137,24 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
     ) -> Result<Self, MatrixSdkError> {
         verify_session_identity(&config, &session)?;
+        let diagnostics = MatrixBuildDiagnostics::new("restore");
         let sidecar = tokio::time::timeout(
             MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config, store_passphrase),
+            Self::build(layout, config, store_passphrase, &diagnostics),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|_| {
+            diagnostics.report("build_timeout", "elapsed");
+            MatrixSdkError::Initialization
+        })??;
         sidecar
             .client
             .restore_session(session.clone())
             .await
             .map_err(|_| MatrixSdkError::Authentication)?;
-        persist_session(sidecar.paths.session(), &session)?;
+        persist_session(sidecar.paths.session(), &session).inspect_err(|_| {
+            let _ = writeln!(std::io::stderr().lock(), "[matrix-init] persist_session");
+        })?;
         sidecar.verify_authenticated_identity()?;
         sidecar.enable_event_cache()?;
         Ok(sidecar)
@@ -83,9 +167,10 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+        let diagnostics = MatrixBuildDiagnostics::new("login_password");
         let sidecar = tokio::time::timeout(
             MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config, store_passphrase),
+            Self::build(layout, config, store_passphrase, &diagnostics),
         )
         .await
         .map_err(|_| MatrixSdkError::Initialization)??;
@@ -126,9 +211,10 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+        let diagnostics = MatrixBuildDiagnostics::new("login_or_restore");
         let sidecar = tokio::time::timeout(
             MATRIX_STARTUP_REQUEST_TIMEOUT,
-            Self::build(layout, config.clone(), store_passphrase),
+            Self::build(layout, config.clone(), store_passphrase, &diagnostics),
         )
         .await
         .map_err(|_| MatrixSdkError::Initialization)??;
@@ -162,26 +248,55 @@ impl MatrixSdkClient {
         layout: &HeptaAgentLayout,
         config: MatrixSidecarConfig,
         store_passphrase: Option<&str>,
+        diagnostics: &MatrixBuildDiagnostics,
     ) -> Result<Self, MatrixSdkError> {
+        diagnostics.enter(MatrixBuildPhase::Paths);
         let paths = MatrixSdkPaths::prepare(layout, &config)?;
+        diagnostics.enter(MatrixBuildPhase::ClientBuilder);
+        let stores = diagnostics
+            .stores
+            .get_or_init(SqliteStoreOpenDiagnostics::default);
         let client = Client::builder()
             .homeserver_url(config.binding.homeserver.as_str())
-            .sqlite_store_with_cache_path(paths.state(), paths.cache(), store_passphrase)
+            .sqlite_store_with_config_and_cache_path(
+                SqliteStoreConfig::new(paths.state())
+                    .passphrase(store_passphrase)
+                    .open_diagnostics(stores.clone()),
+                Some(paths.cache()),
+            )
             .handle_refresh_tokens()
             .build()
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| {
+                let kind = match &error {
+                    ClientBuildError::MissingHomeserver => "missing_homeserver",
+                    ClientBuildError::InvalidServerName => "invalid_server_name",
+                    ClientBuildError::WellKnownLookupDisabled => "well_known_lookup_disabled",
+                    ClientBuildError::AutoDiscovery(_) => "auto_discovery",
+                    ClientBuildError::SlidingSyncVersion(_) => "sliding_sync_version",
+                    ClientBuildError::Url(_) => "url",
+                    ClientBuildError::Http(_) => "http",
+                    ClientBuildError::SqliteStore(_) => "sqlite_store",
+                };
+                diagnostics.report("client_builder", kind);
+                MatrixSdkError::Initialization
+            })?;
         // The SDK's own sync token is only an optimization for its normal
         // sync loop.  Hepta persists the authoritative cursor in its durable
         // inbox store and always supplies that cursor explicitly.  Clear a
         // stale SDK token before session activation so a process restart
         // cannot discard a replay whose `next_batch` happens to equal the
         // SDK token that was persisted before the prior inbox commit.
+        diagnostics.enter(MatrixBuildPhase::SyncToken);
         client
             .state_store()
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                diagnostics.report("sync_token", "unclassified");
+                MatrixSdkError::Initialization
+            })?;
+        diagnostics.enter(MatrixBuildPhase::Callbacks);
         let save_session_path = paths.session().to_path_buf();
         let reload_session_path = paths.session().to_path_buf();
         client
@@ -207,8 +322,13 @@ impl MatrixSdkClient {
                     })
                 }),
             )
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                diagnostics.report("callbacks", "unclassified");
+                MatrixSdkError::Initialization
+            })?;
+        diagnostics.enter(MatrixBuildPhase::VerifyHomeserver);
         verify_homeserver(&config, &client)?;
+        diagnostics.enter(MatrixBuildPhase::Complete);
         Ok(Self {
             client,
             config,
@@ -316,10 +436,10 @@ impl MatrixSdkClient {
     }
 
     fn enable_event_cache(&self) -> Result<(), MatrixSdkError> {
-        self.client
-            .event_cache()
-            .subscribe()
-            .map_err(|_| MatrixSdkError::Initialization)
+        self.client.event_cache().subscribe().map_err(|_| {
+            let _ = writeln!(std::io::stderr().lock(), "[matrix-init] event_cache");
+            MatrixSdkError::Initialization
+        })
     }
 
     fn verify_authenticated_identity(&self) -> Result<(), MatrixSdkError> {

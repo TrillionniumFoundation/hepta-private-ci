@@ -1,0 +1,1115 @@
+hia-asm.v1 hepta.hia.program.v9 codex_command_dispatch
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  valid:bool = call(source) {"function":"validate_frame"}
+  branch valid capacity(source,output) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf)
+  size:usize = buffer.len(c_output)
+  need:usize = const() {"value":200}
+  enough:bool = compare.ge(size,need)
+  branch enough advance(c_source,c_output) short_output()
+block advance(a_source:readbuf,a_output:mutbuf)
+  copied:u32 = call(a_source,a_output) {"function":"copy_response"}
+  result:u32 = call(a_source,a_output) {"function":"advance"}
+  ret(result)
+block invalid()
+  bad:u32 = const() {"value":4294967295}
+  ret(bad)
+block short_output()
+  short:u32 = const() {"value":4294967294}
+  ret(short)
+end
+fn validate_frame(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  size:usize = buffer.len(source)
+  minimum:usize = const() {"value":176}
+  enough:bool = compare.ge(size,minimum)
+  branch enough header(source) invalid()
+block header(h_source:readbuf)
+  zero:usize = const() {"value":0}
+  eight:usize = const() {"value":8}
+  version:u64 = buffer.load.u64.le(h_source,zero)
+  event:u64 = buffer.load.u64.le(h_source,eight)
+  one:u64 = const() {"value":1}
+  maximum:u64 = const() {"value":8}
+  version_ok:bool = compare.eq(version,one)
+  event_ok:bool = compare.le(event,maximum)
+  valid:bool = bool.and(version_ok,event_ok)
+  branch valid choose(h_source,event) invalid()
+block choose(c_source:readbuf,c_event:u64)
+  none:u64 = const() {"value":0}
+  initial:bool = compare.eq(c_event,none)
+  branch initial begin(c_source) state(c_source)
+block begin(b_source:readbuf)
+  result:bool = call(b_source) {"function":"validate_begin"}
+  ret(result)
+block state(s_source:readbuf)
+  state_valid:bool = call(s_source) {"function":"validate_state"}
+  branch state_valid event(s_source) invalid()
+block event(e_source:readbuf)
+  event_valid:bool = call(e_source) {"function":"validate_event"}
+  ret(event_valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn validate_begin(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = buffer.len(source)
+  v1:usize = const() {"value":200}
+  v2:bool = compare.eq(v0,v1)
+  branch v2 fields(source) invalid()
+block fields(s:readbuf)
+  ok:bool = call(s) {"function":"begin_fields"}
+  ret(ok)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn begin_fields(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":1}
+  v2:usize = const() {"value":16}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:bool = compare.eq(v3,v0)
+  v5:usize = const() {"value":24}
+  v6:u64 = buffer.load.u64.le(source,v5)
+  v7:bool = compare.eq(v6,v0)
+  v8:usize = const() {"value":32}
+  v9:u64 = buffer.load.u64.le(source,v8)
+  v10:bool = compare.eq(v9,v0)
+  v11:usize = const() {"value":40}
+  v12:u64 = buffer.load.u64.le(source,v11)
+  v13:bool = compare.eq(v12,v0)
+  v14:usize = const() {"value":48}
+  v15:u64 = buffer.load.u64.le(source,v14)
+  v16:bool = compare.eq(v15,v0)
+  v17:usize = const() {"value":56}
+  v18:u64 = buffer.load.u64.le(source,v17)
+  v19:bool = compare.eq(v18,v0)
+  v20:usize = const() {"value":64}
+  v21:u64 = buffer.load.u64.le(source,v20)
+  v22:bool = compare.eq(v21,v0)
+  v23:usize = const() {"value":72}
+  v24:u64 = buffer.load.u64.le(source,v23)
+  v25:bool = compare.eq(v24,v0)
+  v26:usize = const() {"value":80}
+  v27:u64 = buffer.load.u64.le(source,v26)
+  v28:bool = compare.eq(v27,v0)
+  v29:usize = const() {"value":88}
+  v30:u64 = buffer.load.u64.le(source,v29)
+  v31:bool = compare.eq(v30,v0)
+  v32:usize = const() {"value":96}
+  v33:u64 = buffer.load.u64.le(source,v32)
+  v34:bool = compare.eq(v33,v0)
+  v35:usize = const() {"value":104}
+  v36:u64 = buffer.load.u64.le(source,v35)
+  v37:bool = compare.eq(v36,v0)
+  v38:usize = const() {"value":112}
+  v39:u64 = buffer.load.u64.le(source,v38)
+  v40:bool = compare.eq(v39,v0)
+  v41:usize = const() {"value":120}
+  v42:u64 = buffer.load.u64.le(source,v41)
+  v43:bool = compare.eq(v42,v0)
+  v44:usize = const() {"value":128}
+  v45:u64 = buffer.load.u64.le(source,v44)
+  v46:bool = compare.eq(v45,v0)
+  v47:usize = const() {"value":136}
+  v48:u64 = buffer.load.u64.le(source,v47)
+  v49:bool = compare.eq(v48,v0)
+  v50:usize = const() {"value":144}
+  v51:u64 = buffer.load.u64.le(source,v50)
+  v52:bool = compare.eq(v51,v0)
+  v53:usize = const() {"value":152}
+  v54:u64 = buffer.load.u64.le(source,v53)
+  v55:bool = compare.eq(v54,v0)
+  v56:usize = const() {"value":160}
+  v57:u64 = buffer.load.u64.le(source,v56)
+  v58:bool = compare.eq(v57,v0)
+  v59:usize = const() {"value":168}
+  v60:u64 = buffer.load.u64.le(source,v59)
+  v61:bool = compare.eq(v60,v0)
+  v62:usize = const() {"value":184}
+  v63:u64 = buffer.load.u64.le(source,v62)
+  v64:bool = compare.le(v63,v1)
+  v65:usize = const() {"value":192}
+  v66:u64 = buffer.load.u64.le(source,v65)
+  v67:bool = compare.le(v66,v1)
+  v68:bool = bool.and(v4,v7)
+  v69:bool = bool.and(v68,v10)
+  v70:bool = bool.and(v69,v13)
+  v71:bool = bool.and(v70,v16)
+  v72:bool = bool.and(v71,v19)
+  v73:bool = bool.and(v72,v22)
+  v74:bool = bool.and(v73,v25)
+  v75:bool = bool.and(v74,v28)
+  v76:bool = bool.and(v75,v31)
+  v77:bool = bool.and(v76,v34)
+  v78:bool = bool.and(v77,v37)
+  v79:bool = bool.and(v78,v40)
+  v80:bool = bool.and(v79,v43)
+  v81:bool = bool.and(v80,v46)
+  v82:bool = bool.and(v81,v49)
+  v83:bool = bool.and(v82,v52)
+  v84:bool = bool.and(v83,v55)
+  v85:bool = bool.and(v84,v58)
+  v86:bool = bool.and(v85,v61)
+  v87:bool = bool.and(v86,v64)
+  v88:bool = bool.and(v87,v67)
+  ret(v88)
+end
+fn validate_state(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = const() {"value":16}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":24}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:usize = const() {"value":32}
+  v5:u64 = buffer.load.u64.le(source,v4)
+  v6:usize = const() {"value":40}
+  v7:u64 = buffer.load.u64.le(source,v6)
+  v8:usize = const() {"value":48}
+  v9:u64 = buffer.load.u64.le(source,v8)
+  v10:usize = const() {"value":56}
+  v11:u64 = buffer.load.u64.le(source,v10)
+  v12:usize = const() {"value":64}
+  v13:u64 = buffer.load.u64.le(source,v12)
+  v14:usize = const() {"value":72}
+  v15:u64 = buffer.load.u64.le(source,v14)
+  v16:usize = const() {"value":80}
+  v17:u64 = buffer.load.u64.le(source,v16)
+  v18:usize = const() {"value":88}
+  v19:u64 = buffer.load.u64.le(source,v18)
+  v20:usize = const() {"value":96}
+  v21:u64 = buffer.load.u64.le(source,v20)
+  v22:usize = const() {"value":104}
+  v23:u64 = buffer.load.u64.le(source,v22)
+  v24:usize = const() {"value":112}
+  v25:u64 = buffer.load.u64.le(source,v24)
+  v26:usize = const() {"value":120}
+  v27:u64 = buffer.load.u64.le(source,v26)
+  v28:usize = const() {"value":128}
+  v29:u64 = buffer.load.u64.le(source,v28)
+  v30:usize = const() {"value":136}
+  v31:u64 = buffer.load.u64.le(source,v30)
+  v32:usize = const() {"value":144}
+  v33:u64 = buffer.load.u64.le(source,v32)
+  v34:usize = const() {"value":152}
+  v35:u64 = buffer.load.u64.le(source,v34)
+  v36:usize = const() {"value":160}
+  v37:u64 = buffer.load.u64.le(source,v36)
+  v38:usize = const() {"value":168}
+  v39:u64 = buffer.load.u64.le(source,v38)
+  v40:u64 = const() {"value":0}
+  v41:u64 = const() {"value":1}
+  v42:u64 = const() {"value":2}
+  v43:u64 = const() {"value":3}
+  v44:u64 = const() {"value":4}
+  v45:u64 = const() {"value":5}
+  v46:u64 = const() {"value":6}
+  v47:u64 = const() {"value":7}
+  v48:u64 = const() {"value":8}
+  v49:u64 = const() {"value":9}
+  v50:u64 = const() {"value":1212760388}
+  v51:u64 = const() {"value":18446744073709551615}
+  v52:bool = compare.eq(v3,v41)
+  v53:bool = compare.eq(v3,v42)
+  v54:bool = compare.eq(v3,v43)
+  v55:bool = compare.eq(v3,v44)
+  v56:bool = compare.eq(v3,v45)
+  v57:bool = compare.eq(v3,v46)
+  v58:bool = compare.eq(v3,v47)
+  v59:bool = compare.eq(v3,v48)
+  v60:bool = compare.eq(v3,v49)
+  v61:bool = bool.or(v55,v56)
+  v62:bool = bool.or(v61,v57)
+  v63:bool = bool.or(v62,v58)
+  v64:bool = bool.or(v63,v59)
+  v65:bool = bool.or(v53,v59)
+  v66:bool = bool.or(v55,v56)
+  v67:bool = bool.or(v66,v57)
+  v68:bool = bool.or(v67,v58)
+  v69:u64 = select(v68,v46,v40)
+  v70:u64 = select(v59,v45,v69)
+  v71:bool = compare.eq(v5,v41)
+  v72:bool = compare.eq(v5,v43)
+  v73:bool = bool.or(v71,v72)
+  v74:bool = compare.ge(v5,v42)
+  v75:bool = compare.eq(v11,v40)
+  v76:bool = compare.eq(v13,v40)
+  v77:bool = bool.and(v75,v76)
+  v78:bool = compare.eq(v1,v50)
+  v79:bool = compare.ge(v3,v41)
+  v80:bool = compare.le(v3,v49)
+  v81:bool = compare.le(v5,v43)
+  v82:bool = compare.le(v11,v9)
+  v83:bool = compare.le(v13,v11)
+  v84:bool = compare.le(v17,v15)
+  v85:bool = compare.eq(v19,v70)
+  v86:bool = compare.gt(v21,v40)
+  v87:bool = compare.lt(v21,v51)
+  v88:bool = compare.gt(v7,v40)
+  v89:bool = bool.or(v60,v88)
+  v90:bool = compare.lt(v11,v9)
+  v91:bool = bool.not(v65)
+  v92:bool = bool.or(v91,v90)
+  v93:bool = compare.lt(v17,v15)
+  v94:bool = bool.not(v57)
+  v95:bool = bool.or(v94,v93)
+  v96:bool = bool.not(v64)
+  v97:bool = bool.or(v96,v73)
+  v98:bool = bool.not(v54)
+  v99:bool = bool.or(v98,v73)
+  v100:bool = bool.not(v60)
+  v101:bool = bool.or(v100,v74)
+  v102:bool = bool.or(v54,v55)
+  v103:bool = compare.eq(v11,v9)
+  v104:bool = bool.not(v102)
+  v105:bool = bool.or(v104,v103)
+  v106:bool = bool.or(v54,v55)
+  v107:bool = bool.or(v106,v56)
+  v108:bool = bool.or(v107,v57)
+  v109:bool = bool.or(v108,v58)
+  v110:bool = bool.or(v109,v60)
+  v111:bool = compare.eq(v13,v40)
+  v112:bool = bool.not(v110)
+  v113:bool = bool.or(v112,v111)
+  v114:bool = bool.or(v56,v57)
+  v115:bool = bool.or(v114,v58)
+  v116:bool = bool.not(v115)
+  v117:bool = bool.or(v116,v77)
+  v118:bool = compare.eq(v9,v40)
+  v119:bool = compare.eq(v15,v40)
+  v120:bool = compare.eq(v17,v40)
+  v121:bool = compare.eq(v21,v41)
+  v122:bool = bool.and(v118,v77)
+  v123:bool = bool.and(v122,v119)
+  v124:bool = bool.and(v123,v120)
+  v125:bool = bool.and(v124,v121)
+  v126:bool = bool.not(v52)
+  v127:bool = bool.or(v126,v125)
+  v128:bool = compare.eq(v23,v40)
+  v129:bool = compare.eq(v25,v40)
+  v130:bool = compare.eq(v27,v40)
+  v131:bool = compare.eq(v29,v40)
+  v132:bool = compare.eq(v31,v40)
+  v133:bool = compare.eq(v33,v40)
+  v134:bool = compare.eq(v35,v40)
+  v135:bool = compare.eq(v37,v40)
+  v136:bool = compare.eq(v39,v40)
+  v137:bool = bool.and(v78,v79)
+  v138:bool = bool.and(v137,v80)
+  v139:bool = bool.and(v138,v81)
+  v140:bool = bool.and(v139,v82)
+  v141:bool = bool.and(v140,v83)
+  v142:bool = bool.and(v141,v84)
+  v143:bool = bool.and(v142,v85)
+  v144:bool = bool.and(v143,v86)
+  v145:bool = bool.and(v144,v87)
+  v146:bool = bool.and(v145,v89)
+  v147:bool = bool.and(v146,v92)
+  v148:bool = bool.and(v147,v95)
+  v149:bool = bool.and(v148,v97)
+  v150:bool = bool.and(v149,v99)
+  v151:bool = bool.and(v150,v101)
+  v152:bool = bool.and(v151,v105)
+  v153:bool = bool.and(v152,v113)
+  v154:bool = bool.and(v153,v117)
+  v155:bool = bool.and(v154,v127)
+  v156:bool = bool.and(v155,v128)
+  v157:bool = bool.and(v156,v129)
+  v158:bool = bool.and(v157,v130)
+  v159:bool = bool.and(v158,v131)
+  v160:bool = bool.and(v159,v132)
+  v161:bool = bool.and(v160,v133)
+  v162:bool = bool.and(v161,v134)
+  v163:bool = bool.and(v162,v135)
+  v164:bool = bool.and(v163,v136)
+  ret(v164)
+end
+fn validate_event(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = const() {"value":8}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":24}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:u64 = const() {"value":2}
+  v5:u64 = const() {"value":8}
+  v6:u64 = const() {"value":9}
+  v7:bool = compare.eq(v3,v5)
+  v8:bool = compare.eq(v3,v6)
+  v9:u64 = select(v8,v5,v3)
+  v10:u64 = select(v7,v4,v9)
+  v11:bool = compare.eq(v1,v10)
+  branch v11 choose(source,v1) invalid()
+block choose(s:readbuf,t:u64)
+  one:u64 = const() {"value":1}
+  four:u64 = const() {"value":4}
+  five:u64 = const() {"value":5}
+  first:bool = compare.eq(t,one)
+  host:bool = compare.eq(t,four)
+  paths:bool = compare.eq(t,five)
+  either:bool = bool.or(first,host)
+  bucket:bool = bool.or(either,paths)
+  branch bucket bucket(s) rule_gate(s,t)
+block bucket(b:readbuf)
+  bucket_valid:bool = call(b) {"function":"validate_bucket"}
+  ret(bucket_valid)
+block rule_gate(r:readbuf,rt:u64)
+  rule_tag:u64 = const() {"value":2}
+  is_rule:bool = compare.eq(rt,rule_tag)
+  branch is_rule rule(r) path_gate(r,rt)
+block rule(q:readbuf)
+  rule_valid:bool = call(q) {"function":"validate_rule"}
+  ret(rule_valid)
+block path_gate(p:readbuf,pt:u64)
+  path_tag:u64 = const() {"value":3}
+  is_path:bool = compare.eq(pt,path_tag)
+  branch is_path path(p) pair_gate(p,pt)
+block path(x:readbuf)
+  path_valid:bool = call(x) {"function":"validate_path"}
+  ret(path_valid)
+block pair_gate(a:readbuf,at:u64)
+  pair_tag:u64 = const() {"value":6}
+  is_pair:bool = compare.eq(at,pair_tag)
+  branch is_pair pair(a) basename_gate(a,at)
+block pair(y:readbuf)
+  pair_valid:bool = call(y) {"function":"validate_pair"}
+  ret(pair_valid)
+block basename_gate(c:readbuf,ct:u64)
+  basename_tag:u64 = const() {"value":7}
+  is_basename:bool = compare.eq(ct,basename_tag)
+  branch is_basename basename(c) heuristic(c)
+block basename(z:readbuf)
+  basename_valid:bool = call(z) {"function":"validate_basename"}
+  ret(basename_valid)
+block heuristic(h:readbuf)
+  heuristic_valid:bool = call(h) {"function":"validate_heuristic"}
+  ret(heuristic_valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn validate_bucket(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = buffer.len(source)
+  v1:usize = const() {"value":192}
+  v2:bool = compare.eq(v0,v1)
+  branch v2 fields(source) invalid()
+block fields(s:readbuf)
+  valid:bool = call(s) {"function":"bucket_fields"}
+  ret(valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn bucket_fields(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":1}
+  v2:u64 = const() {"value":2}
+  v3:usize = const() {"value":176}
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:usize = const() {"value":184}
+  v6:u64 = buffer.load.u64.le(source,v5)
+  v7:bool = compare.le(v4,v1)
+  v8:bool = compare.eq(v4,v1)
+  v9:bool = compare.eq(v6,v0)
+  v10:bool = bool.or(v8,v9)
+  v11:bool = bool.and(v7,v10)
+  ret(v11)
+end
+fn validate_rule(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = buffer.len(source)
+  v1:usize = const() {"value":200}
+  v2:bool = compare.eq(v0,v1)
+  branch v2 fields(source) invalid()
+block fields(s:readbuf)
+  valid:bool = call(s) {"function":"rule_fields"}
+  ret(valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn rule_fields(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":1}
+  v2:u64 = const() {"value":2}
+  v3:usize = const() {"value":176}
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:usize = const() {"value":184}
+  v6:u64 = buffer.load.u64.le(source,v5)
+  v7:usize = const() {"value":192}
+  v8:u64 = buffer.load.u64.le(source,v7)
+  v9:usize = const() {"value":24}
+  v10:u64 = buffer.load.u64.le(source,v9)
+  v11:usize = const() {"value":56}
+  v12:u64 = buffer.load.u64.le(source,v11)
+  v13:bool = compare.eq(v10,v2)
+  v14:u64 = select(v13,v0,v1)
+  v15:bool = compare.eq(v4,v12)
+  v16:bool = compare.eq(v6,v14)
+  v17:bool = compare.le(v8,v2)
+  v18:bool = bool.and(v15,v16)
+  v19:bool = bool.and(v18,v17)
+  ret(v19)
+end
+fn validate_path(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = buffer.len(source)
+  v1:usize = const() {"value":184}
+  v2:bool = compare.eq(v0,v1)
+  branch v2 fields(source) invalid()
+block fields(s:readbuf)
+  valid:bool = call(s) {"function":"path_fields"}
+  ret(valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn path_fields(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":1}
+  v2:u64 = const() {"value":2}
+  v3:usize = const() {"value":176}
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:bool = compare.le(v4,v1)
+  ret(v5)
+end
+fn validate_basename(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = buffer.len(source)
+  v1:usize = const() {"value":184}
+  v2:bool = compare.eq(v0,v1)
+  branch v2 fields(source) invalid()
+block fields(s:readbuf)
+  valid:bool = call(s) {"function":"basename_fields"}
+  ret(valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn basename_fields(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":1}
+  v2:u64 = const() {"value":2}
+  v3:usize = const() {"value":176}
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:usize = const() {"value":40}
+  v6:u64 = buffer.load.u64.le(source,v5)
+  v7:bool = compare.eq(v4,v6)
+  ret(v7)
+end
+fn validate_heuristic(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:usize = buffer.len(source)
+  v1:usize = const() {"value":184}
+  v2:bool = compare.eq(v0,v1)
+  branch v2 fields(source) invalid()
+block fields(s:readbuf)
+  valid:bool = call(s) {"function":"heuristic_fields"}
+  ret(valid)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn heuristic_fields(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":1}
+  v2:u64 = const() {"value":2}
+  v3:usize = const() {"value":176}
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:bool = compare.le(v4,v2)
+  ret(v5)
+end
+fn validate_pair(source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  size:usize = buffer.len(source)
+  need:usize = const() {"value":200}
+  enough:bool = compare.ge(size,need)
+  branch enough ordinal(source,size,need) invalid()
+block ordinal(o_source:readbuf,o_size:usize,o_start:usize)
+  ordinal_at:usize = const() {"value":176}
+  index_at:usize = const() {"value":80}
+  value:u64 = buffer.load.u64.le(o_source,ordinal_at)
+  expected:u64 = buffer.load.u64.le(o_source,index_at)
+  same:bool = compare.eq(value,expected)
+  branch same first(o_source,o_size,o_start) invalid()
+block first(f_source:readbuf,f_size:usize,f_start:usize)
+  count_at:usize = const() {"value":184}
+  count:u64 = buffer.load.u64.le(f_source,count_at)
+  end:usize = call(f_source,f_start,count) {"function":"components_end"}
+  zero:usize = const() {"value":0}
+  valid:bool = compare.gt(end,zero)
+  branch valid second(f_source,f_size,end) invalid()
+block second(s_source:readbuf,s_size:usize,s_start:usize)
+  count_at_second:usize = const() {"value":192}
+  count_second:u64 = buffer.load.u64.le(s_source,count_at_second)
+  end_second:usize = call(s_source,s_start,count_second) {"function":"components_end"}
+  exact:bool = compare.eq(end_second,s_size)
+  ret(exact)
+block invalid()
+  bad:bool = const() {"value":false}
+  ret(bad)
+end
+fn components_end(source:readbuf,start:usize,count:u64) -> (usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,start:usize,count:u64)
+  size:usize = buffer.len(source)
+  available:usize = int.sub.checked(size,start)
+  header:usize = const() {"value":16}
+  bound:usize = int.div.checked(available,header)
+  bound_word:u64 = int.cast(bound) {"mode":"wrap"}
+  fits:bool = compare.le(count,bound_word)
+  left:usize = int.cast(count) {"mode":"wrap"}
+  branch fits loop(source,size,start,left) invalid()
+block loop(l_source:readbuf,l_size:usize,l_at:usize,l_left:usize)
+  zero:usize = const() {"value":0}
+  more:bool = compare.gt(l_left,zero)
+  branch more header(l_source,l_size,l_at,l_left) done(l_at)
+block header(h_source:readbuf,h_size:usize,h_at:usize,h_left:usize)
+  remain:usize = int.sub.checked(h_size,h_at)
+  minimum:usize = const() {"value":16}
+  enough:bool = compare.ge(remain,minimum)
+  branch enough record(h_source,h_size,h_at,h_left) invalid()
+block record(r_source:readbuf,r_size:usize,r_at:usize,r_left:usize)
+  eight:usize = const() {"value":8}
+  sixteen:usize = const() {"value":16}
+  length_at:usize = int.add.checked(r_at,eight)
+  body:usize = int.add.checked(r_at,sixteen)
+  available_body:usize = int.sub.checked(r_size,body)
+  available_word:u64 = int.cast(available_body) {"mode":"wrap"}
+  kind:u64 = buffer.load.u64.le(r_source,r_at)
+  length:u64 = buffer.load.u64.le(r_source,length_at)
+  none:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  four:u64 = const() {"value":4}
+  lower:bool = compare.ge(kind,one)
+  upper:bool = compare.le(kind,four)
+  normal:bool = compare.eq(kind,four)
+  nonempty:bool = compare.gt(length,none)
+  empty:bool = compare.eq(length,none)
+  shape:bool = select(normal,nonempty,empty)
+  bounded:bool = compare.le(length,available_word)
+  known:bool = bool.and(lower,upper)
+  sized:bool = bool.and(shape,bounded)
+  valid:bool = bool.and(known,sized)
+  branch valid advance(r_source,r_size,body,r_left,length) invalid()
+block advance(a_source:readbuf,a_size:usize,a_body:usize,a_left:usize,a_length:u64)
+  bytes:usize = int.cast(a_length) {"mode":"wrap"}
+  next:usize = int.add.checked(a_body,bytes)
+  single:usize = const() {"value":1}
+  remaining:usize = int.sub.checked(a_left,single)
+  jump loop(a_source,a_size,next,remaining)
+block done(result:usize)
+  ret(result)
+block invalid()
+  bad:usize = const() {"value":0}
+  ret(bad)
+end
+fn bytes_equal(source:readbuf,a:usize,b:usize,length:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,a:usize,b:usize,length:usize)
+  jump chunks(source,a,b,length)
+block chunks(c_source:readbuf,c_a:usize,c_b:usize,c_left:usize)
+  eight:usize = const() {"value":8}
+  full:bool = compare.ge(c_left,eight)
+  branch full words(c_source,c_a,c_b,c_left) bytes(c_source,c_a,c_b,c_left)
+block words(w_source:readbuf,w_a:usize,w_b:usize,w_left:usize)
+  x:u64 = buffer.load.u64.le(w_source,w_a)
+  y:u64 = buffer.load.u64.le(w_source,w_b)
+  same:bool = compare.eq(x,y)
+  branch same skip_word(w_source,w_a,w_b,w_left) different()
+block skip_word(s_source:readbuf,s_a:usize,s_b:usize,s_left:usize)
+  step:usize = const() {"value":8}
+  next_a:usize = int.add.checked(s_a,step)
+  next_b:usize = int.add.checked(s_b,step)
+  remaining:usize = int.sub.checked(s_left,step)
+  jump chunks(s_source,next_a,next_b,remaining)
+block bytes(t_source:readbuf,t_a:usize,t_b:usize,t_left:usize)
+  zero:usize = const() {"value":0}
+  more:bool = compare.gt(t_left,zero)
+  branch more byte(t_source,t_a,t_b,t_left) equal()
+block byte(b_source:readbuf,b_a:usize,b_b:usize,b_left:usize)
+  bx:u8 = buffer.load(b_source,b_a)
+  by:u8 = buffer.load(b_source,b_b)
+  byte_same:bool = compare.eq(bx,by)
+  branch byte_same skip_byte(b_source,b_a,b_b,b_left) different()
+block skip_byte(k_source:readbuf,k_a:usize,k_b:usize,k_left:usize)
+  one:usize = const() {"value":1}
+  after_a:usize = int.add.checked(k_a,one)
+  after_b:usize = int.add.checked(k_b,one)
+  rest:usize = int.sub.checked(k_left,one)
+  jump bytes(k_source,after_a,after_b,rest)
+block equal()
+  yes:bool = const() {"value":true}
+  ret(yes)
+block different()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn components_equal(source:readbuf,a:usize,b:usize,count:u64) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,a:usize,b:usize,count:u64)
+  jump loop(source,a,b,count)
+block loop(l_source:readbuf,l_a:usize,l_b:usize,l_left:u64)
+  zero:u64 = const() {"value":0}
+  more:bool = compare.gt(l_left,zero)
+  branch more header(l_source,l_a,l_b,l_left) equal()
+block header(h_source:readbuf,h_a:usize,h_b:usize,h_left:u64)
+  eight:usize = const() {"value":8}
+  a_length_at:usize = int.add.checked(h_a,eight)
+  b_length_at:usize = int.add.checked(h_b,eight)
+  a_kind:u64 = buffer.load.u64.le(h_source,h_a)
+  b_kind:u64 = buffer.load.u64.le(h_source,h_b)
+  a_length:u64 = buffer.load.u64.le(h_source,a_length_at)
+  b_length:u64 = buffer.load.u64.le(h_source,b_length_at)
+  kinds:bool = compare.eq(a_kind,b_kind)
+  lengths:bool = compare.eq(a_length,b_length)
+  same:bool = bool.and(kinds,lengths)
+  branch same body(h_source,h_a,h_b,h_left,a_length) different()
+block body(t_source:readbuf,t_a:usize,t_b:usize,t_left:u64,t_length:u64)
+  sixteen:usize = const() {"value":16}
+  a_body:usize = int.add.checked(t_a,sixteen)
+  b_body:usize = int.add.checked(t_b,sixteen)
+  size:usize = int.cast(t_length) {"mode":"wrap"}
+  same_bytes:bool = call(t_source,a_body,b_body,size) {"function":"bytes_equal"}
+  branch same_bytes advance(t_source,a_body,b_body,t_left,size) different()
+block advance(n_source:readbuf,n_a:usize,n_b:usize,n_left:u64,n_size:usize)
+  after_a:usize = int.add.checked(n_a,n_size)
+  after_b:usize = int.add.checked(n_b,n_size)
+  one:u64 = const() {"value":1}
+  remaining:u64 = int.sub.checked(n_left,one)
+  jump loop(n_source,after_a,after_b,remaining)
+block equal()
+  yes:bool = const() {"value":true}
+  ret(yes)
+block different()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn copy_response(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  zero:usize = const() {"value":0}
+  jump copy(source,output,zero)
+block copy(c_source:readbuf,c_output:mutbuf,c_at:usize)
+  limit:usize = const() {"value":160}
+  more:bool = compare.lt(c_at,limit)
+  branch more word(c_source,c_output,c_at) tail(c_output,c_at)
+block word(w_source:readbuf,w_output:mutbuf,w_at:usize)
+  header:usize = const() {"value":16}
+  from:usize = int.add.checked(w_at,header)
+  value:u64 = buffer.load.u64.le(w_source,from)
+  _ = buffer.store.u64.le(w_output,w_at,value)
+  eight:usize = const() {"value":8}
+  next:usize = int.add.checked(w_at,eight)
+  jump copy(w_source,w_output,next)
+block tail(t_output:mutbuf,t_at:usize)
+  end_at:usize = const() {"value":200}
+  remains:bool = compare.lt(t_at,end_at)
+  branch remains clear(t_output,t_at) sequence(t_output)
+block clear(z_output:mutbuf,z_at:usize)
+  none:u64 = const() {"value":0}
+  _ = buffer.store.u64.le(z_output,z_at,none)
+  step:usize = const() {"value":8}
+  after:usize = int.add.checked(z_at,step)
+  jump tail(z_output,after)
+block sequence(s_output:mutbuf)
+  at:usize = const() {"value":80}
+  prior:u64 = buffer.load.u64.le(s_output,at)
+  one:u64 = const() {"value":1}
+  current:u64 = int.add.checked(prior,one)
+  _ = buffer.store.u64.le(s_output,at,current)
+  ok:u32 = const() {"value":0}
+  ret(ok)
+end
+fn set_action(output:mutbuf,action:u64,operand:u64) -> (u32) effects(read,write,trap) entry(entry)
+block entry(output:mutbuf,action:u64,operand:u64)
+  v0:u64 = const() {"value":0}
+  v1:u64 = const() {"value":10}
+  v2:bool = compare.eq(action,v0)
+  v3:u64 = select(v2,v1,action)
+  v4:usize = const() {"value":8}
+  _ = buffer.store.u64.le(output,v4,v3)
+  v5:usize = const() {"value":176}
+  _ = buffer.store.u64.le(output,v5,action)
+  v6:usize = const() {"value":184}
+  _ = buffer.store.u64.le(output,v6,operand)
+  v7:u32 = const() {"value":0}
+  ret(v7)
+end
+fn finish_unmatched(output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(output:mutbuf)
+  v0:usize = const() {"value":16}
+  v1:u64 = buffer.load.u64.le(output,v0)
+  v2:u64 = const() {"value":2}
+  v3:bool = compare.ge(v1,v2)
+  v4:u64 = const() {"value":9}
+  v5:u64 = const() {"value":0}
+  v6:u64 = select(v3,v4,v5)
+  v7:u64 = const() {"value":0}
+  v8:u32 = call(output,v6,v7) {"function":"set_action"}
+  ret(v8)
+end
+fn post_exact(output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(output:mutbuf)
+  v0:usize = const() {"value":16}
+  v1:u64 = buffer.load.u64.le(output,v0)
+  v2:usize = const() {"value":24}
+  v3:u64 = buffer.load.u64.le(output,v2)
+  v4:u64 = const() {"value":1}
+  v5:bool = compare.eq(v1,v4)
+  v6:u64 = const() {"value":3}
+  v7:bool = compare.eq(v1,v6)
+  v8:bool = bool.or(v5,v7)
+  v9:u64 = const() {"value":0}
+  v10:bool = compare.gt(v3,v9)
+  v11:bool = bool.and(v8,v10)
+  branch v11 path(output) finish(output)
+block path(p:mutbuf)
+  three:u64 = const() {"value":3}
+  zero:u64 = const() {"value":0}
+  next:u32 = call(p,three,zero) {"function":"set_action"}
+  ret(next)
+block finish(f:mutbuf)
+  finished:u32 = call(f) {"function":"finish_unmatched"}
+  ret(finished)
+end
+fn release_host(output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(output:mutbuf)
+  v0:usize = const() {"value":72}
+  v1:u64 = buffer.load.u64.le(output,v0)
+  v2:usize = const() {"value":168}
+  _ = buffer.store.u64.le(output,v2,v1)
+  v3:u64 = const() {"value":0}
+  v4:usize = const() {"value":72}
+  _ = buffer.store.u64.le(output,v4,v3)
+  v5:u32 = const() {"value":0}
+  ret(v5)
+end
+fn release_unmatched(output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(output:mutbuf)
+  v0:u32 = call(output) {"function":"release_host"}
+  v1:u32 = call(output) {"function":"finish_unmatched"}
+  ret(v1)
+end
+fn advance(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":8}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  jump gate0(source,output,v1)
+block gate0(s0:readbuf,o0:mutbuf,t0:u64)
+  tag0:u64 = const() {"value":0}
+  yes0:bool = compare.eq(t0,tag0)
+  branch yes0 run0(s0,o0) gate1(s0,o0,t0)
+block run0(a0:readbuf,b0:mutbuf)
+  result0:u32 = call(a0,b0) {"function":"begin"}
+  ret(result0)
+block gate1(s1:readbuf,o1:mutbuf,t1:u64)
+  tag1:u64 = const() {"value":1}
+  yes1:bool = compare.eq(t1,tag1)
+  branch yes1 run1(s1,o1) gate2(s1,o1,t1)
+block run1(a1:readbuf,b1:mutbuf)
+  result1:u32 = call(a1,b1) {"function":"exact_bucket"}
+  ret(result1)
+block gate2(s2:readbuf,o2:mutbuf,t2:u64)
+  tag2:u64 = const() {"value":2}
+  yes2:bool = compare.eq(t2,tag2)
+  branch yes2 run2(s2,o2) gate3(s2,o2,t2)
+block run2(a2:readbuf,b2:mutbuf)
+  result2:u32 = call(a2,b2) {"function":"rule_result"}
+  ret(result2)
+block gate3(s3:readbuf,o3:mutbuf,t3:u64)
+  tag3:u64 = const() {"value":3}
+  yes3:bool = compare.eq(t3,tag3)
+  branch yes3 run3(s3,o3) gate4(s3,o3,t3)
+block run3(a3:readbuf,b3:mutbuf)
+  result3:u32 = call(a3,b3) {"function":"path_result"}
+  ret(result3)
+block gate4(s4:readbuf,o4:mutbuf,t4:u64)
+  tag4:u64 = const() {"value":4}
+  yes4:bool = compare.eq(t4,tag4)
+  branch yes4 run4(s4,o4) gate5(s4,o4,t4)
+block run4(a4:readbuf,b4:mutbuf)
+  result4:u32 = call(a4,b4) {"function":"host_bucket"}
+  ret(result4)
+block gate5(s5:readbuf,o5:mutbuf,t5:u64)
+  tag5:u64 = const() {"value":5}
+  yes5:bool = compare.eq(t5,tag5)
+  branch yes5 run5(s5,o5) gate6(s5,o5,t5)
+block run5(a5:readbuf,b5:mutbuf)
+  result5:u32 = call(a5,b5) {"function":"allowlist"}
+  ret(result5)
+block gate6(s6:readbuf,o6:mutbuf,t6:u64)
+  tag6:u64 = const() {"value":6}
+  yes6:bool = compare.eq(t6,tag6)
+  branch yes6 run6(s6,o6) gate7(s6,o6,t6)
+block run6(a6:readbuf,b6:mutbuf)
+  result6:u32 = call(a6,b6) {"function":"path_candidate"}
+  ret(result6)
+block gate7(s7:readbuf,o7:mutbuf,t7:u64)
+  tag7:u64 = const() {"value":7}
+  yes7:bool = compare.eq(t7,tag7)
+  branch yes7 run7(s7,o7) gate8(s7,o7,t7)
+block run7(a7:readbuf,b7:mutbuf)
+  result7:u32 = call(a7,b7) {"function":"basename_ready"}
+  ret(result7)
+block gate8(s8:readbuf,o8:mutbuf,t8:u64)
+  result8:u32 = call(s8,o8) {"function":"heuristic_ready"}
+  ret(result8)
+end
+fn begin(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":176}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":184}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:usize = const() {"value":192}
+  v5:u64 = buffer.load.u64.le(source,v4)
+  v6:u64 = int.add.checked(v5,v5)
+  v7:u64 = int.add.checked(v3,v6)
+  v8:u64 = const() {"value":1212760388}
+  v9:usize = const() {"value":0}
+  _ = buffer.store.u64.le(output,v9,v8)
+  v10:usize = const() {"value":16}
+  _ = buffer.store.u64.le(output,v10,v7)
+  v11:usize = const() {"value":24}
+  _ = buffer.store.u64.le(output,v11,v1)
+  v12:u64 = const() {"value":0}
+  v13:bool = compare.gt(v1,v12)
+  branch v13 lookup(output) finish(output)
+block lookup(l:mutbuf)
+  one:u64 = const() {"value":1}
+  zero:u64 = const() {"value":0}
+  next:u32 = call(l,one,zero) {"function":"set_action"}
+  ret(next)
+block finish(f:mutbuf)
+  result:u32 = call(f) {"function":"finish_unmatched"}
+  ret(result)
+end
+fn exact_bucket(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":184}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:u64 = const() {"value":0}
+  v3:usize = const() {"value":32}
+  _ = buffer.store.u64.le(output,v3,v1)
+  v4:usize = const() {"value":40}
+  _ = buffer.store.u64.le(output,v4,v2)
+  v5:usize = const() {"value":48}
+  _ = buffer.store.u64.le(output,v5,v2)
+  v6:bool = compare.gt(v1,v2)
+  branch v6 rules(output) exhausted(output)
+block rules(r:mutbuf)
+  two:u64 = const() {"value":2}
+  none:u64 = const() {"value":0}
+  next:u32 = call(r,two,none) {"function":"set_action"}
+  ret(next)
+block exhausted(x:mutbuf)
+  result:u32 = call(x) {"function":"post_exact"}
+  ret(result)
+end
+fn rule_result(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":192}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":8}
+  v3:u64 = buffer.load.u64.le(output,v2)
+  v4:u64 = const() {"value":0}
+  v5:u64 = const() {"value":1}
+  v6:u64 = const() {"value":2}
+  v7:u64 = const() {"value":8}
+  v8:bool = compare.eq(v3,v7)
+  v9:bool = compare.eq(v1,v5)
+  v10:bool = compare.gt(v1,v4)
+  v11:bool = bool.and(v8,v9)
+  v12:u64 = select(v10,v5,v4)
+  v13:u64 = select(v11,v6,v12)
+  v14:usize = const() {"value":160}
+  _ = buffer.store.u64.le(output,v14,v13)
+  v15:u64 = select(v10,v5,v4)
+  v16:usize = const() {"value":48}
+  v17:u64 = buffer.load.u64.le(output,v16)
+  v18:usize = const() {"value":40}
+  v19:u64 = buffer.load.u64.le(output,v18)
+  v20:usize = const() {"value":32}
+  v21:u64 = buffer.load.u64.le(output,v20)
+  v22:u64 = int.add.checked(v17,v15)
+  v23:u64 = int.add.checked(v19,v5)
+  v24:usize = const() {"value":48}
+  _ = buffer.store.u64.le(output,v24,v22)
+  v25:usize = const() {"value":40}
+  _ = buffer.store.u64.le(output,v25,v23)
+  v26:bool = compare.lt(v23,v21)
+  branch v26 more(output,v3,v23) end_rules(output,v8,v22)
+block more(m:mutbuf,action:u64,ordinal:u64)
+  next:u32 = call(m,action,ordinal) {"function":"set_action"}
+  ret(next)
+block end_rules(e:mutbuf,is_host:bool,total:u64)
+  branch is_host release(e,total) exact(e,total)
+block release(h:mutbuf,h_total:u64)
+  released:u32 = call(h) {"function":"release_host"}
+  none:u64 = const() {"value":0}
+  found:bool = compare.gt(h_total,none)
+  branch found done(h) no_host(h)
+block exact(x:mutbuf,x_total:u64)
+  empty:u64 = const() {"value":0}
+  some:bool = compare.gt(x_total,empty)
+  branch some done(x) no_exact(x)
+block done(d:mutbuf)
+  done_tag:u64 = const() {"value":0}
+  result:u32 = call(d,done_tag,done_tag) {"function":"set_action"}
+  ret(result)
+block no_host(n:mutbuf)
+  fallback:u32 = call(n) {"function":"finish_unmatched"}
+  ret(fallback)
+block no_exact(q:mutbuf)
+  resolve:u32 = call(q) {"function":"post_exact"}
+  ret(resolve)
+end
+fn path_result(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":176}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:u64 = const() {"value":1}
+  v3:bool = compare.eq(v1,v2)
+  branch v3 acquired(output) missing(output)
+block acquired(a:mutbuf)
+  resources_at:usize = const() {"value":72}
+  six:u64 = const() {"value":6}
+  _ = buffer.store.u64.le(a,resources_at,six)
+  four:u64 = const() {"value":4}
+  zero:u64 = const() {"value":0}
+  next:u32 = call(a,four,zero) {"function":"set_action"}
+  ret(next)
+block missing(m:mutbuf)
+  result:u32 = call(m) {"function":"finish_unmatched"}
+  ret(result)
+end
+fn host_bucket(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":176}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":184}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:u64 = const() {"value":1}
+  v5:bool = compare.eq(v1,v4)
+  branch v5 bucket(output,v3) absent(output)
+block bucket(b:mutbuf,count:u64)
+  count_at:usize = const() {"value":32}
+  index_at:usize = const() {"value":40}
+  matches_at:usize = const() {"value":48}
+  zero:u64 = const() {"value":0}
+  _ = buffer.store.u64.le(b,count_at,count)
+  _ = buffer.store.u64.le(b,index_at,zero)
+  _ = buffer.store.u64.le(b,matches_at,zero)
+  five:u64 = const() {"value":5}
+  next:u32 = call(b,five,zero) {"function":"set_action"}
+  ret(next)
+block absent(a:mutbuf)
+  result:u32 = call(a) {"function":"release_unmatched"}
+  ret(result)
+end
+fn allowlist(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":176}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":184}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:u64 = const() {"value":0}
+  v5:usize = const() {"value":56}
+  _ = buffer.store.u64.le(output,v5,v3)
+  v6:usize = const() {"value":64}
+  _ = buffer.store.u64.le(output,v6,v4)
+  v7:bool = compare.eq(v1,v4)
+  branch v7 build(output) present(output,v3)
+block present(p:mutbuf,count:u64)
+  none:u64 = const() {"value":0}
+  nonempty:bool = compare.gt(count,none)
+  branch nonempty inspect(p) denied(p)
+block inspect(i:mutbuf)
+  six:u64 = const() {"value":6}
+  first:u64 = const() {"value":0}
+  next:u32 = call(i,six,first) {"function":"set_action"}
+  ret(next)
+block build(b:mutbuf)
+  seven:u64 = const() {"value":7}
+  unused:u64 = const() {"value":0}
+  built:u32 = call(b,seven,unused) {"function":"set_action"}
+  ret(built)
+block denied(d:mutbuf)
+  result:u32 = call(d) {"function":"release_unmatched"}
+  ret(result)
+end
+fn path_candidate(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:usize = const() {"value":184}
+  v1:u64 = buffer.load.u64.le(source,v0)
+  v2:usize = const() {"value":192}
+  v3:u64 = buffer.load.u64.le(source,v2)
+  v4:bool = compare.eq(v1,v3)
+  branch v4 compare(source,output,v1) different(output)
+block compare(s:readbuf,o:mutbuf,count:u64)
+  start:usize = const() {"value":200}
+  second:usize = call(s,start,count) {"function":"components_end"}
+  equal:bool = call(s,start,second,count) {"function":"components_equal"}
+  jump complete(o,equal)
+block different(d:mutbuf)
+  no:bool = const() {"value":false}
+  jump complete(d,no)
+block complete(c:mutbuf,matched:bool)
+  index_at:usize = const() {"value":64}
+  count_at:usize = const() {"value":56}
+  index:u64 = buffer.load.u64.le(c,index_at)
+  total:u64 = buffer.load.u64.le(c,count_at)
+  one:u64 = const() {"value":1}
+  next_index:u64 = int.add.checked(index,one)
+  _ = buffer.store.u64.le(c,index_at,next_index)
+  branch matched build(c) continue(c,next_index,total)
+block build(b:mutbuf)
+  seven:u64 = const() {"value":7}
+  zero:u64 = const() {"value":0}
+  next:u32 = call(b,seven,zero) {"function":"set_action"}
+  ret(next)
+block continue(n:mutbuf,ordinal:u64,limit:u64)
+  more:bool = compare.lt(ordinal,limit)
+  branch more inspect(n,ordinal) exhausted(n)
+block inspect(i:mutbuf,at:u64)
+  six:u64 = const() {"value":6}
+  again:u32 = call(i,six,at) {"function":"set_action"}
+  ret(again)
+block exhausted(x:mutbuf)
+  result:u32 = call(x) {"function":"release_unmatched"}
+  ret(result)
+end
+fn basename_ready(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:u64 = const() {"value":5}
+  v1:usize = const() {"value":72}
+  _ = buffer.store.u64.le(output,v1,v0)
+  v2:usize = const() {"value":32}
+  v3:u64 = buffer.load.u64.le(output,v2)
+  v4:u64 = const() {"value":0}
+  v5:bool = compare.gt(v3,v4)
+  branch v5 rules(output) empty(output)
+block rules(r:mutbuf)
+  eight:u64 = const() {"value":8}
+  zero:u64 = const() {"value":0}
+  next:u32 = call(r,eight,zero) {"function":"set_action"}
+  ret(next)
+block empty(e:mutbuf)
+  result:u32 = call(e) {"function":"release_unmatched"}
+  ret(result)
+end
+fn heuristic_ready(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  v0:u64 = const() {"value":1}
+  v1:usize = const() {"value":160}
+  _ = buffer.store.u64.le(output,v1,v0)
+  v2:u64 = const() {"value":0}
+  v3:u32 = call(output,v2,v2) {"function":"set_action"}
+  ret(v3)
+end

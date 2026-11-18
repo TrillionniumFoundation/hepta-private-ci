@@ -1,0 +1,13 @@
+hia-asm.v1 hepta.hia.program.v8 codex_prefix_admission
+exports(f0)
+fn f0(command_count:u64,pattern_count:u64) -> (u64) effects(trap) entry(entry)
+block entry(command_count:u64,pattern_count:u64)
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  invalid:u64 = const() {"value":4294967295}
+  nonempty:bool = compare.gt(pattern_count,zero)
+  enough:bool = compare.ge(command_count,pattern_count)
+  admission:u64 = select(enough,one,zero)
+  result:u64 = select(nonempty,admission,invalid)
+  ret(result)
+end

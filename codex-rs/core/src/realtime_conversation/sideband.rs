@@ -2,6 +2,7 @@ use super::RealtimeInputTask;
 use super::RealtimeInputTaskExit;
 use super::RealtimeSidebandSessionInitialization;
 use super::RealtimeWebrtcSidebandInputTask;
+use super::flush_pending_realtime_event;
 use super::flush_realtime_transcript_tail;
 use super::report_realtime_transport_loss;
 use super::run_realtime_input_task;
@@ -47,6 +48,9 @@ pub(super) fn spawn_webrtc_sideband_input_task(
         let mut reconnecting = false;
         let mut rapid_disconnects = 0_u32;
         let mut pending_outbound = None;
+        let mut pending_event = None;
+        let mut connection_error = None;
+        let mut transport_error = None;
         let transcript_state = match &session_initialization {
             RealtimeSidebandSessionInitialization::ExistingCall {
                 initial_connection: Some(connection),
@@ -103,9 +107,7 @@ pub(super) fn spawn_webrtc_sideband_input_task(
                         reconnecting,
                         "failed to connect realtime sideband: {mapped_error}"
                     );
-                    let _ = events_tx
-                        .send(RealtimeEvent::Error(mapped_error.to_string()))
-                        .await;
+                    connection_error = Some(RealtimeEvent::Error(mapped_error.to_string()));
                     break;
                 }
             };
@@ -129,6 +131,7 @@ pub(super) fn spawn_webrtc_sideband_input_task(
                     stop_token: stop_token.clone(),
                 },
                 pending_outbound.take(),
+                &mut pending_event,
             )
             .await;
 
@@ -144,7 +147,7 @@ pub(super) fn spawn_webrtc_sideband_input_task(
                 break;
             }
             if event_parser != RealtimeEventParser::FramelessBidi {
-                report_realtime_transport_loss(&events_tx, err).await;
+                transport_error = Some(err);
                 break;
             }
             if connected_at.elapsed() >= STABLE_CONNECTION_DURATION {
@@ -165,6 +168,16 @@ pub(super) fn spawn_webrtc_sideband_input_task(
             }
         }
 
+        // Retain the pending event across reconnects, then close the output
+        // receivers before the final event/tail drain can await fanout capacity.
+        drop(input_channels);
+        let _ = flush_pending_realtime_event(&events_tx, &mut pending_event).await;
+        if let Some(event) = connection_error {
+            let _ = events_tx.send(event).await;
+        }
+        if let Some(err) = transport_error {
+            report_realtime_transport_loss(&events_tx, err).await;
+        }
         let transcript_tail = transcript_state.take_transcript_tail().await;
         flush_realtime_transcript_tail(&transcript_tail_flush, &transcript_tail).await;
     })

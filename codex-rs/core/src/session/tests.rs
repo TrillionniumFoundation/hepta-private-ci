@@ -4992,6 +4992,7 @@ async fn record_initial_history_forked_hydrates_previous_turn_settings() {
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -9605,6 +9606,7 @@ async fn conflicting_ready_environment_root_ids_keep_first_location() {
         ));
     }
     let environments = TurnEnvironmentSnapshot {
+        ordinary_selections_complete: false,
         environments: turn_environments
             .into_iter()
             .map(TurnEnvironmentState::Ready)
@@ -10553,6 +10555,53 @@ async fn turn_context_item_stores_local_cwd() {
     #[allow(deprecated)]
     let local_cwd = turn_context.cwd.clone();
     assert_eq!(turn_context.to_turn_context_item().cwd, local_cwd);
+    let native = turn_context
+        .to_turn_context_item()
+        .environments
+        .expect("ordinary native paths");
+    assert_eq!(native.len(), 1);
+    assert_eq!(native[0].environment_id, "remote");
+    assert_eq!(native[0].cwd, r"C:\windows");
+    assert!(native[0].workspace_roots.is_empty());
+    let mut second = turn_context
+        .environments
+        .primary()
+        .expect("primary environment")
+        .clone();
+    second.selection.environment_id = "second".to_string();
+    turn_context
+        .environments
+        .environments
+        .push(TurnEnvironmentState::Ready(second));
+    let mut expected = native.clone();
+    expected.push(codex_protocol::protocol::TurnContextEnvironmentItem {
+        environment_id: "second".to_string(),
+        ..native[0].clone()
+    });
+    assert_eq!(
+        turn_context.to_turn_context_item().environments,
+        Some(expected)
+    );
+}
+
+#[tokio::test]
+async fn turn_context_item_distinguishes_empty_and_unrepresentable_selections() {
+    let (_session, mut turn_context) = make_session_and_context().await;
+    let TurnEnvironmentState::Ready(environment) = &mut turn_context.environments.environments[0]
+    else {
+        panic!("ready thread environment");
+    };
+    environment.selection.cwd = PathUri::parse("file:///tmp/%FF").expect("encoded path");
+    assert_eq!(turn_context.to_turn_context_item().environments, None);
+
+    turn_context.environments.environments.clear();
+    assert!(turn_context.environments.ordinary_selections_complete);
+    assert_eq!(
+        turn_context.to_turn_context_item().environments,
+        Some(Vec::new())
+    );
+    turn_context.environments.ordinary_selections_complete = false;
+    assert_eq!(turn_context.to_turn_context_item().environments, None);
 }
 
 #[tokio::test]
@@ -10588,6 +10637,7 @@ async fn turn_context_item_stores_active_permission_profile() {
             .active_permission_profile,
         Some(active_permission_profile)
     );
+    assert_eq!(turn_context.to_turn_context_item().environments, None);
 }
 
 #[tokio::test]

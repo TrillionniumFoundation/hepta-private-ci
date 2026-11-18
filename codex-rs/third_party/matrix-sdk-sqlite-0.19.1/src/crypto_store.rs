@@ -56,6 +56,7 @@ use crate::{
     OpenStoreError, RuntimeConfig, Secret, SqliteStoreConfig,
     connection::{self, Connection as SqliteAsyncConn, Pool as SqlitePool, SqliteConnections},
     error::{Error, Result},
+    open_diagnostics::{OpenPhase, StoreRole, observe_store_open, record_open_phase},
     utils::{
         EncryptableStore, Key, SqliteAsyncConnExt, SqliteKeyValueStoreAsyncConnExt,
         SqliteKeyValueStoreConnExt,
@@ -161,17 +162,24 @@ impl SqliteCryptoStore {
 
     /// Open the SQLite-based crypto store with the config open config.
     pub async fn open_with_config(config: &SqliteStoreConfig) -> Result<Self, OpenStoreError> {
-        fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
+        observe_store_open(config.open_diagnostics.as_ref(), StoreRole::Crypto, async {
+            record_open_phase(OpenPhase::PathPrepare);
+            fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
 
-        let pool = config.build_pool_of_connections(DATABASE_NAME)?;
-        let pool_config = config.pool_config();
-        let runtime_config = config.runtime_config();
+            let pool = config.build_pool_of_connections(DATABASE_NAME)?;
+            let pool_config = config.pool_config();
+            let runtime_config = config.runtime_config();
 
-        let this =
-            Self::open_with_pool(pool, config.secret.clone(), pool_config, runtime_config).await?;
-        this.read().await?.apply_runtime_config(runtime_config).await?;
+            let this =
+                Self::open_with_pool(pool, config.secret.clone(), pool_config, runtime_config)
+                    .await?;
+            record_open_phase(OpenPhase::RuntimeConfig);
+            this.read().await?.apply_runtime_config(runtime_config).await?;
 
-        Ok(this)
+            record_open_phase(OpenPhase::Complete);
+            Ok(this)
+        })
+        .await
     }
 
     /// Create an SQLite-based crypto store using the given SQLite database
@@ -182,17 +190,22 @@ impl SqliteCryptoStore {
         pool_config: PoolConfig,
         runtime_config: RuntimeConfig,
     ) -> Result<Self, OpenStoreError> {
+        record_open_phase(OpenPhase::PoolAcquire);
         let conn = pool.get().await?;
 
+        record_open_phase(OpenPhase::SchemaVersion);
         let version = conn.db_version().await?;
         debug!("Opened sqlite store with version {}", version);
 
+        record_open_phase(OpenPhase::InitialSchema);
         let version = initialize_store(&conn, version).await?;
 
         let store = Self::create_raw(secret, pool, conn, pool_config, runtime_config).await?;
 
+        record_open_phase(OpenPhase::Migrations);
         run_migrations(&store, version, None).await?;
 
+        record_open_phase(OpenPhase::Checkpoint);
         store.write().await?.wal_checkpoint().await;
 
         Ok(store)

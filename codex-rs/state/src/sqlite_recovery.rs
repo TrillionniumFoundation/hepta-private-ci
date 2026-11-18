@@ -105,6 +105,8 @@ impl SqliteConfig {
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
         if path.parent() != Some(self.home()) {
+            #[cfg(unix)]
+            report_bind_failure("config_parent");
             return Err(SqliteRecoveryError::Indeterminate);
         }
         ExistingSqliteRecoveryGuard::bind(path)
@@ -133,35 +135,67 @@ impl SqliteConfig {
     }
 }
 
+#[cfg(unix)]
+fn report_bind_failure(stage: &'static str) {
+    use std::io::Write as _;
+
+    let _ = writeln!(std::io::stderr().lock(), "[sqlite-recovery-bind] {stage}");
+}
+
+#[cfg(unix)]
+fn report_sidecar_bind_failure(
+    sidecar: &'static str,
+    (error, subphase): (SqliteRecoveryError, &'static str),
+) -> SqliteRecoveryError {
+    use std::io::Write as _;
+
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "[sqlite-recovery-bind] {sidecar}.{subphase}"
+    );
+    error
+}
+
 impl ExistingSqliteRecoveryGuard {
     #[cfg(unix)]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let parent_path = database_path
             .parent()
-            .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let canonical_parent = parent_path.canonicalize().map_err(indeterminate)?;
+            .ok_or(SqliteRecoveryError::Indeterminate)
+            .inspect_err(|_| report_bind_failure("parent_path"))?;
+        let canonical_parent = parent_path
+            .canonicalize()
+            .map_err(indeterminate)
+            .inspect_err(|_| report_bind_failure("parent_canonicalize"))?;
         if canonical_parent != parent_path {
+            report_bind_failure("parent_spelling");
             return Err(SqliteRecoveryError::Indeterminate);
         }
 
-        let parent = RetainedObject::bind_parent(parent_path)?;
+        let parent = RetainedObject::bind_parent(parent_path)
+            .inspect_err(|_| report_bind_failure("parent"))?;
         let database_name = database_path
             .file_name()
-            .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let database = RetainedObject::bind_file(&parent.descriptor, database_path, database_name)?;
+            .ok_or(SqliteRecoveryError::Indeterminate)
+            .inspect_err(|_| report_bind_failure("database_name"))?;
+        let database = RetainedObject::bind_file(&parent.descriptor, database_path, database_name)
+            .inspect_err(|_| report_bind_failure("database"))?;
         let sidecars = [
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-wal"),
-            )?,
+            )
+            .map_err(|error| report_sidecar_bind_failure("wal", error))?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-shm"),
-            )?,
+            )
+            .map_err(|error| report_sidecar_bind_failure("shm", error))?,
             RetainedOptionalObject::bind(
                 &parent.descriptor,
                 sqlite_sidecar_path(database_path, "-journal"),
-            )?,
+            )
+            .map_err(|error| report_sidecar_bind_failure("journal", error))?,
         ];
         let guard = Self {
             inner: Arc::new(RecoveryGuardInner {
@@ -171,7 +205,9 @@ impl ExistingSqliteRecoveryGuard {
                 sidecars,
             }),
         };
-        guard.revalidate()?;
+        guard
+            .revalidate()
+            .inspect_err(|_| report_bind_failure("revalidate"))?;
         Ok(guard)
     }
 
@@ -275,15 +311,29 @@ impl RetainedObject {
         path: &Path,
         file_name: &OsStr,
     ) -> Result<Self, SqliteRecoveryError> {
-        let before = std::fs::symlink_metadata(path).map_err(indeterminate)?;
-        let snapshot = FileSnapshot::validated(&before, ObjectKind::PrivateFile)?;
-        let descriptor = openat_read_only(parent, file_name)?;
+        Self::bind_file_with_subphase(parent, path, file_name).map_err(|(error, _)| error)
+    }
+
+    fn bind_file_with_subphase(
+        parent: &File,
+        path: &Path,
+        file_name: &OsStr,
+    ) -> Result<Self, (SqliteRecoveryError, &'static str)> {
+        let before = std::fs::symlink_metadata(path)
+            .map_err(indeterminate)
+            .map_err(|error| (error, "path_metadata"))?;
+        let snapshot = FileSnapshot::validated_with_subphase(&before, ObjectKind::PrivateFile)?;
+        let descriptor = openat_read_only(parent, file_name).map_err(|error| (error, "open"))?;
         let opened = FileSnapshot::validated(
-            &descriptor.metadata().map_err(indeterminate)?,
+            &descriptor
+                .metadata()
+                .map_err(indeterminate)
+                .map_err(|error| (error, "descriptor_metadata"))?,
             ObjectKind::PrivateFile,
-        )?;
+        )
+        .map_err(|error| (error, "descriptor_identity"))?;
         if opened != snapshot {
-            return Err(SqliteRecoveryError::Indeterminate);
+            return Err((SqliteRecoveryError::Indeterminate, "snapshot_comparison"));
         }
         Ok(Self {
             path: path.to_path_buf(),
@@ -318,14 +368,17 @@ enum RetainedOptionalObject {
 
 #[cfg(unix)]
 impl RetainedOptionalObject {
-    fn bind(parent: &File, path: PathBuf) -> Result<Self, SqliteRecoveryError> {
+    fn bind(parent: &File, path: PathBuf) -> Result<Self, (SqliteRecoveryError, &'static str)> {
         match std::fs::symlink_metadata(&path) {
             Ok(_) => {
-                let file_name = path.file_name().ok_or(SqliteRecoveryError::Indeterminate)?;
-                RetainedObject::bind_file(parent, &path, file_name).map(Self::Present)
+                let file_name = path
+                    .file_name()
+                    .ok_or(SqliteRecoveryError::Indeterminate)
+                    .map_err(|error| (error, "name"))?;
+                RetainedObject::bind_file_with_subphase(parent, &path, file_name).map(Self::Present)
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(Self::Absent(path)),
-            Err(_) => Err(SqliteRecoveryError::Indeterminate),
+            Err(_) => Err((SqliteRecoveryError::Indeterminate, "presence_lookup")),
         }
     }
 
@@ -358,6 +411,13 @@ struct FileSnapshot {
 #[cfg(unix)]
 impl FileSnapshot {
     fn validated(metadata: &Metadata, kind: ObjectKind) -> Result<Self, SqliteRecoveryError> {
+        Self::validated_with_subphase(metadata, kind).map_err(|(error, _)| error)
+    }
+
+    fn validated_with_subphase(
+        metadata: &Metadata,
+        kind: ObjectKind,
+    ) -> Result<Self, (SqliteRecoveryError, &'static str)> {
         let mode = metadata.mode() & 0o7777;
         // SAFETY: `geteuid` has no preconditions and does not dereference memory.
         let effective_user = unsafe { libc::geteuid() };
@@ -369,15 +429,30 @@ impl FileSnapshot {
                     && mode == 0o700
             }
             ObjectKind::PrivateFile => {
-                metadata.is_file()
-                    && !metadata.file_type().is_symlink()
-                    && metadata.uid() == effective_user
-                    && mode == 0o600
-                    && metadata.nlink() == 1
+                // Preserve the original short-circuit order and return the same error.
+                if !metadata.is_file() {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.file"));
+                }
+                if metadata.file_type().is_symlink() {
+                    return Err((
+                        SqliteRecoveryError::Indeterminate,
+                        "path_identity.non_symlink",
+                    ));
+                }
+                if metadata.uid() != effective_user {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.uid"));
+                }
+                if mode != 0o600 {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.mode"));
+                }
+                if metadata.nlink() != 1 {
+                    return Err((SqliteRecoveryError::Indeterminate, "path_identity.nlink"));
+                }
+                true
             }
         };
         if !valid {
-            return Err(SqliteRecoveryError::Indeterminate);
+            return Err((SqliteRecoveryError::Indeterminate, "path_identity"));
         }
         Ok(Self {
             device: metadata.dev(),

@@ -5,6 +5,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
+use futures::future::Either as EitherFuture;
 use tokio::sync::RwLock;
 use tokio::task::JoinError;
 use tokio_util::either::Either;
@@ -89,9 +90,23 @@ impl ToolCallRuntime {
         call: ToolCall,
         cancellation_token: CancellationToken,
     ) -> impl std::future::Future<Output = Result<ResponseInputItem, CodexErr>> {
+        let defer_execution = matches!(&call.payload, ToolPayload::Function { .. })
+            && self
+                .step_context
+                .tool_router
+                .tool_runtime(&call)
+                .is_some_and(|runtime| runtime.defer_streamed_execution_until_response_end());
         let error_call = call.clone();
         let source = call.direct_source();
-        let future = self.handle_tool_call_with_source(call, source, cancellation_token);
+        // Only accounting readers defer dispatch to the response loop's existing drain.
+        let future = if defer_execution {
+            EitherFuture::Left(async move {
+                self.handle_tool_call_with_source(call, source, cancellation_token)
+                    .await
+            })
+        } else {
+            EitherFuture::Right(self.handle_tool_call_with_source(call, source, cancellation_token))
+        };
         async move {
             match future.await {
                 Ok(response) => Ok(response.into_response()),

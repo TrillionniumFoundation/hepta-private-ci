@@ -57,6 +57,21 @@ impl ExecPolicyCheckCommand {
     }
 }
 
+#[cfg(feature = "hia-native")]
+pub fn format_matches_json(matched_rules: &[RuleMatch], pretty: bool) -> Result<String> {
+    let output = ExecPolicyCheckOutput {
+        matched_rules,
+        decision: crate::hia_native_policy_summary::summarize(matched_rules).decision,
+    };
+
+    if pretty {
+        serde_json::to_string_pretty(&output).map_err(Into::into)
+    } else {
+        serde_json::to_string(&output).map_err(Into::into)
+    }
+}
+
+#[cfg(not(feature = "hia-native"))]
 pub fn format_matches_json(matched_rules: &[RuleMatch], pretty: bool) -> Result<String> {
     let output = ExecPolicyCheckOutput {
         matched_rules,

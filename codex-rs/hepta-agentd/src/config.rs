@@ -71,6 +71,16 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
     parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
 }
 
+/// Internal composition mapping: only the explicitly empty ordinary host may
+/// serve without a cognitive owner. This is a new mapping, not a registry grant.
+/// Required-owner readiness never substitutes for live owner admission.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub(crate) enum CognitiveOwnerRequirement {
+    #[default]
+    Required,
+    OptionalOrdinary,
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     registry: FleetRegistry,
@@ -96,6 +106,41 @@ pub struct AgentdConfig {
 }
 
 impl AgentdConfig {
+    pub(crate) fn cognitive_owner_requirement(&self) -> CognitiveOwnerRequirement {
+        if cfg!(any(
+            feature = "production-cognitive-write",
+            feature = "qualification-cognitive-write",
+            feature = "qualification-legacy-learning-write"
+        )) {
+            return CognitiveOwnerRequirement::Required;
+        }
+        match self {
+            Self {
+                identity: _,
+                registry: _,
+                _writer_lock: _,
+                authbus_trust_file: None,
+                evidence_trust_file: None,
+                automation_effect_host_file: None,
+                evidence_recovery_frontier_file: None,
+                evidence_recovery_frontier_trust_file: None,
+                objective_profile_file: None,
+                authbus_checkpoint_file: None,
+                cognitive_ranker: None,
+                production_operations: None,
+                production_writer_host: None,
+                cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
+                cognitive_retrieval_context: None,
+                cognitive_retrieval_learning: None,
+                plasticity_bootstrap: None,
+                intuition_policy_host: None,
+                intelligence_product_runner: None,
+                intelligence_invocation_provider: None,
+            } => CognitiveOwnerRequirement::OptionalOrdinary,
+            _ => CognitiveOwnerRequirement::Required,
+        }
+    }
+
     pub fn from_process_environment() -> Result<Self, AgentdError> {
         let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
         let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;

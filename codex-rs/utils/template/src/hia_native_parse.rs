@@ -7,7 +7,7 @@
 use super::Segment;
 use super::Template;
 use super::TemplateParseError;
-use std::collections::BTreeSet;
+use super::hia_native_placeholders::Builder;
 
 const HEADER_BYTES: usize = 64;
 const RECORD_BYTES: usize = 24;
@@ -158,11 +158,11 @@ pub(super) fn parse(source: &str) -> Result<Template, TemplateParseError> {
     if let Some(error) = error {
         return Err(error);
     }
-    let mut placeholders = BTreeSet::new();
+    let mut placeholders = Builder::new(source);
     let mut segments = Vec::new();
     if plan.count == 0 {
         return Ok(Template {
-            placeholders,
+            placeholders: placeholders.finish(),
             segments,
         });
     }
@@ -201,7 +201,7 @@ pub(super) fn parse(source: &str) -> Result<Template, TemplateParseError> {
             }
             3 => {
                 let name = value.to_owned();
-                placeholders.insert(name.clone());
+                placeholders.insert(start..end, &name);
                 segments.push(Segment::Placeholder(name));
             }
             _ => panic!("HIA template record kind is invalid"),
@@ -209,7 +209,7 @@ pub(super) fn parse(source: &str) -> Result<Template, TemplateParseError> {
         previous_end = end;
     }
     Ok(Template {
-        placeholders,
+        placeholders: placeholders.finish(),
         segments,
     })
 }

@@ -1,0 +1,87 @@
+{
+  "schema": "codex.hia.fuzzy-match-oracle-inputs.v1",
+  "status": "MANUALLY_AUTHORED_LITERAL_SOURCE_NOT_EXECUTED",
+  "module": "fuzzy_match",
+  "symbol": "codex_hia_fuzzy_match",
+  "source": {
+    "path": "hia/fuzzy_match.hepta",
+    "bytes": 202030,
+    "sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+    "git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e"
+  },
+  "contract": {
+    "path": "hia/fuzzy_match_buffer_contract.json",
+    "bytes": 62274,
+    "sha256": "232249e64ecbda1469b2d4a4da9ed45a9be497aa080deaff8714a8703360fe09"
+  },
+  "wire_sha256": "c7376442722babc50868e28e2a20e7d295e5c6c0a42ce88708a92028d48103ef",
+  "consistency_clarification_sha256": "3ed239ab8f803b54cc1a956a4ae30af2d66f34a57137c5a411332f46e8c9ee23",
+  "expectation_provenance": "Explicit manually reasoned states, scalars, records and results; helpers only serialize UTF8/u64/JSON. No lowercasing, Unicode lookup, matcher, scoring model, HIA or Rust execution produced these expectations.",
+  "counts": {
+    "streams": 16,
+    "stream_call_templates": 70,
+    "raw_cases": 172,
+    "literal_frame_templates": 242,
+    "native_calls_planned": 242
+  },
+  "case_defaults": {
+    "output_initial_fill_hex": "a5",
+    "external_guard_hex": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021"
+  },
+  "scope": {
+    "max_success_source_frame": 4416,
+    "max_negative_source_frame": 4417,
+    "max_utf8_frame": 4096,
+    "maximum_output_reservation": 393624,
+    "logical_u64_history_not_executed": true,
+    "actual_more_than_one_mebibyte_public_witnesses": "Two separately authored native-only Rust methods, not claimed executed by this raw gate.",
+    "ordinal_literal_patterns": "The 128,129 and4092 index/scalar runs are explicit byte-data patterns mechanically serialized; no Unicode lookup, normalization, greedy match or score computation was executed to produce them.",
+    "output_canary_fill": "a5 unless explicit per-case override; every byte including guards and unused output is compared."
+  },
+  "execution": {
+    "project": false,
+    "reference_model": false,
+    "Unicode_lookup": false,
+    "formatter": false,
+    "compiler": false,
+    "HIA": false,
+    "native": false,
+    "tests": false
+  },
+  "qualification": {
+    "runtime": false,
+    "whole_product": false,
+    "retirement": false,
+    "performance": false
+  },
+  "data_files": [
+    {
+      "path": "fuzzy_match_oracle_streams.json",
+      "kind": "streams",
+      "count": 16,
+      "bytes": 261173,
+      "sha256": "000079f05949795191b371f12648d52500add2d46c0367d5f5b1bf83f7fcc434"
+    },
+    {
+      "path": "fuzzy_match_oracle_raw_core.json",
+      "kind": "raw_cases",
+      "count": 157,
+      "bytes": 228211,
+      "sha256": "4e52932fcc9d796a1c86936020fb1e0dba6c38374d7f661b5955b1fe1725a458"
+    },
+    {
+      "path": "fuzzy_match_oracle_raw_hay_max.json",
+      "kind": "raw_cases",
+      "count": 1,
+      "bytes": 298916,
+      "sha256": "473c2fc87a745a64fb26005cc2514e017ff62da5aed333d9d84aae783d3b8b4f"
+    },
+    {
+      "path": "fuzzy_match_oracle_raw_tail.json",
+      "kind": "raw_cases",
+      "count": 14,
+      "bytes": 308312,
+      "sha256": "a40b1bac4182ae2ba44d8d0ec449282c6b3d5af9cad3c2fb6842b4a72adbc797"
+    }
+  ]
+}

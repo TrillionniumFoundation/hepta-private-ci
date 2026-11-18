@@ -7,6 +7,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 
 use super::AgentdConfig;
+use super::CognitiveOwnerRequirement;
 use super::CognitiveRetrievalMode;
 use super::parse_cognitive_retrieval_mode;
 use crate::AgentdError;
@@ -64,6 +65,28 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
         config.identity().layout.cognitive_root(),
         record.layout.cognitive_root()
     );
+    let expected_requirement = if cfg!(any(
+        feature = "production-cognitive-write",
+        feature = "qualification-cognitive-write",
+        feature = "qualification-legacy-learning-write"
+    )) {
+        CognitiveOwnerRequirement::Required
+    } else {
+        CognitiveOwnerRequirement::OptionalOrdinary
+    };
+    assert_eq!(config.cognitive_owner_requirement(), expected_requirement);
+    config.cognitive_retrieval_mode = CognitiveRetrievalMode::HnmfRequired;
+    assert_eq!(
+        config.cognitive_owner_requirement(),
+        CognitiveOwnerRequirement::Required
+    );
+    config.cognitive_retrieval_mode = CognitiveRetrievalMode::Compatibility;
+    config.authbus_trust_file = Some(root.join("explicit-trust"));
+    assert_eq!(
+        config.cognitive_owner_requirement(),
+        CognitiveOwnerRequirement::Required
+    );
+    config.authbus_trust_file = None;
     assert!(
         config.take_production_operations().is_none(),
         "default config must not manufacture production-operation authority"

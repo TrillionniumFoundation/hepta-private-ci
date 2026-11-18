@@ -298,7 +298,9 @@ impl Frame {
             append(&mut frame.bytes, value.as_bytes());
             frame.variables.push(range);
         }
-        for name in &template.placeholders {
+        let placeholders = template.placeholders();
+        let placeholder_count = placeholders.len();
+        for name in placeholders {
             append(&mut frame.bytes, &word(name.len()).to_le_bytes());
             let range = append(&mut frame.bytes, name.as_bytes());
             frame.placeholders.push(range);
@@ -319,11 +321,7 @@ impl Frame {
         seal(
             &mut frame.bytes,
             FrameKind::Template,
-            [
-                variables.len(),
-                template.placeholders.len(),
-                template.segments.len(),
-            ],
+            [variables.len(), placeholder_count, template.segments.len()],
         );
         frame
     }

@@ -53,7 +53,7 @@
     "Kind 2 appends source[start..end] to the immediately preceding Literal segment; that segment must exist.",
     "Kind 3 creates a new Placeholder from the native-selected trimmed range. Repeated names retain separate ordered Placeholder segments.",
     "Escaped four-brace delimiters reference their first two source bytes and skip the other two. Gaps between ranges are valid.",
-    "The host inserts placeholder strings into the existing BTreeSet to preserve unique sorted names, and constructs the original Vec<Segment> without reparsing.",
+    "The host passes each checked kind-3 original source range to the HIA template_index Builder. HIA performs duplicate detection and byte ordering; Rust moves owned names into a canonical Vec by native node ID and constructs every original Vec<Segment> occurrence without reparsing or Rust sorting.",
     "Empty source produces zero records. Empty literal fragments are omitted; adjacent literal fragments are joined by append instructions."
   ],
   "operations": {
@@ -89,7 +89,7 @@
     "source_and_workspace": "Never modified for any request."
   },
   "host_adapter": {
-    "responsibilities": "Allocate query/emit buffers, check complete header and checked sizes, require query/emit agreement, validate returned range framing and UTF-8 boundaries, map the four native error codes, and materialize original Rust strings/segments/set.",
+    "responsibilities": "Allocate query/emit buffers, check complete header and checked sizes, require query/emit agreement, validate returned range framing and UTF-8 boundaries, map the four native error codes, and materialize original Rust strings/segments plus HIA-index-ordered owned placeholder names.",
     "forbidden_fallback": "No Rust delimiter parser, trim implementation or semantic fallback is selected when HIA fails.",
     "native_failure": "Internal ABI/transport rejection is distinct from the four original semantic parse errors.",
     "retained_boundary": "Original error Display/Debug/Error implementations, public data traits, render algorithm and all 14 original tests remain unchanged."

@@ -1,8 +1,14 @@
 use crate::StreamTextChunk;
 use crate::StreamTextParser;
+#[cfg(not(feature = "hia-native"))]
 use crate::tagged_line_parser::TagSpec;
+#[cfg(not(feature = "hia-native"))]
 use crate::tagged_line_parser::TaggedLineParser;
 use crate::tagged_line_parser::TaggedLineSegment;
+
+#[cfg(feature = "hia-native")]
+#[path = "hia_native_proposed_plan_parser.rs"]
+mod hia_native;
 
 const OPEN_TAG: &str = "<proposed_plan>";
 const CLOSE_TAG: &str = "</proposed_plan>";
@@ -27,10 +33,21 @@ pub enum ProposedPlanSegment {
 /// - `extracted`: ordered plan segments (includes `Normal(...)` segments for ordering fidelity)
 #[derive(Debug)]
 pub struct ProposedPlanParser {
+    #[cfg(not(feature = "hia-native"))]
     parser: TaggedLineParser<PlanTag>,
+    #[cfg(feature = "hia-native")]
+    parser: hia_native::NativeProposedPlanParser,
 }
 
 impl ProposedPlanParser {
+    #[cfg(feature = "hia-native")]
+    pub fn new() -> Self {
+        Self {
+            parser: hia_native::NativeProposedPlanParser::new(),
+        }
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn new() -> Self {
         Self {
             parser: TaggedLineParser::new(vec![TagSpec {
@@ -210,3 +227,11 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "proposed_plan_additional_tests.rs"]
+mod additional_tests;
+
+#[cfg(all(test, feature = "hia-native"))]
+#[path = "proposed_plan_large_native_tests.rs"]
+mod large_native_tests;

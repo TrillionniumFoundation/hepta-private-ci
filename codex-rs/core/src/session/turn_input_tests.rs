@@ -625,6 +625,71 @@ async fn seed_recovery_candidate(session: &Session, turn_id: &str) -> u64 {
 }
 
 #[tokio::test]
+async fn recovery_native_context_migration_keeps_digest_and_environment_bindings() {
+    for (legacy, drift) in [(true, false), (true, true), (false, true)] {
+        let (mut session, _context, _rx) = make_turn_recovery_session_and_context_with_rx().await;
+        attach_in_memory_thread_store(Arc::get_mut(&mut session).expect("fresh session")).await;
+        let turn_id = "native-context-migration";
+        let epoch = seed_recovery_candidate(&session, turn_id).await;
+        let mut expected = session
+            .reference_context_item()
+            .await
+            .expect("recorded context");
+        let environments = expected.environments.as_mut().expect("new native context");
+        assert!(!environments.is_empty());
+        if legacy {
+            expected.environments = None;
+        } else {
+            environments[0].cwd.push_str("/changed-native-cwd");
+        }
+        let digest = crate::model_provider_policy::canonical_sha256(&expected)
+            .expect("recorded context digest")
+            .as_str()
+            .to_string();
+        session
+            .state
+            .lock()
+            .await
+            .set_reference_context_item(Some(expected));
+        {
+            let mut candidate = session.recovery_candidate.lock().expect("candidate lock");
+            let replay = &mut candidate.as_mut().expect("candidate").replay;
+            replay.turn_context_sha256 = digest;
+            assert!(!replay.environments.is_empty());
+            if legacy && drift {
+                replay.environments[0].cwd.push_str("/changed-replay-cwd");
+            }
+        }
+        let submission = handle_recovery(
+            &session,
+            epoch,
+            ThreadSettingsOverrides::default(),
+            turn_id.to_string(),
+        )
+        .await
+        .expect("typed recovery result");
+        if drift {
+            assert_eq!(
+                submission,
+                TurnInputSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::RecoveryStateChanged,
+                }
+            );
+            assert!(session.active_turn.lock().await.is_none());
+        } else {
+            assert_eq!(
+                submission,
+                TurnInputSubmission::Started {
+                    turn_id: turn_id.to_string(),
+                }
+            );
+            session.abort_all_tasks(TurnAbortReason::Interrupted).await;
+            wait_until_idle(&session).await;
+        }
+    }
+}
+
+#[tokio::test]
 async fn recovery_rejects_stale_epoch_after_intervening_completed_turn() {
     let (session, _turn_context, _rx) = make_turn_recovery_session_and_context_with_rx().await;
     let interrupted_turn_id = "stale-interrupted-turn";

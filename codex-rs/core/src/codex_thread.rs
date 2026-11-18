@@ -2,6 +2,7 @@ use crate::agent::AgentStatus;
 use crate::config::ConstraintResult;
 use crate::context::ContextualUserFragment;
 use crate::elicitation::ElicitationRegistration;
+use crate::session::FinishRetryState;
 use crate::session::HistoryMutation;
 use crate::session::SessionIo;
 use crate::session::SessionSettingsUpdate;
@@ -939,6 +940,25 @@ impl CodexThread {
 
     /// Record raw Responses API items without starting a new turn.
     pub async fn inject_response_items(&self, items: Vec<ResponseItem>) -> CodexResult<()> {
+        if !items.is_empty() {
+            // TurnComplete may precede retirement of its exact Finish owner.
+            // Capture once, then leave all session locks free while it finishes.
+            let finish_state = {
+                let active = self.session.active_turn.lock().await;
+                self.session.finish_retry_state(active.as_ref())
+            };
+            if let FinishRetryState::Finishing(fences) = finish_state {
+                'finish_wait: for completion in fences {
+                    tokio::select! {
+                        biased;
+                        () = completion.wait() => {},
+                        () = self.wait_until_terminated() => break 'finish_wait,
+                    }
+                }
+            }
+        }
+        // Clear, blocked, or terminated sessions still use the original guards.
+        // A successor fence is not recaptured and no rejected input is retried.
         self.inject_response_items_for_turn(items).await?;
         self.session.flush_rollout().await?;
         Ok(())
@@ -1287,3 +1307,7 @@ impl CodexThread {
         Ok(elicitations.count)
     }
 }
+
+#[cfg(test)]
+#[path = "codex_thread_inject_tests.rs"]
+mod inject_tests;

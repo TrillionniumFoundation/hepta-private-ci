@@ -349,9 +349,22 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
-    )
+    let manifest = if option_env!("BAZEL_PACKAGE").is_some() {
+        std::env::var_os("CODEX_TEST_ROBRIX_MANIFEST")
+            .map(std::path::PathBuf::from)
+            .context("Bazel should provide the Robrix fixture manifest")?
+    } else {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("fixtures/robrix-control-v2/manifest.json")
+    };
+    // Normalize the declared input file before enumerating its source directory.
+    let manifest = manifest
+        .canonicalize()
+        .context("canonicalize Robrix fixture manifest")?;
+    let root = manifest
+        .parent()
+        .context("Robrix manifest should have a parent directory")?;
+    read_artifacts(root)
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

@@ -2,6 +2,7 @@ use codex_protocol::config_types::ApprovalsReviewer;
 use codex_protocol::models::ActivePermissionProfile;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_rollout::RolloutItem;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
@@ -12,13 +13,14 @@ pub(super) struct PersistedResumeSettings {
     pub(super) active_permission_profile: Option<ActivePermissionProfile>,
     pub(super) runtime_cwd: Option<AbsolutePathBuf>,
     pub(super) runtime_workspace_roots: Option<Vec<AbsolutePathBuf>>,
+    pub(super) runtime_environments: Option<Vec<TurnContextEnvironmentItem>>,
 }
 
 pub(super) fn latest_persisted_resume_settings(
     history: &[RolloutItem],
 ) -> Option<PersistedResumeSettings> {
     // ThreadSettingsApplied snapshots do not carry the primary runtime cwd or
-    // workspace roots. Fold both from the same latest turn context so a later
+    // workspace roots. Fold native and legacy paths from the same latest turn so a later
     // settings-only update cannot erase or mix the environment that produced
     // the persisted model request. `None` roots on TurnContextItem means the
     // effective list was empty, which remains distinct from no turn context.
@@ -26,11 +28,15 @@ pub(super) fn latest_persisted_resume_settings(
         RolloutItem::TurnContext(turn_context) => Some((
             turn_context.cwd.clone(),
             turn_context.workspace_roots.clone().unwrap_or_default(),
+            turn_context.environments.clone(),
         )),
         _ => None,
     });
-    let runtime_cwd = runtime_environment.as_ref().map(|(cwd, _)| cwd.clone());
-    let runtime_workspace_roots = runtime_environment.map(|(_, roots)| roots);
+    let runtime_cwd = runtime_environment.as_ref().map(|(cwd, _, _)| cwd.clone());
+    let runtime_workspace_roots = runtime_environment
+        .as_ref()
+        .map(|(_, roots, _)| roots.clone());
+    let runtime_environments = runtime_environment.and_then(|(_, _, environments)| environments);
 
     history
         .iter()
@@ -51,6 +57,7 @@ pub(super) fn latest_persisted_resume_settings(
                 active_permission_profile: turn_context.active_permission_profile.clone(),
                 runtime_cwd: runtime_cwd.clone(),
                 runtime_workspace_roots: runtime_workspace_roots.clone(),
+                runtime_environments: runtime_environments.clone(),
             }),
             RolloutItem::EventMsg(EventMsg::ThreadSettingsApplied(event)) => {
                 Some(PersistedResumeSettings {
@@ -62,6 +69,7 @@ pub(super) fn latest_persisted_resume_settings(
                         .clone(),
                     runtime_cwd: runtime_cwd.clone(),
                     runtime_workspace_roots: runtime_workspace_roots.clone(),
+                    runtime_environments: runtime_environments.clone(),
                 })
             }
             _ => None,

@@ -1434,6 +1434,7 @@ async fn migration_compacts_subagent_prefix_and_does_not_project_it() {
                 turn_id: Some("child-turn".to_string()),
                 cwd: serde_json::from_value(json!(home.path())).expect("absolute cwd"),
                 workspace_roots: None,
+                environments: None,
                 current_date: None,
                 timezone: None,
                 approval_policy: AskForApproval::Never,

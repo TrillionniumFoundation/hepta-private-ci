@@ -63,7 +63,8 @@ async fn prepared_owner_inputs() -> (
     CompactCheckpoint,
 ) {
     let temp = TempDir::new().expect("temp");
-    let fleet_root = temp.path().join("fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let fleet_root = temp_root.join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000919").expect("owner id");
@@ -216,7 +217,8 @@ async fn explicit_owner_writes_bound_witness_and_replays_without_registration() 
 #[tokio::test]
 async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     let temp = TempDir::new().expect("temp");
-    let fleet_root = temp.path().join("fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let fleet_root = temp_root.join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000920").expect("owner id");
@@ -255,7 +257,11 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .expect("intent");
 
     let other_temp = TempDir::new().expect("other temp");
-    let other_root = other_temp.path().join("fleet");
+    let other_temp_root = other_temp
+        .path()
+        .canonicalize()
+        .expect("canonical temp root");
+    let other_root = other_temp_root.join("fleet");
     fs::create_dir_all(&other_root).expect("other fleet root");
     let other_fleet = HeptaFleetRoot::parse(other_root).expect("other fleet");
     let other_store = CognitiveStore::open(&other_fleet.layout().agent(&owner_id))
@@ -342,7 +348,8 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
 #[tokio::test]
 async fn explicit_owner_rejects_unbound_lease_expiry() {
     let temp = TempDir::new().expect("temp");
-    let fleet_root = temp.path().join("fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let fleet_root = temp_root.join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000921").expect("owner id");

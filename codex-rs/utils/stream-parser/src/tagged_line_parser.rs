@@ -19,6 +19,7 @@ pub(crate) enum TaggedLineSegment<T> {
 }
 
 /// Stateful line parser that splits input into normal text vs tag blocks.
+#[cfg(any(not(feature = "hia-native"), test))]
 #[derive(Debug, Default)]
 pub(crate) struct TaggedLineParser<T>
 where
@@ -30,6 +31,7 @@ where
     line_buffer: String,
 }
 
+#[cfg(any(not(feature = "hia-native"), test))]
 impl<T> TaggedLineParser<T>
 where
     T: Copy + Eq,
@@ -166,6 +168,7 @@ where
     }
 }
 
+#[cfg(any(not(feature = "hia-native"), test))]
 fn push_segment<T>(segments: &mut Vec<TaggedLineSegment<T>>, segment: TaggedLineSegment<T>)
 where
     T: Copy + Eq,

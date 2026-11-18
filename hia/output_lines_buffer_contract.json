@@ -1,0 +1,232 @@
+{
+  "schema": "codex.hia.output-lines-buffer-contract.v1",
+  "revision": 1,
+  "module": "output_lines",
+  "symbol": "codex_hia_output_lines",
+  "status": "Opt-in source integration is authored; assembly/Core/native and original public qualification remain pending.",
+  "scope": "Only the content.lines().count() computation inside formatted_truncate_text. This is not a complete migration of output truncation, budgeting, formatting or mixed-media handling.",
+  "baseline": {
+    "codex_commit": "7ce3622d78dbf9d651d5f2823a861faeba8b2a42",
+    "codex_tree": "80cd5c1e79d7c20eb0863972ff415b3346a95bb3",
+    "original_path": "codex-rs/utils/output-truncation/src/lib.rs",
+    "original_bytes": 7156,
+    "original_sha256": "229513d08e5af60c96eba9136815b0ce06fa9b5f67a8daf68f3185ffc9739eeb",
+    "original_git_blob": "ed8193d175eacc05b06543ff83a5340e04d4818e"
+  },
+  "source": {
+    "path": "hia/output_lines.hepta",
+    "bytes": 8967,
+    "sha256": "9abf072acb819d8a85c8d51ed078d8b0ebce963b80cf53d610de010203f995d0",
+    "git_blob": "698cccefdbd04c83dc52c9680a71637d7e41aa77"
+  },
+  "compiler_boundary": {
+    "unchanged_pinned_compiler": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "core_schema": "hepta.hia.program.v8",
+    "assembly_schema": "hia-asm.v1",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "target": "Linux x86_64, little-endian, 64-bit usize",
+    "reference_syntax": "Exact 7ce hia/utf8_prefix.hepta; byte loads/stores and v8 integer/control operations only. No v9 word-memory instruction is introduced.",
+    "hepta_source_review_commit": "d99855451c8140899c85cf264b330a81a1c00362",
+    "pin_change": false,
+    "note": "The explicit source frame bound matches the exact pinned direct-byte export capacity of 1 MiB. Normal B3 object generation and its concrete wrapper must still be qualified; inspecting the direct wrapper does not replace those gates.",
+    "direct_byte_abi_source": {
+      "commit": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+      "path": "hepta/hia_native_byte_abi.py",
+      "bytes": 6602,
+      "sha256": "65393efd9d0fee950b45e06976f07c917e77843ad6ba151e39f20c763e54be39",
+      "same_bytes_at_d998": true
+    }
+  },
+  "entry": {
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "native_signature": "u64 codex_hia_output_lines(const u8* source,u64 source_len,u8* output,u64 output_capacity,u8* workspace,u64 workspace_len)",
+    "native_return": "A completed Core call returns its u32 result zero-extended to u64. In the pinned direct foreign-byte profile only, a pre-Core ABI rejection instead returns ABI_status << 32; its low word is not a Core result. The line count is always the output word at offset 24.",
+    "workspace": "Unused and never read or written. The production adapter advertises a zero-length workspace.",
+    "output_allocation": "The production adapter uses a 32-byte stack buffer; a larger valid raw capacity is allowed and its suffix is unchanged."
+  },
+  "caller_preconditions": [
+    "All advertised buffers are live for the complete synchronous call and obey the pinned borrowed-buffer ownership and non-overlap rules. Input bytes and lengths do not change during the call. No pointer is retained.",
+    "Only advertised source and output ranges are accessed. Do not reinterpret a forged capacity, overlapping region or concurrent mutation as an ordinary protocol error.",
+    "For a public Rust &str, start with (lf_count,seen_data,last_is_lf)=(0,0,0); visit every byte exactly once in original order, in chunks no larger than 1048544 bytes. Empty chunks are permitted.",
+    "Feed exactly the previous successful first three output words into the next request header. Commit the next state only on status 32; otherwise discard the output. Do not skip a failed chunk or restart with an empty state.",
+    "Chunk boundaries need not be UTF-8 character or CRLF boundaries. The whole public Rust input remains a valid &str; individual chunks can be invalid UTF-8 fragments.",
+    "Keep the existing under-budget early return and the original order of approx_token_count, line count, truncate_text and warning formatting. There is no new total input-size limit and no change to any original byte/token budget."
+  ],
+  "source_frame": {
+    "byte_order": "little-endian",
+    "header_bytes": 32,
+    "minimum_source_bytes": 32,
+    "maximum_source_bytes": 1048576,
+    "maximum_chunk_bytes": 1048544,
+    "words": [
+      {
+        "offset": 0,
+        "name": "version",
+        "type": "u64",
+        "required": "1"
+      },
+      {
+        "offset": 8,
+        "name": "prior_lf_count",
+        "type": "u64",
+        "meaning": "Number of LF bytes in the already consumed prefix; excludes any unterminated final line."
+      },
+      {
+        "offset": 16,
+        "name": "prior_seen_data",
+        "type": "u64",
+        "allowed": [
+          "0",
+          "1"
+        ]
+      },
+      {
+        "offset": 24,
+        "name": "prior_last_is_lf",
+        "type": "u64",
+        "allowed": [
+          "0",
+          "1"
+        ]
+      }
+    ],
+    "chunk": "Every source byte at [32,source_len) belongs to this chunk. There is no separate length field, trailing padding or sentinel. Extra bytes are data. A header-only frame is an empty chunk."
+  },
+  "state_invariants": [
+    "seen_data and last_is_lf are canonical u64 booleans 0 or 1.",
+    "If seen_data is 0, lf_count and last_is_lf must both be 0.",
+    "If seen_data is 1 and last_is_lf is 1, lf_count must be at least 1.",
+    "If seen_data is 1 and last_is_lf is 0, lf_count+1 must be representable in u64.",
+    "These checks validate state framing, not the truth or authenticity of an alleged previous byte history. The sequential caller is responsible for using the actual previous successful output."
+  ],
+  "transition": {
+    "scan": "For each chunk byte in encounter order, compare only with LF=0x0a. LF increments lf_count after an explicit u64 overflow guard. Every consumed byte sets seen_data=1 and sets last_is_lf to exactly that byte comparison.",
+    "empty_chunk": "All three state words remain identical to the input state.",
+    "line_count": "lf_count + (seen_data == 1 and last_is_lf == 0 ? 1 : 0), with explicit u64 overflow rejection before any output write.",
+    "state_carry": "Only lf_count,seen_data,last_is_lf are carried; the derived line_count is never added into a later request. This avoids double-counting an unfinished line across chunks.",
+    "data_domain": "The raw ABI accepts arbitrary chunk bytes. It does not validate UTF-8, normalize text, strip CR, split records or inspect token budgets. UTF-8 validity belongs to the complete public Rust &str.",
+    "rust_lines_equivalence": "For valid UTF-8 s, Rust lines are LF-terminated records plus one nonempty unterminated suffix. CRLF contributes its LF once, a bare CR is ordinary data, trailing LF adds no empty final record, and the empty string has zero lines. Unicode NEL/LS/PS and NUL are ordinary bytes for this count."
+  },
+  "output": {
+    "written_bytes": 32,
+    "words": [
+      {
+        "offset": 0,
+        "name": "lf_count",
+        "type": "u64"
+      },
+      {
+        "offset": 8,
+        "name": "seen_data",
+        "type": "u64"
+      },
+      {
+        "offset": 16,
+        "name": "last_is_lf",
+        "type": "u64"
+      },
+      {
+        "offset": 24,
+        "name": "line_count",
+        "type": "u64"
+      }
+    ],
+    "publication_order": "Write the four complete u64 words at offsets 0,8,16,24 in that order, each as eight little-endian byte stores at increasing addresses. Return status 32 only afterwards.",
+    "unchanged_suffix": "Every output byte at offset >=32 remains unchanged on success.",
+    "source_and_workspace": "Never modified for any outcome."
+  },
+  "statuses": [
+    {
+      "value": 32,
+      "name": "OK",
+      "meaning": "The complete 32-byte result was written."
+    },
+    {
+      "value": 4294967295,
+      "name": "INVALID",
+      "meaning": "Source size is outside [32,1048576], version is not 1, a boolean is not 0/1, or the empty/terminated state invariants are inconsistent."
+    },
+    {
+      "value": 4294967294,
+      "name": "SHORT_OUTPUT",
+      "meaning": "Source size is admissible but output capacity is below 32."
+    },
+    {
+      "value": 4294967293,
+      "name": "OVERFLOW",
+      "meaning": "The input state has an unrepresentable unterminated total, an LF increment overflows u64, or the final unterminated line would overflow u64."
+    }
+  ],
+  "rejection_precedence": [
+    "1. Check source_len >=32. Otherwise INVALID without reading a source byte.",
+    "2. Check source_len <=1048576. Otherwise INVALID without reading a source byte.",
+    "3. Check output_capacity >=32. Otherwise SHORT_OUTPUT, even if the still-unread header would be invalid.",
+    "4. Read all four header words using the original v8 little-endian eight-byte helper; then check version=1.",
+    "5. Check both boolean words; then check the empty or terminated state invariant. A valid unterminated state with lf_count=u64::MAX returns OVERFLOW before scanning.",
+    "6. Scan bytes in order. A byte equal to LF when lf_count=u64::MAX returns OVERFLOW at that byte.",
+    "7. Check final count+1 only if a nonempty prefix lacks a final LF. Return OVERFLOW if it cannot be represented.",
+    "8. Commit the fixed result. There is no ordinary returned-error branch after the first store."
+  ],
+  "atomicity_and_interruptions": {
+    "returned_error": "Every declared INVALID, SHORT_OUTPUT or OVERFLOW return precedes every output store, so the entire advertised output, source and workspace remain byte-identical on these returns.",
+    "success": "The full 32-byte prefix is complete before returning 32; source, workspace and output tail remain unchanged.",
+    "not_a_transaction_guarantee": "Finite fuel exhaustion, cancellation, process failure or an out-of-contract memory trap is not a declared transport error. An interruption during the final byte stores can leave a partial output prefix. A caller must accept output only after status 32; no rollback or hard real-time guarantee is claimed."
+  },
+  "bounds_proof": [
+    "Header reads are at 0..31 only after source_len>=32. No source byte is read on source-size or short-output rejection.",
+    "The scan begins at index 32, loads only while index<source_len, and then advances to at most source_len<=1048576. The checked usize increment cannot overflow on the pinned 64-bit target.",
+    "A count increment is performed only when count<u64::MAX. The final +1 uses the same guard. No saturating or wrapping counter arithmetic is used.",
+    "The read helper shifts indices 0..7 by 0..56; byte widening and OR preserve the full unsigned little-endian word.",
+    "The write helper addresses position+index for position in {0,8,16,24}, index in 0..7. All writes lie within the already admitted 32-byte prefix.",
+    "The three loops are bounded by eight header/store bytes or the finite current chunk length. No allocation, mutable global state, clock, callback, syscall or external call is introduced in the HIA source."
+  ],
+  "retained_original_behavior": [
+    "Existing public Rust signatures and under-budget return remain unchanged. The new count_lines helper delegates through hia-native and preserves str::lines().count() when that feature is off.",
+    "Original token approximation, byte/token budgets, truncate_middle algorithms, warning text and whitespace remain unchanged.",
+    "Original text-segment joining and original image/audio/encrypted-item ordering, values, cost accounting and omission notices remain unchanged.",
+    "Original output-truncation tests and all native/workflow budgets, assertions and skips remain unchanged.",
+    "No old oracle-only kernel is relabeled or attached to production. Compiler pin and default dispatch are unchanged; new source/build/link entries remain unqualified."
+  ],
+  "qualification": {
+    "source_authored": true,
+    "assembler_or_core_verifier_executed": false,
+    "native_or_vm_executed": false,
+    "oracle_inputs_executed": false,
+    "rust_adapter_present": true,
+    "original_crate_qualified": false,
+    "default_changed": false,
+    "compiler_pin_changed": false,
+    "coverage_closed": false,
+    "performance_closed": false,
+    "opt_in_caller_source_integrated": true,
+    "default_production_dispatch_changed": false
+  },
+  "native_abi_layer": {
+    "direct_profile": "hepta.hia.program.direct-linux-x86_64-borrowed-bytes.v1",
+    "direct_export_extent": 1048576,
+    "direct_statuses": {
+      "0": "ABI_OK: Core invoked, result in low u32.",
+      "1": "ABI_EXTENT: one advertised buffer length exceeds the export extent; Core not invoked.",
+      "2": "ABI_NULL: invalid nonempty null range; outside ordinary corpus.",
+      "3": "ABI_ADDRESS: address-range overflow; outside ordinary corpus.",
+      "4": "ABI_ALIAS: mutable range overlap; outside ordinary corpus."
+    },
+    "direct_source_oversize": "For a source length 1048577 and otherwise valid ranges, the direct wrapper returns 4294967296 before the Core INVALID branch can run. The Core contract still defines INVALID for this frame if the Core entry is reached through another valid admission path.",
+    "profile_separation": "hia/build.py uses the direct foreign-byte wrapper only in its seed-only branch. Its normal B3 component generation is a distinct path. Keep the actual profile/report binding and never conflate an ABI status with a Core transport status. No native profile was run here.",
+    "caller_default_lengths": "Each intended production request uses source<=1048576, output=32 and workspace=0, so no whole-string size limit is imposed by the per-call transport cap."
+  },
+  "integration_parent": {
+    "commit": "3cc6201337959bc54b25d523b412a6e8ad9570b4",
+    "tree": "139f86323fc8da2ed8ca79d0c52892724c59141f",
+    "base_map_sha256": "3d965dc6b67463a031190af71f8825e7114bfd6623ebd96322180192d8641ce5",
+    "agreement": "Exact 7ce/3cc complete maps differ only at WAL and older-image paths; all 10065 other entries match. The three new source paths are absent."
+  },
+  "adapter_boundary": {
+    "host": "Own input and buffers; encode fixed header; partition bytes without dropping/reordering; validate status, canonical result fields and checked usize conversion; carry raw state; use only the final native line count. No host line scan, CR/LF correction or fallback.",
+    "hia": "All LF decisions, cumulative state changes, overflow handling and final-line arithmetic.",
+    "qualification_missing": "Fresh exact full-native30 compiler/build/link receipts, raw ABI execution, original Rust/public consumers and installed CLI qualification remain unexecuted.",
+    "source": "codex-rs/utils/string/src/hia_native_output_lines.rs",
+    "payload_chunk_bytes": 4096
+  },
+  "kernel_source_revision": "8987467886706dfec8bfbd3e05f0f1f8ecbf965e"
+}

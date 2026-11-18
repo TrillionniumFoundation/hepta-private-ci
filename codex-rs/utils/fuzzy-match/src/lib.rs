@@ -1,3 +1,10 @@
+#[cfg(feature = "hia-native")]
+#[path = "hia_native_fuzzy_match.rs"]
+mod hia_native;
+
+#[cfg(feature = "hia-native")]
+pub use hia_native::fuzzy_match;
+
 /// Simple case-insensitive subsequence matcher used for fuzzy filtering.
 ///
 /// Returns the indices (character positions) of the matched characters in the
@@ -9,6 +16,7 @@
 /// This ensures the returned indices can be safely used with
 /// `str::chars().enumerate()` consumers for highlighting, even when
 /// lowercasing expands certain characters (e.g., ß → ss, İ → i̇).
+#[cfg(not(feature = "hia-native"))]
 pub fn fuzzy_match(haystack: &str, needle: &str) -> Option<(Vec<usize>, i32)> {
     if needle.is_empty() {
         return Some((Vec::new(), i32::MAX));
@@ -166,3 +174,11 @@ mod tests {
         assert_eq!(score, -100);
     }
 }
+
+#[cfg(test)]
+#[path = "fuzzy_match_additional_tests.rs"]
+mod additional_tests;
+
+#[cfg(all(test, feature = "hia-native"))]
+#[path = "fuzzy_match_large_native_tests.rs"]
+mod large_native_tests;

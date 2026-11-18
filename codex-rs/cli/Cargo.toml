@@ -29,10 +29,13 @@ doctest = false
 # Static HIA components are currently qualified for Linux x86-64 GNU.
 hia-native = [
     "codex-arg0/hia-native",
+    "codex-core/hia-native",
+    "codex-execpolicy/hia-native",
     "codex-login/hia-native",
     "codex-memories-write/hia-native",
     "codex-models-manager/hia-native",
     "codex-tui/hia-native",
+    "codex-utils-cli/hia-native",
 ]
 
 [lints]

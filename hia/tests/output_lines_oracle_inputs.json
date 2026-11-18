@@ -1,0 +1,2350 @@
+{
+  "schema": "codex.hia.output-lines-oracle-inputs.v1",
+  "revision": 1,
+  "status": "Unexecuted expected data for the authored raw-ABI harness and the original Rust public oracle. No native, VM or Rust test has been executed for these inputs.",
+  "source": {
+    "path": "hia/output_lines.hepta",
+    "bytes": 8967,
+    "sha256": "9abf072acb819d8a85c8d51ed078d8b0ebce963b80cf53d610de010203f995d0",
+    "git_blob": "698cccefdbd04c83dc52c9680a71637d7e41aa77"
+  },
+  "contract": "hia/output_lines_buffer_contract.json",
+  "reference_expression": "content.lines().count() from exact7ce codex-rs/utils/output-truncation/src/lib.rs",
+  "encoding": {
+    "u64_words": "Decimal strings avoid loss through JSON decoders with a binary64 number type. Each is serialized as exactly eight unsigned little-endian bytes.",
+    "source": "Concatenate source_header_words_le encoded as four u64 little-endian words, then each chunk part (decoded hex repeated repeat times). A truncated-header case instead gives the exact complete source_hex. These are complete, unambiguous byte recipes without a line-count reference implementation.",
+    "large_recipes": "Repeat recipes are compact complete input definitions, not materialized buffers or measured results. No large frame was allocated or executed during authoring.",
+    "stream": "Start with initial_state, issue calls in listed order, and carry only successful first-three output words. Every expected state is literal author-supplied data; no candidate interpreter computed these expectations.",
+    "output": "Initialize the full advertised output to the fixed a5 byte. On success compare all 32 prefix bytes and the unchanged complete suffix. On error compare the entire output, including any prefix, unchanged.",
+    "workspace": "workspace_hex gives the complete workspace bytes; preserve them on every outcome.",
+    "status_layers": "expected_core_status is the candidate Core result if its entry is reached. seed_direct_profile separately specifies the exact0de direct-wrapper admission and packed return. Oversize source recipes cannot demonstrate a Core rejection through that wrapper. Normal B3 wrapper/report binding remains a later gate.",
+    "defaults": "Apply case_defaults to each call unless a call explicitly overrides a field. All declared Core error returns leave the complete output unchanged. No output sentinel field is a program input."
+  },
+  "public_utf8_equivalence_scope": "Only a complete concatenation marked public-valid-utf8 corresponds to Rust &str. Individual frames may split multibyte characters. Raw-only and arbitrary seeded-state cases are protocol checks and do not assert construction of a Rust &str of that conceptual size.",
+  "streams": [
+    {
+      "id": "empty",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "0",
+      "expected_total_chunk_bytes": 0
+    },
+    {
+      "id": "empty-chunks",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "0",
+      "expected_total_chunk_bytes": 0
+    },
+    {
+      "id": "one-ascii-byte",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "61",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 1
+    },
+    {
+      "id": "single-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 1
+    },
+    {
+      "id": "two-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 2,
+      "partition_equivalence_group": "two-lf"
+    },
+    {
+      "id": "two-lf-split",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "2",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 2,
+      "partition_equivalence_group": "two-lf"
+    },
+    {
+      "id": "trailing-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "610a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 2,
+      "partition_equivalence_group": "a-lf"
+    },
+    {
+      "id": "a-lf-empty-interleaved",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "expected_output_prefix_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "61",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 2,
+      "partition_equivalence_group": "a-lf"
+    },
+    {
+      "id": "leading-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a61",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 2
+    },
+    {
+      "id": "bare-cr",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0d",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 1
+    },
+    {
+      "id": "crlf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0d0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 2
+    },
+    {
+      "id": "crcrlf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0d0d0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 35,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 3
+    },
+    {
+      "id": "bare-cr-inside-line",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "610d62",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 35,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 3
+    },
+    {
+      "id": "mixed-blank-lines",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "610d0a620d630a0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 40,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "3",
+            "1",
+            "1",
+            "3"
+          ],
+          "expected_output_prefix_hex": "0300000000000000010000000000000001000000000000000300000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "3",
+      "expected_total_chunk_bytes": 8
+    },
+    {
+      "id": "two-crlf-lines",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "610d0a620d0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 38,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 6,
+      "partition_equivalence_group": "two-crlf-lines"
+    },
+    {
+      "id": "two-crlf-lines-split",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "610d",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "620d",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 6,
+      "partition_equivalence_group": "two-crlf-lines"
+    },
+    {
+      "id": "nul",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "00",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 1
+    },
+    {
+      "id": "nul-lf-nul",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "000a00",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 35,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 3
+    },
+    {
+      "id": "unicode-nel-ls-ps-not-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "c285e280a8e280a9",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 40,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 8
+    },
+    {
+      "id": "non-ascii-without-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "c3a9f09f9982e4b8ad",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 41,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 9
+    },
+    {
+      "id": "mixed-utf8-crlf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "c3a90d0af09f99820ae4b8ad",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 44,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "0",
+            "3"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000000000000000000000300000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "3",
+      "expected_total_chunk_bytes": 12,
+      "partition_equivalence_group": "mixed-utf8-crlf"
+    },
+    {
+      "id": "mixed-utf8-crlf-byte-fragments",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "c3",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "a9",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0d",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "f0",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "9f99",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "82",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "1",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000001000000000000000200000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "2",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "e4",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "0",
+            "3"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000000000000000000000300000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "2",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "b8ad",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 34,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2",
+            "1",
+            "0",
+            "3"
+          ],
+          "expected_output_prefix_hex": "0200000000000000010000000000000000000000000000000300000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "3",
+      "expected_total_chunk_bytes": 12,
+      "partition_equivalence_group": "mixed-utf8-crlf"
+    },
+    {
+      "id": "raw-non-utf8",
+      "domain": "raw-only-not-a-Rust-str",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "ff0a80",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 35,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "0",
+            "2"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000000000000000000000200000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2",
+      "expected_total_chunk_bytes": 3
+    },
+    {
+      "id": "raw-incomplete-utf8",
+      "domain": "raw-only-not-a-Rust-str",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "c3",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 1
+    },
+    {
+      "id": "seeded-prefix-tail-not-double-counted",
+      "domain": "raw-state-transition",
+      "initial_state": [
+        "13",
+        "1",
+        "1"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "13",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "616263",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 35,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "13",
+            "1",
+            "0",
+            "14"
+          ],
+          "expected_output_prefix_hex": "0d00000000000000010000000000000000000000000000000e00000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "13",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 32,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "13",
+            "1",
+            "0",
+            "14"
+          ],
+          "expected_output_prefix_hex": "0d00000000000000010000000000000000000000000000000e00000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "13",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "14",
+            "1",
+            "1",
+            "14"
+          ],
+          "expected_output_prefix_hex": "0e00000000000000010000000000000001000000000000000e00000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "14",
+      "expected_total_chunk_bytes": 4
+    },
+    {
+      "id": "two-full-frames-no-total-cap",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "61",
+              "repeat": 1048544
+            }
+          ],
+          "source_frame_bytes": 1048576,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "62",
+              "repeat": 1048544
+            }
+          ],
+          "source_frame_bytes": 1048576,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 2097088
+    },
+    {
+      "id": "two-full-frames-of-lf",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1048544
+            }
+          ],
+          "source_frame_bytes": 1048576,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1048544",
+            "1",
+            "1",
+            "1048544"
+          ],
+          "expected_output_prefix_hex": "e0ff0f000000000001000000000000000100000000000000e0ff0f0000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "1048544",
+            "1",
+            "1"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1048544
+            }
+          ],
+          "source_frame_bytes": 1048576,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "2097088",
+            "1",
+            "1",
+            "2097088"
+          ],
+          "expected_output_prefix_hex": "c0ff1f000000000001000000000000000100000000000000c0ff1f0000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "2097088",
+      "expected_total_chunk_bytes": 2097088
+    },
+    {
+      "id": "crlf-across-maximum-frame",
+      "domain": "public-valid-utf8",
+      "initial_state": [
+        "0",
+        "0",
+        "0"
+      ],
+      "calls": [
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "61",
+              "repeat": 1048543
+            },
+            {
+              "hex": "0d",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 1048576,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "0",
+            "1",
+            "0",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+          "expected_core_status": 32
+        },
+        {
+          "source_header_words_le": [
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          "chunk_parts": [
+            {
+              "hex": "0a",
+              "repeat": 1
+            }
+          ],
+          "source_frame_bytes": 33,
+          "expected_written_bytes": 32,
+          "expected_output_words_le": [
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+          "expected_core_status": 32
+        }
+      ],
+      "expected_final_line_count": "1",
+      "expected_total_chunk_bytes": 1048545
+    }
+  ],
+  "raw_cases": [
+    {
+      "id": "exact-output-capacity",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "610a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 34,
+        "output_capacity": 32,
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "large-output-tail-preserved",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "output_capacity": 64,
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        "expected_output_prefix_hex": "0000000000000000010000000000000000000000000000000100000000000000",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "unused-workspace-preserved",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "0d0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 34,
+        "workspace_hex": "00ff5a",
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "expected_output_prefix_hex": "0100000000000000010000000000000001000000000000000100000000000000",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "bad-version",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "2",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "zero-version",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "seen-flag-two",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "2",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "last-flag-two",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "1",
+          "1",
+          "2"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "unseen-with-lf",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "1",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "unseen-with-last-lf",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "seen-terminated-with-zero-lf",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "1",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "output-zero",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "output_capacity": 0,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967294
+      }
+    },
+    {
+      "id": "output-thirty-one",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "output_capacity": 31,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967294
+      }
+    },
+    {
+      "id": "short-output-before-bad-header",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "0",
+          "0",
+          "2",
+          "2"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "output_capacity": 31,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967294
+      }
+    },
+    {
+      "id": "oversize-frame",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1048545
+          }
+        ],
+        "source_frame_bytes": 1048577,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "oversize-before-short-output",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1048545
+          }
+        ],
+        "source_frame_bytes": 1048577,
+        "output_capacity": 0,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "maximum-terminated-empty",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551615",
+          "1",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "18446744073709551615",
+          "1",
+          "1",
+          "18446744073709551615"
+        ],
+        "expected_output_prefix_hex": "ffffffffffffffff01000000000000000100000000000000ffffffffffffffff",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "maximum-minus-one-lf-increment",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551614",
+          "1",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "18446744073709551615",
+          "1",
+          "1",
+          "18446744073709551615"
+        ],
+        "expected_output_prefix_hex": "ffffffffffffffff01000000000000000100000000000000ffffffffffffffff",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "maximum-unterminated-tail",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551614",
+          "1",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "18446744073709551614",
+          "1",
+          "0",
+          "18446744073709551615"
+        ],
+        "expected_output_prefix_hex": "feffffffffffffff01000000000000000000000000000000ffffffffffffffff",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "maximum-tail-becomes-terminated",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551614",
+          "1",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 32,
+        "expected_output_words_le": [
+          "18446744073709551615",
+          "1",
+          "1",
+          "18446744073709551615"
+        ],
+        "expected_output_prefix_hex": "ffffffffffffffff01000000000000000100000000000000ffffffffffffffff",
+        "expected_core_status": 32
+      }
+    },
+    {
+      "id": "overflow-prior-unterminated",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551615",
+          "1",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 32,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967293
+      }
+    },
+    {
+      "id": "overflow-prior-before-new-data",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551615",
+          "1",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967293
+      }
+    },
+    {
+      "id": "overflow-new-lf",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551615",
+          "1",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967293
+      }
+    },
+    {
+      "id": "overflow-final-tail",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551615",
+          "1",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "61",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967293
+      }
+    },
+    {
+      "id": "overflow-after-valid-scanned-prefix",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551614",
+          "1",
+          "1"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "610a0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 35,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967293
+      }
+    },
+    {
+      "id": "invalid-unseen-max-before-overflow",
+      "domain": "raw-protocol",
+      "call": {
+        "source_header_words_le": [
+          "1",
+          "18446744073709551615",
+          "0",
+          "0"
+        ],
+        "chunk_parts": [
+          {
+            "hex": "0a",
+            "repeat": 1
+          }
+        ],
+        "source_frame_bytes": 33,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "truncated-header-0-out-48",
+      "domain": "raw-protocol",
+      "call": {
+        "source_hex": "",
+        "source_frame_bytes": 0,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "truncated-header-31-out-48",
+      "domain": "raw-protocol",
+      "call": {
+        "source_hex": "00000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 31,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    },
+    {
+      "id": "truncated-header-31-out-0",
+      "domain": "raw-protocol",
+      "call": {
+        "source_hex": "00000000000000000000000000000000000000000000000000000000000000",
+        "source_frame_bytes": 31,
+        "output_capacity": 0,
+        "expected_written_bytes": 0,
+        "expected_core_status": 4294967295
+      }
+    }
+  ],
+  "coverage_requirements": [
+    "Bind the actual Core/normal B3 wrapper before checking expected_core_status. Separately check the seed_direct_profile expectations for exact0de direct-byte admission. Compare original Rust for public-valid-utf8 streams. A direct-wrapper rejection does not prove execution of the Core rejection branch.",
+    "For each partition_equivalence_group, compare the complete concatenated byte identity and final line count across the listed partitionings, including empty chunks.",
+    "For bounded public strings, an independent harness should enumerate every split point and byte-by-byte partition, without using the candidate algorithm as the reference.",
+    "Keep original under-budget and exact byte/token-boundary tests, warning text/token count tests, empty/leading-newline tests and mixed text/image/audio/encrypted-item tests unchanged when any future adapter is added.",
+    "Preserve original whole-crate/caller/native budgets. The recipes do not authorize raising fuel, timeouts, memory limits, skips or sample reduction.",
+    "Fuel exhaustion/cancellation is a separate non-success path; do not treat its output as a completed result or as a declared atomic transport error."
+  ],
+  "not_in_scope": [
+    "Dangling pointers, forged lengths, overlapping borrowed regions or concurrent mutation are outside the caller contract; no unsafe memory reproducer is included.",
+    "No actual implementation, reference Rust, VM, native, source validator, generator or product test has been executed.",
+    "No coverage, build, lock, compiler pin or production-dispatch file is changed."
+  ],
+  "qualification": {
+    "inputs_authored": true,
+    "harness_present": true,
+    "inputs_executed": false,
+    "reference_executed": false,
+    "native_or_vm_executed": false,
+    "original_public_equivalence_qualified": false,
+    "normal_b3_wrapper_binding_complete": false
+  },
+  "case_defaults": {
+    "output_capacity": 48,
+    "output_initial_fill_hex": "a5",
+    "workspace_hex": "",
+    "expected_source_unchanged": true,
+    "expected_workspace_unchanged": true,
+    "expected_output_tail_unchanged": true,
+    "error_return_entire_output_unchanged": true
+  },
+  "seed_direct_profile": {
+    "name": "hepta.hia.program.direct-linux-x86_64-borrowed-bytes.v1",
+    "compiler_commit": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "export_extent": 1048576,
+    "valid_live_disjoint_allocations_required": true,
+    "expected_core_reached_and_packed_return": "For source_frame_bytes <=1048576 all corpus output/workspace capacities also fit: Core is entered and the packed u64 equals expected_core_status. For larger source frames Core is not entered and the packed return is 4294967296. This mapping is static source-derived expected data, not an observed native result."
+  }
+}

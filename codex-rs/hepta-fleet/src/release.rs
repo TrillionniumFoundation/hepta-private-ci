@@ -242,8 +242,12 @@ impl FleetRegistry {
                 "matrixd arguments require a matrixd release program".to_string(),
             ));
         }
-        let source_agentd = validate_source_program(source_agentd)?;
-        let source_matrixd = source_matrixd.map(validate_source_program).transpose()?;
+        let source_agentd = validate_source_program(source_agentd)
+            .inspect_err(|_| report_release_install_failure("source_agentd"))?;
+        let source_matrixd = source_matrixd
+            .map(validate_source_program)
+            .transpose()
+            .inspect_err(|_| report_release_install_failure("source_matrixd"))?;
         let final_root = self.layout().releases_root().join(release_id.as_str());
         if final_root.exists() {
             return Err(FleetRegistryError::Invalid(format!(
@@ -255,12 +259,15 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
-        std::fs::create_dir(&staging)?;
+        std::fs::create_dir(&staging)
+            .inspect_err(|_| report_release_install_failure("staging_create"))?;
         let result = (|| {
             let bin_root = staging.join("bin");
-            std::fs::create_dir(&bin_root)?;
+            std::fs::create_dir(&bin_root)
+                .inspect_err(|_| report_release_install_failure("bin_create"))?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
-            copy_immutable_program(&source_agentd, &agentd_program)?;
+            copy_immutable_program(&source_agentd, &agentd_program)
+                .inspect_err(|_| report_release_install_failure("agentd_copy"))?;
             let matrixd = source_matrixd
                 .as_ref()
                 .map(
@@ -275,27 +282,58 @@ impl FleetRegistry {
                         })
                     },
                 )
-                .transpose()?;
+                .transpose()
+                .inspect_err(|_| report_release_install_failure("matrixd_bundle"))?;
             let metadata = ReleaseMetadata {
                 schema_version: RELEASE_METADATA_SCHEMA_VERSION,
                 release_id: release_id.clone(),
                 agentd: ReleaseProgramMetadata {
                     program_relative_path: PathBuf::from(AGENTD_RELEASE_PROGRAM),
-                    program_sha256: sha256_file(&agentd_program)?,
-                    program_size_bytes: std::fs::metadata(&agentd_program)?.len(),
+                    program_sha256: sha256_file(&agentd_program)
+                        .inspect_err(|_| report_release_install_failure("agentd_hash"))?,
+                    program_size_bytes: std::fs::metadata(&agentd_program)
+                        .inspect_err(|_| report_release_install_failure("agentd_metadata"))?
+                        .len(),
                     args: agentd_args,
                 },
                 matrixd,
             };
             let manifest = staging.join(RELEASE_MANIFEST_FILE);
-            write_new_json(&manifest, &metadata)?;
-            set_mode(&manifest, /*mode*/ 0o444)?;
-            set_mode(&bin_root, /*mode*/ 0o555)?;
-            sync_directory(&bin_root)?;
-            sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
-            sync_directory(self.layout().releases_root())?;
+            write_new_json(&manifest, &metadata)
+                .inspect_err(|_| report_release_install_failure("manifest_write"))?;
+            set_mode(&manifest, /*mode*/ 0o444)
+                .inspect_err(|_| report_release_install_failure("manifest_seal"))?;
+            set_mode(&bin_root, /*mode*/ 0o555)
+                .inspect_err(|_| report_release_install_failure("bin_seal"))?;
+            sync_directory(&bin_root)
+                .inspect_err(|_| report_release_install_failure("bin_sync"))?;
+            #[cfg(not(target_os = "macos"))]
+            sync_directory(&staging)
+                .inspect_err(|_| report_release_install_failure("staging_sync"))?;
+            #[cfg(target_os = "macos")]
+            let staging_directory = File::open(&staging)
+                .and_then(|directory| {
+                    directory.sync_all()?;
+                    Ok(directory)
+                })
+                .inspect_err(|_| report_release_install_failure("staging_sync"))?;
+            #[cfg(not(target_os = "macos"))]
+            set_mode(&staging, /*mode*/ 0o555)
+                .inspect_err(|_| report_release_install_failure("staging_seal"))?;
+            std::fs::rename(&staging, &final_root)
+                .inspect_err(|_| report_release_install_failure("publish_rename"))?;
+            #[cfg(target_os = "macos")]
+            {
+                use std::os::unix::fs::PermissionsExt;
+
+                // Darwin requires the source directory to remain writable for rename.
+                // Seal through the same handle used to sync before publication.
+                staging_directory
+                    .set_permissions(std::fs::Permissions::from_mode(/*mode*/ 0o555))
+                    .inspect_err(|_| report_release_install_failure("publish_seal"))?;
+            }
+            sync_directory(self.layout().releases_root())
+                .inspect_err(|_| report_release_install_failure("catalog_sync"))?;
             Ok(())
         })();
         if let Err(error) = result {
@@ -304,6 +342,7 @@ impl FleetRegistry {
             return Err(error);
         }
         resolve_catalog_release(self.layout().releases_root(), &release_id)
+            .inspect_err(|_| report_release_install_failure("catalog_resolve"))
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -717,6 +756,10 @@ fn valid_program_metadata(metadata: &ReleaseProgramMetadata, expected_path: &str
     metadata.program_relative_path == Path::new(expected_path)
         && metadata.program_size_bytes != 0
         && is_sha256(&metadata.program_sha256)
+}
+
+fn report_release_install_failure(stage: &'static str) {
+    let _ = writeln!(std::io::stderr().lock(), "[fleet-release-install] {stage}");
 }
 
 fn validate_arguments(args: &[String]) -> Result<(), FleetRegistryError> {

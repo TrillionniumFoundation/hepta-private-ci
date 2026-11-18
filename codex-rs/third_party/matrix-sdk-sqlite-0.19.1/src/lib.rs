@@ -30,8 +30,10 @@ mod error;
 mod event_cache_store;
 #[cfg(feature = "media-store")]
 mod media_store;
+mod open_diagnostics;
 #[cfg(feature = "state-store")]
 mod state_store;
+mod store_cipher;
 mod utils;
 use std::{
     cmp::max,
@@ -49,6 +51,7 @@ pub use self::error::OpenStoreError;
 pub use self::event_cache_store::SqliteEventCacheStore;
 #[cfg(feature = "media-store")]
 pub use self::media_store::SqliteMediaStore;
+pub use self::open_diagnostics::SqliteStoreOpenDiagnostics;
 #[cfg(feature = "state-store")]
 pub use self::state_store::{DATABASE_NAME as STATE_STORE_DATABASE_NAME, SqliteStateStore};
 
@@ -99,6 +102,7 @@ pub struct SqliteStoreConfig {
     pool_config: PoolConfig,
     /// The runtime configuration to apply when opening an SQLite connection.
     runtime_config: RuntimeConfig,
+    open_diagnostics: Option<SqliteStoreOpenDiagnostics>,
 }
 
 impl fmt::Debug for SqliteStoreConfig {
@@ -130,6 +134,7 @@ impl SqliteStoreConfig {
             pool_config: PoolConfig::new(max(POOL_MINIMUM_SIZE, num_cpus::get_physical() * 4)),
             runtime_config: RuntimeConfig::default(),
             secret: None,
+            open_diagnostics: None,
         }
     }
 
@@ -153,6 +158,12 @@ impl SqliteStoreConfig {
             .cache_size(500_000)
             // Journal size limit is 2Mib.
             .journal_size_limit(2_000_000)
+    }
+
+    /// Attach fixed, per-store open observations without exposing paths or errors.
+    pub fn open_diagnostics(mut self, diagnostics: SqliteStoreOpenDiagnostics) -> Self {
+        self.open_diagnostics = Some(diagnostics);
+        self
     }
 
     /// Override the path.

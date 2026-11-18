@@ -47,6 +47,44 @@ MACOS_WEBRTC_RUSTC_LINK_FLAGS = select({
 
 def _workspace_root_test_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+    if ctx.attr.runfile_environment_only:
+        if ctx.attr.linux_host_tools or ctx.attr.chdir_workspace_root or ctx.attr.data or ctx.attr.env or ctx.attr.test_threads or ctx.attr.shard_count > 0:
+            fail("runfile_environment_only requires the original unsharded test process")
+        if not ctx.attr.runfile_env or RunEnvironmentInfo not in ctx.attr.test_bin:
+            fail("runfile_environment_only requires declared runfiles and the original RunEnvironmentInfo")
+    if ctx.attr.linux_host_tools:
+        # A direct executable alias preserves the original test argv and cwd.
+        # Do not enter the shell launcher's filtering, sharding, or env setup.
+        if ctx.attr.chdir_workspace_root or ctx.attr.data or ctx.attr.env or ctx.attr.runfile_env or ctx.attr.test_threads or ctx.attr.shard_count > 0:
+            fail("linux_host_tools requires an unmodified, unsharded test process")
+        if RunEnvironmentInfo not in ctx.attr.test_bin:
+            fail("linux_host_tools requires the original test RunEnvironmentInfo")
+        if testing.ExecutionInfo in ctx.attr.test_bin:
+            fail("linux_host_tools expects a test without existing ExecutionInfo")
+        test_bin = ctx.executable.test_bin
+        executable = ctx.actions.declare_file(ctx.label.name + (".exe" if is_windows else ""))
+        ctx.actions.symlink(
+            output = executable,
+            target_file = test_bin,
+            is_executable = True,
+        )
+        original_runfiles = ctx.attr.test_bin[DefaultInfo].default_runfiles
+        providers = [
+            DefaultInfo(
+                executable = executable,
+                files = depset([executable]),
+                runfiles = ctx.runfiles(files = [test_bin]).merge(original_runfiles),
+            ),
+            ctx.attr.test_bin[RunEnvironmentInfo],
+        ]
+        if InstrumentedFilesInfo in ctx.attr.test_bin:
+            providers.append(ctx.attr.test_bin[InstrumentedFilesInfo])
+        if ctx.target_platform_has_constraint(ctx.attr._linux_constraint[platform_common.ConstraintValueInfo]):
+            # A provider affects only TestRunner, unlike a rule tag that also
+            # propagates to this rule's build actions.
+            providers.append(testing.ExecutionInfo({"no-remote-exec": ""}))
+        return providers
+
     launcher = ctx.actions.declare_file(ctx.label.name + ".bat" if is_windows else ctx.label.name)
     test_bin = ctx.executable.test_bin
     workspace_root_marker = ctx.file.workspace_root_marker
@@ -58,6 +96,9 @@ def _workspace_root_test_impl(ctx):
         output = launcher,
         is_executable = True,
         substitutions = {
+            "__RUNFILE_ENV_DIRECT_EXEC__": (
+                '"%test_bin%" %*\nexit /b %ERRORLEVEL%' if is_windows else 'exec_test_bin "$@"'
+            ) if ctx.attr.runfile_environment_only else "",
             "__RUNFILE_ENV_EXPORTS__": runfile_env_exports,
             "__TEST_BIN__": test_bin.short_path,
             "__WORKSPACE_ROOT_SETUP__": workspace_root_setup,
@@ -87,6 +128,21 @@ def _workspace_root_test_impl(ctx):
     }
     if ctx.attr.test_threads:
         env["RUST_TEST_THREADS"] = str(ctx.attr.test_threads)
+
+    if ctx.attr.runfile_environment_only:
+        providers = [
+            DefaultInfo(
+                executable = launcher,
+                files = depset([launcher]),
+                runfiles = runfiles,
+            ),
+            ctx.attr.test_bin[RunEnvironmentInfo],
+        ]
+        if testing.ExecutionInfo in ctx.attr.test_bin:
+            providers.append(ctx.attr.test_bin[testing.ExecutionInfo])
+        if InstrumentedFilesInfo in ctx.attr.test_bin:
+            providers.append(ctx.attr.test_bin[InstrumentedFilesInfo])
+        return providers
 
     return [
         DefaultInfo(
@@ -151,8 +207,16 @@ workspace_root_test = rule(
             allow_files = True,
         ),
         "env": attr.string_dict(),
+        "linux_host_tools": attr.bool(
+            default = False,
+            doc = "Forward the test process unchanged and require Linux host tools only for its TestRunner.",
+        ),
         "runfile_env": attr.label_keyed_string_dict(
             cfg = "target",
+        ),
+        "runfile_environment_only": attr.bool(
+            default = False,
+            doc = "Resolve declared runfile environment values without changing the original test invocation.",
         ),
         "test_bin": attr.label(
             cfg = "target",
@@ -163,6 +227,10 @@ workspace_root_test = rule(
         "workspace_root_marker": attr.label(
             allow_single_file = True,
             mandatory = True,
+        ),
+        "_linux_constraint": attr.label(
+            default = "@platforms//os:linux",
+            providers = [platform_common.ConstraintValueInfo],
         ),
         "_windows_constraint": attr.label(
             default = "@platforms//os:windows",
@@ -204,7 +272,9 @@ def codex_rust_crate(
         unit_test_features = [],
         binary_test_target_compatible_with = [],
         integration_test_timeout = None,
+        linux_host_tool_tests = [],
         test_data_extra = [],
+        test_runfile_env = {},
         test_shard_counts = {},
         test_tags = [],
         test_threads = 0,
@@ -253,7 +323,13 @@ def codex_rust_crate(
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
         integration_test_timeout: Optional Bazel timeout for integration test
             targets generated from `tests/*.rs`.
+        linux_host_tool_tests: Names of unsharded native integration-test targets
+            whose TestRunner needs Linux host tools. Compilation stays remote;
+            the executable alias preserves the original argv, cwd, and environment.
         test_data_extra: Extra runtime data for tests.
+        test_runfile_env: Mapping from unsharded native test names to file-label
+            and environment-variable pairs. Only these tests receive a launcher
+            that preserves the original runtime environment, arguments, and cwd.
         test_shard_counts: Mapping from generated test target name to Bazel
             shard count. Matching tests use native Bazel sharding on the outer
             workspace-root launcher, not rules_rust's inner sharding wrapper.
@@ -525,6 +601,8 @@ def codex_rust_crate(
     if integration_test_timeout:
         integration_test_kwargs["timeout"] = integration_test_timeout
 
+    unmatched_linux_host_tool_tests = list(linux_host_tool_tests)
+    unmatched_test_runfile_env = list(test_runfile_env)
     for test in native.glob(["tests/*.rs"], allow_empty = True):
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
         test_crate_name = test_file_stem.replace("-", "_")
@@ -536,6 +614,18 @@ def codex_rust_crate(
         test_kwargs = {}
         test_kwargs.update(integration_test_kwargs)
         test_shard_count = _test_shard_count(test_shard_counts, test_name)
+        needs_linux_host_tools = test_name in linux_host_tool_tests
+        fixture_runfile_env = test_runfile_env.get(test_name, {})
+        if test_name in test_runfile_env:
+            unmatched_test_runfile_env.remove(test_name)
+            if not fixture_runfile_env:
+                fail("test_runfile_env entries must declare at least one file")
+            if test_shard_count or needs_linux_host_tools or run_tests_with_wine_exec:
+                fail("test_runfile_env only supports unsharded native tests without host-tool placement")
+        if needs_linux_host_tools:
+            unmatched_linux_host_tool_tests.remove(test_name)
+            if test_shard_count or run_tests_with_wine_exec:
+                fail("linux_host_tool_tests only supports unsharded native tests")
         if test_shard_count:
             # Put Bazel sharding on the label users/CI invoke. Do not set
             # rules_rust's experimental_enable_sharding on the Rust test
@@ -607,9 +697,11 @@ def codex_rust_crate(
             # For unsharded tests, the direct rust_test rule is still fine:
             # there is no rules_rust sharding wrapper to bypass, and env can
             # use rlocation paths directly because the test starts under
-            # Bazel's normal test environment.
+            # Bazel's normal test environment. Host-tool tests retain that
+            # environment behind a direct executable alias, not a shell.
+            direct_test_kwargs = {} if needs_linux_host_tools or fixture_runfile_env else test_kwargs
             rust_test(
-                name = test_name,
+                name = integration_test_binary if needs_linux_host_tools or fixture_runfile_env else test_name,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -626,9 +718,32 @@ def codex_rust_crate(
                 rustc_env = rustc_env,
                 env = integration_test_cargo_env,
                 target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
-                tags = test_tags,
-                **test_kwargs
+                tags = test_tags + ["manual"] if needs_linux_host_tools or fixture_runfile_env else test_tags,
+                **direct_test_kwargs
             )
+            if needs_linux_host_tools:
+                workspace_root_test(
+                    name = test_name,
+                    chdir_workspace_root = False,
+                    linux_host_tools = True,
+                    test_bin = ":" + integration_test_binary,
+                    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+                    target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
+                    tags = test_tags,
+                    **test_kwargs
+                )
+            elif fixture_runfile_env:
+                workspace_root_test(
+                    name = test_name,
+                    chdir_workspace_root = False,
+                    runfile_env = fixture_runfile_env,
+                    runfile_environment_only = True,
+                    test_bin = ":" + integration_test_binary,
+                    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+                    target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
+                    tags = test_tags,
+                    **test_kwargs
+                )
 
         if run_tests_with_wine_exec:
             wine_test_name = test_name.removesuffix("-test") + "-wine-exec-test"
@@ -705,13 +820,18 @@ def codex_rust_crate(
             name = test_name + "-windows-cross",
             chdir_workspace_root = False,
             env = integration_test_cargo_env,
-            runfile_env = integration_test_cargo_env_runfiles,
+            runfile_env = (cargo_env_runfiles | fixture_runfile_env) if fixture_runfile_env else integration_test_cargo_env_runfiles,
             test_bin = ":" + windows_cross_test_binary,
             workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
             target_compatible_with = WINDOWS_GNULLVM_ONLY,
             tags = test_tags,
             **windows_cross_test_kwargs
         )
+
+    if unmatched_linux_host_tool_tests:
+        fail("unknown or duplicate linux_host_tool_tests: {}".format(unmatched_linux_host_tool_tests))
+    if unmatched_test_runfile_env:
+        fail("unknown test_runfile_env targets: {}".format(unmatched_test_runfile_env))
 
 def _test_shard_count(test_shard_counts, test_name):
     shard_count = test_shard_counts.get(test_name)

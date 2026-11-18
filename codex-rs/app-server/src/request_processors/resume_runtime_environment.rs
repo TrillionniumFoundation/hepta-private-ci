@@ -5,12 +5,19 @@ use codex_core::config::ConfigOverrides;
 use codex_protocol::models::ActivePermissionProfile;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::TurnContextEnvironmentItem;
 use codex_rollout::RolloutItem;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-type RuntimeEnvironment = (AbsolutePathBuf, Vec<AbsolutePathBuf>);
+pub(super) enum RuntimeEnvironment {
+    Legacy(AbsolutePathBuf, Vec<AbsolutePathBuf>),
+    Native {
+        environments: Vec<TurnContextEnvironmentItem>,
+        rebuild_roots: bool,
+    },
+}
 
 /// Runtime context from a previous turn is reusable only under the permission
 /// selection and policy that produced it. Current configuration remains the
@@ -37,9 +44,19 @@ impl PersistedResumeRuntime {
             None
         } else {
             settings
-                .runtime_cwd
+                .runtime_environments
                 .clone()
-                .zip(settings.runtime_workspace_roots.clone())
+                .map(|environments| RuntimeEnvironment::Native {
+                    environments,
+                    rebuild_roots: false,
+                })
+                .or_else(|| {
+                    settings
+                        .runtime_cwd
+                        .clone()
+                        .zip(settings.runtime_workspace_roots.clone())
+                        .map(|(cwd, roots)| RuntimeEnvironment::Legacy(cwd, roots))
+                })
         };
         let restored_workspace_roots =
             !explicit_roots && settings.runtime_workspace_roots.is_some();
@@ -94,12 +111,21 @@ pub(super) async fn load_config_for_resume(
         // Never overwrite an explicit request. Only undo roots inherited from
         // the old turn, and ask the normal loader to recompute current profile
         // defaults and constraints instead of editing its resolved permissions.
-        runtime.environment = None;
+        if matches!(
+            runtime.environment.as_ref(),
+            Some(RuntimeEnvironment::Legacy(..))
+        ) {
+            runtime.environment = None;
+        }
         if runtime.restored_workspace_roots {
             typesafe_overrides.workspace_roots = None;
             config = manager
                 .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
                 .await?;
+        }
+        if let Some(RuntimeEnvironment::Native { rebuild_roots, .. }) = runtime.environment.as_mut()
+        {
+            *rebuild_roots = true;
         }
     }
     Ok((

@@ -9,6 +9,7 @@ async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result
     let home = unique_temp_dir();
     std::fs::create_dir(&home)?;
     std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
+    let home = home.canonicalize()?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
     let source = config.open_durable_evidence_pool(&path).await?;
@@ -48,6 +49,7 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
     let home = unique_temp_dir();
     std::fs::create_dir(&home)?;
     std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
+    let home = home.canonicalize()?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
     let source = config.open_durable_evidence_pool(&path).await?;
