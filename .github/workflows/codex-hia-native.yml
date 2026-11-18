@@ -32,6 +32,7 @@ on:
       - scripts/format.py
       - scripts/test_hepta_format_scope.py
       - patches/rama-dns_hermetic_toolchain.patch
+      - scripts/ci/check_hia_source.py
       - .github/workflows/codex-hia-native.yml
   pull_request:
     paths:
@@ -64,6 +65,7 @@ on:
       - scripts/format.py
       - scripts/test_hepta_format_scope.py
       - patches/rama-dns_hermetic_toolchain.patch
+      - scripts/ci/check_hia_source.py
       - .github/workflows/codex-hia-native.yml
   workflow_dispatch:
 
@@ -126,6 +128,14 @@ jobs:
           set -euo pipefail
           python3 -B codex/scripts/test_hepta_format_scope.py \
             2>&1 | tee "$RUNNER_TEMP/hia-formatter-scope.log"
+
+      - name: Preflight pinned HIA lexical SSA and result arity
+        run: |
+          set -euo pipefail
+          python3 -B codex/scripts/ci/check_hia_source.py --self-test
+          python3 -B codex/scripts/ci/check_hia_source.py \
+            --toolchain codex/hia/toolchain.json \
+            2>&1 | tee "$RUNNER_TEMP/hia-source-preflight.json"
 
       - name: Rebuild compiler generations and native components
         id: build
@@ -1810,6 +1820,14 @@ jobs:
           set -euo pipefail
           python3 -B codex/scripts/test_hepta_format_scope.py \
             2>&1 | tee "$RUNNER_TEMP/hia-formatter-scope.log"
+
+      - name: Preflight pinned HIA lexical SSA and result arity
+        run: |
+          set -euo pipefail
+          python3 -B codex/scripts/ci/check_hia_source.py --self-test
+          python3 -B codex/scripts/ci/check_hia_source.py \
+            --toolchain codex/hia/toolchain.json \
+            2>&1 | tee "$RUNNER_TEMP/hia-source-preflight.json"
 
       - name: Rebuild compiler generations and native components
         id: build
