@@ -55,3 +55,7 @@ The agent-identity path continues through protocol; the selected cloud-config wi
 - [INDEX.json](retained/INDEX.json) SHA-256: `2d3a17da3b008ce94ed547185065de93b0a978a4693e6950ff1a8614da87523b`.
 
 Every archived member was reread and matched to the index. The size-policy exception binds this exact archive SHA and path; the global 512000-byte limit remains unchanged.
+
+## Repository policy gate
+
+The [first-head receipt](policy/first-evidence-head/FIRST_RESULT.json) records all seven original policy tests and the actual base-to-evidence changed-blob check with exit 0. Original outputs and stages are retained beside it. Only exact archive bytes are excepted; no path-wide exception was added. The metadata-only final head receives another actual changed-blob check before publication, with no repeat native test execution.
