@@ -1,0 +1,69 @@
+name: Hepta lost-reply timeout qualification
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-lost-reply-timeout.yml"
+      - "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-lost-reply-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: lost-reply
+      - name: Repeat original lost-reply and reopened conflict assertions
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          TARGET: ${{ matrix.target }}
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          evidence="$RUNNER_TEMP/hepta-lost-reply"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          wrapper=()
+          platform=()
+          if [[ "$TARGET" == x86_64-pc-windows-msvc ]]; then
+            wrapper+=(--windows-msvc-host-platform --remote-download-toplevel)
+            platform+=(--platforms=//:windows_x86_64_msvc)
+          fi
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs "${wrapper[@]}" -- \
+            test "${platform[@]}" --test_output=all --nocache_test_results --runs_per_test=5 \
+            --test_filter=cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch \
+            -- //codex-rs/hepta-neuron:hepta-neuron-unit-tests \
+            2>&1 | tee "$evidence/original-test.log"
+          grep -F 'test cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch ... ok' "$evidence/original-test.log"
+      - uses: ./.github/actions/check-clean-worktree
+        if: always() && !cancelled()
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always() && !cancelled()
+        with:
+          name: hepta-lost-reply-${{ matrix.target }}-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-lost-reply
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
