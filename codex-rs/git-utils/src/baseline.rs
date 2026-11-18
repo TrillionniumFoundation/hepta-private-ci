@@ -10,6 +10,10 @@ use std::ffi::OsStr;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::SystemTimeError;
+use std::time::UNIX_EPOCH;
 use tokio::task;
 
 use crate::operations::run_git_for_status;
@@ -139,7 +143,7 @@ fn commit_current_tree(repo: &gix::Repository, message: &str) -> anyhow::Result<
         .workdir()
         .context("git baseline repo must have a worktree")?;
     let tree_id = write_tree(repo, root)?;
-    let signature = codex_signature();
+    let signature = codex_signature(SystemTime::now().duration_since(UNIX_EPOCH));
     let mut time = gix::date::parse::TimeBuf::default();
     let signature_ref = signature.to_ref(&mut time);
     repo.commit_as(
@@ -159,14 +163,24 @@ fn write_index_from_head(root: &Path) -> anyhow::Result<()> {
         .context("write git baseline index from HEAD")
 }
 
-fn codex_signature() -> gix::actor::Signature {
+fn codex_signature(elapsed: Result<Duration, SystemTimeError>) -> gix::actor::Signature {
+    // Preserve chrono 0.4.43 Utc::now(): pre-epoch clocks fail rather than
+    // being clamped or converted to negative Git timestamps.
+    let elapsed = match elapsed {
+        Ok(elapsed) => elapsed,
+        Err(error) => panic!("system time before Unix epoch: {error:?}"),
+    };
+    let seconds = elapsed.as_secs() as i64;
+    // Preserve the old DateTime UTC range, including its seconds cast.
+    // No calendar, timezone, or new dependency is needed for whole Unix seconds.
+    assert!(
+        (-8_334_601_228_800..=8_210_266_876_799).contains(&seconds),
+        "system time outside timestamp range"
+    );
     gix::actor::Signature {
         name: "Codex".into(),
         email: "noreply@openai.com".into(),
-        time: gix::date::Time {
-            seconds: chrono::Utc::now().timestamp(),
-            offset: 0,
-        },
+        time: gix::date::Time { seconds, offset: 0 },
     }
 }
 
@@ -532,6 +546,60 @@ mod tests {
     use std::fs;
     use std::process::Command;
     use tempfile::TempDir;
+
+    #[test]
+    fn signature_preserves_whole_unix_seconds_and_actor() {
+        for (seconds, nanos) in [
+            (0, 0),
+            (0, 999_999_999),
+            (1, 0),
+            (1, 999_999_999),
+            (2_147_483_648, 999_999_999),
+            (8_210_266_876_799, 999_999_999),
+        ] {
+            let signature = codex_signature(Ok(Duration::new(seconds, nanos)));
+            assert_eq!(
+                signature,
+                gix::actor::Signature {
+                    name: "Codex".into(),
+                    email: "noreply@openai.com".into(),
+                    time: gix::date::Time {
+                        seconds: i64::try_from(seconds).expect("fixture fits i64"),
+                        offset: 0,
+                    },
+                }
+            );
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "system time before Unix epoch")]
+    fn signature_rejects_pre_epoch_clock() {
+        let before_epoch = UNIX_EPOCH - Duration::from_secs(1);
+        codex_signature(before_epoch.duration_since(UNIX_EPOCH));
+    }
+
+    #[test]
+    #[should_panic(expected = "system time outside timestamp range")]
+    fn signature_rejects_old_calendar_overflow() {
+        codex_signature(Ok(Duration::from_secs(8_210_266_876_800)));
+    }
+
+    #[test]
+    fn signature_preserves_old_seconds_cast() {
+        let signature = codex_signature(Ok(Duration::from_secs(u64::MAX)));
+        assert_eq!(
+            signature,
+            gix::actor::Signature {
+                name: "Codex".into(),
+                email: "noreply@openai.com".into(),
+                time: gix::date::Time {
+                    seconds: -1,
+                    offset: 0,
+                },
+            }
+        );
+    }
 
     fn git_stdout(root: &Path, args: &[&str]) -> String {
         let output = Command::new("git")
