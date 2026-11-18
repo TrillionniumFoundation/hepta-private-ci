@@ -163,6 +163,9 @@ def main():
         "output",
     ):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument(
+        "--study", choices=("fixed_graphs", "repair_retrieval"), default="fixed_graphs"
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     directory = args.output.resolve()
@@ -211,6 +214,12 @@ def main():
         ),
         ("F_one_call", Graph("F_one_call", ("F", "T")), {"drop_cell": "T"}),
     ]
+    study, augmented = None, {}
+    if args.study == "repair_retrieval":
+        from cell_experiments.circuit_repair_study_v4 import prepare
+
+        arms, augmented, study = prepare(records, root)
+        write_new(directory / "RETRIEVAL.json", study)
     budget = Budget(max_output_tokens_per_call=384, max_relay_bytes=2048)
     launch = {
         "command": command,
@@ -219,7 +228,11 @@ def main():
         "source_inventory": inventory,
         "started_at_ns": time.time_ns(),
         "automatic_retry": False,
-        "planned_model_calls": 60,
+        "planned_model_calls": len(records)
+        * sum(
+            sum(cell != intervention.get("drop_cell") for cell in graph.path)
+            for _, graph, intervention in arms
+        ),
     }
     write_new(directory / "LAUNCH.json", launch)
     client, outcomes, started = None, [], time.perf_counter()
@@ -263,6 +276,11 @@ def main():
             "scientific_confirmation_qualified": False,
             "native_owner_adoption": False,
         }
+        if study is not None:
+            freeze["study_extension"] = {
+                "name": args.study,
+                "receipt_digest": data.digest(study),
+            }
         write_new(directory / "FREEZE.json", freeze)
 
         def generate(cell, request, call_dir):
@@ -274,7 +292,9 @@ def main():
             for name, graph, intervention in arms:
                 location = directory / panel / record["record_id"] / name
                 result = run_graph(
-                    record,
+                    augmented[(panel, record["record_id"])]
+                    if name.endswith("_retrieval")
+                    else record,
                     graph,
                     cells,
                     budget,
@@ -337,6 +357,16 @@ def main():
             "external_teacher_count_added": 0,
             "new_users": 0,
         }
+        if study is not None:
+            report["study_extension"] = {
+                "name": args.study,
+                "receipt_digest": data.digest(study),
+                "additional_reference_verifier_calls": study[
+                    "reference_verifier_calls"
+                ],
+                "reference_preparation_wall_seconds": study["wall_seconds"],
+                "reference_preparation_parent_cpu_seconds": study["parent_cpu_seconds"],
+            }
         write_new(directory / "RESULT.json", report)
         print(
             data.canonical(
