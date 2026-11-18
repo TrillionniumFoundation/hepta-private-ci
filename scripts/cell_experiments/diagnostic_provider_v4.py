@@ -62,10 +62,31 @@ def main():
                 visible_request,
             )
             from cell_experiments.online_v4.shared_pool_v4 import SharedAdapterPool
+            import hepta_cells
+            from hepta_cells import semantic as cell_semantic
+
+            support = {
+                "hepta_cells/__init__.py": Path(hepta_cells.__file__).resolve(
+                    strict=True
+                ),
+                "hepta_cells/semantic.py": Path(cell_semantic.__file__).resolve(
+                    strict=True
+                ),
+            }
+            if any(
+                path != (core / name).resolve(strict=True)
+                for name, path in support.items()
+            ):
+                raise ValueError(
+                    "actual Cell support imports differ from retained core"
+                )
 
             def inventory():
                 return {
                     "legacy": legacy.sources(),
+                    "cell_support": {
+                        name: file_hash(path) for name, path in support.items()
+                    },
                     "online_v4": {
                         path.name: file_hash(path)
                         for path in sorted((modules / "online_v4").glob("*.py"))
