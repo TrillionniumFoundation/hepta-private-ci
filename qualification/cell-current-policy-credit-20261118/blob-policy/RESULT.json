@@ -1,0 +1,99 @@
+{
+  "archive": "qualification/cell-current-policy-credit-20261118/complete-originals.tar.gz",
+  "archive_bytes": 4511826,
+  "archive_sha256": "95beda262721a747aeb3180b7d7f37a245735870b3ee0c8c58e80e45857b9bb6",
+  "base": "462c651d349663d86f6ec88ed5d9eed453f218c0",
+  "checker_git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+  "exact_SHA256_path_pin_only": true,
+  "head": "14e242ed35246dc130a44861ccb3f543c457fd4d",
+  "max_blob_bytes": 512000,
+  "policy_tests": 7,
+  "source_and_outputs_unchanged": true,
+  "stages": [
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--depth=1",
+        "--filter=blob:none",
+        "origin",
+        "14e242ed35246dc130a44861ccb3f543c457fd4d",
+        "462c651d349663d86f6ec88ed5d9eed453f218c0"
+      ],
+      "exit_code": 0,
+      "label": "fetch",
+      "wall_seconds": 7.383752272056881
+    },
+    {
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E2/source",
+        "14e242ed35246dc130a44861ccb3f543c457fd4d"
+      ],
+      "exit_code": 0,
+      "label": "worktree",
+      "wall_seconds": 0.016709420015104115
+    },
+    {
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "label": "sparse",
+      "wall_seconds": 0.0045212520053610206
+    },
+    {
+      "command": [
+        "git",
+        "read-tree",
+        "-mu",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "materialize",
+      "wall_seconds": 7.3847627739887685
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_blob_size_policy.py"
+      ],
+      "exit_code": 0,
+      "label": "policy-tests",
+      "wall_seconds": 1.9703497029840946
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "462c651d349663d86f6ec88ed5d9eed453f218c0",
+        "--head",
+        "14e242ed35246dc130a44861ccb3f543c457fd4d",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit_code": 0,
+      "label": "changed-blob-gate",
+      "wall_seconds": 0.36558330297702923
+    }
+  ],
+  "status": "PASS"
+}
