@@ -91,7 +91,7 @@ async fn reject_material_page_fault(fault: &'static str) -> anyhow::Result<()> {
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .ok_or_else(|| anyhow::anyhow!("original evaluation host is absent"))?
         .fixture_model_material_commands(Some(evaluation.clone()), fault, /*pause*/ None)?;
     assert!(
         client.fixture_read_current_at(fixture.at).await.is_err(),
@@ -147,7 +147,7 @@ async fn reject_completed_material_regression(
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .ok_or_else(|| anyhow::anyhow!("original evaluation host is absent"))?
         .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;
     let material = client.fixture_read_current_at(fixture.at).await?;
     assert_eq!(material.original_evaluation(), &evaluation);
@@ -169,7 +169,7 @@ async fn reject_completed_material_regression(
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .ok_or_else(|| anyhow::anyhow!("original evaluation host is absent"))?
         .fixture_model_material_commands(
             Some(evaluation.clone()),
             cold_fault,
