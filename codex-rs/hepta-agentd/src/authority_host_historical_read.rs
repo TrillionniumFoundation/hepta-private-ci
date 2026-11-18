@@ -342,7 +342,12 @@ impl HistoricalTaskReadRuntime {
                                 payload: RootHistoricalLearningTrustV1::read_original_payload(&self.learning_trust, service, &initial, &ledger).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_payload\n"); })?,
                             })
                         }.map_err(io::Error::other).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.reply_encode\n"); })?;
-                        if reply.is_empty() || reply.len() > WIRE_BOUND {
+                        if !trust_requested && request_id == 1 {
+                            let _ = writeln!(io::stderr(),
+                                "root_measure=historical.task_reply bytes={} bound={}",
+                                reply.len(), operation.response_bound());
+                        }
+                        if reply.is_empty() || reply.len() > operation.response_bound() {
                             return Err(io::Error::other(
                                 "complete historical reply exceeds bound",
                             )).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.reply_bound\n"); });

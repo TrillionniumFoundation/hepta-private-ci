@@ -24,6 +24,19 @@ pub(crate) const SOCKET: &str = "historical-task-read-v1.sock";
 pub(crate) const MAX_READS: u64 = 64;
 pub(crate) const WIRE_BOUND: usize = 16_384;
 
+// The Task reply contains both independently bounded canonical DTOs. Keep the
+// original request/bootstrap and other-operation limits. This is a paired
+// Root/daemon capacity revision: an old v1 reader still rejects replies above
+// 16 KiB; the wire shape, purpose and digest domains are unchanged.
+const TASK_RESPONSE_ENVELOPE_BOUND: usize =
+    br#"{"schema":1,"purpose":"","request_id":,"profile":"","data_cut":"","ledger":,"publication":}"#.len()
+        + PURPOSE.len()
+        + (MAX_READS.ilog10() as usize + 1)
+        + 2 * 64; // Canonical nonzero Digest32 strings: profile and data_cut.
+pub(crate) const TASK_RESPONSE_BOUND: usize = RootHistoricalLedgerReadDataV1::JSON_BOUND
+    + RootHistoricalTaskPublicationDataV1::JSON_BOUND
+    + TASK_RESPONSE_ENVELOPE_BOUND;
+
 #[path = "root_post_a_learning_protocol.rs"]
 mod post_a;
 pub(crate) use post_a::POST_A_PURPOSE;
@@ -61,6 +74,17 @@ impl HistoricalReadOperationV1 {
             CAPTURE_COMPLETED_PURPOSE => Ok(Self::CaptureCompletedHistory),
             READ_COMPLETED_PURPOSE => Ok(Self::ReadCompletedHistory),
             _ => Err(io::Error::other("unknown original historical operation")),
+        }
+    }
+
+    pub(crate) fn response_bound(self) -> usize {
+        match self {
+            Self::Task => TASK_RESPONSE_BOUND,
+            Self::LearningTrust
+            | Self::PostAFrozenLearning
+            | Self::AcceptCompletedLearning
+            | Self::CaptureCompletedHistory
+            | Self::ReadCompletedHistory => WIRE_BOUND,
         }
     }
 
@@ -184,7 +208,10 @@ pub(crate) fn require_complete_reply(
     request_id: u64,
     profile: &str,
 ) -> io::Result<HistoricalTaskReadDataV1> {
-    if bytes.is_empty() || bytes.len() > WIRE_BOUND || !(1..=MAX_READS).contains(&request_id) {
+    if bytes.is_empty()
+        || bytes.len() > TASK_RESPONSE_BOUND
+        || !(1..=MAX_READS).contains(&request_id)
+    {
         return Err(io::Error::other(
             "historical read response exceeds original bounds",
         ));

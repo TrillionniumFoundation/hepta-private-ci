@@ -177,7 +177,9 @@ impl RootHistoricalTaskReadClientV1 {
                 profile: self.profile.clone(),
             })
             .map_err(io::Error::other)?;
-            let bytes = lane.stream.exchange(&request)?;
+            let bytes = lane
+                .stream
+                .exchange_with_response_bound(&request, operation.response_bound())?;
             let data = match operation {
                 HistoricalReadOperationV1::Task => Reply::Task(Box::new(require_complete_reply(
                     &bytes,

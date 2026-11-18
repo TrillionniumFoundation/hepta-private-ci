@@ -23,6 +23,7 @@ use crate::authority_host_runtime::validate_runtime_lanes;
 use crate::authority_host_runtime::verify_pinned_process;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadRequestV1;
 use crate::root_historical_task_read_protocol::MAX_READS;
+use crate::root_historical_task_read_protocol::TASK_RESPONSE_BOUND;
 
 pub(in super::super) struct BoundHistoricalTaskRead {
     runtime: HistoricalTaskReadRuntime,
@@ -149,7 +150,7 @@ pub(in super::super) fn serve_optional(
                                     io::Error::other("original historical session expired")
                                 })?,
                             request_bound: WIRE_BOUND,
-                            response_bound: WIRE_BOUND,
+                            response_bound: TASK_RESPONSE_BOUND,
                         };
                         let mut channel = HostAuthorityPeerChannel::from_stream(
                             stream,

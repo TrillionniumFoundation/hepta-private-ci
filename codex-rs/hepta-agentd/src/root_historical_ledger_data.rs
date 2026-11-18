@@ -95,6 +95,9 @@ pub(crate) struct RootHistoricalLedgerReadDataV1 {
 }
 
 impl RootHistoricalLedgerReadDataV1 {
+    /// Existing complete canonical Ledger DTO budget, independent of framing.
+    pub(crate) const JSON_BOUND: usize = 12 * 1024;
+
     pub(crate) fn validate_data(&self) -> io::Result<()> {
         if self.schema != 1
             || self.purpose != LEDGER_READ_DATA_PURPOSE
@@ -204,7 +207,7 @@ impl RootHistoricalLedgerReadDataV1 {
                 ));
             }
         }
-        if serde_json::to_vec(self).map_err(io::Error::other)?.len() > 12 * 1024 {
+        if serde_json::to_vec(self).map_err(io::Error::other)?.len() > Self::JSON_BOUND {
             return Err(io::Error::other(
                 "original Ledger data exceeds bounded lane",
             ));
@@ -238,7 +241,7 @@ impl RootHistoricalLedgerReadDataV1 {
 
     fn decode_image(&self) -> io::Result<LedgerSnapshot> {
         // This bound also protects callers of the private decoder. The whole
-        // DTO and the enclosing reply keep their separate 12/16 KiB limits.
+        // DTO keeps its 12 KiB limit; the complete Task reply composes both DTO caps.
         if self.ledger_image_bytes.len() > 12 * 1024 {
             return Err(io::Error::other("original Ledger image exceeds bound"));
         }
