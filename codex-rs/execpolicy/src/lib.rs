@@ -6,6 +6,8 @@ mod executable_name;
 #[cfg(feature = "hia-native")]
 mod hia_native_allowed_prefixes;
 #[cfg(feature = "hia-native")]
+mod hia_native_example_validation_step;
+#[cfg(feature = "hia-native")]
 mod hia_native_network_domains;
 #[cfg(feature = "hia-native")]
 mod hia_native_network_host;
