@@ -1,0 +1,67 @@
+{
+  "execution_source": "0d1e9d9e24f2f1d569585adb3a6203a9114f850d",
+  "protocol_sha256": "b2894184e497663f52fc01cafe7b1d86e32c247248d339ded8b1ad75f62a5e1e",
+  "cases_sha256": "6b759706ee2970d824c864c1a6d7dc947e1cb75b2622af3dda6a60f11b28b1c9",
+  "by_arm": {
+    "NoUpdate": {
+      "failure": {
+        "cases": 6,
+        "successful": 2
+      },
+      "success": {
+        "cases": 5,
+        "successful": 2
+      }
+    },
+    "all_observed": {
+      "failure": {
+        "cases": 6,
+        "successful": 5
+      },
+      "success": {
+        "cases": 5,
+        "successful": 2
+      }
+    },
+    "verified_credit": {
+      "failure": {
+        "cases": 6,
+        "successful": 5
+      },
+      "success": {
+        "cases": 5,
+        "successful": 5
+      }
+    }
+  },
+  "totals": {
+    "business_executions": 26,
+    "format_rejections": 7,
+    "generation_wall_seconds": 210.31126516405493,
+    "hit_output_limit": 0,
+    "input_tokens": 17484,
+    "model_calls": 33,
+    "new_training_updates": 0,
+    "observed_subject_calls": 117,
+    "output_tokens": 2941,
+    "verifier_calls": 33,
+    "verifier_wall_seconds": 5.054334706
+  },
+  "model_digests": {
+    "NoUpdate": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+    "all_observed": "0585075a5277f7e8e5a7b7ad3f42bc718f17253f1dbf6c2b03e8248cfc1c1562",
+    "verified_credit": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1"
+  },
+  "manifest_sha256": {
+    "NoUpdate": "4a9c82ab237a5d902db378d1987170c1608bdef40c5603731718f4202fff6c5d",
+    "all_observed": "01a5dece93e07144c7f853f8e33e15f338b7a410f3540389b991783f00809c7f",
+    "verified_credit": "88f93eaca8b88eeec3ff426eb26d2ee472de7d1cd2c9e3388dea6750c1391005"
+  },
+  "archive_sha256": "62ff592e727968b2e2df035d6b4a4bd2141037de6774d1e37a0407b08e507858",
+  "index_sha256": "f5a9cb70d0db4887eff1fd10ee0b3610e7bb2637fe5bc8f04f49095c4b7cfbac",
+  "readout_sha256": "ec65db0622d391963edd3d3f5332a65ef6a6fd8697a4f2d582c49893505407be",
+  "old_108_decision_changed": false,
+  "research_NoUpdate_retained": true,
+  "scientific_confirmation_qualified": false,
+  "native_adoption": false
+}

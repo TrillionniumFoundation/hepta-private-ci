@@ -1,0 +1,211 @@
+{
+  "paired_cases": [
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-counter/failure",
+      "kind": "failure",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_passed",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": true,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-mse/failure",
+      "kind": "failure",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_passed",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": true,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-readout-score/failure",
+      "kind": "failure",
+      "reason_by_mode": {
+        "NoUpdate": "invalid_test_patch",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-clipped-metrics/failure",
+      "kind": "failure",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_failed",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-pair-map/failure",
+      "kind": "failure",
+      "reason_by_mode": {
+        "NoUpdate": "invalid_test_patch",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": false,
+      "case_id": "A-colon-repair/failure",
+      "kind": "failure",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_failed",
+        "all_observed": "business_tests_failed",
+        "verified_credit": "invalid_test_patch"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": false,
+        "verified_credit": false
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-counter/success",
+      "kind": "success",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_passed",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": true,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": true,
+      "case_id": "A-mse/success",
+      "kind": "success",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_passed",
+        "all_observed": "business_tests_passed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": true,
+        "all_observed": true,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": false,
+      "case_id": "A-readout-score/success",
+      "kind": "success",
+      "reason_by_mode": {
+        "NoUpdate": "invalid_test_patch",
+        "all_observed": "invalid_test_patch",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": false,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": false,
+      "case_id": "A-clipped-metrics/success",
+      "kind": "success",
+      "reason_by_mode": {
+        "NoUpdate": "business_tests_failed",
+        "all_observed": "business_tests_failed",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": false,
+        "verified_credit": true
+      }
+    },
+    {
+      "all_observed_and_credit_same_answer_bytes": false,
+      "case_id": "A-pair-map/success",
+      "kind": "success",
+      "reason_by_mode": {
+        "NoUpdate": "invalid_test_patch",
+        "all_observed": "invalid_test_patch",
+        "verified_credit": "business_tests_passed"
+      },
+      "success_by_mode": {
+        "NoUpdate": false,
+        "all_observed": false,
+        "verified_credit": true
+      }
+    }
+  ],
+  "paired_history_answer_identity": [
+    {
+      "exact_answer_identity_across_failure_and_success_history": {
+        "NoUpdate": true,
+        "all_observed": true,
+        "verified_credit": true
+      },
+      "task": "A-counter"
+    },
+    {
+      "exact_answer_identity_across_failure_and_success_history": {
+        "NoUpdate": true,
+        "all_observed": true,
+        "verified_credit": true
+      },
+      "task": "A-mse"
+    },
+    {
+      "exact_answer_identity_across_failure_and_success_history": {
+        "NoUpdate": true,
+        "all_observed": false,
+        "verified_credit": true
+      },
+      "task": "A-readout-score"
+    },
+    {
+      "exact_answer_identity_across_failure_and_success_history": {
+        "NoUpdate": false,
+        "all_observed": false,
+        "verified_credit": true
+      },
+      "task": "A-clipped-metrics"
+    },
+    {
+      "exact_answer_identity_across_failure_and_success_history": {
+        "NoUpdate": false,
+        "all_observed": false,
+        "verified_credit": true
+      },
+      "task": "A-pair-map"
+    }
+  ]
+}
