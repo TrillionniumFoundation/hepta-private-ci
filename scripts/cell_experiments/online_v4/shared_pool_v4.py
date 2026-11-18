@@ -140,6 +140,10 @@ class SharedAdapterPool:
         started, cpu = time.perf_counter(), time.process_time()
         root = Path(artifact_root)
         entries, base = verified_entries(manifests, root)
+        self._initialize(entries, base, root, started, cpu)
+
+    def _initialize(self, entries, base, root, started, cpu):
+        """Load only entries that a public constructor has fully admitted."""
         runtime = base["runtime"]
         require(
             runtime["device"].startswith("cuda:")
@@ -163,7 +167,7 @@ class SharedAdapterPool:
                 "wall_seconds": time.perf_counter() - started,
                 "cpu_seconds": time.process_time() - cpu,
                 "base_load_count": 1,
-                "adapter_load_count": 3,
+                "adapter_load_count": len(entries),
                 "scope": "verification and one shared pool load",
                 "monetary_cost": None,
                 "energy_joules": None,
