@@ -1,8 +1,15 @@
 # Four source-separated upstream repair materials for prospective B3
 
-Status: acquisition and original replay are being prepared. This commit does
-not contain a model result, learning gain, native adoption or authenticated
-independent-controller qualification.
+Status: original acquisition is complete; the source-frozen before/after replay
+is next. Acquisition verified 110 distinct Git blobs / 1,636,560 bytes from four
+lineages in 38.005129526 seconds and created a separate environment from the
+original verified wheels. It performed zero tests, model calls or training
+updates. The lost first RPC acknowledgement was recovered with the identical
+idempotency key; the server returned reused=true for original job
+`1a1efde4e0f-ffbe-643`, which actually completed with exit zero.
+
+This commit does not contain a model result, learning gain, native adoption or
+authenticated independent-controller qualification.
 
 The fixed selection uses pypa/packaging #1531, python-semver/python-semver #489,
 mahmoud/boltons #475 and python-hyper/h11 #181. They are four project and repair

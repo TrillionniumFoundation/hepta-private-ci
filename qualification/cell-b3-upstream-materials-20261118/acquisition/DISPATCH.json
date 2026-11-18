@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.b3.acquisition_dispatch_observation.v1",
+  "first_rpc": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.shell_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "recovery_same_idempotency_key": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"python3 -B /home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/inputs/acquire.py --payload /home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/inputs/ACQUISITION_PAYLOAD.json --root /home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material --source-commit 3b5aac3996e3773ebf057e5567a3cae5f4558600\"\n    ],\n    \"created_unix_ms\": 1795025686031,\n    \"cwd\": \"/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b\",\n    \"env_keys\": [],\n    \"executable\": \"/bin/sh\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1efde4e0f-ffbe-643\",\n    \"idempotency_key\": \"root-b3-acquire-3b5aac-2e9b-001\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efde4e0f-ffbe-643\",\n    \"request_digest\": \"058c9b81fb35010dfec535ac3ba62358080d5b77185bb3063531ea6d72a10a00\",\n    \"request_fingerprint\": 399865449496772877,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1efde4e0f-ffbe-643\"\n  },\n  \"launch\": null,\n  \"retried_launch\": false,\n  \"reused\": true,\n  \"status\": {\n    \"at_unix_ms\": 1795025733883,\n    \"automatic_retry\": false,\n    \"cancelled\": false,\n    \"exit_code\": 0,\n    \"job_id\": \"1a1efde4e0f-ffbe-643\",\n    \"launch_nonce\": \"254325af2387d230befac1e666f36585\",\n    \"log_bytes\": {\n      \"stderr\": {\n        \"seen\": 0,\n        \"stored\": 0\n      },\n      \"stdout\": {\n        \"seen\": 235,\n        \"stored\": 235\n      }\n    },\n    \"log_errors\": {\n      \"stderr\": null,\n      \"stdout\": null\n    },\n    \"log_synced\": {\n      \"stderr\": true,\n      \"stdout\": true\n    },\n    \"log_truncated\": {\n      \"stderr\": false,\n      \"stdout\": false\n    },\n    \"output_complete\": true,\n    \"output_durable\": true,\n    \"state\": \"succeeded\",\n    \"terminal_publication_confirmed\": true,\n    \"terminal_publication_protocol\": 1,\n    \"timed_out\": false\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "original_status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1795025733883,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1efde4e0f-ffbe-643\",\n  \"launch_nonce\": \"254325af2387d230befac1e666f36585\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 235,\n      \"stored\": 235\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "duplicated_execution": false,
+  "explanation": "The first acknowledgement timed out. Repeating exactly the original start arguments and key returned reused=true and the same original durable job; no new key or second acquisition was used."
+}
