@@ -38,3 +38,23 @@ Both actual product binaries were rebuilt and pinned before execution. The autho
 The safe v7 archive is native-owner-v7-public-evidence.tar.xz (102,040 bytes, SHA-256 a0223d4b2063341b8dcd59661169fd7df9cf0fa731a9097a9e0d9e2dd59e4082). All 75 regular members were independently checked against its manifest before this publication. v7-SUMMARY.json, v7-MANIFEST.json, v7-ARCHIVE.json and v7-compiler-products.json provide readable result, source, binary and byte bindings. This evidence commit is a direct child of the actual tested source and makes no production/test source changes.
 
 Wall-clock stages, failed execution and original stdout/stderr are retained. CPU/GPU/energy/API/monetary costs remain unknown where unmeasured. Full E6 independent adoption, fresh D, FinalUse and settlement qualification remain unestablished; the existing cold profile only checks retained C.
+
+## v8: bounded completed-learning refusal identity
+
+The exact tested source is f7e58512021c7481fa51809bb349f63d93bb1d6c, tree ef1ef15d5f2ef5dadefb5bdd0d73c255a7d0678f, direct child of evidence-only cd8cb2dfdddd6a52c945bb4fa668907de434540c. Only the CompletedLearning refusal slot now uses the existing domain-separated digest helper over the original fixed-width scope32 and initial32. The resulting owner key is 104 bytes; the former canonical key was 169 bytes and the unchanged backend rejects keys above 128 before lock or persistence. The complete target and initial remain in the original record. The other five kinds retain their exact original keys. No marker is migrated, recreated or promoted.
+
+The actual ignored Root regression proves the old key cannot initialize state, the bounded key can initialize through the real backend, different initial values stay isolated, and a different target in the same scope cannot bypass the existing gate. A real child process reopens the persistent failed state and checks that its independent initial remains available. This component callback test does not certify full CompletedFiles, B, C, fresh D or adoption.
+
+| Exact selected stage | Actual outcome |
+|---|---|
+| root-completed-refusal-namespace | passed |
+| ordinary-whole-cold-no-update | retained failure |
+| ordinary-whole-cold-adopt | not attempted |
+
+Observed original Root error stages: root_stage=cli.serve. The original errors and all failed outputs remain in the raw archive. These stages are execution evidence; a stage label alone is not an assertion about an unobserved deeper cause.
+
+Both products were rebuilt and pinned at this exact source. The authority ELF was required to differ from v7, and an independent read-only hash/stat check confirmed the new completed-key domain inside the actual Root binary. The archive contains completed-owner-domain-elf-check.json and component-executable-bindings.json. The selected Root regression and original NoUpdate execute once with retries zero. The original Adopt cold case is attempted once only if the NoUpdate case passes. Earlier source gates are not inherited.
+
+The safe v8 archive is native-owner-v8-public-evidence.tar.xz (106,888 bytes, SHA-256 e2e8bf5a3f58884e78ff4c394a65b7bb50a213925e1a33dc34da1c8ec8e277de). Every one of its 88 regular members was checked against its manifest before this publication. v8-SUMMARY.json and v8-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
+
+All command timings and cost gaps are retained. CPU/GPU/energy/API/monetary business costs remain unknown when unmeasured; independent checker CPU time is not total execution cost. Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
