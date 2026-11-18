@@ -1,0 +1,81 @@
+{
+  "schema": "independent-cpu-eager-checkpoint-synthetic-readonly.v1",
+  "module_sha256": "81ad33310f7bb427d01d25fd4ff696d281e6c53f3bba24cbc80667df63316aaa",
+  "torch": "2.9.1+cu128",
+  "model_calls": 0,
+  "business_qualification": false,
+  "cases": [
+    {
+      "all_identical": true,
+      "dtype": "torch.float32",
+      "length": 7,
+      "max_abs_output_weights_qkv_gradient": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "all_identical": true,
+      "dtype": "torch.float32",
+      "length": 129,
+      "max_abs_output_weights_qkv_gradient": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "all_identical": true,
+      "dtype": "torch.float32",
+      "length": 257,
+      "max_abs_output_weights_qkv_gradient": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "all_identical": true,
+      "dtype": "torch.bfloat16",
+      "length": 7,
+      "max_abs_output_weights_qkv_gradient": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "all_identical": true,
+      "dtype": "torch.bfloat16",
+      "length": 129,
+      "max_abs_output_weights_qkv_gradient": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "all_identical": true,
+      "dtype": "torch.bfloat16",
+      "length": 257,
+      "max_abs_output_weights_qkv_gradient": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}
