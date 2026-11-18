@@ -23,6 +23,7 @@ from hepta_cells.component_types import (
     PendingExecution,
 )
 from hepta_cells.hia_component import HiaCellComponent
+from hepta_cells.joint_concurrency import wait_joint_phase
 from hepta_cells.lifecycle import CellOwner
 from hepta_cells.temporal import TemporalConfig, TemporalKernel
 from hepta_cells.temporal_component import TemporalComponent
@@ -294,7 +295,7 @@ def load_candidate(path):
     return value, hashlib.sha256(raw).hexdigest(), roots, bridge
 
 
-def execute(candidate_path, database, request):
+def execute(candidate_path, database, request, *, admission_directory=None):
     start = time.perf_counter_ns()
     if type(request) is not dict or set(request) != {
         "request_id",
@@ -303,6 +304,8 @@ def execute(candidate_path, database, request):
         "payload",
     }:
         raise ValueError("one exact bounded worker request required")
+    if admission_directory is not None and request["operation"] != "readback":
+        raise ValueError("qualification admission is restricted to original readback")
     value, candidate_hash, roots, native = load_candidate(candidate_path)
     model = value["models"][request["cell_id"]]
     kernel, _ = TemporalKernel.restore_checkpoint(
@@ -341,13 +344,26 @@ def execute(candidate_path, database, request):
                 total_work_units=value["total_work_units"],
             )
         operation = request["operation"]
+        if admission_directory is not None:
+            # A cold open may correctly reject concurrently changing retained
+            # bytes. Admit both owners before the qualification releases work.
+            wait_joint_phase(admission_directory, "ADMITTED")
         if operation == "step":
             result = owner.step(
                 partition, component, request["request_id"], request["payload"]
             )
         elif operation == "readback":
+
+            def readback(pending):
+                if admission_directory is not None:
+                    # Reconcile has already retained this readback attempt and
+                    # released its transaction. Require both attempts to exist
+                    # before either native continuation can finish.
+                    wait_joint_phase(admission_directory, "READBACK")
+                return component.readback(pending)
+
             result = owner.reconcile(
-                partition, component, request["request_id"], component.readback
+                partition, component, request["request_id"], readback
             )
         elif operation == "cancel":
             result = owner.request_cancel(partition, component, request["request_id"])
@@ -389,11 +405,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--database", required=True)
+    parser.add_argument(
+        "--admission-directory",
+        type=Path,
+        help="qualification-only two-process readback barrier; not an authority or recovery override",
+    )
     args = parser.parse_args()
     raw = sys.stdin.buffer.read(65537)
     if len(raw) > 65536:
         raise ValueError("worker request exceeds 65536 bytes")
-    result = execute(args.candidate, args.database, strict_json(raw))
+    result = execute(
+        args.candidate,
+        args.database,
+        strict_json(raw),
+        admission_directory=args.admission_directory,
+    )
     print(json.dumps(result, sort_keys=True, separators=(",", ":"), allow_nan=False))
     return 0 if result["status"] == "observed" else 3
 
