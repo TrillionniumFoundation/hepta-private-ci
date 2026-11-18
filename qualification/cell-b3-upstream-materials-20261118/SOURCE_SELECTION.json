@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.b3.source_selection.v1",
+  "created_at_utc": "2026-11-18 18:06:53 UTC",
+  "scope": "Four source-separated real Python repair tasks. Static source/test selection precedes local replay and all B3 model calls; upstream authors' claimed outcomes were visible during material screening.",
+  "projects": [
+    {
+      "project": "pypa/packaging",
+      "pr": 1531,
+      "before": "a00861f4cb12f5705a95e277862cdcd7387abfde",
+      "after": "5a7d3386d2777180a381eb947f21293124ce8df5",
+      "source": "src/packaging/_parser.py",
+      "target": "_try_parse_specifier_set",
+      "optional_constant": null,
+      "tests": "tests/test_requirements.py",
+      "nodeids": [
+        "TestRequirementParsing::test_nonempty_arbitrary_version"
+      ]
+    },
+    {
+      "project": "python-semver/python-semver",
+      "pr": 489,
+      "before": "1d515915d50b31f23fd1fb0f572ef608453e80e3",
+      "after": "37ae009c7cacab8f1a87157ca2b484b8e18a0a78",
+      "source": "src/semver/version.py",
+      "target": "Version.next_version",
+      "optional_constant": null,
+      "tests": "tests/test_bump.py",
+      "nodeids": [
+        "test_next_version_matches_literal_prerelease_token_family",
+        "test_next_version_rejects_invalid_prerelease_token",
+        "test_next_version_preserves_empty_token_semantics",
+        "test_next_version_ignores_token_for_main_parts"
+      ]
+    },
+    {
+      "project": "mahmoud/boltons",
+      "pr": 475,
+      "before": "1cdc0e9d36f3eb32608f3b34885717697643e9b8",
+      "after": "45a251181fba4c5a4ecc05e838da1c394e1ed0e4",
+      "source": "boltons/strutils.py",
+      "target": "iter_splitlines",
+      "optional_constant": "_line_ending_re",
+      "tests": "tests/test_strutils.py",
+      "nodeids": [
+        "test_iter_splitlines_unicode_line_endings",
+        "test_iter_splitlines_preserves_numbers_after_spaces",
+        "test_indent_unicode_line_endings"
+      ]
+    },
+    {
+      "project": "python-hyper/h11",
+      "pr": 181,
+      "before": "31e626c64e1e28db3cd73a6aa0ac057f1b915c18",
+      "after": "70a96bea8e55403e5d92db14c111432c6d7a8685",
+      "source": "h11/_headers.py",
+      "target": "normalize_and_validate",
+      "optional_constant": "CONTENT_LENGTH_MAX_DIGITS",
+      "tests": "h11/tests/test_headers.py",
+      "nodeids": [
+        "test_normalize_and_validate"
+      ]
+    }
+  ],
+  "selection_basis": "New project and organization lineages versus prior A/B/B2 and four current E5 training lineages; actual merged public repairs with original regression tests, retained permissive notices, small Python-only repair scope and executable offline replay. No student answer or model score was used.",
+  "screened_alternatives": [
+    {
+      "source": "python-semver/python-semver#516",
+      "decision": "not selected",
+      "reason": "Static diff requires several method/normalization changes and a new import; select the earlier single-method prerelease repair for this bounded patch interface."
+    },
+    {
+      "source": "python-semver/python-semver#485",
+      "decision": "examined, not selected",
+      "reason": "An older repair of the same next_version family; #489 is the later eligible selected lineage. Do not count both as independent sources."
+    },
+    {
+      "source": "mahmoud/boltons#513",
+      "decision": "not selected",
+      "reason": "Static diff spans write/seek methods in several stream classes. Use the distinct one-constant line-ending repair #475."
+    },
+    {
+      "source": "pypa/packaging#1548",
+      "decision": "title observed, not further inspected",
+      "reason": "Protocol selects requirement-parser behavior; no eligibility or replay result claimed."
+    }
+  ],
+  "data_separation": {
+    "trainer_agent": "e123_learning",
+    "trainer_has_been_told_project_names_only": true,
+    "root_has_seen_reference_fixes": true,
+    "will_release_actual_task_records_only_after_next_candidate_weights_are_frozen": true,
+    "shared_workspace_is_not_authenticated_custody": true,
+    "no_certified_future_publication_or_pretraining_clean_claim": true
+  },
+  "replay": {
+    "planned_original_children": 8,
+    "variants": [
+      "before",
+      "after"
+    ],
+    "per_test_timeout_seconds": 3,
+    "child_timeout_seconds": 120,
+    "original_tests_unchanged": true,
+    "full_repository_suite": false,
+    "no_new_model_calls": true,
+    "no_new_training_updates": true
+  },
+  "qualification": {
+    "independent_controller_authenticated": false,
+    "independent_gain": false,
+    "native_adoption": false,
+    "authenticated_user_count": 0
+  }
+}
