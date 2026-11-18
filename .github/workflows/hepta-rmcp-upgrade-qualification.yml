@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   qualify:
-    name: Resolve rmcp 3.9 locks and qualify real consumers
+    name: Qualify committed rmcp 3.9 graph and real consumers
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     environment:
@@ -36,7 +36,7 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
           cache-scope: rmcp-upgrade
-      - name: Generate and bind the real Cargo and Bazel lock postimages
+      - name: Verify committed Cargo and Bazel locks
         shell: bash
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
@@ -48,9 +48,8 @@ jobs:
           git rev-parse HEAD > "$evidence/source-head.txt"
           rustc -Vv > "$evidence/rustc.txt"
           cargo --version > "$evidence/cargo.txt"
-          cargo update --manifest-path codex-rs/Cargo.toml -p rmcp --precise 3.9.0 2>&1 | tee "$evidence/cargo-update.log"
+          cargo tree --locked --manifest-path codex-rs/Cargo.toml -p rmcp 2>&1 | tee "$evidence/cargo-update.log"
           cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
-          just bazel-lock-update 2>&1 | tee "$evidence/bazel-lock-update.log"
           cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
           just bazel-lock-check 2>&1 | tee "$evidence/bazel-lock-check.log"
           git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$evidence/locks.patch"
@@ -62,7 +61,7 @@ jobs:
           versions = [p["version"] for p in packages if p["name"] == "rmcp"]
           assert versions == ["3.9.0"], versions
           changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
-          assert set(changed) <= {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}, changed
+          assert not changed, changed
           postimages = {}
           for name in ["Cargo.lock", "MODULE.bazel.lock"]:
               data = (evidence / name).read_bytes()
@@ -70,9 +69,9 @@ jobs:
           (evidence / "source-and-locks.json").write_text(json.dumps({
               "source_head": os.environ["EXPECTED_HEAD"],
               "rmcp_versions": versions,
-              "generated_lock_postimages": postimages,
+              "committed_locks": postimages,
               "source_changes": changed,
-              "qualification_scope": "source head plus generated lock postimages; not yet committed locks",
+              "qualification_scope": "exact committed source head and unchanged committed locks",
           }, indent=2) + "\n")
           PY
       - name: Compile and clippy real MCP and product consumers
@@ -87,7 +86,7 @@ jobs:
             //codex-rs/core:core \
             //codex-rs/app-server:app-server \
             2>&1 | tee "$RUNNER_TEMP/hepta-rmcp-upgrade/compile.log"
-      - name: Run unchanged MCP client package tests
+      - name: Run MCP client tests with typed discovery errors
         shell: bash
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
