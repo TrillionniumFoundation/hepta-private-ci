@@ -15,7 +15,7 @@ workspace = true
 
 [features]
 # Only enabled by qualification dev-dependencies, never a default feature.
-qualification-control-snapshot = []
+qualification-control-snapshot = ["codex-hepta-infer-core/qualification-control-snapshot"]
 
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
