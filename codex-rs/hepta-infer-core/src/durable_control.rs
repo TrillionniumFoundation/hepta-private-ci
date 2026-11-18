@@ -1041,7 +1041,12 @@ mod snapshot_qualification_tests {
                 .as_nanos(),
         ));
         let mut owner = DurableInferenceControl::open(&path, 32).expect("owner");
-        assert!(owner.test_snapshot_bytes().expect("empty snapshot").is_empty());
+        assert!(
+            owner
+                .test_snapshot_bytes()
+                .expect("empty snapshot")
+                .is_empty()
+        );
         // The real Windows owner has append rights, not truncate rights.
         // Populate the oversized unit fixture through that same held handle.
         let block = [0_u8; 4096];
