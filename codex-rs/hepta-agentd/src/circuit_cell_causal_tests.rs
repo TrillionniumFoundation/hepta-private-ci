@@ -74,11 +74,14 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
         ),
         expected
     );
+    let original_path = store.path().to_path_buf();
     store.close().await;
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let root = checked(directory.path().canonicalize());
+    let layout = checked(HeptaFleetRoot::parse(root.join("fleet")))
         .layout()
         .agent(&fence().owner_agent_id);
     let reopened = checked(AutomationStore::open(&layout).await);
+    assert_eq!(reopened.path(), original_path.as_path());
     assert_eq!(
         checked(
             runtime
