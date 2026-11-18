@@ -80,8 +80,16 @@ async fn save_writes_signed_payload_and_loads_for_matching_identity() {
     let cache_file: CloudConfigBundleCacheFile =
         serde_json::from_slice(&std::fs::read(cache.path()).expect("read cache"))
             .expect("parse cache");
-    let cached_at = cache_file.signed_payload.cached_at.try_into_instant().expect("cached instant");
-    let expires_at = cache_file.signed_payload.expires_at.try_into_instant().expect("expiry instant");
+    let cached_at = cache_file
+        .signed_payload
+        .cached_at
+        .try_into_instant()
+        .expect("cached instant");
+    let expires_at = cache_file
+        .signed_payload
+        .expires_at
+        .try_into_instant()
+        .expect("expiry instant");
     assert!(expires_at <= cached_at + time::Duration::minutes(60));
     assert!(expires_at > cached_at);
     assert_eq!(
@@ -182,9 +190,9 @@ async fn load_rejects_expired_cache() {
     let codex_home = tempdir().expect("tempdir");
     let cache = create_test_cache(codex_home.path());
     let mut signed_payload = valid_signed_payload();
-    signed_payload.expires_at = CanonicalUtcTimestamp::from_instant(
-        OffsetDateTime::now_utc() - time::Duration::seconds(1),
-    ).expect("expiry time");
+    signed_payload.expires_at =
+        CanonicalUtcTimestamp::from_instant(OffsetDateTime::now_utc() - time::Duration::seconds(1))
+            .expect("expiry time");
     write_cache_file(&cache, &signed_cache_file(signed_payload));
 
     assert_eq!(

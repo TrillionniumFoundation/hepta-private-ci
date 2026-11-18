@@ -29,14 +29,15 @@ const LEGACY_FIXTURES: &[(&str, &str, &str)] = &[
         r#"{"version":1,"cached_at":"2099-01-31T23:59:60.123456789Z","expires_at":"2099-02-01T23:59:60.999999999Z","chatgpt_user_id":"user-12345","account_id":"account-12345","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
         "uFhTG2LAWh/nbxxUNWCBeTn/od/WtlfM2NsqFtW8nbE=",
     ),
- ];
+];
 
 #[tokio::test]
 async fn existing_signed_cache_keeps_canonical_time_bytes_and_authentication() {
     let codex_home = tempfile::tempdir().expect("temporary cache home");
-    let cache = CloudConfigBundleCache::new(
-        AbsolutePathBuf::resolve_path_against_base(codex_home.path(), "/"),
-    );
+    let cache = CloudConfigBundleCache::new(AbsolutePathBuf::resolve_path_against_base(
+        codex_home.path(),
+        "/",
+    ));
     for (input, canonical, signature) in LEGACY_FIXTURES {
         let payload: CloudConfigBundleCacheSignedPayload =
             serde_json::from_str(input).expect("old timestamp grammar");
@@ -50,14 +51,15 @@ async fn existing_signed_cache_keeps_canonical_time_bytes_and_authentication() {
         std::fs::write(
             cache.path(),
             serde_json::to_vec(&file).expect("serialize frozen cache"),
-        ).expect("write frozen cache");
+        )
+        .expect("write frozen cache");
         assert_eq!(
             cache.load(Some("user-12345"), Some("account-12345")).await,
             Ok(payload),
         );
         let mut tampered = file.signed_payload;
-        tampered.cached_at = CanonicalUtcTimestamp::parse_legacy("2098-01-01T00:00:00Z")
-            .expect("replacement time");
+        tampered.cached_at =
+            CanonicalUtcTimestamp::parse_legacy("2098-01-01T00:00:00Z").expect("replacement time");
         assert!(!verify_cache_signature(
             &cache_payload_bytes(&tampered).expect("tampered payload bytes"),
             signature,

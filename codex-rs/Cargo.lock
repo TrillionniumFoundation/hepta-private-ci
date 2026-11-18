@@ -2584,7 +2584,6 @@ name = "codex-cloud-config"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
- "chrono",
  "codex-agent-identity",
  "codex-backend-client",
  "codex-config",
@@ -2593,6 +2592,7 @@ dependencies = [
  "codex-login",
  "codex-otel",
  "codex-protocol",
+ "codex-utils-time",
  "hmac 0.12.1",
  "pretty_assertions",
  "serde",
@@ -2600,6 +2600,7 @@ dependencies = [
  "sha2 0.10.9",
  "tempfile",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tracing",
 ]
@@ -5688,6 +5689,16 @@ name = "codex-utils-template"
 version = "0.0.0"
 dependencies = [
  "pretty_assertions",
+]
+
+[[package]]
+name = "codex-utils-time"
+version = "0.0.0"
+dependencies = [
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "time",
 ]
 
 [[package]]
