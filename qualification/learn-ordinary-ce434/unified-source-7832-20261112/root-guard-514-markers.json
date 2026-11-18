@@ -1,0 +1,290 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+    "function": null,
+    "before": "OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage).await",
+    "after": "OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage)\n                    .await"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+    "function": null,
+    "before": "Box::pin(async { Err(Error::OwnerUnavailable(",
+    "after": "Box::pin(async {\n            Err(Error::OwnerUnavailable("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+    "function": "fn require_snapshot(",
+    "before": "snapshot.request != material.initial.request || snapshot.owners != material.initial.owners",
+    "after": "snapshot.request != material.initial.request\n        || snapshot.owners != material.initial.owners"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+    "function": "fn verify_receipt(",
+    "before": "material.verifier.verify(",
+    "after": "material\n        .verifier\n        .verify("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+    "function": "fn bind_original_stage_channel(",
+    "before": "channel: Mutex::new(Some(Channel { peer, next_request_id: 1, execution_requested }))",
+    "after": "channel: Mutex::new(Some(Channel {\n                peer,\n                next_request_id: 1,\n                execution_requested,\n            }))"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+    "function": "fn bind_original_stage_channel(",
+    "before": "channel: Mutex::new(Some(Channel { peer, next_request_id: 1, execution_requested }))",
+    "after": "channel: Mutex::new(Some(Channel {\n                peer,\n                next_request_id: 1,\n                execution_requested,\n            }))"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+    "function": "fn bind_original_stage_channel(",
+    "before": "channel: Mutex::new(Some(Channel { peer, next_request_id: 1 }))",
+    "after": "channel: Mutex::new(Some(Channel {\n                peer,\n                next_request_id: 1,\n            }))"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+    "function": "fn read_current(",
+    "before": "self.channel.try_lock()",
+    "after": "self\n            .channel\n            .try_lock()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+    "function": "fn read_current(",
+    "before": ".take().ok_or(Error::Unavailable)?",
+    "after": ".take()\n            .ok_or(Error::Unavailable)?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+    "function": "fn read_current(",
+    "before": "response.request.require_context(&self.context, self.binding, request_id)?",
+    "after": "response\n            .request\n            .require_context(&self.context, self.binding, request_id)?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+    "function": "fn read_current(",
+    "before": "retained.as_ref().is_some_and(|prior| current.as_ref() != Some(prior))",
+    "after": "retained\n                .as_ref()\n                .is_some_and(|prior| current.as_ref() != Some(prior))"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+    "function": "fn serve_completion_readiness(",
+    "before": "self.connections.try_acquire()",
+    "after": "self\n            .connections\n            .try_acquire()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+    "function": "fn serve_completion_readiness(",
+    "before": "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+    "after": "stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+    "function": "fn read_original_readiness(",
+    "before": "&self.source, &self.identity, &self.cell.task.source().scope.run_id",
+    "after": "&self.source,\n            &self.identity,\n            &self.cell.task.source().scope.run_id"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+    "function": "fn read_original_readiness(",
+    "before": "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)? != selection",
+    "after": "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?\n            != selection"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn bind(",
+    "before": "require_timing(streams.version.timeout, streams.version.lifetime, Duration::from_secs(30))?",
+    "after": "require_timing(\n        streams.version.timeout,\n        streams.version.lifetime,\n        Duration::from_secs(30),\n    )?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn bind(",
+    "before": "v.stream, v.peer, v.uid, v.original_task_pidfd, v.timeout, v.lifetime",
+    "after": "v.stream,\n        v.peer,\n        v.uid,\n        v.original_task_pidfd,\n        v.timeout,\n        v.lifetime"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn bind(",
+    "before": "version.check_peer_lifetime()",
+    "after": "version\n        .check_peer_lifetime()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn bind(",
+    "before": "completion.check_peer_lifetime()",
+    "after": "completion\n        .check_peer_lifetime()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn bind(",
+    "before": "completion.check_peer_lifetime()",
+    "after": "completion\n        .check_peer_lifetime()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn bind(",
+    "before": "version.check_peer_lifetime()",
+    "after": "version\n        .check_peer_lifetime()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn role_channel(",
+    "before": "channel.check_peer_lifetime()",
+    "after": "channel\n        .check_peer_lifetime()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+    "function": "fn require_timing(",
+    "before": "timeout.is_zero() || timeout > limit || lifetime.is_zero() || lifetime > Duration::from_secs(300)",
+    "after": "timeout.is_zero()\n        || timeout > limit\n        || lifetime.is_zero()\n        || lifetime > Duration::from_secs(300)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn read_prefix(",
+    "before": "self.read_stage(owners, expected.observation.stage()).await?",
+    "after": "self\n                .read_stage(owners, expected.observation.stage())\n                .await?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn read_attestation(",
+    "before": "self.records.get(index).ok_or(Error::CommitUncertain)?.1.clone()",
+    "after": "self\n            .records\n            .get(index)\n            .ok_or(Error::CommitUncertain)?\n            .1\n            .clone()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_selector(",
+    "before": "self.original_dataset.as_ref()",
+    "after": "self\n                .original_dataset\n                .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_selector(",
+    "before": "dataset, &training, owners.origin",
+    "after": "dataset,\n                    &training,\n                    owners.origin"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_next_use(",
+    "before": "self.original_dataset.as_ref()",
+    "after": "self\n                .original_dataset\n                .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_next_use(",
+    "before": "dataset, &selection, owners.origin",
+    "after": "dataset,\n                    &selection,\n                    owners.origin"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_readiness(",
+    "before": "self.original_dataset.as_ref()",
+    "after": "self\n                .original_dataset\n                .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_readiness(",
+    "before": "self.original_selection.as_ref()",
+    "after": "self\n                .original_selection\n                .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_readiness(",
+    "before": "self.readiness_initial.take()",
+    "after": "self\n                .readiness_initial\n                .take()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_readiness(",
+    "before": "&owners.material, dataset, selection",
+    "after": "&owners.material,\n                    dataset,\n                    selection"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn record_material(",
+    "before": "original, &owners.material",
+    "after": "original,\n                &owners.material"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn record_material(",
+    "before": "original.snapshot().receipts.iter().zip(original.attestations())",
+    "after": "original\n            .snapshot()\n            .receipts\n            .iter()\n            .zip(original.attestations())"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn record_training(",
+    "before": "self.original_dataset.as_ref()",
+    "after": "self\n            .original_dataset\n            .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn record_selection(",
+    "before": "self.original_training.as_ref()",
+    "after": "self\n            .original_training\n            .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn record_next_use(",
+    "before": "self.original_selection.as_ref()",
+    "after": "self\n            .original_selection\n            .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn pin(",
+    "before": "owners.material.scope.validate_snapshot(coordinator.snapshot())?",
+    "after": "owners\n            .material\n            .scope\n            .validate_snapshot(coordinator.snapshot())?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+    "function": "fn ensure_version(",
+    "before": "self.original_dataset.as_ref()",
+    "after": "self\n                .original_dataset\n                .as_ref()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn execute_original_stage(",
+    "before": "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage() != Some(stage)",
+    "after": "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()\n                != Some(stage)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn execute_original_stage(",
+    "before": "self.root.as_ref().ok_or(",
+    "after": "self\n            .root\n            .as_ref()\n            .ok_or("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn await_completed_c(",
+    "before": "self.root.as_ref().ok_or(",
+    "after": "self\n            .root\n            .as_ref()\n            .ok_or("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn await_completed_c(",
+    "before": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?",
+    "after": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)\n                .await?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn prepare_retained_version(",
+    "before": "self.root.as_ref().ok_or(",
+    "after": "self\n            .root\n            .as_ref()\n            .ok_or("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn prepare_retained_version(",
+    "before": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?",
+    "after": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)\n            .await?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn prepare_retained_version(",
+    "before": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?",
+    "after": "RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    snapshot,\n                    &self.material.scope,\n                )\n                .await?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+    "function": "fn prepare_retained_version(",
+    "before": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?",
+    "after": "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)\n                .await?"
+  }
+]
