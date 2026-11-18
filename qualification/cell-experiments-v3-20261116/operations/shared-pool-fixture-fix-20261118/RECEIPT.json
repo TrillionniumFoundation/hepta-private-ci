@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.shared-pool-tokenizer-fixture-fix.20261118",
+  "original_source_commit": "eb56c51e4e73b0d466795b257a547ab93a0baa63",
+  "original_fixture_sha256": "9540460b1f11b7993bf376ea430d91090cdee25a8aec840e0246ce2c289ad58b",
+  "tested_fixture_sha256": "cc54be3965eb210105f78d45eaa15d7df6c6887d1e1de5f4ae7c2945d040bfb8",
+  "formatted_fixture_sha256": "d6836f2ed6dfec2fbaf1470a01dd0c5bb22a1033abbd50f898b84c11854e9200",
+  "ast_unchanged_by_formatting": true,
+  "original_prepare_failure": {
+    "path": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-round03-20261118-392934/engineering-numerical/OUTPUT.log",
+    "sha256": "a09898b961dab39c84141010ec0653ae433690ba1daf91dd07ab847757c4a2b2",
+    "tests": 2,
+    "errors": 1,
+    "skipped": 0,
+    "retained": true
+  },
+  "targeted_test": {
+    "exit_code": 0,
+    "out": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/shared-pool-fixture-fix-20261118-392934",
+    "output_sha256": "5babd6a7d4e8dd85339931d50ebde2c7097ea71d3214259e9215dc6fb2a26853",
+    "source_sha256": "cc54be3965eb210105f78d45eaa15d7df6c6887d1e1de5f4ae7c2945d040bfb8",
+    "tests": {
+      "errors": 0,
+      "failures": 0,
+      "scope": "Real tiny CPU A/B/A engineering fixture; no research task or independent sample",
+      "skipped": 0,
+      "successful": true,
+      "tests_run": 1
+    },
+    "wall_seconds": 18.917163172969595
+  },
+  "test_environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "isolated_python": true,
+    "write_bytecode": false
+  },
+  "test_session": "dpty-8a200c9f57a0a7b8a22c7b4ed235e0962fa871f64a74d5c3549e9cf07df07957",
+  "formatted_handoff": {
+    "ast_sha256": "480a1fc82433ad380bf322730003aa3cd1c8633609742acbb5b410f516f31bb0",
+    "path": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/shared-pool-fixture-fix-20261118-392934/formatted_test_shared_pool_v4.py",
+    "sha256": "d6836f2ed6dfec2fbaf1470a01dd0c5bb22a1033abbd50f898b84c11854e9200"
+  },
+  "production_predictor_changed": false,
+  "production_pool_changed": false,
+  "resource_or_numerical_gates_weakened": false,
+  "independent_sample_increment": 0,
+  "scientific_qualification": false,
+  "formal_prepare": "Required again on a new source and run identity; original failed run remains preserved"
+}
