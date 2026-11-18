@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="11" skipped="0" failures="0" errors="0" uuid="72787eb2-b939-4c03-bcc6-43cba363af4c" timestamp="2026-11-19T04:15:46.383+08:00" time="2.411">
+    <testsuite name="codex-hepta-agentd" tests="11" skipped="0" errors="0" failures="0">
+        <testcase name="production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="0.016"/>
+        <testcase name="production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="0.017"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="0.865"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="0.876"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="0.903"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="1.075"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="1.108"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="1.314"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="1.654"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="2.305"/>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner" classname="codex-hepta-agentd" timestamp="2026-11-19T04:15:46.403+08:00" time="2.391"/>
+    </testsuite>
+</testsuites>

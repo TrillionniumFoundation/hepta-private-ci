@@ -1,0 +1,169 @@
+{
+  "source": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+  "tree": "d0b851b201a8e1559e354b94a8909a146e340542",
+  "frozen_at_ns": 1795032047967819895,
+  "source_freeze_sha256": "9b41815f698cef5c80e76b41c8a9b26a6174155be9b9aca83ef9fccedbd28043",
+  "protocol_sha256": "0ab9993a856607c7b449b49976d0bd2d567cfe5fa7b2a9d67e0d9ff7c6a2c30f",
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(q24_preparation_) | test(source_operation_) | test(training_source_operation_) | test(post_a_owner_open_) | test(post_a_signing_files_)"
+  ],
+  "cwd": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs",
+  "cargo_target_dir": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target",
+  "cargo_build_jobs": 4,
+  "source_files": 15573,
+  "source_inventory_sha256": "3dc7fc7fb1a4481eeca10c3f1d5c4c6f5c9d9e58a7bd79aa68630f17da42afa7",
+  "started_at_ns": 1795032622024091260,
+  "disk_free_bytes_before": 150949793792,
+  "native_adoption": false,
+  "complete_NoUpdate": false,
+  "automatic_retry": false,
+  "original_executor_target_reused": false,
+  "own_prior_failed_target_reused": true,
+  "prior_failed_result_sha256": "8a7d4d661f5823a7f0c60b53acdd7cd0657b37f709fab38b67d3d776360ea2a5",
+  "compiler_preflight_sha256": "f24aa2ef2963df3da99b6ab9a213c5156d796c2cbcd0402b35fe75394d5d0b84",
+  "compiler_environment": {
+    "LIBCLANG_PATH": "/home/qq/hepta-learn-ff41-tools/lib",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "libclang_sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+  "stddef_sha256": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04",
+  "finished_at_ns": 1795032950501597973,
+  "command_exit": 0,
+  "timed_out": false,
+  "command_wall_seconds": 326.81381194409914,
+  "owner_wall_seconds": 331.8269008731004,
+  "command_child_user_cpu_seconds": 853.058533,
+  "command_child_system_cpu_seconds": 89.239327,
+  "owner_children_max_rss_kib": 6134624,
+  "command_child_input_blocks": 12191352,
+  "command_child_output_blocks": 36900024,
+  "cost_scope": "Whole just test command includes the continuing own compilation after the original header-environment preflight, and its test descendants. Child maximum RSS is not concurrent system RSS. Wall intervals are nested, not additive.",
+  "unknown_costs": [
+    "whole-system concurrent CPU/RSS",
+    "physical energy",
+    "physical network bytes",
+    "physical storage byte-seconds",
+    "provider charges"
+  ],
+  "source_after_sha256": "3dc7fc7fb1a4481eeca10c3f1d5c4c6f5c9d9e58a7bd79aa68630f17da42afa7",
+  "source_unchanged": true,
+  "head_unchanged": true,
+  "source_clean": true,
+  "junit": [
+    {
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "retained_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-validation-2/original-nextest-0.xml",
+      "bytes": 3222,
+      "sha256": "45766e21d4a03928bd26b0110b44c83ca757ec4ffb9133b6a76dcdc23f1a8b39"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+      "classname": "codex-hepta-agentd",
+      "time": "0.016",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+      "classname": "codex-hepta-agentd",
+      "time": "0.017",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+      "classname": "codex-hepta-agentd",
+      "time": "0.865",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+      "classname": "codex-hepta-agentd",
+      "time": "0.876",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+      "classname": "codex-hepta-agentd",
+      "time": "0.903",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+      "classname": "codex-hepta-agentd",
+      "time": "1.075",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+      "classname": "codex-hepta-agentd",
+      "time": "1.108",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+      "classname": "codex-hepta-agentd",
+      "time": "1.314",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+      "classname": "codex-hepta-agentd",
+      "time": "1.654",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+      "classname": "codex-hepta-agentd",
+      "time": "2.305",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner",
+      "classname": "codex-hepta-agentd",
+      "time": "2.391",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "native_cases": 11,
+  "expected_native_cases": 11,
+  "missing_cases": [],
+  "unexpected_cases": [],
+  "all_native_passed": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7d7276190956169b85bbeca5c24f1bf6f3e4cd920b4184635684116da550d8f7",
+  "disk_free_bytes_after": 134468763648,
+  "compiler_environment_unchanged": true,
+  "successful": true
+}

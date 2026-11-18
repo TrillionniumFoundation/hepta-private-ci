@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-18 19:35:52 UTC",
+  "observed_at_utc": "2026-11-18T20:45:27Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18 14:35:52 America/New_York",
+  "observed_at_user_timezone": "2026-11-18 15:45:27 America/New_York",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -621,7 +621,7 @@
     "current_student_layout_followup": {
       "pr": 6722,
       "source": "d5f52660f37d3fc46b2cdb17560691cca4ab332d",
-      "status": "Three actual calibration attempts failed under the unchanged 70% memory cap; zero updates and zero generation. Next SDPA numerical calibration is being prepared; B3 remains sealed.",
+      "status": "actual full-3584 gate passed; both fresh-parent 32-update arms are now running under the published training admission; B3 remains sealed",
       "primary_arm": "native_feedback",
       "control_arm": "document_evidence",
       "parent_model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
@@ -668,7 +668,7 @@
       },
       "information_match": "same original task, actual first P/C answer, exact actual feedback, identical verified maintainer target",
       "new_generation_call_cap": 56,
-      "actual_completed_optimizer_updates": 0,
+      "actual_completed_optimizer_updates": null,
       "B3_read_before_weights_frozen": false,
       "decision_rule": {
         "A": "strictly more final successes than original P; no lost P final successes; preserve all successful original P second calls on identical first prefixes",
@@ -757,6 +757,130 @@
         "wall_seconds": 3.207,
         "receipt_sha256": "356db0b16048160e723b40e11f34c06e455634e3881282ee79160e5c58259aa2",
         "status": "worker verified original probe; root independent read pending"
+      },
+      "active_source": "78099aa6af4c70c00f26cb11888e20aa59510014",
+      "active_protocol_sha256": "c71f8348977e955b1d5b6b98e8780ff13188b88b141fad683efb6f08bb03814f",
+      "sdpa_short_A": {
+        "source": "c77f2b0261bf06de49fe5b46735f4e7f06dd7f9b",
+        "evidence": "a28b07fd0433b643a12a986812348e38e2e6ac65",
+        "job_id": "1a1f033c440-ffbe-741",
+        "status": "NUMERICAL_REJECT",
+        "forwards": 4,
+        "backwards": 4,
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "logit_max_absolute_difference": [
+          6.71875,
+          6.47656
+        ],
+        "gradient_cosine": [
+          0.8043,
+          0.8677
+        ],
+        "gradient_relative_l2_error": [
+          0.6104,
+          0.5129
+        ],
+        "original_tolerances_unchanged": true,
+        "archive_sha256": "45cafab3eca10eb525144b71f668adbe8e67c32280741c842334414b16bc08f6"
+      },
+      "eager_inner_checkpoint_short_A": {
+        "source": "2776b2e7e6464ce57014f2ed755a965b35037ec5",
+        "evidence": "b5a29c31e1bf3866e1b82e9ce006956787398cd6",
+        "job_id": "1a1f04812c9-ffbe-765",
+        "status": "PASS",
+        "protocol_sha256": "b217ccd661aa82f5c0e0fe045ff43aa4b2a1367486ec06e0e9d2fad28eb9f7f3",
+        "readout_sha256": "13290505a8a38d188940d98f4d0e068830a8d78985cfe5a18550da8717619247",
+        "forwards": 4,
+        "backwards": 4,
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "both_layouts": {
+          "cross_entropy_difference": 0,
+          "selected_logit_max_absolute_difference": 0,
+          "gradient_max_absolute_difference": 0,
+          "gradient_relative_l2_error": 0,
+          "gradient_cosine": 1,
+          "argmax_agreement": "115/115"
+        },
+        "parameter_before_after": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+        "query_rows": 128,
+        "extra_recomputation_is_charged": true,
+        "early_stop_started_and_completed_counters_preserved": true
+      },
+      "full_calibration_wiring_failure": {
+        "source": "96990368541053f982bec074fda36e5d0ae2f1d7",
+        "job_id": "1a1f04f4906-ffbe-77c",
+        "evidence": "d79caff200d7579dff397bf71b51caf5193f8af0",
+        "status": "actual OOM; calibration entry had omitted engine installation and ran old eager",
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "not_evidence_against_checkpoint_engine": true,
+        "originals_retained": true
+      },
+      "corrected_full_calibration": {
+        "source": "02b3fb49ac00ccb7ad28e5d803af5675fbd28e26",
+        "protocol_sha256": "c71f8348977e955b1d5b6b98e8780ff13188b88b141fad683efb6f08bb03814f",
+        "root": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2",
+        "idempotency_key": "e123-checkpoint2-full-gate-02b3fb-2e9b-001",
+        "owner": "owned-calibration_only-1",
+        "status": "PASS",
+        "deployment_sha256": "46518e755127e165ae93f4f2c378878df4c71a8a97123efee85570f2b0e8009a",
+        "actual_engine_receipt_sha256": "f0ebe718361445415c938f653555cdd92bc99d6d59dd4b4fee1040f2f3783cb4",
+        "function_sha256": "68ca2df87451ac0f3a38b318c6714914638dd2195a1585f43828a5f614095d4f",
+        "entry_code_sha256": "a3331738cf460f3e484d4d75c28fc78427b523bd27cbe5a2cbddfe792b282005",
+        "root_independent_entry_diff_reviewed": true,
+        "observed_document_full_forward_backward_pairs": 5,
+        "full_padded_positions_per_pair": 3584,
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "full_calibration_passed": true,
+        "no_relaunch": true,
+        "job_id": "1a1f05cbf17-ffbe-78b",
+        "original_exit_sha256": "1cde540665f6789ef2a003408e6c39d06f5f2b8b54d9e038a2b6159d9a30d8ac",
+        "original_exit_witness_sha256": "20effb437a7b4d08f6ddf96a0409eef5de8d57e61ef50ae8e665253512f7203f",
+        "result_sha256": "e77bdaaec01d7ced834700d46b6981f38218440cb6f0f946046831391b239390",
+        "model_forwards": 10,
+        "model_backwards": 10,
+        "observed_native_feedback_full_forward_backward_pairs": 5,
+        "cuda_peak_allocated_bytes": 4801211392,
+        "cuda_peak_reserved_bytes": 5131730944,
+        "each_arm_padded_positions": 17920,
+        "each_arm_supervised_positions": 1196,
+        "original_P_parameter_before_after": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+        "root_readback_and_sha256_verified": true,
+        "mathematical_engine_module_sha256": "81ad33310f7bb427d01d25fd4ff696d281e6c53f3bba24cbc80667df63316aaa",
+        "evidence": "78099aa6af4c70c00f26cb11888e20aa59510014",
+        "readout_sha256": "e1c810f102031ceceefc4ad8a3105e3986eec75dacb5e568e6a9787cbcc3d5ad",
+        "archive_bytes": 9552,
+        "archive_sha256": "e5784699e8f129412ab67cff6b6d7ee4367f38c5c99070ce2f2b604a725c4ffb",
+        "index_sha256": "a9d57f6effbfabbf2525803bb55606fa6a13fa2d4c9637a11661b8d120ec1954",
+        "owner_exit_path": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/owned-calibration_only-1/calibration/EXIT.json",
+        "owner_exit_sha256": "bb27209a555c9edc837ce54137a8986df330ea7d569f8c7b03b4b3ca46302f7a",
+        "owner_wall_seconds": 116.774,
+        "model_wall_seconds": 114.87391170702176,
+        "model_self_cpu_seconds": 116.371076658,
+        "owner_complete_sha256": "07b199ebb53dbb1b7013021108b2c10d00a0344cc065e2c88186aa05ea74d39a"
+      },
+      "last_confirmed_optimizer_updates_before_training_launch": 0,
+      "training_execution": {
+        "status": "running; no completed weight manifests yet",
+        "source": "78099aa6af4c70c00f26cb11888e20aa59510014",
+        "mathematical_execution_source_unchanged_from": "02b3fb49ac00ccb7ad28e5d803af5675fbd28e26",
+        "training_admission_sha256": "6e17e6b1fcc13cfad448448c871c9c15f09bb970334bfc060d47e24cd746a04d",
+        "training_admission_created_at_ns": "1795034331357150865",
+        "session_id": "dpty-83e22ffc6ebedf522aa8cc44df8db0a6e4001caec6e52903f00b7c5dd9793d62",
+        "idempotency_key": "e123-layout-checkpoint2-fresh32x2-78099a-2e9b-001",
+        "owner": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/owned-training-1",
+        "planned_updates_each_arm": 32,
+        "order": [
+          "document_evidence",
+          "native_feedback",
+          "actual audit"
+        ],
+        "fresh_P_and_empty_AdamW_each_arm": true,
+        "current_completed_update_count": null,
+        "B3_opened": false
       }
     }
   },
@@ -2029,7 +2153,7 @@
       "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
       "original_executor_mutated": false,
       "original_target_used": false,
-      "status": "two local production postimages, formatter passed; original source gates correctly refuse unupdated contracts; no native tests yet",
+      "status": "reviewed source gates and 11 native cases pass; complete NoUpdate owner has built/verified helpers and pinned real products and is building the selected native test binaries",
       "source_changes": [
         "cell_q24_prepared_learning.rs",
         "production_post_a_q24_owners.rs"
@@ -2041,9 +2165,120 @@
       "original_source_qa_cases_attempted": 79,
       "original_source_qa_passed": false,
       "source_qa_result_sha256": "fe957d6efe658a407646362aa757c131056e39b6c1c0b22778a504ce3f3888df",
-      "native_tests": 0,
+      "native_tests": 11,
       "business_execution": 0,
-      "claim": "Group existing synchronous Prepared borrow around read-only key/descriptor opening and pure profile construction. Keep complete physical postread before witness initialization, third standalone post-witness validation, original identity/HRTB/non-Send/fence/clock/deadline/error contracts. Full 64-read lifecycle sufficiency is unproven."
+      "claim": "Within existing synchronous Prepared operations, share pure profile checks and read-only pre-witness handle construction. The complete physical postread and both Result layers finish before witness opening; the standalone check after witnesses remains. The native component result does not prove the complete 64-read lifecycle, adoption or fresh D.",
+      "preliminary_source_contract_refusal": {
+        "source_qa_cases_attempted": 79,
+        "passed": false,
+        "result_sha256": "fe957d6efe658a407646362aa757c131056e39b6c1c0b22778a504ce3f3888df",
+        "postimage_sha256": {
+          "cell_q24_prepared_learning.rs": "9cf9ffccf0b19a74a5d2c7e7a218411984fb1cb6cff2e796aa3b1815f1d702ad",
+          "production_post_a_q24_owners.rs": "c0bf49de76b4f6e638195b652966350a68753e6842d9a2167974f10c6cccdb48"
+        },
+        "status": "retained original preliminary refusal; superseded by reviewed contracts and actual native execution"
+      },
+      "pr": 6726,
+      "source": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+      "tree": "d0b851b201a8e1559e354b94a8909a146e340542",
+      "protocol_publication_commit": "407e49e200ee87be06ae7d81d003eb1909d796ba",
+      "source_freeze_sha256": "9b41815f698cef5c80e76b41c8a9b26a6174155be9b9aca83ef9fccedbd28043",
+      "final_production_sha256": {
+        "cell_q24_prepared_learning.rs": "5579c6782997fdc3261d69a8861bb891c45da3f93b59579bf41afadd4f5f55ec",
+        "production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374"
+      },
+      "source_qa": {
+        "cases": 90,
+        "passed": 90,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "protected_rows": 892,
+        "formatter_passed": true,
+        "result_sha256": "1c45ca2a21aef6abc8c376433f578868157fee98bb6da3fb8179a102bbd46410"
+      },
+      "caller_boundaries": {
+        "rust_sources": 6900,
+        "prepared_operation_callers": 9,
+        "prepared_owner_callers": 10,
+        "negative_controls": 4,
+        "all_passed": true,
+        "result_sha256": "84e5fb72ef051e7edf2293f316cdf26f2841f9067e2d6e14392693b27babe4a1"
+      },
+      "native_component": {
+        "job_id": "1a1f047f10c-ffbe-764",
+        "cases": 11,
+        "expected": 11,
+        "passed": 11,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "command_exit": 0,
+        "timed_out": false,
+        "source_files": 15573,
+        "source_before_after_sha256": "3dc7fc7fb1a4481eeca10c3f1d5c4c6f5c9d9e58a7bd79aa68630f17da42afa7",
+        "source_clean": true,
+        "result_sha256": "d302707cddbea96ebf1378c1cf1f71e9d11c8cd13c7ffcc855fc7ee16b889fc0",
+        "junit_sha256": "45766e21d4a03928bd26b0110b44c83ca757ec4ffb9133b6a76dcdc23f1a8b39",
+        "command_wall_seconds": 326.81381194409914,
+        "owner_wall_seconds": 331.8269008731004,
+        "child_user_cpu_seconds": 853.058533,
+        "child_system_cpu_seconds": 89.239327,
+        "child_max_rss_kib": 6134624,
+        "cost_note": "Nested wall intervals; descendant maximum RSS is not concurrent system RSS. Energy, physical network/storage and charges unknown."
+      },
+      "first_compile_failure": {
+        "command_exit": 101,
+        "native_cases": 0,
+        "cause": "aws-lc-sys bindgen could not find stddef.h in the unconfigured libclang environment",
+        "result_sha256": "8a7d4d661f5823a7f0c60b53acdd7cd0657b37f709fab38b67d3d776360ea2a5",
+        "retained": true
+      },
+      "compiler_environment_recovery": {
+        "actual_header_parse_exit": 0,
+        "diagnostics": [],
+        "result_sha256": "f24aa2ef2963df3da99b6ab9a213c5156d796c2cbcd0402b35fe75394d5d0b84",
+        "original_environment_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+        "libclang_sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+        "stddef_sha256": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04",
+        "original_source_target_or_environment_modified": false
+      },
+      "exact_publication": {
+        "ordinary_git_push": true,
+        "matching_remote_head_and_tree": true,
+        "verified_changed_files": 11,
+        "bundle_sha256": "1e4a2c11cf01dc8c9f534a870c47bc7853f66b16b97069937582d912b987d01f",
+        "result_sha256": "c42c828c84ff0e10adb51f938df54905ad818564837c32b6b217b603959b2966",
+        "first_ai395_credential_failure_retained": true
+      },
+      "complete_NoUpdate_attempt": {
+        "source": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+        "protocol_freeze": "407e49e200ee87be06ae7d81d003eb1909d796ba",
+        "protocol_sha256": "ac140a726224fd8377bc7e7da70bca527aea8d77d3c076d7f185054a6de3235e",
+        "driver_sha256": "321716b45e543bc56ef54516832409770edd0af7b9c583e3447c7e4df299489a",
+        "job_id": "1a1f05d7f3b-ffbe-78e",
+        "idempotency_key": "root-e6-complete-noupdate-ab12-2e9b-001",
+        "request_sha256": "60599ea878beb7015c66959ee347e0405feb4043dd96cb45535f6c20c756c84a",
+        "request_command_exact_match_count": 1,
+        "delayed_actual_started_at_utc": "2026-11-18T20:33:42.708452+00:00",
+        "status": "preparing selected library test binaries; original helper build/verify and product build/pin passed; no complete parent result yet",
+        "owner_result": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-1/result.json",
+        "observed_intermediate_result_sha256": "67d78c2bc6b01ad5c96a6dee87a0efd37fee776fc908e6e0f0850778cec56e7c",
+        "root_read_limit": 64,
+        "root_read_limit_or_deadlines_changed": false,
+        "old_source_or_target_or_owner_lock_modified": false,
+        "source_worktree_remains_ab12": true,
+        "complete_native_NoUpdate": false,
+        "restarted": false,
+        "observation_at_utc": "2026-11-18T20:44:18Z",
+        "completed_preparations": [
+          "helper-build",
+          "helper-verify-and-load",
+          "product-build-and-pin"
+        ],
+        "helper_build_command_wall_seconds": 375.99163139704615,
+        "product_build_command_wall_seconds": 12.741243019001558
+      }
     }
   },
   "Chain": {
@@ -2728,6 +2963,50 @@
         }
       },
       "next_work": "Publish full original negative evidence and diagnose ROOT first-batch Submit/receiver observation costs using actual request digests. Do not change the original pressure window, security fences, or count ACK as confirmation."
+    },
+    "native_root_body_delay_followup": {
+      "status": "actual TCP positive control exposed digest-domain mismatch; correcting exact protocol-framed body hash and then complete-write publication; no new F0",
+      "previous_f0_evidence_pr": 965,
+      "previous_f0_evidence": "8d8e50e4256c1f4a5e0bcaa6dfb4d0e19eb5510f",
+      "previous_f0_run": 44376853052,
+      "previous_30s_completion": "1/6",
+      "previous_scheduled_4s_completion": "0/6",
+      "root_history_calls": 0,
+      "original_native_root_requests": 15,
+      "original_hostile_requests": 395,
+      "credit_observations": 417,
+      "observed_credit_depletion": 0,
+      "original_min_credit_ns": 1982201160,
+      "typed_provenance_scope": "actual held/detached complete parent/M06/task-output Root or receipts mismatch, exact canonical Submit body and network/parameters/genesis",
+      "no_validity_verdict_cache": true,
+      "original_capacity": 256,
+      "original_ways": 4,
+      "original_delay_ms": 500,
+      "extra_workers_or_cpu_credit": false,
+      "root_static_review_completed_for_provisional_patch": "9eb2477bf5ff65569d43961035d64bc3b2580ab02a1144ac84381ebdda49419c",
+      "publication_completion_fix_pending": true,
+      "actual_next_f0_run": null,
+      "original_repeat_gap_readback_sha256": "4126ed0f993308244b7243bfaf0f15ee924cf989877bf55f29fd0a98325586db",
+      "original_repeat_gap_records_sha256": "91be694c88d5150d94eef92e8fd64584906c4ff0bf9abc57d0c1d3d07f6ea628",
+      "repeat_analysis": {
+        "exact_bodies": 24,
+        "repeats": 371,
+        "grant_entry_to_next_grant_entry_below_500ms": 5,
+        "response_write_end_to_next_wait_grant_entry_below_500ms": 324,
+        "response_write_end_to_next_wait_grant_entry_median_ns": 2638849,
+        "hash_bucket_max_occupancy": 2,
+        "observed_new_cache_hits": false,
+        "interpretation": "Potential original-clock timing opportunities only; actual lookup instant and new hint hits are unobserved."
+      },
+      "actual_tcp_digest_binding_failure": {
+        "job_id": "1a1f05c22c9-ffbe-78a",
+        "native_exit": 101,
+        "repeat_grant_wait_ns": 7770,
+        "root_cause": "new proof used plain SHA256; original Cookie uses pon_wire::hash(public-request-body-v3, raw canonical body)",
+        "socket_write_negative_reached": false
+      },
+      "digest_correction": "Reuse the original TRNM-PON1 domain/tag/body-length framing with a 512-byte streaming buffer; no new full-body copy. Actual TCP control is pending.",
+      "root_static_review_limitation": "The old static review did not establish agreement with the existing Cookie digest; the actual TCP control caught this mismatch."
     }
   },
   "CI": {
@@ -3265,13 +3544,104 @@
         "index_sha256": "6c1dd2a4d724f1c3159104b313246497fccc18abbb7f1b638cb7f8889354b0bc",
         "evidence_pr": 6721
       }
+    },
+    "chrono_joint_consumer_slice": {
+      "pr": 6724,
+      "source": "616dccdbf8d68192aa984b676608a01d1a75e168",
+      "source_tree": "3fc080258ea689675dedb0e6267b0157b400b11c",
+      "evidence": "902a8ccdff0326877515683717fe6e5db4356df7",
+      "evidence_tree": "a57b9e73660220e30307be21b2a76bbc390dd397",
+      "packages": {
+        "codex-utils-time": 10,
+        "codex-cloud-config": 35
+      },
+      "native_passed": 45,
+      "native_failed": 0,
+      "native_errors": 0,
+      "native_skips": 0,
+      "retries": 0,
+      "source_files": 11826,
+      "source_before_after_sha256": "feca10b13c29d43784be042198fdc54aeb8fc5597c77707967f8948a608de0c7",
+      "result_sha256": "7a1ff4a3c011d23777797be130a4f7cf24862c173c3123e5104cdb49cc885a4d",
+      "junit_sha256": "fcc6f1eaaadcdd6f5cc8ddf8d458b0bc9ea1553f4056e443657347c6247fc7a5",
+      "command_wall_seconds": 151.839976833,
+      "owner_wall_seconds": 154.04471420800002,
+      "original_files": 214,
+      "archive_bytes": 2268320,
+      "archive_sha256": "1d46b479efdee5de223cb0d29047f2cb27b9715604a06d7a30d4a65c759f7eb1",
+      "index_sha256": "e8b3739cd1eb54942204641bfd487c12bc012503a2d9c44aae48cebfd04da1bb",
+      "final_actual_blob_gate_result_sha256": "f4ccea4ba69d51de0bba243dd5c1aa164f794373c016172065ed6b58510dca81",
+      "policy_tests": 7,
+      "actual_blob_gate_exit": 0,
+      "remaining_graph": {
+        "package_count": 1524,
+        "roots": 194,
+        "reachable": 121,
+        "direct": 27,
+        "indirect": 94,
+        "require_zero_exit": 2
+      },
+      "whole_migration_passed": false
+    },
+    "next_agent_identity_slice": {
+      "status": "actual three-package native result passed; complete-original archive and actual blob gate in progress",
+      "base": "902a8ccdff0326877515683717fe6e5db4356df7",
+      "source_changes": "two Seconds/Z timestamp calls and dependency, existing signed-wire assertions",
+      "root": "/Users/qianqi/work/hepta-chrono-agent-identity-joint-20261118-2e9b",
+      "original_job_id": "1a1f055d023-ffbe-787",
+      "original_key": "e45-agent-identity-joint-prepare-2e9b-001",
+      "original_exit_sha256": "7c5efd0825b01b7fef967bd39f223bb764c4f6c1f7a9ace1df09ea83240c3a91",
+      "original_exit_witness_sha256": "9094885212ec7e9e01478e3db4e22a0ed6f7fb28d18082b94ecc0d34a4c1156b",
+      "result_sha256": "95749c9801f869ec41e634e70904aa15a97a891bf12a7297ae4f2433588107c4",
+      "cargo_lock_sha256": "d8273be4e092dad45eef9d70263659ec22bbbe9edc471be55b76133ee9213f6d",
+      "metadata_and_bazel_update_check_scoped_fix_formatter_exit": 0,
+      "native_cases": 61,
+      "original_launch_replayed": false,
+      "pr": 6727,
+      "source": "4cf78192425b8c9478147915745694495879a6f4",
+      "source_tree": "14317874cf27e0b6b7478d3f8389688e0eaf6cce",
+      "source_files": 11871,
+      "source_before_after_sha256": "b445e915c770fa62990bf70daee54d3fb02a1562f16c2a62e779886bee329804",
+      "native_passed": 61,
+      "native_failed": 0,
+      "native_errors": 0,
+      "native_skips": 0,
+      "retries": 0,
+      "packages": {
+        "codex-cloud-config": 35,
+        "codex-utils-time": 10,
+        "codex-agent-identity": 16
+      },
+      "junit_sha256": "26343398e9bc4694f9a2aa658f5b8adafff0c49044c05c2016bcd7ec763cc855",
+      "command_wall_seconds": 128.13553258299999,
+      "owner_wall_seconds": 129.663528416,
+      "root_original_result_read": true,
+      "remaining_graph": {
+        "reachable": 121,
+        "direct": 26,
+        "indirect": 95,
+        "require_zero_exit": 2
+      }
     }
   },
   "environment": {
     "scratch_status": "Local exec-server remains unavailable after the environment handoff; original Git and authorized remote jobs/files survive. Temporary function caches were rebuilt from exact original bytes.",
     "actual_remote_evaluation_continues": true,
     "rerun_experiments_due_to_scratch_outage": false,
-    "readout_reconstruction": "Hash-matched published originals and original remote native records; no experiment recomputation."
+    "readout_reconstruction": "Hash-matched published originals and original remote native records; no experiment recomputation.",
+    "execution_transport_recovery": {
+      "cloud_environment_unavailable_observed": true,
+      "h_legacy_listing_and_launch_ack_degraded": true,
+      "ai395_job_directory_entries": 18267,
+      "mac_job_directory_entries": 14021,
+      "observed_reader_entry_bound": 10000,
+      "configuration_or_permissions_changed": false,
+      "history_deleted": false,
+      "supported_persistent_operator_pty_verified": true,
+      "recovery": "Read exact original request/exit/witness and owned result files over h_pty_start/read. The original delayed launches remain single executions; timeout/transport error never means native failure or absent work.",
+      "root_recovered_noupdate_job": "1a1f05d7f3b-ffbe-78e",
+      "new_noupdate_execution_relaunched": false
+    }
   },
   "qualification": {
     "whole_joint_native_or_numerical": false,
@@ -3378,7 +3748,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "5b5bd5ece3420d5b2acf7b0aab435df235aef6a0",
+  "previous_evidence_commit": "9af3cc5b6ec8b35d1e97acd534751bf651bc7342",
   "next_actual_student_collection": {
     "pr": 6717,
     "source": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
