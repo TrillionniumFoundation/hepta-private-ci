@@ -1,0 +1,60 @@
+{
+  "archives": [
+    {
+      "bytes": 2576143,
+      "git_blob_sha1": "90df5eed3ad0b7d071c5a4c4310ab5689a91de23",
+      "members": 3558,
+      "path": "e4-originals.tar.gz",
+      "regular_files": 3035,
+      "root_entries": [
+        "B_COMPARISON.json",
+        "B_ENGINEERING_GATE.json",
+        "RESULT.json",
+        "ROUND03_CLOSURE_20261118_392934_V4.json",
+        "candidate-qwen-03",
+        "e1e2-operation-helpers-04",
+        "e4-controls-owned-20261118-392934-b",
+        "e4-controls-source-20261118-392934-b",
+        "launch_qwen_research_owned_v1_02.py",
+        "launch_round03_392934_b.py",
+        "pre-execution",
+        "previous-owner",
+        "research-e4-controls-20261118-392934-b",
+        "research-sft-02",
+        "research-sft-v1-source",
+        "round03-source-20261118-392934-b"
+      ],
+      "sha256": "7e0a67d8c4cdfadbebf195591bbe30cce2e6ed9b524c46c6011b0cadcb8f3a32"
+    },
+    {
+      "bytes": 208335,
+      "git_blob_sha1": "46596da1c8ff16e29d35ee76b9ebf55fb600392a",
+      "members": 20,
+      "path": "e4-readout-originals.tar.gz",
+      "regular_files": 19,
+      "root_entries": [
+        "e4-controls-readout-20261118-392934-c"
+      ],
+      "sha256": "04b05b0762f928734903287b8dd3c0bdef78743d4cd4af471945c19337a7c837"
+    },
+    {
+      "bytes": 10366,
+      "git_blob_sha1": "ab665c6ec38535e08d2048112f9619ce89c5951b",
+      "members": 6,
+      "path": "e4-offline-audit.tar.gz",
+      "regular_files": 6,
+      "root_entries": [
+        "e4-offline-audit"
+      ],
+      "sha256": "3932ebcf47fdd46391d360e12b41690e122d5bfe00015be4f9e8a768c5a4fcd6"
+    }
+  ],
+  "no_model_weights": true,
+  "offline_replay_byte_identical": true,
+  "original_readout": {
+    "bytes": 1054217,
+    "sha256": "8599d61793f97da236afb53aab382eba9b0a072752705c053aca8264977c3a94"
+  },
+  "protocol_sha256": "f4111d887c9827156da1f6c4a6859cb3d9cef02b1c54a90f3af47004a036c7c1",
+  "schema": "hepta.e4.complete-evidence-archive-index.v1"
+}
