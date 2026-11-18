@@ -4,6 +4,7 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 codex_rust_crate(
     name = "hepta-matrix-sdk",
     crate_name = "codex_hepta_matrix_sdk",
+    integration_compile_data_extra = ["//codex-rs:third_party/matrix-sdk-sqlite-0.19.1/src/cipher_task.rs"],
 )
 
 # Exercise the existing marker helper directly without enabling the SDK's
