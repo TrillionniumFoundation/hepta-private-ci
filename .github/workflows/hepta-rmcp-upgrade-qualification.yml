@@ -50,6 +50,8 @@ jobs:
           cargo --version > "$evidence/cargo.txt"
           cargo tree --locked --manifest-path codex-rs/Cargo.toml -p rmcp 2>&1 | tee "$evidence/cargo-update.log"
           cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p bindgen@0.73.2 --lib 2>&1 | tee "$evidence/bindgen-check.log"
+          just bazel-lock-update 2>&1 | tee "$evidence/bazel-lock-update.log"
           cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
           just bazel-lock-check 2>&1 | tee "$evidence/bazel-lock-check.log"
           git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$evidence/locks.patch"
@@ -60,8 +62,11 @@ jobs:
           packages = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())["package"]
           versions = [p["version"] for p in packages if p["name"] == "rmcp"]
           assert versions == ["3.9.0"], versions
+          bindgen = next(p for p in packages if p["name"] == "bindgen" and p["version"] == "0.73.2")
+          assert "syn 2.0.119" in bindgen["dependencies"], bindgen
+          assert "syn 3.0.9" not in bindgen["dependencies"], bindgen
           changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
-          assert not changed, changed
+          assert set(changed) <= {"MODULE.bazel.lock"}, changed
           postimages = {}
           for name in ["Cargo.lock", "MODULE.bazel.lock"]:
               data = (evidence / name).read_bytes()
@@ -71,7 +76,7 @@ jobs:
               "rmcp_versions": versions,
               "committed_locks": postimages,
               "source_changes": changed,
-              "qualification_scope": "exact committed source head and unchanged committed locks",
+              "qualification_scope": "exact committed Cargo graph plus generated Bazel lock postimage; pending commit",
           }, indent=2) + "\n")
           PY
       - name: Compile and clippy real MCP and product consumers
