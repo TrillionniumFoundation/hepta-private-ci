@@ -2,30 +2,30 @@ name: Cell HIA joint candidate
 on:
   pull_request:
     paths:
-      - 'scripts/hepta_cells/**'
-      - 'scripts/hepta_pred1/**'
-      - 'scripts/hepta_cell_joint_worker.py'
-      - 'scripts/hepta_cell_campaign_worker.py'
-      - 'scripts/hepta_cell_semantic_campaign_worker.py'
-      - 'scripts/qualify_cell_updates.py'
-      - 'scripts/verify_hepta_semantic_cycle.py'
-      - 'scripts/test_hepta_maintenance_semantics.py'
-      - 'scripts/test_hepta_joint_source_identity.py'
-      - 'scripts/test_hepta_joint_candidate_closure.py'
-      - 'scripts/test_hepta_runtime_campaign_binding.py'
-      - 'scripts/qualify_runtime_campaign.py'
-      - 'scripts/package_hia_cell_candidate.py'
-      - 'scripts/verify_hepta_maintenance_cycle.py'
-      - 'scripts/review_hepta_maintenance_snapshot.py'
-      - 'scripts/qualify_hia_cell_joint.py'
-      - 'scripts/runtime_process_bridge.py'
-      - 'scripts/runtime_stdio.py'
-      - 'scripts/runtime_process_contract.py'
-      - 'scripts/refreeze_joint_worker.py'
-      - 'scripts/qualify_runtime_process_bridge.py'
-      - 'scripts/test*cell*'
-      - 'scripts/test_runtime_process_bridge.py'
-      - '.github/workflows/cell-hia-joint.yml'
+      - "scripts/hepta_cells/**"
+      - "scripts/hepta_pred1/**"
+      - "scripts/hepta_cell_joint_worker.py"
+      - "scripts/hepta_cell_campaign_worker.py"
+      - "scripts/hepta_cell_semantic_campaign_worker.py"
+      - "scripts/qualify_cell_updates.py"
+      - "scripts/verify_hepta_semantic_cycle.py"
+      - "scripts/test_hepta_maintenance_semantics.py"
+      - "scripts/test_hepta_joint_source_identity.py"
+      - "scripts/test_hepta_joint_candidate_closure.py"
+      - "scripts/test_hepta_runtime_campaign_binding.py"
+      - "scripts/qualify_runtime_campaign.py"
+      - "scripts/package_hia_cell_candidate.py"
+      - "scripts/verify_hepta_maintenance_cycle.py"
+      - "scripts/review_hepta_maintenance_snapshot.py"
+      - "scripts/qualify_hia_cell_joint.py"
+      - "scripts/runtime_process_bridge.py"
+      - "scripts/runtime_stdio.py"
+      - "scripts/runtime_process_contract.py"
+      - "scripts/refreeze_joint_worker.py"
+      - "scripts/qualify_runtime_process_bridge.py"
+      - "scripts/test*cell*"
+      - "scripts/test_runtime_process_bridge.py"
+      - ".github/workflows/cell-hia-joint.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -37,10 +37,10 @@ jobs:
       run:
         shell: bash
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      CARGO_BUILD_JOBS: '2'
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      CARGO_BUILD_JOBS: "2"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,7 +59,7 @@ jobs:
           path: runtime
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Install repository-pinned task runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -102,8 +102,7 @@ jobs:
         working-directory: cells
         env:
           PYTHONPATH: scripts
-          HEPTA_RECEIVER_TEST_ARTIFACT_ROOT:
-            ${{ runner.temp }}/cell-joint-evidence/receiver-controls
+          HEPTA_RECEIVER_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/cell-joint-evidence/receiver-controls
         run: |
           python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics test_hepta_temporal_native_probe test_hepta_receiver_store test_hepta_receiver_handoff 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
       - name: Freeze and run actual HIA and GRU cold processes
