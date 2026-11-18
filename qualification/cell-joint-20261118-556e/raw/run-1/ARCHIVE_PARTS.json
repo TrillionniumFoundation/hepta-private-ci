@@ -1,0 +1,38 @@
+{
+  "archive": {
+    "bytes": 655242,
+    "sha256": "4a94e9a761bf107ec56be309e96f6da7a34053dde1efd312c2829a8d0af458bb"
+  },
+  "candidate_commit": "581c4c060836b6600ed1676894972a96321b292d",
+  "index": {
+    "bytes": 247590,
+    "path": "INDEX.json",
+    "sha256": "2b54aa7b7a8b171928bcb43392aba81d12deb137b98920f4a78c9dd1c1f2391c"
+  },
+  "members": 647,
+  "model_calls": 0,
+  "original_bytes_modified": false,
+  "parts": [
+    {
+      "bytes": 491640,
+      "path": "part-001.zip",
+      "payload": {
+        "bytes": 491520,
+        "sha256": "7e4b62d319ce4dc4788d74b5f58c18335b1a6905ecbd5498e3016d6695464ef4"
+      },
+      "sha256": "57423c38eea83a08989a97ae471ac1c71b7515e7242011b0da2113799151667a"
+    },
+    {
+      "bytes": 163842,
+      "path": "part-002.zip",
+      "payload": {
+        "bytes": 163722,
+        "sha256": "36d1d9ca905bd44113c0ef92496d7bc1273f72575b59285b51ef0da9a123bb6c"
+      },
+      "sha256": "676627e219d7560c78f220e1d3ecafab1d6660c2b5731bfc69535c0ea6804e40"
+    }
+  ],
+  "run": "run-1",
+  "schema": "hepta.original-archive-parts.v1",
+  "semantic_verifier_calls": 0
+}
