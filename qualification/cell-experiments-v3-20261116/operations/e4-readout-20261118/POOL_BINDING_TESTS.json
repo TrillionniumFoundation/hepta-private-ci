@@ -1,0 +1,25 @@
+{
+  "fixtures": [
+    {
+      "complete_totals_unknown": true,
+      "expected_binding_behavior": true,
+      "fixture": "matched",
+      "status": "INCOMPLETE"
+    },
+    {
+      "complete_totals_unknown": true,
+      "expected_binding_behavior": true,
+      "fixture": "wrong_source",
+      "status": "INCOMPLETE"
+    },
+    {
+      "complete_totals_unknown": true,
+      "expected_binding_behavior": true,
+      "fixture": "missing_binding",
+      "status": "INCOMPLETE"
+    }
+  ],
+  "kind": "Synthetic binding and partial-evidence reader fixtures, not model execution",
+  "passed": 3,
+  "reader_before_format_sha256": "40b7221cfc8de221d44662064fd43cb38723e81abb448f2a251628170c493c1c"
+}

@@ -60,6 +60,44 @@ def main():
 
     job, complete = read(circuit / "RESULT.json"), read(root / "COMPLETE.json")
     pool = read(circuit / "POOL.json")
+    pool_binding = None
+    repair = protocol.get("adapter_precision_repair")
+    if repair is not None:
+        pool_binding = read(circuit / "POOL_BINDING.json")
+        intent = read(root / "WORKER_INTENT.json")
+        expected_source = protocol["source_sha256"]["shared_pool_v4.py"]
+        if pool_binding is not None:
+            for key, expected in (
+                ("class_module", repair["expected_pool_class_module"]),
+                ("class_name", "SharedAdapterPool"),
+                ("source_sha256", expected_source),
+                ("protocol_digest", args.protocol_sha),
+            ):
+                same(
+                    pool_binding.get(key), expected, "pool binding " + key + " differs"
+                )
+        if pool is not None:
+            same(
+                pool["inventory"]["source_sha256"],
+                expected_source,
+                "actual pool source differs",
+            )
+            same(
+                pool["pool_identity"],
+                digest(pool["inventory"]),
+                "pool inventory identity differs",
+            )
+        if intent is not None:
+            same(
+                intent.get("actual_pool_source_sha256"),
+                expected_source,
+                "worker pool source differs",
+            )
+            same(
+                intent.get("actual_pool_class_module"),
+                repair["expected_pool_class_module"],
+                "worker pool module differs",
+            )
     search = read(circuit / "search/SEARCH.json")
     static = read(circuit / "STATIC_SELECTION.json")
     studies, plans = {}, {}
@@ -365,9 +403,12 @@ def main():
             same(count, totals["model_calls"], "shared-pool call coverage differs")
         full = not issues
     result = {
-        "schema": "hepta.extended-e4-readout.v1",
+        "schema": "hepta.extended-e4-readout.v2",
         "status": "COMPLETE" if full else "INCOMPLETE",
         "protocol_sha256": args.protocol_sha,
+        "actual_pool_binding": pool_binding,
+        "pre_execution_cost_history": protocol.get("prior_cost_history"),
+        "pre_execution_history_scope": "Protocol-bound earlier failure and diagnostic costs; separate from this run graph totals",
         "issues": issues,
         "failures": failures,
         "planned_counts_only": protocol["planned_counts_only"],
