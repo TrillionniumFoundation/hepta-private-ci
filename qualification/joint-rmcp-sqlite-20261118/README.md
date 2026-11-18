@@ -4,7 +4,7 @@
 
 The joint E1–E6 source still resolved the older RMCP and SQLite graphs identified by the dependency audit. Their individual upgrade proposals had separate qualification runs. This candidate combines those exact reviewed changes on the actual joint baseline and generates one Cargo/Bazel graph. It also carries the two narrowly scoped Mac fixture corrections and the already verified Fence action pin. It does not inherit a business pass from the earlier proposal runs.
 
-The baseline is `be0e66c975433446a25e3e613294a2c64e9926f9`. [SOURCE_INPUTS.json](SOURCE_INPUTS.json) binds all 75 changed source files by Git blob, SHA256, size and import source. Unlisted source files remain the baseline bytes. The dependency import stage is `8018be4e7f0029109a7576f1c409fb626b80ab8d`; the following stage adds the four authored Rust adaptations. These review stages preserve the upstream vendor bytes while allowing the repository formatter to process the authored changes.
+The baseline is `be0e66c975433446a25e3e613294a2c64e9926f9`. [SOURCE_INPUTS.json](SOURCE_INPUTS.json) binds all 75 changed source files by Git blob, SHA256, size and import source. The 75-file list covers runtime, dependency and workflow inputs. The separate exact archive pin and qualification records are described below; other runtime source remains the baseline bytes. The dependency import stage is `8018be4e7f0029109a7576f1c409fb626b80ab8d`; the following stage adds the four authored Rust adaptations. These review stages preserve the upstream vendor bytes while allowing the repository formatter to process the authored changes.
 
 | Component | Exact reviewed source | What is retained |
 | --- | --- | --- |
@@ -65,3 +65,6 @@ The existing exact-path/SHA256 blob-policy mechanism admits only this retained a
 The imported RMCP and SQLite qualification workflows each check out the exact new PR head. Their original scopes compile real product consumers and run MCP, SQLx and Matrix package tests, with source-bound artifacts and test-result caching disabled. Those new runs must be inspected separately; earlier proposal counts are historical context only. The two Mac fixture files require actual Mac validation and do not gain it from Linux compilation.
 
 The 112-call E4 run remains bound to source `18de3463…` and its original archive in #6714. No model call, training step, native adoption, full cost closure or learning gain is claimed for this new dependency source.
+
+
+The frozen-source re-materialization and original blob policy also passed: all 75 input hashes were checked in a clean independent worktree at `2b3642214ba5ff4aaac27de13322a354a69507e7`, followed by all seven original policy tests and the original changed-blob check against actual PR base `80cb4dc2…`. The exact freeze, commands and original outputs are retained under `candidate-gates/`. The following publication commit adds only these records and this clarification; runtime/dependency/workflow bytes remain that frozen source.
