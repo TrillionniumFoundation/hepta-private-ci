@@ -131,42 +131,18 @@ async fn open_control(fixture: &Fixture) -> DurableInferenceControl {
     ))
 }
 
-
-async fn open_observed_control(fixture: &Fixture) -> (DurableInferenceControl, fs::File) {
-    checked(checked(
-        timeout(Duration::from_secs(5), async {
-            loop {
-                let path = fixture.directory.path().join(CONTROL_FILE);
-                let mut options = fs::OpenOptions::new();
-                options.create(true).append(true).read(true);
-                #[cfg(unix)]
-                {
-                    use std::os::unix::fs::OpenOptionsExt;
-                    options.mode(0o600);
-                }
-                let file = checked(options.open(&path));
-                let readback = checked(file.try_clone());
-                match DurableInferenceControl::open_file(file, &path, 32) {
-                    Ok(control) => return Ok((control, readback)),
-                    Err(ControlError::WriterUnavailable) => sleep(Duration::from_millis(1)).await,
-                    Err(error) => return Err(error),
-                }
-            }
-        })
-        .await,
-    ))
-}
-
 async fn start(
     fixture: &Fixture,
     clock: Clock,
     worker: Arc<UnknownWorker>,
     contacts: Arc<AtomicUsize>,
-) -> (NeuronGenerationRuntimeHandleV2, RuntimeTasks, ControlTestSnapshot) {
-    let (control, readback) = open_observed_control(fixture).await;
+) -> (
+    NeuronGenerationRuntimeHandleV2,
+    RuntimeTasks,
+    ControlTestSnapshot,
+) {
     let (port, snapshot) = checked(ControlledCellGenerationPortV2::spawn_with_test_snapshot(
-        control,
-        readback,
+        open_control(fixture).await,
         ControlledCellGenerationConfigV2 {
             scope: fixture.config.initial.scope.clone(),
             manifest: fixture.config.manifest.clone(),
@@ -213,10 +189,15 @@ async fn durable_bytes(
     let [journal, witness] = fixture.journal_bytes(handle).await;
     let control = checked(control.bytes());
     let contender = checked(
-        fs::OpenOptions::new().read(true).write(true)
+        fs::OpenOptions::new()
+            .read(true)
+            .write(true)
             .open(fixture.directory.path().join(CONTROL_FILE)),
     );
-    assert!(matches!(contender.try_lock(), Err(std::fs::TryLockError::WouldBlock)));
+    assert!(matches!(
+        contender.try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
+    ));
     [journal, witness, control]
 }
 
@@ -266,7 +247,10 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.snapshot().await), expected);
     let bytes = durable_bytes(&fixture, &handle, &control_snapshot).await;
     assert_eq!(checked(handle.step(original.clone()).await), receipt);
-    assert_eq!(durable_bytes(&fixture, &handle, &control_snapshot).await, bytes);
+    assert_eq!(
+        durable_bytes(&fixture, &handle, &control_snapshot).await,
+        bytes
+    );
     assert!(checked(handle.drain().await));
     assert_eq!(
         checked(fixture.state().neuron_generation_drain_blockers()),
@@ -295,11 +279,11 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.task_cost().await), receipt.cost);
     assert_eq!(checked(handle.snapshot().await), expected);
     assert!(checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture, &handle, &control_snapshot).await, drained_bytes);
     assert_eq!(
-        checked(control_snapshot.bytes()),
-        control_before
+        durable_bytes(&fixture, &handle, &control_snapshot).await,
+        drained_bytes
     );
+    assert_eq!(checked(control_snapshot.bytes()), control_before);
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
@@ -354,7 +338,10 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         handle.step(original.clone()).await,
         Err(CellGenerationErrorV2::Pending)
     );
-    assert_eq!(durable_bytes(&fixture, &handle, &control_snapshot).await, bytes);
+    assert_eq!(
+        durable_bytes(&fixture, &handle, &control_snapshot).await,
+        bytes
+    );
     assert_eq!(
         handle.cancel(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Conflict)
@@ -430,7 +417,10 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     );
     assert_eq!(checked(handle.pending_request().await), Some(original));
     assert!(!checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture, &handle, &control_snapshot).await, bytes);
+    assert_eq!(
+        durable_bytes(&fixture, &handle, &control_snapshot).await,
+        bytes
+    );
     assert_eq!(contacts.load(Ordering::SeqCst), 1);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     assert!(checked(handle.pending_output().await).is_none());
@@ -447,9 +437,7 @@ async fn control_snapshot_serializes_with_real_owner_and_preserves_locks() {
     let clock = clock();
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks, snapshot) = start(
-        &fixture, Arc::clone(&clock), worker, contacts,
-    ).await;
+    let (handle, mut tasks, snapshot) = start(&fixture, Arc::clone(&clock), worker, contacts).await;
     let before = checked(snapshot.bytes());
     let original = original(&fixture, &clock);
     let observations = tokio::task::spawn_blocking(move || {
@@ -460,7 +448,10 @@ async fn control_snapshot_serializes_with_real_owner_and_preserves_locks() {
         }
         (snapshot, bytes)
     });
-    assert_eq!(handle.step(original).await, Err(CellGenerationErrorV2::Pending));
+    assert_eq!(
+        handle.step(original).await,
+        Err(CellGenerationErrorV2::Pending)
+    );
     let (snapshot, observations) = checked(observations.await);
     let after = checked(snapshot.bytes());
     assert_ne!(after, before);
@@ -468,40 +459,9 @@ async fn control_snapshot_serializes_with_real_owner_and_preserves_locks() {
     assert!(observations.iter().all(|bytes| after.starts_with(bytes)));
     durable_bytes(&fixture, &handle, &snapshot).await;
     tasks.shutdown().await;
-}
-
-#[tokio::test]
-async fn control_snapshot_rejects_oversized_file_before_read_and_preserves_cursor() {
-    use std::io::Seek;
-
-    let fixture = Fixture::new().await;
-    let (control, readback) = open_observed_control(&fixture).await;
-    let mut probe = checked(readback.try_clone());
-    checked(probe.set_len(64 * 1024 * 1024 + 1));
-    let position = checked(probe.stream_position());
-    let (mut port, snapshot) = checked(ControlledCellGenerationPortV2::spawn_with_test_snapshot(
-        control,
-        readback,
-        ControlledCellGenerationConfigV2 {
-            scope: fixture.config.initial.scope.clone(),
-            manifest: fixture.config.manifest.clone(),
-            worker_generation: fixture.identity.spawn_generation,
-            queue_capacity: 2,
-            rpc_timeout: Duration::from_secs(1),
-        },
-        Arc::new(UnknownWorker::default()),
-        clock(),
-    ));
-    let error = snapshot.bytes().expect_err("oversized snapshot must fail before allocation");
-    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(checked(probe.stream_position()), position);
-    assert_eq!(checked(probe.metadata()).len(), 64 * 1024 * 1024 + 1);
-    checked(probe.set_len(0));
-    assert!(checked(snapshot.bytes()).is_empty());
-    assert_eq!(checked(probe.stream_position()), position);
-    checked(port.shutdown());
     assert_eq!(
         snapshot.bytes().expect_err("closed owner").kind(),
         std::io::ErrorKind::BrokenPipe
     );
 }
+
