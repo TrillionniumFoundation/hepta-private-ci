@@ -1,0 +1,32 @@
+name: Windows owned-handle observation qualification
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-windows-handle-observation.yml"
+      - "scripts/hepta_windows_handle_observation.py"
+permissions:
+  contents: read
+jobs:
+  handles:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify exact source and qualify native handles
+        shell: pwsh
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if ((git rev-parse HEAD) -ne $env:EXPECTED_HEAD) { throw "head mismatch" }
+          python scripts/hepta_windows_handle_observation.py 2>&1 | Tee-Object -FilePath "$env:RUNNER_TEMP/handle-observation.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Retain unmodified experimental output
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-handle-observation-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/handle-observation.log
+          if-no-files-found: warn
