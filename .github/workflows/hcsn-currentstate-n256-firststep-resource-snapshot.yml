@@ -20,6 +20,9 @@ jobs:
           python-version: "3.12"
       - name: Verify frozen observation source
         run: python3 qualification/hcsn_currentstate_n256_firststep_resource_snapshot/verify_source.py
+
+      - name: Verify retry request and preserved RED
+        run: python3 qualification/hcsn_currentstate_n256_firststep_resource_snapshot/verify_retry_v2.py
       - name: Run five small stdlib controls
         run: python3 -m unittest qualification.hcsn_currentstate_n256_firststep_resource_snapshot.test_source -v
       - name: Run optimized controls
