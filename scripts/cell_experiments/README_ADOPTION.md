@@ -130,6 +130,28 @@ for equality. This tests loaded-version and deterministic-output continuity;
 it is not an additional independent task, an agentd restart, or recurrent hidden
 state recovery. Backend sampling must be fixed by the frozen runtime profile.
 
+### Optional distinct D tasks after cold recovery
+
+Freeze `plan.d_tasks` and matching request `d_tasks` together, with the same
+metadata/record format as C. D contains 1–64 confirmation records; declared
+sources must be disjoint from A/B/C, and task IDs/digests cannot repeat B/C or
+another D task. Record hashes, splits and the complete panel are checked before
+any C execution. These checks bind declared data; they do not authenticate
+independent origins or prove that a development record was previously unseen.
+
+The cold process reserves a create-only `COLD_ADMISSION.json` before model load.
+It replays the last C input and checks the original prediction before running D
+on the same selected model. Each completed D is retained in `D_RECEIPTS.json`.
+An interrupted attempt cannot automatically repeat D, including by calling the
+recovery entry point again. Missing D originals prevent successful readback.
+
+`fresh_D_status: COMPLETE_ENGINEERING` means this distinct frozen panel executed
+after cold replay. The independent E6 and native-owner gates remain blocked.
+`execution_costs` separates hot C, cold C replay and cold D calls/tokens/reported
+prediction time. Cold process wall time overlaps its inference time and must not
+be added to it. Training/B costs and energy remain unknown; `costs_complete`
+stays false. Omitting D preserves the original replay-only experiment behavior.
+
 ## Explicit qualification boundary
 
 The experiment journal is not the existing CellOwner/agentd authority or a

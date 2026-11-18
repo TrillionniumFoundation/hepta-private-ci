@@ -324,6 +324,9 @@ def validate(request):
             and digest(task["record"]) == task["task_digest"],
             "C changed since freeze or has wrong split",
         )
+    from .adoption_future import validate_d
+
+    validate_d(request, sys.modules[__name__])
     return (
         ("ADOPTED" if adopted else "NO_UPDATE"),
         (candidate if adopted else parent),
@@ -377,19 +380,30 @@ def recover(spec, expected_digest=None):
             (spec["operation_id"],),
         ).fetchone()
     require(row == (spec["binding"], selected), "cold durable selection changed")
+    from .adoption_future import admit_d, execute_d
+
+    require(
+        "d_tasks" not in spec or expected_digest is not None,
+        "D requires the original cold request digest",
+    )
+    admit_d(spec, sys.modules[__name__])
     predictor = load_predictor(spec["manifest"], spec["artifact_root"])
     try:
         result = prediction(predictor, spec["record"], selected)
+        new_tasks = execute_d(predictor, spec, selected, result, sys.modules[__name__])
         require(
             verify_manifest(spec["manifest"], spec["artifact_root"]) == selected,
             "cold materials changed",
         )
-        return {
+        recovered = {
             "pid": os.getpid(),
             "ppid": os.getppid(),
             "selected_model_digest": selected,
             "prediction": result,
         }
+        if new_tasks is not None:
+            recovered["D"] = new_tasks
+        return recovered
     finally:
         predictor.close()
 
@@ -548,6 +562,11 @@ def execute(request, output):
             binding=binding,
             record=request["c_tasks"][-1]["record"],
         )
+        if "d_tasks" in request:
+            spec.update(
+                d_tasks=request["d_tasks"],
+                replay_expected=comparable(report["C"][-1]["prediction"]),
+            )
         save(root / "COLD_REQUEST.json", spec)
         timeout = plan.get("cold_timeout_seconds", 120)
         require(
@@ -625,6 +644,20 @@ def execute(request, output):
             costs_complete=False,
             energy_joules=None,
         )
+        if "d_tasks" in request:
+            from .adoption_future import measured_costs
+
+            require(
+                cold.get("D") == read_json(root / "D_RECEIPTS.json")
+                and len(cold["D"]) == len(request["d_tasks"]),
+                "D receipts incomplete",
+            )
+            report.update(
+                D=cold["D"],
+                fresh_D_status="COMPLETE_ENGINEERING",
+                cold_scope="new process; checked last-C replay followed by distinct frozen D tasks; independent provenance unauthenticated",
+            )
+            report["execution_costs"] = measured_costs(report)
     except FileNotFoundError as error:
         report.update(status="INCOMPLETE" if inserted else "BLOCKED", reason=str(error))
     except EvidenceError as error:

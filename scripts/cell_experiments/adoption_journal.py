@@ -129,6 +129,9 @@ def completed_report(root, prior, binding, selected, decision, plan_digest, api)
             "cold_process_digest",
             "cold_scope",
             "wall_seconds",
+            "D",
+            "fresh_D_status",
+            "execution_costs",
         )
     }
     expected_decision.update(status="INCOMPLETE", C=[])
@@ -140,6 +143,11 @@ def completed_report(root, prior, binding, selected, decision, plan_digest, api)
         binding=binding,
         record=request["c_tasks"][-1]["record"],
     )
+    if "d_tasks" in request:
+        expected_cold.update(
+            d_tasks=request["d_tasks"],
+            replay_expected=api.comparable(old["C"][-1]["prediction"]),
+        )
     for name, value in (
         ("RESULT.json", old),
         ("C_RECEIPTS.json", old.get("C")),
@@ -170,4 +178,28 @@ def completed_report(root, prior, binding, selected, decision, plan_digest, api)
         and process.get("seconds") == old.get("cold_wall_seconds"),
         "retained cold process changed",
     )
+    if "d_tasks" in request:
+        from .adoption_future import measured_costs
+
+        materials = {
+            "D_RECEIPTS.json": old.get("D"),
+            "COLD_ADMISSION.json": dict(
+                schema="hepta.e6.cold-admission.v1",
+                binding=binding,
+                spec_digest=api.digest(expected_cold),
+            ),
+        }
+        for name, value in materials.items():
+            path = root / name
+            api.require(
+                path.is_file(), "retained D material is missing: " + name, "INCOMPLETE"
+            )
+            api.require(
+                api.read_json(path) == value, "retained D material changed: " + name
+            )
+        api.require(
+            old.get("D") == old["cold"].get("D")
+            and old.get("execution_costs") == measured_costs(old),
+            "retained D or cost accounting changed",
+        )
     return old
