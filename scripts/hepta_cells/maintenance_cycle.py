@@ -46,10 +46,14 @@ from .maintenance_execution import (
 
 
 def cost_summary(windows, report):
-    all_windows = [*windows, *(
-        row for value in report.values()
-        for row in value["cold"].get("cost_windows", [])
-    )]
+    all_windows = [
+        *windows,
+        *(
+            row
+            for value in report.values()
+            for row in value["cold"].get("cost_windows", [])
+        ),
+    ]
     groups = {}
     for row in all_windows:
         if row["stage"] == "task":
@@ -57,8 +61,10 @@ def cost_summary(windows, report):
             groups.setdefault(key, []).append(row)
     return dict(
         windows=all_windows,
-        task_latency={key: summarize_tasks(rows, scope=rows[0]["scope"])
-                      for key, rows in sorted(groups.items())},
+        task_latency={
+            key: summarize_tasks(rows, scope=rows[0]["scope"])
+            for key, rows in sorted(groups.items())
+        },
         decisions=summarize_decisions([value["decision"] for value in report.values()]),
         aggregation="windows are inclusive and may nest; never add stage, task, child and outer windows",
         shared_diagnostics="A acquisition and B original diagnostics are recorded once; A/B/retention per-arm windows exclude them",
@@ -77,7 +83,9 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
     pins = freeze_runtime_pins(root, runtime_pins)
     numeric = numeric_identity()
     plan = dict(
-        schema="hepta.semantic-maintenance-cycle.v1" if semantic else "hepta.controlled-maintenance-cycle.v1",
+        schema="hepta.semantic-maintenance-cycle.v1"
+        if semantic
+        else "hepta.controlled-maintenance-cycle.v1",
         parent_pid=os.getpid(),
         panels=panels,
         source_sha256=frozen_sources,
@@ -124,8 +132,11 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
         observed, episodes, labels = {}, {}, {}
         for task in panels["A"]:
             with measure_window(
-                windows, "data_acquisition", "shared A diagnostic, four repair outcomes and encoding",
-                phase="A", task_id=task["id"],
+                windows,
+                "data_acquisition",
+                "shared A diagnostic, four repair outcomes and encoding",
+                phase="A",
+                task_id=task["id"],
                 diagnostic_scope="once across both cells and all arms; not charged again per arm",
             ):
                 original = compiler.check(task, task["source"], "A", "observation")
@@ -185,8 +196,13 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                 a_served, batch, actions, targets = [], [], [], []
                 for task in panels["A"]:
                     with measure_window(
-                        windows, "task", "Cell owner, inference, repair and compile/semantic check",
-                        phase="A", cell=cell, arm="active", task_id=task["id"],
+                        windows,
+                        "task",
+                        "Cell owner, inference, repair and compile/semantic check",
+                        phase="A",
+                        cell=cell,
+                        arm="active",
+                        task_id=task["id"],
                         diagnostic_scope="excludes earlier shared A diagnostic and label acquisition",
                     ) as task_cost:
                         use = serve(
@@ -226,8 +242,11 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                         allowed=np.asarray(targets, dtype=bool),
                     )
                 with measure_window(
-                    windows, "training", "isolated candidate copy and Adam fitting",
-                    cell=cell, preparation_scope="A acquisition and dataset serialization are outside this window",
+                    windows,
+                    "training",
+                    "isolated candidate copy and Adam fitting",
+                    cell=cell,
+                    preparation_scope="A acquisition and dataset serialization are outside this window",
                 ):
                     candidate, training = kernel.train_candidate(
                         batch,
@@ -252,20 +271,27 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                     directory / "candidate.npz", candidate.initial_state("active")
                 )
                 with measure_window(
-                    windows, "validation", "B and A-retention evaluation with all arms and persisted evaluation",
+                    windows,
+                    "validation",
+                    "B and A-retention evaluation with all arms and persisted evaluation",
                     cell=cell,
                 ):
                     results = {}
                     for phase in ("B", "A-retention"):
                         phase_results = {
                             arm: []
-                            for arm in (ARMS if phase == "B" else ("frozen", "candidate"))
+                            for arm in (
+                                ARMS if phase == "B" else ("frozen", "candidate")
+                            )
                         }
                         for task in panels["B" if phase == "B" else "A"]:
                             if task["id"] not in episodes:
                                 with measure_window(
-                                    windows, "shared_diagnostic", "original B diagnostic and encoding shared across all cells/arms",
-                                    phase=phase, task_id=task["id"],
+                                    windows,
+                                    "shared_diagnostic",
+                                    "original B diagnostic and encoding shared across all cells/arms",
+                                    phase=phase,
+                                    task_id=task["id"],
                                 ):
                                     original = compiler.check(
                                         task, task["source"], phase, "observation"
@@ -276,8 +302,13 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                                     )
                             for arm, outcomes in phase_results.items():
                                 with measure_window(
-                                    windows, "task", "Cell owner, inference, repair and compile/semantic check",
-                                    phase=phase, cell=cell, arm=arm, task_id=task["id"],
+                                    windows,
+                                    "task",
+                                    "Cell owner, inference, repair and compile/semantic check",
+                                    phase=phase,
+                                    cell=cell,
+                                    arm=arm,
+                                    task_id=task["id"],
                                     diagnostic_scope="excludes shared original diagnostic and encoding",
                                 ) as task_cost:
                                     if arm == "deterministic":
@@ -293,7 +324,9 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                                         use = serve(
                                             owner,
                                             candidate if trained else kernel,
-                                            candidate_bundle if trained else parent_bundle,
+                                            candidate_bundle
+                                            if trained
+                                            else parent_bundle,
                                             task,
                                             episodes[task["id"]],
                                             arm,
@@ -310,7 +343,9 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                         results[phase] = phase_results
                     evaluation_hash = save(directory / "EVALUATION.json", results)
                 with measure_window(
-                    windows, "selection_and_switch", "fixed gate, Adopt or NoUpdate, active-version readback and persisted decision",
+                    windows,
+                    "selection_and_switch",
+                    "fixed gate, Adopt or NoUpdate, active-version readback and persisted decision",
                     cell=cell,
                 ) as decision_cost:
                     counts = {
@@ -335,9 +370,12 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                         candidate_manifest == parent_manifest
                         or target.identity == parent.identity
                     ):
-                        raise ValueError("trained candidate reused its parent's identity")
+                        raise ValueError(
+                            "trained candidate reused its parent's identity"
+                        )
                     qualification = Qualification(
-                        parent.identity.digest, target.identity.digest,
+                        parent.identity.digest,
+                        target.identity.digest,
                         evaluation_hash if semantic else plan_hash,
                     )
                     decision = dict(
@@ -358,7 +396,9 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                     )
                     if admitted:
                         owner.qualify = lambda q: q == qualification
-                        decision["adoption"] = owner.adopt(active, target, qualification)
+                        decision["adoption"] = owner.adopt(
+                            active, target, qualification
+                        )
                     selected, selected_bundle = (
                         (candidate, candidate_bundle)
                         if admitted
@@ -380,11 +420,18 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                 c_results = []
                 for task in panels["C"]:
                     with measure_window(
-                        windows, "task", "fresh original diagnostic, Cell owner, inference, repair and compile/semantic check",
-                        phase="C", cell=cell, arm="selected", task_id=task["id"],
+                        windows,
+                        "task",
+                        "fresh original diagnostic, Cell owner, inference, repair and compile/semantic check",
+                        phase="C",
+                        cell=cell,
+                        arm="selected",
+                        task_id=task["id"],
                         diagnostic_scope="fresh diagnostic and encoding included for this cell/task",
                     ) as task_cost:
-                        original = compiler.check(task, task["source"], "C", "observation")
+                        original = compiler.check(
+                            task, task["source"], "C", "observation"
+                        )
                         use = serve(
                             owner,
                             selected,
@@ -431,8 +478,11 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
                 cold_wall = time.perf_counter_ns()
                 child_cpu_before = child_cpu_seconds()
                 with measure_window(
-                    windows, "cold_process", "fresh child launch, restore, inference, optional D task and wait/capture",
-                    cell=cell, persistence_scope="parent COLD_PROCESS log persistence occurs after this window",
+                    windows,
+                    "cold_process",
+                    "fresh child launch, restore, inference, optional D task and wait/capture",
+                    cell=cell,
+                    persistence_scope="parent COLD_PROCESS log persistence occurs after this window",
                 ):
                     child = subprocess.run(
                         [
@@ -505,15 +555,19 @@ def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
             energy_joules=None,
             peak_rss_bytes=None,
             cost_observations=cost_summary(windows, report),
-            status="SEMANTIC_FIXTURE_COMPLETE" if semantic else "CONTROLLED_FIXTURE_COMPLETE",
+            status="SEMANTIC_FIXTURE_COMPLETE"
+            if semantic
+            else "CONTROLLED_FIXTURE_COMPLETE",
             cost_scope="outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
         )
         if semantic:
             result.update(
                 semantic_subprocesses=compiler.semantic_calls,
                 parent_compile_calls=compiler.calls,
-                cold_new_tasks={cell: value["cold"]["new_task"]["outcome"]["success"]
-                                for cell, value in report.items()},
+                cold_new_tasks={
+                    cell: value["cold"]["new_task"]["outcome"]["success"]
+                    for cell, value in report.items()
+                },
                 compile_count_scope="compile_calls counts parent checks; semantic subprocess compiles and cold checks are recorded separately",
             )
         save(root / "RESULT.json", result)

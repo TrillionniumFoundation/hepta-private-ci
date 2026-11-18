@@ -65,7 +65,9 @@ class HiaCellComponent:
             or self.image_sha256 != source.image_sha256
             or type(self.inner) is not type(source.inner)
         ):
-            raise CellError("HIA migration must retain owner, native transport and image")
+            raise CellError(
+                "HIA migration must retain owner, native transport and image"
+            )
         before, prior = self.identity, source.identity
         owner, native, image = self.owner, self.native, self.image_sha256
         if before.effectful or prior.effectful:
@@ -77,11 +79,16 @@ class HiaCellComponent:
         if (
             self.identity != before
             or source.identity != prior
-            or self.owner is not owner or source.owner is not owner
-            or self.native is not native or source.native is not native
-            or self.image_sha256 != image or source.image_sha256 != image
+            or self.owner is not owner
+            or source.owner is not owner
+            or self.native is not native
+            or source.native is not native
+            or self.image_sha256 != image
+            or source.image_sha256 != image
         ):
-            raise CellError("HIA migration identity or custody changed during conversion")
+            raise CellError(
+                "HIA migration identity or custody changed during conversion"
+            )
         return migrated
 
     def _row(self, partition, request):

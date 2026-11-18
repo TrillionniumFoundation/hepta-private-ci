@@ -119,16 +119,22 @@ def recover(spec_path):
     windows = []
     try:
         with measure_window(
-            windows, "recovery", "cold model/owner restore, exact inference and optional D task",
+            windows,
+            "recovery",
+            "cold model/owner restore, exact inference and optional D task",
             cell=spec["cell"],
         ):
             result = _recover(spec_path, windows)
         result["cost_windows"] = windows
         save(root / "COLD_RESULT.json", result)
     except BaseException as error:
-        save(root / "COLD_FAILURE.json", dict(
-            error=f"{type(error).__name__}: {error}", cost_windows=windows,
-        ))
+        save(
+            root / "COLD_FAILURE.json",
+            dict(
+                error=f"{type(error).__name__}: {error}",
+                cost_windows=windows,
+            ),
+        )
         raise
 
 
@@ -180,20 +186,42 @@ def _recover(spec_path, windows):
         if spec.get("semantic") is True:
             task = spec["new_task"]
             with measure_window(
-                windows, "task", "fresh original diagnostic, Cell inference, repair and semantic check",
-                phase="D-cold", cell=spec["cell"], arm="selected", task_id=task["id"],
+                windows,
+                "task",
+                "fresh original diagnostic, Cell inference, repair and semantic check",
+                phase="D-cold",
+                cell=spec["cell"],
+                arm="selected",
+                task_id=task["id"],
                 diagnostic_scope="fresh diagnostic included; no shared diagnostic allocation",
             ) as task_cost:
-                compiler = Compiler(root, time.perf_counter(), semantic=True, filename="cold-compile.jsonl")
+                compiler = Compiler(
+                    root,
+                    time.perf_counter(),
+                    semantic=True,
+                    filename="cold-compile.jsonl",
+                )
                 original = compiler.check(task, task["source"], "D-cold", "observation")
-                use = serve(owner, kernel, Bundle(**spec["bundle"]), task,
-                            observations(task, original), "active", runtime=runtime, active=True)
+                use = serve(
+                    owner,
+                    kernel,
+                    Bundle(**spec["bundle"]),
+                    task,
+                    observations(task, original),
+                    "active",
+                    runtime=runtime,
+                    active=True,
+                )
                 use["outcome"] = compiler.check(
-                    task, repair(task["source"], use["action"]), "D-cold", spec["cell"] + "-selected",
+                    task,
+                    repair(task["source"], use["action"]),
+                    "D-cold",
+                    spec["cell"] + "-selected",
                 )
             use["task_cost"] = task_cost
             result.update(
-                new_task=use, cold_compile_calls=compiler.calls,
+                new_task=use,
+                cold_compile_calls=compiler.calls,
                 semantic_subprocesses=compiler.semantic_calls,
                 wall_ns=time.perf_counter_ns() - wall,
                 cpu_ns=time.process_time_ns() - cpu,

@@ -103,11 +103,23 @@ def fixed_panels(*, semantic=False):
             if semantic:
                 task.update(
                     entry=name,
-                    checks=[dict(args=[x], expected=f"tag_{number}" if index % 4 == 2 else x + number)
-                            for x in (-7, 0, 11)],
-                    provenance=dict(origin="controlled-generated-template",
-                                    family=("expected ':'", "was never closed", "unterminated string",
-                                            "expected an indented block")[index % 4], split=phase),
+                    checks=[
+                        dict(
+                            args=[x],
+                            expected=f"tag_{number}" if index % 4 == 2 else x + number,
+                        )
+                        for x in (-7, 0, 11)
+                    ],
+                    provenance=dict(
+                        origin="controlled-generated-template",
+                        family=(
+                            "expected ':'",
+                            "was never closed",
+                            "unterminated string",
+                            "expected an indented block",
+                        )[index % 4],
+                        split=phase,
+                    ),
                 )
             rows.append(task)
         panels[phase] = rows
@@ -312,8 +324,11 @@ def review_cell(root, cell, plan, result, manifests, compile_rows, *, semantic=F
         "reported B/retention counts differ",
     )
     if semantic:
-        require(decision["evaluation_digest"] == sha((directory / "EVALUATION.json").read_bytes()),
-                "decision is not bound to actual independent evaluation bytes")
+        require(
+            decision["evaluation_digest"]
+            == sha((directory / "EVALUATION.json").read_bytes()),
+            "decision is not bound to actual independent evaluation bytes",
+        )
     require(
         decision["ordinary_adopt"] == decision["ordinary_no_update"] == 0,
         "ordinary authority claim differs",
@@ -431,16 +446,26 @@ def review_cell(root, cell, plan, result, manifests, compile_rows, *, semantic=F
         ]
     )
     if semantic:
-        require(cold_request["new_task"] == plan["cold_task"] and cold_request["semantic"] is True,
-                "cold new task differs from the frozen task")
-        require(cold["cold_compile_calls"] == 2 and cold["new_task"]["candidate_manifest_sha256"] == selected_id
-                and cold["new_task"]["wrapper_identity_digest"] == decision["selected_identity"],
-                "cold new task did not use the selected version")
+        require(
+            cold_request["new_task"] == plan["cold_task"]
+            and cold_request["semantic"] is True,
+            "cold new task differs from the frozen task",
+        )
+        require(
+            cold["cold_compile_calls"] == 2
+            and cold["new_task"]["candidate_manifest_sha256"] == selected_id
+            and cold["new_task"]["wrapper_identity_digest"]
+            == decision["selected_identity"],
+            "cold new task did not use the selected version",
+        )
         rows.append(cold["new_task"])
     known_outcomes = {canonical(row) for row in compile_rows}
     if semantic:
         from verify_hepta_semantic_cycle import review_served
-        tasks = {task["id"]: task for panel in plan["panels"].values() for task in panel}
+
+        tasks = {
+            task["id"]: task for panel in plan["panels"].values() for task in panel
+        }
         tasks[plan["cold_task"]["id"]] = plan["cold_task"]
     for row in rows:
         if "outcome" in row:
@@ -468,8 +493,11 @@ def review_cell(root, cell, plan, result, manifests, compile_rows, *, semantic=F
         directory, receipts, manifests, plan["native"]["image_sha256"]
     )
     require(
-        journal["native_completed"] == ((265 if cell == "memory" else 457)
-                                        + ((4 if cell == "memory" else 7) if semantic else 0)),
+        journal["native_completed"]
+        == (
+            (265 if cell == "memory" else 457)
+            + ((4 if cell == "memory" else 7) if semantic else 0)
+        ),
         "fixed native serving schedule changed",
     )
     reported = result["cells"][cell]
@@ -511,9 +539,19 @@ def review(directory, *, semantic=False):
     root = Path(directory).resolve(strict=True)
     plan, result = read(root / "PLAN.json"), read(root / "RESULT.json")
     plan_hash = sha((root / "PLAN.json").read_bytes())
-    require(plan["panels"] == fixed_panels(semantic=semantic), "predeclared A/B/C fixtures changed")
-    require(plan["schema"] == ("hepta.semantic-maintenance-cycle.v1" if semantic
-                               else "hepta.controlled-maintenance-cycle.v1"), "plan schema differs")
+    require(
+        plan["panels"] == fixed_panels(semantic=semantic),
+        "predeclared A/B/C fixtures changed",
+    )
+    require(
+        plan["schema"]
+        == (
+            "hepta.semantic-maintenance-cycle.v1"
+            if semantic
+            else "hepta.controlled-maintenance-cycle.v1"
+        ),
+        "plan schema differs",
+    )
     require(
         (
             plan["seed"],
@@ -528,7 +566,8 @@ def review(directory, *, semantic=False):
     )
     require(
         result["plan_sha256"] == plan_hash
-        and result["status"] == ("SEMANTIC_FIXTURE_COMPLETE" if semantic else "CONTROLLED_FIXTURE_COMPLETE"),
+        and result["status"]
+        == ("SEMANTIC_FIXTURE_COMPLETE" if semantic else "CONTROLLED_FIXTURE_COMPLETE"),
         "run did not complete against retained plan",
     )
     require(
@@ -605,23 +644,43 @@ def review(directory, *, semantic=False):
         )
     if semantic:
         from verify_hepta_semantic_cycle import review_rows, review_training_data
-        cold_rows = [row for cell in ("memory", "predictor")
-                     for row in map(json.loads, (root / cell / "cold-compile.jsonl").read_text().splitlines())]
+
+        cold_rows = [
+            row
+            for cell in ("memory", "predictor")
+            for row in map(
+                json.loads,
+                (root / cell / "cold-compile.jsonl").read_text().splitlines(),
+            )
+        ]
         require(len(cold_rows) == 4, "cold compile schedule differs")
         review_rows(plan, compile_rows + cold_rows)
         review_training_data(plan, compile_rows, read(root / "A_DATA.json"))
-        require(result["parent_compile_calls"] == len(compile_rows)
-                and result["semantic_subprocesses"] == sum(row["compile_success"] for row in compile_rows),
-                "parent semantic process counts differ")
-        require(result["cold_new_tasks"] == {cell: result["cells"][cell]["cold"]["new_task"]["outcome"]["success"]
-                                             for cell in ("memory", "predictor")}, "cold task result summary differs")
+        require(
+            result["parent_compile_calls"] == len(compile_rows)
+            and result["semantic_subprocesses"]
+            == sum(row["compile_success"] for row in compile_rows),
+            "parent semantic process counts differ",
+        )
+        require(
+            result["cold_new_tasks"]
+            == {
+                cell: result["cells"][cell]["cold"]["new_task"]["outcome"]["success"]
+                for cell in ("memory", "predictor")
+            },
+            "cold task result summary differs",
+        )
         compile_rows += cold_rows
     cells = {
-        cell: review_cell(root, cell, plan, result, manifests, compile_rows, semantic=semantic)
+        cell: review_cell(
+            root, cell, plan, result, manifests, compile_rows, semantic=semantic
+        )
         for cell in ("memory", "predictor")
     }
     return dict(
-        schema="hepta.semantic-maintenance-readonly-review.v1" if semantic else "hepta.controlled-maintenance-readonly-review.v1",
+        schema="hepta.semantic-maintenance-readonly-review.v1"
+        if semantic
+        else "hepta.controlled-maintenance-readonly-review.v1",
         status="READ_ONLY_CONSISTENCY_PASS",
         root=str(root),
         verifier_sha256=sha(Path(__file__).read_bytes()),

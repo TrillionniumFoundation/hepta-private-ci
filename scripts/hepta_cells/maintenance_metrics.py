@@ -24,12 +24,20 @@ def _usage():
         children = resource.getrusage(resource.RUSAGE_CHILDREN)
     except (OSError, ValueError):
         return None
-    scale = 1 if sys.platform == "darwin" else 1024 if sys.platform.startswith("linux") else None
+    scale = (
+        1
+        if sys.platform == "darwin"
+        else 1024
+        if sys.platform.startswith("linux")
+        else None
+    )
     return {
         "self_cpu_seconds": own.ru_utime + own.ru_stime,
         "reaped_children_cpu_seconds": children.ru_utime + children.ru_stime,
         "self_lifetime_peak_rss_bytes": int(own.ru_maxrss * scale) if scale else None,
-        "reaped_children_max_peak_rss_bytes": int(children.ru_maxrss * scale) if scale else None,
+        "reaped_children_max_peak_rss_bytes": int(children.ru_maxrss * scale)
+        if scale
+        else None,
     }
 
 
@@ -44,7 +52,9 @@ class Measurement:
     def __init__(self, stage, scope, *, parent_scope=None):
         if not all(type(value) is str and value for value in (stage, scope)):
             raise ValueError("stage and scope must be nonempty strings")
-        if parent_scope is not None and (type(parent_scope) is not str or not parent_scope):
+        if parent_scope is not None and (
+            type(parent_scope) is not str or not parent_scope
+        ):
             raise ValueError("parent scope must be a nonempty string or None")
         self.stage, self.scope, self.parent_scope = stage, scope, parent_scope
         self.result = None
@@ -60,7 +70,10 @@ class Measurement:
         wall, cpu, after = time.perf_counter_ns(), time.process_time_ns(), _usage()
         child_cpu = None
         if self._before is not None and after is not None:
-            delta = after["reaped_children_cpu_seconds"] - self._before["reaped_children_cpu_seconds"]
+            delta = (
+                after["reaped_children_cpu_seconds"]
+                - self._before["reaped_children_cpu_seconds"]
+            )
             if delta >= 0:
                 child_cpu = delta
         self.result = {
@@ -128,7 +141,9 @@ def summarize_decisions(rows):
     for row in rows:
         decision = row.get("decision")
         if decision not in ("Adopt", "NoUpdate"):
-            raise ValueError("only completed Adopt/NoUpdate decisions can be summarized")
+            raise ValueError(
+                "only completed Adopt/NoUpdate decisions can be summarized"
+            )
         reason = row.get("reason")
         if type(reason) is not str or not reason:
             raise ValueError("completed decisions must retain their reason")

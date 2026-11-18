@@ -20,7 +20,9 @@ class SemanticMaintenanceTests(unittest.TestCase):
         result = evaluate(self.task, source)
         self.assertEqual(result["status"], "failed")
         self.assertFalse(result["success"])
-        self.assertEqual([r["observed"] for r in result["child"]["checks"]], [-10, -3, 8])
+        self.assertEqual(
+            [r["observed"] for r in result["child"]["checks"]], [-10, -3, 8]
+        )
 
     def test_real_correct_function_and_literal_cases(self):
         for task in (self.task, fixtures(semantic=True)["B"][2], cold_task()):
@@ -37,7 +39,11 @@ class SemanticMaintenanceTests(unittest.TestCase):
         self.assertFalse(result["success"])
 
     def test_timeout_terminates_owned_child(self):
-        result = evaluate(self.task, "def fixture_A_0(x):\n    while True:\n        pass\n", timeout_seconds=0.15)
+        result = evaluate(
+            self.task,
+            "def fixture_A_0(x):\n    while True:\n        pass\n",
+            timeout_seconds=0.15,
+        )
         self.assertEqual(result["status"], "timeout")
         self.assertIsInstance(result["returncode"], int)
         self.assertFalse(result["success"])
@@ -53,8 +59,12 @@ class SemanticMaintenanceTests(unittest.TestCase):
     def test_compiler_records_success_only_after_semantic_pass(self):
         with tempfile.TemporaryDirectory() as directory:
             compiler = Compiler(Path(directory), time.perf_counter(), semantic=True)
-            bad = compiler.check(self.task, "def fixture_A_0(x):\n    return 0\n", "B", "candidate")
-            good = compiler.check(self.task, repair(self.task["source"], 0), "B", "candidate")
+            bad = compiler.check(
+                self.task, "def fixture_A_0(x):\n    return 0\n", "B", "candidate"
+            )
+            good = compiler.check(
+                self.task, repair(self.task["source"], 0), "B", "candidate"
+            )
             self.assertTrue(bad["compile_success"])
             self.assertFalse(bad["success"])
             self.assertTrue(good["success"])
@@ -73,15 +83,22 @@ class SemanticMaintenanceTests(unittest.TestCase):
             split_binding(wrong)
         changed = copy.deepcopy(self.task)
         changed["checks"][0]["expected"] += 1
-        self.assertNotEqual(contract(changed)["checks_sha256"], contract(self.task)["checks_sha256"])
+        self.assertNotEqual(
+            contract(changed)["checks_sha256"], contract(self.task)["checks_sha256"]
+        )
 
     def test_independent_review_rejects_promoted_compile_and_changed_checks(self):
         panels = fixtures(semantic=True)
-        plan = dict(panels=panels, cold_task=cold_task(),
-                    task_contracts=split_binding({**panels, "D-cold": [cold_task()]}))
+        plan = dict(
+            panels=panels,
+            cold_task=cold_task(),
+            task_contracts=split_binding({**panels, "D-cold": [cold_task()]}),
+        )
         with tempfile.TemporaryDirectory() as directory:
             compiler = Compiler(Path(directory), time.perf_counter(), semantic=True)
-            row = compiler.check(self.task, repair(self.task["source"], 0), "A", "acquisition")
+            row = compiler.check(
+                self.task, repair(self.task["source"], 0), "A", "acquisition"
+            )
         review_rows(plan, [row])
         altered = copy.deepcopy(row)
         altered["semantic"]["checks_sha256"] = "0" * 64
@@ -98,11 +115,26 @@ class SemanticMaintenanceTests(unittest.TestCase):
 
     def test_review_binds_action_and_repair_to_original_native_logits(self):
         logits = [3.0, 1.0, -1.0, 0.0]
-        receipts = [dict(request_id=self.task["id"] + f"-event-{index}", output=dict(cell=dict(cursor=index + 1)))
-                    for index in range(3)]
-        receipts.append(dict(request_id=self.task["id"] + "-predict-0", output=dict(cell=dict(logits=logits))))
-        row = dict(action=0, chosen_logits=logits, predict_action=[0.0], receipts=receipts,
-                   outcome=dict(source=repair(self.task["source"], 0)))
+        receipts = [
+            dict(
+                request_id=self.task["id"] + f"-event-{index}",
+                output=dict(cell=dict(cursor=index + 1)),
+            )
+            for index in range(3)
+        ]
+        receipts.append(
+            dict(
+                request_id=self.task["id"] + "-predict-0",
+                output=dict(cell=dict(logits=logits)),
+            )
+        )
+        row = dict(
+            action=0,
+            chosen_logits=logits,
+            predict_action=[0.0],
+            receipts=receipts,
+            outcome=dict(source=repair(self.task["source"], 0)),
+        )
         review_served(row, "memory", self.task)
         changed = copy.deepcopy(row)
         changed["action"] = 3

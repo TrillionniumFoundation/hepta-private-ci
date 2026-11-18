@@ -22,7 +22,9 @@ import time
 
 EMPTY_WAL = {"memory/owner.sqlite-wal", "predictor/owner.sqlite-wal"}
 VERIFIER_SHA256 = "0901262d5ef3fdc2612acd2f5b00e4f1d098f80bf4fae59d348462126e68c0a2"
-SEMANTIC_VERIFIER_SHA256 = "8b68b808b29b30aa70ae4fea3452c17114309fa0fd28487bd02d5bdc0558ae4c"
+SEMANTIC_VERIFIER_SHA256 = (
+    "8b68b808b29b30aa70ae4fea3452c17114309fa0fd28487bd02d5bdc0558ae4c"
+)
 
 
 def require(condition, message):
@@ -190,7 +192,11 @@ def review_snapshot(source_directory, snapshot_dir, output, *, semantic=False):
     )
     verifier = (
         Path(__file__)
-        .with_name("verify_hepta_semantic_cycle.py" if semantic else "verify_hepta_maintenance_cycle.py")
+        .with_name(
+            "verify_hepta_semantic_cycle.py"
+            if semantic
+            else "verify_hepta_maintenance_cycle.py"
+        )
         .resolve(strict=True)
     )
     expected_verifier = SEMANTIC_VERIFIER_SHA256 if semantic else VERIFIER_SHA256
@@ -296,8 +302,13 @@ def review_snapshot(source_directory, snapshot_dir, output, *, semantic=False):
         )
         if semantic:
             require(
-                report["review"]["base_verifier_sha256"] == VERIFIER_SHA256
-                == sha(Path(__file__).with_name("verify_hepta_maintenance_cycle.py").read_bytes()),
+                report["review"]["base_verifier_sha256"]
+                == VERIFIER_SHA256
+                == sha(
+                    Path(__file__)
+                    .with_name("verify_hepta_maintenance_cycle.py")
+                    .read_bytes()
+                ),
                 "semantic review dependency differs",
             )
         stage = "post_review_invariance"
@@ -351,7 +362,9 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--semantic", action="store_true")
     args = parser.parse_args()
-    report = review_snapshot(args.source_directory, args.snapshot_dir, args.output, semantic=args.semantic)
+    report = review_snapshot(
+        args.source_directory, args.snapshot_dir, args.output, semantic=args.semantic
+    )
     print(
         json.dumps(
             {

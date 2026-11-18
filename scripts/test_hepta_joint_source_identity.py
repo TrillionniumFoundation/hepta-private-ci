@@ -8,7 +8,11 @@ import tempfile
 import unittest
 
 from package_hia_cell_candidate import git
-from qualify_hia_cell_joint import capture_source_identity, execution_sources, verify_source_identity
+from qualify_hia_cell_joint import (
+    capture_source_identity,
+    execution_sources,
+    verify_source_identity,
+)
 from refreeze_joint_worker import verify_transferred_identity
 
 
@@ -29,12 +33,22 @@ class SourceIdentityControls(unittest.TestCase):
         self.temp.cleanup()
 
     def commit(self, message, *extra):
-        git(self.root, "-c", "user.name=Source identity fixture",
-            "-c", "user.email=fixture@example.invalid",
-            "commit", "-qm", message, *extra)
+        git(
+            self.root,
+            "-c",
+            "user.name=Source identity fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "commit",
+            "-qm",
+            message,
+            *extra,
+        )
 
     def capture(self, *extra, allow_dirty=False):
-        return capture_source_identity(self.root, [self.name, *extra], allow_dirty=allow_dirty)
+        return capture_source_identity(
+            self.root, [self.name, *extra], allow_dirty=allow_dirty
+        )
 
     def test_changed_bytes_are_refused_even_when_git_index_hides_them(self):
         original = self.capture()
@@ -57,7 +71,9 @@ class SourceIdentityControls(unittest.TestCase):
         self.assertFalse(observed["exact_head_source"])
         row = next(item for item in observed["files"] if item["path"] == name)
         self.assertIsNone(row["head_blob"])
-        self.assertEqual(row["sha256"], hashlib.sha256((self.root / name).read_bytes()).hexdigest())
+        self.assertEqual(
+            row["sha256"], hashlib.sha256((self.root / name).read_bytes()).hexdigest()
+        )
 
     def test_missing_required_source_is_refused_including_exploration(self):
         original = self.capture()
@@ -87,7 +103,9 @@ class SourceIdentityControls(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify_source_identity(self.root, original)
 
-    def test_automatic_closure_includes_untracked_and_hidden_missing_package_source(self):
+    def test_automatic_closure_includes_untracked_and_hidden_missing_package_source(
+        self,
+    ):
         package_file = self.root / "scripts/hepta_cells/cell.py"
         package_file.parent.mkdir()
         package_file.write_text("def cell():\n    return 1\n")
@@ -99,9 +117,11 @@ class SourceIdentityControls(unittest.TestCase):
         self.commit("complete closure")
 
         def capture_closure(**kwargs):
-            names = [str(path.relative_to(self.root))
-                     for group, _, path in execution_sources(self.root, self.root)
-                     if group == "cells"]
+            names = [
+                str(path.relative_to(self.root))
+                for group, _, path in execution_sources(self.root, self.root)
+                if group == "cells"
+            ]
             return capture_source_identity(self.root, names, **kwargs)
 
         capture_closure()
@@ -112,7 +132,12 @@ class SourceIdentityControls(unittest.TestCase):
         exploration = capture_closure(allow_dirty=True)
         self.assertTrue(any(row["head_blob"] is None for row in exploration["files"]))
         new.unlink()
-        git(self.root, "update-index", "--skip-worktree", str(package_file.relative_to(self.root)))
+        git(
+            self.root,
+            "update-index",
+            "--skip-worktree",
+            str(package_file.relative_to(self.root)),
+        )
         package_file.unlink()
         self.assertEqual(git(self.root, "status", "--porcelain"), b"")
         with self.assertRaises((OSError, ValueError)):
@@ -122,9 +147,17 @@ class SourceIdentityControls(unittest.TestCase):
         original = self.capture()
         target = Path(self.temp.name) / "portable"
         old = {
-            "files": [{"root": group, "path": self.name,
-                       "sha256": original["files"][0]["sha256"]} for group in ("cells", "hia")],
-            "source_identity": {group: copy.deepcopy(original) for group in ("cells", "hia")},
+            "files": [
+                {
+                    "root": group,
+                    "path": self.name,
+                    "sha256": original["files"][0]["sha256"],
+                }
+                for group in ("cells", "hia")
+            ],
+            "source_identity": {
+                group: copy.deepcopy(original) for group in ("cells", "hia")
+            },
             "source_bases": {"cells": original["head"]},
         }
         mapped = []
@@ -133,10 +166,22 @@ class SourceIdentityControls(unittest.TestCase):
             path.parent.mkdir(parents=True)
             path.write_bytes(self.source.read_bytes())
             path.chmod(self.source.stat().st_mode & 0o777)
-            mapped.append({"path": group + "/" + self.name,
-                           "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+            mapped.append(
+                {
+                    "path": group + "/" + self.name,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                }
+            )
         raw = json.dumps(old, sort_keys=True).encode()
-        return target, old, raw, {"files": mapped, "origin_candidate_sha256": hashlib.sha256(raw).hexdigest()}
+        return (
+            target,
+            old,
+            raw,
+            {
+                "files": mapped,
+                "origin_candidate_sha256": hashlib.sha256(raw).hexdigest(),
+            },
+        )
 
     def test_portable_sources_preserve_origin_without_claiming_target_checkout(self):
         target, old, raw, mapped = self.portable()

@@ -68,25 +68,38 @@ def capture_source_identity(root, paths, *, allow_dirty=False):
             object_format, b"blob " + str(len(raw)).encode() + b"\0" + raw
         ).hexdigest()
         head_mode, head_blob = tracked.get(name, (None, None))
-        files.append({
-            "path": name, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
-            "mode": format(mode | 0o100000, "o"), "git_blob": blob,
-            "head_blob": head_blob, "head_mode": head_mode,
-        })
+        files.append(
+            {
+                "path": name,
+                "bytes": len(raw),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "mode": format(mode | 0o100000, "o"),
+                "git_blob": blob,
+                "head_blob": head_blob,
+                "head_mode": head_mode,
+            }
+        )
     status = git(root, "status", "--porcelain=v1", "--untracked-files=all").decode()
     exact = not status and all(
         item["git_blob"] == item["head_blob"] and item["mode"] == item["head_mode"]
         for item in files
     )
     if not exact and not allow_dirty:
-        raise ValueError("execution source is dirty or absent from HEAD; --allow-dirty is exploratory only")
+        raise ValueError(
+            "execution source is dirty or absent from HEAD; --allow-dirty is exploratory only"
+        )
     if git(root, "rev-parse", "HEAD^{commit}").decode().strip() != head:
         raise ValueError("source HEAD changed during capture")
     return {
-        "schema": "hepta.joint-source-identity.v1", "head": head, "tree": tree,
-        "symbolic_ref": branch, "object_format": object_format,
-        "git_status_porcelain": status, "exact_head_source": exact,
-        "allow_dirty": allow_dirty, "files": files,
+        "schema": "hepta.joint-source-identity.v1",
+        "head": head,
+        "tree": tree,
+        "symbolic_ref": branch,
+        "object_format": object_format,
+        "git_status_porcelain": status,
+        "exact_head_source": exact,
+        "allow_dirty": allow_dirty,
+        "files": files,
         "scope": "listed execution bytes and modes; branch names are location metadata, not authority",
     }
 
@@ -94,7 +107,8 @@ def capture_source_identity(root, paths, *, allow_dirty=False):
 def verify_source_identity(root, expected):
     """Refuse source or checkout identity drift, including same-tree HEAD changes."""
     actual = capture_source_identity(
-        root, [item["path"] for item in expected["files"]],
+        root,
+        [item["path"] for item in expected["files"]],
         allow_dirty=expected["allow_dirty"],
     )
     if actual != expected:
@@ -107,9 +121,11 @@ def execution_sources(cells_root, hia_root):
     locations = []
     for package in ("hepta_cells", "hepta_pred1"):
         prefix = "scripts/" + package
-        paths = set(git(
-            cells_root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", prefix
-        ).decode().split("\0")) - {""}
+        paths = set(
+            git(cells_root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", prefix)
+            .decode()
+            .split("\0")
+        ) - {""}
         paths = {path for path in paths if path.endswith(".py")}
         paths.update(
             str(path.relative_to(cells_root))
@@ -137,10 +153,14 @@ def execution_sources(cells_root, hia_root):
             "refreeze_joint_worker.py",
         )
     ]
-    locations += [("cells", cells_root, cells_root / "scripts/qualify_hia_cell_joint.py")]
-    compiler_paths = set(git(
-        hia_root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", "hepta"
-    ).decode().split("\0")) - {""}
+    locations += [
+        ("cells", cells_root, cells_root / "scripts/qualify_hia_cell_joint.py")
+    ]
+    compiler_paths = set(
+        git(hia_root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", "hepta")
+        .decode()
+        .split("\0")
+    ) - {""}
     compiler_paths.update(
         str(p.relative_to(hia_root)) for p in (hia_root / "hepta").rglob("*.py")
     )
@@ -166,7 +186,8 @@ def freeze(hia_root, output, *, allow_dirty=False):
     locations = execution_sources(cells_root, hia_root)
     source_identity = {
         name: capture_source_identity(
-            root, [str(p.relative_to(root)) for group, _, p in locations if group == name],
+            root,
+            [str(p.relative_to(root)) for group, _, p in locations if group == name],
             allow_dirty=allow_dirty,
         )
         for name, root in (("cells", cells_root), ("hia", hia_root))
@@ -255,7 +276,8 @@ def freeze(hia_root, output, *, allow_dirty=False):
         "source_bases": {
             "hia_compiler": build["compiler_commit"],
             "cells": source_identity["cells"]["head"]
-            if source_identity["cells"]["exact_head_source"] else None,
+            if source_identity["cells"]["exact_head_source"]
+            else None,
             "runtime": "73b5c33d5762eefc0554a86750094350f18ae6a0",
         },
         "source_identity": source_identity,
@@ -591,7 +613,10 @@ owner.step(p, c, "hard-death", {"operation":"observe", "cursor":0, "observation"
     checks.append("changed-native-image-binding-refused")
     load_candidate(candidate)[3].close()
     assert sha(candidate) == candidate_hash
-    for name, root in (("cells", Path(__file__).resolve().parent.parent), ("hia", hia_root)):
+    for name, root in (
+        ("cells", Path(__file__).resolve().parent.parent),
+        ("hia", hia_root),
+    ):
         verify_source_identity(root, manifest["source_identity"][name])
     durations = sorted(r["wall_ns"] for r in records)
     import math
@@ -638,10 +663,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--hia-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--allow-dirty", action="store_true",
-                        help="Freeze exploratory bytes without attributing them to a Git HEAD")
+    parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="Freeze exploratory bytes without attributing them to a Git HEAD",
+    )
     args = parser.parse_args()
     print(
-        json.dumps(run(args.hia_root.resolve(), args.output.resolve(),
-                       allow_dirty=args.allow_dirty), sort_keys=True)
+        json.dumps(
+            run(
+                args.hia_root.resolve(),
+                args.output.resolve(),
+                allow_dirty=args.allow_dirty,
+            ),
+            sort_keys=True,
+        )
     )

@@ -324,8 +324,13 @@ def main():
 
             close_client()
             report["semantic_updates"] = run_campaign(
-                profile, candidate_record, args.output, private, ssh.env,
-                request["request_id"], campaign="semantic_updates",
+                profile,
+                candidate_record,
+                args.output,
+                private,
+                ssh.env,
+                request["request_id"],
+                campaign="semantic_updates",
             )
         report["status"] = "PASS"
     except BaseException:

@@ -281,7 +281,9 @@ class BridgeControls(unittest.TestCase):
         profile["process"]["args"].append("--changed-after-admission")
         identity["transport"] = "actual_mcp_stdio"
         result = self.bridge.execute(REQUEST)
-        starts = [arguments for tool, arguments in self.owner.calls if tool == "process_start"]
+        starts = [
+            arguments for tool, arguments in self.owner.calls if tool == "process_start"
+        ]
         self.assertEqual(starts[0]["args"], PROFILE["process"]["args"])
         self.assertFalse(result["actual_runtime_transport"])
 
@@ -334,14 +336,18 @@ class BridgeControls(unittest.TestCase):
             try:
                 ready.wait(timeout=5)
                 result = bridge.observe(REQUEST["request_id"])
-                self.assertFalse(any(tool == "process_start" for tool, _ in owner.calls))
+                self.assertFalse(
+                    any(tool == "process_start" for tool, _ in owner.calls)
+                )
                 return result
             finally:
                 bridge.close()
 
         with ThreadPoolExecutor(max_workers=2) as executor:
             results = list(executor.map(observe, (b"x", b"y")))
-        self.assertEqual(sorted(result["state"] for result in results), ["TERMINAL", "UNKNOWN"])
+        self.assertEqual(
+            sorted(result["state"] for result in results), ["TERMINAL", "UNKNOWN"]
+        )
         accepted = next(result for result in results if result["state"] == "TERMINAL")
         retained = self.bridge.db.execute(
             "SELECT observation FROM terminal_observations WHERE request_id=?",

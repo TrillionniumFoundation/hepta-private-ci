@@ -38,41 +38,60 @@ def verify_transferred_identity(root, sources, original_raw, *, allow_dirty=Fals
     if len(mapped) != len(sources["files"]):
         raise ValueError("duplicate portable source record")
     for group, identity in identities.items():
-        if (identity.get("schema") != "hepta.joint-source-identity.v1"
-                or identity.get("object_format") not in {"sha1", "sha256"}
-                or type(identity.get("exact_head_source")) is not bool
-                or type(identity.get("allow_dirty")) is not bool
-                or type(identity.get("git_status_porcelain")) is not str):
+        if (
+            identity.get("schema") != "hepta.joint-source-identity.v1"
+            or identity.get("object_format") not in {"sha1", "sha256"}
+            or type(identity.get("exact_head_source")) is not bool
+            or type(identity.get("allow_dirty")) is not bool
+            or type(identity.get("git_status_porcelain")) is not str
+        ):
             raise ValueError("unknown original source identity")
         width = 40 if identity["object_format"] == "sha1" else 64
-        if any(not re.fullmatch("[0-9a-f]{" + str(width) + "}", identity.get(key, ""))
-               for key in ("head", "tree")):
+        if any(
+            not re.fullmatch("[0-9a-f]{" + str(width) + "}", identity.get(key, ""))
+            for key in ("head", "tree")
+        ):
             raise ValueError("invalid original Git HEAD/tree identity")
         listed = {item["path"]: item for item in old["files"] if item["root"] == group}
         rows = identity["files"]
-        if (len({row["path"] for row in rows}) != len(rows)
-                or {row["path"] for row in rows} != set(listed)):
-            raise ValueError("source identity does not cover exactly the listed execution files")
+        if len({row["path"] for row in rows}) != len(rows) or {
+            row["path"] for row in rows
+        } != set(listed):
+            raise ValueError(
+                "source identity does not cover exactly the listed execution files"
+            )
         for row in rows:
             name = group + "/" + str(relative(row["path"]))
             raw, mode = read_file(root, name)
             checksum = hashlib.sha256(raw).hexdigest()
-            blob = hashlib.new(identity["object_format"],
-                               b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
-            if (name not in mapped or checksum != mapped[name]["sha256"]
-                    or checksum != listed[row["path"]]["sha256"]
-                    or checksum != row["sha256"] or len(raw) != row["bytes"]
-                    or blob != row["git_blob"] or format(mode | 0o100000, "o") != row["mode"]):
-                raise ValueError("transferred source differs from its original source identity")
+            blob = hashlib.new(
+                identity["object_format"],
+                b"blob " + str(len(raw)).encode() + b"\0" + raw,
+            ).hexdigest()
+            if (
+                name not in mapped
+                or checksum != mapped[name]["sha256"]
+                or checksum != listed[row["path"]]["sha256"]
+                or checksum != row["sha256"]
+                or len(raw) != row["bytes"]
+                or blob != row["git_blob"]
+                or format(mode | 0o100000, "o") != row["mode"]
+            ):
+                raise ValueError(
+                    "transferred source differs from its original source identity"
+                )
             if identity["exact_head_source"] and (
-                    row["git_blob"] != row["head_blob"] or row["mode"] != row["head_mode"]):
+                row["git_blob"] != row["head_blob"] or row["mode"] != row["head_mode"]
+            ):
                 raise ValueError("source bytes do not match the claimed original HEAD")
         if identity["exact_head_source"] and identity["git_status_porcelain"]:
             raise ValueError("dirty original checkout cannot claim exact HEAD source")
         if not identity["exact_head_source"] and not allow_dirty:
             raise ValueError("dirty exploratory source requires explicit --allow-dirty")
     cells = identities["cells"]
-    if old["source_bases"]["cells"] != (cells["head"] if cells["exact_head_source"] else None):
+    if old["source_bases"]["cells"] != (
+        cells["head"] if cells["exact_head_source"] else None
+    ):
         raise ValueError("Cell source base differs from original execution identity")
     observation["origin_exact_head_source"] = all(
         item["exact_head_source"] for item in identities.values()
@@ -99,7 +118,9 @@ def main():
     from hepta_cell_joint_worker import device
 
     old, source_materialization = verify_transferred_identity(
-        root, sources, (root / "candidate/original_candidate.json").read_bytes(),
+        root,
+        sources,
+        (root / "candidate/original_candidate.json").read_bytes(),
         allow_dirty=args.allow_dirty,
     )
     pins = strict_json(args.runtime_pins.read_bytes())

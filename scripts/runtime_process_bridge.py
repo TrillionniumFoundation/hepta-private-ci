@@ -160,8 +160,12 @@ class RuntimeProcessBridge:
                     value = {
                         key: value[key]
                         for key in (
-                            "request_id", "host", "job_id", "automatic_replay",
-                            "profile_sha256", "domain_success",
+                            "request_id",
+                            "host",
+                            "job_id",
+                            "automatic_replay",
+                            "profile_sha256",
+                            "domain_success",
                         )
                     } | {
                         "state": "UNKNOWN",
@@ -205,9 +209,11 @@ class RuntimeProcessBridge:
             "worker request exceeds runtime stdin bound",
         )
         key = "cell_joint_" + digest(canonical([self.profile["namespace"], request_id]))
-        params = strict_json(canonical(
-            {**self.profile["process"], "stdin": stdin, "idempotency_key": key}
-        ))
+        params = strict_json(
+            canonical(
+                {**self.profile["process"], "stdin": stdin, "idempotency_key": key}
+            )
+        )
         binding = digest(
             canonical({"profile_sha256": self.profile_sha, "params": params})
         )

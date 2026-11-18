@@ -94,9 +94,18 @@ def fixtures(*, semantic=False):
             if semantic:
                 task.update(
                     entry=name,
-                    checks=[dict(args=[x], expected=f"tag_{number}" if i % 4 == 2 else x + number)
-                            for x in (-7, 0, 11)],
-                    provenance=dict(origin="controlled-generated-template", family=TOKENS[i % 4], split=phase),
+                    checks=[
+                        dict(
+                            args=[x],
+                            expected=f"tag_{number}" if i % 4 == 2 else x + number,
+                        )
+                        for x in (-7, 0, 11)
+                    ],
+                    provenance=dict(
+                        origin="controlled-generated-template",
+                        family=TOKENS[i % 4],
+                        split=phase,
+                    ),
                 )
             rows.append(task)
         panels[phase] = rows
@@ -106,10 +115,13 @@ def fixtures(*, semantic=False):
 def cold_task():
     """A new source and input contract executed only after the serving owner closes."""
     return dict(
-        id="fixture_D_cold", entry="fixture_D_cold",
+        id="fixture_D_cold",
+        entry="fixture_D_cold",
         source="def fixture_D_cold(x)\n    return x + 409\n",
         checks=[dict(args=[x], expected=x + 409) for x in (-13, 2, 23)],
-        provenance=dict(origin="controlled-generated-template", family=TOKENS[0], split="D-cold"),
+        provenance=dict(
+            origin="controlled-generated-template", family=TOKENS[0], split="D-cold"
+        ),
     )
 
 
@@ -150,7 +162,9 @@ class Compiler:
                 self.semantic_calls += 1
                 success = semantic_result["success"]
             else:
-                semantic_result = dict(**binding, status="not_run_compile_error", success=False)
+                semantic_result = dict(
+                    **binding, status="not_run_compile_error", success=False
+                )
         result = dict(
             task=task["id"],
             phase=phase,
@@ -191,6 +205,8 @@ def observations(task, original):
         0,
     ]
     second = (
-        [0.0] * 6 + [float(token in (original["error"] or "")) for token in TOKENS] + [0, 1, 0]
+        [0.0] * 6
+        + [float(token in (original["error"] or "")) for token in TOKENS]
+        + [0, 1, 0]
     )
     return np.asarray([first, second, [0.0] * 12 + [1.0]], dtype=np.float64)
