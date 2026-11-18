@@ -85,22 +85,24 @@ impl ControlledCellGenerationPortV2 {
         clock: Clock,
     ) -> Result<Self, CellGenerationErrorV2> {
         Self::spawn_inner(
-            control, config, worker, clock,
+            control,
+            config,
+            worker,
+            clock,
             #[cfg(feature = "qualification-control-snapshot")]
             None,
         )
     }
 
-    /// Qualification-only. The file must be a clone of the file moved into control.
+    /// Qualification-only bounded observation, executed by the actual control owner.
     #[cfg(feature = "qualification-control-snapshot")]
     pub fn spawn_with_test_snapshot(
         control: DurableInferenceControl,
-        original_file: std::fs::File,
         config: ControlledCellGenerationConfigV2,
         worker: Arc<dyn CellGenerationWorkerV2>,
         clock: Clock,
     ) -> Result<(Self, ControlTestSnapshot), CellGenerationErrorV2> {
-        let (observation, snapshot) = test_snapshot::Observation::new(original_file, config.rpc_timeout);
+        let (observation, snapshot) = test_snapshot::Observation::new(config.rpc_timeout);
         let port = Self::spawn_inner(control, config, worker, clock, Some(observation))?;
         Ok((port, snapshot))
     }
@@ -110,8 +112,9 @@ impl ControlledCellGenerationPortV2 {
         config: ControlledCellGenerationConfigV2,
         worker: Arc<dyn CellGenerationWorkerV2>,
         clock: Clock,
-        #[cfg(feature = "qualification-control-snapshot")]
-        observation: Option<test_snapshot::Observation>,
+        #[cfg(feature = "qualification-control-snapshot")] observation: Option<
+            test_snapshot::Observation,
+        >,
     ) -> Result<Self, CellGenerationErrorV2> {
         config.manifest.digest()?;
         for id in [
@@ -304,7 +307,7 @@ impl Actor {
             self.collect();
             #[cfg(feature = "qualification-control-snapshot")]
             if let Some(observation) = &mut self.observation {
-                observation.poll();
+                observation.poll(&mut self.control);
             }
             if self.stopping.load(Ordering::Acquire) {
                 if let Some(active) = &self.active {
