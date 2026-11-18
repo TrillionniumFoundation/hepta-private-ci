@@ -49,3 +49,7 @@ The remaining git-utils witness is `git-utils → protocol → Chrono`. [The gra
 - [INDEX.json](retained/INDEX.json) SHA-256: `993a38f681572d1b315a2d38d85ceb5e9dce4923f548b77028e6b1a8afa72444`.
 
 Every archived member was reread against the index. The size exception binds only this exact archive SHA and path. The global 512000-byte limit remains unchanged.
+
+## Repository policy gate
+
+The [first-head receipt](policy/first-evidence-head/FIRST_RESULT.json) retains all seven original policy tests and the actual base-to-evidence changed-blob check, both passing. Original outputs and stages are beside it. The final metadata head receives another actual changed-blob check before publication. No native tests are repeated during publication.
