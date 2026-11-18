@@ -1,0 +1,42 @@
+{
+  "base_commit": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "historical_source_head": "fdd12a3aa0b085ded9c5e5df1b4577620227127a",
+  "scope": "Fleet verified dispatch clock source patch only; full fdd source audit remains in progress.",
+  "entries": [
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "sha": "1020ef1aafd45a64b5bad9561ab6dbe57470093d",
+      "mode": "100644",
+      "type": "blob",
+      "local_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fleet_patch/codex-rs/hepta-fleet/src/authority_port.rs",
+      "bytes": 11110,
+      "sha256": "2e130b0e7b13a443a4effce7300af0abe139b8f0d8d79a11c5cc5a9b164db4f4"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port_clock_tests.rs",
+      "sha": "757c482087b7a871b6a16a5600b26cf24ac4cbd6",
+      "mode": "100644",
+      "type": "blob",
+      "local_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fleet_patch/codex-rs/hepta-fleet/src/authority_port_clock_tests.rs",
+      "bytes": 3275,
+      "sha256": "81e1640e16c0d3b5e94af2211d3228822cd989a45f2e83a477a17083213f7c4e"
+    }
+  ],
+  "regression_before": {
+    "exit_code": 100,
+    "actual": "Expired allocation incorrectly Issued at trusted now=9500 with expiry=9000 and caller now=2000",
+    "log": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fleet-baseline-regression.log"
+  },
+  "regression_after": {
+    "exit_code": 0,
+    "tests_passed": 46,
+    "tests_skipped": 0,
+    "command": "just test --locked --offline -p codex-hepta-fleet --retries 0",
+    "log": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fleet-fixed-tests.log"
+  },
+  "format": "just fmt succeeded",
+  "limits": [
+    "Linux x86_64 native only; no Windows or macOS qualification claimed.",
+    "No remote ref updated."
+  ]
+}

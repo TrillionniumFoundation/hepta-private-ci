@@ -1,0 +1,51 @@
+{
+  "steps": [
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-memory-retrieval",
+        "-p",
+        "codex-hepta-cognitive-read",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-compact-engine",
+        "--test",
+        "canonical_consumer_v1"
+      ],
+      "exit_code": 0,
+      "seconds": 11.72322392463684
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-memory-retrieval",
+        "-p",
+        "codex-hepta-cognitive-read",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-compact-engine"
+      ],
+      "exit_code": 0,
+      "seconds": 85.57223629951477
+    },
+    {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "seconds": 1.1131606101989746
+    }
+  ],
+  "complete": true
+}

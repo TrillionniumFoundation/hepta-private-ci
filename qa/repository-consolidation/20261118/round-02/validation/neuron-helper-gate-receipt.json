@@ -1,0 +1,195 @@
+{
+  "schema": "hepta.frontier-real-helper-gate.v1",
+  "observed_utc": "2026-11-18T02:23:06.752276+00:00",
+  "snapshot": {
+    "purpose": "Isolated local source qualification snapshot, no original branch parent adopted and no remote refs updated.",
+    "base": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+    "commit": "2f72f2f550b89432e2d853774744a88d02f6a532",
+    "tree": "a13f8664679435b53af8b109dcf7a349a1a66e5d",
+    "changed_paths": [
+      "codex-rs/hepta-fleet/src/authority_port.rs",
+      "codex-rs/hepta-fleet/src/authority_port_clock_tests.rs",
+      "codex-rs/hepta-neuron/src/metrics.rs",
+      "codex-rs/hepta-neuron/src/metrics_tests.rs"
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "manifest_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt01/manifest.json",
+      "manifest": {
+        "schema_version": 1,
+        "source_sha": "2f72f2f550b89432e2d853774744a88d02f6a532",
+        "source_sha_after": null,
+        "source_status_before": "",
+        "source_status_after": null,
+        "workspace": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs",
+        "selected_packages": [
+          "codex-hepta-infer-worker-host"
+        ],
+        "builds": [
+          {
+            "package": "codex-hepta-infer-worker-host",
+            "binaries": [
+              "hepta-joint-propose"
+            ],
+            "command": [
+              "cargo",
+              "build",
+              "--locked",
+              "--message-format=json-render-diagnostics",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "--bin",
+              "hepta-joint-propose"
+            ],
+            "stdout": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt01/codex-hepta-infer-worker-host.jsonl",
+            "stderr": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt01/codex-hepta-infer-worker-host.stderr.log",
+            "exit_code": 101,
+            "cargo_finished": false,
+            "complete": false
+          }
+        ],
+        "artifacts": {},
+        "complete": false,
+        "exit_code": 1,
+        "error": "RuntimeError: codex-hepta-infer-worker-host build exited 101; see raw logs"
+      },
+      "logs": [
+        {
+          "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt01/codex-hepta-infer-worker-host.stderr.log",
+          "bytes": 25428,
+          "sha256": "8030750541e57592083ba2029f6d9a9d4418b96652446e5f02933010c6508b64"
+        },
+        {
+          "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt01/codex-hepta-infer-worker-host.jsonl",
+          "bytes": 201842,
+          "sha256": "90f709274fbd4a3d58e771328da57fc32c2f693514c6fd2928062092c9f80242"
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "manifest_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt02/manifest.json",
+      "manifest": {
+        "schema_version": 1,
+        "source_sha": "2f72f2f550b89432e2d853774744a88d02f6a532",
+        "source_sha_after": null,
+        "source_status_before": "",
+        "source_status_after": null,
+        "workspace": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs",
+        "selected_packages": [
+          "codex-hepta-infer-worker-host"
+        ],
+        "builds": [
+          {
+            "package": "codex-hepta-infer-worker-host",
+            "binaries": [
+              "hepta-joint-propose"
+            ],
+            "command": [
+              "cargo",
+              "build",
+              "--locked",
+              "--message-format=json-render-diagnostics",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "--bin",
+              "hepta-joint-propose"
+            ],
+            "stdout": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt02/codex-hepta-infer-worker-host.jsonl",
+            "stderr": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt02/codex-hepta-infer-worker-host.stderr.log",
+            "exit_code": 101,
+            "cargo_finished": false,
+            "complete": false
+          }
+        ],
+        "artifacts": {},
+        "complete": false,
+        "exit_code": 1,
+        "error": "RuntimeError: codex-hepta-infer-worker-host build exited 101; see raw logs"
+      },
+      "logs": [
+        {
+          "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt02/codex-hepta-infer-worker-host.stderr.log",
+          "bytes": 68969,
+          "sha256": "fe1add0be2a51de1cc9e1a69234840949ef8fe836dfa556077195d94583508b0"
+        },
+        {
+          "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt02/codex-hepta-infer-worker-host.jsonl",
+          "bytes": 1005121,
+          "sha256": "12c7681a77257745775a8a591257a3a5a38010ad939323dab998eff365c1a37c"
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "manifest_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/manifest.json",
+      "manifest": {
+        "schema_version": 1,
+        "source_sha": "2f72f2f550b89432e2d853774744a88d02f6a532",
+        "source_sha_after": null,
+        "source_status_before": "",
+        "source_status_after": null,
+        "workspace": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs",
+        "selected_packages": [
+          "codex-hepta-infer-worker-host"
+        ],
+        "builds": [
+          {
+            "package": "codex-hepta-infer-worker-host",
+            "binaries": [
+              "hepta-joint-propose"
+            ],
+            "command": [
+              "cargo",
+              "build",
+              "--locked",
+              "--message-format=json-render-diagnostics",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "--bin",
+              "hepta-joint-propose"
+            ],
+            "stdout": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/codex-hepta-infer-worker-host.jsonl",
+            "stderr": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/codex-hepta-infer-worker-host.stderr.log",
+            "exit_code": null,
+            "cargo_finished": null,
+            "complete": false
+          }
+        ],
+        "artifacts": {},
+        "complete": false,
+        "exit_code": 1
+      },
+      "logs": [
+        {
+          "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/codex-hepta-infer-worker-host.stderr.log",
+          "bytes": 3127,
+          "sha256": "34441bae58be0eaa955948bdb2843871691f9856e373c8b10e8cbd6deba4762d"
+        },
+        {
+          "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/codex-hepta-infer-worker-host.jsonl",
+          "bytes": 105861,
+          "sha256": "574e6c73ba081292a04ab08bc099e3ac78708cb88a2f4d5893ef05048d59bb1f"
+        }
+      ],
+      "observed_exec_terminal_exit_code": 130,
+      "manifest_finalized_after_interrupt": false,
+      "interpretation": "The retained manifest is the last incomplete checkpoint (exit_code 1); the original exec session returned terminal exit 130 after interruption. Do not treat the checkpoint as a completed helper build receipt."
+    }
+  ],
+  "outcome": "not-qualified",
+  "attempt01": "aws-lc bindgen could not locate stddef.h; fixed tooling include path in later attempts",
+  "attempt02": "rustc for codex-core lib terminated by SIGKILL; no verified helper produced; reason not further asserted",
+  "attempt03": "Operator/root requested resource control; cancelled using original exec session interrupt, tool returned exit130. No PID-based kill; no restart.",
+  "cache_release": {
+    "path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/target",
+    "source_or_evidence_deleted": false,
+    "open_fd_users_before_release": [],
+    "status": "released",
+    "logical_bytes_before_release": 11507118043,
+    "directory_absent": true
+  },
+  "native_test_toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25), observed in the unchanged isolated codex-rs workspace"
+}

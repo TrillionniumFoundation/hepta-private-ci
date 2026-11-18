@@ -1,0 +1,18 @@
+{
+  "status": "interrupted_without_terminal_receipt",
+  "observed_utc": "2026-11-18T02:13:48.554622+00:00",
+  "source_tree": "ebd406b6ac3c88d5d76ccf82407dcbd54eeea360",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_*.py"
+  ],
+  "completed_pass_claimed": false,
+  "partial_log_bytes": 526,
+  "reason": "The command session no longer exists, no running owned process or terminal result was found; the partial dots-only log is insufficient to establish a successful run."
+}

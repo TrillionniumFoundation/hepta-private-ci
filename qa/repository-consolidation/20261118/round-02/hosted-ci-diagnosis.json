@@ -1,0 +1,124 @@
+{
+  "base": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "approved_for_parent_review": [
+    {
+      "issue": "HNMF lexical fuzz decoder coverage",
+      "patch": "hnmf-fuzz-proposal/explicit-decode-calls.patch",
+      "old_blob": "f8556a1660ab1f5e83428725d1e66e01a9e8733f",
+      "new_blob": "f5617b8a391f83692b670114d90a2c8c7b7854ba",
+      "validation": [
+        "baseline verifier fails",
+        "patched HNMF verifier passes",
+        "HNMF self-test passes",
+        "development full docs gate passes",
+        "just fmt passes",
+        "actual standalone cargo check --all-targets --locked passes using preserved ephemeral lock"
+      ],
+      "scope": "13 concrete decode calls each once; conditional re-encode/equality assertions retained; gate/workflow unchanged"
+    },
+    {
+      "issue": "Bazel Clippy rejects unwrap in extracted ordinary async test helpers",
+      "patch": "model-material-clippy-proposal/propagate-missing-host.patch",
+      "old_blob": "773339545d370e95507de6df77d528d9088ce567",
+      "new_blob": "a6ceb0a5b1f5428fc1affd4aea10a3c59120bf5b",
+      "validation": [
+        "just fmt passes",
+        "git diff --check passes"
+      ],
+      "scope": "3 unwrap calls become anyhow error propagation; all scenarios, original deadlines and assertions retained; parent still owns native Agentd clippy"
+    }
+  ],
+  "cargo_deny": {
+    "job": 134513723408,
+    "version": "0.19.0",
+    "observed_local_exit": 1,
+    "only_error": {
+      "kind": "unmaintained",
+      "package": "chrono",
+      "version": "0.4.45",
+      "advisory": "RUSTSEC-2026-0543",
+      "patched_versions": [],
+      "official_db_head": "233155b4025b854c68a4b199c0e32d7fd53291a2"
+    },
+    "other_checks": "bans ok, licenses ok, sources ok",
+    "lock_and_policy_unchanged": true,
+    "first_party_and_vendor_chrono_manifests": 30,
+    "transitive_examples": [
+      "oauth2",
+      "rmcp",
+      "schemars",
+      "sqlx-core",
+      "sqlx-sqlite"
+    ],
+    "existing_migration_found": false,
+    "proposal": "No policy ignore or broad dependency upgrade applied. Migration must preserve wire/schema timestamps and third-party integrations."
+  },
+  "windows": {
+    "private_state_job": {
+      "id": 134513309391,
+      "last_observed": "private file/ACL/reparse/hardlink; Prompt Registry owner; signed final-use/lease steps passed; Agentd integration was still running",
+      "prior_5ec_job": 134026753709,
+      "prior_5ec_conclusion": "success"
+    },
+    "agentd": {
+      "job": 134513724061,
+      "failed_positive_cases": 7,
+      "cause": "Windows ensure_current_user_peer in codex-rs/uds/src/lib.rs unconditionally returns Unsupported; real connections fail closed before request bytes",
+      "fixture_only_fix": false,
+      "secure_candidate_scope": "c6f98ff2b5d and 9cf33449107 provide protected named-pipe OwnerLocal transport with static review and scoped Matrixd qualification; they do not integrate Agentd or supply general AF_UNIX identity. PID-based 41bbc7798f5/b4d805f40d2 require additional lifetime/qualification review.",
+      "automatic_adoption": false
+    },
+    "elevated_sandbox": {
+      "jobs": [
+        134513724197,
+        134513315760
+      ],
+      "cause": "intentional elevated backend refusal because ambient parent FILE_DELETE_CHILD bypass remains unqualified",
+      "acl_suite": {
+        "tests": 17,
+        "passed": 16,
+        "failed": 1,
+        "failing_test": "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+        "refusal_tests_passed": 3
+      },
+      "no_positive_test_skips_added": true
+    },
+    "appcontainer": {
+      "job": 134513316144,
+      "artifact": 14389128263,
+      "source_unchanged": true,
+      "native_token_operations_hypotheses": "all match",
+      "ordinary_appcontainer": {
+        "child_exit": 22,
+        "stderr": "Access is denied.",
+        "child_created": true,
+        "child_deleted": false
+      },
+      "lpac": {
+        "child_exit": 1,
+        "child_created": false
+      },
+      "production_qualification": false
+    }
+  },
+  "unchanged": {
+    "shared_worktree": true,
+    "shared_index": true,
+    "remote_refs": true,
+    "auth_and_acl_refusal": true,
+    "HIA_and_Cell": true
+  },
+  "browser": "Only read-only job page fallback; logs require sign-in. No login requested. Marked deliverable and completion_summary completed.",
+  "canonical_consumer_clippy_correction": {
+    "head": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+    "job": 134513724023,
+    "status": "root confirmed still unresolved in 6ffe; root now owns four-file repair and scoped Clippy",
+    "paths": [
+      "codex-rs/hepta-memory-retrieval/tests/canonical_consumer_v1.rs",
+      "codex-rs/hepta-cognitive-read/tests/canonical_consumer_v1.rs",
+      "codex-rs/hepta-cognitive-store/tests/canonical_consumer_v1.rs",
+      "codex-rs/hepta-compact-engine/tests/canonical_consumer_v1.rs"
+    ],
+    "correction": "Earlier parent-already-fixed assumption conflated these four copies with an intelligence copy. Do not mark fixed without root validation."
+  }
+}
