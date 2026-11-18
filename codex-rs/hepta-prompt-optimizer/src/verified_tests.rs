@@ -79,7 +79,7 @@ fn enumerated() -> EnumeratedPromptCandidatesV1 {
             revocation_frontier: 0,
             generation_vector_digest: generation_vector,
             model_tuple_digest: tuple.digest(),
-            snapshot_digest: digest("registry-snapshot"),
+            snapshot_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         },
         model_tuple: tuple,
@@ -99,14 +99,16 @@ fn enumerated() -> EnumeratedPromptCandidatesV1 {
         },
         candidates,
     };
-    value.candidates_digest = digest_candidates(&value);
-    value.canonical_order_digest = digest_candidate_order(&value);
-    value.receipt.receipt_digest = digest_candidate_receipt(
-        &value,
-        value.candidates_digest,
-        value.canonical_order_digest,
-    );
+    value.registry_snapshot.snapshot_digest = value.registry_snapshot.compute_snapshot_digest();
+    recompute_enumeration_digests(&mut value);
     value
+}
+
+fn recompute_enumeration_digests(value: &mut EnumeratedPromptCandidatesV1) {
+    value.candidates_digest = digest_candidates(value);
+    value.canonical_order_digest = digest_candidate_order(value);
+    value.receipt.receipt_digest =
+        digest_candidate_receipt(value, value.candidates_digest, value.canonical_order_digest);
 }
 
 fn priced() -> PricedPromptCandidatesV1 {
@@ -217,6 +219,108 @@ fn verified_enumeration_recomputes_every_binding_and_digest() {
         .unwrap_or_else(|error| panic!("verified enumeration: {error}"));
     assert_eq!(verified.canonical(), &value);
     assert!(!verified.scope_digest().is_zero());
+}
+
+#[test]
+fn empty_selection_grammar_is_rejected_with_recomputed_digests() {
+    let mut value = enumerated();
+    value.receipt.selection_grammar_digest = Digest32::ZERO;
+    recompute_enumeration_digests(&mut value);
+    assert!(matches!(
+        verify_enumerated_prompt_candidates_v2(value),
+        Err(VerifiedPromptErrorV2::EmptyDigest("selection grammar"))
+    ));
+}
+
+#[test]
+fn invalid_registry_frontiers_are_rejected_with_recomputed_digests() {
+    for (lifecycle_frontier, revocation_frontier) in [(1, 2), (2, 0)] {
+        let mut value = enumerated();
+        value.registry_snapshot.lifecycle_frontier = lifecycle_frontier;
+        value.registry_snapshot.revocation_frontier = revocation_frontier;
+        value.registry_snapshot.snapshot_digest = value.registry_snapshot.compute_snapshot_digest();
+        recompute_enumeration_digests(&mut value);
+        assert!(matches!(
+            verify_enumerated_prompt_candidates_v2(value),
+            Err(VerifiedPromptErrorV2::Canonical(CanonicalPromptError::Registry(error)))
+                if error == "InvalidFrontier"
+        ));
+    }
+}
+
+#[test]
+fn stale_registry_snapshot_digest_is_rejected() {
+    let mut value = enumerated();
+    value.registry_snapshot.revision =
+        Revision::new(2).unwrap_or_else(|error| panic!("revision: {error}"));
+    recompute_enumeration_digests(&mut value);
+    assert!(matches!(
+        verify_enumerated_prompt_candidates_v2(value),
+        Err(VerifiedPromptErrorV2::Canonical(CanonicalPromptError::Registry(error)))
+            if error == "DigestMismatch(\"snapshot\")"
+    ));
+}
+
+#[test]
+fn invalid_model_tuple_is_rejected_with_recomputed_digests() {
+    let mut value = enumerated();
+    value.model_tuple.model_version.clear();
+    value.registry_snapshot.model_tuple_digest = value.model_tuple.digest();
+    value.registry_snapshot.snapshot_digest = value.registry_snapshot.compute_snapshot_digest();
+    recompute_enumeration_digests(&mut value);
+    assert!(matches!(
+        verify_enumerated_prompt_candidates_v2(value),
+        Err(VerifiedPromptErrorV2::Canonical(CanonicalPromptError::Registry(error)))
+            if error == "InvalidModelVersion"
+    ));
+}
+
+#[test]
+fn invalid_realization_fields_are_rejected_with_recomputed_digests() {
+    let mut realizations = [candidate(0), candidate(0), candidate(0)];
+    realizations[0].realization.token_cost = 0;
+    realizations[1].realization.payload_digest = Digest32::ZERO;
+    realizations[2].realization.expires_unix_ms = Some(0);
+    for (mut binding, expected_error) in
+        realizations
+            .into_iter()
+            .zip(["ZeroTokenCost", "EmptyDigest(\"payload\")", "InvalidExpiry"])
+    {
+        binding.binding_digest = binding.realization.digest();
+        let mut value = enumerated();
+        value.candidates[0] = binding;
+        recompute_enumeration_digests(&mut value);
+        assert!(matches!(
+            verify_enumerated_prompt_candidates_v2(value),
+            Err(VerifiedPromptErrorV2::Canonical(CanonicalPromptError::Registry(error)))
+                if error == expected_error
+        ));
+    }
+}
+
+#[test]
+fn realization_model_tuple_drift_is_rejected_with_recomputed_digests() {
+    let mut realizations: [_; 8] = std::array::from_fn(|_| candidate(0));
+    realizations[0].realization.model_id = id("model:other");
+    realizations[1].realization.model_version = "v2".to_owned();
+    realizations[2].realization.model_digest = digest("other-model");
+    realizations[3].realization.tokenizer_digest = digest("other-tokenizer");
+    realizations[4].realization.template_digest = digest("other-template");
+    realizations[5].realization.tool_schema_digest = digest("other-tools");
+    realizations[6].realization.context_profile_digest = digest("other-context");
+    realizations[7].realization.locale_id = id("locale:fr-FR");
+    for mut binding in realizations {
+        binding.binding_digest = binding.realization.digest();
+        let mut value = enumerated();
+        value.candidates[0] = binding;
+        recompute_enumeration_digests(&mut value);
+        assert!(matches!(
+            verify_enumerated_prompt_candidates_v2(value),
+            Err(VerifiedPromptErrorV2::IdentityMismatch(
+                "candidate realization/model tuple"
+            ))
+        ));
+    }
 }
 
 #[test]

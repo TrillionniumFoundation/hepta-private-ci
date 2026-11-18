@@ -27,6 +27,7 @@ fn validate_enumerated(value: &EnumeratedPromptCandidatesV1) -> Result<(), Verif
         ("objective", value.receipt.objective_digest),
         ("state", value.receipt.state_digest),
         ("registry", value.receipt.registry_digest),
+        ("selection grammar", value.receipt.selection_grammar_digest),
         ("generation vector", value.generation_vector_digest),
         ("candidate set", value.candidates_digest),
         ("candidate order", value.canonical_order_digest),
@@ -34,6 +35,14 @@ fn validate_enumerated(value: &EnumeratedPromptCandidatesV1) -> Result<(), Verif
     ] {
         require_digest(label, digest)?;
     }
+    value
+        .model_tuple
+        .validate()
+        .map_err(|error| CanonicalPromptError::Registry(error.to_string()))?;
+    value
+        .registry_snapshot
+        .validate()
+        .map_err(|error| CanonicalPromptError::Registry(error.to_string()))?;
     if value.registry_snapshot.registry_digest != value.receipt.registry_digest
         || value.registry_snapshot.generation_vector_digest != value.generation_vector_digest
         || value.registry_snapshot.model_tuple_digest != value.model_tuple.digest()
@@ -54,11 +63,29 @@ fn validate_enumerated(value: &EnumeratedPromptCandidatesV1) -> Result<(), Verif
     let mut factors = BTreeSet::new();
     let mut realizations = BTreeSet::new();
     for candidate in &value.candidates {
+        candidate
+            .realization
+            .validate()
+            .map_err(|error| CanonicalPromptError::Registry(error.to_string()))?;
         if candidate.factor_id != candidate.realization.factor_id
             || candidate.binding_digest != candidate.realization.digest()
         {
             return Err(VerifiedPromptErrorV2::IdentityMismatch(
                 "candidate realization binding",
+            ));
+        }
+        if candidate.realization.model_id != value.model_tuple.model_id
+            || candidate.realization.model_version != value.model_tuple.model_version
+            || candidate.realization.model_digest != value.model_tuple.model_digest
+            || candidate.realization.tokenizer_digest != value.model_tuple.tokenizer_digest
+            || candidate.realization.template_digest != value.model_tuple.template_digest
+            || candidate.realization.tool_schema_digest != value.model_tuple.tool_schema_digest
+            || candidate.realization.context_profile_digest
+                != value.model_tuple.context_profile_digest
+            || candidate.realization.locale_id != value.model_tuple.locale_id
+        {
+            return Err(VerifiedPromptErrorV2::IdentityMismatch(
+                "candidate realization/model tuple",
             ));
         }
         if !factors.insert(candidate.factor_id.clone()) {
