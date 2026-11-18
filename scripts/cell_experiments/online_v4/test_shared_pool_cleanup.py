@@ -52,28 +52,46 @@ class LegacyStyleError(RuntimeError):
 
 
 def notes(error):
-    return "\n".join([*getattr(error, "__notes__", []),
-                       *getattr(error, "cleanup_notes", [])])
+    return "\n".join(
+        [*getattr(error, "__notes__", []), *getattr(error, "cleanup_notes", [])]
+    )
 
 
 class PoolCleanupTests(unittest.TestCase):
-    def construct_failure(self, stage, close_error=None, cache_error=None, error_type=RuntimeError):
+    def construct_failure(
+        self, stage, close_error=None, cache_error=None, error_type=RuntimeError
+    ):
         primary = error_type(stage + " primary failure")
         cuda = CudaFixture(cache_error)
         torch = SimpleNamespace(cuda=cuda, device=lambda value: value)
         view_type, instances = predictor_fixture(
-            torch, constructor_error=primary if stage == "constructor" else None,
-            close_error=close_error)
-        base = {"runtime": {"device": "cuda:0", "dtype": "bfloat16",
-                            "min_cuda_free_bytes": 4294967296,
-                            "max_input_tokens": 4096, "max_new_tokens": 384}}
+            torch,
+            constructor_error=primary if stage == "constructor" else None,
+            close_error=close_error,
+        )
+        base = {
+            "runtime": {
+                "device": "cuda:0",
+                "dtype": "bfloat16",
+                "min_cuda_free_bytes": 4294967296,
+                "max_input_tokens": 4096,
+                "max_new_tokens": 384,
+            }
+        }
         with ExitStack() as stack:
-            stack.enter_context(patch.object(shared, "verified_entries", return_value=({}, base)))
-            stack.enter_context(patch.object(shared.probe, "_libraries", return_value=(torch, None)))
-            stack.enter_context(patch.object(shared.probe, "check_device", return_value={}))
+            stack.enter_context(
+                patch.object(shared, "verified_entries", return_value=({}, base))
+            )
+            stack.enter_context(
+                patch.object(shared.probe, "_libraries", return_value=(torch, None))
+            )
+            stack.enter_context(
+                patch.object(shared.probe, "check_device", return_value={})
+            )
             stack.enter_context(patch.object(shared.probe, "Predictor", view_type))
-            install = stack.enter_context(patch.object(shared.SharedAdapterPool, "_install",
-                                                        side_effect=primary))
+            install = stack.enter_context(
+                patch.object(shared.SharedAdapterPool, "_install", side_effect=primary)
+            )
             with self.assertRaises(RuntimeError) as caught:
                 shared.SharedAdapterPool({}, Path("/engineering-fixture"))
         self.assertIs(caught.exception, primary)
@@ -94,14 +112,19 @@ class PoolCleanupTests(unittest.TestCase):
         self.construct_failure("install")
 
     def test_constructor_error_survives_close_and_cache_errors(self):
-        primary = self.construct_failure("constructor", RuntimeError("close failure"),
-                                         RuntimeError("cache failure"))
+        primary = self.construct_failure(
+            "constructor", RuntimeError("close failure"), RuntimeError("cache failure")
+        )
         self.assertIn("close failure", notes(primary))
         self.assertIn("cache failure", notes(primary))
 
     def test_cleanup_notes_work_without_python_311_add_note(self):
-        primary = self.construct_failure("constructor", LegacyStyleError("close failure"),
-                                         LegacyStyleError("cache failure"), LegacyStyleError)
+        primary = self.construct_failure(
+            "constructor",
+            LegacyStyleError("close failure"),
+            LegacyStyleError("cache failure"),
+            LegacyStyleError,
+        )
         self.assertFalse(callable(getattr(primary, "add_note", None)))
         self.assertIn("close failure", notes(primary))
         self.assertIn("cache failure", notes(primary))
@@ -128,7 +151,9 @@ class PoolCleanupTests(unittest.TestCase):
 
     def test_close_failure_cannot_leave_reusable_model_or_mask_original_error(self):
         primary = RuntimeError("close primary failure")
-        pool, view, cuda = self.close_fixture(primary, RuntimeError("cache later failure"))
+        pool, view, cuda = self.close_fixture(
+            primary, RuntimeError("cache later failure")
+        )
         with self.assertRaises(RuntimeError) as caught:
             pool.close()
         self.assertIs(caught.exception, primary)
@@ -156,9 +181,14 @@ class PoolCleanupTests(unittest.TestCase):
 
     def test_invalid_cell_ids_are_rejected_before_legacy_model_access(self):
         for invalid in ("invalid/id", "", "x" * 65, "汉", 1, None):
-            with self.subTest(invalid=invalid), patch.object(shared, "legacy") as legacy:
+            with (
+                self.subTest(invalid=invalid),
+                patch.object(shared, "legacy") as legacy,
+            ):
                 with self.assertRaisesRegex(ValueError, "invalid Cell ID"):
-                    shared.verified_entries({"A": {}, "B": {}, invalid: {}}, Path("/unused"))
+                    shared.verified_entries(
+                        {"A": {}, "B": {}, invalid: {}}, Path("/unused")
+                    )
                 legacy.assert_not_called()
 
 

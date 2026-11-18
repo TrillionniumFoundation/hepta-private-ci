@@ -15,12 +15,18 @@ class ReportReadTests(unittest.TestCase):
             receipt = root / "circuit/POOL.json"
             receipt.parent.mkdir()
             receipt.write_text("{}\n")
-            with patch.object(Path, "read_text", side_effect=PermissionError("receipt unavailable")):
+            with patch.object(
+                Path, "read_text", side_effect=PermissionError("receipt unavailable")
+            ):
                 result = report_directory(root)
             self.assertEqual(result["status"], "INCOMPLETE")
             self.assertEqual(result["input_validation"], "INCOMPLETE")
-            self.assertEqual(result["unreadable_artifacts"], [
-                {"path": "circuit/POOL.json", "error": "receipt unavailable"}])
+            self.assertEqual(
+                result["unreadable_artifacts"],
+                [{"path": "circuit/POOL.json", "error": "receipt unavailable"}],
+            )
             self.assertIsNone(result["shared_pool_initialization"])
-            self.assertTrue(all(value is None for value in result["reported_scope_totals"].values()))
+            self.assertTrue(
+                all(value is None for value in result["reported_scope_totals"].values())
+            )
             self.assertFalse(result["scientific_qualification"])

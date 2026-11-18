@@ -28,22 +28,39 @@ class ResearchBackend:
 
     def collect(self, records, current, output, mode, maximum):
         if mode == "teacher":
-            result = {"schema": "hepta.current-policy-collection.v1",
-                      "model_digest": data.digest(current), "rows": [],
-                      "records_digest": data.digest(records), "model_calls": 0,
-                      "student_verifier_calls": 0, "input_tokens": 0, "output_tokens": 0,
-                      "reused_observation_count": 0, "independent_sample_increment": 0,
-                      "complete": True, "full_system_cost_complete": False,
-                      "collection_mode": "teacher", "student_called": False}
+            result = {
+                "schema": "hepta.current-policy-collection.v1",
+                "model_digest": data.digest(current),
+                "rows": [],
+                "records_digest": data.digest(records),
+                "model_calls": 0,
+                "student_verifier_calls": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "reused_observation_count": 0,
+                "independent_sample_increment": 0,
+                "complete": True,
+                "full_system_cost_complete": False,
+                "collection_mode": "teacher",
+                "student_called": False,
+            }
             write_new(Path(output) / "COLLECTION.json", result)
             return result
-        return collect_current(records, current, self.root, output, onpolicy_train.load_predictor,
-                               maximum=maximum if mode == "controlled" else 1,
-                               execute=mode == "controlled")
+        return collect_current(
+            records,
+            current,
+            self.root,
+            output,
+            onpolicy_train.load_predictor,
+            maximum=maximum if mode == "controlled" else 1,
+            execute=mode == "controlled",
+        )
 
     def corrections(self, records, collection, mode, round_index, output):
-        contract.require(mode == "teacher" or len(collection["rows"]) == len(records),
-                         "collection coverage differs from A")
+        contract.require(
+            mode == "teacher" or len(collection["rows"]) == len(records),
+            "collection coverage differs from A",
+        )
         result = []
         for index, original in enumerate(records):
             row = copy.deepcopy(original)
@@ -53,32 +70,60 @@ class ResearchBackend:
                 receipt = self.old.recheck_reference(row, directory)
                 row["protocol_reference_receipt"] = receipt
                 row["verified_outcome"] = {
-                    "success": True, "receipt_sha256": receipt["receipt_sha256"],
-                    "verifier_name": "repo_patch", "verifier_version": "1"}
-                row["derivation"] = {"original_record_digest": data.digest(original),
-                                     "mode": "authored_teacher_only", "independent_sample_increment": 0}
+                    "success": True,
+                    "receipt_sha256": receipt["receipt_sha256"],
+                    "verifier_name": "repo_patch",
+                    "verifier_version": "1",
+                }
+                row["derivation"] = {
+                    "original_record_digest": data.digest(original),
+                    "mode": "authored_teacher_only",
+                    "independent_sample_increment": 0,
+                }
             else:
                 observed = collection["rows"][index]
-                contract.require(observed["task_id"] == row["task_id"]
-                                 and observed["model_digest"] == collection["model_digest"],
-                                 "observation belongs to another current policy or task")
+                contract.require(
+                    observed["task_id"] == row["task_id"]
+                    and observed["model_digest"] == collection["model_digest"],
+                    "observation belongs to another current policy or task",
+                )
                 row = self.execution.corrected(row, observed, mode, directory)
             row["onpolicy_derivation"] = {
-                "original_record_digest": data.digest(original), "round_index": round_index,
+                "original_record_digest": data.digest(original),
+                "round_index": round_index,
                 "current_model_digest": collection["model_digest"],
-                "collection_digest": data.digest(collection), "retention": "latest_round_only",
-                "target_origin": "verified authored A reference", "external_teacher": False}
+                "collection_digest": data.digest(collection),
+                "retention": "latest_round_only",
+                "target_origin": "verified authored A reference",
+                "external_teacher": False,
+            }
             data.validate_record(row)
             result.append(row)
         return result
 
     def make_plan(self, records, current, operation_id, round_index, mode):
-        return contract.make_plan(records, current, self.root, self.context,
-                                  operation_id=operation_id, round_index=round_index, mode=mode)
+        return contract.make_plan(
+            records,
+            current,
+            self.root,
+            self.context,
+            operation_id=operation_id,
+            round_index=round_index,
+            mode=mode,
+        )
 
     def fit(self, records, current, plan, output):
-        return onpolicy_train.train(records, current, self.root, plan, output, self.context)
+        return onpolicy_train.train(
+            records, current, self.root, plan, output, self.context
+        )
 
     def evaluate(self, records, current, output, maximum):
-        return collect_current(records, current, self.root, output, onpolicy_train.load_predictor,
-                               maximum=maximum, execute=True)
+        return collect_current(
+            records,
+            current,
+            self.root,
+            output,
+            onpolicy_train.load_predictor,
+            maximum=maximum,
+            execute=True,
+        )
