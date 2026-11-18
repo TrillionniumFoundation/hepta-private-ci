@@ -1,0 +1,196 @@
+{
+  "advisory": "RUSTSEC-2026-0543",
+  "chrono_versions": [
+    "0.4.43"
+  ],
+  "closure_ready": false,
+  "external_count": 8,
+  "gate": "OPEN",
+  "importers": [
+    {
+      "kind": "external",
+      "name": "oauth2",
+      "version": "5.0.0"
+    },
+    {
+      "kind": "external",
+      "name": "rmcp",
+      "version": "3.9.0"
+    },
+    {
+      "kind": "external",
+      "name": "schemars",
+      "version": "1.2.1"
+    },
+    {
+      "kind": "external",
+      "name": "serde_with",
+      "version": "3.17.0"
+    },
+    {
+      "kind": "external",
+      "name": "sqlx-core",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "external",
+      "name": "sqlx-mysql",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "external",
+      "name": "sqlx-postgres",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "external",
+      "name": "sqlx-sqlite",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "app_test_support",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-agent-identity",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-api",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-app-server",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-app-server-transport",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-cli",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-cloud-config",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-cloud-tasks",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-cloud-tasks-client",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-cloud-tasks-mock-client",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-core",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-core-plugins",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-external-agent-migration",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-git-utils",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-goal-extension",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-hepta-memory-extension",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-hooks",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-login",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-memories-write",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-models-manager",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-network-proxy",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-otel",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-protocol",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-rollout",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-state",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-thread-store",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-tui",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace",
+      "name": "codex-windows-sandbox",
+      "version": "0.0.0"
+    }
+  ],
+  "issued": "2026-11-17",
+  "lock_git_blob": "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd",
+  "schema": "codex.hia.chrono_dependency_audit.v1",
+  "source_head": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
+  "workspace_count": 28
+}
