@@ -2,6 +2,7 @@
 //! A caller must authenticate the new recipient inside the borrowed action.
 //! All five data kinds are mandatory; no partial cut grants historical access.
 
+use std::io::Write;
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -114,7 +115,7 @@ impl RootRetainedHistoricalCompleteTaskV1 {
                                         };
                                         // The actual recipient writer, pidfd, AuthBus,
                                         // lease and revocation postchecks must return here.
-                                        let value = action(&mut read)?;
+                                        let value = action(&mut read).inspect_err(|_| { let _ = std::io::stderr().write_all(b"root_stage=historical_task.recipient_action\n"); })?;
                                         if !matches!(read.state, ReadState::Complete)
                                             || Instant::now() >= end
                                         {
@@ -124,10 +125,10 @@ impl RootRetainedHistoricalCompleteTaskV1 {
                                         }
                                         Ok(value)
                                     },
-                                )
-                            })
-                    })
-            })
+                                ).inspect_err(|_| { let _ = std::io::stderr().write_all(b"root_stage=historical_task.ledger\n"); })
+                            }).inspect_err(|_| { let _ = std::io::stderr().write_all(b"root_stage=historical_task.run_start\n"); })
+                    }).inspect_err(|_| { let _ = std::io::stderr().write_all(b"root_stage=historical_task.source_cell\n"); })
+            }).inspect_err(|_| { let _ = std::io::stderr().write_all(b"root_stage=historical_task.handoff\n"); })
     }
 }
 
@@ -172,7 +173,11 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
         }
         let source = self
             .source
-            .read_original_retired_source_cell(load_original_source)?;
+            .read_original_retired_source_cell(load_original_source)
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_task.source_observation\n");
+            })?;
         let pin = &self.original.source.expected.pin;
         RootOriginalRunStartReadV1::require_original_publisher(
             self.run_start,
@@ -183,12 +188,23 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &pin.initial_profile,
             &pin.writer,
             &pin.target_files,
-        )?;
+        )
+        .inspect_err(|_| {
+            let _ =
+                std::io::stderr().write_all(b"root_stage=historical_task.run_start_publisher\n");
+        })?;
         let run_start = RootOriginalRunStartReadV1::read_original_publication(
             self.run_start,
-            load_original_run_start()?,
+            load_original_run_start().inspect_err(|_| {
+                let _ = std::io::stderr()
+                    .write_all(b"root_stage=historical_task.run_start_deployment\n");
+            })?,
             source.source.original_identity(),
-        )?;
+        )
+        .inspect_err(|_| {
+            let _ =
+                std::io::stderr().write_all(b"root_stage=historical_task.run_start_observation\n");
+        })?;
         if &run_start.observed.record != source.source.publication().original_record() {
             return Err(io::Error::other(
                 "Source request is not the original Root-retained RunStart",
@@ -200,9 +216,19 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &source.source,
             &source.definition,
             &source.cell,
-        )?;
-        let run_start_digest = RootOriginalRunStartReadV1::retained_digest(self.run_start)?;
-        let ledger_digest = RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)?;
+        )
+        .inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=historical_task.ledger_observation\n");
+        })?;
+        let run_start_digest = RootOriginalRunStartReadV1::retained_digest(self.run_start)
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_task.run_start_digest\n");
+            })?;
+        let ledger_digest = RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=historical_task.ledger_digest\n");
+            })?;
         let cut = Digest32::of_parts(&[
             b"hepta.root.original-historical-complete-task-cut.v1\0",
             &self.original.target.digest().map_err(io::Error::other)?,
@@ -217,11 +243,19 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &source.source,
             &source.cell,
         )
+        .inspect_err(|_| {
+            let _ =
+                std::io::stderr().write_all(b"root_stage=historical_task.publication_projection\n");
+        })
         .map_err(io::Error::other)?;
         publication
             .validate_against(
                 &RootOriginalHistoricalLedgerObservationV1::ledger_read_data(&ledger)?,
             )
+            .inspect_err(|_| {
+                let _ = std::io::stderr()
+                    .write_all(b"root_stage=historical_task.publication_validation\n");
+            })
             .map_err(io::Error::other)?;
         if Instant::now() >= self.end {
             return Err(io::Error::other(

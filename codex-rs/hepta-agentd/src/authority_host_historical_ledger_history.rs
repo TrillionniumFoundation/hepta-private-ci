@@ -2,6 +2,7 @@
 //! durable refusal arm. The complete new-recipient Root action stays inside
 //! that arm; this observation alone never grants Dataset or learning access.
 
+use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 
@@ -64,84 +65,114 @@ impl HostAuthorityService {
             Arc::clone(&root),
             RootDataKind::HistoricalLedger,
             target,
-        )?;
-        refusal.inspect(|| {
-            if Instant::now() >= end {
-                return Err(io::Error::other("historical Ledger deadline expired"));
-            }
-            // Even open() reads the primary. No primary, metadata, identity
-            // path or original descriptor is opened before the durable arm.
-            let owner = ledger_owner(target)?;
-            let store =
-                HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?;
-            let record: LedgerRecord = store.load(&owner).map_err(io::Error::other)?;
-            if record.schema != 1
-                || record.purpose != LEDGER_PURPOSE
-                || &record.target != target
-                || record.registered_at == 0
-                || !matches!(record.phase, LedgerPhase::Captured { .. })
-            {
-                return Err(io::Error::other("captured original Ledger record required"));
-            }
-            let registration: HostAuthorityRegisteredIdentity =
-                serde_json::from_str(&record.registered_identity).map_err(io::Error::other)?;
-            let identity = registration.identity()?;
-            if serde_json::to_string(&registration).map_err(io::Error::other)?
-                != record.registered_identity
-                || crate::neuron_generation_process_identity_digest_v1(&identity)
-                    .map_err(io::Error::other)?
-                    .to_string()
-                    != record.identity
-            {
-                return Err(io::Error::other("original Ledger identity differs"));
-            }
-            let deployment = RootHistoricalLedgerDeploymentV1::open_original(deployment_path)?;
-            let files = OriginalLedgerFiles::retain_original_ledger(
-                deployment,
-                record.publisher.uid,
-                record.peer_gid,
-            )?;
-            if files.file_pins() != &record.files
-                || files.deployment.metadata_digest().to_string() != record.metadata
-                || &files.deployment.initial.target != target
-            {
-                return Err(io::Error::other("retained original Ledger custody differs"));
-            }
-            record.trust.require_target(target)?;
-            let mut pending = PendingOriginalLedgerHistoryV1 {
-                service: self,
-                files,
-                record: record.clone(),
-                identity,
-                end,
-                state: HistoryState::Unobserved,
-            };
-            // The caller encloses the complete authenticated new-recipient
-            // context and every other original-data arm, including postchecks.
-            let result = action(&mut pending)?;
-            let HistoryState::Complete {
-                observed,
-                mut held,
-                trust,
-            } = pending.state
-            else {
-                return Err(io::Error::other("original Ledger observation unfinished"));
-            };
-            held.require_unchanged(&observed)?;
-            pending.files.require_original_files()?;
-            trust.revalidate(
-                self.clock
-                    .refresh_projection()
-                    .map_err(io::Error::other)?
-                    .observed_unix_ms,
-            )?;
-            if store.load(&owner).map_err(io::Error::other)? != record || Instant::now() >= end {
-                return Err(io::Error::other(
-                    "historical Ledger changed after Root context",
-                ));
-            }
-            Ok(result)
-        })
+        )
+        .inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.refusal_open\n");
+        })?;
+        refusal
+            .inspect(|| {
+                if Instant::now() >= end {
+                    return Err(io::Error::other("historical Ledger deadline expired"));
+                }
+                // Even open() reads the primary. No primary, metadata, identity
+                // path or original descriptor is opened before the durable arm.
+                let owner = ledger_owner(target)?;
+                let store = HostAuthorityFrontierStore::open(root, owner.clone())
+                    .map_err(io::Error::other)?;
+                let record: LedgerRecord = store.load(&owner).map_err(io::Error::other)?;
+                if record.schema != 1
+                    || record.purpose != LEDGER_PURPOSE
+                    || &record.target != target
+                    || record.registered_at == 0
+                    || !matches!(record.phase, LedgerPhase::Captured { .. })
+                {
+                    return Err(io::Error::other("captured original Ledger record required"));
+                }
+                let registration: HostAuthorityRegisteredIdentity =
+                    serde_json::from_str(&record.registered_identity).map_err(io::Error::other)?;
+                let identity = registration.identity()?;
+                if serde_json::to_string(&registration).map_err(io::Error::other)?
+                    != record.registered_identity
+                    || crate::neuron_generation_process_identity_digest_v1(&identity)
+                        .map_err(io::Error::other)?
+                        .to_string()
+                        != record.identity
+                {
+                    return Err(io::Error::other("original Ledger identity differs"));
+                }
+                let deployment = RootHistoricalLedgerDeploymentV1::open_original(deployment_path)
+                    .inspect_err(|_| {
+                    let _ =
+                        std::io::stderr().write_all(b"root_stage=historical_ledger.deployment\n");
+                })?;
+                let files = OriginalLedgerFiles::retain_original_ledger(
+                    deployment,
+                    record.publisher.uid,
+                    record.peer_gid,
+                )
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.files\n");
+                })?;
+                if files.file_pins() != &record.files
+                    || files.deployment.metadata_digest().to_string() != record.metadata
+                    || &files.deployment.initial.target != target
+                {
+                    return Err(io::Error::other("retained original Ledger custody differs"));
+                }
+                record.trust.require_target(target)?;
+                let mut pending = PendingOriginalLedgerHistoryV1 {
+                    service: self,
+                    files,
+                    record: record.clone(),
+                    identity,
+                    end,
+                    state: HistoryState::Unobserved,
+                };
+                // The caller encloses the complete authenticated new-recipient
+                // context and every other original-data arm, including postchecks.
+                let result = action(&mut pending).inspect_err(|_| {
+                    let _ = std::io::stderr()
+                        .write_all(b"root_stage=historical_ledger.recipient_action\n");
+                })?;
+                let HistoryState::Complete {
+                    observed,
+                    mut held,
+                    trust,
+                } = pending.state
+                else {
+                    return Err(io::Error::other("original Ledger observation unfinished"));
+                };
+                held.require_unchanged(&observed).inspect_err(|_| {
+                    let _ = std::io::stderr()
+                        .write_all(b"root_stage=historical_ledger.held_postcheck\n");
+                })?;
+                pending.files.require_original_files().inspect_err(|_| {
+                    let _ = std::io::stderr()
+                        .write_all(b"root_stage=historical_ledger.files_postcheck\n");
+                })?;
+                trust
+                    .revalidate(
+                        self.clock
+                            .refresh_projection()
+                            .map_err(io::Error::other)?
+                            .observed_unix_ms,
+                    )
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"root_stage=historical_ledger.trust_postcheck\n");
+                    })?;
+                if store.load(&owner).map_err(io::Error::other)? != record || Instant::now() >= end
+                {
+                    return Err(io::Error::other(
+                        "historical Ledger changed after Root context",
+                    ));
+                }
+                Ok(result)
+            })
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_ledger.refusal_context\n");
+            })
     }
 }
 
@@ -206,14 +237,26 @@ impl PendingOriginalLedgerHistoryV1<'_> {
         };
         let trust_files: Arc<crate::authority_host_runtime::RootInitialLearningTrustFilesV1> =
             Arc::clone(&self.files.deployment.trust);
-        let trust: RegisteredInitialLearningTrustV1 =
-            trust_files.bind_original(&self.identity, &self.files.deployment.initial, now)?;
+        let trust: RegisteredInitialLearningTrustV1 = trust_files
+            .bind_original(&self.identity, &self.files.deployment.initial, now)
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_ledger.original_trust\n");
+            })?;
         if trust.pin != record.trust {
             return Err(io::Error::other("historical original trust pin differs"));
         }
         let (activated, generator, observer) = trust
-            .read_original_payload(now)?
-            .activate_pinned_genesis(now / 1_000)?;
+            .read_original_payload(now)
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_ledger.original_payload\n");
+            })?
+            .activate_pinned_genesis(now / 1_000)
+            .inspect_err(|_| {
+                let _ = std::io::stderr()
+                    .write_all(b"root_stage=historical_ledger.original_activation\n");
+            })?;
         // Recreate only the original plain contract at its retained Root
         // enrollment time. This never creates a fresh claim window or signer.
         let config = self
@@ -251,30 +294,51 @@ impl PendingOriginalLedgerHistoryV1<'_> {
                 checkpoint_digest: cut.signature_checkpoint.parse().map_err(io::Error::other)?,
             },
         };
-        let mut held = self.files.open_original_terminal(&context, mode)?;
+        let mut held = self
+            .files
+            .open_original_terminal(&context, mode)
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_ledger.open_terminal\n");
+            })?;
         let observed = OriginalLedgerReadGuard::observe_original_terminal(
             &mut held,
             &context,
             source.publication(),
             cell,
             now / 1_000,
-        )?;
-        if CapturedLedgerCut::from_original(&observed, source.publication(), cell, source_pin)?
+        )
+        .inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.observe_terminal\n");
+        })?;
+        if CapturedLedgerCut::from_original(&observed, source.publication(), cell, source_pin)
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.capture_cut\n");
+            })?
             != **cut
         {
             return Err(io::Error::other(
                 "original complete four-file Ledger cut differs",
             ));
         }
-        self.files.require_original_files()?;
-        held.require_unchanged(&observed)?;
-        trust.revalidate(
-            self.service
-                .clock
-                .refresh_projection()
-                .map_err(io::Error::other)?
-                .observed_unix_ms,
-        )?;
+        self.files.require_original_files().inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.files_postcheck\n");
+        })?;
+        held.require_unchanged(&observed).inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.held_postcheck\n");
+        })?;
+        trust
+            .revalidate(
+                self.service
+                    .clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms,
+            )
+            .inspect_err(|_| {
+                let _ =
+                    std::io::stderr().write_all(b"root_stage=historical_ledger.trust_postcheck\n");
+            })?;
         if Instant::now() >= self.end {
             return Err(io::Error::other(
                 "historical Ledger ended during observation",
@@ -290,6 +354,9 @@ impl PendingOriginalLedgerHistoryV1<'_> {
                 observed.facts.outcome.clone(),
             ],
         )
+        .inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.data_encoding\n");
+        })
         .map_err(io::Error::other)?;
         if ledger_image.len() as u64 != observed.cut.ledger_length
             || Digest32::of_bytes(&ledger_image) != observed.cut.ledger_digest
