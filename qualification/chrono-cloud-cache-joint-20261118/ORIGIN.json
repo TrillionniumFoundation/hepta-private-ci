@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.chrono-consumer-origin.v1",
+  "base_commit": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+  "base_tree": "7695f9c9f70f80d1c5e860fddf6e8510c9fde3c7",
+  "origin": {
+    "host": "rog",
+    "source": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/chrono-repo",
+    "head": "92d8b09f3929b60d0b53b49e4720ff16d35b94fd",
+    "component_commit": "699d8258a1929b12a597b201778e50842ce4e83f",
+    "inherit_qualification": false
+  },
+  "copied_inputs": [
+    {
+      "path": "codex-rs/cloud-config/src/cache.rs",
+      "bytes": 9252,
+      "sha256": "e757968ef9608e962214a502fed84bac165c772c8043cbec5fec820fc1f113c6"
+    },
+    {
+      "path": "codex-rs/cloud-config/src/cache_time_tests.rs",
+      "bytes": 4823,
+      "sha256": "dd65e7500403daaa434b1b98c7eca52d98582a2c05c6c80c30e8870327409a9e"
+    },
+    {
+      "path": "codex-rs/utils/time/src/lib.rs",
+      "bytes": 7985,
+      "sha256": "eb3b38c1042f1d374329c7ba09982674b82d9682f01f3f6a23a5382df002b909"
+    },
+    {
+      "path": "codex-rs/utils/time/src/parse.rs",
+      "bytes": 6069,
+      "sha256": "81ca7f2887d255e5d56b94b3d6af75817bda279fb64b02f1a4167dd9221a3f88"
+    },
+    {
+      "path": "codex-rs/utils/time/src/format.rs",
+      "bytes": 1478,
+      "sha256": "7663becb0e6f64b63a0824305d1a62fee0df643ce86cb9d2d2eda22337ec3b5e"
+    },
+    {
+      "path": "codex-rs/utils/time/src/serde.rs",
+      "bytes": 2563,
+      "sha256": "e454dc1cc7e8b650e26db185058750fe5e7256fc706a4a6466a8a6938a163771"
+    },
+    {
+      "path": "codex-rs/utils/time/Cargo.toml",
+      "bytes": 408,
+      "sha256": "c9ffadd3499e67274ae311a58bbf9abd76ea6d7c9933015773047cb4b83f13ec"
+    },
+    {
+      "path": "codex-rs/utils/time/BUILD.bazel",
+      "bytes": 169,
+      "sha256": "cf3441017b7f6e8c75929d14c512f1ac8a2fd665cdb5f47b10ea765507b6598a"
+    },
+    {
+      "path": "codex-rs/utils/time/README.md",
+      "bytes": 4132,
+      "sha256": "a071e8a518bc25aec3b0bb74ac48f543bd097391f8e308d537dfbc8e95035e9c"
+    },
+    {
+      "path": "codex-rs/utils/time/src/codec_tests.rs",
+      "bytes": 10895,
+      "sha256": "804068d153aaec22e97c235d7907aaab17d2def0672f00b86dc0759060c5bcc8"
+    },
+    {
+      "path": "codex-rs/utils/time/tests/fixtures/comparison-oracle.json",
+      "bytes": 7121,
+      "sha256": "fb6699ab708a62638f037f457806feab71d5316d11713b43cf693a5b01972914"
+    },
+    {
+      "path": "codex-rs/utils/time/tests/fixtures/grammar-oracle.json",
+      "bytes": 30370,
+      "sha256": "1061dfceab2618f9a5f54f91167ea5e4299056426a8c6c198b060d003f581297"
+    },
+    {
+      "path": "codex-rs/utils/time/tests/fixtures/wire-oracle.json",
+      "bytes": 39418,
+      "sha256": "0285e6a5eda8d2f5ff52e64e97a5eb8ae35749cdad2c3ddd1bac87c9789ee71d"
+    },
+    {
+      "path": "codex-rs/cloud-config/src/cache_tests.rs",
+      "bytes": 7267,
+      "sha256": "c131c4e8e38dbff09968a7590a9594d57c8db539846dbe16a3c8dc4284f2ff77"
+    },
+    {
+      "path": "codex-rs/cloud-config/Cargo.toml",
+      "bytes": 1018,
+      "sha256": "e7fe8d7edc497a5581d3c0ec0a05a9506f8ba02b10bac8e04a5c6d8afd797a0a"
+    }
+  ],
+  "integration_edits": [
+    "Register utils/time as a workspace member and dependency",
+    "Format copied Rust files with the repository formatter before execution",
+    "Limit current qualification statements to actual joint candidate runs"
+  ],
+  "scope": [
+    "codex-utils-time",
+    "codex-cloud-config"
+  ],
+  "unmodified_boundaries": [
+    "cache version 1",
+    "HMAC key and signed field order",
+    "identity and signature verification",
+    "one-hour cache lifetime",
+    "original invalid-cache rejection statuses"
+  ],
+  "qualification": {
+    "status": "source_preparation_only",
+    "old_stage6_counts_inherited": false,
+    "whole_workspace_chrono_removed": false,
+    "original_cargo_deny_pass_claimed": false,
+    "locks_to_be_regenerated_on_joint_source": true
+  }
+}

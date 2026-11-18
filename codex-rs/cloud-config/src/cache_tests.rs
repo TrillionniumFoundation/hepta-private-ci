@@ -38,11 +38,12 @@ fn signed_cache_file(
 }
 
 fn valid_signed_payload() -> CloudConfigBundleCacheSignedPayload {
-    let cached_at = Utc::now();
+    let cached_at = OffsetDateTime::now_utc();
     CloudConfigBundleCacheSignedPayload {
         version: CLOUD_CONFIG_BUNDLE_CACHE_VERSION,
-        cached_at,
-        expires_at: cached_at + ChronoDuration::minutes(30),
+        cached_at: CanonicalUtcTimestamp::from_instant(cached_at).expect("cached time"),
+        expires_at: CanonicalUtcTimestamp::from_instant(cached_at + time::Duration::minutes(30))
+            .expect("expiry time"),
         chatgpt_user_id: Some("user-12345".to_string()),
         account_id: Some("account-12345".to_string()),
         bundle: test_bundle(),
@@ -79,11 +80,18 @@ async fn save_writes_signed_payload_and_loads_for_matching_identity() {
     let cache_file: CloudConfigBundleCacheFile =
         serde_json::from_slice(&std::fs::read(cache.path()).expect("read cache"))
             .expect("parse cache");
-    assert!(
-        cache_file.signed_payload.expires_at
-            <= cache_file.signed_payload.cached_at + ChronoDuration::minutes(60)
-    );
-    assert!(cache_file.signed_payload.expires_at > cache_file.signed_payload.cached_at);
+    let cached_at = cache_file
+        .signed_payload
+        .cached_at
+        .try_into_instant()
+        .expect("cached instant");
+    let expires_at = cache_file
+        .signed_payload
+        .expires_at
+        .try_into_instant()
+        .expect("expiry instant");
+    assert!(expires_at <= cached_at + time::Duration::minutes(60));
+    assert!(expires_at > cached_at);
     assert_eq!(
         cache_file,
         signed_cache_file(CloudConfigBundleCacheSignedPayload {
@@ -182,7 +190,9 @@ async fn load_rejects_expired_cache() {
     let codex_home = tempdir().expect("tempdir");
     let cache = create_test_cache(codex_home.path());
     let mut signed_payload = valid_signed_payload();
-    signed_payload.expires_at = Utc::now() - ChronoDuration::seconds(1);
+    signed_payload.expires_at =
+        CanonicalUtcTimestamp::from_instant(OffsetDateTime::now_utc() - time::Duration::seconds(1))
+            .expect("expiry time");
     write_cache_file(&cache, &signed_cache_file(signed_payload));
 
     assert_eq!(

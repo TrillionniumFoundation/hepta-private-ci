@@ -5,11 +5,9 @@
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
-use chrono::DateTime;
-use chrono::Duration as ChronoDuration;
-use chrono::Utc;
 use codex_config::AbsolutePathBuf;
 use codex_config::CloudConfigBundle;
+use codex_utils_time::CanonicalUtcTimestamp;
 use hmac::Hmac;
 use hmac::Mac;
 use serde::Deserialize;
@@ -18,6 +16,7 @@ use sha2::Sha256;
 use std::path::Path;
 use std::time::Duration;
 use thiserror::Error;
+use time::OffsetDateTime;
 use tokio::fs;
 
 const CLOUD_CONFIG_BUNDLE_CACHE_VERSION: u32 = 1;
@@ -99,7 +98,12 @@ impl CloudConfigBundleCache {
             return Err(CacheLoadStatus::CacheIdentityMismatch);
         }
 
-        if cache_file.signed_payload.expires_at <= Utc::now() {
+        if !cache_file
+            .signed_payload
+            .expires_at
+            .compare_to_instant(OffsetDateTime::now_utc())
+            .is_gt()
+        {
             return Err(CacheLoadStatus::CacheExpired);
         }
 
@@ -131,17 +135,19 @@ impl CloudConfigBundleCache {
         account_id: Option<String>,
         bundle: CloudConfigBundle,
     ) -> Result<(), CloudConfigBundleCacheError> {
-        let now = Utc::now();
+        let now = OffsetDateTime::now_utc();
         let expires_at = now
-            .checked_add_signed(
-                ChronoDuration::from_std(CLOUD_CONFIG_BUNDLE_CACHE_TTL)
+            .checked_add(
+                time::Duration::try_from(CLOUD_CONFIG_BUNDLE_CACHE_TTL)
                     .map_err(|_| CloudConfigBundleCacheError)?,
             )
             .ok_or(CloudConfigBundleCacheError)?;
         let signed_payload = CloudConfigBundleCacheSignedPayload {
             version: CLOUD_CONFIG_BUNDLE_CACHE_VERSION,
-            cached_at: now,
-            expires_at,
+            cached_at: CanonicalUtcTimestamp::from_instant(now)
+                .map_err(|_| CloudConfigBundleCacheError)?,
+            expires_at: CanonicalUtcTimestamp::from_instant(expires_at)
+                .map_err(|_| CloudConfigBundleCacheError)?,
             chatgpt_user_id,
             account_id,
             bundle,
@@ -204,8 +210,8 @@ pub(super) struct CloudConfigBundleCacheFile {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub(super) struct CloudConfigBundleCacheSignedPayload {
     pub(super) version: u32,
-    pub(super) cached_at: DateTime<Utc>,
-    pub(super) expires_at: DateTime<Utc>,
+    pub(super) cached_at: CanonicalUtcTimestamp,
+    pub(super) expires_at: CanonicalUtcTimestamp,
     pub(super) chatgpt_user_id: Option<String>,
     pub(super) account_id: Option<String>,
     pub(super) bundle: CloudConfigBundle,
@@ -251,3 +257,7 @@ fn verify_cache_signature_with_key(
 #[cfg(test)]
 #[path = "cache_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cache_time_tests.rs"]
+mod time_tests;
