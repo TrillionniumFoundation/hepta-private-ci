@@ -199,7 +199,7 @@ class InitialPeerReadySourceTests(unittest.TestCase):
             "self.require_original_context(end)?", "self.service.enroll_generation_initial(",
             "let enrollment_post = self.require_original_context(end)", "enrolled?",
             "self.service.register_initial_run_start_retention(",
-            "source .register_original_source_cell(context)", "source .register_original_source_ledger(context)",
+            "source .register_original_source_cell(context)", "source .register_original_source_ledger(context, self.end)",
             "RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?",
             "let post = self.require_original_context(end)", "post.map(|()| run_start)",
         ))

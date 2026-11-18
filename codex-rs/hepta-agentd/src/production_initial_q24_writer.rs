@@ -64,6 +64,25 @@ pub(in crate::production_launcher) async fn attach(
     )
     .await?;
     require_current()?;
+    // Opening the original local lease invalidates the protected Current cut.
+    // Publish that same owner's actual cut before installing it. Recovery
+    // remains read-only and cannot turn this retained Dirty state into Current.
+    tokio::time::timeout(
+        super::initial_remaining(end)?,
+        host.writer().acknowledge_current(),
+    )
+    .await
+    .map_err(|_| super::refused("Initial Current acknowledgement deadline elapsed"))?
+    .map_err(|error| super::refused(format!("Initial original Current acknowledgement: {error}")))?;
+    require_current()?;
+    tokio::time::timeout(
+        super::initial_remaining(end)?,
+        checkpoint.observed_current_receipt(),
+    )
+    .await
+    .map_err(|_| super::refused("Initial Current readback deadline elapsed"))?
+    .map_err(|error| super::refused(format!("Initial original Current readback: {error}")))?;
+    require_current()?;
     let config = config.with_production_writer_host(Arc::new(host))?;
     super::initial_remaining(end)?;
     Ok((

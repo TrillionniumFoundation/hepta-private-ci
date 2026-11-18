@@ -707,7 +707,7 @@ symbol = "ProductionDurableWriter::acknowledge_current"
 call_pattern = '(?:\.\s*acknowledge_current\s*\(\s*\)|ProductionDurableWriter\s*::\s*acknowledge_current\s*\()'
 definition_path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
 definition_markers = ["pub async fn acknowledge_current(&self)", "self.verify_authority().await?", "if !self.store.commit_gate.is_managed()", "begin_checkpoint_barrier()", "self.acknowledge_bound_owner_transaction(&mut transaction)"]
-product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs", "codex-rs/hepta-agentd/src/desktop_root_composition.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs", "codex-rs/hepta-agentd/src/desktop_root_composition.rs", "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"]
 caller_markers = [".acknowledge_current()"]
 
 [[protected_file]]
@@ -721,7 +721,7 @@ symbol = "ProtectedCognitiveCheckpoint::observed_current_receipt"
 call_pattern = "(?:\\.\\s*observed_current_receipt\\s*\\(\\s*\\)|ProtectedCognitiveCheckpoint\\s*::\\s*observed_current_receipt\\s*\\()"
 definition_path = "codex-rs/hepta-memory/src/cognitive_checkpoint.rs"
 definition_markers = ["pub async fn observed_current_receipt(", "self.receipt_transaction()", "let observed = self.owner.read_head(&self.receipt).await?", "if observed != *self.receipt", "observed.head.phase != CognitiveCheckpointPhase::Current", "observed.head.proposal.is_some()"]
-product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs", "codex-rs/hepta-memory/src/cognitive_checkpoint_publication.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs", "codex-rs/hepta-memory/src/cognitive_checkpoint_publication.rs", "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"]
 caller_markers = [".observed_current_receipt()"]
 
 [[protected_file]]
@@ -7433,7 +7433,7 @@ required_function_order = [{function = "fn open(",sequence = ["OriginalFiles::ne
 path = "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"
 required = []
 forbidden = ["attach_target(", "attach_additional_target(", "AgentdProductionWriterHost::open(", "SigningKey", "AlwaysCurrent", "FinalUseProductionOutboxTarget"]
-required_function_order = [{function = "fn attach(",sequence = ["super::initial_remaining(end)?", "config.require_unconfigured_production_hosts()?", "original.bootstrap.registered_identity.identity()? != *config.identity()", "original.bootstrap.writer.validate()?", "Arc::new(original.session)", "session.authority()", "session.verifier()", "super::initial_remaining(end)?", ".verify_sender_process_binding(", "writer.local_lease_generation", "config.identity().spawn_generation", "require_current()?", "config.retain_root_session(&session)?", "AgentdProductionWriterHost::open_with_protected_recovery(", "original.checkpoint", "require_current()?", "config.with_production_writer_host(Arc::new(host))?", "super::initial_remaining(end)?", "_session: session", "_checkpoint: checkpoint", "_grants: original.grants", "_device: original.device", "_notes: original.notes"]}]
+required_function_order = [{function = "fn attach(",sequence = ["super::initial_remaining(end)?", "config.require_unconfigured_production_hosts()?", "original.bootstrap.registered_identity.identity()? != *config.identity()", "original.bootstrap.writer.validate()?", "Arc::new(original.session)", "session.authority()", "session.verifier()", "super::initial_remaining(end)?", ".verify_sender_process_binding(", "writer.local_lease_generation", "config.identity().spawn_generation", "require_current()?", "config.retain_root_session(&session)?", "AgentdProductionWriterHost::open_with_protected_recovery(", "original.checkpoint", "require_current()?", "tokio::time::timeout(", "super::initial_remaining(end)?", "host.writer().acknowledge_current()", "require_current()?", "tokio::time::timeout(", "super::initial_remaining(end)?", "checkpoint.observed_current_receipt()", "require_current()?", "config.with_production_writer_host(Arc::new(host))?", "super::initial_remaining(end)?", "_session: session", "_checkpoint: checkpoint", "_grants: original.grants", "_device: original.device", "_notes: original.notes"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_initial_q24_cli.rs"
