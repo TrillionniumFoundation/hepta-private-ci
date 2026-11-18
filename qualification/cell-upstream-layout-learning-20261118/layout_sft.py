@@ -1,6 +1,7 @@
 """Resume one actual parent on identical verified repair targets and two evidence layouts."""
 
 import copy
+import checkpoint_softmax
 import gc
 import importlib.util
 import os
@@ -32,9 +33,46 @@ SETTINGS = {
     "max_grad_norm": 1.0,
     "cuda_memory_fraction": 0.70,
     "cuda_allocator": "expandable_segments:True",
+    "training_attention": "eager_checkpointed_softmax",
+    "inner_softmax_query_rows": 128,
+    "inner_checkpoint_use_reentrant": False,
+    "inner_checkpoint_preserve_rng_state": True,
+    "outer_decoder_checkpoint_use_reentrant": False,
     "optimizer_state": "fresh identical empty AdamW",
 }
 require = matched.require
+
+
+def configure_training_attention(model, output):
+    checkpoint_softmax.register()
+    base = model.get_base_model()
+    require(
+        base.config._attn_implementation == "eager",
+        "cold parent inference engine differs",
+    )
+    base.set_attn_implementation(checkpoint_softmax.NAME)
+    require(
+        base.config._attn_implementation == SETTINGS["training_attention"]
+        and all(
+            module.config._attn_implementation == SETTINGS["training_attention"]
+            for module in base.modules()
+            if type(module).__name__ == "Qwen2Attention"
+        ),
+        "actual inner checkpoint engine differs",
+    )
+    write_new(
+        Path(output) / "TRAINING_ENGINE.json",
+        {
+            "engine": SETTINGS["training_attention"],
+            "query_rows": checkpoint_softmax.QUERY_ROWS,
+            "eager_mask_preserved": True,
+            "complete_QK_AV_matrix_shapes_preserved": True,
+            "FP32_softmax_then_original_dtype_preserved": True,
+            "extra_recomputation_is_not_free": True,
+            "inference_engine": "eager",
+            "installed_library_files_changed": False,
+        },
+    )
 
 
 def allocator_admission(torch, device):
@@ -175,6 +213,7 @@ def backward_group(
     denominator = sum(counts)
     require(denominator > 0, "nonempty objective required")
     observed_loss, positions, inputs = 0.0, 0, 0
+    checkpoint_softmax.TRACKER.reset()
 
     def emit(event, chunk, count):
         if trace_path is not None:
@@ -204,6 +243,7 @@ def backward_group(
         mask = torch.tensor(
             [[1] * len(row["input_ids"]) + [0] * padding], device=device
         )
+        checkpoint_softmax.TRACKER.phase = "forward"
         emit("forward_started", chunk, count)
         loss, actual_count = numeric.selected_token_loss(model, ids, mask, labels)
         require(
@@ -211,6 +251,7 @@ def backward_group(
         )
         emit("forward_completed", chunk, actual_count)
         weighted = loss * (count / denominator)
+        checkpoint_softmax.TRACKER.phase = "backward"
         emit("backward_started", chunk, count)
         weighted.backward()
         observed_loss += float(weighted.detach())
@@ -225,6 +266,7 @@ def backward_group(
         "supervised_positions": denominator,
         "input_tokens": inputs,
         "padded_positions": limit * len(turns),
+        "inner_checkpoint_counts": checkpoint_softmax.TRACKER.snapshot(),
     }
 
 
@@ -314,7 +356,12 @@ def verify_manifest(manifest, artifact_root, old_code_root, candidate_root):
         "candidate adapter bytes changed",
     )
     import peft
+    import freeze_training
 
+    require(
+        manifest["training_admission_sha256"] == freeze_training.verify_admission(),
+        "actual full calibration admission changed",
+    )
     require(peft.__version__ == manifest["peft_version"], "adapter backend differs")
     return data.digest(manifest)
 
@@ -379,6 +426,9 @@ def train(
             file_hash(Path(candidate_root) / name) == expected,
             "new candidate changed: " + name,
         )
+    import freeze_training
+
+    training_admission_sha = freeze_training.verify_admission()
     output.mkdir(parents=True, exist_ok=False)
     write_new(
         output / "STARTED.json",
@@ -436,6 +486,7 @@ def train(
         )
         write_new(output / "ENCODED_GROUPS.json", groups)
         model = predictor.model
+        configure_training_attention(model, output)
         # The parent loader validates FP32 adapter bytes before enabling gradients.
         # No adapter is reinitialized and no parent optimizer state is invented.
         for name, value in model.named_parameters():
@@ -535,6 +586,7 @@ def train(
             "candidate_files": copy.deepcopy(freeze["candidate_files"]),
             "objective": mode,
             "training_settings": SETTINGS,
+            "training_admission_sha256": training_admission_sha,
             "freeze_digest": data.digest(freeze),
             "train_records_digest": data.digest(records),
             "encoded_groups_digest": data.digest(groups),
@@ -570,6 +622,15 @@ def train(
                         "padded_positions",
                     )
                 },
+                "inner_checkpoint_counts": {
+                    key: sum(
+                        row["inner_checkpoint_counts"].get(key, 0) for row in steps
+                    )
+                    for key in sorted(
+                        {key for row in steps for key in row["inner_checkpoint_counts"]}
+                    )
+                },
+                "model_F_B_counts_are_outer_calls_not_total_recomputed_work": True,
                 "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated(device),
                 "cuda_peak_reserved_bytes": torch.cuda.max_memory_reserved(device),
                 "energy_joules": None,
@@ -617,6 +678,7 @@ def audit(output, artifact_root, old_code_root, candidate_root, freeze):
         "head_positions",
         "supervised_positions",
         "padded_positions",
+        "inner_checkpoint_counts",
     )
     for mode in MODES:
         folder = output / "training" / mode

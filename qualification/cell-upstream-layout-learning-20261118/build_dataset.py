@@ -188,6 +188,8 @@ def build(source_commit):
     ctx.write(prepared / "INPUT_INDEX.json", input_files)
     names = (
         "layout_sft.py",
+        "checkpoint_softmax.py",
+        "freeze_training.py",
         "layout_context.py",
         "build_dataset.py",
         "run_layout.py",
@@ -208,7 +210,10 @@ def build(source_commit):
         == "b8b4ebdd3b27193564c535ba732f209fbdc676f2b0bdff36692055147ae30f36",
         "original failed calibration must remain retained",
     )
-    allocator_proof = ctx.WORK / "preparation/allocator-capability/RESULT.json"
+    allocator_proof = (
+        ctx.WORK.parent
+        / "hepta-upstream-layout-learning-20261118-2e9b-expandable/preparation/allocator-capability/RESULT.json"
+    )
     second_failure = (
         ctx.WORK.parent
         / "hepta-upstream-layout-learning-20261118-2e9b-3584/retained/calibration/FAILED.json"
@@ -220,7 +225,46 @@ def build(source_commit):
         == "d3ccfdea6d8eb895d0159906e58d1e8867be127424a8395621d18757ba6255ff",
         "actual allocator control or second failure changed",
     )
+    short_gate = ctx.WORK / "probe-result-1/RESULT.json"
+    layout.require(
+        ctx.sha(short_gate)
+        == "22e9642729084223acf0058606ef01132c7e8b5f707eafb8e37c3002eb87586a",
+        "actual short numerical gate changed",
+    )
+    short = ctx.read(short_gate)
+    layout.require(
+        short["status"] == "PASS"
+        and short["parameter_before"]
+        == short["parameter_after"]
+        == layout.PARENT_PARAMETERS,
+        "short numerical gate not passed",
+    )
     protocol = {
+        "training_attention_revision": {
+            "engine": "eager_checkpointed_softmax",
+            "inner_softmax_query_rows": 128,
+            "short_actual_result_sha256": ctx.sha(short_gate),
+            "short_source_commit": "2776b2e7e6464ce57014f2ed755a965b35037ec5",
+            "full_length_gate_required_before_training_admission_freeze": True,
+            "each_fit_in_new_process_with_fresh_parent_and_empty_optimizer": True,
+            "same_original_eager_QK_AV_shapes_and_mask": True,
+            "extra_recomputation_counts_required": True,
+            "same_physical_work_as_prior_eager_claim": False,
+        },
+        "prior_SDPA_numerical_reject": {
+            "source_commit": "c77f2b0261bf06de49fe5b46735f4e7f06dd7f9b",
+            "result_sha256": "5586e99593a5de111b1eaac25281e9b9c457a118beef088d3847eda12383d394",
+            "status": "NUMERICAL_REJECT",
+            "unchanged_tolerances": True,
+        },
+        "prior_eager_expandable_failure": {
+            "source_commit": "d5f52660f37d3fc46b2cdb17560691cca4ab332d",
+            "failure_sha256": "c198b7c9e556c189d4842a9fb2cbd6d9f3c689cf839672f88615290a58d5df8e",
+            "completed_forwards": 1,
+            "attempted_backwards": 1,
+            "completed_backwards": 0,
+            "optimizer_updates": 0,
+        },
         "allocator_revision": {
             "configuration": "expandable_segments:True",
             "backend": "native",
@@ -269,7 +313,7 @@ def build(source_commit):
         "calibration_index": calibration_index,
         "information_match": "same original task, actual first P/C answer, exact actual feedback, identical verified maintainer target",
         "layout_difference": "single user evidence document versus actual user-assistant-tool turns; native tool wire stays original labeled user observation",
-        "compute_match": "same P tensors, empty AdamW, 32 updates, example order, target tokens, selected head positions, full padded 3584-token forwards/backwards",
+        "compute_match": "same P tensors, empty AdamW, 32 updates, example order, target tokens, selected head positions, full padded 3584-token outer F/B and identical inner checkpoint engine. Actual extra softmax recomputation counts must match between arms; 72 outer F/B is not the old eager physical work.",
         "unpadded_token_counts_can_differ": True,
         "physical_compute_time_energy_equal": False,
         "target_partition": "at most 256 selected head positions per full causal forward/backward; weighted target-count mean; no token truncation",

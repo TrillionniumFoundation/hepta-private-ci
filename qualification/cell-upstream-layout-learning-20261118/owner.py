@@ -38,7 +38,9 @@ def retain(source, destination):
 
 def own(phase, binding):
     protocol = ctx.read(ctx.HERE / "prepared/PROTOCOL.json")
-    deployment_path = ctx.WORK / "DEPLOYMENT.json"
+    deployment_path = ctx.WORK / (
+        "DEPLOYMENT.json" if phase == "calibration_only" else "TRAINING_DEPLOYMENT.json"
+    )
     deployment = ctx.read(deployment_path)
     if ctx.sha(ctx.HERE / "prepared/PROTOCOL.json") != deployment["protocol_sha256"]:
         raise ValueError("published protocol changed")
@@ -52,9 +54,17 @@ def own(phase, binding):
         ctx.COLLECTION / "execution-code/owner.py",
         OLD_OWNER_SHA,
     )
-    if phase == "training":
+    if phase == "calibration_only":
+        stages = [("calibration", ["--stage", "calibrate"], 1800)]
+    elif phase == "training":
+        import freeze_training
+
+        if (
+            freeze_training.verify_admission()
+            != deployment["training_admission_sha256"]
+        ):
+            raise ValueError("prospective final training admission changed")
         stages = [
-            ("calibration", ["--stage", "calibrate"], 1800),
             (
                 "document_evidence",
                 ["--stage", "train", "--mode", "document_evidence"],
@@ -217,7 +227,7 @@ def own(phase, binding):
                 ctx.write(folder / "EXIT.json", record)
                 exits.append(record)
                 print(ctx.data.canonical(record).decode(), flush=True)
-                if phase == "training" and name in (
+                if phase in ("training", "calibration_only") and name in (
                     "calibration",
                     "document_evidence",
                     "native_feedback",
@@ -298,7 +308,9 @@ def own(phase, binding):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--phase", choices=("training", "evaluation_A", "evaluation_B3"), required=True
+        "--phase",
+        choices=("calibration_only", "training", "evaluation_A", "evaluation_B3"),
+        required=True,
     )
     parser.add_argument("--b3-binding", type=Path)
     args = parser.parse_args()

@@ -121,3 +121,12 @@ an expandable segment and the unchanged 0.70 cap; its raw receipt is retained.
 This does not establish that the full training fits: the largest-record
 calibration remains an actual gate. No daemon, driver, access policy, other
 owner's process or shared environment is changed.
+
+
+## Actual eager inner-checkpoint revision
+
+The original three eager calibrations, including the real expandable allocator, failed before any optimizer update. The distinct fused SDPA probe completed four real F/B pairs but failed its frozen whole-logit and full-LoRA-gradient thresholds; that rejection remains unchanged. A subsequent original-eager/inner-softmax-checkpoint probe passed all four F/B pairs with zero observed logit or gradient difference on the fixed short A examples. Both have complete retained evidence.
+
+This source adds non-reentrant checkpointing only to FP32 softmax blocks of 128 query rows. The original complete QK and AV matrix shapes and eager causal/padding mask are preserved. Existing decoder-layer checkpointing remains. The additional original/recompute function starts/completions are recorded for every group, including early-stop differences, and must match between arms. The old 72 outer F/B count is not a claim of the same physical work.
+
+First run `owner.py --phase calibration_only` on the fixed largest full 3584-token group, with no optimizer or generation. On actual success, `freeze_training.py` checks original full-gate receipts and creates a new `TRAINING_ADMISSION.json`. Publish that exact admission before `TRAINING_DEPLOYMENT.json` and the two actual 32-step child fits. Both training children cold-load the same P and create fresh empty AdamW; calibration state/gradients are not reused. The main source/data/protocol remain identical across full calibration and training. B3 remains sealed until both real weight manifests and the existing WEIGHTS_FROZEN receipt exist. All previous NoUpdate decisions remain unchanged.

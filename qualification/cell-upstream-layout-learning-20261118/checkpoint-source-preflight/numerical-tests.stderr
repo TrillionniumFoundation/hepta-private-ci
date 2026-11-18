@@ -1,0 +1,11 @@
+test_evidence_fields_are_identical_and_unverified_actions_untrained (__main__.PartitionNumerics.test_evidence_fields_are_identical_and_unverified_actions_untrained) ... ok
+test_exact_target_partition_and_gradient_equivalence (__main__.PartitionNumerics.test_exact_target_partition_and_gradient_equivalence) ... /home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/source/qualification/cell-upstream-layout-learning-20261118/test_layout_sft.py:77: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  self.assertAlmostEqual(float(loss), measured["loss"], places=6)
+ok
+test_rejects_empty_or_noncausal_target (__main__.PartitionNumerics.test_rejects_empty_or_noncausal_target) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.057s
+
+OK
