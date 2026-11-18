@@ -21,7 +21,10 @@ import sys
 import time
 
 EMPTY_WAL = {"memory/owner.sqlite-wal", "predictor/owner.sqlite-wal"}
-VERIFIER_SHA256 = "899723e758d8e89cb59c8fd25f7c734a1e39a829e49029f216a371a4d3527bd5"
+VERIFIER_SHA256 = "526d959dee1e7729d9097fc728556aa7395d0c993f0dcd4041a4f35c6a92d68f"
+SEMANTIC_VERIFIER_SHA256 = (
+    "9263dea8f2bddb35b5ae6255fe8969ac5c2538911a95878f31a4091a9a2f19dd"
+)
 
 
 def require(condition, message):
@@ -166,7 +169,7 @@ def byte_records(manifest):
     }
 
 
-def review_snapshot(source_directory, snapshot_dir, output):
+def review_snapshot(source_directory, snapshot_dir, output, *, semantic=False):
     source, snapshot, output = map(
         checked_path, (source_directory, snapshot_dir, output)
     )
@@ -189,9 +192,14 @@ def review_snapshot(source_directory, snapshot_dir, output):
     )
     verifier = (
         Path(__file__)
-        .with_name("verify_hepta_maintenance_cycle.py")
+        .with_name(
+            "verify_hepta_semantic_cycle.py"
+            if semantic
+            else "verify_hepta_maintenance_cycle.py"
+        )
         .resolve(strict=True)
     )
+    expected_verifier = SEMANTIC_VERIFIER_SHA256 if semantic else VERIFIER_SHA256
     started = time.perf_counter()
     report = dict(
         schema="hepta.maintenance-readonly-snapshot-review.v1",
@@ -201,7 +209,8 @@ def review_snapshot(source_directory, snapshot_dir, output):
         snapshot_directory=str(snapshot),
         postprocessor_sha256=sha(Path(__file__).read_bytes()),
         original_verifier_path=str(verifier),
-        original_verifier_expected_sha256=VERIFIER_SHA256,
+        original_verifier_expected_sha256=expected_verifier,
+        semantic_profile=semantic,
         source_unchanged_verified=None,
         snapshot_unchanged_during_review=None,
         source_access="read-only descriptors; no source writes, chmod, SQLite open or checkpoint",
@@ -235,7 +244,7 @@ def review_snapshot(source_directory, snapshot_dir, output):
         stage = "verifier_identity"
         report["original_verifier_sha256"] = sha(verifier.read_bytes())
         require(
-            report["original_verifier_sha256"] == VERIFIER_SHA256,
+            report["original_verifier_sha256"] == expected_verifier,
             "frozen verifier source differs",
         )
         stage = "exact_copy"
@@ -287,10 +296,21 @@ def review_snapshot(source_directory, snapshot_dir, output):
         )
         require(
             report["review"]["verifier_sha256"]
-            == VERIFIER_SHA256
+            == expected_verifier
             == sha(verifier.read_bytes()),
             "verifier changed during review",
         )
+        if semantic:
+            require(
+                report["review"]["base_verifier_sha256"]
+                == VERIFIER_SHA256
+                == sha(
+                    Path(__file__)
+                    .with_name("verify_hepta_maintenance_cycle.py")
+                    .read_bytes()
+                ),
+                "semantic review dependency differs",
+            )
         stage = "post_review_invariance"
         after_review = inventory(source)
         snapshot_after = inventory(snapshot)
@@ -340,8 +360,11 @@ def main():
     parser.add_argument("source_directory", type=Path)
     parser.add_argument("--snapshot-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--semantic", action="store_true")
     args = parser.parse_args()
-    report = review_snapshot(args.source_directory, args.snapshot_dir, args.output)
+    report = review_snapshot(
+        args.source_directory, args.snapshot_dir, args.output, semantic=args.semantic
+    )
     print(
         json.dumps(
             {

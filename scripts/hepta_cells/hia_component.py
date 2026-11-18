@@ -49,6 +49,48 @@ class HiaCellComponent:
     def initial_state(self):
         return self.inner.initial_state()
 
+    def migrate_state_from(self, source, state):
+        """Delegate an idle upgrade without changing continuation custody.
+
+        CellOwner enforces the retained checkpoint, no pending intents and an
+        atomic cutover. This port additionally requires the exact same native
+        transport instance and SQLite owner; it transfers no in-flight effects.
+        The inner component must validate its own hidden-state relation.
+        """
+        if type(self) is not HiaCellComponent or type(source) is not HiaCellComponent:
+            raise CellError("HIA migration requires canonical wrappers")
+        if (
+            self.owner is not source.owner
+            or self.native is not source.native
+            or self.image_sha256 != source.image_sha256
+            or type(self.inner) is not type(source.inner)
+        ):
+            raise CellError(
+                "HIA migration must retain owner, native transport and image"
+            )
+        before, prior = self.identity, source.identity
+        owner, native, image = self.owner, self.native, self.image_sha256
+        if before.effectful or prior.effectful:
+            raise CellError("HIA effectful state requires separate custody")
+        convert = getattr(self.inner, "migrate_state_from", None)
+        if not callable(convert):
+            raise CellError("inner Cell has no checked state migration")
+        migrated = convert(source.inner, state)
+        if (
+            self.identity != before
+            or source.identity != prior
+            or self.owner is not owner
+            or source.owner is not owner
+            or self.native is not native
+            or source.native is not native
+            or self.image_sha256 != image
+            or source.image_sha256 != image
+        ):
+            raise CellError(
+                "HIA migration identity or custody changed during conversion"
+            )
+        return migrated
+
     def _row(self, partition, request):
         row = self.owner.db.execute(
             "SELECT * FROM hia_cell_calls WHERE partition=? AND request=?",

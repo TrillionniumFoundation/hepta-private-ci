@@ -1,5 +1,6 @@
 """Durable maintenance inference and same-candidate cold recovery."""
 
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -10,8 +11,23 @@ import numpy as np
 from .bundle import Bundle
 from .lifecycle import Budget, CellOwner, Partition
 from .temporal import TemporalConfig, TemporalKernel
-from .maintenance_tasks import save, sources
+from .maintenance_tasks import Compiler, observations, repair, save, sources
 from .maintenance_execution import DiagnosticComponent, RuntimeBinding, cell_output
+from .maintenance_metrics import Measurement
+
+
+@contextmanager
+def measure_window(windows, stage, scope, **metadata):
+    """Retain successful and failed inclusive windows without adding them."""
+    meter = Measurement(stage, scope, parent_scope="campaign")
+    row = dict(stage=stage, scope=scope, **metadata)
+    windows.append(row)
+    try:
+        with meter:
+            yield row
+    finally:
+        row["measurement"] = meter.result
+        row["wall_ns"] = meter.result["wall_ns"] if meter.result else None
 
 
 def serve(owner, kernel, bound, task, episode, arm, *, runtime, active=False):
@@ -99,6 +115,31 @@ def serve_diagnostic(owner, cell, task, diagnostic, runtime):
 
 def recover(spec_path):
     spec = json.loads(Path(spec_path).read_text())
+    root = Path(spec["root"])
+    windows = []
+    try:
+        with measure_window(
+            windows,
+            "recovery",
+            "cold model/owner restore, exact inference and optional D task",
+            cell=spec["cell"],
+        ):
+            result = _recover(spec_path, windows)
+        result["cost_windows"] = windows
+        save(root / "COLD_RESULT.json", result)
+    except BaseException as error:
+        save(
+            root / "COLD_FAILURE.json",
+            dict(
+                error=f"{type(error).__name__}: {error}",
+                cost_windows=windows,
+            ),
+        )
+        raise
+
+
+def _recover(spec_path, windows):
+    spec = json.loads(Path(spec_path).read_text())
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
     if sources() != spec["sources"]:
         raise ValueError("cold source identity changed")
@@ -142,7 +183,50 @@ def recover(spec_path):
             candidate_manifest_sha256=spec["candidate_manifest_sha256"],
             wrapper_identity_digest=component.identity.digest,
         )
-        save(root / "COLD_RESULT.json", result)
+        if spec.get("semantic") is True:
+            task = spec["new_task"]
+            with measure_window(
+                windows,
+                "task",
+                "fresh original diagnostic, Cell inference, repair and semantic check",
+                phase="D-cold",
+                cell=spec["cell"],
+                arm="selected",
+                task_id=task["id"],
+                diagnostic_scope="fresh diagnostic included; no shared diagnostic allocation",
+            ) as task_cost:
+                compiler = Compiler(
+                    root,
+                    time.perf_counter(),
+                    semantic=True,
+                    filename="cold-compile.jsonl",
+                )
+                original = compiler.check(task, task["source"], "D-cold", "observation")
+                use = serve(
+                    owner,
+                    kernel,
+                    Bundle(**spec["bundle"]),
+                    task,
+                    observations(task, original),
+                    "active",
+                    runtime=runtime,
+                    active=True,
+                )
+                use["outcome"] = compiler.check(
+                    task,
+                    repair(task["source"], use["action"]),
+                    "D-cold",
+                    spec["cell"] + "-selected",
+                )
+            use["task_cost"] = task_cost
+            result.update(
+                new_task=use,
+                cold_compile_calls=compiler.calls,
+                semantic_subprocesses=compiler.semantic_calls,
+                wall_ns=time.perf_counter_ns() - wall,
+                cpu_ns=time.process_time_ns() - cpu,
+            )
+        return result
     finally:
         owner.close()
         runtime.close()

@@ -32,6 +32,10 @@ class RuntimeProcessBridge:
     """A durable no-resubmission adapter; call is an actual MCP owner callback."""
 
     def __init__(self, profile, database, call, *, transport_identity):
+        # Retain values, not references that can change the admitted command or
+        # transport identity after their joint digest has been computed.
+        profile = strict_json(canonical(profile))
+        transport_identity = strict_json(canonical(transport_identity))
         require(
             profile.get("schema") == "hepta.cell.runtime-process-bridge.v1",
             "unknown bridge profile",
@@ -114,6 +118,9 @@ class RuntimeProcessBridge:
         self.db.execute(
             "CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY AUTOINCREMENT, request_id TEXT NOT NULL, kind TEXT NOT NULL, body TEXT NOT NULL)"
         )
+        self.db.execute(
+            "CREATE TABLE IF NOT EXISTS terminal_observations (request_id TEXT PRIMARY KEY, observation TEXT NOT NULL)"
+        )
         self.db.commit()
 
     def _event(self, request_id, kind, value):
@@ -123,13 +130,60 @@ class RuntimeProcessBridge:
         )
 
     def _save(self, request_id, value):
-        self.db.execute(
-            "UPDATE operations SET observation=? WHERE request_id=?",
-            (canonical(value).decode(), request_id),
-        )
-        self._event(request_id, "observation", value)
-        self.db.commit()
-        return value
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            if value["state"] == "TERMINAL":
+                encoded = canonical(value).decode()
+                original = self.db.execute(
+                    "SELECT observation FROM terminal_observations WHERE request_id=?",
+                    (request_id,),
+                ).fetchone()
+                if original is None:
+                    # Existing journals already retain complete observations.
+                    # Recover their first terminal, even if their latest view is
+                    # UNKNOWN, instead of trusting a new post-restart result.
+                    history = self.db.execute(
+                        "SELECT body FROM events WHERE request_id=? AND kind='observation' ORDER BY sequence",
+                        (request_id,),
+                    )
+                    for (body,) in history:
+                        if strict_json(body).get("state") == "TERMINAL":
+                            original = (body,)
+                            break
+                    original = original or (encoded,)
+                    self.db.execute(
+                        "INSERT INTO terminal_observations VALUES(?,?)",
+                        (request_id, original[0]),
+                    )
+                if canonical(strict_json(original[0])).decode() != encoded:
+                    self._event(request_id, "terminal_conflict", value)
+                    value = {
+                        key: value[key]
+                        for key in (
+                            "request_id",
+                            "host",
+                            "job_id",
+                            "automatic_replay",
+                            "profile_sha256",
+                            "domain_success",
+                        )
+                    } | {
+                        "state": "UNKNOWN",
+                        "reason": "original_terminal_observation_changed",
+                        "original_terminal_retained": True,
+                        "original_terminal_sha256": digest(original[0].encode()),
+                        "observed_terminal_sha256": digest(encoded.encode()),
+                    }
+            self.db.execute(
+                "UPDATE operations SET observation=? WHERE request_id=?",
+                (canonical(value).decode(), request_id),
+            )
+            self._event(request_id, "observation", value)
+            self.db.commit()
+            return value
+        except BaseException:
+            self.db.rollback()
+            raise
 
     def execute(self, request):
         require(
@@ -155,7 +209,11 @@ class RuntimeProcessBridge:
             "worker request exceeds runtime stdin bound",
         )
         key = "cell_joint_" + digest(canonical([self.profile["namespace"], request_id]))
-        params = {**self.profile["process"], "stdin": stdin, "idempotency_key": key}
+        params = strict_json(
+            canonical(
+                {**self.profile["process"], "stdin": stdin, "idempotency_key": key}
+            )
+        )
         binding = digest(
             canonical({"profile_sha256": self.profile_sha, "params": params})
         )
@@ -199,7 +257,7 @@ class RuntimeProcessBridge:
             self.db.rollback()
             raise
         try:
-            started = self.call("process_start", params)
+            started = self.call("process_start", strict_json(canonical(params)))
             job = started.get("job", {})
             require(
                 isinstance(job.get("id"), str)

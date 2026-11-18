@@ -49,6 +49,7 @@ def main():
     parser.add_argument("--runtime-commit", required=True)
     parser.add_argument("--allow-disposable-sshd", action="store_true")
     parser.add_argument("--with-maintenance", action="store_true")
+    parser.add_argument("--with-semantic-updates", action="store_true")
     args = parser.parse_args()
     require(args.allow_disposable_sshd, "the explicit disposable-sshd flag is required")
     require(
@@ -317,6 +318,19 @@ def main():
                 private,
                 ssh.env,
                 request["request_id"],
+            )
+        if args.with_semantic_updates:
+            from qualify_runtime_campaign import run_campaign
+
+            close_client()
+            report["semantic_updates"] = run_campaign(
+                profile,
+                candidate_record,
+                args.output,
+                private,
+                ssh.env,
+                request["request_id"],
+                campaign="semantic_updates",
             )
         report["status"] = "PASS"
     except BaseException:
