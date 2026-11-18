@@ -25,6 +25,7 @@ from .maintenance_tasks import (
     WALL_BUDGET_SECONDS,
     Compiler,
     child_cpu_seconds,
+    cold_task,
     freeze_sources,
     fixtures,
     observations,
@@ -32,7 +33,9 @@ from .maintenance_tasks import (
     save,
     sources,
 )
-from .maintenance_serving import serve, serve_diagnostic, recover
+from .maintenance_semantics import split_binding
+from .maintenance_serving import serve, serve_diagnostic, recover, measure_window
+from .maintenance_metrics import summarize_tasks, summarize_decisions
 from .maintenance_execution import (
     RuntimeBinding,
     bundle,
@@ -42,17 +45,39 @@ from .maintenance_execution import (
 )
 
 
-def run(output, *, native_build_record=None, runtime_pins=None):
+def cost_summary(windows, report):
+    all_windows = [*windows, *(
+        row for value in report.values()
+        for row in value["cold"].get("cost_windows", [])
+    )]
+    groups = {}
+    for row in all_windows:
+        if row["stage"] == "task":
+            key = "/".join(row[name] for name in ("cell", "phase", "arm"))
+            groups.setdefault(key, []).append(row)
+    return dict(
+        windows=all_windows,
+        task_latency={key: summarize_tasks(rows, scope=rows[0]["scope"])
+                      for key, rows in sorted(groups.items())},
+        decisions=summarize_decisions([value["decision"] for value in report.values()]),
+        aggregation="windows are inclusive and may nest; never add stage, task, child and outer windows",
+        shared_diagnostics="A acquisition and B original diagnostics are recorded once; A/B/retention per-arm windows exclude them",
+        memory_scope="process-lifetime high-water marks only; campaign process-tree peak remains unknown",
+        full_system_cost_known=False,
+    )
+
+
+def run(output, *, native_build_record=None, runtime_pins=None, semantic=False):
     started, cpu_started = time.perf_counter(), time.process_time()
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
-    panels, frozen_sources = fixtures(), sources()
+    panels, frozen_sources = fixtures(semantic=semantic), sources()
     freeze_sources(root, frozen_sources)
     native = freeze_native(root, native_build_record)
     pins = freeze_runtime_pins(root, runtime_pins)
     numeric = numeric_identity()
     plan = dict(
-        schema="hepta.controlled-maintenance-cycle.v1",
+        schema="hepta.semantic-maintenance-cycle.v1" if semantic else "hepta.controlled-maintenance-cycle.v1",
         parent_pid=os.getpid(),
         panels=panels,
         source_sha256=frozen_sources,
@@ -82,29 +107,44 @@ def run(output, *, native_build_record=None, runtime_pins=None):
             platform=platform.platform(),
         ),
     )
+    if semantic:
+        plan.update(
+            evaluation="CPython compile and isolated function results against frozen input/output checks",
+            cold_scope="restore original state and logits, then run a new D-cold task with semantic checks in the cold process",
+            task_contracts=split_binding({**panels, "D-cold": [cold_task()]}),
+            cold_task=cold_task(),
+            split_scope="exact source bytes and task IDs are disjoint; generated syntax families overlap",
+            code_execution_scope="controlled generated functions; no ordinary repository distribution or OS sandbox claim",
+        )
     plan_hash = save(root / "PLAN.json", plan)
     runtime = RuntimeBinding(root, plan_hash, frozen_sources, numeric, native, pins)
-    compiler, report = Compiler(root, started), {}
+    compiler, report = Compiler(root, started, semantic=semantic), {}
+    windows = []
     try:
         observed, episodes, labels = {}, {}, {}
         for task in panels["A"]:
-            original = compiler.check(task, task["source"], "A", "observation")
-            if original["success"]:
-                raise ValueError("fixture unexpectedly valid before repair")
-            observed[task["id"]], episodes[task["id"]] = (
-                original,
-                observations(task, original),
-            )
-            labels[task["id"]] = [
-                compiler.check(
-                    task, repair(task["source"], action), "A", "acquisition"
-                )["success"]
-                for action in range(4)
-            ]
-            if sum(labels[task["id"]]) != 1:
-                raise ValueError(
-                    "training task does not have one observed successful repair"
+            with measure_window(
+                windows, "data_acquisition", "shared A diagnostic, four repair outcomes and encoding",
+                phase="A", task_id=task["id"],
+                diagnostic_scope="once across both cells and all arms; not charged again per arm",
+            ):
+                original = compiler.check(task, task["source"], "A", "observation")
+                if original["success"]:
+                    raise ValueError("fixture unexpectedly valid before repair")
+                observed[task["id"]], episodes[task["id"]] = (
+                    original,
+                    observations(task, original),
                 )
+                labels[task["id"]] = [
+                    compiler.check(
+                        task, repair(task["source"], action), "A", "acquisition"
+                    )["success"]
+                    for action in range(4)
+                ]
+                if sum(labels[task["id"]]) != 1:
+                    raise ValueError(
+                        "training task does not have one observed successful repair"
+                    )
         save(
             root / "A_DATA.json",
             dict(
@@ -144,22 +184,28 @@ def run(output, *, native_build_record=None, runtime_pins=None):
                 )
                 a_served, batch, actions, targets = [], [], [], []
                 for task in panels["A"]:
-                    use = serve(
-                        owner,
-                        kernel,
-                        parent_bundle,
-                        task,
-                        episodes[task["id"]],
-                        "active",
-                        runtime=runtime,
-                        active=True,
-                    )
-                    use["outcome"] = compiler.check(
-                        task,
-                        repair(task["source"], use["action"]),
-                        "A",
-                        cell + "-active",
-                    )
+                    with measure_window(
+                        windows, "task", "Cell owner, inference, repair and compile/semantic check",
+                        phase="A", cell=cell, arm="active", task_id=task["id"],
+                        diagnostic_scope="excludes earlier shared A diagnostic and label acquisition",
+                    ) as task_cost:
+                        use = serve(
+                            owner,
+                            kernel,
+                            parent_bundle,
+                            task,
+                            episodes[task["id"]],
+                            "active",
+                            runtime=runtime,
+                            active=True,
+                        )
+                        use["outcome"] = compiler.check(
+                            task,
+                            repair(task["source"], use["action"]),
+                            "A",
+                            cell + "-active",
+                        )
+                    use["task_cost"] = task_cost
                     a_served.append(use)
                     for action in range(4) if cell == "predictor" else (0,):
                         batch.append(episodes[task["id"]])
@@ -179,13 +225,17 @@ def run(output, *, native_build_record=None, runtime_pins=None):
                         actions=np.asarray(actions),
                         allowed=np.asarray(targets, dtype=bool),
                     )
-                candidate, training = kernel.train_candidate(
-                    batch,
-                    actions,
-                    np.asarray(targets, dtype=bool),
-                    updates=UPDATES,
-                    lr=0.003,
-                )
+                with measure_window(
+                    windows, "training", "isolated candidate copy and Adam fitting",
+                    cell=cell, preparation_scope="A acquisition and dataset serialization are outside this window",
+                ):
+                    candidate, training = kernel.train_candidate(
+                        batch,
+                        actions,
+                        np.asarray(targets, dtype=bool),
+                        updates=UPDATES,
+                        lr=0.003,
+                    )
                 save(directory / "TRAINING.json", training)
                 candidate_bundle = parent_bundle.successor(
                     cell + "-candidate",
@@ -201,131 +251,157 @@ def run(output, *, native_build_record=None, runtime_pins=None):
                 candidate_hash = candidate.checkpoint(
                     directory / "candidate.npz", candidate.initial_state("active")
                 )
-                results = {}
-                for phase in ("B", "A-retention"):
-                    phase_results = {
-                        arm: []
-                        for arm in (ARMS if phase == "B" else ("frozen", "candidate"))
+                with measure_window(
+                    windows, "validation", "B and A-retention evaluation with all arms and persisted evaluation",
+                    cell=cell,
+                ):
+                    results = {}
+                    for phase in ("B", "A-retention"):
+                        phase_results = {
+                            arm: []
+                            for arm in (ARMS if phase == "B" else ("frozen", "candidate"))
+                        }
+                        for task in panels["B" if phase == "B" else "A"]:
+                            if task["id"] not in episodes:
+                                with measure_window(
+                                    windows, "shared_diagnostic", "original B diagnostic and encoding shared across all cells/arms",
+                                    phase=phase, task_id=task["id"],
+                                ):
+                                    original = compiler.check(
+                                        task, task["source"], phase, "observation"
+                                    )
+                                    observed[task["id"]], episodes[task["id"]] = (
+                                        original,
+                                        observations(task, original),
+                                    )
+                            for arm, outcomes in phase_results.items():
+                                with measure_window(
+                                    windows, "task", "Cell owner, inference, repair and compile/semantic check",
+                                    phase=phase, cell=cell, arm=arm, task_id=task["id"],
+                                    diagnostic_scope="excludes shared original diagnostic and encoding",
+                                ) as task_cost:
+                                    if arm == "deterministic":
+                                        use = serve_diagnostic(
+                                            owner,
+                                            cell,
+                                            task,
+                                            observed[task["id"]]["error"],
+                                            runtime,
+                                        )
+                                    else:
+                                        trained = arm in ("candidate", "no_memory")
+                                        use = serve(
+                                            owner,
+                                            candidate if trained else kernel,
+                                            candidate_bundle if trained else parent_bundle,
+                                            task,
+                                            episodes[task["id"]],
+                                            arm,
+                                            runtime=runtime,
+                                        )
+                                    use["outcome"] = compiler.check(
+                                        task,
+                                        repair(task["source"], use["action"]),
+                                        phase,
+                                        cell + "-" + arm,
+                                    )
+                                use["task_cost"] = task_cost
+                                outcomes.append(use)
+                        results[phase] = phase_results
+                    evaluation_hash = save(directory / "EVALUATION.json", results)
+                with measure_window(
+                    windows, "selection_and_switch", "fixed gate, Adopt or NoUpdate, active-version readback and persisted decision",
+                    cell=cell,
+                ) as decision_cost:
+                    counts = {
+                        arm: sum(row["outcome"]["success"] for row in rows)
+                        for arm, rows in results["B"].items()
                     }
-                    for task in panels["B" if phase == "B" else "A"]:
-                        if task["id"] not in episodes:
-                            original = compiler.check(
-                                task, task["source"], phase, "observation"
-                            )
-                            observed[task["id"]], episodes[task["id"]] = (
-                                original,
-                                observations(task, original),
-                            )
-                        for arm, outcomes in phase_results.items():
-                            if arm == "deterministic":
-                                use = serve_diagnostic(
-                                    owner,
-                                    cell,
-                                    task,
-                                    observed[task["id"]]["error"],
-                                    runtime,
-                                )
-                            else:
-                                trained = arm in ("candidate", "no_memory")
-                                use = serve(
-                                    owner,
-                                    candidate if trained else kernel,
-                                    candidate_bundle if trained else parent_bundle,
-                                    task,
-                                    episodes[task["id"]],
-                                    arm,
-                                    runtime=runtime,
-                                )
-                            use["outcome"] = compiler.check(
-                                task,
-                                repair(task["source"], use["action"]),
-                                phase,
-                                cell + "-" + arm,
-                            )
-                            outcomes.append(use)
-                    results[phase] = phase_results
-                save(directory / "EVALUATION.json", results)
-                counts = {
-                    arm: sum(row["outcome"]["success"] for row in rows)
-                    for arm, rows in results["B"].items()
-                }
-                retained = {
-                    arm: sum(row["outcome"]["success"] for row in rows)
-                    for arm, rows in results["A-retention"].items()
-                }
-                admitted = (
-                    all(
-                        counts["candidate"] > counts[arm]
-                        for arm in ("frozen", "no_learning", "deterministic")
+                    retained = {
+                        arm: sum(row["outcome"]["success"] for row in rows)
+                        for arm, rows in results["A-retention"].items()
+                    }
+                    admitted = (
+                        all(
+                            counts["candidate"] > counts[arm]
+                            for arm in ("frozen", "no_learning", "deterministic")
+                        )
+                        and retained["candidate"] >= retained["frozen"]
                     )
-                    and retained["candidate"] >= retained["frozen"]
-                )
-                target, candidate_manifest = runtime.component(
-                    owner, candidate, candidate_bundle, "active"
-                )
-                if (
-                    candidate_manifest == parent_manifest
-                    or target.identity == parent.identity
-                ):
-                    raise ValueError("trained candidate reused its parent's identity")
-                qualification = Qualification(
-                    parent.identity.digest, target.identity.digest, plan_hash
-                )
-                decision = dict(
-                    decision="Adopt" if admitted else "NoUpdate",
-                    B_successes=counts,
-                    denominator=8,
-                    A_retention=retained,
-                    reason="predeclared strict baseline and retention gates"
-                    if admitted
-                    else "candidate failed one or more predeclared baseline/retention gates",
-                    candidate_weights_sha256=candidate.weights_sha256,
-                    parent_weights_sha256=kernel.weights_sha256,
-                    evaluation_digest=plan_hash,
-                    ordinary_adopt=0,
-                    ordinary_no_update=0,
-                    parent_candidate_manifest_sha256=parent_manifest,
-                    trained_candidate_manifest_sha256=candidate_manifest,
-                )
-                if admitted:
-                    owner.qualify = lambda q: q == qualification
-                    decision["adoption"] = owner.adopt(active, target, qualification)
-                selected, selected_bundle = (
-                    (candidate, candidate_bundle)
-                    if admitted
-                    else (kernel, parent_bundle)
-                )
-                selected_component, selected_manifest = runtime.component(
-                    owner, selected, selected_bundle, "active"
-                )
-                decision["selected_identity"] = selected_component.identity.digest
-                decision["selected_candidate_manifest_sha256"] = selected_manifest
-                if owner.status(active)["identity"] != asdict(
-                    selected_component.identity
-                ):
-                    raise ValueError(
-                        "decision did not preserve the actual active version"
+                    target, candidate_manifest = runtime.component(
+                        owner, candidate, candidate_bundle, "active"
                     )
-                save(directory / "DECISION.json", decision)
+                    if (
+                        candidate_manifest == parent_manifest
+                        or target.identity == parent.identity
+                    ):
+                        raise ValueError("trained candidate reused its parent's identity")
+                    qualification = Qualification(
+                        parent.identity.digest, target.identity.digest,
+                        evaluation_hash if semantic else plan_hash,
+                    )
+                    decision = dict(
+                        decision="Adopt" if admitted else "NoUpdate",
+                        B_successes=counts,
+                        denominator=8,
+                        A_retention=retained,
+                        reason="predeclared strict baseline and retention gates"
+                        if admitted
+                        else "candidate failed one or more predeclared baseline/retention gates",
+                        candidate_weights_sha256=candidate.weights_sha256,
+                        parent_weights_sha256=kernel.weights_sha256,
+                        evaluation_digest=evaluation_hash if semantic else plan_hash,
+                        ordinary_adopt=0,
+                        ordinary_no_update=0,
+                        parent_candidate_manifest_sha256=parent_manifest,
+                        trained_candidate_manifest_sha256=candidate_manifest,
+                    )
+                    if admitted:
+                        owner.qualify = lambda q: q == qualification
+                        decision["adoption"] = owner.adopt(active, target, qualification)
+                    selected, selected_bundle = (
+                        (candidate, candidate_bundle)
+                        if admitted
+                        else (kernel, parent_bundle)
+                    )
+                    selected_component, selected_manifest = runtime.component(
+                        owner, selected, selected_bundle, "active"
+                    )
+                    decision["selected_identity"] = selected_component.identity.digest
+                    decision["selected_candidate_manifest_sha256"] = selected_manifest
+                    if owner.status(active)["identity"] != asdict(
+                        selected_component.identity
+                    ):
+                        raise ValueError(
+                            "decision did not preserve the actual active version"
+                        )
+                    save(directory / "DECISION.json", decision)
+                decision_cost["decision"] = decision["decision"]
                 c_results = []
                 for task in panels["C"]:
-                    original = compiler.check(task, task["source"], "C", "observation")
-                    use = serve(
-                        owner,
-                        selected,
-                        selected_bundle,
-                        task,
-                        observations(task, original),
-                        "active",
-                        runtime=runtime,
-                        active=True,
-                    )
-                    use["outcome"] = compiler.check(
-                        task,
-                        repair(task["source"], use["action"]),
-                        "C",
-                        cell + "-selected",
-                    )
+                    with measure_window(
+                        windows, "task", "fresh original diagnostic, Cell owner, inference, repair and compile/semantic check",
+                        phase="C", cell=cell, arm="selected", task_id=task["id"],
+                        diagnostic_scope="fresh diagnostic and encoding included for this cell/task",
+                    ) as task_cost:
+                        original = compiler.check(task, task["source"], "C", "observation")
+                        use = serve(
+                            owner,
+                            selected,
+                            selected_bundle,
+                            task,
+                            observations(task, original),
+                            "active",
+                            runtime=runtime,
+                            active=True,
+                        )
+                        use["outcome"] = compiler.check(
+                            task,
+                            repair(task["source"], use["action"]),
+                            "C",
+                            cell + "-selected",
+                        )
+                    use["task_cost"] = task_cost
                     c_results.append(use)
                 save(directory / "C_SERVED.json", c_results)
                 checkpoint = owner.checkpoint(active)
@@ -346,25 +422,34 @@ def run(output, *, native_build_record=None, runtime_pins=None):
                     candidate_manifest_sha256=selected_manifest,
                     wrapper_identity_digest=selected_component.identity.digest,
                 )
+                if semantic:
+                    cold["new_task"] = plan["cold_task"]
+                    cold["semantic"] = True
                 save(directory / "COLD_REQUEST.json", cold)
+                if semantic:
+                    owner.close()
                 cold_wall = time.perf_counter_ns()
                 child_cpu_before = child_cpu_seconds()
-                child = subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "hepta_cells.maintenance_cycle",
-                        "--recover",
-                        str(directory / "COLD_REQUEST.json"),
-                    ],
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                    env={
-                        **os.environ,
-                        "PYTHONPATH": str(Path(__file__).resolve().parents[1]),
-                    },
-                )
+                with measure_window(
+                    windows, "cold_process", "fresh child launch, restore, inference, optional D task and wait/capture",
+                    cell=cell, persistence_scope="parent COLD_PROCESS log persistence occurs after this window",
+                ):
+                    child = subprocess.run(
+                        [
+                            sys.executable,
+                            "-m",
+                            "hepta_cells.maintenance_cycle",
+                            "--recover",
+                            str(directory / "COLD_REQUEST.json"),
+                        ],
+                        capture_output=True,
+                        text=True,
+                        timeout=30,
+                        env={
+                            **os.environ,
+                            "PYTHONPATH": str(Path(__file__).resolve().parents[1]),
+                        },
+                    )
                 child_cpu_after = child_cpu_seconds()
                 save(
                     directory / "COLD_PROCESS.json",
@@ -384,6 +469,8 @@ def run(output, *, native_build_record=None, runtime_pins=None):
                     raise RuntimeError(
                         "cold restore failed; original child logs retained"
                     )
+                if semantic:
+                    owner = CellOwner(directory / "owner.sqlite")
                 cold_result = json.loads((directory / "COLD_RESULT.json").read_text())
                 if cold_result["pid"] == os.getpid() or owner.status(active)["pending"]:
                     raise ValueError(
@@ -417,9 +504,18 @@ def run(output, *, native_build_record=None, runtime_pins=None):
             parent_cpu_seconds=time.process_time() - cpu_started,
             energy_joules=None,
             peak_rss_bytes=None,
-            status="CONTROLLED_FIXTURE_COMPLETE",
+            cost_observations=cost_summary(windows, report),
+            status="SEMANTIC_FIXTURE_COMPLETE" if semantic else "CONTROLLED_FIXTURE_COMPLETE",
             cost_scope="outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
         )
+        if semantic:
+            result.update(
+                semantic_subprocesses=compiler.semantic_calls,
+                parent_compile_calls=compiler.calls,
+                cold_new_tasks={cell: value["cold"]["new_task"]["outcome"]["success"]
+                                for cell, value in report.items()},
+                compile_count_scope="compile_calls counts parent checks; semantic subprocess compiles and cold checks are recorded separately",
+            )
         save(root / "RESULT.json", result)
         return result
     except BaseException as error:
@@ -431,6 +527,7 @@ def run(output, *, native_build_record=None, runtime_pins=None):
                 completed_cells=report,
                 wall_seconds=time.perf_counter() - started,
                 training_receipt=getattr(error, "receipt", None),
+                cost_observations=cost_summary(windows, report),
                 status="FAILED_OR_INCOMPLETE",
             ),
         )
@@ -445,6 +542,7 @@ if __name__ == "__main__":
     parser.add_argument("--recover")
     parser.add_argument("--native-build-record")
     parser.add_argument("--runtime-pins")
+    parser.add_argument("--semantic", action="store_true")
     args = parser.parse_args()
     if args.recover:
         recover(args.recover)
@@ -453,6 +551,7 @@ if __name__ == "__main__":
             args.output,
             native_build_record=args.native_build_record,
             runtime_pins=args.runtime_pins,
+            semantic=args.semantic,
         )
         print(
             json.dumps(
