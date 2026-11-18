@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "source_head": "7ae4ed4bd03c1ddd4e2202c2e0feee06401b38a7",
+  "source_tree": "475a1668333bae4a6af9c2583070104ce9568006",
+  "source_unchanged": true,
+  "status": "completed",
+  "all_attempted_stages_passed": false,
+  "checks": {
+    "helper-build": {
+      "started": "2026-11-18T14:39:22.575237+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T14:40:05.052850+00:00",
+      "elapsed_seconds": 42.47753590880893
+    },
+    "helper-verify-and-load": {
+      "started": "2026-11-18T14:40:05.052935+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T14:40:06.429402+00:00",
+      "elapsed_seconds": 1.3764367490075529
+    },
+    "product-build-and-pin": {
+      "started": "2026-11-18T14:40:06.429695+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T14:40:32.644057+00:00",
+      "elapsed_seconds": 26.214319912018254
+    },
+    "library-binaries-build-uid1000": {
+      "started": "2026-11-18T14:40:32.644423+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T14:43:04.833224+00:00",
+      "elapsed_seconds": 152.18873156583868
+    },
+    "root-mount-setup": {
+      "started": "2026-11-18T14:43:07.906743+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T14:43:07.949838+00:00",
+      "elapsed_seconds": 0.04290078696794808
+    },
+    "ordinary-whole-cold-no-update": {
+      "started": "2026-11-18T14:43:07.950031+00:00",
+      "status": "failed",
+      "passed": false,
+      "finished": "2026-11-18T14:44:11.834800+00:00",
+      "elapsed_seconds": 63.884719629073516
+    }
+  },
+  "original_case": {
+    "command_exit_code": 100,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "ordinary-whole-cold-no-update.json",
+      "execution_sha256": "4a9d2a26d1875f84563deb4da8b4b3db0bdbabea45d59285ababea49e53c6330",
+      "failures": 1,
+      "job": null,
+      "junit_bytes": 4127,
+      "junit_mtime_ns": 1795013051462210480,
+      "junit_sha256": "a2b23ad8ec1a416eca91c39663f5dda22433e33ff59ea781a1a0f117d985cd54",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "7ae4ed4bd03c1ddd4e2202c2e0feee06401b38a7",
+      "source_tree": "475a1668333bae4a6af9c2583070104ce9568006",
+      "status": "retained-failed",
+      "total_testcases": 1,
+      "collector_exit_code": 1,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "7ae4ed4bd03c1ddd4e2202c2e0feee06401b38a7",
+      "tree": "475a1668333bae4a6af9c2583070104ce9568006",
+      "status": "",
+      "tracked_files": 15520,
+      "tracked_sha256": "eb165519840fea3d062c548274996fb4fa4dc79e8f2c4d3c70cfae65f0c83cd8"
+    },
+    "source_unchanged": true
+  },
+  "observed_static_stages": [
+    "root_stage=cli.historical_route"
+  ],
+  "cost": {
+    "observed_wall_seconds": 290.50646434980445,
+    "cpu_seconds": null,
+    "gpu_seconds": null,
+    "energy_kwh": null,
+    "api_cost": null,
+    "monetary_cost": null,
+    "qualification": "incomplete; null means unmeasured, not zero; nested command and check elapsed times overlap"
+  },
+  "scope": "Single original evaluated-NoUpdate cold-profile attempt; no inherited earlier-source pass. Existing cold profile checks retained C, not fresh D. Independent-controller certification/FinalUse/settlement/full-cost remain unestablished."
+}

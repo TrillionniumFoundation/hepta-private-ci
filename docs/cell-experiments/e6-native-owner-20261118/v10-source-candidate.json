@@ -1,0 +1,113 @@
+{
+  "started": "2026-11-18T15:35:15.370720+00:00",
+  "base": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+  "evidence_parent": "121e7eee7b79c6cb5f15708f08fc18f6d06a59b0",
+  "patch_proposal_sha256": "1fc44b9d0b7e9eabf2ccc69853002db5fb5dbdd47deca79fb5c409a934d177c3",
+  "stages": [
+    {
+      "name": "historical-stage-evidence-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/evidence-publisher-v9",
+        "121e7eee7b79c6cb5f15708f08fc18f6d06a59b0"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.02117676311172545
+    },
+    {
+      "name": "historical-stage-evidence-fast-forward",
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "121e7eee7b79c6cb5f15708f08fc18f6d06a59b0"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.017091040965169668
+    },
+    {
+      "name": "historical-stage-diagnostic-apply-check",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/owner-historical-static-stages-proposal.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0008865150157362223
+    },
+    {
+      "name": "historical-stage-diagnostic-apply",
+      "command": [
+        "git",
+        "apply",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/owner-historical-static-stages-proposal.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0014369019772857428
+    },
+    {
+      "name": "historical-stage-diagnostic-fmt",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.2716262028552592
+    },
+    {
+      "name": "historical-stage-diagnostic-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004292397992685437
+    },
+    {
+      "name": "historical-stage-diagnostic-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_task.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.00964412186294794
+    },
+    {
+      "name": "historical-stage-diagnostic-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Locate original historical task failures without changing readers"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.013865800108760595
+    }
+  ],
+  "status": "frozen",
+  "head": "82b1fadbdd77906ae28a46d6d26c378a70947c73",
+  "tree": "98057b24dfa633e6e7eb25a8b989391f1548fdfb",
+  "parent": "121e7eee7b79c6cb5f15708f08fc18f6d06a59b0",
+  "files": [
+    "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+    "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+    "codex-rs/hepta-agentd/src/authority_host_historical_task.rs"
+  ],
+  "patch_sha256": "accd99188bbad62305ebdb9d73be22a35d861162f2ec6600fabd60ca8a8cd775",
+  "source_status": "",
+  "scope": "Static error-only labels at worker and original reduction boundaries; no original error, predicate, control flow, cleanup, or deadline change. No tests yet.",
+  "run_adapter_sha256": "8046363808a80329cbebff8744857477583e7e3b1f50ab5054a972ea3e6effdc",
+  "finished": "2026-11-18T15:35:15.767958+00:00"
+}

@@ -1,6 +1,7 @@
 //! One fixed listener in the original Root serve scope. It accepts no second
 //! peer, preserves the absolute end, and closes the real stream before joining.
 
+use std::io::Write;
 use std::net::Shutdown;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
@@ -22,6 +23,7 @@ use crate::authority_host_runtime::validate_runtime_lanes;
 use crate::authority_host_runtime::verify_pinned_process;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadRequestV1;
 use crate::root_historical_task_read_protocol::MAX_READS;
+use crate::root_historical_task_read_protocol::TASK_RESPONSE_BOUND;
 
 pub(in super::super) struct BoundHistoricalTaskRead {
     runtime: HistoricalTaskReadRuntime,
@@ -148,7 +150,7 @@ pub(in super::super) fn serve_optional(
                                     io::Error::other("original historical session expired")
                                 })?,
                             request_bound: WIRE_BOUND,
-                            response_bound: WIRE_BOUND,
+                            response_bound: TASK_RESPONSE_BOUND,
                         };
                         let mut channel = HostAuthorityPeerChannel::from_stream(
                             stream,
@@ -163,9 +165,19 @@ pub(in super::super) fn serve_optional(
                             .exchange(|bytes| {
                                 let request: HistoricalTaskReadRequestV1 =
                                     serde_json::from_slice(bytes)
+                                        .inspect_err(|_| {
+                                            let _ = std::io::stderr().write_all(
+                                                b"root_stage=historical.request_decode\n",
+                                            );
+                                        })
                                         .map_err(|_| HostIssuerTransportError::Unavailable)?;
                                 let operation =
                                     HistoricalReadOperationV1::from_purpose(&request.purpose)
+                                        .inspect_err(|_| {
+                                            let _ = std::io::stderr().write_all(
+                                                b"root_stage=historical.operation_decode\n",
+                                            );
+                                        })
                                         .map_err(|_| HostIssuerTransportError::Unavailable)?;
                                 if request.schema != 1
                                     || request.profile != bound.runtime.profile.binding
@@ -191,6 +203,11 @@ pub(in super::super) fn serve_optional(
                                         request.request_id,
                                         request_end,
                                     )
+                                    .inspect_err(|_| {
+                                        let _ = std::io::stderr().write_all(
+                                            b"root_stage=historical.observe_complete_task\n",
+                                        );
+                                    })
                                     .map_err(|_| HostIssuerTransportError::Unavailable)
                             })
                             .map_err(io::Error::other)?
@@ -198,7 +215,10 @@ pub(in super::super) fn serve_optional(
                             require_end(session_end)?;
                         }
                         Ok(())
-                    })();
+                    })()
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=historical.worker\n");
+                    });
                     bound.runtime.phase.store(STOPPED, Ordering::Release);
                     if stopping.load(Ordering::Acquire) {
                         Ok(())

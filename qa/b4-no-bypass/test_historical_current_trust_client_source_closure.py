@@ -46,32 +46,32 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
             "OriginalHistoricalLearningTrustV1::with_original_operation(", "OriginalHistoricalOperationV1::read_for(operation, self, &self.receipt, action)"))
         for occurrence in (0, 1):
             self.reject_removal(OPERATION, "fn with_original_operation<T, E>(",
-                                "self.current_operation_activation()?", occurrence)
+                                ('self.current_operation_activation().inspect_err(|_| {\n                    let _ = std::io::stderr()\n                        .write_all(b"daemon_stage=historical.operation.activation_before\\n");\n                })?', 'self.current_operation_activation().inspect_err(|_| {\n                    let _ = std::io::stderr()\n                        .write_all(b"daemon_stage=historical.operation.activation_after\\n");\n                })?')[occurrence], 0)
             self.reject_removal(OPERATION, "fn read_for<T>(",
-                                "self.trust.current_operation_activation()?", occurrence)
+                                ('self.trust.current_operation_activation().inspect_err(|_| {\n                    let _ = std::io::stderr()\n                        .write_all(b"daemon_stage=historical.read_for.activation_before\\n");\n                })?', 'self.trust.current_operation_activation().inspect_err(|_| {\n                let _ = std::io::stderr()\n                    .write_all(b"daemon_stage=historical.read_for.activation_after\\n");\n            })?')[occurrence], 0)
         self.check_markers(OPERATION, "fn current_operation_activation(", (
-            "OriginalHistoricalLearningTrustV1::original_unix_seconds(self)?",
-            "activate_for_recipient(self.initial_snapshot(), now)?",
-            "self.require_same_activation(&activated, &evaluator)?"))
+            'OriginalHistoricalLearningTrustV1::original_unix_seconds(self).inspect_err(|_| {\n                let _ = std::io::stderr().write_all(b"daemon_stage=historical.activation.clock\\n");\n            })?',
+            'activate_for_recipient(self.initial_snapshot(), now)\n            .inspect_err(|_| {\n                let _ =\n                    std::io::stderr().write_all(b"daemon_stage=historical.activation.activate\\n");\n            })?',
+            'self.require_same_activation(&activated, &evaluator)\n            .inspect_err(|_| {\n                let _ = std::io::stderr().write_all(b"daemon_stage=historical.activation.pin\\n");\n            })?'))
         self.check_markers(OPERATION, "fn read_for<T>(", (
             "!std::ptr::eq(self.trust, trust)", "!Arc::ptr_eq(&self.trust.receipt, receipt)",
-            "let value = action(self.data, activated.verifier(), &evaluator, now);",
+            'let value =\n                action(self.data, activated.verifier(), &evaluator, now).inspect_err(|_| {\n                    let _ =\n                        std::io::stderr().write_all(b"daemon_stage=historical.read_for.action\\n");\n                });',
             "self.trust.receipt.client.fence()"))
 
     def test_borrow_cannot_escape_the_actual_root_operation(self):
         self.check_markers(OPERATION, "fn with_original_operation<T, E>(", (
             "action: impl for<'read> FnOnce(&OriginalHistoricalOperationV1<'read>)",
             "OriginalHistoricalTaskReadReceiptV1::with_current_read(&self.receipt",
-            "trust: self", "let value = action(&operation);",
+            "trust: self", 'let value = action(&operation).inspect_err(|_| {\n                    let _ =\n                        std::io::stderr().write_all(b"daemon_stage=historical.operation.action\\n");\n                });',
             "!matches!(&result, Ok(Ok(_)))", "self.receipt.client.fence()"))
 
     def test_failed_callback_and_unwind_cannot_skip_the_root_postcheck(self):
         for occurrence in (0, 1):
             self.reject_removal(CLIENT, "fn with_current_read<T>(",
-                                "self.client.observe()? != self.data", occurrence)
+                                ('self.client.observe().inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b"daemon_stage=historical_client.observe_before_action\\n",\n                );\n            })? != self.data', 'self.client.observe().inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b"daemon_stage=historical_client.observe_after_action\\n",\n                );\n            })? != self.data')[occurrence], 0)
         self.check_markers(CLIENT, "fn with_current_read<T>(", (
             "let mut fence = FenceReadOnDrop", "client: &self.client", "armed: true",
-            "let value = action(&self.data.ledger);", "if result.is_err()",
+            'let value = action(&self.data.ledger).inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b"daemon_stage=historical_client.action\\n",\n                );\n            });', "if result.is_err()",
             "self.client.fence()", "fence.armed = false"))
         self.check_markers(CLIENT, "fn drop(", ("if self.armed", "self.client.fence()"))
 
@@ -90,11 +90,11 @@ class HistoricalCurrentTrustClientSourceTests(unittest.TestCase):
             self.reject_removal(CLIENT, "fn exchange(",
                                 "self.connection\n                .require_original_session()", occurrence)
         self.check_markers(CLIENT, "fn exchange(", (
-            "self.lane.try_lock()", "held.take().ok_or_else(refused)?", "let request_id = lane.sequence",
+            'self\n            .lane\n            .try_lock()', 'held.take().ok_or_else(refused).inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b"daemon_stage=historical_client.lane_missing\\n",\n                );\n            })?', "let request_id = lane.sequence",
             "!(1..=MAX_READS).contains(&request_id)", "purpose: operation.purpose().into()",
-            "lane.stream.exchange(&request)?", "require_complete_reply(\n                    &bytes,\n                    request_id,\n                    &self.profile,\n                )?",
+            'lane\n                .stream\n                .exchange_with_response_bound(&request, operation.response_bound())\n                .inspect_err(|_| {\n                    let _ = std::io::Write::write_all(\n                        &mut io::stderr(),\n                        b"daemon_stage=historical_client.transport\\n",\n                    );\n                })?', 'require_complete_reply(&bytes, request_id, &self.profile).inspect_err(\n                        |_| {\n                            let _ = std::io::Write::write_all(\n                                &mut io::stderr(),\n                                b"daemon_stage=historical_client.decode_task\\n",\n                            );\n                        },\n                    )?',
             "require_original_trust_reply(", "&self.learning_trust", "&self.initial",
-            "request_id.checked_add(1)", "*held = Some(lane)", "if result.is_err()"))
+            'request_id\n                .checked_add(1)', "*held = Some(lane)", "if result.is_err()"))
 
     def test_original_absolute_end_and_sealed_pin_reach_the_same_client(self):
         self.check_markers(AGENT + "root_historical_task_read_inputs.rs", "fn connect_original(", (

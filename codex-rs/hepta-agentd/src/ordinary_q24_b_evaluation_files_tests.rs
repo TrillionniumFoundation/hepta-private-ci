@@ -18,7 +18,6 @@ use serde::Serialize;
 use super::super::post_a_plan::OriginalPostAPlan;
 use super::super::post_a_plan::OriginalPostAResources;
 use super::super::post_a_trust::B_EVALUATOR;
-use super::super::post_a_trust::TRAINER;
 use super::business;
 use super::data::BaselineBytes;
 use super::protocol::OriginalProtocol;
@@ -89,11 +88,8 @@ impl OriginalFiles {
         )?;
         let now = business::now()?;
         let (trust, generator, _) = resources.trust.payload.activate_pinned_genesis(now)?;
-        let key = SigningKey::from_bytes(
-            &std::fs::read(resources.trust.key(TRAINER)?)?
-                .try_into()
-                .map_err(|_| anyhow::anyhow!("original Generator key length"))?,
-        );
+        let key =
+            SigningKey::from_bytes(&read_original_key(&resources.trust.original_generator_key)?);
         anyhow::ensure!(
             key.verifying_key().to_bytes() == generator.verifying_key,
             "original fixed protocol Generator key"

@@ -17,6 +17,12 @@ use crate::authority_host_service::generation_initial::run_start_retention::Root
 use crate::authority_host_service::generation_initial::run_start_retention::RootRetainedRunStartDataV1;
 use crate::circuit_task::RootHistoricalTaskPublicationDataV1;
 
+#[path = "authority_host_historical_task_diagnostics.rs"]
+mod diagnostics;
+
+use diagnostics::HistoricalTaskDiagnosticStage;
+use diagnostics::log_historical_task_diagnostic;
+
 pub(crate) struct RootRetainedHistoricalCompleteTaskV1 {
     root: Arc<RootAuthorityDirectory>,
     target: CellGenerationOwnerBindingV1,
@@ -92,41 +98,62 @@ impl RootRetainedHistoricalCompleteTaskV1 {
                     .with_original_source_cell_data(&self.cell, |source| {
                         self.run_start
                             .with_original_run_start_data(end, |run_start| {
-                                service.with_retained_original_ledger(
-                                    Arc::clone(&self.root),
-                                    &self.target,
-                                    &self.ledger_deployment,
-                                    end,
-                                    |ledger| {
-                                        if Instant::now() >= end {
-                                            return Err(io::Error::other(
-                                                "historical task session expired",
-                                            ));
-                                        }
-                                        let mut read = RootOriginalHistoricalTaskReadV1 {
-                                            original: self,
-                                            source,
-                                            run_start,
-                                            ledger,
-                                            handoff_digest,
-                                            end,
-                                            state: ReadState::AwaitingTarget,
-                                        };
-                                        // The actual recipient writer, pidfd, AuthBus,
-                                        // lease and revocation postchecks must return here.
-                                        let value = action(&mut read)?;
-                                        if !matches!(read.state, ReadState::Complete)
-                                            || Instant::now() >= end
-                                        {
-                                            return Err(io::Error::other(
-                                                "complete historical task observation required",
-                                            ));
-                                        }
-                                        Ok(value)
-                                    },
-                                )
+                                service
+                                    .with_retained_original_ledger(
+                                        Arc::clone(&self.root),
+                                        &self.target,
+                                        &self.ledger_deployment,
+                                        end,
+                                        |ledger| {
+                                            if Instant::now() >= end {
+                                                return Err(io::Error::other(
+                                                    "historical task session expired",
+                                                ));
+                                            }
+                                            let mut read = RootOriginalHistoricalTaskReadV1 {
+                                                original: self,
+                                                source,
+                                                run_start,
+                                                ledger,
+                                                handoff_digest,
+                                                end,
+                                                state: ReadState::AwaitingTarget,
+                                            };
+                                            // The actual recipient writer, pidfd, AuthBus,
+                                            // lease and revocation postchecks must return here.
+                                            let value = action(&mut read).inspect_err(|_| {
+                                                log_historical_task_diagnostic(
+                                                    HistoricalTaskDiagnosticStage::RecipientAction,
+                                                );
+                                            })?;
+                                            if !matches!(read.state, ReadState::Complete)
+                                                || Instant::now() >= end
+                                            {
+                                                return Err(io::Error::other(
+                                                    "complete historical task observation required",
+                                                ));
+                                            }
+                                            Ok(value)
+                                        },
+                                    )
+                                    .inspect_err(|_| {
+                                        log_historical_task_diagnostic(
+                                            HistoricalTaskDiagnosticStage::Ledger,
+                                        );
+                                    })
+                            })
+                            .inspect_err(|_| {
+                                log_historical_task_diagnostic(
+                                    HistoricalTaskDiagnosticStage::RunStart,
+                                );
                             })
                     })
+                    .inspect_err(|_| {
+                        log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::SourceCell);
+                    })
+            })
+            .inspect_err(|_| {
+                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::Handoff);
             })
     }
 }
@@ -172,7 +199,10 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
         }
         let source = self
             .source
-            .read_original_retired_source_cell(load_original_source)?;
+            .read_original_retired_source_cell(load_original_source)
+            .inspect_err(|_| {
+                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::SourceObservation);
+            })?;
         let pin = &self.original.source.expected.pin;
         RootOriginalRunStartReadV1::require_original_publisher(
             self.run_start,
@@ -183,12 +213,20 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &pin.initial_profile,
             &pin.writer,
             &pin.target_files,
-        )?;
+        )
+        .inspect_err(|_| {
+            log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::RunStartPublisher);
+        })?;
         let run_start = RootOriginalRunStartReadV1::read_original_publication(
             self.run_start,
-            load_original_run_start()?,
+            load_original_run_start().inspect_err(|_| {
+                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::RunStartDeployment);
+            })?,
             source.source.original_identity(),
-        )?;
+        )
+        .inspect_err(|_| {
+            log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::RunStartObservation);
+        })?;
         if &run_start.observed.record != source.source.publication().original_record() {
             return Err(io::Error::other(
                 "Source request is not the original Root-retained RunStart",
@@ -200,9 +238,18 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &source.source,
             &source.definition,
             &source.cell,
-        )?;
-        let run_start_digest = RootOriginalRunStartReadV1::retained_digest(self.run_start)?;
-        let ledger_digest = RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)?;
+        )
+        .inspect_err(|_| {
+            log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::LedgerObservation);
+        })?;
+        let run_start_digest = RootOriginalRunStartReadV1::retained_digest(self.run_start)
+            .inspect_err(|_| {
+                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::RunStartDigest);
+            })?;
+        let ledger_digest = RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)
+            .inspect_err(|_| {
+                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::LedgerDigest);
+            })?;
         let cut = Digest32::of_parts(&[
             b"hepta.root.original-historical-complete-task-cut.v1\0",
             &self.original.target.digest().map_err(io::Error::other)?,
@@ -217,11 +264,19 @@ impl RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_> {
             &source.source,
             &source.cell,
         )
+        .inspect_err(|_| {
+            log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::PublicationProjection);
+        })
         .map_err(io::Error::other)?;
         publication
             .validate_against(
                 &RootOriginalHistoricalLedgerObservationV1::ledger_read_data(&ledger)?,
             )
+            .inspect_err(|_| {
+                log_historical_task_diagnostic(
+                    HistoricalTaskDiagnosticStage::PublicationValidation,
+                );
+            })
             .map_err(io::Error::other)?;
         if Instant::now() >= self.end {
             return Err(io::Error::other(

@@ -1,0 +1,895 @@
+{
+  "review_kind": "independent-static-successful-fresh-path-call-accounting",
+  "source_head": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "evidence_head": "3299c1d3318ff157f4948dee89b7939ef67b515c",
+  "classification": "Source derivation of the successful fresh path, compatible with the actual request_id=65 maximum=64 diagnostic; not a newly measured runtime stack or per-request trace.",
+  "assumptions": [
+    "Fresh production post-A path: completed_history=None, exactly one Root historical task, new owner initialization; every preceding original validation and operation succeeds.",
+    "Count only exchanges on this one RootHistoricalTaskReadClientV1 lane. Factory, publication, B, checkpoint and other sockets retain their own distinct costs and are not included.",
+    "No concurrent extraneous caller or repeated startup attempt is inserted. This does not assert completed NoUpdate, Adopt, C, D, FinalUse or settlement."
+  ],
+  "counting_rules": {
+    "observe": 1,
+    "read_original_publication": 1,
+    "with_current_read_success": 2,
+    "with_current_feature_read_success": 2,
+    "with_original_operation_success": 2,
+    "with_current_trust_success": 2,
+    "read_for_additional_requests": 0,
+    "original_prepared_operation_success": 2,
+    "failure_rule": "A pre-observe failure short-circuits before the action; existing callback Result and post-observe error precedence are not changed."
+  },
+  "rows": [
+    {
+      "callee": "RootHistoricalTaskReadClientV1::observe_original_task",
+      "operations": [
+        "Task"
+      ],
+      "file": "root_historical_task_read_client.rs",
+      "symbol": "fn observe_original_task(",
+      "reason": "observe() calls exchange(Task) once.",
+      "request_first": 1,
+      "request_last": 1,
+      "source_line": 133,
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+    },
+    {
+      "callee": "OriginalHistoricalTaskReadReceiptV1::activate_current_learning_trust",
+      "operations": [
+        "LearningTrust",
+        "Task",
+        "Task"
+      ],
+      "file": "root_historical_learning_trust_client.rs",
+      "symbol": "fn activate_current_learning_trust(",
+      "reason": "One LearningTrust exchange, then with_current_read activation callback; session/client checks add zero historical requests.",
+      "request_first": 2,
+      "request_last": 4,
+      "source_line": 35,
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
+    },
+    {
+      "callee": "CellQ24DatasetTaskV1::capture_historical",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_task.rs",
+      "symbol": "fn capture_historical(",
+      "reason": "read_original_publication then HistoricalTaskSource::read each calls observe once.",
+      "request_first": 5,
+      "request_last": 6,
+      "source_line": 38,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs"
+    },
+    {
+      "callee": "HistoricalDatasetLedgerV1::capture_original",
+      "operations": [
+        "Task",
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_ledger.rs",
+      "symbol": "fn capture_original(",
+      "reason": "Exactly one task is enforced; require_historical_receipt rereads publication once; ledger.with_current brackets snapshot read with two Task requests.",
+      "request_first": 7,
+      "request_last": 9,
+      "source_line": 22,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+    },
+    {
+      "callee": "CellQ24DatasetFreezePreparationV1::capture_historical: snapshot/frontier",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_preparation.rs",
+      "symbol": "fn capture_historical(",
+      "reason": "After ledger capture, separate HistoricalDatasetLedgerV1::with_current callback reads immutable snapshot/frontier.",
+      "request_first": 10,
+      "request_last": 11,
+      "source_line": 13,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+    },
+    {
+      "callee": "CellQ24DatasetFreezePreparationV1::capture_historical: signing_payload",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_preparation.rs",
+      "symbol": "fn signing_payload_historical(",
+      "reason": "Final preparation.signing_payload selects historical with_historical_cut and one original ledger operation.",
+      "request_first": 12,
+      "request_last": 13,
+      "source_line": 103,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+    },
+    {
+      "callee": "CellQ24DatasetFreezePreparationV1::original_historical_freeze_config",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_freezer.rs",
+      "symbol": "fn original_historical_freeze_config(",
+      "reason": "SigningFilesData::freeze_original obtains configuration through one with_historical_cut.",
+      "request_first": 14,
+      "request_last": 15,
+      "source_line": 10,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs"
+    },
+    {
+      "callee": "OriginalCellQ24DatasetFreezeOwnerV1::create",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_freeze_owner.rs",
+      "symbol": "pub fn create(",
+      "reason": "One with_original_freeze_operation; historical validate_config and signing payload use supplied OriginalFreezePreparationRead.",
+      "request_first": 16,
+      "request_last": 17,
+      "source_line": 55,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+    },
+    {
+      "callee": "OriginalCellQ24DatasetFreezeOwnerV1::authorize_or_readback",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_freeze_owner.rs",
+      "symbol": "pub fn authorize_or_readback(",
+      "reason": "One with_original_freeze_operation; journal/signature checks use the same supplied read.",
+      "request_first": 18,
+      "request_last": 19,
+      "source_line": 107,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+    },
+    {
+      "callee": "materialize_retained -> materialize_historical -> validate_authorization_historical",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_preparation.rs",
+      "symbol": "fn validate_authorization_historical(",
+      "reason": "This retained path does not call public materialize's extra new-work deadline operation. Authorization is checked in one outer ledger operation.",
+      "request_first": 20,
+      "request_last": 21,
+      "source_line": 112,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+    },
+    {
+      "callee": "CellQ24TrainingBatchV1::from_original_historical_dataset",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_dataset_historical_ledger.rs",
+      "symbol": "fn from_original_historical_dataset(",
+      "reason": "source.materialize enters one materialize_historical operation before source capability is attached to batch.",
+      "request_first": 22,
+      "request_last": 23,
+      "source_line": 99,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+    },
+    {
+      "callee": "CellQ24PreparedLearningV1::finish_original: batch provenance",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_prepared_learning.rs",
+      "symbol": "fn finish_original(",
+      "reason": "batch.require_original_dataset_provenance -> source.require_batch -> source.materialize -> one historical operation.",
+      "request_first": 24,
+      "request_last": 25,
+      "source_line": 78,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+    },
+    {
+      "callee": "CellQ24PreparedLearningV1::finish_original: prepared revalidation",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_prepared_learning.rs",
+      "symbol": "fn finish_original(",
+      "reason": "The final prepared.revalidate_source repeats original batch materialization in a separate operation.",
+      "request_first": 26,
+      "request_last": 27,
+      "source_line": 78,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+    },
+    {
+      "callee": "OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning",
+      "operations": [
+        "Task",
+        "PostAFrozenLearning",
+        "Task"
+      ],
+      "file": "root_post_a_learning_client.rs",
+      "symbol": "fn install_original_post_a_learning(",
+      "reason": "Explicit pre-observe, typed PostA exchange, explicit post-observe; no other historical request in this function.",
+      "request_first": 28,
+      "request_last": 30,
+      "source_line": 16,
+      "git_path": "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
+    },
+    {
+      "callee": "PendingHandoffs::receive_original_after_ack: learning.require_prepared_q24",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "root_production_learning_inputs.rs",
+      "symbol": "fn require_prepared_q24(",
+      "reason": "prepared.require_initial -> prepared.revalidate_source; Ack::require_prepared_scope calls are zero-network.",
+      "request_first": 31,
+      "request_last": 32,
+      "source_line": 182,
+      "git_path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+    },
+    {
+      "callee": "OriginalHistoricalLearningTrustV1::original_stage_authorities",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "root_historical_learning_trust_client.rs",
+      "symbol": "fn original_stage_authorities(",
+      "reason": "with_current_trust -> with_original_operation -> with_current_read. Signer selection uses the supplied read.",
+      "request_first": 33,
+      "request_last": 34,
+      "source_line": 90,
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
+    },
+    {
+      "callee": "StageFilesData::into_original_inputs: before original file opens",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "production_post_a_q24_owners.rs",
+      "symbol": "fn into_original_inputs(",
+      "reason": "First prepared.revalidate_source.",
+      "request_first": 35,
+      "request_last": 36,
+      "source_line": 221,
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+    },
+    {
+      "callee": "StageFilesData::into_original_inputs: after file/key opens",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "production_post_a_q24_owners.rs",
+      "symbol": "fn into_original_inputs(",
+      "reason": "Second prepared.revalidate_source before original witness owners are opened.",
+      "request_first": 37,
+      "request_last": 38,
+      "source_line": 221,
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+    },
+    {
+      "callee": "StageFilesData::into_original_inputs: after witness opens",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "production_post_a_q24_owners.rs",
+      "symbol": "fn into_original_inputs(",
+      "reason": "Third prepared.revalidate_source; real opens/mutations separate these checks.",
+      "request_first": 39,
+      "request_last": 40,
+      "source_line": 221,
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+    },
+    {
+      "callee": "RegisteredHistoricalLearningSourceV1::capture_original_historical_source",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration_historical_source.rs",
+      "symbol": "fn capture_original_historical_source(",
+      "reason": "retain_original_completed_acceptance performs only session/identity checks; require_current_historical_source performs one batch materialization operation.",
+      "request_first": 41,
+      "request_last": 42,
+      "source_line": 52,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+    },
+    {
+      "callee": "AgentdConfig::with_root_q24_learning_owners: initial prepared binding",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "config_root_learning.rs",
+      "symbol": "fn with_root_q24_learning_owners(",
+      "reason": "inputs.require_prepared_q24 before local/stage owner construction.",
+      "request_first": 43,
+      "request_last": 44,
+      "source_line": 14,
+      "git_path": "codex-rs/hepta-agentd/src/config_root_learning.rs"
+    },
+    {
+      "callee": "initialize_original_owners",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_learning_owner_initialization.rs",
+      "symbol": "fn initialize_original_owners(",
+      "reason": "One with_original_prepared_operation covers Source/E/D/Trainer initialization; *_in_operation and sealed OriginalPreparedRead use read_for, not another outer operation.",
+      "request_first": 45,
+      "request_last": 46,
+      "source_line": 16,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs"
+    },
+    {
+      "callee": "AgentdRootLearningInputsV1::into_q24_learning_runtime",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "root_production_learning_inputs.rs",
+      "symbol": "fn into_q24_learning_runtime(",
+      "reason": "require_prepared_q24 once; subsequent checkpoint/registry/identity binding uses data and existing capabilities.",
+      "request_first": 47,
+      "request_last": 48,
+      "source_line": 195,
+      "git_path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+    },
+    {
+      "callee": "LearningIterationRuntimeBootstrapV1::with_original_historical_source: prepared binding",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration_historical_source.rs",
+      "symbol": "fn with_original_historical_source(",
+      "reason": "source.require_prepared_historical_source -> require_current_historical_source.",
+      "request_first": 49,
+      "request_last": 50,
+      "source_line": 126,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+    },
+    {
+      "callee": "LearningIterationRuntimeBootstrapV1::with_original_historical_source: before journal",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration_historical_source.rs",
+      "symbol": "fn with_original_historical_source(",
+      "reason": "Explicit source.require_current_historical_source before original delivery journal create/recover.",
+      "request_first": 51,
+      "request_last": 52,
+      "source_line": 126,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+    },
+    {
+      "callee": "LearningIterationRuntimeBootstrapV1::with_original_historical_source: after journal",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration_historical_source.rs",
+      "symbol": "fn with_original_historical_source(",
+      "reason": "Explicit source.require_current_historical_source after original delivery journal create/recover.",
+      "request_first": 53,
+      "request_last": 54,
+      "source_line": 126,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+    },
+    {
+      "callee": "prepare_original_successor_context: historical/prepared binding",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration_successor.rs",
+      "symbol": "fn prepare_original_successor_context(",
+      "reason": "Historical branch calls require_prepared_historical_source once.",
+      "request_first": 55,
+      "request_last": 56,
+      "source_line": 112,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+    },
+    {
+      "callee": "prepare_original_successor_context: require_current_successor_context",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration_successor.rs",
+      "symbol": "fn require_current_successor_context(",
+      "reason": "Historical branch early-returns through with_original_successor_read -> one in_original_prepared_lane. Later match Historical arm is not additionally executed.",
+      "request_first": 57,
+      "request_last": 58,
+      "source_line": 78,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+    },
+    {
+      "callee": "OriginalCellQ24LearningStageOwnersV1::register_original_successor",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_learning_successor.rs",
+      "symbol": "fn register_original_successor(",
+      "reason": "One in_original_prepared_lane; successor session/factory checks use current borrowed operation.",
+      "request_first": 59,
+      "request_last": 60,
+      "source_line": 9,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+    },
+    {
+      "callee": "OriginalCellQ24LearningStageOwnersV1::install_root_independent_evaluation",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "cell_q24_learning_evaluation_root.rs",
+      "symbol": "fn install_root_independent_evaluation(",
+      "reason": "One in_original_prepared_lane; independent B client uses its separate route, not this historical exchange sequence.",
+      "request_first": 61,
+      "request_last": 62,
+      "source_line": 21,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs"
+    },
+    {
+      "callee": "runtime::run_with_shutdown: require_proposal_owner",
+      "operations": [
+        "Task",
+        "Task"
+      ],
+      "file": "learning_iteration.rs",
+      "symbol": "fn require_proposal_owner(",
+      "reason": "runtime.rs invokes require_proposal_owner before state construction; original owners.require_current -> one in_original_prepared_lane.",
+      "request_first": 63,
+      "request_last": 64,
+      "source_line": 365,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration.rs"
+    }
+  ],
+  "zero_request_callees": [
+    {
+      "callee": "OriginalPostAFrozenLearningAckV1::require_prepared_scope",
+      "file": "root_post_a_learning_client.rs",
+      "symbol": "fn require_prepared_scope(",
+      "count": 0,
+      "reason": "Session pre/post checks, scope validation, fenced flag, exact scope binding; no client.observe or exchange. Five caller uses during postA/handoff do not increment the historical sequence.",
+      "source_line": 59,
+      "git_path": "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
+    },
+    {
+      "callee": "RootGenerationPublicationHandoffV1::retain_original_preparation",
+      "file": "root_publication_preparation.rs",
+      "symbol": "fn retain_original_preparation(",
+      "count": 0,
+      "reason": "Reads its separate publication offer, checks prepared initial/scope fields, and validates publication session; it does not own or call the historical client.",
+      "source_line": 32,
+      "git_path": "codex-rs/hepta-agentd/src/root_publication_preparation.rs"
+    },
+    {
+      "callee": "RootHistoricalTaskReadClientV1::retain_original_completed_acceptance",
+      "file": "root_completed_learning_history.rs",
+      "symbol": "fn retain_original_completed_acceptance(",
+      "count": 0,
+      "reason": "Retains the same client and identity after session checks; no AcceptCompletedLearning exchange occurs here.",
+      "source_line": 37,
+      "git_path": "codex-rs/hepta-agentd/src/root_completed_learning_history.rs"
+    },
+    {
+      "callee": "OriginalHistoricalOperationV1::read_for",
+      "file": "root_historical_learning_operation.rs",
+      "symbol": "fn read_for",
+      "count": 0,
+      "reason": "Exact trust/receipt identity, activation/clock before and after callback, fence on error; the already borrowed ledger data is used. Its surrounding with_original_operation, counted separately, performs two Task reads.",
+      "source_line": 82,
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs"
+    },
+    {
+      "callee": "OriginalPreparedReadV1::require_training_batch",
+      "file": "cell_q24_prepared_operation.rs",
+      "symbol": "fn require_training_batch(",
+      "count": 0,
+      "reason": "Checks exact source Arc and delegates to OriginalDatasetOperationV1::require_original_batch -> materialize_historical_in_operation/read_for, without opening another operation.",
+      "source_line": 30,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs"
+    },
+    {
+      "callee": "OriginalFreezePreparationReadV1::original_signing_payload",
+      "file": "cell_q24_freeze_operation.rs",
+      "symbol": "fn original_signing_payload(",
+      "count": 0,
+      "reason": "Historical branch uses with_historical_cut_in_operation on supplied operation. The Live branch is outside this fresh historical route.",
+      "source_line": 72,
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs"
+    },
+    {
+      "callee": "LearningIterationRuntimeBootstrapV1::require_identity",
+      "file": "learning_iteration.rs",
+      "symbol": "fn require_identity(",
+      "count": 0,
+      "reason": "Compares agent_id and spawn_generation only.",
+      "source_line": 383,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration.rs"
+    },
+    {
+      "callee": "AgentdLearningCheckpointClientV1::with_original_q24_checkpoint",
+      "file": "learning_iteration_q24_checkpoint.rs",
+      "symbol": "fn with_original_q24_checkpoint(",
+      "count": 0,
+      "reason": "Compares initial/scope and retains existing client/owners Arcs; does not perform a historical or checkpoint read.",
+      "source_line": 14,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_q24_checkpoint.rs"
+    },
+    {
+      "callee": "OriginalRootQ24CheckpointV1::require_original_owners",
+      "file": "learning_iteration_q24_checkpoint.rs",
+      "symbol": "fn require_original_owners(",
+      "count": 0,
+      "reason": "Pointer identity and initial/scope data only.",
+      "source_line": 43,
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_q24_checkpoint.rs"
+    },
+    {
+      "callee": "compose_original_successor_runtime",
+      "file": "circuit_q24_successor.rs",
+      "symbol": "fn compose_original_successor_runtime(",
+      "count": 0,
+      "reason": "Constructs channel, pending owner, bootstrap and handoff; no historical observation.",
+      "source_line": 97,
+      "git_path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+    }
+  ],
+  "extra_source_files": [
+    "production_post_a_q24.rs",
+    "production_post_a_q24_handoff.rs",
+    "cell_q24_dataset_operation.rs",
+    "cell_q24_dataset_materializer.rs",
+    "cell_q24_prepared_operation.rs",
+    "cell_q24_freeze_operation.rs",
+    "cell_q24_dataset_preparation.rs",
+    "cell_q24_training_source_read.rs",
+    "cell_composed_q24_training.rs",
+    "cell_composed_q24_training_owner.rs",
+    "cell_composed_q24_training_construction.rs",
+    "cell_q24_learning_owner_inputs.rs",
+    "cell_q24_source_owner_files.rs",
+    "cell_q24_source_receipt_construction.rs",
+    "cell_q24_source_receipt_owner.rs",
+    "cell_q24_source_receipt_operation.rs",
+    "cell_q24_training_stage_construction.rs",
+    "cell_q24_learning_stage_owners.rs",
+    "cell_q24_learning_operation_lane.rs",
+    "production_post_a_continuation.rs",
+    "learning_iteration_delivery_runtime.rs",
+    "runtime.rs",
+    "root_historical_task_read_protocol.rs"
+  ],
+  "expected_totals": {
+    "before_post_a_install": 27,
+    "after_post_a_install": 30,
+    "after_first_source_capture": 42,
+    "after_assembly": 48,
+    "after_historical_bootstrap": 54,
+    "after_successor_and_b_setup": 62,
+    "after_runtime_proposal_owner": 64,
+    "Task": 62,
+    "LearningTrust": 1,
+    "PostAFrozenLearning": 1
+  },
+  "next_attempt": {
+    "request_id": 65,
+    "operation": "Task",
+    "would_complete_at": 66,
+    "route": [
+      "runtime.rs::run_with_shutdown -> CircuitLearningDeliveryRuntimeV1::attach_sources",
+      "learning_iteration_delivery_runtime.rs::attach_sources -> OriginalHistoricalLearningDeliveryV1::require_original_source",
+      "learning_iteration_historical_source.rs::require_original_source -> RegisteredHistoricalLearningSourceV1::require_current_historical_source",
+      "CellQ24PreparedLearningV1::require_original_historical_source -> revalidate_source",
+      "CellQ24TrainingBatchV1::require_original_dataset_provenance -> OriginalDataset::require_batch -> materialize -> materialize_historical",
+      "OriginalDatasetLedgerV1::with_original_ledger_operation -> OriginalHistoricalLearningTrustV1::with_original_operation -> OriginalHistoricalTaskReadReceiptV1::with_current_read -> pre-observe -> exchange(Task)"
+    ],
+    "guard": "The existing local sequence guard refuses 65 before wire IO, Dataset callback and matching post-read; no attempt to send 65 or to run its action is inferred.",
+    "expected_error_chain": "original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable",
+    "evidence_limit": "The reported v13 first read_limit/observe_before_action/operation.result/operation.fence/dataset.operation labels and generic chain are compatible with this full static route. They do not independently sample attach_sources as a runtime stack frame."
+  },
+  "corrections_to_intermediate_reasoning": [
+    "The earlier 54 figure was independently expanded and remains 54; it is a prefix, not the complete startup count.",
+    "A speculative +2 for publication preparation was rejected after reading its implementation: it is +0. The actual additional pair at 63/64 comes from runtime.require_proposal_owner.",
+    "Ack::require_prepared_scope is +0 on every invocation; install_original_post_a_learning itself is exactly Task/PostA/Task (+3)."
+  ],
+  "safety_assessment": {
+    "already_held_token_calling_outer_wrapper_found": false,
+    "safe_local_read_elision_identified": false,
+    "unchanged_v1_status": "BLOCKED for this fresh startup path by its existing 64-request contract.",
+    "why_no_deletion": "The runtime proposal-owner operation has returned before registry.load and AgentdState::new; attach_sources validates the historical source at the later attachment boundary. Other reviewed checks straddle original journal/file/witness operations or await boundaries. No already-live token was found that can replace them without a new semantic proof.",
+    "invariants_a_future_change_must_preserve": [
+      "Wrong client/receipt/trust/prepared identity remains refused.",
+      "Mutations, withdrawal/refusal and session/clock failure during work are caught by original postchecks; rejected action cannot publish a success.",
+      "Callback errors still undergo original postchecks with unchanged error priority and fence behavior.",
+      "Journal/file/witness mutations and async owner boundaries retain original admission and currentness checks.",
+      "The old paired v1 must still reject request 0/65 and cannot reset/reconnect to bypass the shared six-operation budget."
+    ]
+  },
+  "budget_contract": {
+    "kind": "Internal shared v1 resource/protocol contract, implicitly selected by authenticated purpose/profile; no explicit numeric read-budget field in the inspected historical request/profile DTOs.",
+    "constant": "root_historical_task_read_protocol.rs::MAX_READS = 64",
+    "profile_fields": [
+      "purpose",
+      "identity",
+      "writer",
+      "initial",
+      "deployment",
+      "learning_trust",
+      "binding"
+    ],
+    "request_fields": [
+      "schema",
+      "purpose",
+      "request_id",
+      "profile"
+    ],
+    "future_scope": "No assertion that the product protocol is immutable. A separately reviewed paired version with explicit bounded Root authorization is a distinct candidate; not implemented or qualified by this audit."
+  },
+  "reviewer_actions": {
+    "source_edits": 0,
+    "Rust_builds": 0,
+    "tests": 0,
+    "business_runs": 0,
+    "model_runs": 0
+  },
+  "output_dir": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/historical-read-budget-v13-e1-20261118-556e",
+  "output_file": "SUCCESSFUL_FRESH_PATH_READ_ACCOUNTING.json",
+  "source_inventory": [
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "bytes": 14243,
+      "sha256": "60ce721b7a61a6b16263034961d16a079b46b900a0df3954bf9e2d63b597bae1"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_construction.rs",
+      "bytes": 3237,
+      "sha256": "ab2e8ff34c039062ca80e6c595b6e5730a37a0867b178aa9d46812c66508729c"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "bytes": 14371,
+      "sha256": "23436186760dc8e114cb6abf5fdac67e4e581fdf67ebcfb1d5e9101486309cc3"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs",
+      "bytes": 13642,
+      "sha256": "443a12a0453368c380a6abc3d499d8b400c9481a42cba63e2c16012421989f96"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs",
+      "bytes": 3910,
+      "sha256": "dca1cd15346974a9029553e7fe8bb2729af7e686547eff1b11b36901504882fa"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+      "bytes": 10084,
+      "sha256": "eec8ce33ccc36192551bb2dc57c68e933de105e46c7db11c9b8a9404dec9c77a"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+      "bytes": 8174,
+      "sha256": "4f8a49ae357b21532560e8f031a90a3b7d86fd87f44326cb13ee6ce627e93704"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs",
+      "bytes": 2996,
+      "sha256": "08969f34ef5b1fb535ead1ee2c06c074eaa8eb2360603effb5d0580ee4843647"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs",
+      "bytes": 16158,
+      "sha256": "6faf80d59e1db0a2641ff5b5cd587a92a1fbd57a5314387259b03be48243d1b1"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs",
+      "bytes": 4528,
+      "sha256": "153db2d7f9cd68f28f5fa58aaec8406b85df20fed2e7eaea0c725d6c332503e6"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+      "bytes": 10882,
+      "sha256": "9746cdd0e101ab67bf1ba91b06af4a933a39d44307b3361310f83816997252e7"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs",
+      "bytes": 4543,
+      "sha256": "cd1cb7017024d9646115ac7ab4a6700ac82025811562452f5d4fea6eda392df8"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs",
+      "bytes": 8144,
+      "sha256": "b30a8c8e792c9dda8833317a5507463f1a3885c6b2036e2444ed0fb8561a3cbe"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+      "bytes": 3032,
+      "sha256": "216731dc6729b3b493972ff66694c68132db703c33f413a6fc9cac3b6d865e65"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs",
+      "bytes": 3107,
+      "sha256": "01a8572e00b8550d18bee6cb7b33f6f13c1c0c4de7421a657a3801c0b8a5767d"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "bytes": 10082,
+      "sha256": "69688e624e17314625cd8e050e4b728044f7813d09b68e41a1ba59a55d2f430e"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "bytes": 29434,
+      "sha256": "a7e051517f7c8f324b667c8db4bc966594d2df7954288ec7bb84407ffb13421f"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+      "bytes": 2564,
+      "sha256": "7b2a2e41464842ed38d24b3291f110ae492cfa11535901d09b2fa3b1cb604d33"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+      "bytes": 10351,
+      "sha256": "108b8614e728ce86bf7bab6a3f95ce2ce3e56bf39294ec1aa0f5893080f87652"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs",
+      "bytes": 2648,
+      "sha256": "4beede6771e9957e943440eb96005d482040877415b573b80308726892d2878d"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+      "bytes": 3950,
+      "sha256": "d98eb2d67ac3e0e9f4b33a5b36cad7ae263df7f2c3b18e769566c85b4cc23a0c"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_source_receipt_construction.rs",
+      "bytes": 3378,
+      "sha256": "d04375e16ddb0ec16113bd7665e27cb0ab59d8de3bad18bc3382463f0eb45045"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_source_receipt_operation.rs",
+      "bytes": 3774,
+      "sha256": "4236a7e8a4b0cdb66a950b90d079b199ef4a6ca1de366482b17e61fcbb3c202c"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+      "bytes": 16298,
+      "sha256": "1fc9d7c279f664eb17f2e605a78c07fc9dd255c0be33c2d7d3c49cb6601986a0"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "bytes": 2181,
+      "sha256": "4c7d5ae17597b4e1b948275c47bf24d19bdb2dd1007840e04d800942b75bb206"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_construction.rs",
+      "bytes": 2921,
+      "sha256": "ca5eccb2d617614475ac9f4d2683bbe6e55fcfdd0f30c73e237d1ca1089f4e1c"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "bytes": 8743,
+      "sha256": "2b4bf3894dec5b6df20aac7b76d554b6497de933a7a6de7103ced2037befd663"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "bytes": 4054,
+      "sha256": "e805f96728bcf46e8380b421c3406426707f83986e110ab6b2859040014001a5"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "bytes": 26406,
+      "sha256": "3e3677c973cd9f0d05fd187c14398ffbc336ff45e809a1abd84944fa57ea0b06"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "bytes": 13030,
+      "sha256": "04c1df2ca27b1e7bddd2566957fb6ec75340fcbc857c1b5f5023dffd1538aff1"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+      "bytes": 16116,
+      "sha256": "e96776794f66492254a2e00aca2af4afec4a23e0002d648290344284ca3c9007"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_q24_checkpoint.rs",
+      "bytes": 2941,
+      "sha256": "6625c4194910141af06afe8ad2a01a71270fc04bb8adbfb12638cd84e48eb77a"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "bytes": 8212,
+      "sha256": "28f0795bf3b6f0cd1d3eb7aaf7c9ec30c22a39334a987da9718666c6bde5e21b"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "bytes": 14594,
+      "sha256": "1181da280922db3327d4ac2ee5e23333e76a1e996f8696bf7886f9d7156ef3e6"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+      "bytes": 13120,
+      "sha256": "181ed13b614f458f8cd92818483a676ac1cb220dfc3f0946179b8090d4ff34f9"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs",
+      "bytes": 4851,
+      "sha256": "91278fea6a97dc0bf29c6e3f434ae1bd0cc46127d43be99390c28a7d0f076280"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs",
+      "bytes": 11659,
+      "sha256": "570e783b0c6ee248098bacdf15e339624b7c908324b50b2d93597b88ee9342ab"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_completed_learning_history.rs",
+      "bytes": 10240,
+      "sha256": "8fc80ccae6b5ec9a76de4139ee2054e5575b58dd89200bcff05d7ec290a2da0f"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs",
+      "bytes": 5389,
+      "sha256": "d2ba4783380b403bc5250931fa8450598501619ab8f6af66437421cd3d3db180"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+      "bytes": 7973,
+      "sha256": "8a797064a75f3f545a4501b5dc014ed875d2bde97c235ca9b47851f413d1963b"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+      "bytes": 19417,
+      "sha256": "3900836ce74f2415360411937a204941a87f965a0308a7b41dae929d08d0be83"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_historical_task_read_protocol.rs",
+      "bytes": 9201,
+      "sha256": "8beb8bffc1d60a7a036c29f6466efe305b60d80c48afb7adacc04976e4a50d44"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs",
+      "bytes": 3099,
+      "sha256": "7dc682ea7775ecc9b2712d38efd8b6dffc1ca7da9f2f158e78606e1a83833357"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "bytes": 10949,
+      "sha256": "cd6342c4032e1e68389f78055c175c3aea87fafb1861e8f2430e8f65a59f265c"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/root_publication_preparation.rs",
+      "bytes": 3585,
+      "sha256": "ebb41c2d8805a5a9a3cf6523f954e6d5838fe88e14a7f281a6fcc0285ebe0553"
+    },
+    {
+      "git_path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "bytes": 33520,
+      "sha256": "9ec2ed8a9c3bd3218bf24ecd7c6b557a032ec934190a0d83710216902c178313"
+    }
+  ],
+  "source_inventory_method": "Exact git show at source_head; only public source files were read. No active-source edits, configuration/key reads, Rust build/test or business execution.",
+  "created_at_utc": "2026-11-18T17:18:26.305294+00:00",
+  "arithmetic_verified": {
+    "contiguous_requests": 64,
+    "operation_counts": {
+      "Task": 62,
+      "LearningTrust": 1,
+      "PostAFrozenLearning": 1
+    },
+    "rows": 31
+  }
+}

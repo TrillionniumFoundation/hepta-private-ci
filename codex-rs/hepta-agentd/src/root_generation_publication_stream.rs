@@ -130,11 +130,41 @@ impl OriginalPublicationStream {
         request: &[u8],
         requested_end: Instant,
     ) -> io::Result<Vec<u8>> {
+        self.exchange_until_with_response_bound(request, requested_end, 16_384)
+    }
+
+    /// The caller selects this bound from its known operation before receiving
+    /// a peer-controlled length. Default CURRENT exchanges remain 16 KiB.
+    pub(crate) fn exchange_with_response_bound(
+        &mut self,
+        request: &[u8],
+        response_bound: usize,
+    ) -> io::Result<Vec<u8>> {
+        self.exchange_until_with_response_bound(
+            request,
+            (Instant::now() + self.timeout).min(self.end),
+            response_bound,
+        )
+    }
+
+    fn exchange_until_with_response_bound(
+        &mut self,
+        request: &[u8],
+        requested_end: Instant,
+        response_bound: usize,
+    ) -> io::Result<Vec<u8>> {
         if request.is_empty() || request.len() > 16_384 {
             return Err(io::Error::other(format!(
                 "original Root publication request frame length rejected: {}",
                 request.len()
             )));
+        }
+        // Match the pre-existing HostAuthorityPeerPolicy response ceiling.
+        // This check runs before any request bytes or peer-sized allocation.
+        if !(1..=65_536).contains(&response_bound) {
+            return Err(io::Error::other(
+                "original Root publication response capacity rejected",
+            ));
         }
         let now = Instant::now();
         let end = requested_end.min(now + self.timeout).min(self.end);
@@ -154,7 +184,7 @@ impl OriginalPublicationStream {
         self.read(&mut prefix, end)
             .map_err(|error| frame_error("read response length", error))?;
         let size = u32::from_be_bytes(prefix) as usize;
-        if size == 0 || size > 16_384 {
+        if size == 0 || size > response_bound {
             return Err(io::Error::other(format!(
                 "original Root publication response frame length rejected: {size}"
             )));

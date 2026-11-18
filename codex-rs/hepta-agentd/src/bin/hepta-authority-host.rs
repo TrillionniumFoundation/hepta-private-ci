@@ -418,17 +418,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &config,
                     &registration,
                     owner,
-                )?;
+                )
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=cli.recover_material\n");
+                })?;
             let bootstrap =
                 codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_material_bootstrap(
                     &prepared,
-                )?;
+                )
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=cli.material_bootstrap\n");
+                })?;
             codex_hepta_agentd::send_root_production_handoff(
                 std::os::unix::net::UnixDatagram::from(handoff),
                 &bootstrap,
                 root,
                 std::time::Duration::from_secs(30),
-            )?;
+            )
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=cli.material_handoff\n");
+            })?;
             prepared
         } else {
             if handoff.is_some()
@@ -501,7 +510,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let historical_offer = match (historical_deployment, historical_handoff) {
             (Some(path), Some(handoff)) => {
-                codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)?;
+                codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=cli.historical_route\n");
+                })?;
                 if let Some(post_a_path) = post_a_deployment.as_deref() {
                     let learning = learning_handoff
                         .take()
@@ -548,9 +560,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         root,
                         publication,
                         independent_evaluation,
-                    )?;
+                    )
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=cli.post_a_independent_b\n");
+                    })?;
                 }
-                Some((handoff, codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?))
+                Some((handoff, codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=cli.historical_bootstrap\n");
+                    })?))
             }
             (None, None) => None,
             _ => {
@@ -621,6 +639,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     root,
                     std::time::Duration::from_secs(30),
                 )
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=cli.historical_handoff\n");
+                })
                 .map_err(std::io::Error::other)?;
             }
             if let Some(session) = initial_ready {
@@ -694,7 +715,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 })?),
                 None => None,
             };
-            served?;
+            served.inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=cli.serve\n");
+            })?;
             if let Some(registered) = initial_registered {
                 registered?;
             }

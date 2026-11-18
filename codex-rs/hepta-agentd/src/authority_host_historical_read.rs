@@ -3,6 +3,7 @@
 //! it neither opens a legacy learning checkpoint nor freezes a Dataset scope.
 
 use std::io;
+use std::io::Write;
 use std::os::fd::OwnedFd;
 use std::path::Path;
 use std::path::PathBuf;
@@ -237,33 +238,55 @@ impl HistoricalTaskReadRuntime {
             HistoricalReadOperationV1::Task => false,
             HistoricalReadOperationV1::LearningTrust => true,
             HistoricalReadOperationV1::PostAFrozenLearning => {
-                return self.install_original_frozen_learning(
-                    service,
-                    config,
-                    registration,
-                    owner,
-                    request_id,
-                    end,
-                );
+                return self
+                    .install_original_frozen_learning(
+                        service,
+                        config,
+                        registration,
+                        owner,
+                        request_id,
+                        end,
+                    )
+                    .inspect_err(|_| {
+                        let _ =
+                            io::stderr().write_all(b"root_stage=historical.route_post_a_frozen\n");
+                    });
             }
             HistoricalReadOperationV1::AcceptCompletedLearning
             | HistoricalReadOperationV1::CaptureCompletedHistory
             | HistoricalReadOperationV1::ReadCompletedHistory => {
-                return self.completed_learning_operation(
-                    service,
-                    config,
-                    registration,
-                    owner,
-                    operation,
-                    request_id,
-                    end,
-                );
+                return self
+                    .completed_learning_operation(
+                        service,
+                        config,
+                        registration,
+                        owner,
+                        operation,
+                        request_id,
+                        end,
+                    )
+                    .inspect_err(|_| {
+                        let label: &[u8] = if matches!(
+                            operation,
+                            HistoricalReadOperationV1::AcceptCompletedLearning
+                        ) {
+                            b"root_stage=historical.route_accept_completed\n"
+                        } else if matches!(
+                            operation,
+                            HistoricalReadOperationV1::CaptureCompletedHistory
+                        ) {
+                            b"root_stage=historical.route_capture_completed\n"
+                        } else {
+                            b"root_stage=historical.route_read_completed\n"
+                        };
+                        let _ = io::stderr().write_all(label);
+                    });
             }
         };
         self.task
             .with_original_historical_task(service, end, |read| {
-                require_end(end)?;
-                self.metadata.require_metadata_unchanged()?;
+                require_end(end).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.entry_deadline\n"); })?;
+                self.metadata.require_metadata_unchanged().inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.entry_metadata\n"); })?;
                 let (reply, initial) = service.with_learning_profile(
                     config,
                     registration,
@@ -271,32 +294,32 @@ impl HistoricalTaskReadRuntime {
                     &self.deployment.initial,
                     |initial, proof| {
                         let expected = self.profile.require_original_context(
-                            &registration.registered_identity.identity()?,
+                            &registration.registered_identity.identity().inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.recipient_identity\n"); })?,
                             &proof,
                             &self.deployment.initial,
-                        )?;
+                        ).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.recipient_profile\n"); })?;
                         if expected != initial || self.phase.load(Ordering::Acquire) != SERVING {
-                            return Err(io::Error::other("original historical recipient changed"));
+                            return Err(io::Error::other("original historical recipient changed")).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.recipient_state\n"); });
                         }
-                        RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
-                        RootOriginalHistoricalTaskReadV1::require_original_target(read, &self.deployment.target)?;
+                        RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_before_read\n"); })?;
+                        RootOriginalHistoricalTaskReadV1::require_original_target(read, &self.deployment.target).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.target\n"); })?;
                         let observed: RootOriginalHistoricalCompleteTaskObservationV1 = RootOriginalHistoricalTaskReadV1::observe_original_task(
                             read,
                             |identity| {
                                 RootHistoricalSourceInputsV1::open_original_source_deployment(
                                     &self.deployment.source_deployment,
                                     identity,
-                                )
+                                ).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.source_deployment\n"); })
                             },
                             || {
                                 RootInitialRunStartFilesV1::open_original_deployment(
                                     &self.deployment.run_start_deployment,
-                                )
+                                ).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.run_start_deployment\n"); })
                                 .map(Arc::new)
                             },
-                        )?;
-                        let ledger = RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?;
-                        RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger)?;
+                        ).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.observe_original_task\n"); })?;
+                        let ledger = RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.ledger_read_data\n"); })?;
+                        RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_ledger\n"); })?;
                         let data_cut = RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(&observed).to_string();
                         let reply = if !trust_requested {
                             serde_json::to_vec(&HistoricalTaskReadResponseV1 {
@@ -316,25 +339,37 @@ impl HistoricalTaskReadRuntime {
                                 profile: self.profile.binding.clone(),
                                 data_cut,
                                 pin: self.learning_trust.pin.clone(),
-                                payload: RootHistoricalLearningTrustV1::read_original_payload(&self.learning_trust, service, &initial, &ledger)?,
+                                payload: RootHistoricalLearningTrustV1::read_original_payload(&self.learning_trust, service, &initial, &ledger).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_payload\n"); })?,
                             })
-                        }.map_err(io::Error::other)?;
-                        if reply.is_empty() || reply.len() > WIRE_BOUND {
+                        }.map_err(io::Error::other).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.reply_encode\n"); })?;
+                        if !trust_requested && request_id == 1 {
+                            let _ = writeln!(io::stderr(),
+                                "root_measure=historical.task_reply bytes={} bound={}",
+                                reply.len(), operation.response_bound());
+                        }
+                        if reply.is_empty() || reply.len() > operation.response_bound() {
                             return Err(io::Error::other(
                                 "complete historical reply exceeds bound",
-                            ));
+                            )).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.reply_bound\n"); });
                         }
-                        RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
-                        require_end(end)?;
+                        RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_after_reply\n"); })?;
+                        require_end(end).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.reply_deadline\n"); })?;
                         Ok((reply, initial))
                     },
-                )?;
+                ).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.recipient_service\n"); })?;
                 // Actual current recipient postchecks returned before the complete
                 // task's final physical rereads and all refusal Ready transitions.
-                self.metadata.require_metadata_unchanged()?;
-                RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
-                require_end(end)?;
+                self.metadata.require_metadata_unchanged().inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.exit_metadata\n"); })?;
+                RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.exit_trust\n"); })?;
+                require_end(end).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.exit_deadline\n"); })?;
                 Ok(reply)
+            }).inspect_err(|_| {
+                let label: &[u8] = if trust_requested {
+                    b"root_stage=historical.route_learning_trust\n"
+                } else {
+                    b"root_stage=historical.route_task\n"
+                };
+                let _ = io::stderr().write_all(label);
             })
     }
 }

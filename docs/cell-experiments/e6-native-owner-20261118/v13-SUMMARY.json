@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "source_head": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "source_tree": "51814cb530c723c7544f6eda763f28d9fa228fcf",
+  "source_unchanged": true,
+  "status": "completed",
+  "all_attempted_stages_passed": false,
+  "checks": {
+    "helper-build": {
+      "started": "2026-11-18T16:55:48.040420+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:56:24.952530+00:00",
+      "elapsed_seconds": 36.912041652947664
+    },
+    "helper-verify-and-load": {
+      "started": "2026-11-18T16:56:24.952602+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:56:25.967493+00:00",
+      "elapsed_seconds": 1.0148620321415365
+    },
+    "product-build-and-pin": {
+      "started": "2026-11-18T16:56:25.967757+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:56:41.020142+00:00",
+      "elapsed_seconds": 15.0523371421732
+    },
+    "library-binaries-build-uid1000": {
+      "started": "2026-11-18T16:56:41.020558+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:58:26.457767+00:00",
+      "elapsed_seconds": 105.43713314505294
+    },
+    "root-mount-setup": {
+      "started": "2026-11-18T16:58:29.064625+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:58:29.096576+00:00",
+      "elapsed_seconds": 0.03179559297859669
+    },
+    "ordinary-whole-cold-no-update": {
+      "started": "2026-11-18T16:58:29.096703+00:00",
+      "status": "failed",
+      "passed": false,
+      "finished": "2026-11-18T16:59:40.430981+00:00",
+      "elapsed_seconds": 71.33425311907195
+    }
+  },
+  "observed_daemon_stages": [
+    "daemon_stage=historical.dataset.operation",
+    "daemon_stage=historical.operation.fence",
+    "daemon_stage=historical.operation.result",
+    "daemon_stage=historical_client.observe_before_action",
+    "daemon_stage=historical_client.read_limit"
+  ],
+  "task_reply_measurements": [
+    {
+      "bytes": 19118,
+      "bound": 28933,
+      "origin": "/tmp/ordinary-q24-original-process-meXGYy/stderr.log"
+    }
+  ],
+  "client_limit_observations": [
+    {
+      "request_id": 65,
+      "maximum": 64,
+      "origin": "/tmp/ordinary-q24-original-process-VOgp5r/stderr.log"
+    }
+  ],
+  "diagnostic_stderr": [
+    {
+      "archive_member": "native-owner-v13/child-logs/ordinary-q24-original-process-VOgp5r/stderr.log",
+      "sha256": "1a0a86781a951adb024237f909a6c79fa58e4c9c1c9f262cece51c386fb65874",
+      "stderr": "daemon_stage=historical_client.read_limit request_id=65 maximum=64\ndaemon_stage=historical_client.observe_before_action\ndaemon_stage=historical.operation.result\ndaemon_stage=historical.operation.fence\ndaemon_stage=historical.dataset.operation\nError: agentd generation fenced: original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable\n"
+    },
+    {
+      "archive_member": "native-owner-v13/child-logs/ordinary-q24-original-process-cGlxW0/stderr.log",
+      "sha256": "b95844c93c2b6023295c70ee9876aada3c81337c19dd769dd314f806b8cf41b8",
+      "stderr": "Error: original B notification ended before its cut\n"
+    },
+    {
+      "archive_member": "native-owner-v13/child-logs/ordinary-q24-original-process-meXGYy/stderr.log",
+      "sha256": "02918bc90b27eeceaa07c07df6858bdb4ce258fd13b891a7691b9b578d7765f1",
+      "stderr": "root_measure=historical.task_reply bytes=19118 bound=28933\nroot_stage=post_a.worker\nroot_stage=cli.serve\nError: Custom { kind: Other, error: \"original publication slot closed\" }\n"
+    }
+  ],
+  "diagnostic_order_scope": "Original per-process stderr order is retained. Separate process files do not supply a total timestamp order. Tags describe actual boundaries, not every unlabelled predicate.",
+  "original_no_update": {
+    "command_exit_code": 100,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "ordinary-whole-cold-no-update.json",
+      "execution_sha256": "b06eee9a60e1979457213d78f9e07ea3fcd2b1afcaa64ce9d9e2062fa32ee382",
+      "failures": 1,
+      "job": null,
+      "junit_bytes": 6341,
+      "junit_mtime_ns": 1795021178832394636,
+      "junit_sha256": "6abdc83dc2a5d044af7868a130cf8826552223efee20275dc6b5f66f60ea15c9",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+      "source_tree": "51814cb530c723c7544f6eda763f28d9fa228fcf",
+      "status": "retained-failed",
+      "total_testcases": 1,
+      "collector_exit_code": 1,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+      "tree": "51814cb530c723c7544f6eda763f28d9fa228fcf",
+      "status": "",
+      "tracked_files": 15558,
+      "tracked_sha256": "a1f4699ca5e11f6578bd9ba13b14426ccf3a1b3ec1820cebb966a49903023b25"
+    },
+    "source_unchanged": true
+  },
+  "original_adopt": null,
+  "observed_static_stages": [
+    "root_stage=cli.serve",
+    "root_stage=post_a.worker"
+  ],
+  "cost": {
+    "observed_wall_seconds": 234.0532579831779,
+    "cpu_seconds": null,
+    "gpu_seconds": null,
+    "energy_kwh": null,
+    "api_cost": null,
+    "monetary_cost": null,
+    "qualification": "incomplete; null means unmeasured, not zero; nested command and check elapsed times overlap"
+  },
+  "scope": "Successor of the actual v12 E0034 preparation failure: two diagnostic parent modules use fully qualified Write calls, keeping original inputs/readers and log bytes unchanged. Error-only historical client/operation/Dataset candidate and single original evaluated-NoUpdate cold-profile attempt; Adopt cold runs only after NoUpdate passes; no inherited earlier-source pass or repeated v11 codec regressions. Original Result, postcheck priority, fence/drop, all budgets and authority predicates unchanged. Existing cold profile checks retained C, not fresh D. Independent-controller certification/FinalUse/settlement/full-cost remain unestablished."
+}

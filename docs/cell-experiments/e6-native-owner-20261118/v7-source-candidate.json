@@ -1,0 +1,113 @@
+{
+  "started": "2026-11-18T14:39:02.799017+00:00",
+  "base": "c9ccf727b25878f41aa2fdeec478e9f854edb43b",
+  "evidence_parent": "85ecd9fb1f0770e35da0b6bc5b4d7c5f73c33e5e",
+  "patch_proposal_sha256": "84b5ff6e462f3854937e7cf2d542e4b049832adf7d66191101e9acc8aa9343f8",
+  "stages": [
+    {
+      "name": "stage-evidence-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/evidence-publisher-c9",
+        "85ecd9fb1f0770e35da0b6bc5b4d7c5f73c33e5e"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007231276016682386
+    },
+    {
+      "name": "stage-evidence-fast-forward",
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "85ecd9fb1f0770e35da0b6bc5b4d7c5f73c33e5e"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.017322096973657608
+    },
+    {
+      "name": "stage-diagnostic-apply-check",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/owner-recovery-static-stages-c9.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.001568072009831667
+    },
+    {
+      "name": "stage-diagnostic-apply",
+      "command": [
+        "git",
+        "apply",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/owner-recovery-static-stages-c9.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.002283585024997592
+    },
+    {
+      "name": "stage-diagnostic-fmt",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.328113148920238
+    },
+    {
+      "name": "stage-diagnostic-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.005546491127461195
+    },
+    {
+      "name": "stage-diagnostic-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+        "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+        "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.010073889046907425
+    },
+    {
+      "name": "stage-diagnostic-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Diagnose original native recovery stages without changing errors or gates"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014070260105654597
+    }
+  ],
+  "status": "frozen",
+  "head": "7ae4ed4bd03c1ddd4e2202c2e0feee06401b38a7",
+  "tree": "475a1668333bae4a6af9c2583070104ce9568006",
+  "parent": "85ecd9fb1f0770e35da0b6bc5b4d7c5f73c33e5e",
+  "files": [
+    "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+    "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+    "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+  ],
+  "patch_sha256": "9db9f2306ef1b9be1e22c90dbdaae08b66d5fbd1d27f6174bacb629259d4b152",
+  "source_status": "",
+  "scope": "Static byte-string stage diagnostics only; original Err, predicates, deadlines and authority unchanged. No diagnostic-source tests yet.",
+  "run_adapter_sha256": "d68e12cf53d475d624a428700b71df3fb3dabbb3142c7fb76a7d2e0bd92f18db",
+  "finished": "2026-11-18T14:39:03.244096+00:00"
+}

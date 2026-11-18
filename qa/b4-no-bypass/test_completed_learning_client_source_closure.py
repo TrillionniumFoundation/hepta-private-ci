@@ -159,10 +159,10 @@ class CompletedLearningClientSourceTests(unittest.TestCase):
 
     def test_original_exchange_is_still_the_only_bounded_lane(self):
         for marker in (
-            "self.lane.try_lock()", "held.take().ok_or_else(refused)?",
-            "!(1..=MAX_READS).contains(&request_id)", "lane.stream.exchange(&request)?",
+            'self\n            .lane\n            .try_lock()', 'held.take().ok_or_else(refused).inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b"daemon_stage=historical_client.lane_missing\\n",\n                );\n            })?',
+            "!(1..=MAX_READS).contains(&request_id)", 'lane\n                .stream\n                .exchange_with_response_bound(&request, operation.response_bound())\n                .inspect_err(|_| {\n                    let _ = std::io::Write::write_all(\n                        &mut io::stderr(),\n                        b"daemon_stage=historical_client.transport\\n",\n                    );\n                })?',
             "require_completed_acceptance_reply(", "require_completed_history_reply(",
-            "request_id.checked_add(1)", "*held = Some(lane)", "held.take()",
+            'request_id\n                .checked_add(1)', "*held = Some(lane)", "held.take()",
         ):
             with self.subTest(marker=marker):
                 self.rejects(CLIENT, "fn exchange(", marker)

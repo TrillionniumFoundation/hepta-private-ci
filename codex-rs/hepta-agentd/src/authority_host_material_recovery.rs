@@ -15,6 +15,7 @@ use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
 use codex_hepta_paths::HeptaFleetRoot;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Write;
 use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
@@ -199,88 +200,127 @@ impl HostAuthorityService {
             .writer
             .as_ref()
             .ok_or_else(|| io::Error::other("registered successor writer required"))?;
-        let (checkpoint, consumers) = writer.registration.with_live(&writer.leases, |_| {
-            if self
-                .issuer
-                .retained_writer_authorization(&writer.registration)?
-                != writer.proof
-            {
-                return Err(io::Error::other("retained successor writer proof changed"));
-            }
-            let _writer_lock = retain_original_writer_lock(&self.identity)?;
-            let record = verify_original_starting_record(&self.identity)?;
-            let peer = CognitiveCheckpointPeerLifetime {
-                uid: config.peer_uid,
-                pid: registration.peer_pid,
-                boot_id: registration.boot_id.clone(),
-                process_start_ticks: registration.process_start_ticks,
-            };
-            let binding = writer.checkpoint_registration(
-                &self.issuer,
-                registration.publisher_epoch,
-                peer.clone(),
-            )?;
-            let recovery = PreparedMaterialRecovery::observe(
-                RootAuthorityDirectory::open(directory).map_err(io::Error::other)?,
-                RootMaterialProfile {
-                    layout: self.identity.layout.clone(),
-                    root: material_root.clone(),
-                    deadline: Duration::from_millis(config.timeout_ms.min(5_000)),
-                },
-                binding,
-                self.clock.clone(),
-            )
-            .map_err(io::Error::other)?;
-            // All authority, retirement and independent-image admission precedes
-            // the first custody mutation. Never read/hash the suspect live DB.
-            let _custody = seize_registered_cognitive_root(&self.identity, config.peer_uid)?;
-            let (backend, installed) = recovery
-                .install()
-                .map_err(io::Error::other)?
-                .adopt()
-                .map_err(io::Error::other)?;
-            let consumers = match (
-                &config.consumers,
-                &config.sockets.device_frontier,
-                &config.sockets.notes_frontier,
-            ) {
-                (Some(consumers), Some(_), Some(_)) => Some(RegisteredConsumers::open(
-                    &config.state_dir,
-                    consumers,
-                    &self.issuer.trust_key()?.key_id,
+        let (checkpoint, consumers) = writer
+            .registration
+            .with_live(&writer.leases, |_| {
+                if self
+                    .issuer
+                    .retained_writer_authorization(&writer.registration)
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=recover.writer_proof\n");
+                    })?
+                    != writer.proof
+                {
+                    return Err(io::Error::other("retained successor writer proof changed"));
+                }
+                let _writer_lock =
+                    retain_original_writer_lock(&self.identity).inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=recover.writer_lock\n");
+                    })?;
+                let record = verify_original_starting_record(&self.identity).inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=recover.starting_record\n");
+                })?;
+                let peer = CognitiveCheckpointPeerLifetime {
+                    uid: config.peer_uid,
+                    pid: registration.peer_pid,
+                    boot_id: registration.boot_id.clone(),
+                    process_start_ticks: registration.process_start_ticks,
+                };
+                let binding = writer
+                    .checkpoint_registration(
+                        &self.issuer,
+                        registration.publisher_epoch,
+                        peer.clone(),
+                    )
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=recover.writer_binding\n");
+                    })?;
+                let recovery = PreparedMaterialRecovery::observe(
+                    RootAuthorityDirectory::open(directory)
+                        .inspect_err(|_| {
+                            let _ = std::io::stderr()
+                                .write_all(b"root_stage=recover.checkpoint_directory\n");
+                        })
+                        .map_err(io::Error::other)?,
+                    RootMaterialProfile {
+                        layout: self.identity.layout.clone(),
+                        root: material_root.clone(),
+                        deadline: Duration::from_millis(config.timeout_ms.min(5_000)),
+                    },
+                    binding,
                     self.clock.clone(),
-                    writer.registration.authority_lease.expires_at_unix_ms,
-                )?),
-                (None, None, None) => None,
-                _ => {
+                )
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=recover.observe\n");
+                })
+                .map_err(io::Error::other)?;
+                // All authority, retirement and independent-image admission precedes
+                // the first custody mutation. Never read/hash the suspect live DB.
+                let _custody = seize_registered_cognitive_root(&self.identity, config.peer_uid)?;
+                let (backend, installed) = recovery
+                    .install()
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=recover.install\n");
+                    })
+                    .map_err(io::Error::other)?
+                    .adopt()
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=recover.adopt\n");
+                    })
+                    .map_err(io::Error::other)?;
+                let consumers = match (
+                    &config.consumers,
+                    &config.sockets.device_frontier,
+                    &config.sockets.notes_frontier,
+                ) {
+                    (Some(consumers), Some(_), Some(_)) => Some(
+                        RegisteredConsumers::open(
+                            &config.state_dir,
+                            consumers,
+                            &self.issuer.trust_key()?.key_id,
+                            self.clock.clone(),
+                            writer.registration.authority_lease.expires_at_unix_ms,
+                        )
+                        .inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=recover.consumers\n");
+                        })?,
+                    ),
+                    (None, None, None) => None,
+                    _ => {
+                        return Err(io::Error::other(
+                            "both original consumer lanes required together",
+                        ));
+                    }
+                };
+                if verify_original_starting_record(&self.identity)? != record
+                    || self.clock.now_unix_ms().map_err(io::Error::other)?
+                        >= writer.registration.authority_lease.expires_at_unix_ms
+                {
                     return Err(io::Error::other(
-                        "both original consumer lanes required together",
+                        "successor identity or lease changed during restore",
                     ));
                 }
-            };
-            if verify_original_starting_record(&self.identity)? != record
-                || self.clock.now_unix_ms().map_err(io::Error::other)?
-                    >= writer.registration.authority_lease.expires_at_unix_ms
-            {
-                return Err(io::Error::other(
-                    "successor identity or lease changed during restore",
-                ));
-            }
-            verify_pinned_process(
-                registration,
-                config.peer_uid,
-                config.peer_gid,
-                owner_pidfd,
-                end,
-            )?;
-            installed
-                .release_to_registered_owner(config.peer_uid, config.peer_gid)
-                .map_err(io::Error::other)?;
-            Ok((
-                RegisteredCheckpoint::adopted_material(backend, peer),
-                consumers,
-            ))
-        })?;
+                verify_pinned_process(
+                    registration,
+                    config.peer_uid,
+                    config.peer_gid,
+                    owner_pidfd,
+                    end,
+                )?;
+                installed
+                    .release_to_registered_owner(config.peer_uid, config.peer_gid)
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=recover.release\n");
+                    })
+                    .map_err(io::Error::other)?;
+                Ok((
+                    RegisteredCheckpoint::adopted_material(backend, peer),
+                    consumers,
+                ))
+            })
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=recover.transaction\n");
+            })?;
         self.checkpoint = Some(checkpoint);
         self.consumers = consumers;
         Ok(self)

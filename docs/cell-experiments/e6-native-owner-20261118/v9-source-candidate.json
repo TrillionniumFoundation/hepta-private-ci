@@ -1,0 +1,117 @@
+{
+  "started": "2026-11-18T15:19:17.369494+00:00",
+  "base": "f7e58512021c7481fa51809bb349f63d93bb1d6c",
+  "evidence_parent": "7df70f327ef95dfa72f3036c3ec0f648e19f50f4",
+  "patch_proposal_sha256": "194392cc8be36e3649e2814f7e666cbe8cd13f1768f897402c58d88cec61d77e",
+  "stages": [
+    {
+      "name": "service-stage-evidence-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/evidence-publisher-v8",
+        "7df70f327ef95dfa72f3036c3ec0f648e19f50f4"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.025496823014691472
+    },
+    {
+      "name": "service-stage-evidence-fast-forward",
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "7df70f327ef95dfa72f3036c3ec0f648e19f50f4"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.018904055934399366
+    },
+    {
+      "name": "service-stage-diagnostic-apply-check",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/owner-service-static-stages-proposal.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0022748529445379972
+    },
+    {
+      "name": "service-stage-diagnostic-apply",
+      "command": [
+        "git",
+        "apply",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/owner-service-static-stages-proposal.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.001754380064085126
+    },
+    {
+      "name": "service-stage-diagnostic-fmt",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.3827828939538449
+    },
+    {
+      "name": "service-stage-diagnostic-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.005464250920340419
+    },
+    {
+      "name": "service-stage-diagnostic-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs",
+        "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.011225122958421707
+    },
+    {
+      "name": "service-stage-diagnostic-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Locate native owner service failures before error reduction"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.017096465919166803
+    }
+  ],
+  "status": "frozen",
+  "head": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+  "tree": "b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0",
+  "parent": "7df70f327ef95dfa72f3036c3ec0f648e19f50f4",
+  "files": [
+    "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+    "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+    "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs",
+    "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+    "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs"
+  ],
+  "patch_sha256": "b37ce56e39eb76af6f520e6e265dd2ea97c25d769f8720b2421866fef8a55045",
+  "source_status": "",
+  "scope": "Static error-only labels at worker and original reduction boundaries; no original error, predicate, control flow, cleanup, or deadline change. No tests yet.",
+  "run_adapter_sha256": "02525eab984df0d5efd705183c388091997a79820069dc2687ffca5c08aff1a3",
+  "finished": "2026-11-18T15:19:17.982327+00:00"
+}

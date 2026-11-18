@@ -2,6 +2,7 @@
 //! recipient trust. No Ledger writer or consumer-side file is reopened.
 
 use std::io;
+use std::io::Write;
 
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
@@ -121,9 +122,13 @@ impl OriginalDataset {
         &self,
         ledger: &HistoricalDatasetLedgerV1,
     ) -> Result<CellQ24TrainingBatchV1, Error> {
-        self.ledger.with_original_ledger_operation(|operation| {
-            self.materialize_historical_in_operation(ledger, operation)
-        })?
+        self.ledger
+            .with_original_ledger_operation(|operation| {
+                self.materialize_historical_in_operation(ledger, operation)
+            })
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"daemon_stage=historical.dataset.operation\n");
+            })?
     }
 
     pub(super) fn materialize_historical_in_operation(
@@ -133,11 +138,19 @@ impl OriginalDataset {
     ) -> Result<CellQ24TrainingBatchV1, Error> {
         Ok(
             operation.read_historical(ledger, |data, verifier, evaluator, observed_at| {
-                let current = RootHistoricalLedgerReadDataV1::read_snapshot(data)?;
+                let current =
+                    RootHistoricalLedgerReadDataV1::read_snapshot(data).inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"daemon_stage=historical.dataset.snapshot\n");
+                    })?;
                 if current != self.frozen {
                     return Err(io::Error::other(
                         "historical Dataset cut differs from actual Root image",
-                    ));
+                    ))
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"daemon_stage=historical.dataset.cut_mismatch\n");
+                    });
                 }
                 let plan = DatasetFreezePlanV2 {
                     snapshot_id: self.receipt.snapshot.snapshot_id.clone(),
@@ -145,10 +158,18 @@ impl OriginalDataset {
                     inclusion_policy_digest: self
                         .projection
                         .inclusion_policy_digest()
+                        .inspect_err(|_| {
+                            let _ = std::io::stderr()
+                                .write_all(b"daemon_stage=historical.dataset.projection_policy\n");
+                        })
                         .map_err(io::Error::other)?,
                 };
-                let payload =
-                    dataset_freeze_signing_payload_v2(&current, &plan).map_err(io::Error::other)?;
+                let payload = dataset_freeze_signing_payload_v2(&current, &plan)
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"daemon_stage=historical.dataset.freeze_payload\n");
+                    })
+                    .map_err(io::Error::other)?;
                 let verified = verifier
                     .verify(
                         LearningEvidenceRoleV1::Evaluator,
@@ -156,13 +177,21 @@ impl OriginalDataset {
                         &payload,
                         observed_at,
                     )
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"daemon_stage=historical.dataset.freeze_signature\n");
+                    })
                     .map_err(io::Error::other)?;
                 if verified.principal() != &evaluator.principal
                     || verified.controller_id() != &evaluator.controller_id
                 {
                     return Err(io::Error::other(
                         "Dataset freeze differs from fixed current Root Evaluator",
-                    ));
+                    ))
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"daemon_stage=historical.dataset.evaluator_mismatch\n");
+                    });
                 }
                 if freeze_dataset_from_ledger(
                     &current,
@@ -170,15 +199,27 @@ impl OriginalDataset {
                     verified.principal().clone(),
                     observed_at,
                 )
+                .inspect_err(|_| {
+                    let _ =
+                        std::io::stderr().write_all(b"daemon_stage=historical.dataset.freeze\n");
+                })
                 .map_err(io::Error::other)?
                     != self.receipt
                 {
                     return Err(io::Error::other(
                         "current authenticated historical Dataset freeze differs",
-                    ));
+                    ))
+                    .inspect_err(|_| {
+                        let _ = std::io::stderr()
+                            .write_all(b"daemon_stage=historical.dataset.freeze_mismatch\n");
+                    });
                 }
                 let records =
                     LedgerSnapshot::read_dataset_records(&current, &self.receipt, observed_at)
+                        .inspect_err(|_| {
+                            let _ = std::io::stderr()
+                                .write_all(b"daemon_stage=historical.dataset.records\n");
+                        })
                         .map_err(io::Error::other)?;
                 // These tasks were captured with this exact opaque receipt. Both
                 // surrounding Root reads compare the full publication and Cell
@@ -196,6 +237,10 @@ impl OriginalDataset {
                     &tasks,
                     observed_at,
                 )
+                .inspect_err(|_| {
+                    let _ =
+                        std::io::stderr().write_all(b"daemon_stage=historical.dataset.project\n");
+                })
                 .map_err(io::Error::other)
             })?,
         )

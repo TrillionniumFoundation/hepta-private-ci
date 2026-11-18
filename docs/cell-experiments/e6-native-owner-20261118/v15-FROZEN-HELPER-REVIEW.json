@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "status": "frozen-source-static-review-no-blocker",
+  "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+  "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+  "qa_exactly_equals_v2_proposal": true,
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_historical_task_diagnostic_source_closure.py",
+      "bytes": 15961,
+      "sha256": "6e8a2a57b5950b659a817a53ce808eafc79643c719d2e9025935382a2ed21f00"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_task.rs",
+      "bytes": 13857,
+      "sha256": "b4383c5a28d45d53724fbd6823b85a96c629ed0bbee6899af27356b735d80859"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_task_diagnostics.rs",
+      "bytes": 2428,
+      "sha256": "20a0191839a0ec4ba59a0cc60fbe357f7470fb969b9f69972d98f1edc3f0dde3"
+    },
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1736768,
+      "sha256": "1e40f322b1ec16f60409de99d245f7db78c1de88405ceebb5c8347e8e77aca7b"
+    }
+  ],
+  "static_review": {
+    "path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/historical-task-diagnostic-qa-v15-e1-v2/FINAL_STATIC_REVIEW.json",
+    "bytes": 15272,
+    "sha256": "7f88a19b3fea8ca5bb0166ce7d8b5e3ad3fc26c92e9ace675696962244e8f3f9",
+    "actual_reader_function_records": 6,
+    "actual_reader_marker_positions": 84
+  },
+  "scope": {
+    "original_write_ban_retained": true,
+    "fixed_helper_shape_and_fourteen_original_labels_retained": true,
+    "fixed_reader_call_distribution": [
+      5,
+      9
+    ],
+    "new_unique_function_boundary_only_reader_and_inventory_present": true,
+    "old_boundaries_and_current_client_rows_unchanged": true,
+    "source_schema_or_budget_relaxation": false,
+    "qa_rust_model_owner_execution_by_reviewer": false,
+    "native_qualification_granted": false
+  },
+  "proposal_history": "v1 trailing-comma regex issue was identified statically before QA execution; v1 is retained and superseded by v2. The sole enum argument permits a trailing comma, with extra-argument and tuple negative controls retained.",
+  "execution_boundary": "E6 owns actual frozen QA and product builds; this review does not assert their outcomes. No Q/S/target writes."
+}

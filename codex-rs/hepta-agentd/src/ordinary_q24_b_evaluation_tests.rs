@@ -16,7 +16,6 @@ use super::evidence_custody::OriginalEvidenceDirectoryKind;
 use super::post_a_plan::OriginalPostAPlan;
 use super::post_a_plan::OriginalPostAResources;
 use super::post_a_trust::B_OBSERVER;
-use super::post_a_trust::TRAINER;
 
 #[path = "ordinary_q24_b_evaluation_business_tests.rs"]
 mod business;
@@ -190,7 +189,7 @@ impl OriginalIndependentBEvaluationInputs {
             expires_at_seconds: initial.request.envelope.expiry_unix_seconds,
             business_directory: self.business_directory.path().to_path_buf(),
             trust: plan.resources.trust.payload.clone(),
-            generator_key: files::read_original_key(plan.resources.trust.key(TRAINER)?)?,
+            generator_key: files::read_original_key(&plan.resources.trust.original_generator_key)?,
             observer_key: files::read_original_key(plan.resources.trust.key(B_OBSERVER)?)?,
         };
         Ok(serde_json::to_value(data)?)

@@ -1,0 +1,111 @@
+{
+  "started": "2026-11-18T14:59:06.620342+00:00",
+  "base": "7ae4ed4bd03c1ddd4e2202c2e0feee06401b38a7",
+  "evidence_parent": "cd8cb2dfdddd6a52c945bb4fa668907de434540c",
+  "patch_proposal_sha256": "ccd16fb466ea34a06860aad2497108acf068d883553fee2ede076e49f6b7a25f",
+  "stages": [
+    {
+      "name": "completed-key-evidence-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/evidence-publisher-v7",
+        "cd8cb2dfdddd6a52c945bb4fa668907de434540c"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.013600449077785015
+    },
+    {
+      "name": "completed-key-evidence-fast-forward",
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "cd8cb2dfdddd6a52c945bb4fa668907de434540c"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.015013919910416007
+    },
+    {
+      "name": "completed-key-diagnostic-apply-check",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/completed-refusal-bounded-owner.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0010558480862528086
+    },
+    {
+      "name": "completed-key-diagnostic-apply",
+      "command": [
+        "git",
+        "apply",
+        "/home/qq/e6-owner-current-20261118-556e5fc18a5b/completed-refusal-bounded-owner.patch"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.001609143102541566
+    },
+    {
+      "name": "completed-key-diagnostic-fmt",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1005487700458616
+    },
+    {
+      "name": "completed-key-diagnostic-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0038577800150960684
+    },
+    {
+      "name": "completed-key-diagnostic-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/authority_host_data_refusal.rs",
+        "codex-rs/hepta-agentd/src/authority_host_data_refusal_tests.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.008270245976746082
+    },
+    {
+      "name": "completed-key-diagnostic-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Bind completed-learning refusal identity within the original owner-key limit"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01206690608523786
+    }
+  ],
+  "status": "frozen",
+  "head": "f7e58512021c7481fa51809bb349f63d93bb1d6c",
+  "tree": "ef1ef15d5f2ef5dadefb5bdd0d73c255a7d0678f",
+  "parent": "cd8cb2dfdddd6a52c945bb4fa668907de434540c",
+  "files": [
+    "codex-rs/hepta-agentd/src/authority_host_data_refusal.rs",
+    "codex-rs/hepta-agentd/src/authority_host_data_refusal_tests.rs"
+  ],
+  "patch_sha256": "0e33bce6b30d2f136d336a81551b91ea2f8df4a5e29298f7d9d872049cf1d8f9",
+  "source_status": "",
+  "scope": "Only CompletedLearning key uses a domain-separated scope32+initial32 digest; record target/initial and other keys/global128 limit unchanged. Root persistence regression added; no tests yet.",
+  "run_adapter_sha256": "881cf10d5a416f50b2767d9e4dcc474e71cf9077907cd9cc665de1f4d1588812",
+  "finished": "2026-11-18T14:59:06.825380+00:00"
+}

@@ -2,6 +2,7 @@
 //! RunStart are controlled fixtures; the Ledger DTO is untrusted test data.
 //! None of these tests establish a Root session, recipient or Dataset right.
 
+use anyhow::Context;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use codex_hepta_neuron::CellDecisionReceiptV1;
@@ -16,11 +17,22 @@ pub(crate) async fn publication_data_fixture() -> anyhow::Result<(
     CircuitTaskSourcePublicationV1,
     CellDecisionReceiptV1,
 )> {
+    publication_data_fixture_with_observation(b"original data observation").await
+}
+
+pub(crate) async fn publication_data_fixture_with_observation(
+    observation: &[u8],
+) -> anyhow::Result<(
+    RootHistoricalTaskPublicationDataV1,
+    RootHistoricalLedgerReadDataV1,
+    CircuitTaskSourcePublicationV1,
+    CellDecisionReceiptV1,
+)> {
     let root = tempfile::tempdir()?;
     let identity = identity(root.path())?;
     let fence = fence(&identity)?;
     let store = AutomationStore::open(&identity.layout).await?;
-    let sources = vec![source("A", b"original data observation")];
+    let sources = vec![source("A", observation)];
     let owner = Source::create(
         opened(root.path(), "source-journal")?,
         witness(root.path(), "source-witness")?,
@@ -66,7 +78,8 @@ pub(crate) async fn publication_data_fixture() -> anyhow::Result<(
     )?;
     let observation = original.observe_run_publication(&cell::id("A"))?;
     let data =
-        RootHistoricalTaskPublicationDataV1::from_original_observation(&observation, &decision)?;
+        RootHistoricalTaskPublicationDataV1::from_original_observation(&observation, &decision)
+            .context("publication DTO constructor rejected fixture")?;
     let mut ledger = crate::root_historical_ledger_data::tests::fixture_data()?;
     let input = publication.input();
     let mut target = serde_json::to_value(&ledger.target)?;

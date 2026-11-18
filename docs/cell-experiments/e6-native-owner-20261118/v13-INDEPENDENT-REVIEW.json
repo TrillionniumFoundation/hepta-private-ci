@@ -1,0 +1,75 @@
+{
+  "status": "reviewed-no-blocker",
+  "reviewer": "/root/e1_e5_evidence",
+  "reviewed_at_utc": "2026-11-18T16:58:16.723868+00:00",
+  "base": "30b4e260accbc0d81f6a17e106854c41c61c3346",
+  "intended_parent": "5a5d9c5256cd3ce390b2442474224ab98ea2efcc",
+  "frozen_head": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "frozen_tree": "51814cb530c723c7544f6eda763f28d9fa228fcf",
+  "patch_sha256": "8103911c162bcf79fadc6116a4b4bd22dacab8d9359b2ecaef046e2139c03edd",
+  "patch_bytes": 14468,
+  "formatted_patch_sha256": "b3c0e9855b748654cfe77917e3230568075ec8e624b80cea015bcebcbf965be8",
+  "formatted_patch_bytes": 16985,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+      "base_sha256": "c870eed213557e963cddfe45eaa28f23f516cfed141ec448d2cc7b8d12b8d9e2",
+      "proposal_sha256": "59c2e3195644abb79fb442a7cef3625c79abf6ce680d91cddc029e013210c45b",
+      "frozen_sha256": "e96776794f66492254a2e00aca2af4afec4a23e0002d648290344284ca3c9007",
+      "diagnostic_calls": 4,
+      "write_all": 4,
+      "write_fmt": 0,
+      "log_calls_equivalent_after_receiver_qualification_and_writeln_expansion": true,
+      "log_payload_and_format_strings_same_including_newline": true,
+      "non_diagnostic_tokens_and_string_literals_identical": true,
+      "diagnostic_write_import_removed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+      "base_sha256": "3ff05b53f1af63fe85882fa1246b6c3ae401fc23857b0d70d516584a711fa35b",
+      "proposal_sha256": "117f07861edaa6d2df9ead0d7eaea5064de51b5d288c2d816efe0aa6f6e30011",
+      "frozen_sha256": "3900836ce74f2415360411937a204941a87f965a0308a7b41dae929d08d0be83",
+      "diagnostic_calls": 26,
+      "write_all": 25,
+      "write_fmt": 1,
+      "log_calls_equivalent_after_receiver_qualification_and_writeln_expansion": true,
+      "log_payload_and_format_strings_same_including_newline": true,
+      "non_diagnostic_tokens_and_string_literals_identical": true,
+      "diagnostic_write_import_removed": true
+    }
+  ],
+  "unchanged_files": {
+    "root_historical_task_read_inputs.rs": {
+      "sha256": "7559a42a6d96bb99da19c237ce55e45474fe44ce4260b744c07b38f3d219d470",
+      "base_equals_frozen_and_observed_active_bytes": true
+    },
+    "learning_iteration_terminal_acceptance.rs": {
+      "sha256": "d31405c47e66fdbe986dd4b43a7627fa680afe9239bad3f2f887ea001054c9df",
+      "base_equals_frozen_and_observed_active_bytes": true
+    },
+    "cell_q24_dataset_historical_ledger.rs": {
+      "sha256": "eec8ce33ccc36192551bb2dc57c68e933de105e46c7db11c9b8a9404dec9c77a",
+      "base_equals_frozen_and_observed_active_bytes": true
+    },
+    "root_historical_learning_operation.rs": {
+      "sha256": "d2ba4783380b403bc5250931fa8450598501619ab8f6af66437421cd3d3db180",
+      "base_equals_frozen_and_observed_active_bytes": true
+    }
+  },
+  "actual_changed_code_files": [
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+  ],
+  "reason": "UFCS names Write without importing it into the parent module, so child use super::* no longer receives this diagnostic Write trait binding. Each original Stderr receiver, diagnostic payload and captured formatting identifier remains the same.",
+  "method": "Independent immutable git-show baselines/proposal/frozen source; exact hashes, all 30 log calls compared after only receiver qualification/writeln newline expansion and formatter trailing-call-comma normalization; remaining Rust tokens including string literals compared exactly.",
+  "earlier_review_attempt": {
+    "session_id": "dpty-84e36b272b317574ccea3c2e189f61d4a495334f949ac84ff1fab05b01e12d70",
+    "exit_code": 1,
+    "reason": "Review script assumed proposal/ subdirectory; actual immutable proposal artifacts use filename.rs.proposal. No review JSON or production file was written before the assertion."
+  },
+  "scope_limits": [
+    "Static source review only; no Rust compilation, formatter, tests or business/model execution by this reviewer.",
+    "No active source, original readers, configs, keys, gates, budgets, deadlines or refusal predicates changed by this reviewer.",
+    "Actual v13 build and business outcome remain separate evidence owned by E6."
+  ]
+}

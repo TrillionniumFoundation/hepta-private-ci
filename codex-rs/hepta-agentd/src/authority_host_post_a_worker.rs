@@ -3,6 +3,7 @@
 //! Installation acknowledgement is not a learning or task outcome.
 
 use std::io;
+use std::io::Write;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixDatagram;
 use std::sync::Arc;
@@ -220,7 +221,10 @@ pub(super) fn serve_optional(
                 registration,
                 owner,
                 session_end,
-            );
+            )
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=post_a.worker\n");
+            });
             if result.is_err() {
                 worker.gate.phase.store(CLOSED, Ordering::Release);
             }

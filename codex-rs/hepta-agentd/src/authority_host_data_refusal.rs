@@ -240,23 +240,33 @@ fn binding(
     target.digest().map_err(io::Error::other)?;
     let scope = crate::neuron_generation_current::types::scope_digest(target.scope())
         .map_err(io::Error::other)?;
-    let name = match kind {
-        RootDataKind::SourcePin => "source-pin".to_owned(),
-        RootDataKind::SourceHandoff => "source-handoff".to_owned(),
-        RootDataKind::CellSnapshot => "cell-snapshot".to_owned(),
-        RootDataKind::HistoricalLedger => "historical-ledger".to_owned(),
-        RootDataKind::RunStart => "run-start".to_owned(),
+    let (name, slot) = match kind {
+        RootDataKind::SourcePin => ("source-pin", scope),
+        RootDataKind::SourceHandoff => ("source-handoff", scope),
+        RootDataKind::CellSnapshot => ("cell-snapshot", scope),
+        RootDataKind::HistoricalLedger => ("historical-ledger", scope),
+        RootDataKind::RunStart => ("run-start", scope),
         RootDataKind::CompletedLearning { initial } => {
             let initial = codex_hepta_types::Digest32::from_array(initial);
             if initial.is_zero() {
                 return Err(io::Error::other("original completed initial is empty"));
             }
-            format!("completed-learning/{initial}")
+            // The old two-hex key was 169 bytes and could never pass the
+            // authority store's fixed 128-byte owner bound. Hash the two
+            // original fixed-width digests under a distinct domain; keep the
+            // complete initial and target in the unchanged refusal record.
+            // The full target must not select a fresh key within one scope.
+            let slot = codex_hepta_types::Digest32::of_parts(&[
+                b"hepta.root.initial-data-refusal.completed-learning.v1\0",
+                scope.as_array(),
+                initial.as_array(),
+            ]);
+            ("completed-learning", slot)
         }
     };
     // Match the primary slot's scope namespace. The complete target remains
     // inside the record, so a different target cannot create another gate.
-    let owner = format!("initial-data-refusal/{name}/{scope}");
+    let owner = format!("initial-data-refusal/{name}/{slot}");
     Ok((
         owner,
         RefusalRecord {

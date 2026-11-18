@@ -118,12 +118,14 @@ def require_armed_io(path, source):
         end = PROOF._rust_item_end(masked, start)
         raw = source[start:end + 1]
         code = masked[start:end + 1]
-        literal = 'let owner = format!("initial-data-refusal/{name}/{scope}");'
-        if raw.count(literal) != 1:
-            raise PROOF.VerificationFailure("same primary scope refusal namespace required")
-        position = raw.index(literal)
-        if code[position:position + len(literal)] != PROOF._strip_rust_non_code(literal):
-            raise PROOF.VerificationFailure("a comment cannot supply the refusal namespace")
+        # Each exact executable arm retains the original scope slot; completed
+        # learning alone uses its domain-separated scope/initial pair.
+        for literal in ('let owner = format!("initial-data-refusal/{name}/{slot}");', 'RootDataKind::SourcePin => ("source-pin", scope),', 'RootDataKind::SourceHandoff => ("source-handoff", scope),', 'RootDataKind::CellSnapshot => ("cell-snapshot", scope),', 'RootDataKind::HistoricalLedger => ("historical-ledger", scope),', 'RootDataKind::RunStart => ("run-start", scope),', 'let slot = codex_hepta_types::Digest32::of_parts(&[\n                b"hepta.root.initial-data-refusal.completed-learning.v1\\0",\n                scope.as_array(),\n                initial.as_array(),\n            ]);'):
+            if raw.count(literal) != 1:
+                raise PROOF.VerificationFailure("same scope and original initial refusal namespace required")
+            position = raw.index(literal)
+            if code[position:position + len(literal)] != PROOF._strip_rust_non_code(literal):
+                raise PROOF.VerificationFailure("a comment cannot supply the refusal namespace")
 
 
 def require_executed_child(source):
@@ -205,13 +207,30 @@ class RootDataRefusalClosureTests(unittest.TestCase):
             "retained.load_matching()?.phase != Phase::Ready",
         ))
         self.check_mutation(REFUSAL, lambda source: source.replace(
-            '"initial-data-refusal/{name}/{scope}"', '"another-marker/{name}/{scope}"', 1
-        ) + '\n// let owner = format!("initial-data-refusal/{name}/{scope}");\n')
+            '"initial-data-refusal/{name}/{slot}"', '"another-marker/{name}/{slot}"', 1
+        ) + '\n// let owner = format!("initial-data-refusal/{name}/{slot}");\n')
         self.check_mutation(REFUSAL, lambda source: source.replace(
             "if retained.load_matching()?.phase != Phase::Ready",
             "retained.complete_armed(&fake, || Ok(()))?;\n"
             "        if retained.load_matching()?.phase != Phase::Ready", 1
         ))
+
+    def test_completed_slot_keeps_scope_initial_domain_and_full_refusal_identity(self):
+        self.rejects_removal(REFUSAL, "binding", (
+            "RootDataKind::CompletedLearning { initial }",
+            "codex_hepta_types::Digest32::from_array(initial)",
+            "if initial.is_zero()", "scope.as_array()", "initial.as_array()",
+            "target: target.clone()",
+        ))
+        for old, new in (
+            ('b"hepta.root.initial-data-refusal.completed-learning.v1\\0"',
+             'b"another.completed-learning.domain\\0"'),
+            ("scope.as_array()", "target.digest()?.as_array()"),
+            ("initial.as_array()", "scope.as_array()"),
+        ):
+            with self.subTest(marker=old):
+                self.check_mutation(REFUSAL, lambda source, old=old, new=new:
+                                    source.replace(old, new, 1) + "\n// " + old + "\n")
 
     def test_refusal_does_not_need_to_decode_the_primary(self):
         self.rejects_removal(REFUSAL, "refuse", (

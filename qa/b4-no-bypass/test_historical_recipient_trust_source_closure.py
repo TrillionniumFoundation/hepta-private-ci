@@ -88,13 +88,13 @@ class HistoricalRecipientTrustSourceTests(unittest.TestCase):
         path = AGENT + "authority_host_historical_read.rs"
         for occurrence in (0, 1, 2):
             self.reject_removal(path, "fn observe_complete_task(",
-                                "RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?", occurrence)
+                                ('RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_before_read\\n"); })?', 'RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_after_reply\\n"); })?', 'RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.exit_trust\\n"); })?')[occurrence], 0)
         self.check_markers(path, "fn observe_complete_task(", (
             ".with_original_historical_task(service, end, |read|", "let (reply, initial) = service.with_learning_profile(",
             "RootOriginalHistoricalTaskReadV1::observe_original_task(",
-            "RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger)?",
+            'RootHistoricalLearningTrustV1::require_original_ledger(&self.learning_trust, &ledger).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.trust_ledger\\n"); })?',
             "publication: RootOriginalHistoricalCompleteTaskObservationV1::publication_read_data(&observed)",
-            "HistoricalReadOperationV1::LearningTrust", "reply.is_empty() || reply.len() > WIRE_BOUND"))
+            "HistoricalReadOperationV1::LearningTrust", 'reply.is_empty() || reply.len() > operation.response_bound()'))
 
     def test_trust_reply_is_exact_profile_cut_pin_and_original_bound(self):
         self.check_markers(DATA, "fn require_original_trust_reply(", (

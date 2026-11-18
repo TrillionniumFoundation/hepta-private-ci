@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "source_head": "30b4e260accbc0d81f6a17e106854c41c61c3346",
+  "source_tree": "f0764fd91e5aff3921b9b20fc274f422516c8fd2",
+  "source_unchanged": true,
+  "status": "failed",
+  "all_attempted_stages_passed": false,
+  "checks": {
+    "helper-build": {
+      "started": "2026-11-18T16:36:55.739685+00:00",
+      "status": "failed",
+      "passed": false,
+      "finished": "2026-11-18T16:37:10.457423+00:00",
+      "elapsed_seconds": 14.717660166788846
+    }
+  },
+  "observed_daemon_stages": [],
+  "task_reply_measurements": [],
+  "client_limit_observations": [],
+  "diagnostic_stderr": [],
+  "diagnostic_order_scope": "Original per-process stderr order is retained. Separate process files do not supply a total timestamp order. Tags describe actual boundaries, not every unlabelled predicate.",
+  "original_no_update": null,
+  "original_adopt": null,
+  "observed_static_stages": [],
+  "cost": {
+    "observed_wall_seconds": 15.246130984043702,
+    "cpu_seconds": null,
+    "gpu_seconds": null,
+    "energy_kwh": null,
+    "api_cost": null,
+    "monetary_cost": null,
+    "qualification": "incomplete; null means unmeasured, not zero; nested command and check elapsed times overlap"
+  },
+  "scope": "Error-only historical client/operation/Dataset candidate and single original evaluated-NoUpdate cold-profile attempt; Adopt cold runs only after NoUpdate passes; no inherited earlier-source pass or repeated v11 codec regressions. Original Result, postcheck priority, fence/drop, all budgets and authority predicates unchanged. Existing cold profile checks retained C, not fresh D. Independent-controller certification/FinalUse/settlement/full-cost remain unestablished."
+}

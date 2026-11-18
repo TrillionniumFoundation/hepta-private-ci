@@ -1,5 +1,6 @@
 //! Fixed listener-to-lane mapping and captured-owner session lifetime.
 use super::*;
+use std::io::Write;
 use std::os::unix::net::UnixListener;
 use std::time::Duration;
 
@@ -142,7 +143,21 @@ pub(super) fn serve_bound_lanes(
                 request_bound: 1,
                 response_bound: 1,
             };
-            workers.push(scope.spawn(move || service.serve(lane, stream, policy, pidfd)));
+            workers.push(scope.spawn(move || {
+                service.serve(lane, stream, policy, pidfd).inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(match lane {
+                        HostAuthorityLane::Observation => b"root_stage=lane.observation\n",
+                        HostAuthorityLane::Issuer => b"root_stage=lane.issuer\n",
+                        HostAuthorityLane::Checkpoint => b"root_stage=lane.checkpoint\n",
+                        HostAuthorityLane::DeviceConsumerFrontier => {
+                            b"root_stage=lane.device_frontier\n"
+                        }
+                        HostAuthorityLane::NotesConsumerFrontier => {
+                            b"root_stage=lane.notes_frontier\n"
+                        }
+                    });
+                })
+            }));
         }
         for worker in workers {
             worker

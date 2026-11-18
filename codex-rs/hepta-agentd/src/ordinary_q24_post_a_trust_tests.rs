@@ -26,6 +26,7 @@ pub(super) struct OriginalPostATrust {
     pub(super) payload: LearningTrustPayloadV1,
     pub(super) payload_file: PathBuf,
     pub(super) keys: BTreeMap<String, PathBuf>,
+    pub(super) original_generator_key: PathBuf,
     pub(super) trust_digest: Digest32,
     pub(super) freezer: LearningTrustRoleSelectionV1,
 }
@@ -49,6 +50,11 @@ impl OriginalPostATrust {
         payload.distribution.issued_at_seconds = now;
         payload.distribution.signers.clear();
         let mut keys = BTreeMap::new();
+        let original_generator_key = original
+            .plan
+            .protected
+            .path()
+            .join("ordinary-trainer-original-input.key");
         for (name, seed, role, held_by_root) in [
             (TRAINER, 74, LearningTrustRoleV1::Generator, false),
             (
@@ -81,6 +87,11 @@ impl OriginalPostATrust {
         ] {
             let key = SigningKey::from_bytes(&[seed; 32]);
             let public = key.verifying_key().to_bytes();
+            if name == TRAINER {
+                // Retain the original Root input before handing the learner
+                // its own file. Never read a delegated key back as Root input.
+                write_bytes(&original_generator_key, &key.to_bytes())?;
+            }
             payload
                 .distribution
                 .signers
@@ -111,6 +122,12 @@ impl OriginalPostATrust {
             write_bytes(&path, &key.to_bytes())?;
             if !held_by_root {
                 super::super::owned_mode(&path, 60001, 60001, 0o600)?;
+                if name == TRAINER {
+                    anyhow::ensure!(
+                        read_private(&path, 32).is_err(),
+                        "delegated Generator key was accepted as original Root input"
+                    );
+                }
             }
             keys.insert(name.into(), path);
         }
@@ -129,6 +146,7 @@ impl OriginalPostATrust {
             payload,
             payload_file,
             keys,
+            original_generator_key,
             trust_digest: trust.verifier().trust_digest(),
             freezer: role(FREEZER),
         })

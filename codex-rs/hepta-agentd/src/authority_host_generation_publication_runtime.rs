@@ -1,6 +1,7 @@
 //! Late original enrollment and one publication connection share the exact
 //! lifetime of the original Root listeners, not a detached replacement service.
 
+use std::io::Write;
 use std::net::Shutdown;
 use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
@@ -158,16 +159,20 @@ fn serve_optional_with_end(
             };
             let operation_end = end.min(submission.end);
             owner_alive(owner, operation_end)?;
-            let slot = service.enroll_generation_publication(
-                config,
-                registration,
-                owner,
-                learning,
-                submission.inputs,
-                publication.runtime.version,
-                operation_end,
-                submission.successor,
-            );
+            let slot = service
+                .enroll_generation_publication(
+                    config,
+                    registration,
+                    owner,
+                    learning,
+                    submission.inputs,
+                    publication.runtime.version,
+                    operation_end,
+                    submission.successor,
+                )
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=publication.enroll\n");
+                });
             let slot = match slot {
                 Ok(slot) => {
                     let acknowledged = (|| {
@@ -253,7 +258,10 @@ fn serve_optional_with_end(
                     policy,
                     owner.try_clone()?,
                 ),
-            };
+            }
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=publication.serve\n");
+            });
             if stopping.load(Ordering::Acquire) {
                 Ok(())
             } else {

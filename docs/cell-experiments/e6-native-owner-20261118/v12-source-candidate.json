@@ -1,0 +1,64 @@
+{
+  "started": "2026-11-18T16:36:46.985718+00:00",
+  "parent": "b01b277b7c887a65a2159b37074eb7e0564e09e0",
+  "patch_sha256": "533d7c0739a317b4e19784f992fac4b03f90e71c59cbc8ec4edd05bf884c353e",
+  "stages": [
+    {
+      "name": "client-v12-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0053936748299747705
+    },
+    {
+      "name": "client-v12-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.008975439006462693
+    },
+    {
+      "name": "client-v12-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Trace original historical client and Dataset refusals"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01251640310510993
+    }
+  ],
+  "files": [
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+    "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+  ],
+  "template_sha256": {
+    "run_native_v12": "fdd72ffd7aaf2a1e1375605060f64f4ec5a4fc8aeddb8bc4c60c3733a5f888db",
+    "archive_native_v12": "9b783cb53cd537e80d7f6b5f1e4129e37b4d297dc91c0f62d2bd153e5f6854b3",
+    "prepare_v12_publication": "ec6d73cc2cdd75693629b36d04b1f992c35ba58c88157007c6c46fcab7d36437"
+  },
+  "scope": "Error-only client/operation/Dataset observations at original failures. Original Results/postcheck priority/fence/drop/identity/deadline/64-read and frame/component budgets unchanged. No new case has yet run. Earlier v11 codec tests are not inherited or repeated.",
+  "status": "frozen",
+  "head": "30b4e260accbc0d81f6a17e106854c41c61c3346",
+  "tree": "f0764fd91e5aff3921b9b20fc274f422516c8fd2",
+  "source_status": "",
+  "run_adapter_sha256": "f77becc41e138b95439bc692ffecf48a6fe8a12f6b744c21afb3662aeb46b56b",
+  "finished": "2026-11-18T16:36:47.039529+00:00"
+}

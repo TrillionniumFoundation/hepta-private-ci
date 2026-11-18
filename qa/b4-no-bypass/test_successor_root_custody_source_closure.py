@@ -99,10 +99,10 @@ def require_structure(path, source):
         if not context[0] < call < context[1]:
             raise PROOF.VerificationFailure("C physical read needs actual Root current authority")
         tail = body[context[1]:arm[1]]
-        if not re.match(r"\s*,\s*\)\?;", tail):
+        if not re.match('\\s*' + route.token_pattern(',\n                ).inspect_err(|_| {\n                    let _ = std::io::stderr().write_all(b                                           );\n                })?;'), tail):
             raise PROOF.VerificationFailure("full writer postchecks must return Ok")
         for marker in ("RegisteredSuccessorData::finish_observed(",
-                       "RegisteredSuccessorData::read_data(", "refusal::require_end(end)?", "Ok((raw, accepted))"):
+                       "RegisteredSuccessorData::read_data(", 'refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                   );\n                        })?', "Ok((raw, accepted))"):
             if marker not in tail:
                 raise PROOF.VerificationFailure("C physical re-read and deadline must precede Ready")
     if path == READ:
@@ -218,7 +218,7 @@ class SuccessorRootCustodySourceTests(unittest.TestCase):
         self.mutate(ENROLL, lambda s: s.replace("RegisteredSuccessorData::require_baseline(&retained)?;", "if false { RegisteredSuccessorData::require_baseline(&retained)?; }", 1))
 
     def test_cold_commands_require_actual_current_and_complete_context_postchecks(self):
-        self.check(TRANSPORT, "serve_generation_publication_with_end", ("PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "version != PublicationVersion::DurableV2 || before.current != intent.target", "RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?", "raw.len() > 16 * 1024", "RegisteredSuccessorData::finish_observed(successor, &observed.cut)?", "RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed", "refusal::require_end(end)?"))
+        self.check(TRANSPORT, "serve_generation_publication_with_end", ("PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "version != PublicationVersion::DurableV2 || before.current != intent.target", "RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?", "raw.len() > 16 * 1024", "RegisteredSuccessorData::finish_observed(successor, &observed.cut)?", "RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed", 'refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                   );\n                        })?'))
         self.check(STORE, "finish_observed", ("self.observe_retired(", "false", "!= *expected", "self.require_exact()"))
 
 

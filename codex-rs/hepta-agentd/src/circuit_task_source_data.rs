@@ -14,7 +14,6 @@ use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
 mod decision;
 
 const PURPOSE: &str = "runtime.learning.historical-task-publication-data.v1";
-const DATA_BOUND: usize = 16_384;
 
 /// Exact canonical request/result bytes, projected only from the Root's actual
 /// observation in production. Raw deserialization alone grants no read right.
@@ -30,6 +29,9 @@ pub(crate) struct RootHistoricalTaskPublicationDataV1 {
 }
 
 impl RootHistoricalTaskPublicationDataV1 {
+    /// Existing complete canonical publication DTO budget, including both blobs.
+    pub(crate) const JSON_BOUND: usize = 16_384;
+
     /// Pure canonical data projection for the same-Root successor receipt.
     /// The closed actual client separately supplies current admission/custody.
     pub(crate) fn decode_original_successor_data(
@@ -112,7 +114,7 @@ impl RootHistoricalTaskPublicationDataV1 {
     fn decode_data(
         &self,
     ) -> Result<(CircuitTaskSourcePublicationV1, CellDecisionReceiptV1), Error> {
-        if self.schema != 1 || self.purpose != PURPOSE || json(self)?.len() > DATA_BOUND {
+        if self.schema != 1 || self.purpose != PURPOSE || json(self)?.len() > Self::JSON_BOUND {
             return Err(Error::InvalidBinding);
         }
         let binding = self

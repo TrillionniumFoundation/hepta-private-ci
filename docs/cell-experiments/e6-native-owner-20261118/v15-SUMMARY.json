@@ -1,0 +1,269 @@
+{
+  "schema": 1,
+  "source_before": {
+    "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+    "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+    "clean": true
+  },
+  "source_after": {
+    "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+    "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+    "clean": true
+  },
+  "source_unchanged": true,
+  "parent": "570b46e1cd0d9093f37dbb31bd157825971e899d",
+  "prior_native_source_not_inherited": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "started": "2026-11-18T18:08:36.948184+00:00",
+  "finished": "2026-11-18T18:08:50.584894+00:00",
+  "whole_qa_execution_seconds": 13.636731559876353,
+  "modules": [
+    "test_complete_historical_task_source_closure",
+    "test_completed_learning_client_source_closure",
+    "test_historical_current_trust_client_source_closure",
+    "test_historical_dataset_capability_source_closure",
+    "test_historical_learning_delivery_source_closure",
+    "test_historical_recipient_trust_source_closure",
+    "test_historical_task_capacity_source_closure",
+    "test_historical_task_read_source_closure",
+    "test_initial_absolute_deadline_source_closure",
+    "test_initial_lane_admission_source_closure",
+    "test_publication_refusal_source_closure",
+    "test_root_data_refusal_source_closure",
+    "test_root_historical_ledger_source_closure",
+    "test_successor_root_custody_source_closure",
+    "test_historical_task_diagnostic_source_closure"
+  ],
+  "unittest": {
+    "tests_run": 150,
+    "successful": true,
+    "failures_including_subtests": 0,
+    "errors_including_subtests": 0,
+    "skips": 0,
+    "case_records": 150,
+    "cases_with_failure_events": 0,
+    "duration_seconds": 12.305355900200084
+  },
+  "protected_file_sweep": {
+    "status": "passed",
+    "original_verifier": "_verify_protected_files",
+    "protected_rows": 892,
+    "all_rows_checked": true,
+    "duration_seconds": 1.308001504978165
+  },
+  "native_attempt_executed": false,
+  "rust_build_executed": false,
+  "business_or_model_executed": false,
+  "complete_owner_adoption_proven": false,
+  "cost_scope": "Actual Python QA execution wall only; prior preparation/tool costs not fully measured, not a complete cost total.",
+  "unmeasured_costs": {
+    "cpu_core_seconds": null,
+    "energy_joules": null,
+    "api_or_money": null
+  },
+  "successful": true,
+  "source_head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+  "source_tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+  "source_parent": "570b46e1cd0d9093f37dbb31bd157825971e899d",
+  "remote_base": "3299c1d3318ff157f4948dee89b7939ef67b515c",
+  "product_preparation": {
+    "status": "compiled-and-pinned",
+    "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+    "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+    "stages": [
+      {
+        "name": "product-build",
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "--bin",
+          "codex-hepta-agentd",
+          "--bin",
+          "hepta-authority-host",
+          "--message-format=json-render-diagnostics"
+        ],
+        "cwd": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs",
+        "started": "2026-11-18T18:08:39.710540+00:00",
+        "status": "completed",
+        "launcher_uid": 1000,
+        "pid": 296078,
+        "exit_code": 0,
+        "finished": "2026-11-18T18:09:25.070197+00:00",
+        "elapsed_seconds": 45.35969805601053
+      }
+    ],
+    "checks": {
+      "product-build-and-pin": {
+        "started": "2026-11-18T18:08:39.710439+00:00",
+        "status": "passed",
+        "passed": true,
+        "finished": "2026-11-18T18:09:29.952030+00:00",
+        "elapsed_seconds": 50.24154290417209
+      }
+    },
+    "original_harness": "/home/qq/hepta-learn-ff41-tools/root_5eeb5d33_completed_chain_v1.py",
+    "original_harness_sha256": "ee20bff704f8495fabb6133bbb478d82dd14466303e82c4a93ff2ea276c2b3d1",
+    "adapter_sha256": "01090fb3eb24abd03977e3bf3e9173d9573db99931b06a56cf18254cdeb20b57",
+    "scope": "Compilation and exact pinned binary provenance for the closed diagnostics helper and explicit historical Lane type. No libtest, native owner business, model, adoption, or cold recovery executes. v13 native 65/64 remains attributed to 978719e; no prior test pass is inherited.",
+    "native_owner_business_executed": false,
+    "libtest_executed": false,
+    "model_executed": false,
+    "budget_read_limit_unchanged": 64,
+    "independent_controller_qualification": false,
+    "unmeasured_costs": {
+      "cpu_core_seconds": null,
+      "energy_joules": null,
+      "api_or_money": null
+    },
+    "before": {
+      "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+      "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+      "status": "",
+      "tracked_files": 15569,
+      "tracked_sha256": "c32cbaa977979d8c1af57ede1ac1030c83a2dccac6b223a2032148b1b88423f2"
+    },
+    "after": {
+      "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+      "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+      "status": "",
+      "tracked_files": 15569,
+      "tracked_sha256": "c32cbaa977979d8c1af57ede1ac1030c83a2dccac6b223a2032148b1b88423f2"
+    },
+    "whole_product_preparation_seconds": 52.54007192887366,
+    "finished": "2026-11-18T18:09:31.045848+00:00",
+    "passed": true,
+    "cost_scope": "Measured whole product preparation wall, including owned source fast-forward, actual cargo build, pin/readback, and 14-tag ELF verification; excludes QA/research/publication. No complete cost claim."
+  },
+  "compiler_products": {
+    "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+    "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+    "artifacts": {
+      "hepta-authority-host": {
+        "package_id": "path+file:///home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 1,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "compiler_executable": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/target/debug/hepta-authority-host",
+        "pinned": "/var/tmp/hepta-native-e6-owner-gates-a6f9e806-20261118-v15/bin/hepta-authority-host",
+        "bytes": 974634472,
+        "sha256": "baf520842749923ceac423ff62dc1b16938444fda3f75af97db1c708337361b7"
+      },
+      "codex-hepta-agentd": {
+        "package_id": "path+file:///home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 1,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "compiler_executable": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/target/debug/codex-hepta-agentd",
+        "pinned": "/var/tmp/hepta-native-e6-owner-gates-a6f9e806-20261118-v15/bin/codex-hepta-agentd",
+        "bytes": 1363889888,
+        "sha256": "ccc9145e76984a940543db52b77f3fa06742478eca8e5caf8a0ab728efb9475c"
+      }
+    }
+  },
+  "root_fixed_diagnostics": {
+    "head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+    "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+    "elf": "/var/tmp/hepta-native-e6-owner-gates-a6f9e806-20261118-v15/bin/hepta-authority-host",
+    "elf_sha256": "baf520842749923ceac423ff62dc1b16938444fda3f75af97db1c708337361b7",
+    "bytes": 974634472,
+    "stable_read": true,
+    "fixed_tags": [
+      {
+        "tag": "root_stage=historical_task.recipient_action",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.ledger",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.run_start",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.source_cell",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.handoff",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.source_observation",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.run_start_publisher",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.run_start_deployment",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.run_start_observation",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.ledger_observation",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.run_start_digest",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.ledger_digest",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.publication_projection",
+        "found": true
+      },
+      {
+        "tag": "root_stage=historical_task.publication_validation",
+        "found": true
+      }
+    ],
+    "all_14_present": true,
+    "runtime_execution": false
+  },
+  "native_business_executed": false,
+  "prior_native_source": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "prior_native_result": "BLOCKED: historical read request_id=65 maximum=64",
+  "prior_native_recorded_attempt_wall_v1_v13_seconds": 3283.672103214776,
+  "prior_native_attempt_cost_scope": "Previously recorded 13 native attempt wall scopes; excludes source QA, publication, research and unmeasured costs. Nested stages are not added again.",
+  "read_budget_audit": {
+    "path": "v13-static-audit/SUCCESSFUL_FRESH_PATH_READ_ACCOUNTING.json",
+    "sha256": "69085ade2eddebe287efc5d5804848c6be329fd3b098849019758144ee5f9ec8",
+    "source": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+    "qualification": "Static startup accounting only: 64 completed reads (62 Task + 1 Trust + 1 PostA), attach_sources attempts 65 and needs 66 to finish. Not a measured stack; no proven whole-session NoUpdate/Adopt/cold upper bound, no budget increase."
+  },
+  "limitations": [
+    "150 source QA cases and 892 protected rows are attributed only to a6f9e806.",
+    "No full caller sweep, old 949-case result, v11 codec result or native adoption result is inherited.",
+    "No libtest, model, NoUpdate, Adopt or fresh D executed on this candidate.",
+    "Original MAX_READS=64, deadlines, authentication, refusal, freshness and postchecks remain unchanged.",
+    "CPU, energy, API/monetary and total research/publication costs are unknown, not zero."
+  ],
+  "retained_preparation_defects": [
+    "v14 initial EOF diff check failure",
+    "rejected Chain row270 wrong-file proposal, superseded before freeze",
+    "rejected E1 observer regex without fmt trailing comma, superseded before freeze",
+    "formatter executable absent from ordinary PATH; original environment resolved it",
+    "two pre-freeze marker-locator assumptions rejected before source writes",
+    "exact service method raw marker formatting fixed after verifier inspection"
+  ],
+  "source_clean_after": true
+}

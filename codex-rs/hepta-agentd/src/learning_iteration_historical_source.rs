@@ -72,7 +72,14 @@ impl RegisteredHistoricalLearningSourceV1 {
             end,
             terminal_acceptance: Mutex::new(Some(terminal_acceptance)),
         });
-        source.require_current_historical_source(&source.identity)?;
+        source
+            .require_current_historical_source(&source.identity)
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.capture\n",
+                );
+            })?;
         source.receipt.require_original_client(client, session)?;
         Ok(source)
     }
@@ -130,7 +137,14 @@ impl LearningIterationRuntimeBootstrapV1 {
             .as_ref()
             .ok_or_else(|| refused("actual assembled Q24 owners absent"))?;
         let prepared = original.prepared();
-        source.require_prepared_historical_source(prepared)?;
+        source
+            .require_prepared_historical_source(prepared)
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.bootstrap_prepared\n",
+                );
+            })?;
         let registry = self
             .circuit_delivery_registry
             .as_ref()
@@ -151,7 +165,14 @@ impl LearningIterationRuntimeBootstrapV1 {
                 "historical delivery differs from original Root assembly",
             ));
         }
-        source.require_current_historical_source(identity)?;
+        source
+            .require_current_historical_source(identity)
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.bootstrap_before_journal\n",
+                );
+            })?;
         let key = ProductEvaluationExecutionKeyV1 {
             plan_id: source.request().operation_id.clone(),
             binding_digest: Digest32::of_parts(&[
@@ -170,7 +191,14 @@ impl LearningIterationRuntimeBootstrapV1 {
             }
         }
         .map_err(refused)?;
-        source.require_current_historical_source(identity)?;
+        source
+            .require_current_historical_source(identity)
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.bootstrap_after_journal\n",
+                );
+            })?;
         self.historical_source = Some(Arc::clone(&source));
         self.historical_delivery = Some(OriginalHistoricalLearningDeliveryV1 {
             source,
