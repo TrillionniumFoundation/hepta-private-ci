@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+import importlib
 import json
 from pathlib import Path
 import sys
@@ -9,7 +10,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import teacher_connection as connection
+connection = importlib.import_module("teacher_connection")
 
 
 def read(path):

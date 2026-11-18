@@ -2,7 +2,7 @@
 
 import argparse
 import copy
-import hashlib
+import importlib
 import json
 from pathlib import Path
 import resource
@@ -11,7 +11,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import native_sandbox as native
+native = importlib.import_module("native_sandbox")
 
 PREVIOUS = Path("/home/qian-qi/work/hepta-e2-current-credit-20261118-2e9b")
 OLD_CODE = Path("/home/qian-qi/work/hepta-e1-matched-info-20261118-2e9b/source")
@@ -19,8 +19,9 @@ CANDIDATE = PREVIOUS / "source/qualification/cell-current-policy-credit-20261118
 ARTIFACT = Path("/dev/shm/hepta-cell-experiments-v3-20261116-0c078a")
 sys.path.insert(0, str(OLD_CODE / "scripts"))
 sys.path.insert(0, str(CANDIDATE))
-import current_credit as credit
-from cell_experiments import chat_protocol, data
+credit = importlib.import_module("current_credit")
+chat_protocol = importlib.import_module("cell_experiments.chat_protocol")
+data = importlib.import_module("cell_experiments.data")
 
 
 def manifest_path(mode):

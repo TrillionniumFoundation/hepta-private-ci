@@ -135,7 +135,7 @@ def main(root):
     )
     assert lock.is_file() and not lock.is_symlink()
     samples, exits = [], []
-    started, usage = time.perf_counter(), resource.getrusage(resource.RUSAGE_CHILDREN)
+    started = time.perf_counter()
     try:
         with lock.open("a+b") as held:
             fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)

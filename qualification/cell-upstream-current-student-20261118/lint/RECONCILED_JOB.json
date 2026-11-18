@@ -1,0 +1,66 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "import hashlib,json,pathlib,subprocess,sys,time\np=json.load(sys.stdin);root=pathlib.Path(\"/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1\");root.mkdir(exist_ok=False)\nfor name,text in p[\"files\"].items():\n compile(text,name,\"exec\");(root/name).write_bytes(text.encode())\nbase=[\"/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv\",\"run\",\"--frozen\",\"--project\",\"/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts\",\"ruff\"]\npaths=[str(root/name) for name in p[\"files\"]];stages=[]\nfor name,args in [(\"format\",[\"format\",*paths]),(\"format-check\",[\"format\",\"--check\",*paths]),(\"lint\",[\"check\",*paths])]:\n tick=time.perf_counter();r=subprocess.run([*base,*args],capture_output=True,timeout=60)\n (root/(name+\".stdout\")).write_bytes(r.stdout);(root/(name+\".stderr\")).write_bytes(r.stderr)\n stages.append({\"name\":name,\"argv\":[*base,*args],\"exit_code\":r.returncode,\"wall_seconds\":time.perf_counter()-tick})\nfor path in paths:compile(pathlib.Path(path).read_bytes(),path,\"exec\")\nresult={\"status\":\"PASS\" if all(x[\"exit_code\"]==0 for x in stages) else \"FAIL\",\"stages\":stages,\"files\":{name:{\"path\":str(root/name),\"sha256\":hashlib.sha256((root/name).read_bytes()).hexdigest(),\"bytes\":(root/name).stat().st_size} for name in p[\"files\"]},\"actual_execution_source_unchanged\":\"dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950\",\"all_model_calls\":0,\"all_verifier_calls\":0,\"changes\":\"Remove four unused imports and one unused counter read; split imports; load five fixed modules through importlib after the identical explicit sys.path setup. No score, admission predicate, original test, model/runtime setting or manifest changed.\"}\n(root/\"RESULT.json\").write_bytes(json.dumps(result,sort_keys=True,indent=2).encode()+b\"\\n\");print(json.dumps(result),flush=True);raise SystemExit(0 if result[\"status\"]==\"PASS\" else 1)\n"
+    ],
+    "created_unix_ms": 1795025652365,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1efddca8d-ffbe-640",
+    "idempotency_key": "e123-upstream-publication-lint-cleanup-2e9b-001",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efddca8d-ffbe-640",
+    "request_digest": "5568c9e6bbd20a112129f458e64acb65020889d4130ae1a92d2b79c4ceced515",
+    "request_fingerprint": 6154390883632548369,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1efddca8d-ffbe-640"
+  },
+  "launch": null,
+  "retried_launch": false,
+  "reused": true,
+  "status": {
+    "at_unix_ms": 1795025654067,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1efddca8d-ffbe-640",
+    "launch_nonce": "e0c391f68063d385053aad4bb2e36974",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 5646,
+        "stored": 5646
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

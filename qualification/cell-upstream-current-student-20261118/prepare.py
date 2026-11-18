@@ -3,7 +3,6 @@
 import argparse
 import ast
 import difflib
-import importlib.util
 import json
 from pathlib import Path
 import sys

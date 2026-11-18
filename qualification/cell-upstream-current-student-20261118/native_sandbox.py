@@ -1,7 +1,6 @@
 """Restricted upstream source edits, evaluated by unchanged tests in real bwrap."""
 
 import ast
-import copy
 import errno
 import hashlib
 import importlib

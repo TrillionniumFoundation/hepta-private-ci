@@ -1,0 +1,118 @@
+{
+  "actual_execution_source_unchanged": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
+  "all_model_calls": 0,
+  "all_verifier_calls": 0,
+  "changes": "Remove four unused imports and one unused counter read; split imports; load five fixed modules through importlib after the identical explicit sys.path setup. No score, admission predicate, original test, model/runtime setting or manifest changed.",
+  "files": {
+    "collect_complete.py": {
+      "bytes": 24040,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/collect_complete.py",
+      "sha256": "cd295ab6f39dcfadb6d642de2ca95cc9aeb66513bc6f34e08b4d26c1d26abf85"
+    },
+    "native_sandbox.py": {
+      "bytes": 25999,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/native_sandbox.py",
+      "sha256": "15b7babbe86dea6ff732dbbac3d8130e2bcda020bce1db8a17cb9351ffea44e6"
+    },
+    "owner.py": {
+      "bytes": 13421,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/owner.py",
+      "sha256": "91f68fb0e886c8728f57ed9d2d29793d83452f84724ffabb742325618f6deae1"
+    },
+    "prepare.py": {
+      "bytes": 15934,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/prepare.py",
+      "sha256": "9faf83c667e8bda11226b926c9e82bd1db92660532c1439fe9dc1aaac6f00623"
+    },
+    "run_students.py": {
+      "bytes": 16053,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_students.py",
+      "sha256": "a5dbb4b72f5f29948386332024ceb6a7b11188ac39b8f733fb68875a8427d375"
+    },
+    "run_teacher.py": {
+      "bytes": 14746,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_teacher.py",
+      "sha256": "34dd86b060622528a14671181f1d659817adf676506dc95d68b97b3d26163bec"
+    },
+    "teacher_bridge.py": {
+      "bytes": 5249,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_bridge.py",
+      "sha256": "6489d112fce1190a8b49308e2bc5c50883acec1e3e5b91781e7c37eb836a33f7"
+    },
+    "teacher_connection.py": {
+      "bytes": 12255,
+      "path": "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_connection.py",
+      "sha256": "5e372f0e8c61a06330965e1186f08e26cadde0e524658e28842c03da853745cb"
+    }
+  },
+  "stages": [
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/owner.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_connection.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/collect_complete.py"
+      ],
+      "exit_code": 0,
+      "name": "format",
+      "wall_seconds": 0.04568548401584849
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/owner.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_connection.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/collect_complete.py"
+      ],
+      "exit_code": 0,
+      "name": "format-check",
+      "wall_seconds": 0.028577127028256655
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "check",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/owner.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_connection.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/publication-cleanup-1/collect_complete.py"
+      ],
+      "exit_code": 0,
+      "name": "lint",
+      "wall_seconds": 0.0366215500398539
+    }
+  ],
+  "status": "PASS"
+}

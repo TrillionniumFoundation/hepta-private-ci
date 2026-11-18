@@ -1,6 +1,13 @@
 """Dispatch frozen teacher outputs through the unchanged actual upstream sandbox."""
 
-import argparse, hashlib, json, pathlib, resource, sys, time
+import argparse
+import hashlib
+import importlib
+import json
+import pathlib
+import resource
+import sys
+import time
 
 ROOT = pathlib.Path("/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b")
 CODE = ROOT / "execution-code"
@@ -9,7 +16,7 @@ assert (
     == "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c"
 )
 sys.path.insert(0, str(CODE))
-import native_sandbox as native
+native = importlib.import_module("native_sandbox")
 
 
 def main(stage):
