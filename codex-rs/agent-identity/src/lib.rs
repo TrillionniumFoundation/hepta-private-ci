@@ -8,12 +8,13 @@ use anyhow::Result;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpError;
 use codex_protocol::auth::PlanType as AuthPlanType;
 use codex_protocol::protocol::SessionSource;
+use codex_utils_time::Precision;
+use codex_utils_time::UtcSuffix;
+use codex_utils_time::format_rfc3339_utc;
 use crypto_box::SecretKey as Curve25519SecretKey;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
@@ -34,6 +35,7 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 use sha2::Digest as _;
 use sha2::Sha512;
+use time::OffsetDateTime;
 
 const AGENT_TASK_REGISTRATION_TIMEOUT: Duration = Duration::from_secs(30);
 const AGENT_IDENTITY_JWKS_TIMEOUT: Duration = Duration::from_secs(10);
@@ -233,7 +235,8 @@ pub fn authorization_header_for_agent_task(
     key: AgentIdentityKey<'_>,
     task_id: &str,
 ) -> Result<String> {
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let timestamp =
+        format_rfc3339_utc(OffsetDateTime::now_utc(), Precision::Seconds, UtcSuffix::Z)?;
     let envelope = AgentAssertionEnvelope {
         agent_runtime_id: key.agent_runtime_id.to_string(),
         task_id: task_id.to_string(),
@@ -317,7 +320,8 @@ pub async fn register_agent_task(
     agent_identity_authapi_base_url: &str,
     key: AgentIdentityKey<'_>,
 ) -> Result<String> {
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let timestamp =
+        format_rfc3339_utc(OffsetDateTime::now_utc(), Precision::Seconds, UtcSuffix::Z)?;
     let request = RegisterTaskRequest {
         signature: sign_task_registration_payload(key, &timestamp)?,
         timestamp,
@@ -624,6 +628,8 @@ mod tests {
                 signature: envelope.signature.clone(),
             }
         );
+        assert!(envelope.timestamp.ends_with('Z'));
+        assert!(!envelope.timestamp.contains('.'));
         let signature_bytes = BASE64_STANDARD
             .decode(&envelope.signature)
             .expect("valid base64 signature");

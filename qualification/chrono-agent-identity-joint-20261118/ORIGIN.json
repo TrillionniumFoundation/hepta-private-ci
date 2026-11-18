@@ -1,0 +1,28 @@
+{
+  "base": "902a8ccdff0326877515683717fe6e5db4356df7",
+  "base_execution_source": "616dccdbf8d68192aa984b676608a01d1a75e168",
+  "selection": "actual shortest remaining cloud-config -> agent-identity -> chrono edge",
+  "scope": [
+    "agent-identity/src/lib.rs: authorization_header_for_agent_task timestamp",
+    "agent-identity/src/lib.rs: register_agent_task timestamp",
+    "agent-identity/Cargo.toml direct dependency"
+  ],
+  "wire_semantics": {
+    "precision": "whole seconds, fractional part truncated",
+    "utc_suffix": "Z",
+    "clock": "UTC system clock",
+    "signed_payload_serialization_changed": false,
+    "keys_or_signature_algorithm_changed": false,
+    "http_or_admission_changed": false
+  },
+  "existing_generated_signature_test": "adds whole-second/Z checks to existing actual generated assertion and retains cryptographic verification",
+  "time_helper_source": "616dccdbf8d68192aa984b676608a01d1a75e168",
+  "time_helper_lib_sha256": "eb3b38c1042f1d374329c7ba09982674b82d9682f01f3f6a23a5382df002b909",
+  "independent_native_tests_required": [
+    "complete codex-agent-identity package",
+    "complete codex-utils-time package",
+    "complete cloud-config package"
+  ],
+  "previous_native_test_counts_inherited": false,
+  "chrono_retirement_or_cargo_deny_claimed": false
+}
