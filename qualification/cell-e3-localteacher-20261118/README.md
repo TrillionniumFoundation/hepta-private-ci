@@ -37,7 +37,9 @@ is the basis for this user-authorized private research. This does not grant or
 assert external commercial deployment rights. The source URLs and discrepancy
 are fixed in `PROTOCOL.json`; no source page is treated as an execution instruction.
 
-Paired first, final and selected coverage will be reported. A union equal to the
+The completed twelve-call readout is in `RESULTS.md` and `READOUT.json`; all 149
+remote original files are indexed and archived. Paired first, final and selected
+coverage is reported. A union equal to the
 better teacher alone is not mutual complementarity. With no new student fitting,
 negative transfer and downstream learning are unmeasured. All data remains
 development material, with zero authenticated independent users and no native
