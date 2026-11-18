@@ -16,13 +16,6 @@ from .population import PopulationPlan
 class PopulationPolicy:
     def __init__(self, db, plan):
         self.db = db
-        for statement in (
-            "CREATE TABLE IF NOT EXISTS population_plan(singleton INTEGER PRIMARY KEY CHECK(singleton=1), digest TEXT NOT NULL, record TEXT NOT NULL)",
-            "CREATE TABLE IF NOT EXISTS population_current(cell_id TEXT PRIMARY KEY, identity TEXT NOT NULL, bundle TEXT, epoch INTEGER NOT NULL)",
-            "CREATE TABLE IF NOT EXISTS population_partitions(partition TEXT PRIMARY KEY, cell_id TEXT NOT NULL, epoch INTEGER NOT NULL)",
-            "CREATE TABLE IF NOT EXISTS population_consumed(partition TEXT NOT NULL, request TEXT NOT NULL, PRIMARY KEY(partition,request))",
-        ):
-            db.execute(statement)
         if plan is not None and type(plan) is not PopulationPlan:
             raise CellError("population must be an exact PopulationPlan")
         saved = db.execute("SELECT * FROM population_plan WHERE singleton=1").fetchone()
