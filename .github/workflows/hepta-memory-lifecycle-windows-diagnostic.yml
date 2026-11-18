@@ -23,14 +23,18 @@ jobs:
       deployment: false
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      EVIDENCE_DIR: ${{ runner.temp }}/memory-lifecycle-diagnostic
       MEMORY_CASE: local_lifecycle::tests::indeterminate_crash_window_replays_as_terminal_and_releases
       MEMORY_TARGET: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests
     steps:
-      - name: Enable Windows long paths before checkout
+      - name: Initialize evidence path and enable Windows long paths
         shell: pwsh
         working-directory: ${{ runner.temp }}
-        run: git config --global core.longpaths true
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/memory-lifecycle-diagnostic
+        run: |
+          "EVIDENCE_DIR=$env:EVIDENCE_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
 
       - name: Check out the exact source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -189,6 +193,8 @@ jobs:
       - name: Preserve raw results and require exactly one original test
         if: always()
         shell: bash
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/memory-lifecycle-diagnostic
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -280,7 +286,7 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: memory-lifecycle-windows-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ env.EVIDENCE_DIR }}/
+          path: ${{ runner.temp }}/memory-lifecycle-diagnostic/
           if-no-files-found: error
           retention-days: 14
 

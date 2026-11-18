@@ -64,3 +64,19 @@ the YAML-only change and left the exact validated workflow unchanged. No test
 was rerun after maintenance. Required CI and Architecture checks remain required
 before main can advance; no branch deletion is authorized by this diagnostic's
 result alone.
+
+## Subsequent registration correction
+
+GitHub rejected the first published diagnostic at `e2c3adbf1098` before assigning
+a runner: run `44353316661` had zero jobs and zero native test executions. The
+job-level environment referenced `runner.temp`, which is available only in the
+appropriate step contexts. The original YAML/parser controls did not detect this
+GitHub expression-context rule.
+
+The current workflow initializes the same absolute evidence directory in the
+first step and exports it through `GITHUB_ENV`. The always-running collector and
+upload action address that directory independently. The original case, source,
+250ms budget, assertions, invocation count and collector remain unchanged.
+`registration-fix/` retains the complete hosted failure page, original API
+records, exact correction, independent review and new validation/maintenance
+receipts. No native Windows test result is claimed by that correction.
