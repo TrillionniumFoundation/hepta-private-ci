@@ -5,6 +5,11 @@ on:
     paths:
       - ".github/workflows/hepta-agentd-windows-fixtures.yml"
       - "codex-rs/hepta-agentd/src/*test*.rs"
+      - "codex-rs/hepta-agentd/BUILD.bazel"
+      - "codex-rs/hepta-agentd/Cargo.toml"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-intelligence/BUILD.bazel"
       - "codex-rs/ext/queue/tests/queue_service.rs"
 
 permissions:
@@ -61,6 +66,9 @@ jobs:
             --nocache_test_results \
             --build_metadata=COMMIT_SHA="$EXPECTED_HEAD" \
             -- \
+            //codex-rs/hepta-neuron:hepta-neuron \
+            //codex-rs/hepta-infer-core:hepta-infer-core \
+            //codex-rs/hepta-infer-core:hepta-infer-core-snapshot-test \
             //codex-rs/hepta-agentd:hepta-agentd-unit-tests \
             //codex-rs/ext/queue:queue-queue_service-test \
             2>&1 | tee "$RUNNER_TEMP/hepta-windows-fixtures/test-output.log"

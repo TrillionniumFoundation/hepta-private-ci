@@ -700,22 +700,26 @@ async fn queued_byte_observation_serializes_with_step_and_preserves_replay() {
         lifetime,
     ));
     let before = fixture.journal_bytes(&handle).await;
-    let original = request("concurrent-byte-observation", fixture.config.initial.clone());
-    let (receipt, observations) = tokio::join!(
-        handle.step(original.clone()),
-        async {
-            let mut observations = Vec::new();
-            for _ in 0..32 {
-                observations.push(fixture.journal_bytes(&handle).await);
-                tokio::task::yield_now().await;
-            }
-            observations
-        }
+    let original = request(
+        "concurrent-byte-observation",
+        fixture.config.initial.clone(),
     );
+    let (receipt, observations) = tokio::join!(handle.step(original.clone()), async {
+        let mut observations = Vec::new();
+        for _ in 0..32 {
+            observations.push(fixture.journal_bytes(&handle).await);
+            tokio::task::yield_now().await;
+        }
+        observations
+    });
     let receipt = checked(receipt);
     let after = fixture.journal_bytes(&handle).await;
     assert_ne!(after, before);
-    assert!(observations.iter().all(|bytes| bytes == &before || bytes == &after));
+    assert!(
+        observations
+            .iter()
+            .all(|bytes| bytes == &before || bytes == &after)
+    );
     assert_eq!(checked(handle.step(original).await), receipt);
     assert_eq!(fixture.journal_bytes(&handle).await, after);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);

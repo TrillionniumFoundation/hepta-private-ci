@@ -108,10 +108,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     assert_eq!(replay.chain_digest, appended.chain_digest);
     assert_eq!(checked(writer.records()).len(), 2);
     assert_eq!(writer.bytes(), ledger_after);
-    assert_eq!(
-        fixture.journal_bytes(&handle).await,
-        generation_after
-    );
+    assert_eq!(fixture.journal_bytes(&handle).await, generation_after);
     assert_eq!(control.calls.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
 }

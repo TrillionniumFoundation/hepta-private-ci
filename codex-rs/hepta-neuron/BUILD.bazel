@@ -1,3 +1,5 @@
+load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
@@ -17,4 +19,22 @@ exports_files(
         "tests/support/joint_synthetic.rs",
     ],
     visibility = ["//codex-rs/hepta-agentd:__pkg__"],
+)
+
+# Only Agentd test graphs may expose the bounded owner snapshot channel.
+rust_library(
+    name = "hepta-neuron-qualification-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = ["qualification-control-snapshot"],
+    crate_name = "codex_hepta_neuron",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = [
+        "//codex-rs/hepta-agentd:__pkg__",
+        "//codex-rs/hepta-intelligence:__pkg__",
+    ],
+    deps = rust_test_dependencies({
+        "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-qualification-lib",
+    }),
 )

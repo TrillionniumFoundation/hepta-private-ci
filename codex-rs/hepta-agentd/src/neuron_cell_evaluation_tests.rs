@@ -362,7 +362,10 @@ fn holdout_readback_serializes_with_owner_and_preserves_cursor_and_lock() {
                 let mut fixture = checked(fixture.lock());
                 let position = checked(fixture.holdout_readback.stream_position());
                 assert!(!fixture.holdout_bytes().is_empty());
-                assert_eq!(checked(fixture.holdout_readback.stream_position()), position);
+                assert_eq!(
+                    checked(fixture.holdout_readback.stream_position()),
+                    position
+                );
                 let contender = file(&fixture.directory.path().join("holdout"));
                 assert!(matches!(
                     contender.try_lock(),

@@ -496,6 +496,46 @@ impl DurableInferenceControl {
         &self.path
     }
 
+    /// Qualification-only bounded raw observation inside the exclusive owner.
+    #[cfg(feature = "qualification-control-snapshot")]
+    pub fn test_snapshot_bytes(&mut self) -> std::io::Result<Vec<u8>> {
+        let length = self.file.metadata()?.len();
+        if length > MAX_JOURNAL_BYTES {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "control snapshot exceeds limit",
+            ));
+        }
+        let length = usize::try_from(length).map_err(|_| {
+            std::io::Error::new(std::io::ErrorKind::InvalidData, "control snapshot length")
+        })?;
+        let position = self.file.stream_position()?;
+        let read = (|| {
+            self.file.rewind()?;
+            let mut bytes = vec![0; length];
+            self.file.read_exact(&mut bytes)?;
+            let mut extra = [0];
+            if self.file.read(&mut extra)? != 0 {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "control snapshot grew",
+                ));
+            }
+            Ok(bytes)
+        })();
+        match self.file.seek(std::io::SeekFrom::Start(position)) {
+            Ok(restored) if restored == position => read,
+            Ok(_) => {
+                self.poisoned = true;
+                Err(std::io::Error::other("control snapshot cursor restoration"))
+            }
+            Err(error) => {
+                self.poisoned = true;
+                Err(error)
+            }
+        }
+    }
+
     fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
@@ -985,3 +1025,55 @@ mod history_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "durable_control_file_tests.rs"]
 mod file_tests;
+
+#[cfg(all(test, feature = "qualification-control-snapshot"))]
+mod snapshot_qualification_tests {
+    use super::*;
+
+    #[test]
+    fn oversized_snapshot_is_rejected_before_allocation_without_moving_cursor() {
+        let path = std::env::temp_dir().join(format!(
+            "control-snapshot-bound-{}-{}.log",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("clock")
+                .as_nanos(),
+        ));
+        let mut owner = DurableInferenceControl::open(&path, 32).expect("owner");
+        assert!(
+            owner
+                .test_snapshot_bytes()
+                .expect("empty snapshot")
+                .is_empty()
+        );
+        // The real Windows owner has append rights, not truncate rights.
+        // Populate the oversized unit fixture through that same held handle.
+        let block = [0_u8; 4096];
+        for _ in 0..MAX_JOURNAL_BYTES / block.len() as u64 {
+            owner.file.write_all(&block).expect("oversized fixture");
+        }
+        owner.file.write_all(&[0]).expect("overflow byte");
+        let position = owner.file.stream_position().expect("position");
+        let error = owner.test_snapshot_bytes().expect_err("oversized snapshot");
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
+        assert_eq!(owner.file.stream_position().expect("position"), position);
+        assert_eq!(
+            owner.file.metadata().expect("metadata").len(),
+            MAX_JOURNAL_BYTES + 1
+        );
+        let contender = File::options()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .expect("contender");
+        assert!(matches!(
+            contender.try_lock(),
+            Err(std::fs::TryLockError::WouldBlock)
+        ));
+        assert!(!owner.poisoned);
+        drop(contender);
+        drop(owner);
+        std::fs::remove_file(path).expect("cleanup");
+    }
+}
