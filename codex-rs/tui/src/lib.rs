@@ -3262,10 +3262,12 @@ mod tests {
             .and_then(|err| err.downcast_ref::<LocalStateDbStartupError>())
             .expect("state db startup failure should retain its typed context");
 
+        // Compare the existing file identity, not Windows verbatim-path spelling.
         assert_eq!(
-            startup_error.database_path(),
-            logs_db_path.canonicalize()?.as_path()
+            startup_error.database_path().canonicalize()?,
+            logs_db_path.canonicalize()?
         );
+        assert_eq!(std::fs::read(&logs_db_path)?, b"not a sqlite database");
         assert!(
             codex_state::sqlite_error_detail_is_corruption(startup_error.detail()),
             "startup error should preserve the SQLite corruption cause, got: {}",
