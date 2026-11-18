@@ -19,6 +19,7 @@ use super::*;
 mod observations;
 pub(super) use observations::signed;
 
+#[track_caller]
 pub(super) fn checked<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
