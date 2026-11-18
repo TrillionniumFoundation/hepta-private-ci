@@ -13,6 +13,10 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+# Only enabled by qualification dev-dependencies, never a default feature.
+qualification-control-snapshot = []
+
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-types = { path = "../hepta-types" }
