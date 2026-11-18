@@ -46,7 +46,10 @@ jobs:
           git -C "$action" remote add origin https://github.com/EmbarkStudios/cargo-deny-action.git
           git -C "$action" fetch --depth=1 origin 82eb9f621fbc699dd0918f3ea06864c14cc84246
           git -C "$action" checkout --detach FETCH_HEAD
-          test "$(git -C "$action" rev-parse HEAD)" = 82eb9f621fbc699dd0918f3ea06864c14cc84246
+          test "$(git -C "$action" cat-file -t 82eb9f621fbc699dd0918f3ea06864c14cc84246)" = tag
+          test "$(git -C "$action" rev-parse HEAD)" = 3fd3802e88374d3fe9159b834c7714ec57d6c979
+          git -C "$action" cat-file -p 82eb9f621fbc699dd0918f3ea06864c14cc84246 > "$evidence/action-tag-object.txt"
+          git -C "$action" rev-parse HEAD > "$evidence/action-source-commit.txt"
           cp "$action/Dockerfile" "$action/entrypoint.sh" "$evidence/"
           sha256sum "$action/Dockerfile" "$action/entrypoint.sh" > "$evidence/action-files.sha256"
           docker build -t hepta-pinned-cargo-deny "$action" 2>&1 | tee "$evidence/image-build.log"
