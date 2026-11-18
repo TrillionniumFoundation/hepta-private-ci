@@ -47,7 +47,11 @@ gradient clipping 1, and a 2,048-token training limit. Both fits share their exa
 parent parameter hash. A prefit encoding overflow or identity mismatch is a
 failed candidate, not permission to silently truncate or change the setting.
 Optimizer state from the old fit is not retained, so both new arms explicitly use
-fresh optimizer state. This has not yet been implemented or executed as a fit.
+fresh optimizer state. `current_credit.py` and `run_credit.py` implement this
+prospective comparison; no successful fit is claimed before actual receipts.
+The original parent is cold-loaded through its immutable `992f2b3` dependency
+inventory before its existing adapter gradients are enabled. A new adapter is
+never initialized. Both starts must equal the previous measured parameter hash.
 
 ## Fixed evaluation and limits
 
@@ -57,6 +61,13 @@ six upstream development tasks. Report first, final, selected, recovered and
 regressed outcomes, including every format failure, and all training/loading/
 generation/verifier cost windows. The current six B tasks are already exposed
 development material; they cannot become a future independent confirmation panel.
+
+A separate executor additionally prepares six B2 tasks from new licensed projects
+without model trials. Its tasks and gold remain sealed from this training
+execution until both candidate weights and the matched-work audit are frozen.
+The same three models then receive the fixed two-call opportunity. B2 results
+are reported without selecting or retuning the candidates. Maintainer diversity
+does not imply independent users or absent pretraining overlap.
 
 The A criterion for advancing the mechanism is fewer post-success regressions
 without losing the observed recovery opportunities or final A successes relative
