@@ -25,6 +25,28 @@ def _json(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
+def _validate_plan(plan):
+    if type(plan) is not dict or set(plan) != {"candidate_sha256", "clock_id", "tasks"}:
+        raise ValueError("invalid frozen task plan")
+    if type(plan["candidate_sha256"]) is not str or not re.fullmatch(
+        "[0-9a-f]{64}", plan["candidate_sha256"]
+    ):
+        raise ValueError("candidate SHA-256 required")
+    if type(plan["clock_id"]) is not str or not plan["clock_id"]:
+        raise ValueError("explicit shared monotonic clock identity required")
+    tasks = plan["tasks"]
+    if type(tasks) is not list or not tasks:
+        raise ValueError("a nonempty task plan is required")
+    required = {"task_id", "cell", "phase", "arm", "source_group"}
+    if any(
+        type(task) is not dict
+        or set(task) != required
+        or any(type(v) is not str or not v for v in task.values())
+        for task in tasks
+    ) or len({task["task_id"] for task in tasks}) != len(tasks):
+        raise ValueError("task identity/stratum missing or duplicated")
+
+
 def _receipt_bytes(path, *, sync):
     descriptor = os.open(
         path,
@@ -46,25 +68,9 @@ class TaskLedger:
 
     @classmethod
     def create(cls, path, *, candidate_sha256, clock_id, tasks):
-        if not isinstance(candidate_sha256, str) or not re.fullmatch(
-            "[0-9a-f]{64}", candidate_sha256
-        ):
-            raise ValueError("candidate SHA-256 required")
-        if type(clock_id) is not str or not clock_id:
-            raise ValueError("explicit shared monotonic clock identity required")
-        if not isinstance(tasks, list) or not tasks:
-            raise ValueError("a nonempty task plan is required")
-        required = {"task_id", "cell", "phase", "arm", "source_group"}
-        if any(
-            type(task) is not dict
-            or set(task) != required
-            or any(type(v) is not str or not v for v in task.values())
-            for task in tasks
-        ) or len({task["task_id"] for task in tasks}) != len(tasks):
-            raise ValueError("task identity/stratum missing or duplicated")
-        plan = _json(
-            dict(candidate_sha256=candidate_sha256, clock_id=clock_id, tasks=tasks)
-        )
+        plan = dict(candidate_sha256=candidate_sha256, clock_id=clock_id, tasks=tasks)
+        _validate_plan(plan)
+        plan = _json(plan)
         path = Path(path)
         with path.open("xb"):
             pass
@@ -77,22 +83,117 @@ class TaskLedger:
                 "kind TEXT NOT NULL, ns INTEGER NOT NULL, body TEXT NOT NULL, "
                 "UNIQUE(task_id,kind))"
             )
-        return cls(path, candidate_sha256=candidate_sha256, clock_id=clock_id)
+        return cls(
+            path,
+            candidate_sha256=candidate_sha256,
+            clock_id=clock_id,
+            expected_plan_sha256=hashlib.sha256(plan.encode()).hexdigest(),
+        )
 
-    def __init__(self, path, *, candidate_sha256, clock_id):
+    def __init__(self, path, *, candidate_sha256, clock_id, expected_plan_sha256=None):
+        """Open retained observations; pass an externally frozen plan digest.
+
+        Legacy callers may omit the digest, which checks candidate and clock
+        identity only. Structural validation is not authentication of a rewritten
+        database, the supplied clock identity, or the reported task outcome.
+        """
         self.path = Path(path).resolve(strict=True)
         with self._db() as db:
+            db.execute("BEGIN")
             rows = db.execute("SELECT body FROM plan").fetchall()
-        if len(rows) != 1:
-            raise ValueError("one frozen plan required")
-        self._plan_bytes = rows[0][0]
-        self.plan = json.loads(self._plan_bytes)
-        if (self.plan["candidate_sha256"], self.plan["clock_id"]) != (
-            candidate_sha256,
-            clock_id,
+            if len(rows) != 1 or type(rows[0][0]) is not str:
+                raise ValueError("one frozen plan required")
+            self._plan_bytes = rows[0][0]
+            plan = self.plan
+            _validate_plan(plan)
+            if _json(plan) != self._plan_bytes:
+                raise ValueError("frozen plan is not canonical")
+            if (plan["candidate_sha256"], plan["clock_id"]) != (
+                candidate_sha256,
+                clock_id,
+            ):
+                raise ValueError("candidate or monotonic clock identity differs")
+            if expected_plan_sha256 is not None and (
+                type(expected_plan_sha256) is not str
+                or expected_plan_sha256 != self.plan_sha256
+            ):
+                raise ValueError("frozen task plan digest differs")
+            self._task_ids = frozenset(task["task_id"] for task in plan["tasks"])
+            self._events(db)
+
+    @property
+    def plan(self):
+        """Return a detached view; caller edits cannot change frozen attribution."""
+        return json.loads(self._plan_bytes)
+
+    @property
+    def plan_sha256(self):
+        return hashlib.sha256(self._plan_bytes.encode()).hexdigest()
+
+    def _events(self, db):
+        """Reject malformed persisted histories before deriving cost denominators."""
+        events, histories, previous_ns, previous_seq = [], defaultdict(set), -1, 0
+        for seq, task_id, kind, ns, raw in db.execute(
+            "SELECT seq,task_id,kind,ns,body FROM events ORDER BY seq"
         ):
-            raise ValueError("candidate or monotonic clock identity differs")
-        self.plan_sha256 = hashlib.sha256(self._plan_bytes.encode()).hexdigest()
+            if (
+                task_id not in self._task_ids
+                or kind not in {"accepted", "started", "interrupted", "final"}
+                or type(seq) is not int
+                or seq != previous_seq + 1
+                or type(ns) is not int
+                or ns < 0
+                or ns < previous_ns
+                or type(raw) is not str
+            ):
+                raise ValueError("invalid recorded task event identity or order")
+            detail = json.loads(raw)
+            if type(detail) is not dict or _json(detail) != raw:
+                raise ValueError("invalid recorded task event detail")
+            history = histories[task_id]
+            if kind in history or "final" in history:
+                raise ValueError("duplicate or post-terminal recorded task event")
+            if kind != "accepted" and "accepted" not in history:
+                raise ValueError("recorded task acceptance event missing")
+            if kind in {"accepted", "started"} and detail:
+                raise ValueError("unexpected recorded dispatch detail")
+            if kind == "interrupted" and (
+                set(detail) != {"error_type"}
+                or type(detail["error_type"]) is not str
+                or not detail["error_type"]
+            ):
+                raise ValueError("invalid recorded interruption")
+            if kind == "final":
+                if (
+                    set(detail)
+                    != {
+                        "outcome",
+                        "receipt_path",
+                        "receipt_sha256",
+                        "receipt_bytes",
+                        "receipt_sync_scope",
+                    }
+                    or type(detail["outcome"]) is not str
+                    or detail["outcome"]
+                    not in {"success", "failed", "cancelled", "unknown"}
+                    or type(detail["receipt_path"]) is not str
+                    or not Path(detail["receipt_path"]).is_absolute()
+                    or type(detail["receipt_sha256"]) is not str
+                    or not re.fullmatch("[0-9a-f]{64}", detail["receipt_sha256"])
+                    or type(detail["receipt_bytes"]) is not int
+                    or not 0 <= detail["receipt_bytes"] <= 1024 * 1024
+                    or detail["receipt_sync_scope"]
+                    != "file fsync/readback; directory persistence and authority require runtime evidence"
+                ):
+                    raise ValueError("invalid recorded terminal receipt")
+                if "started" not in history and detail["outcome"] != "cancelled":
+                    raise ValueError("recorded task start event missing")
+            history.add(kind)
+            events.append(
+                dict(seq=seq, task_id=task_id, kind=kind, ns=ns, detail=detail)
+            )
+            previous_seq, previous_ns = seq, ns
+        return events
 
     @contextmanager
     def _db(self):
@@ -105,16 +206,17 @@ class TaskLedger:
             db.close()
 
     def _record(self, task_id, kind, body):
-        if task_id not in {task["task_id"] for task in self.plan["tasks"]}:
+        if task_id not in self._task_ids:
             raise ValueError("unplanned task")
         raw = _json(body)
         with self._db() as db:
             db.execute("BEGIN IMMEDIATE")
             if db.execute("SELECT body FROM plan").fetchall() != [(self._plan_bytes,)]:
                 raise ValueError("frozen plan changed")
-            previous = dict(
-                db.execute("SELECT kind,body FROM events WHERE task_id=?", (task_id,))
-            )
+            events = self._events(db)
+            previous = {
+                e["kind"]: _json(e["detail"]) for e in events if e["task_id"] == task_id
+            }
             if kind in previous:
                 if previous[kind] != raw:
                     raise ValueError("observation conflict; original retained")
@@ -130,7 +232,7 @@ class TaskLedger:
             ):
                 raise ValueError("start event missing")
             now = time.perf_counter_ns()
-            latest = db.execute("SELECT MAX(ns) FROM events").fetchone()[0]
+            latest = events[-1]["ns"] if events else None
             if latest is not None and now < latest:
                 raise ValueError("monotonic clock regressed")
             db.execute(
@@ -169,16 +271,10 @@ class TaskLedger:
     def report(self):
         """Describe observed durations; absent planned tasks remain in denominators."""
         with self._db() as db:
+            db.execute("BEGIN")
             if db.execute("SELECT body FROM plan").fetchall() != [(self._plan_bytes,)]:
                 raise ValueError("frozen plan changed")
-            events = [
-                dict(
-                    seq=seq, task_id=task_id, kind=kind, ns=ns, detail=json.loads(body)
-                )
-                for seq, task_id, kind, ns, body in db.execute(
-                    "SELECT seq,task_id,kind,ns,body FROM events ORDER BY seq"
-                )
-            ]
+            events = self._events(db)
         by_task, queue, peak = defaultdict(dict), set(), 0
         for event in events:
             task_id, kind = event["task_id"], event["kind"]

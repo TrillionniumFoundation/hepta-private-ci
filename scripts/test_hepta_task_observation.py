@@ -3,6 +3,8 @@
 import json
 import os
 from pathlib import Path
+import shutil
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -228,6 +230,154 @@ except ValueError as error:
             self.ledger.finish("one", receipt, outcome="success")
         self.ledger.finish("one", receipt, outcome="cancelled")
         self.assertEqual(self.ledger.report()["queue_remaining_items"], 0)
+
+    def test_public_plan_edits_cannot_relabel_or_add_tasks(self):
+        original_plan = self.ledger.plan
+        original_digest = self.ledger.plan_sha256
+        view = self.ledger.plan
+        view["candidate_sha256"] = "b" * 64
+        view["tasks"][0].update(task_id="unplanned", arm="other-arm")
+        self.tasks[0]["source_group"] = "changed-caller-input"
+        with self.assertRaisesRegex(ValueError, "unplanned"):
+            self.ledger.accept("unplanned")
+        for name, value in (("plan", view), ("plan_sha256", "b" * 64)):
+            with self.assertRaises(AttributeError):
+                setattr(self.ledger, name, value)
+        self.ledger.accept("one")
+        report = self.ledger.report()
+        self.assertEqual(self.ledger.plan, original_plan)
+        self.assertEqual(report["plan_sha256"], original_digest)
+        self.assertEqual(report["rows"][0]["arm"], "fixture")
+        self.assertEqual(report["rows"][0]["source_group"], "one")
+        self.assertEqual(report["candidate_sha256"], CANDIDATE)
+
+    def test_external_plan_pin_rejects_rewritten_cold_attribution(self):
+        pinned = self.ledger.plan_sha256
+        changed = self.ledger.plan
+        changed["tasks"][0]["arm"] = "other-arm"
+        db = sqlite3.connect(self.path)
+        try:
+            with db:
+                db.execute(
+                    "UPDATE plan SET body=?",
+                    (json.dumps(changed, sort_keys=True, separators=(",", ":")),),
+                )
+        finally:
+            db.close()
+        before = self.path.read_bytes()
+        with self.assertRaisesRegex(ValueError, "plan digest differs"):
+            TaskLedger(
+                self.path,
+                candidate_sha256=CANDIDATE,
+                clock_id=CLOCK,
+                expected_plan_sha256=pinned,
+            )
+        with self.assertRaisesRegex(ValueError, "frozen plan changed"):
+            self.ledger.report()
+        self.assertEqual(self.path.read_bytes(), before)
+
+    def test_corrupted_event_histories_cannot_be_reported_or_dispatched(self):
+        self.ledger.accept("one")
+        self.ledger.start("one")
+        self.ledger.finish(
+            "one", self.receipt("final.json", b"original"), outcome="success"
+        )
+        corruptions = {
+            "unknown-task": "UPDATE events SET task_id='unplanned' WHERE seq=1",
+            "unknown-kind": "UPDATE events SET kind='invented' WHERE seq=2",
+            "regressed-clock": "UPDATE events SET ns=0 WHERE seq=2",
+            "deleted-start": "DELETE FROM events WHERE seq=2",
+            "deleted-start-renumbered": (
+                "DELETE FROM events WHERE seq=2; UPDATE events SET seq=2 WHERE seq=3"
+            ),
+            "invalid-accept-detail": "UPDATE events SET body='[1]' WHERE seq=1",
+            "post-terminal": (
+                "INSERT INTO events(task_id,kind,ns,body) "
+                "SELECT 'one','interrupted',ns,'{\"error_type\":\"RuntimeError\"}' "
+                "FROM events WHERE kind='final'"
+            ),
+            "duplicate-accepted": (
+                "ALTER TABLE events RENAME TO old_events; "
+                "CREATE TABLE events AS SELECT * FROM old_events; "
+                "DROP TABLE old_events; "
+                "INSERT INTO events SELECT 4,'one','accepted',ns,'{}' "
+                "FROM events WHERE kind='final'"
+            ),
+        }
+        for name, sql in corruptions.items():
+            with self.subTest(name=name):
+                path = self.root / (name + ".sqlite")
+                shutil.copyfile(self.path, path)
+                opened = TaskLedger(
+                    path,
+                    candidate_sha256=CANDIDATE,
+                    clock_id=CLOCK,
+                    expected_plan_sha256=self.ledger.plan_sha256,
+                )
+                db = sqlite3.connect(path)
+                try:
+                    with db:
+                        db.executescript(sql)
+                finally:
+                    db.close()
+                before = path.read_bytes()
+                with self.assertRaises(ValueError):
+                    opened.report()
+                with self.assertRaises(ValueError):
+                    opened.accept("two")
+                with self.assertRaises(ValueError):
+                    TaskLedger(
+                        path,
+                        candidate_sha256=CANDIDATE,
+                        clock_id=CLOCK,
+                        expected_plan_sha256=self.ledger.plan_sha256,
+                    )
+                self.assertEqual(path.read_bytes(), before)
+
+    def test_corrupted_terminal_detail_is_not_a_completed_observation(self):
+        self.ledger.accept("one")
+        self.ledger.start("one")
+        self.ledger.finish(
+            "one", self.receipt("final.json", b"original"), outcome="success"
+        )
+        original = self.ledger.report()
+        detail = original["rows"][0]["receipt"]
+        for field, value in (
+            ("outcome", "invented"),
+            ("receipt_bytes", True),
+            ("receipt_path", "relative"),
+            ("receipt_sha256", "x"),
+            ("receipt_sync_scope", "rewritten-scope"),
+        ):
+            with self.subTest(field=field):
+                changed = {**detail, field: value}
+                db = sqlite3.connect(self.path)
+                try:
+                    with db:
+                        db.execute(
+                            "UPDATE events SET body=? WHERE kind='final'",
+                            (
+                                json.dumps(
+                                    changed, sort_keys=True, separators=(",", ":")
+                                ),
+                            ),
+                        )
+                    before = self.path.read_bytes()
+                    with self.assertRaisesRegex(ValueError, "terminal receipt"):
+                        self.ledger.report()
+                    self.assertEqual(self.path.read_bytes(), before)
+                    with db:
+                        db.execute(
+                            "UPDATE events SET body=? WHERE kind='final'",
+                            (
+                                json.dumps(
+                                    detail, sort_keys=True, separators=(",", ":")
+                                ),
+                            ),
+                        )
+                finally:
+                    db.close()
+        self.assertEqual(self.ledger.report(), original)
 
 
 if __name__ == "__main__":
