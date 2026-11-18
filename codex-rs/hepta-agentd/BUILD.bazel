@@ -5,6 +5,7 @@ load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies
 load(":v13_acceptance.bzl", "v13_acceptance_example")
 
 _UNIT_TEST_DEPENDENCIES = {
+    "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-qualification-lib",
     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
     "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
