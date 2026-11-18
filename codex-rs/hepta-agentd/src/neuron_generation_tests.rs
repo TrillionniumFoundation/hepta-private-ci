@@ -49,7 +49,10 @@ impl Fixture {
         };
         let witness_file = file("witness");
         let journal_file = file("journal");
-        let readback = [checked(journal_file.try_clone()), checked(witness_file.try_clone())];
+        let readback = [
+            checked(journal_file.try_clone()),
+            checked(witness_file.try_clone()),
+        ];
         let witness = checked(FileAnchorWitnessStore::open(
             witness_file,
             JournalScope {
