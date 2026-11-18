@@ -1,6 +1,7 @@
 //! The actual original Root dispatch. Only derived preparation and the
 //! original one-operation publication may mutate CURRENT. Readback never does.
 
+use std::io::Write;
 use std::os::unix::net::UnixStream;
 use std::time::Instant;
 
@@ -129,7 +130,9 @@ impl HostAuthorityService {
                     if matches!(&request.command, Command::IssueFinalUse { .. }) {
                         return HostAuthorityService::issue_generation_publication_grant(
                             self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
-                        ).map(|raw| (raw, None));
+                        ).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                        }).map(|raw| (raw, None));
                     }
                     let mut successor_observed = None;
                     let mut fresh_publication = None;
@@ -169,18 +172,29 @@ impl HostAuthorityService {
                         sequence = sequence
                             .checked_add(1)
                             .ok_or_else(|| io::Error::other("publication sequence exhausted"))?;
-                        slot.require_profile()?;
-                        slot.require_history(learning, &scope)?;
-                        slot.require_previous()?;
+                        slot.require_profile().inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.profile\n");
+                        })?;
+                        slot.require_history(learning, &scope).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.history\n");
+                        })?;
+                        slot.require_previous().inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.previous\n");
+                        })?;
                         let now = self
                             .clock
                             .refresh_projection()
                             .map_err(io::Error::other)?
                             .observed_unix_ms;
-                        slot.require_selection(now)?;
+                        slot.require_selection(now).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.selection\n");
+                        })?;
                         let before = slot
                             .current
                             .original_broker_head()
+                            .inspect_err(|_| {
+                                let _ = std::io::stderr().write_all(b"root_stage=publication.current_head\n");
+                            })
                             .map_err(io::Error::other)?;
                         let original_revocations = self.issuer.revocations()?;
                         let intent = &slot.profile.intent;
@@ -198,7 +212,9 @@ impl HostAuthorityService {
                                 }
                                 let record = before.published.as_ref().filter(|record| record.intent == *intent)
                                     .ok_or_else(|| io::Error::other("exact original successor publication missing"))?;
-                                if slot.verify_retained(&record.signed, &record.witness)? != original_revocations {
+                                if slot.verify_retained(&record.signed, &record.witness).inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                                })? != original_revocations {
                                     return Err(io::Error::other("original successor FinalUse differs"));
                                 }
                                 slot.target.observe().map_err(io::Error::other)?;
@@ -216,7 +232,9 @@ impl HostAuthorityService {
                                         .ok_or_else(|| {
                                             io::Error::other("original published record missing")
                                         })?;
-                                    if slot.verify_retained(&record.signed, &record.witness)?
+                                    if slot.verify_retained(&record.signed, &record.witness).inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                                })?
                                         != original_revocations
                                     {
                                         return Err(io::Error::other(
@@ -278,7 +296,9 @@ impl HostAuthorityService {
                                         || published.intent != *intent
                                         || published.signed != *signed
                                         || published.witness != *witness
-                                        || slot.verify_retained(signed, witness)? != original_revocations
+                                        || slot.verify_retained(signed, witness).inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                                })? != original_revocations
                                     {
                                         return Err(io::Error::other("original accepted publication replay differs"));
                                     }
@@ -300,7 +320,9 @@ impl HostAuthorityService {
                                     signed,
                                     witness,
                                 )?;
-                                if slot.verify_retained(signed, witness)? != original_revocations {
+                                if slot.verify_retained(signed, witness).inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                                })? != original_revocations {
                                     return Err(io::Error::other(
                                         "original entered consumer and live issuer differ",
                                     ));
@@ -364,15 +386,23 @@ impl HostAuthorityService {
                         }
                         // There is no cross-owner transaction: any post-effect loss is
                         // unavailable/uncertain and permanently closes the original lane.
-                        slot.require_profile()?;
-                        slot.require_history(learning, &scope)?;
-                        slot.require_previous()?;
+                        slot.require_profile().inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.profile\n");
+                        })?;
+                        slot.require_history(learning, &scope).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.history\n");
+                        })?;
+                        slot.require_previous().inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.previous\n");
+                        })?;
                         let after_time = self
                             .clock
                             .refresh_projection()
                             .map_err(io::Error::other)?
                             .observed_unix_ms;
-                        slot.require_selection(after_time)?;
+                        slot.require_selection(after_time).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.selection\n");
+                        })?;
                         if let Some((signed, witness)) = fresh_grant {
                             slot.require_genesis()?;
                             require_fresh_window(
@@ -381,7 +411,9 @@ impl HostAuthorityService {
                                 signed,
                                 witness,
                             )?;
-                            if slot.verify_retained(signed, witness)? != original_revocations {
+                            if slot.verify_retained(signed, witness).inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                                })? != original_revocations {
                                 return Err(io::Error::other(
                                     "consumer changed after original publication",
                                 ));
@@ -394,7 +426,9 @@ impl HostAuthorityService {
                             let record = after.published.as_ref().ok_or_else(|| {
                                 io::Error::other("original published record missing after read")
                             })?;
-                            if slot.verify_retained(&record.signed, &record.witness)?
+                            if slot.verify_retained(&record.signed, &record.witness).inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.final_use\n");
+                                })?
                                 != original_revocations
                             {
                                 return Err(io::Error::other(
@@ -407,6 +441,9 @@ impl HostAuthorityService {
                             || slot
                                 .current
                                 .original_broker_head()
+                                .inspect_err(|_| {
+                                    let _ = std::io::stderr().write_all(b"root_stage=publication.current_head\n");
+                                })
                                 .map_err(io::Error::other)?
                                 != after
                         {
@@ -416,11 +453,15 @@ impl HostAuthorityService {
                         }
                         Ok((raw, after))
                     },
-                )?;
+                ).inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=publication.learning_profile\n");
+                })?;
                     // Do not clear the durable arm until the complete actual Root
                     // writer context has returned and the exact physical cut is read
                     // again under this frame's original absolute deadline.
-                    slot.require_profile()?;
+                    slot.require_profile().inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.profile\n");
+                        })?;
                     if let Some(observed) = successor_observed {
                         let successor = slot.successor.as_ref().ok_or_else(|| io::Error::other("original successor custody disappeared"))?;
                         RegisteredSuccessorData::finish_observed(successor, &observed.cut)?;
@@ -428,16 +469,23 @@ impl HostAuthorityService {
                             return Err(io::Error::other("original successor record changed after Root context"));
                         }
                     }
-                    slot.require_previous()?;
+                    slot.require_previous().inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.previous\n");
+                        })?;
                     slot.require_selection(
                         self.clock
                             .refresh_projection()
                             .map_err(io::Error::other)?
                             .observed_unix_ms,
-                    )?;
+                    ).inspect_err(|_| {
+                        let _ = std::io::stderr().write_all(b"root_stage=publication.selection\n");
+                    })?;
                     if slot
                         .current
                         .original_broker_head()
+                        .inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.current_head\n");
+                        })
                         .map_err(io::Error::other)?
                         != expected
                     {
@@ -459,7 +507,9 @@ impl HostAuthorityService {
                         &pin,
                         end,
                     )?;
-                    refusal::require_end(end)?;
+                    refusal::require_end(end).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.deadline\n");
+                        })?;
                     let accepted = match fresh_publication {
                         Some(prepared) if version == PublicationVersion::DurableV2 => Some(
                             acceptance::PublicationAcceptance::observe_original_publish(self, slot, &prepared, &expected, end)?
@@ -467,8 +517,13 @@ impl HostAuthorityService {
                         Some(_) | None => None,
                     };
                     crate::authority_host_runtime::verify_pinned_process(registration, config.peer_uid, config.peer_gid, &pin, end)?;
-                    refusal::require_end(end)?;
+                    refusal::require_end(end).inspect_err(|_| {
+                            let _ = std::io::stderr().write_all(b"root_stage=publication.deadline\n");
+                        })?;
                     Ok((raw, accepted))
+                })
+                .inspect_err(|_| {
+                    let _ = std::io::stderr().write_all(b"root_stage=publication.inspect\n");
                 })
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
             })
