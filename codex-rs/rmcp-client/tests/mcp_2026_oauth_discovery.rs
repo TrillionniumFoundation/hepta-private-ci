@@ -338,7 +338,10 @@ async fn legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redi
 
     assert_cross_origin_redirect_rejected(
         discovery,
-        &format!("{}/.well-known/oauth-authorization-server", authorization_server.uri()),
+        &format!(
+            "{}/.well-known/oauth-authorization-server",
+            authorization_server.uri()
+        ),
         &redirect_target.uri(),
     )?;
     assert!(
