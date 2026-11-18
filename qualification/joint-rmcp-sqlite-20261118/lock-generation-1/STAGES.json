@@ -1,0 +1,22 @@
+[
+  {
+    "label": "rust-version",
+    "command": [
+      "rustc",
+      "-Vv"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 0.03234515496296808
+  },
+  {
+    "label": "bazel-lock-update",
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "exit_code": 2,
+    "timed_out": false,
+    "wall_seconds": 5.228962886962108
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "authored_files": [
+    "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+    "codex-rs/rmcp-client/src/auth_status.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs"
+  ],
+  "changed_by_format": [
+    "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs"
+  ],
+  "dependency_import_stage": "8018be4e7f0029109a7576f1c409fb626b80ab8d",
+  "files": 75,
+  "full_diff_check_exit": 2,
+  "full_diff_check_reason": "Three pre-existing upstream documentation trailing spaces in sqlx-sqlite src/connection/deserialize.rs are preserved byte-for-byte; original full-scope failure remains in source-format-1.",
+  "just_fmt_exit": 0,
+  "source_base": "be0e66c975433446a25e3e613294a2c64e9926f9",
+  "stages": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "8018be4e7f0029109a7576f1c409fb626b80ab8d",
+        "--",
+        "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+        "codex-rs/rmcp-client/src/auth_status.rs",
+        "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "authored-diff-check",
+      "wall_seconds": 0.0167901249951683
+    }
+  ],
+  "status": "AUTHORED_FORMAT_PASS_UPSTREAM_WHITESPACE_RETAINED",
+  "upstream_vendor_bytes_preserved": true
+}

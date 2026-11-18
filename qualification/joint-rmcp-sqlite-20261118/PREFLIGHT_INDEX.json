@@ -1,0 +1,674 @@
+{
+  "business_tests_executed": false,
+  "changed_source_files": 75,
+  "chrono_retirement_closed": false,
+  "files": [
+    {
+      "bytes": 1273,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/PATCH_READY.json",
+      "path": "combined-patches/PATCH_READY.json",
+      "sha256": "fa57add40ee9a8781e384b6f3babfde88f980697d45ec2c8b2d2d450cd255a33"
+    },
+    {
+      "bytes": 421418,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/baseline-Cargo.lock",
+      "path": "combined-patches/baseline-Cargo.lock",
+      "sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f"
+    },
+    {
+      "bytes": 23138,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/baseline-Cargo.toml",
+      "path": "combined-patches/baseline-Cargo.toml",
+      "sha256": "6ac9ba7db88aefd65f20d3e917913e1723b4fb93444ffcfce278b8ae5a38e144"
+    },
+    {
+      "bytes": 4152,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-baseline.json",
+      "path": "combined-patches/chrono-baseline.json",
+      "sha256": "a3e774810125efa50c55af2eb1dbdcf536256bd38c4fd754c74df3daca270bba"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-baseline.stderr",
+      "path": "combined-patches/chrono-baseline.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 23258,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-joint-reachability.json",
+      "path": "combined-patches/chrono-joint-reachability.json",
+      "sha256": "8ea593b6df578657749596bea9199a17dd32c03058a878a84a4587b4c7ab6fd4"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-joint-reachability.stderr",
+      "path": "combined-patches/chrono-joint-reachability.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4152,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-joint.json",
+      "path": "combined-patches/chrono-joint.json",
+      "sha256": "96c32e84389f42d59b777a656e624664ddc00ec3dbcef85ca51d373ea22c9183"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-joint.stderr",
+      "path": "combined-patches/chrono-joint.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5536,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-scanner/chrono_lock_audit.py",
+      "path": "combined-patches/chrono-scanner/chrono_lock_audit.py",
+      "sha256": "2c32d6cad635db14565e0a638b5734e559fbf4d8237ccc573bce821b70e2647d"
+    },
+    {
+      "bytes": 8002,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/chrono-scanner/chrono_reachability.py",
+      "path": "combined-patches/chrono-scanner/chrono_reachability.py",
+      "sha256": "8d949329bdc61c75febdbaec1095e33a62e74a8cb8b2fce91039539178571b0e"
+    },
+    {
+      "bytes": 14373,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/rmcp.patch",
+      "path": "combined-patches/rmcp.patch",
+      "sha256": "4973c6be34d50551550f42f9b39e256b9cf39b11ec67864ddc9dbb1e4b57b9f3"
+    },
+    {
+      "bytes": 465906,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/combined-patches/sqlite.patch",
+      "path": "combined-patches/sqlite.patch",
+      "sha256": "4d1d3fa55b0a984a0ae8ab644a185373b0a4df8a1500ac71b7ed18bc36eaaf7b"
+    },
+    {
+      "bytes": 421006,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/Cargo.lock.before",
+      "path": "lock-generation-1/Cargo.lock.before",
+      "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+    },
+    {
+      "bytes": 23372,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/Cargo.toml.before",
+      "path": "lock-generation-1/Cargo.toml.before",
+      "sha256": "68ca181620e3d21c7751ea7865dde86f7dc190c3ae75f3a505fd9368996be2d9"
+    },
+    {
+      "bytes": 667,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/INTENT.json",
+      "path": "lock-generation-1/INTENT.json",
+      "sha256": "1041a9ffd645e198f716c22c8b82eebda2afa343e4c15a689c2a8560e8bb7c07"
+    },
+    {
+      "bytes": 1786971,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/MODULE.bazel.lock.before",
+      "path": "lock-generation-1/MODULE.bazel.lock.before",
+      "sha256": "2be801e80e41fc993798e133a168c8202c73ed8c8e4e06f419779e317f7c0679"
+    },
+    {
+      "bytes": 365,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/STAGES.json",
+      "path": "lock-generation-1/STAGES.json",
+      "sha256": "7e8dd680073d91de0011730a9198a6ce8cbc6cce7bcbe88c7b70de95c9a9c5ee"
+    },
+    {
+      "bytes": 28296,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/bazel-lock-update.stderr",
+      "path": "lock-generation-1/bazel-lock-update.stderr",
+      "sha256": "cab263ae6438a24c15e5fae69a6ebfa796771397532f63b9471f69d1bea6b63b"
+    },
+    {
+      "bytes": 18,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/bazel-lock-update.stdout",
+      "path": "lock-generation-1/bazel-lock-update.stdout",
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "bytes": 317,
+      "mode": 493,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/bin/bazel",
+      "path": "lock-generation-1/bin/bazel",
+      "sha256": "0ea2248bb1ec3ad816ad758910a3472aa78fe9fde0e01d9d0a6b332dd1e42f72"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/rust-version.stderr",
+      "path": "lock-generation-1/rust-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 196,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-1/rust-version.stdout",
+      "path": "lock-generation-1/rust-version.stdout",
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    {
+      "bytes": 421006,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/Cargo.lock.after",
+      "path": "lock-generation-2/Cargo.lock.after",
+      "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+    },
+    {
+      "bytes": 421006,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/Cargo.lock.before",
+      "path": "lock-generation-2/Cargo.lock.before",
+      "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+    },
+    {
+      "bytes": 23372,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/Cargo.toml.after",
+      "path": "lock-generation-2/Cargo.toml.after",
+      "sha256": "68ca181620e3d21c7751ea7865dde86f7dc190c3ae75f3a505fd9368996be2d9"
+    },
+    {
+      "bytes": 23372,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/Cargo.toml.before",
+      "path": "lock-generation-2/Cargo.toml.before",
+      "sha256": "68ca181620e3d21c7751ea7865dde86f7dc190c3ae75f3a505fd9368996be2d9"
+    },
+    {
+      "bytes": 470,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/FIRST_FAILURE_CONTEXT.json",
+      "path": "lock-generation-2/FIRST_FAILURE_CONTEXT.json",
+      "sha256": "95ee1019175e1975ae8a11405d0de5fa8c549ba8bb950d0c0a4e3431d938c187"
+    },
+    {
+      "bytes": 669,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/INTENT.json",
+      "path": "lock-generation-2/INTENT.json",
+      "sha256": "300e7984cea0f661185828ae5936acd02d4fbf68318754f01d847efe84e21bcd"
+    },
+    {
+      "bytes": 1788366,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/MODULE.bazel.lock.after",
+      "path": "lock-generation-2/MODULE.bazel.lock.after",
+      "sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+    },
+    {
+      "bytes": 1786971,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/MODULE.bazel.lock.before",
+      "path": "lock-generation-2/MODULE.bazel.lock.before",
+      "sha256": "2be801e80e41fc993798e133a168c8202c73ed8c8e4e06f419779e317f7c0679"
+    },
+    {
+      "bytes": 1114,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/RESULT.json",
+      "path": "lock-generation-2/RESULT.json",
+      "sha256": "969498d66558deab8bf2573ae18bfd2c06506c76ab2450fcf3bf744a537b9078"
+    },
+    {
+      "bytes": 842,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/STAGES.json",
+      "path": "lock-generation-2/STAGES.json",
+      "sha256": "32027b5f8a02c989490f7743b78fe53e9ba4654eee4832f5896411d8b369227b"
+    },
+    {
+      "bytes": 947,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/bazel-lock-check.stderr",
+      "path": "lock-generation-2/bazel-lock-check.stderr",
+      "sha256": "92cb40959958123ee90a86a8f243d6a3c792157ea9d4e64392db0df690198093"
+    },
+    {
+      "bytes": 18,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/bazel-lock-check.stdout",
+      "path": "lock-generation-2/bazel-lock-check.stdout",
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "bytes": 4791,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/bazel-lock-update.stderr",
+      "path": "lock-generation-2/bazel-lock-update.stderr",
+      "sha256": "e72a84f999f554d03da097f44066349d1c26e7243d6164832cc660d7ca670a19"
+    },
+    {
+      "bytes": 18,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/bazel-lock-update.stdout",
+      "path": "lock-generation-2/bazel-lock-update.stdout",
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "bytes": 639,
+      "mode": 493,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/bin/bazel",
+      "path": "lock-generation-2/bin/bazel",
+      "sha256": "6a14dfcb8a28dc843333806e22f9f663741c52fead12b80e355343847580966a"
+    },
+    {
+      "bytes": 152,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/cargo-metadata.stderr",
+      "path": "lock-generation-2/cargo-metadata.stderr",
+      "sha256": "54ec92637c31e64f80327d6ba9b7898defad5007e91ed4a84f3df2da9853f15e"
+    },
+    {
+      "bytes": 8404207,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/cargo-metadata.stdout",
+      "path": "lock-generation-2/cargo-metadata.stdout",
+      "sha256": "bd443e7a84f757a7b180f38d52ae324d86d4aeb922aa86a7bbd7a297f6ce80ee"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/rust-version.stderr",
+      "path": "lock-generation-2/rust-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 196,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/lock-generation-2/rust-version.stdout",
+      "path": "lock-generation-2/rust-version.stdout",
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+    },
+    {
+      "bytes": 1129,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/mac-fixture-import/IMPORT.json",
+      "path": "mac-fixture-import/IMPORT.json",
+      "sha256": "3f97f7201259acd98f62cb87f186f8f2ef39eaad82486c5bcdff1570ac3fdf16"
+    },
+    {
+      "bytes": 6237,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/mac-fixture-import/circuit_cell_causal_tests.rs.before",
+      "path": "mac-fixture-import/circuit_cell_causal_tests.rs.before",
+      "sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca"
+    },
+    {
+      "bytes": 6581,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/mac-fixture-import/exact-fixtures.patch",
+      "path": "mac-fixture-import/exact-fixtures.patch",
+      "sha256": "b50e1092e21c5cbaa7eb46075506f0f7a0067dd19c881ab56b59b1ac34b1529b"
+    },
+    {
+      "bytes": 142,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/mac-fixture-import/fetch.stderr",
+      "path": "mac-fixture-import/fetch.stderr",
+      "sha256": "8a21e1fb5e51919bd8a93c3df878227df3821f53405552d1b150a981bd2c38b9"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/mac-fixture-import/fetch.stdout",
+      "path": "mac-fixture-import/fetch.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6622,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/mac-fixture-import/learning_iteration_research_external_material_tests.rs.before",
+      "path": "mac-fixture-import/learning_iteration_research_external_material_tests.rs.before",
+      "sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/Cargo.lock.github.stderr",
+      "path": "publish-preparation-1/Cargo.lock.github.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 178,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/Cargo.lock.github.stdout",
+      "path": "publish-preparation-1/Cargo.lock.github.stdout",
+      "sha256": "9b6eb3cc3e5ec987c9023345f879714b70e68b5c3afd1ab335b3d8efa268e2a0"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/Cargo.toml.github.stderr",
+      "path": "publish-preparation-1/Cargo.toml.github.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 178,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/Cargo.toml.github.stdout",
+      "path": "publish-preparation-1/Cargo.toml.github.stdout",
+      "sha256": "929f45b8b9f7ccc4c36f76c447ed892a55347d8aa0606e62f1ab7543fb340f92"
+    },
+    {
+      "bytes": 29015,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/FILES.json",
+      "path": "publish-preparation-1/FILES.json",
+      "sha256": "3178c10ff04e65d2aca27dbd0e852f42750a7b9f4573c6db66ce72d6ba0e2f65"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/MODULE.bazel.lock.github.stderr",
+      "path": "publish-preparation-1/MODULE.bazel.lock.github.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 178,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/publish-preparation-1/MODULE.bazel.lock.github.stdout",
+      "path": "publish-preparation-1/MODULE.bazel.lock.github.stdout",
+      "sha256": "1f4dd43e4a75747f54c9d48690664143159d2439bc8ee69b5746dd859b5b1f7b"
+    },
+    {
+      "bytes": 501,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef82cebf-ffbe-51d/exit.json",
+      "path": "runtime-jobs/1a1ef82cebf-ffbe-51d/exit.json",
+      "sha256": "15f615a705e69cc5919dab67e1e1b55da868b6a86305bb7bdeed037f27319733"
+    },
+    {
+      "bytes": 206,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef82cebf-ffbe-51d/exit.witness.json",
+      "path": "runtime-jobs/1a1ef82cebf-ffbe-51d/exit.witness.json",
+      "sha256": "0c3b286493f2beaa254afd311042a4edbd9fa799ec88ab8475f56ab0faee97f9"
+    },
+    {
+      "bytes": 268,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef82cebf-ffbe-51d/stderr.log",
+      "path": "runtime-jobs/1a1ef82cebf-ffbe-51d/stderr.log",
+      "sha256": "a09117eb2c3ff256099a4cf9404d2cabf609dbf8ee0a1e4472c2b18e35093bb6"
+    },
+    {
+      "bytes": 272,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef82cebf-ffbe-51d/stdout.log",
+      "path": "runtime-jobs/1a1ef82cebf-ffbe-51d/stdout.log",
+      "sha256": "2d383c23b20208e76a8931b1b0da78ac1a179da0e38d20e8316978118df62d20"
+    },
+    {
+      "bytes": 499,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef84e6fb-ffbe-524/exit.json",
+      "path": "runtime-jobs/1a1ef84e6fb-ffbe-524/exit.json",
+      "sha256": "1b5a8b5c800c13e4252fdc5a44059a2a234abd7e50d2bb9d38e9cfeb5fe06883"
+    },
+    {
+      "bytes": 206,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef84e6fb-ffbe-524/exit.witness.json",
+      "path": "runtime-jobs/1a1ef84e6fb-ffbe-524/exit.witness.json",
+      "sha256": "59f252279208f438fc48e5da553353fe69dd408933d75ca6a91544e428de3657"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef84e6fb-ffbe-524/stderr.log",
+      "path": "runtime-jobs/1a1ef84e6fb-ffbe-524/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5332,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef84e6fb-ffbe-524/stdout.log",
+      "path": "runtime-jobs/1a1ef84e6fb-ffbe-524/stdout.log",
+      "sha256": "3e030205788cc564ce87e9e6861c30e5779a8023f7f1d31623ea322b680cf6ee"
+    },
+    {
+      "bytes": 499,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef870ff2-ffbe-529/exit.json",
+      "path": "runtime-jobs/1a1ef870ff2-ffbe-529/exit.json",
+      "sha256": "728d9fa80dacb47055cedc395bb38cff4e71f041aabeaaa7f8cea1acd299e0cc"
+    },
+    {
+      "bytes": 206,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef870ff2-ffbe-529/exit.witness.json",
+      "path": "runtime-jobs/1a1ef870ff2-ffbe-529/exit.witness.json",
+      "sha256": "1bf2a72db50cbe3a74072fc21db1dc44ce7c0995faf2330dfe1fd078f344f8b8"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef870ff2-ffbe-529/stderr.log",
+      "path": "runtime-jobs/1a1ef870ff2-ffbe-529/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1585,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef870ff2-ffbe-529/stdout.log",
+      "path": "runtime-jobs/1a1ef870ff2-ffbe-529/stdout.log",
+      "sha256": "a4f7b10b92980e029d37aadac93ee8b02862f66325d1b2a5559c36242e9834fe"
+    },
+    {
+      "bytes": 497,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef9953a5-ffbe-55e/exit.json",
+      "path": "runtime-jobs/1a1ef9953a5-ffbe-55e/exit.json",
+      "sha256": "518efb0bba584849735bcb96d1706d345e3a7f471109e6eada993de693bfec51"
+    },
+    {
+      "bytes": 206,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef9953a5-ffbe-55e/exit.witness.json",
+      "path": "runtime-jobs/1a1ef9953a5-ffbe-55e/exit.witness.json",
+      "sha256": "755c6ca0ccf6bd738b95798c1ccdaa7410dff88f5d85c92697180e8687e42a3f"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef9953a5-ffbe-55e/stderr.log",
+      "path": "runtime-jobs/1a1ef9953a5-ffbe-55e/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 565,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ef9953a5-ffbe-55e/stdout.log",
+      "path": "runtime-jobs/1a1ef9953a5-ffbe-55e/stdout.log",
+      "sha256": "eed6aec0437d0674a05257ea002fbd5ccc0932ed5ed934def248a6e0e00cdbb2"
+    },
+    {
+      "bytes": 501,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efa90679-ffbe-595/exit.json",
+      "path": "runtime-jobs/1a1efa90679-ffbe-595/exit.json",
+      "sha256": "2aab40fe06125a87a4aa6b084824a27998ffec749173243dda48c60bdaad1f1f"
+    },
+    {
+      "bytes": 206,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efa90679-ffbe-595/exit.witness.json",
+      "path": "runtime-jobs/1a1efa90679-ffbe-595/exit.witness.json",
+      "sha256": "15d6e6383bd6c2d0272135534b3db1fb9f570e878f9d59cc5dd730899219eb39"
+    },
+    {
+      "bytes": 326,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efa90679-ffbe-595/stderr.log",
+      "path": "runtime-jobs/1a1efa90679-ffbe-595/stderr.log",
+      "sha256": "2c9cd45c3edeaceb4820490b1707691492021485d8ef4c0f5fb35bd50b5ba8ae"
+    },
+    {
+      "bytes": 724,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efa90679-ffbe-595/stdout.log",
+      "path": "runtime-jobs/1a1efa90679-ffbe-595/stdout.log",
+      "sha256": "e96c037aa05c5df0437b887edb58bf832ed598fcb034e8449011b2599640beb5"
+    },
+    {
+      "bytes": 499,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efab882b-ffbe-59c/exit.json",
+      "path": "runtime-jobs/1a1efab882b-ffbe-59c/exit.json",
+      "sha256": "62bc716827423e4fc346c63bd8f5337f71c672b2ac30c6dc76e1abef0b438c93"
+    },
+    {
+      "bytes": 206,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efab882b-ffbe-59c/exit.witness.json",
+      "path": "runtime-jobs/1a1efab882b-ffbe-59c/exit.witness.json",
+      "sha256": "f329b0d8da443e264bcd7ba14909c281246a744a7ed84e12f53286e0279524d4"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efab882b-ffbe-59c/stderr.log",
+      "path": "runtime-jobs/1a1efab882b-ffbe-59c/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4944,
+      "mode": 384,
+      "original_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1efab882b-ffbe-59c/stdout.log",
+      "path": "runtime-jobs/1a1efab882b-ffbe-59c/stdout.log",
+      "sha256": "c7b2b4c0b692c92c882e9a7b7c26cac2e9cb1e17f107ee9b9a92fcc49da9a734"
+    },
+    {
+      "bytes": 910,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/STAGES.json",
+      "path": "source-format-1/STAGES.json",
+      "sha256": "9429a9ccb794effc440d81b6d7fb260e10aa901741f3dd858efc3e62f42d50ea"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/diff-check.stderr",
+      "path": "source-format-1/diff-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 551,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/diff-check.stdout",
+      "path": "source-format-1/diff-check.stdout",
+      "sha256": "169510228eb1ef7668da545734fb34cedb8db1b6fd5ace51be24073eab7ad95b"
+    },
+    {
+      "bytes": 142,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/fetch-import-stage.stderr",
+      "path": "source-format-1/fetch-import-stage.stderr",
+      "sha256": "980ef42c9adff0839a0a9093d2f614e2bc15516be4827c6c976f64fa3f1f42b8"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/fetch-import-stage.stdout",
+      "path": "source-format-1/fetch-import-stage.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/just-fmt.stderr",
+      "path": "source-format-1/just-fmt.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-1/just-fmt.stdout",
+      "path": "source-format-1/just-fmt.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 31189,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/FILES.json",
+      "path": "source-format-2/FILES.json",
+      "sha256": "f1c71df70e214b4bad123bfb84d9fd8e5cbf2420b53e16d9e62edb22393bf162"
+    },
+    {
+      "bytes": 1540,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/RESULT.json",
+      "path": "source-format-2/RESULT.json",
+      "sha256": "fe3c206954885cbcf1abaf624d2d3cb002000a92da2db438b076f32a8d6e677f"
+    },
+    {
+      "bytes": 585,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/STAGES.json",
+      "path": "source-format-2/STAGES.json",
+      "sha256": "cd2abda79afb96d33a4a8606f570938f7cbf1fdd2985f2ecd396cd3f795e5fa5"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/authored-diff-check.stderr",
+      "path": "source-format-2/authored-diff-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/authored-diff-check.stdout",
+      "path": "source-format-2/authored-diff-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6282,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/postimages/codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+      "path": "source-format-2/postimages/codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+      "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+    },
+    {
+      "bytes": 6989,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/postimages/codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "path": "source-format-2/postimages/codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "sha256": "c6cd11793d2bc05426e6851c5bce48b24dbfc6d85b35cc9420580cc13c9e6a96"
+    },
+    {
+      "bytes": 31157,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/postimages/codex-rs/rmcp-client/src/auth_status.rs",
+      "path": "source-format-2/postimages/codex-rs/rmcp-client/src/auth_status.rs",
+      "sha256": "6766877e17e956c17dda893920b9571916292710cee1fe439bb98904b34e1983"
+    },
+    {
+      "bytes": 25444,
+      "mode": 384,
+      "original_path": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source-format-2/postimages/codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "path": "source-format-2/postimages/codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "sha256": "11b9e7628ad0c4ccddd803a8a902f9278b592953e83f220a38949c4774e1e945"
+    }
+  ],
+  "schema": "hepta.joint-rmcp-sqlite-preflight-originals.v1",
+  "source_base": "be0e66c975433446a25e3e613294a2c64e9926f9"
+}
