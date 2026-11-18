@@ -13,7 +13,7 @@ import urllib.request
 WEIGHT = "/home/qq/local-llm/models/Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4.gguf"
 WEIGHT_SHA256 = "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e"
 ALIAS = "qwen38-flash-next-uc"
-URL = "http://127.0.0.1:18880"
+URL = "http://127.0.0.1:8080"
 
 
 def canonical(value):
@@ -59,7 +59,7 @@ def existing_server():
         try:
             argv = [x.decode() for x in (path / "cmdline").read_bytes().split(b"\0") if x]
             if (argv and Path(argv[0]).name == "llama-server" and WEIGHT in argv
-                    and "--port" in argv and argv[argv.index("--port") + 1] == "18880"):
+                    and "--port" in argv and argv[argv.index("--port") + 1] == "8080"):
                 matches.append((path, argv))
         except (OSError, UnicodeDecodeError):
             continue

@@ -42,3 +42,19 @@ better teacher alone is not mutual complementarity. With no new student fitting,
 negative transfer and downstream learning are unmeasured. All data remains
 development material, with zero authenticated independent users and no native
 owner, FinalUse or settlement claim.
+
+## Operator service cutover before the first model call
+
+The initially observed port 18880 service was removed by its existing owner.
+The first attempt exited in preflight with zero model requests. Its read-only
+observer was stopped after confirming that no experiment run or request existed.
+The same weight file is now served by the already configured port 8080 process,
+using the operator's existing `llama-b1376-gfx1151-20261115` runtime. This endpoint
+change is republished before sampling, preserving the original zero-call attempt.
+The experiment did not restart or reconfigure either service.
+
+All twelve baseline A outputs have additionally been verified in the same local
+Python 3.12.14 / NumPy 2.3.5 environment used for the second teacher. Their strict
+outcomes remain identical, and every first-feedback text exactly matches the
+original baseline second request. `BASELINE_RECHECK.json` retains these new E3
+verification costs separately. Six reference tests also pass in this environment.

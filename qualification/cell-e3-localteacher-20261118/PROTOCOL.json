@@ -10,8 +10,18 @@
   },
   "calls_per_task": 2,
   "complementarity_scope": "paired selected/first/final coverage; no unmeasured negative-transfer or student-learning claim",
+  "endpoint": "http://127.0.0.1:8080",
+  "endpoint_source": "Existing operator service observed at pid3366827, llama-b1376-gfx1151-20261115, same byte-verified weight; no service change by this experiment",
   "feedback_source_sha256": "5b901cc781eb9ee2087b11f7a244c6edf234f64486859564be612c57a5420e05",
   "independent_users": 0,
+  "local_verifier_helper_sha256": "05d22caf1b788e5d37fd2ab8fde15a43d6c1773ba44a7c9bb146d7feca758699",
+  "local_verifier_runtime": {
+    "baseline_recheck_sha256": "1334e8edcee77a26b5d7e72981d9e65a2d90c16cbdd8bb0e8fa827508e5e2a1c",
+    "baseline_rechecked_same_environment": true,
+    "first_feedback_exactly_matches_original": true,
+    "numpy": "2.3.5",
+    "python": "3.12.14"
+  },
   "logical_observation_encoding": "same native_chat_v2 Tool observation prefix as pinned baseline",
   "matching_scope": "same logical inputs, output-token caps, two calls and verifier opportunities; hardware/active parameters/runtime differ and all actual costs remain separate",
   "maximum_observed_input_tokens": 4096,
@@ -38,6 +48,16 @@
   "scoring": "strict original repo_patch v1; no stripping fences, repair, response substitution or retries",
   "second_stage": "real first-output verification feedback, then second output even after success",
   "source_commit_for_verification": "992f2b3de51902448abf5743f94179bf40e11b6d",
+  "superseded_preflight": {
+    "endpoint": "http://127.0.0.1:18880",
+    "first_job": "1a1ef0b40e9-ffbe-3d6",
+    "first_wait_returncode": 1,
+    "reason": "configured original endpoint no longer has a serving process",
+    "requests_sent": 0,
+    "source_commit": "4080e53337e0ee0e285c3a18754abd09222bad7e",
+    "watcher_cancellation": "own read-only observer stopped after observing the operator cutover; no run-2 or model requests existed",
+    "watcher_job": "1a1ef0f5a91-ffbe-3e4"
+  },
   "task_records_digest": "f3206c37a200890561b47b3823a39a5419189d06861c161f5c92ca7de5c6d644",
   "tasks": 6,
   "teacher": {
