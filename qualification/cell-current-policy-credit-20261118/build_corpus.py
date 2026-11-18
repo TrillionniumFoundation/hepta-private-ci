@@ -86,6 +86,7 @@ def main(originals, output):
                                  "new_model_calls_performed_by_builder": 0}
         derived["verified_outcome"] = {"success": True, "receipt_sha256": target_check["receipt_sha256"],
                                        "verifier_name": "repo_patch", "verifier_version": "1"}
+        derived["protocol_reference_receipt"] = target_check
         protocol_v3.require_prepared(derived)
         data.validate_record(derived)
         records.append(derived)
