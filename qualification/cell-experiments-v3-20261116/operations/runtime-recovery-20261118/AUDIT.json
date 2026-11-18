@@ -1,0 +1,142 @@
+{
+  "schema": "hepta.original-runtime-recovery.20261118",
+  "status": "ORIGINAL_MANIFEST_BYTES_RESTORED",
+  "experiment_source_commit": "eb56c51e4e73b0d466795b257a547ab93a0baa63",
+  "scope": "Prerequisite runtime recovery only; not an E1-E6 model-result or qualification receipt",
+  "host": "desktop",
+  "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+  "runtime": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv",
+  "initial": {
+    "missing_files": 20,
+    "missing_bytes": 5637504148,
+    "distributions": 12,
+    "original_download_manifest_sha256": "326c9338a24f60400e97184561d7bf93c86c749a70706eebbaa66bed190d8903"
+  },
+  "restoration": {
+    "stages": [
+      {
+        "stage": "recovery-20261118-e4",
+        "files": 9,
+        "bytes": 1414395760
+      },
+      {
+        "stage": "recovery-20261118-e4b",
+        "files": 6,
+        "bytes": 2090641305
+      },
+      {
+        "stage": "recovery-20261118-e4c",
+        "files": 5,
+        "bytes": 2132467083
+      }
+    ],
+    "all_initial_missing_paths_reconciled": true,
+    "existing_file_overwrite": false,
+    "package_versions_changed": false,
+    "model_or_adapter_bytes_changed": false
+  },
+  "verification": {
+    "bytes": 7111800439,
+    "different": [],
+    "files": 19079,
+    "missing": []
+  },
+  "smoke": {
+    "cuda": "12.8",
+    "cuda_matrix_sum": 32768,
+    "device": "NVIDIA GeForce RTX 4060",
+    "scope": "Original runtime import and tiny CUDA kernel only; no model task or learning evidence",
+    "versions": {
+      "numpy": "1.26.4",
+      "peft": "0.18.0",
+      "torch": "2.9.1+cu128",
+      "transformers": "4.57.3"
+    }
+  },
+  "final_install_wall_seconds": 120.33454718801659,
+  "final_install_exit_code": 0,
+  "complete_wheel_bytes_transferred": 1196009000,
+  "scp_wall_seconds": 14.083837124999999,
+  "preserved_operations": [
+    {
+      "stage": "desktop sequential downloads",
+      "session": "dpty-5ecb4b5c8b353c62b372d450e2a5247f656e6d7feaf0b561d4bd1e3855382970",
+      "exit_code": -15,
+      "reason": "Stopped only own download to use exact local libraries and bounded ranges; nine restored files retained."
+    },
+    {
+      "stage": "desktop range downloads",
+      "session": "dpty-0fad26980951485fa7aee179413a750f42b5845a93317fb73b67a54400cbc10e",
+      "exit_code": -15,
+      "reason": "Stopped only own slow download; six exact local-library copies retained."
+    },
+    {
+      "stage": "mac mixed ranges",
+      "session": "dpty-48562a630fab21d4dab1d99174013798fed98a4815dc37e086f2c8319ed3efa6",
+      "exit_code": -15,
+      "reason": "Moved torch to measured faster ai395; retained partial files and range receipts."
+    },
+    {
+      "stage": "mac PyPI ranges",
+      "session": "dpty-fb980e1bbe9b1359fd39e5a0688d8684fb58f17b07276c80440e4ee88b18c00b",
+      "exit_code": -15,
+      "reason": "Moved remaining PyPI wheels to ai395 after sustained slow throughput; retained all partials."
+    },
+    {
+      "stage": "ai395 torch",
+      "session": "dpty-1483c8a9852466d2f3a9c8bd6a9c4d33e06b2701beef009c74c2bab38e5a9eb0",
+      "exit_code": 0,
+      "result": "VERIFIED"
+    },
+    {
+      "stage": "ai395 PyPI",
+      "session": "dpty-34de6f260205e0902363396248aad9b2e20c3e25e4b25d087cc1cd3b4fbcaf53",
+      "exit_code": 0,
+      "result": "COMPLETE"
+    },
+    {
+      "stage": "temporary LAN HTTP client",
+      "session": "dpty-1771ce4e7c718eb4352ee2afca6a0cb85db844fb4098c8946368bf2b0d7b2b3c",
+      "exit_code": 1,
+      "result": "Connection timed out; no wheel transferred or network setting changed."
+    },
+    {
+      "stage": "temporary LAN HTTP whitelist server",
+      "session": "dpty-c3af4062d4b620f36ed7b7db22c2ebdb5ffd9288c3d5c01fcd420ac255962ba8",
+      "exit_code": -15,
+      "result": "Stopped own server after observed client timeout; no directory service exposed."
+    },
+    {
+      "stage": "existing SSH scp -3",
+      "session": "dpty-907da4955c92ed6e06108d7d8670795ceedca0a21085bb0edbd87534bd4f47f1",
+      "exit_code": 0,
+      "result": "Three wheels copied and separately rehashed on destination."
+    },
+    {
+      "stage": "final five-library installation",
+      "session": "dpty-e359b43bc97e40fd60a4695a63ea838da19c6d7502a257531b5969c09da4be5e",
+      "exit_code": 0,
+      "result": "COMPLETE"
+    }
+  ],
+  "receipt_registry": "RECEIPTS.jsonl",
+  "source_registry": "SOURCES.jsonl",
+  "source_archive": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/operations/recovery-20261118-e4c/source-archive",
+  "cost_accounting": {
+    "model_experiments_executed": 0,
+    "network_and_orchestration_work_performed": true,
+    "stopped_downloads_not_free": true,
+    "all_failed_and_partial_artifacts_retained": true,
+    "full_system_cost_known": false,
+    "network_wire_bytes_total": null,
+    "energy_joules": null
+  },
+  "claims": {
+    "new_independent_sources": 0,
+    "new_authenticated_users": 0,
+    "new_external_teachers": 0,
+    "learning_benefit": false,
+    "circuit_benefit": false,
+    "native_adoption": false
+  }
+}
