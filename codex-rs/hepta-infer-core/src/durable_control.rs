@@ -496,7 +496,6 @@ impl DurableInferenceControl {
         &self.path
     }
 
-
     /// Qualification-only bounded raw observation inside the exclusive owner.
     #[cfg(feature = "qualification-control-snapshot")]
     pub fn test_snapshot_bytes(&mut self) -> std::io::Result<Vec<u8>> {
@@ -1042,17 +1041,32 @@ mod snapshot_qualification_tests {
                 .as_nanos(),
         ));
         let mut owner = DurableInferenceControl::open(&path, 32).expect("owner");
-        owner.file.set_len(MAX_JOURNAL_BYTES + 1).expect("sparse fixture");
+        assert!(owner.test_snapshot_bytes().expect("empty snapshot").is_empty());
+        // The real Windows owner has append rights, not truncate rights.
+        // Populate the oversized unit fixture through that same held handle.
+        let block = [0_u8; 4096];
+        for _ in 0..MAX_JOURNAL_BYTES / block.len() as u64 {
+            owner.file.write_all(&block).expect("oversized fixture");
+        }
+        owner.file.write_all(&[0]).expect("overflow byte");
         let position = owner.file.stream_position().expect("position");
         let error = owner.test_snapshot_bytes().expect_err("oversized snapshot");
         assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
         assert_eq!(owner.file.stream_position().expect("position"), position);
-        assert_eq!(owner.file.metadata().expect("metadata").len(), MAX_JOURNAL_BYTES + 1);
-        let contender = File::options().read(true).write(true).open(&path).expect("contender");
-        assert!(matches!(contender.try_lock(), Err(std::fs::TryLockError::WouldBlock)));
-        owner.file.set_len(0).expect("restore fixture");
-        assert!(owner.test_snapshot_bytes().expect("valid snapshot").is_empty());
-        assert_eq!(owner.file.stream_position().expect("position"), position);
+        assert_eq!(
+            owner.file.metadata().expect("metadata").len(),
+            MAX_JOURNAL_BYTES + 1
+        );
+        let contender = File::options()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .expect("contender");
+        assert!(matches!(
+            contender.try_lock(),
+            Err(std::fs::TryLockError::WouldBlock)
+        ));
+        assert!(!owner.poisoned);
         drop(contender);
         drop(owner);
         std::fs::remove_file(path).expect("cleanup");
