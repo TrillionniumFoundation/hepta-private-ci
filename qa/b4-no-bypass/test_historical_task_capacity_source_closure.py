@@ -67,6 +67,16 @@ class HistoricalTaskCapacitySourceTests(unittest.TestCase):
             for path in (STREAM, CLIENT)
         }
         PROOF._verify_boundary(ROOT, row, sources, ())
+        # Keep opaque receiver inference fail-closed if the actual type is removed.
+        unresolved = dict(sources)
+        annotation = "let mut lane: Lane ="
+        self.assertEqual(unresolved[CLIENT].count(annotation), 1)
+        unresolved[CLIENT] = unresolved[CLIENT].replace(annotation, "let mut lane =", 1)
+        with self.assertRaisesRegex(
+            PROOF.VerificationFailure,
+            "unresolved possible OriginalPublicationStream::exchange_with_response_bound receiver",
+        ):
+            PROOF._verify_boundary(ROOT, row, unresolved, ())
         bypass = dict(sources)
         bypass[A + "unregistered_response_capacity.rs"] = (
             "fn bypass(owner: &OriginalPublicationStream) { "

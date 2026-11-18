@@ -22,7 +22,7 @@ def require_complete_structure(path, source):
         spans = [cell.armed.closure_span(code, marker) for marker in (
             "|handoff_digest| {", "|source| {", "|run_start| {", "|ledger| {",
         )]
-        action = code.index('let value = action(&mut read).inspect_err(|_| { let _ = std::io::stderr().write_all(b                                               ); })?')
+        action = code.index('let value = action(&mut read).inspect_err(|_| {\n                                                log_historical_task_diagnostic(\n                                                    HistoricalTaskDiagnosticStage::RecipientAction,\n                                                );\n                                            })?')
         final = code.index("!matches!(read.state, ReadState::Complete)")
         if not all(start < action < final < end for start, end in spans):
             raise PROOF.VerificationFailure("all independent data arms must enclose the Root context")
@@ -81,7 +81,7 @@ class CompleteHistoricalTaskSourceTests(unittest.TestCase):
         for marker in (
             ".with_finalized_source_data(", ".with_original_source_cell_data(",
             ".with_original_run_start_data(", "service.with_retained_original_ledger(",
-            'let value = action(&mut read).inspect_err(|_| { let _ = std::io::stderr().write_all(b                                               ); })?', "!matches!(read.state, ReadState::Complete)",
+            'let value = action(&mut read).inspect_err(|_| {\n                                                log_historical_task_diagnostic(\n                                                    HistoricalTaskDiagnosticStage::RecipientAction,\n                                                );\n                                            })?', "!matches!(read.state, ReadState::Complete)",
         ):
             self.reject(TASK, "fn with_original_historical_task<T>(", marker)
 
@@ -97,10 +97,10 @@ class CompleteHistoricalTaskSourceTests(unittest.TestCase):
 
     def test_original_run_start_is_full_record_joined_before_actual_ledger(self):
         for marker in (
-            '.read_original_retired_source_cell(load_original_source)\n            .inspect_err(|_| {\n                let _ =\n                    std::io::stderr().write_all(b                                                 );\n            })?',
+            '.read_original_retired_source_cell(load_original_source)\n            .inspect_err(|_| {\n                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::SourceObservation);\n            })?',
             "RootOriginalRunStartReadV1::require_original_publisher(", "&pin.publisher", "pin.publisher_epoch",
             "&pin.initial_profile", "&pin.writer", "&pin.target_files",
-            'load_original_run_start().inspect_err(|_| {\n                let _ = std::io::stderr()\n                    .write_all(b                                                   );\n            })?',
+            'load_original_run_start().inspect_err(|_| {\n                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::RunStartDeployment);\n            })?',
             "&run_start.observed.record != source.source.publication().original_record()",
             "PendingOriginalLedgerHistoryV1::observe_original_terminal(", "&source.source",
             "&source.definition", "&source.cell",
@@ -109,7 +109,7 @@ class CompleteHistoricalTaskSourceTests(unittest.TestCase):
 
     def test_complete_cut_commits_every_root_retained_data_kind(self):
         for marker in (
-            'RootOriginalRunStartReadV1::retained_digest(self.run_start)\n            .inspect_err(|_| {\n                let _ =\n                    std::io::stderr().write_all(b                                               );\n            })?', 'RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)\n            .inspect_err(|_| {\n                let _ = std::io::stderr().write_all(b                                            );\n            })?',
+            'RootOriginalRunStartReadV1::retained_digest(self.run_start)\n            .inspect_err(|_| {\n                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::RunStartDigest);\n            })?', 'RootOriginalHistoricalLedgerObservationV1::data_cut_digest(&ledger)\n            .inspect_err(|_| {\n                log_historical_task_diagnostic(HistoricalTaskDiagnosticStage::LedgerDigest);\n            })?',
             "self.original.target.digest()", "self.handoff_digest.as_array()",
             "source.source_pin_digest.as_array()", "source.cell_cut_digest.as_array()",
             "run_start_digest.as_array()", "ledger_digest.as_array()",

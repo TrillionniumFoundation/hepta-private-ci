@@ -190,7 +190,7 @@ impl RootHistoricalTaskReadClientV1 {
                     );
                 })
                 .map_err(io::Error::other)?;
-            let mut lane = held.take().ok_or_else(refused).inspect_err(|_| {
+            let mut lane: Lane = held.take().ok_or_else(refused).inspect_err(|_| {
                 let _ = std::io::Write::write_all(
                     &mut io::stderr(),
                     b"daemon_stage=historical_client.lane_missing\n",
