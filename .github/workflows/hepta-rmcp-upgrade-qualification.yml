@@ -1,0 +1,108 @@
+name: Hepta rmcp upgrade lock and compatibility qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-rmcp-upgrade-qualification.yml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rmcp-client/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-rmcp-upgrade-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: Resolve rmcp 3.9 locks and qualify real consumers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout exact source proposal
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: rmcp-upgrade
+      - name: Generate and bind the real Cargo and Bazel lock postimages
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          evidence="$RUNNER_TEMP/hepta-rmcp-upgrade"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          rustc -Vv > "$evidence/rustc.txt"
+          cargo --version > "$evidence/cargo.txt"
+          cargo update --manifest-path codex-rs/Cargo.toml -p rmcp --precise 3.9.0 2>&1 | tee "$evidence/cargo-update.log"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          just bazel-lock-update 2>&1 | tee "$evidence/bazel-lock-update.log"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          just bazel-lock-check 2>&1 | tee "$evidence/bazel-lock-check.log"
+          git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$evidence/locks.patch"
+          git diff --check
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, tomllib
+          evidence = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-rmcp-upgrade"
+          packages = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())["package"]
+          versions = [p["version"] for p in packages if p["name"] == "rmcp"]
+          assert versions == ["3.9.0"], versions
+          changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          assert set(changed) <= {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}, changed
+          postimages = {}
+          for name in ["Cargo.lock", "MODULE.bazel.lock"]:
+              data = (evidence / name).read_bytes()
+              postimages[name] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+          (evidence / "source-and-locks.json").write_text(json.dumps({
+              "source_head": os.environ["EXPECTED_HEAD"],
+              "rmcp_versions": versions,
+              "generated_lock_postimages": postimages,
+              "source_changes": changed,
+              "qualification_scope": "source head plus generated lock postimages; not yet committed locks",
+          }, indent=2) + "\n")
+          PY
+      - name: Compile and clippy real MCP and product consumers
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy -- \
+            //codex-rs/rmcp-client:rmcp-client \
+            //codex-rs/core:core \
+            //codex-rs/app-server:app-server \
+            2>&1 | tee "$RUNNER_TEMP/hepta-rmcp-upgrade/compile.log"
+      - name: Run unchanged MCP client package tests
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
+            test --test_output=all --nocache_test_results -- \
+            //codex-rs/rmcp-client/... \
+            2>&1 | tee "$RUNNER_TEMP/hepta-rmcp-upgrade/tests.log"
+      - name: Preserve source-bound postimages and native evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-rmcp-upgrade-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-rmcp-upgrade
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
