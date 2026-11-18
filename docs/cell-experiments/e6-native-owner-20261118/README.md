@@ -168,3 +168,52 @@ The adapter permits one original evaluated-NoUpdate whole-cold profile with retr
 The safe v13 archive is native-owner-v13-public-evidence.tar.xz, 106,920 bytes, SHA-256 bff48544b40faee865e8b5d136f2497d320da0526f8bce220d84d82f235a3888; all 77 regular members were checked against the original manifest before publication. This evidence-only child is separately identified from the actually attempted source.
 
 All real command timings and failed preparation or business costs are retained. Unknown CPU/GPU/energy/API/monetary costs remain null, not zero. Existing cold profiles inspect retained C; they do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
+
+## v14–v15: executable source gates and exact product identity
+
+The latest native business observation remains **BLOCKED** on source 978719e6137cc1fe9a64bcde7795cd478b2f293e: the historical client attempted request 65 against the original maximum 64. These successors repair source gates and diagnostics. No new NoUpdate, Adopt, libtest, model, or fresh D executes here.
+
+The exact linear history is 3299c1d3318ff157f4948dee89b7939ef67b515c → 570b46e1cd0d9093f37dbb31bd157825971e899d → a6f9e8064f83680134af168e0500048b6942ddfd, tree 894a8e5ff061980adec9825f0e519b3aba8c454e. The first successor changed only CALLERS and source-QA files and retained the same Rust tree as 978719e. Its failed result remains v14. The final successor changes three Rust files, CALLERS and three related QA files. This following documentation child has no inherited test identity.
+
+| Exact source and scope | Actual result | Measured wall scope |
+|---|---|---:|
+| Unmodified original two QA modules on 3299c1d3 | 20 cases, 69 error events including subtests | 1.071733924 s |
+| Scoped v14 QA on 570b46e1 | 143 cases, 24 error events across 16 cases, 0 assertion failures/skips; protected sweep stopped early | 11.952395594 s |
+| Scoped v15 QA on a6f9e806 | 150/150 passed, 0 errors/failures/skips | 13.636731560 s |
+| Original protected-file sweep on a6f9e806 | All 892 rows checked and passed | 1.308001505 s, included above |
+| Real two-product preparation on a6f9e806 | Compiled, pinned from actual compiler-artifact records and independently hashed | 52.540071929 s |
+
+### What the repair preserves
+
+The v14 failures exposed three concrete issues. The original function-order verifier requires at least two markers but the default wrapper row supplied one. The strict typed resolver cannot infer the historical Lane through its take/ok_or_else/inspect_err chain. Fourteen inline diagnostics also conflicted with the complete historical reader's original whole-file write prohibition.
+
+The original verifier and typed resolver remain unchanged. The default wrapper is pinned as the complete original call, including requested_end and 16_384, with two real body markers and a top-level requirement. Only the historical local variable receives an explicit Lane annotation; the initializer, type and error propagation remain unchanged. Its removal must still fail the original typed verifier. The unrelated CURRENT reader and row270 remain byte-identical.
+
+All 13 original reader forbidden patterns, including write_all, remain. The existing 14 inspect_err sites now call one private child module through a fieldless closed enum. The helper accepts no task or error data, selects only the original fixed byte strings and ignores the result of its sole stderr UFCS write. Seven new QA cases protect its exact executable shape, actual literal positions, private module/imports, original 5+9 call distribution, each observer removal, extra calls/aliases/function pointers, dynamic payloads, comment/string spoofing, write prohibition, caller boundary and inventory. The optional trailing comma covers the actual one-argument Rust formatting; extra-argument and tuple controls remain rejected.
+
+The helper is inside the original codex-rs source inventory. All 1,123 existing boundary records remain unchanged relative to v14; one unique helper boundary, one inventory entry and two protected rows were added. Existing complete-task test/mutation topology remains. One rustfmt receiver line break is pinned exactly in CALLERS because the original verifier uses code.find; the original QA token matcher already accepts the whitespace and was unchanged.
+
+The failed EOF check (exit 2), rejected wrong-file row270 proposal, initially narrow observer regex, formatter PATH preparation failure, and two rejected marker-locator assumptions are retained with their exact scopes. Static proposal defects are not relabelled as executed QA failures. The complete failed 570b run is retained alongside the passing a6f9 run.
+
+### Actual product provenance
+
+Both products were built on a6f9e8064f83680134af168e0500048b6942ddfd through the original build-and-pin routine with two Cargo jobs, locked offline dependencies and identical source snapshots before/after. No earlier executable substitutes for a fresh compiler record.
+
+| Product | Bytes | SHA-256 |
+|---|---:|---|
+| hepta-authority-host | 974634472 | baf520842749923ceac423ff62dc1b16938444fda3f75af97db1c708337361b7 |
+| codex-hepta-agentd | 1363889888 | ccc9145e76984a940543db52b77f3fa06742478eca8e5caf8a0ab728efb9475c |
+
+All 14 original diagnostic byte strings were found in the pinned Root ELF during a stable full hash read. The exact receipts are v15-compiler-products.json and v15-ROOT-ELF-STAGES.json. This proves compilation and executable identity; no business execution follows from it.
+
+### Budget and qualification remain explicit
+
+v13-READ-BUDGET-ACCOUNTING.json contains the independently reviewed static audit bound to 978719e. It accounts for 64 successful startup requests (62 Task, one Trust and one PostA), then identifies attach_sources as the next static call requiring requests 65–66. This agrees with the observed refusal at 65; it is not a runtime stack. A closed whole-session bound covering fresh NoUpdate, Adopt, cold recovery and all permitted consumers is not established. MAX_READS remains 64; no arbitrary 128/256 replacement was made.
+
+Authentication, deadlines, identity/freshness, refusal state, original Results/postchecks and request/response limits remain unchanged by v15. The v11 Task capacity revision and its 9/9 tests, the old 843 949-case result and all native attempts retain their original sources. The 150 scoped cases and 892-row protected sweep are not a new full caller sweep.
+
+The recorded native attempt wall scopes v1–v13 total 3283.672103214776 seconds. Separate QA, research, publication and unmeasured preparation are excluded. Nested stages are not added again; the QA and product preparation scopes above are separate and ran concurrently. Unknown CPU, energy, API and monetary costs remain null.
+
+The explicit archive native-owner-v14-v15-source-gates.tar.xz contains 149 regular members, 412,220 bytes, SHA-256 bc1683162f65837faa6c49483c225435518d6482898099950af3c4b9871f350f. Every member was checked against v14-v15-MANIFEST.json. Only source, patches, stdout/stderr, JUnit, metadata, costs and static reviews are included; private keys, SourceInputs and authority-input directories are excluded.
+
+Complete original-owner NoUpdate/adoption, independent-controller authorization, fresh D, FinalUse and settlement qualification remain unestablished.

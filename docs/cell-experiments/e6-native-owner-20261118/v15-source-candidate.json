@@ -1,0 +1,78 @@
+{
+  "base": "570b46e1cd0d9093f37dbb31bd157825971e899d",
+  "base_tree": "1e7a6a5f18c7e2d5749ff7357ee5098b8fe2b377",
+  "remote_base": "3299c1d3318ff157f4948dee89b7939ef67b515c",
+  "files": {
+    "CALLERS.toml": {
+      "bytes": 1736768,
+      "sha256": "1e40f322b1ec16f60409de99d245f7db78c1de88405ceebb5c8347e8e77aca7b"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_task.rs": {
+      "bytes": 13857,
+      "sha256": "b4383c5a28d45d53724fbd6823b85a96c629ed0bbee6899af27356b735d80859"
+    },
+    "codex-rs/hepta-agentd/src/authority_host_historical_task_diagnostics.rs": {
+      "bytes": 2428,
+      "sha256": "20a0191839a0ec4ba59a0cc60fbe357f7470fb969b9f69972d98f1edc3f0dde3"
+    },
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs": {
+      "bytes": 19423,
+      "sha256": "457b966e2bc83f172769dfd3e9d0ab5cc1a928114e8eb6a78fcd563d6b0587ec"
+    },
+    "qa/b4-no-bypass/test_complete_historical_task_source_closure.py": {
+      "bytes": 10351,
+      "sha256": "2ae2b3fad543fd0a96e110ccfa81b95ffb04d0a7ea712bb3e7d86e68470b08bf"
+    },
+    "qa/b4-no-bypass/test_historical_task_capacity_source_closure.py": {
+      "bytes": 9274,
+      "sha256": "0ed55fd2ee37df7654543076b1a2af2a64f5989d51e73722377adb38efeef837"
+    },
+    "qa/b4-no-bypass/test_historical_task_diagnostic_source_closure.py": {
+      "bytes": 15961,
+      "sha256": "6e8a2a57b5950b659a817a53ce808eafc79643c719d2e9025935382a2ed21f00"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "status": "frozen-not-yet-tested",
+  "source_head": "a6f9e8064f83680134af168e0500048b6942ddfd",
+  "source_tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+  "codex_rs_tree": "3b019e60f26ceb35a8f50736d408239ce5cfdb4a",
+  "verifier_blob": "8d6b23e09c2b8591712e79264bf3bee0791ec2a3",
+  "verifier_sha256": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896",
+  "patch_bytes": 139722,
+  "patch_sha256": "e8e0a41135221ac3c1bc3c5cc986784398401a54fd0d25991764be956e509e78",
+  "qa_modules": [
+    "test_complete_historical_task_source_closure",
+    "test_completed_learning_client_source_closure",
+    "test_historical_current_trust_client_source_closure",
+    "test_historical_dataset_capability_source_closure",
+    "test_historical_learning_delivery_source_closure",
+    "test_historical_recipient_trust_source_closure",
+    "test_historical_task_capacity_source_closure",
+    "test_historical_task_read_source_closure",
+    "test_initial_absolute_deadline_source_closure",
+    "test_initial_lane_admission_source_closure",
+    "test_publication_refusal_source_closure",
+    "test_root_data_refusal_source_closure",
+    "test_root_historical_ledger_source_closure",
+    "test_successor_root_custody_source_closure",
+    "test_historical_task_diagnostic_source_closure"
+  ],
+  "whole_freeze_seconds": 0.4279663439374417,
+  "finished": "2026-11-18T18:08:21.839103+00:00",
+  "source_clean": true,
+  "native_business_not_rerun": true,
+  "prior_native_source": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+  "prior_native_failure": "request_id=65 maximum=64",
+  "prior_qa_source": "570b46e1cd0d9093f37dbb31bd157825971e899d",
+  "prior_qa_failure_preserved": true
+}
