@@ -132,7 +132,7 @@ class InitialLaneAdmissionSourceClosureTests(unittest.TestCase):
             body, "&serde_json::to_vec(&request)?", "&[]",
         ))
         self.remove(LANE, "fn original_frame_end(", ".min(self.session_end)")
-        self.reject(STREAM, "fn exchange_until(", lambda body: self.replace(
+        self.reject(STREAM, "fn exchange_until_with_response_bound(", lambda body: self.replace(
             body, "requested_end.min(now + self.timeout).min(self.end)",
             "(now + self.timeout).min(self.end)",
         ))
@@ -141,7 +141,7 @@ class InitialLaneAdmissionSourceClosureTests(unittest.TestCase):
         ))
         # A ready token can be returned even when recv_deadline was already late.
         self.remove(LANE, "fn acquire<'a, T>(", "require_admission_open(fenced, end, self.domain.deadline)?", 1)
-        self.remove(STREAM, "fn exchange_until(", "now >= end")
+        self.remove(STREAM, "fn exchange_until_with_response_bound(", "now >= end")
 
     def test_waiters_recheck_original_session_fence_and_poison(self):
         self.remove(LANE, "fn acquire_original_lane(",

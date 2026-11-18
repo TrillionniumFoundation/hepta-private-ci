@@ -212,13 +212,13 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
 
     def test_cold_arm_precedes_primary_and_all_four_file_opening(self):
         self.check_markers(AGENT + "authority_host_historical_ledger_history.rs", "fn with_retained_original_ledger<T>(", (
-            "RootDataRefusalV1::open_existing(", "refusal.inspect(||",
+            "RootDataRefusalV1::open_existing(", 'refusal\n            .inspect(||',
             "HostAuthorityFrontierStore::open(root, owner.clone())", "record.registered_at == 0",
             "!matches!(record.phase, LedgerPhase::Captured { .. })", "registration.identity()?",
-            "RootHistoricalLedgerDeploymentV1::open_original(deployment_path)?",
+            'RootHistoricalLedgerDeploymentV1::open_original(deployment_path)\n                    .inspect_err(|_| {\n                    let _ =\n                        std::io::stderr().write_all(b"root_stage=historical_ledger.deployment\\n");\n                })?',
             "OriginalLedgerFiles::retain_original_ledger(", "files.file_pins() != &record.files",
             "files.deployment.metadata_digest().to_string() != record.metadata",
-            "let result = action(&mut pending)?", "held.require_unchanged(&observed)?", "trust.revalidate("))
+            'let result = action(&mut pending).inspect_err(|_| {\n                    let _ = std::io::stderr()\n                        .write_all(b"root_stage=historical_ledger.recipient_action\\n");\n                })?', 'held.require_unchanged(&observed).inspect_err(|_| {\n                    let _ = std::io::stderr()\n                        .write_all(b"root_stage=historical_ledger.held_postcheck\\n");\n                })?', 'trust\n                    .revalidate('))
         self.reject_removal(AGENT + "authority_host_historical_ledger_history.rs", "fn with_retained_original_ledger<T>(",
                             "Instant::now() >= end", 1)
 
@@ -237,7 +237,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "original.pin.source_sequence != source.journal_anchor().sequence",
             "require_target(&record.target, definition, source.original_source())?", "trust.pin != record.trust",
             ".configuration(generator, observer, record.registered_at)", "OriginalLedgerReadModeV1::Retained",
-            "CapturedLedgerCut::from_original(", "!= **cut", "held.require_unchanged(&observed)?"))
+            "CapturedLedgerCut::from_original(", "!= **cut", 'held.require_unchanged(&observed).inspect_err(|_| {\n            let _ = std::io::stderr().write_all(b"root_stage=historical_ledger.held_postcheck\\n");\n        })?'))
 
     def test_runtime_custody_requires_pre_a_cell_and_consumes_once(self):
         self.check_markers(AGENT + "authority_host_historical_ledger_session.rs", "fn install_initial_source_ledger(", (
@@ -266,7 +266,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "serde_json::from_str(&self.registered_identity)", "!= self.registered_identity",
             "self.trust.require_target(&self.target)?", "pin.mode & 0o7777 != 0o600",
             "(other.device, other.inode) == (pin.device, pin.inode)",
-            "serde_json::to_vec(self).map_err(io::Error::other)?.len() > 12 * 1024"))
+            'serde_json::to_vec(self).map_err(io::Error::other)?.len() > Self::JSON_BOUND'))
 
     def test_wire_conversion_preserves_entire_retained_cut(self):
         self.check_markers(AGENT + "root_historical_ledger_data.rs", "fn ledger_cut(", (

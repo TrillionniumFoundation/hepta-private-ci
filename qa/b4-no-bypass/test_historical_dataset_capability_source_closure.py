@@ -49,7 +49,7 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
 
     def test_canonical_image_and_fixed_current_evaluator_govern_freeze(self):
         self.check_markers(HISTORY, "fn materialize_historical_in_operation(", (
-            "operation.read_historical(", "RootHistoricalLedgerReadDataV1::read_snapshot(data)?",
+            "operation.read_historical(", 'RootHistoricalLedgerReadDataV1::read_snapshot(data).inspect_err(|_| {\n                        let _ = std::io::stderr()\n                            .write_all(b"daemon_stage=historical.dataset.snapshot\\n");\n                    })?',
             "current != self.frozen", "dataset_freeze_signing_payload_v2(&current, &plan)",
             "LearningEvidenceRoleV1::Evaluator", "&self.evidence", "&payload",
             "verified.principal() != &evaluator.principal", "verified.controller_id() != &evaluator.controller_id",

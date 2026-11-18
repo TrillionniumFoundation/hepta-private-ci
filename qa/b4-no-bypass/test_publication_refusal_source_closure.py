@@ -119,14 +119,14 @@ def require_structure(path, source):
         start, stop = route.original.span(body, "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {")
         inner = body[start:stop]
         context, done = route.original.span(inner, "|initial, proof| {")
-        if not re.match(r"^\s*,\s*\)\?;", inner[done:]):
+        if not re.match('^\\s*' + route.token_pattern(',\n                ).inspect_err(|_| {\n                    let _ = std::io::stderr().write_all(b                                           );\n                })?;'), inner[done:]):
             raise PROOF.VerificationFailure("actual Root context postchecks must return first")
         for marker in ("let (raw, expected) = self.with_learning_profile(",
-                       "refusal::require_end(end)?", "Ok((raw, accepted))"):
+                       'refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                   );\n                        })?', "Ok((raw, accepted))"):
             at_depth(inner, marker, 1)
         final = inner[done:]
-        for marker in ("slot.require_profile()?", "slot.require_previous()?", "slot.require_selection(",
-                       "original_broker_head()", "verify_pinned_process(", "refusal::require_end(end)?"):
+        for marker in ('slot.require_profile().inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                  );\n                        })?', 'slot.require_previous().inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                   );\n                        })?', "slot.require_selection(",
+                       "original_broker_head()", "verify_pinned_process(", 'refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                   );\n                        })?'):
             if marker not in final:
                 raise PROOF.VerificationFailure("physical or actual peer postcheck missing after Root context")
     if path == OWNER:
@@ -222,10 +222,10 @@ class PublicationRefusalSourceTests(unittest.TestCase):
     def test_frame_arm_covers_root_postchecks_and_exact_current_readback(self):
         self.check(TRANSPORT, "serve_generation_publication_with_end", ("exchange_with_original_deadline(|bytes, end| {",
             "PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {", "Ok((raw, after))",
-            "!= expected", "refusal::require_end(end)?"))
+            "!= expected", 'refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                   );\n                        })?'))
         for occurrence in (0, 1, 2):
-            self.reject(TRANSPORT, "serve_generation_publication_with_end", "slot.require_profile()?", occurrence)
-        self.mutate(TRANSPORT, lambda s: s.replace("refusal::require_end(end)?;", "if false { refusal::require_end(end)?; }", 1))
+            self.reject(TRANSPORT, "serve_generation_publication_with_end", 'slot.require_profile().inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b                                  );\n                        })?', occurrence)
+        self.mutate(TRANSPORT, lambda s: s.replace('refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b"root_stage=publication.deadline\\n");\n                        })?;', 'if false { refusal::require_end(end).inspect_err(|_| {\n                            let _ = std::io::stderr().write_all(b"root_stage=publication.deadline\\n");\n                        })?; }', 1))
 
     def test_registration_delivery_uses_original_end_and_independent_refusal(self):
         self.check(RUNTIME, "serve_optional_with_end", ("let operation_end = end.min(submission.end)",

@@ -80,13 +80,13 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
         self.reject(filename, "fn wait(",
                     "libc::POLLERR | libc::POLLHUP | libc::POLLNVAL")
         self.reject(filename, "fn wait(", "fds[0].revents != 0")
-        self.reject(filename, "fn exchange_until(", "size > 16_384")
+        self.reject(filename, "fn exchange_until_with_response_bound(", "size == 0 || size > response_bound")
 
     def test_poll_diagnostics_keep_original_deadline_errno_and_rejection_order(self):
         filename = "root_generation_publication_stream.rs"
         self.reject(filename, "fn exchange(",
                     "(Instant::now() + self.timeout).min(self.end)")
-        self.reject(filename, "fn exchange_until(",
+        self.reject(filename, "fn exchange_until_with_response_bound(",
                     "let end = requested_end.min(now + self.timeout).min(self.end)")
         for marker in ("end.checked_duration_since(Instant::now())",
                        "remaining.is_zero()", "if ready <= 0",

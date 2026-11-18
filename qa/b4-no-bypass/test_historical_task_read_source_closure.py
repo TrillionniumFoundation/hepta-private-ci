@@ -78,9 +78,9 @@ def require_structure(path, source, rows):
             if not context[0] < found.start() < context[1]:
                 raise PROOF.VerificationFailure("original files and reply must stay in actual recipient context")
         tail = code[context[1]:outer[1]]
-        if not re.match(r"^\s*,\s*\)\?\s*;", tail):
+        if not re.match('^\\s*' + token_pattern(',\n                ).inspect_err(|_| { let _ = io::stderr().write_all(b                                           ); })?;'), tail):
             raise PROOF.VerificationFailure("actual context postcheck error must propagate")
-        if "self.metadata.require_metadata_unchanged()?" not in tail or "require_end(end)?" not in tail:
+        if 'self.metadata.require_metadata_unchanged().inspect_err(|_| { let _ = io::stderr().write_all(b                                       ); })?' not in tail or 'require_end(end).inspect_err(|_| { let _ = io::stderr().write_all(b                                       ); })?' not in tail:
             raise PROOF.VerificationFailure("post-context metadata and actual end must precede refusal Ready")
     if path == CLI:
         # The binary also has a distinct non-Linux main. Select the unique real
@@ -238,10 +238,10 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
 
     def test_every_exchange_is_same_session_bounded_once_and_permanently_fenced_on_error(self):
         self.check(CLIENT, "exchange", (
-            "self.lane.try_lock()", "held.take().ok_or_else(refused)?",
+            "self.lane.try_lock()", 'held.take().ok_or_else(refused).inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b                                               ,\n                );\n            })?',
             "!(1..=MAX_READS).contains(&request_id)", "purpose: operation.purpose().into()",
-            "profile: self.profile.clone()", "lane.stream.exchange(&request)?",
-            "require_complete_reply(\n                    &bytes,\n                    request_id,\n                    &self.profile,\n                )?", "request_id.checked_add(1)",
+            "profile: self.profile.clone()", 'lane\n                .stream\n                .exchange_with_response_bound(&request, operation.response_bound())\n                .inspect_err(|_| {\n                    let _ = std::io::Write::write_all(\n                        &mut io::stderr(),\n                        b                                            ,\n                    );\n                })?',
+            'require_complete_reply(&bytes, request_id, &self.profile).inspect_err(\n                        |_| {\n                            let _ = std::io::Write::write_all(\n                                &mut io::stderr(),\n                                b                                              ,\n                            );\n                        },\n                    )?', "request_id.checked_add(1)",
             "*held = Some(lane)", "held.take()",
         ))
         for occurrence in (0, 1):
@@ -252,12 +252,12 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
 
     def test_consumer_stays_between_two_actual_root_observations(self):
         for occurrence in (0, 1):
-            self.reject(CLIENT, "with_current_read<T>", "self.client.observe()? != self.data", occurrence)
+            self.reject(CLIENT, "with_current_read<T>", 'self.client.observe().inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut io::stderr(),\n                    b                                                        ,\n                );\n            })? != self.data', occurrence)
         self.check(CLIENT, "with_current_read<T>", ("let value = action(&self.data.ledger)", "self.client.fence()"))
 
     def test_reply_is_complete_strict_and_bound_to_current_original_profile(self):
         self.check(PROTOCOL, "require_complete_reply", (
-            "bytes.len() > WIRE_BOUND", "!(1..=MAX_READS).contains(&request_id)",
+            'bytes.len() > TASK_RESPONSE_BOUND', "!(1..=MAX_READS).contains(&request_id)",
             "response.schema != 1", "response.purpose != PURPOSE", "response.request_id != request_id",
             "response.profile != profile", "response.ledger.validate_data()?", "canonical_digest(&response.data_cut)?",
         ))
@@ -279,11 +279,11 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "require_original_target(", "observe_original_task(",
             "RootHistoricalSourceInputsV1::open_original_source_deployment(",
             "RootInitialRunStartFilesV1::open_original_deployment(",
-            "RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?", "reply.is_empty() || reply.len() > WIRE_BOUND",
+            'RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed).inspect_err(|_| { let _ = io::stderr().write_all(b                                          ); })?', 'reply.is_empty() || reply.len() > operation.response_bound()',
         ))
         for occurrence in (0, 1):
-            self.reject(PROVIDER, "observe_complete_task", "self.metadata.require_metadata_unchanged()?", occurrence)
-        self.mutate(PROVIDER, lambda s: s.replace("                require_end(end)?;", "                RootInitialRunStartFilesV1::open_original_deployment(&self.deployment.run_start_deployment)?;\n                require_end(end)?;", 1))
+            self.reject(PROVIDER, "observe_complete_task", 'self.metadata.require_metadata_unchanged().inspect_err(|_| { let _ = io::stderr().write_all(b                                        ); })?', occurrence)
+        self.mutate(PROVIDER, lambda s: s.replace('require_end(end).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.exit_deadline\\n"); })?;', 'RootInitialRunStartFilesV1::open_original_deployment(&self.deployment.run_start_deployment)?;\n                require_end(end).inspect_err(|_| { let _ = io::stderr().write_all(b"root_stage=historical.exit_deadline\\n"); })?;', 1))
 
     def test_root_sealing_and_serving_cannot_renew_or_replace_original_inputs(self):
         self.check(PREPARED, "seal_original_historical_task_read", (
@@ -294,7 +294,7 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
         ))
         self.check(RUNTIME, "serve_optional", (
             "owner_alive(owner, session_end)?", "verify_pinned_process(", "*held = Some(stream.try_clone()?)",
-            "request_bound: WIRE_BOUND", "response_bound: WIRE_BOUND", "request.profile != bound.runtime.profile.binding",
+            "request_bound: WIRE_BOUND", 'response_bound: TASK_RESPONSE_BOUND', "request.profile != bound.runtime.profile.binding",
             "request.request_id != sequence", "!(1..=MAX_READS).contains(&sequence)", "sequence.checked_add(1)",
             "let request_end = session_end.min(Instant::now() + Duration::from_millis(config.timeout_ms))",
             "require_end(session_end)?", "stopping.store(true, Ordering::Release)", "stream.shutdown(Shutdown::Both)", "worker.join()",
@@ -314,8 +314,8 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "historical_deployment.is_some() != historical_handoff.is_some()",
             "historical_deployment.is_some() && root_fd.is_none()",
             "historical_deployment.is_some() && initial_deployment.is_some()",
-            "PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)?",
-            "PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?", "send_root_historical_task_read_handoff(",
+            'PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)\n                .inspect_err(|_| {\n                    let _ = std::io::stderr().write_all(b                                   );\n                })?',
+            'PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)\n                    .inspect_err(|_| {\n                        let _ = std::io::stderr().write_all(b                                       );\n                    })?', "send_root_historical_task_read_handoff(",
         ))
         self.mutate(CLI, lambda s: s.replace('"--historical-task-deployment"', '"--incorrect-historical-input" /* "--historical-task-deployment" */', 1))
         for path, name in ((LAUNCH, "receive"), (LATE, "receive_original_late_writer")):
