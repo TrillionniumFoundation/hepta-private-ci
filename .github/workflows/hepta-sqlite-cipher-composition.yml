@@ -60,14 +60,14 @@ jobs:
           links = [(p["name"],p["version"]) for p in metadata["packages"] if p.get("links") == "sqlite3"]
           assert links == [("libsqlite3-sys","0.40.0")], links
           changed = subprocess.check_output(["git","diff","--name-only"],text=True).splitlines()
-          assert set(changed) <= {"MODULE.bazel.lock"}, changed
+          assert changed == [], changed
           assert "from_secs(5)" in pathlib.Path("codex-rs/hepta-matrix-sdk/src/sdk.rs").read_text()
           (root / "record.json").write_text(json.dumps({
               "head": os.environ["EXPECTED_HEAD"],
               "links": links,
               "changed": changed,
               "locks": {n: hashlib.sha256((root/n).read_bytes()).hexdigest() for n in ["Cargo.lock","MODULE.bazel.lock"]},
-              "scope": "composed SQLite 0.40 cipher qualification; generated Bazel lock pending review"
+              "scope": "composed SQLite 0.40 cipher qualification; reviewed generated Bazel lock committed; zero lock drift required"
           },indent=2)+"\n")
           PY
       - name: Execute original restart and security regressions without retries
