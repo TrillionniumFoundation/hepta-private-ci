@@ -32,7 +32,9 @@ use crate::rule::PatternToken;
 use crate::rule::PrefixPattern;
 use crate::rule::PrefixRule;
 use crate::rule::RuleRef;
+#[cfg(not(feature = "hia-native"))]
 use crate::rule::validate_match_examples;
+#[cfg(not(feature = "hia-native"))]
 use crate::rule::validate_not_match_examples;
 
 pub struct PolicyParser {
@@ -142,10 +144,21 @@ impl PolicyBuilder {
                 Vec::new(),
                 self.host_executables_by_name.clone(),
             );
-            validate_not_match_examples(&policy, &validation.rules, &validation.not_matches)
-                .map_err(|error| attach_validation_location(error, validation.location.clone()))?;
-            validate_match_examples(&policy, &validation.rules, &validation.matches)
-                .map_err(|error| attach_validation_location(error, validation.location.clone()))?;
+            #[cfg(feature = "hia-native")]
+            crate::hia_native_example_validation_step::validate_examples(
+                &policy,
+                &validation.rules,
+                &validation.matches,
+                &validation.not_matches,
+            )
+            .map_err(|error| attach_validation_location(error, validation.location.clone()))?;
+            #[cfg(not(feature = "hia-native"))]
+            {
+                validate_not_match_examples(&policy, &validation.rules, &validation.not_matches)
+                    .map_err(|error| attach_validation_location(error, validation.location.clone()))?;
+                validate_match_examples(&policy, &validation.rules, &validation.matches)
+                    .map_err(|error| attach_validation_location(error, validation.location.clone()))?;
+            }
         }
 
         Ok(())
