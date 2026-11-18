@@ -25,6 +25,7 @@ on:
       - "scripts/qualify_runtime_process_bridge.py"
       - "scripts/test*cell*"
       - "scripts/test_hepta_owner*"
+      - "scripts/test_hepta_cgroup_observation.py"
       - "scripts/test_runtime_process_bridge.py"
       - ".github/workflows/cell-hia-joint.yml"
   workflow_dispatch:
@@ -106,7 +107,11 @@ jobs:
           HEPTA_OWNER_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/cell-joint-evidence/owner-controls
           HEPTA_RECEIVER_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/cell-joint-evidence/receiver-controls
         run: |
-          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics test_hepta_temporal_native_probe test_hepta_receiver_store test_hepta_receiver_handoff test_hepta_owner_store test_hepta_owner_history 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics test_hepta_temporal_native_probe test_hepta_receiver_store test_hepta_receiver_handoff test_hepta_owner_store test_hepta_owner_history test_hepta_cgroup_observation 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+      - name: Observe current cgroup accounting with explicit measurement scope
+        working-directory: cells
+        run: |
+          python -B scripts/hepta_cells/cgroup_observation.py > "$RUNNER_TEMP/cell-joint-evidence/cgroup-observation.json"
       - name: Freeze and run actual HIA and GRU cold processes
         working-directory: cells
         run: |
