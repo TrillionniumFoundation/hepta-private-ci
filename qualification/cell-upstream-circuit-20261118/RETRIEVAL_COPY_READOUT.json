@@ -1,0 +1,162 @@
+{
+  "counts": {
+    "native_FF_retrieval": {
+      "calls": 12,
+      "copy_A_reference_AST": 10,
+      "unparseable_AST": 2
+    },
+    "native_TF_retrieval": {
+      "calls": 12,
+      "copy_A_reference_AST": 12,
+      "unparseable_AST": 0
+    }
+  },
+  "rows": [
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": null,
+      "slot": "node-0",
+      "task": "test-completion:upstream-requests-unquote-header-value"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": null,
+      "slot": "node-1",
+      "task": "test-completion:upstream-requests-unquote-header-value"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-requests-unquote-header-value"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-requests-unquote-header-value"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-requests-unquote-unreserved"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-requests-unquote-unreserved"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-requests-unquote-unreserved"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-requests-unquote-unreserved"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-requests-parse-header-links"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-requests-parse-header-links"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-requests-parse-header-links"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-requests-parse-header-links"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-werkzeug-is-entity-header"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-werkzeug-is-entity-header"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-werkzeug-is-entity-header"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-werkzeug-is-entity-header"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-werkzeug-is-byte-range-valid"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-werkzeug-is-byte-range-valid"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-werkzeug-is-byte-range-valid"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-werkzeug-is-byte-range-valid"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-click-split-opt"
+    },
+    {
+      "arm": "native_FF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-click-split-opt"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-0",
+      "task": "test-completion:upstream-click-split-opt"
+    },
+    {
+      "arm": "native_TF_retrieval",
+      "copies_A_reference_AST": true,
+      "slot": "node-1",
+      "task": "test-completion:upstream-click-split-opt"
+    }
+  ],
+  "schema": "hepta.retrieval-answer-copy-readout.v1",
+  "scope": "descriptive AST comparison of already-complete raw outputs; no model, verifier or source modification"
+}
