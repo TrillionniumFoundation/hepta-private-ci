@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="38" skipped="0" failures="0" errors="0" uuid="3022c3aa-45d5-4fcb-b3c0-ecc6d3e626d0" timestamp="2026-11-19T05:01:23.252+08:00" time="4.969">
+    <testsuite name="codex-git-utils" tests="38" skipped="0" errors="0" failures="0">
+        <testcase name="apply::tests::apply_add_success" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.254+08:00" time="0.072"/>
+        <testcase name="apply::tests::apply_modify_conflict" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.254+08:00" time="0.091"/>
+        <testcase name="apply::tests::apply_modify_skipped_missing_index" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.326+08:00" time="0.048"/>
+        <testcase name="apply::tests::extract_paths_handles_quoted_headers" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.374+08:00" time="0.006"/>
+        <testcase name="apply::tests::extract_paths_ignores_dev_null_header" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.380+08:00" time="0.006"/>
+        <testcase name="apply::tests::extract_paths_unescapes_c_style_in_quoted_headers" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.386+08:00" time="0.006"/>
+        <testcase name="apply::tests::parse_output_unescapes_quoted_paths" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.392+08:00" time="0.010"/>
+        <testcase name="apply::tests::apply_then_revert_success" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.345+08:00" time="0.089"/>
+        <testcase name="apply::tests::preflight_blocks_partial_changes" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.402+08:00" time="0.063"/>
+        <testcase name="baseline::tests::diff_reports_added_modified_and_deleted_files" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.465+08:00" time="0.024"/>
+        <testcase name="baseline::tests::ensure_recovers_from_unborn_repository" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.489+08:00" time="0.036"/>
+        <testcase name="apply::tests::revert_preflight_does_not_stage_index" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.433+08:00" time="0.111"/>
+        <testcase name="baseline::tests::reports_executable_bit_changes_as_modified" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.525+08:00" time="0.021"/>
+        <testcase name="baseline::tests::reset_drops_previous_history" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.546+08:00" time="0.035"/>
+        <testcase name="baseline::tests::reset_creates_fresh_baseline" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.545+08:00" time="0.039"/>
+        <testcase name="baseline::tests::status_scan_does_not_write_added_file_blobs" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.582+08:00" time="0.021"/>
+        <testcase name="baseline::tests::write_index_ignores_configured_hooks_path" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.583+08:00" time="0.033"/>
+        <testcase name="branch::tests::merge_base_returns_none_when_branch_missing" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.617+08:00" time="0.068"/>
+        <testcase name="branch::tests::merge_base_returns_shared_commit" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.685+08:00" time="0.151"/>
+        <testcase name="fsmonitor::tests::detects_supported_builtin_fsmonitor_values" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.836+08:00" time="0.006"/>
+        <testcase name="branch::tests::merge_base_prefers_upstream_when_remote_ahead" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.603+08:00" time="0.263"/>
+        <testcase name="git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.867+08:00" time="3.142"/>
+        <testcase name="git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running" classname="codex-git-utils" timestamp="2026-11-19T05:01:23.842+08:00" time="3.170"/>
+        <testcase name="info::tests::canonicalize_git_remote_url_normalizes_github_variants" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.012+08:00" time="0.020"/>
+        <testcase name="info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.009+08:00" time="0.022"/>
+        <testcase name="info::tests::canonicalize_git_remote_url_rejects_non_repository_values" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.032+08:00" time="0.019"/>
+        <testcase name="info::tests::fsmonitor_override_rejects_configured_helper" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.032+08:00" time="0.538"/>
+        <testcase name="info::tests::git_metadata_commands_do_not_inherit_stdin" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.570+08:00" time="0.045"/>
+        <testcase name="info::tests::local_git_branches_excludes_detached_head_entry" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.614+08:00" time="0.057"/>
+        <testcase name="status::tests::canceling_one_consumer_preserves_the_shared_status_scan" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.671+08:00" time="0.006"/>
+        <testcase name="status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.677+08:00" time="0.006"/>
+        <testcase name="status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.683+08:00" time="0.006"/>
+        <testcase name="status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.688+08:00" time="0.006"/>
+        <testcase name="status::tests::concurrent_status_requests_share_one_repository_scan" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.694+08:00" time="0.034"/>
+        <testcase name="status::tests::status_keys_coalesce_symlink_aliases_of_the_same_worktree" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.728+08:00" time="0.006"/>
+        <testcase name="status::tests::status_requests_do_not_share_different_repositories" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.735+08:00" time="0.034"/>
+        <testcase name="status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.769+08:00" time="0.023"/>
+        <testcase name="info::tests::fsmonitor_override_uses_effective_layered_config_value" classname="codex-git-utils" timestamp="2026-11-19T05:01:27.051+08:00" time="1.170"/>
+    </testsuite>
+</testsuites>
