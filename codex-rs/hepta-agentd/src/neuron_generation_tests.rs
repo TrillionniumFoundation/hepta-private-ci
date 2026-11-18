@@ -15,6 +15,7 @@ use pretty_assertions::assert_eq;
 use super::AgentdNeuronGenerationOwnerV2;
 use super::GenerationOwnerBoundary;
 
+#[track_caller]
 fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
     match value {
         Ok(value) => value,
