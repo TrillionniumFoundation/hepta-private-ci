@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.retained-publication.review-summary.v1",
+  "source_head": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+  "source_tree": "377b386d89bc0f950ed260d8ab6fe58b423a9976",
+  "source_branch": "codex/learn-original-retained-publication-ce434-20261112-wip",
+  "original_source_head": "3396b96cf11f7b04722fa0f94e7f2010434110bf",
+  "original_source_failure": "Inherited f8 CALLERS.toml mixed inline required_function_order with an array table; source classes failed before any test.",
+  "repair": "Only normalize the existing require_original_training item to an array table; preserve that item and the subsequent read_candidate_material sequence/top_level values.",
+  "checks": [
+    {
+      "name": "retained-source",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_retained_publication_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.93819,
+      "log_bytes": 2050,
+      "log_sha256": "e2e3ce097519e9da109ce16823ca6ab4ac579c7b15dd446ef611f4d0e3d38525",
+      "test_count": 9,
+      "phase": "77bfe-v2"
+    },
+    {
+      "name": "training-source",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_training_command_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.259461,
+      "log_bytes": 2085,
+      "log_sha256": "0853879d9eb625fb3d35c517faac3623d31ab9e1e3511bd49880b6b63c438742",
+      "test_count": 9,
+      "phase": "77bfe-v2"
+    },
+    {
+      "name": "coverage-parser",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.641177,
+      "log_bytes": 3123,
+      "log_sha256": "d84c148bbdb96ed5e7ef12da6fa0283c31674a0fa4d9783dad7fdf84e2fc162c",
+      "test_count": 16,
+      "phase": "77bfe-v3-parser"
+    },
+    {
+      "name": "py-compile",
+      "argv": [
+        "python3",
+        "-m",
+        "py_compile",
+        "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "scripts/hepta_c_observer_coverage.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.078853,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "77bfe-v2"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.022196,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "phase": "77bfe-v2"
+    }
+  ],
+  "preserved_failures": [
+    {
+      "phase": "3396-v1",
+      "cause": "TOML parsing failed before source controls ran",
+      "result": "3396-v1/result.json"
+    },
+    {
+      "phase": "77bfe-v2",
+      "cause": "The sparse checkout omitted the actual workflow required by eight parser subcases. Added that unchanged original fixture and reran only the parser.",
+      "result": "77bfe-v2/result.json"
+    }
+  ],
+  "qualification_limit": {
+    "source_controls_executed": 18,
+    "parser_tests_executed_in_successful_rerun": 16,
+    "all_268_source_controls_executed": false,
+    "formatter_executed": false,
+    "rust_executed": false,
+    "full_caller_proof_executed": false,
+    "native_mechanism_tests_executed": false,
+    "deployed_full_chain_proven": false,
+    "authority_granted": false
+  },
+  "native_tests_pending": [
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_uses_original_selection_and_real_distinct_task_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_changed_full_training_signature_before_prepare",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_never_converts_candidate_training_into_no_update",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_another_final_use_purpose_and_only_reads_pending",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_refuses_actual_artifact_withdrawal_before_final_use",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant"
+  ],
+  "source_before": {
+    "head": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+    "tree": "377b386d89bc0f950ed260d8ab6fe58b423a9976",
+    "tracked_status": ""
+  },
+  "source_after": {
+    "head": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+    "tree": "377b386d89bc0f950ed260d8ab6fe58b423a9976",
+    "tracked_status": ""
+  },
+  "artifacts": [
+    {
+      "path": "77bfe-v2/retained-source.log",
+      "sha": "975b889f0baf8dfa054ae53948b76abfc586301d",
+      "bytes": 2050
+    },
+    {
+      "path": "77bfe-v2/training-source.log",
+      "sha": "ebd0a6fce4a2ce0a01ae9744fdca6d423b85270f",
+      "bytes": 2085
+    },
+    {
+      "path": "77bfe-v2/coverage-parser.log",
+      "sha": "cc21602684b34c13d8bee89420bc7c98fcad25dc",
+      "bytes": 16702
+    },
+    {
+      "path": "77bfe-v2/py-compile.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "77bfe-v2/diff-check.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "77bfe-v2/result.json",
+      "sha": "23c22afeb310a76ab93da6cd39e89203678d73d8",
+      "bytes": 2881
+    },
+    {
+      "path": "77bfe-v3-parser/coverage-parser.log",
+      "sha": "a5c9d248d62a741fe9fe363e2490d3f466497fa3",
+      "bytes": 3123
+    },
+    {
+      "path": "77bfe-v3-parser/result.json",
+      "sha": "56cb93633536a45016248b079dda8b5f631aecc5",
+      "bytes": 1258
+    },
+    {
+      "path": "run_3396_v1.py",
+      "sha": "b60b27c13273aee92555899431801d8e48452281",
+      "bytes": 3260
+    },
+    {
+      "path": "run_77bfe_v2.py",
+      "sha": "f76b9b50ac49e78050f550f880ff3b92414fb087",
+      "bytes": 3261
+    },
+    {
+      "path": "run_77bfe_v3_parser.py",
+      "sha": "b91de175776a1a9dd023448c3d098b0d9331c3cc",
+      "bytes": 3427
+    },
+    {
+      "path": "3396-v1/retained-source.log",
+      "sha": "c1f7a50480320d920b868390ef1a308d454accc2",
+      "bytes": 1331
+    },
+    {
+      "path": "3396-v1/training-source.log",
+      "sha": "d64b56493a61e1f6f510fc6f1fb7d776e9714e34",
+      "bytes": 1354
+    },
+    {
+      "path": "3396-v1/coverage-parser.log",
+      "sha": "a615e315f4a4f40cc182a47795eafe615c88b50b",
+      "bytes": 3123
+    },
+    {
+      "path": "3396-v1/py-compile.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "3396-v1/diff-check.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "3396-v1/result.json",
+      "sha": "d61c48cb10aa292d74bde2b4b734a7eff4b19ff0",
+      "bytes": 2881
+    }
+  ]
+}

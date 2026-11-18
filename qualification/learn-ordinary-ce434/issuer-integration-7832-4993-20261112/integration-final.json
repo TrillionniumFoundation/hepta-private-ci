@@ -1,0 +1,750 @@
+{
+  "refs": {
+    "base": "6d900c56b330089f0de380b28c7f57bb8072be30",
+    "left": "7832eef16022f1af233e2a48ef46fb1ac61dcd8f",
+    "right": "4993c1fe99dc412067f34f122912c90fcc3af403"
+  },
+  "conflicts": [
+    ".github/workflows/hepta-daemon-learning-native.yml",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+  ],
+  "rust_resolution": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "base": {
+        "bytes": 8870,
+        "sha256": "be18d1db0061a8790a737916005b9a9735608f9ffdc882a8a6d5097305f0ab32",
+        "blob": "432df874d4f7b5aa4cee28563800b7dcefafa379"
+      },
+      "left_formatter_postimage": {
+        "bytes": 9532,
+        "sha256": "9ee65417bba1a22aaebae51e1ab5ec72288a13acec467ffe781d496f459cfd8a",
+        "blob": "b5305f1e734aef022f8bde44eb0f62605de76fd2"
+      },
+      "selected_right": {
+        "bytes": 8921,
+        "sha256": "0d3d42a752d3fae651ea506795bcf74f6832f05d67a0411dd099d9a8c1c61a65",
+        "blob": "1a85644583dba5ff3fd149dff14fc0919e6fe510"
+      },
+      "base_equals_619": true,
+      "left_equals_514": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "base": {
+        "bytes": 10266,
+        "sha256": "97a6821e57dc0b9496a5761f4ed178f1392ef6c7b8e51f22e302cf15d0c340de",
+        "blob": "c9d8ac2a6c51b3e957d51a48b0e3b792c072e403"
+      },
+      "left_formatter_postimage": {
+        "bytes": 11185,
+        "sha256": "dbc8aff54f535737814ab25acf62a2771c21a3d0a3422deb146cacb66a46e345",
+        "blob": "4fd0451b9ead5653f18cc1eff849ca0436c9adce"
+      },
+      "selected_right": {
+        "bytes": 10938,
+        "sha256": "e6a27d49234c538d1c49b80eb9862fcab2d366c8adfb19f63a87919c486fff8e",
+        "blob": "117f5363df89f26027746d2ceaed4c3bbbefe1c2"
+      },
+      "base_equals_619": true,
+      "left_equals_514": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "base": {
+        "bytes": 9932,
+        "sha256": "a92550e360a2ddb06b8ec1e01e7593f2cd7e747337994f8914d19b63afccc318",
+        "blob": "b59bb7e2d44d90aebf6929630e6eb977b3256c0d"
+      },
+      "left_formatter_postimage": {
+        "bytes": 10558,
+        "sha256": "698c9a8880299f7402935de7d0272cbd8f833c8d10472366acbec702817fe339",
+        "blob": "2d2e7b9e6101fe2ba22a48b036b3d4036d4c3227"
+      },
+      "selected_right": {
+        "bytes": 11888,
+        "sha256": "7a6e178c14907abe851c6b6157d79dd9556c4f48e09c0454c6b3736d056d2016",
+        "blob": "ae857bfc2920d12d95330bdbb32bf8911e173ad4"
+      },
+      "base_equals_619": true,
+      "left_equals_514": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "base": {
+        "bytes": 9822,
+        "sha256": "701844ffcc1fc47865dd60769791b630cf31a3a72b3b8dcc5249df5041cb1dc3",
+        "blob": "f0ebd1a974d8d9bbf5b2ef71008df3ba02299357"
+      },
+      "left_formatter_postimage": {
+        "bytes": 10695,
+        "sha256": "07e06b6c6a021df343ed85cf812d54b79ad25c17ee4841f360f17cf9a59773d3",
+        "blob": "92fef8025631a2f0ada5dfedc0c0b53b942414f9"
+      },
+      "selected_right": {
+        "bytes": 10478,
+        "sha256": "49f9cc20c944d47812979de58c82f12356d7b04d3d4cef6e0496bad8b94a05b8",
+        "blob": "d479dbd7f1046b7a86c637ce529f149bc31e1069"
+      },
+      "base_equals_619": true,
+      "left_equals_514": true
+    }
+  ],
+  "scope": "source integration and canonical preservation only; no fmt, Rust, native or full source qualification",
+  "manifest": {
+    "before_counts": {
+      "base": [
+        462,
+        360
+      ],
+      "left": [
+        480,
+        368
+      ],
+      "right": [
+        465,
+        365
+      ]
+    },
+    "after_counts": [
+      483,
+      373
+    ],
+    "metadata_unchanged": true,
+    "full_row_multiset": true,
+    "new_boundary_ids": [
+      "learning_retained_version_original_issuer_attenuation",
+      "learning_retained_version_original_issuer_request",
+      "learning_retained_version_original_issuer_worker"
+    ],
+    "changed_existing_boundary": {
+      "id": "learning_retained_version_original_final_use",
+      "symbol": "OriginalCircuitRetainedVersionHostV1::publish_original_final_use",
+      "definition_path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "definition_markers": [
+        "fn publish_original_final_use("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs"
+      ],
+      "caller_markers": [],
+      "receiver_type": "OriginalCircuitRetainedVersionHostV1"
+    },
+    "right_added_protected_rows": [
+      {
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "try_clone(",
+          "permit_all",
+          "forward_recovery",
+          "LearningEvidenceVerifierV1::new",
+          "RootResidentLearningProfileV3::new",
+          "initialize_host_authority(",
+          "DeploymentFinalUseIssuer::issue(",
+          "ROOT_RESIDENT_LEARNING_EXECUTE",
+          "AgentdUnixFinalUseGrantProvider::from_stream(",
+          "derive(Clone",
+          "impl Clone",
+          "Deserialize"
+        ],
+        "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+        "required": [
+          "enum OriginalVersionIssuerAccessV1 { Available, ReadbackOnly }",
+          "const ORIGINAL_RETAINED_VERSION_DESTINATION: &str = \"agentd.cell-generation.next-task-same-model\";",
+          "provider: AgentdUnixFinalUseGrantProvider,",
+          "access: OriginalVersionIssuerAccessV1,"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn into_original_retained_version_issuer(",
+            "sequence": [
+              "self.protected_root.as_ref()",
+              "root.original_uid != 0",
+              "return Err(AgentdFinalUseIssuerError::PeerDenied)",
+              "self.check_root()?",
+              "super::super::remaining(root.end)?",
+              "self.stream.try_lock()",
+              "if slot.is_none()",
+              "Ok(OriginalRootRetainedVersionIssuerV1",
+              "provider: self",
+              "access: OriginalVersionIssuerAccessV1::Available"
+            ]
+          },
+          {
+            "function": "fn request_for_original_retained_version(",
+            "sequence": [
+              "binding.destination_id != ORIGINAL_RETAINED_VERSION_DESTINATION",
+              "binding.subject_id.is_empty()",
+              "binding.request_sha256 == [0; 32]",
+              "binding.scope_sha256 == [0; 32]",
+              "binding.payload_sha256 == [0; 32]",
+              "return Err(AgentdFinalUseIssuerError::BindingMismatch)",
+              "!matches!(self.access, OriginalVersionIssuerAccessV1::Available)",
+              "return Err(AgentdFinalUseIssuerError::ChannelClosed)",
+              "self.access = OriginalVersionIssuerAccessV1::ReadbackOnly",
+              "AgentdUnixFinalUseGrantProvider::request_grant(&self.provider, binding)"
+            ]
+          }
+        ]
+      },
+      {
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "try_clone(",
+          "permit_all",
+          "forward_recovery",
+          "LearningEvidenceVerifierV1::new",
+          "RootResidentLearningProfileV3::new",
+          "initialize_host_authority(",
+          "DeploymentFinalUseIssuer::issue(",
+          "ROOT_RESIDENT_LEARNING_EXECUTE",
+          "AgentdUnixFinalUseGrantProvider::from_stream(",
+          "self.issuer_worker_started.store(false",
+          "final_use_issuer = Some(",
+          "pub async fn"
+        ],
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+        "required": [
+          "struct QueuedOriginalVersionIssuerV1",
+          "cancelled: Arc<AtomicBool>"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_original_final_use(",
+            "sequence": [
+              "self.origin != RetainedVersionOriginV1::Fresh",
+              "self.issuer_worker_started.swap(true, Ordering::AcqRel)",
+              "QueuedOriginalVersionIssuerV1::new()",
+              "self.require_lifetime()?",
+              "owner.claim_original_final_use(&cancelled)",
+              "RetainedVersionFinalUseOutcomeV1::Uncertain as u8",
+              "if let Some((mut issuer, binding)) = claimed",
+              "let response = tokio::task::spawn_blocking(move ||",
+              "require_not_cancelled(&cancelled)?",
+              "owner.state.try_lock()",
+              "owner.read_original(&state)?",
+              "original.final_use_binding() != &binding",
+              ".require_fresh(started, PublicationAccess::NewWork)?",
+              "require_not_cancelled(&cancelled)?",
+              "OriginalRootRetainedVersionIssuerV1::request_for_original_retained_version(",
+              "OriginalCircuitRetainedVersionHostV1::publish_original_final_use(",
+              "AgentdFinalUseIssuerError::Denied",
+              "RetainedVersionFinalUseOutcomeV1::Denied as u8",
+              "RetainedVersionFinalUseOutcomeV1::Uncertain as u8",
+              "drop(queued)",
+              "return Ok(())"
+            ]
+          },
+          {
+            "function": "fn claim_original_final_use(",
+            "sequence": [
+              "require_not_cancelled(cancelled)?",
+              "self.require_lifetime()?",
+              "self.origin != RetainedVersionOriginV1::Fresh",
+              "self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Awaiting",
+              "self.state.try_lock()",
+              "RetainedVersionHostPhaseV1::Awaiting",
+              "RetainedVersionHostPhaseV1::Prepared",
+              "!self.preparation_requested.load(Ordering::Acquire)",
+              "self.read_original(&state)?",
+              "let binding = original.final_use_binding().clone()",
+              ".require_fresh(started, PublicationAccess::NewWork)?",
+              "require_not_cancelled(cancelled)?",
+              "state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?",
+              "RetainedVersionFinalUseOutcomeV1::Requested as u8",
+              "Ok(Some((issuer, binding)))"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.cancelled.store(true, Ordering::Release)"
+            ]
+          },
+          {
+            "function": "fn require_not_cancelled(",
+            "sequence": [
+              "cancelled.load(Ordering::Acquire)",
+              "return Err(Error::Cancelled)"
+            ]
+          }
+        ]
+      },
+      {
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "try_clone(",
+          "permit_all",
+          "forward_recovery",
+          "LearningEvidenceVerifierV1::new",
+          "RootResidentLearningProfileV3::new",
+          "initialize_host_authority(",
+          "DeploymentFinalUseIssuer::issue(",
+          "ROOT_RESIDENT_LEARNING_EXECUTE",
+          "AgentdUnixFinalUseGrantProvider::from_stream("
+        ],
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "required": [
+          "issuer_worker_started: AtomicBool,",
+          "final_use_outcome: AtomicU8,",
+          "final_use_issuer: Option<OriginalRootRetainedVersionIssuerV1>,"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_owners(",
+            "sequence": [
+              "final_use_issuer: AgentdUnixFinalUseGrantProvider",
+              "task.require_completed_a(&inputs.completed)?",
+              "RetainedVersionArtifactOwnerV1::new(",
+              "AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(",
+              "RetainedVersionHostPhaseV1::Awaiting",
+              "final_use_issuer: Some(final_use_issuer)"
+            ]
+          },
+          {
+            "function": "fn recover_from_original_owners(",
+            "sequence": [
+              "RetainedVersionHostPhaseV1::Recovered",
+              "RetainedVersionOriginV1::Recovered",
+              "final_use_issuer: None"
+            ]
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "issuer_worker_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
+              "final_use_outcome: AtomicU8::new(match origin",
+              "RetainedVersionOriginV1::Fresh => RetainedVersionFinalUseOutcomeV1::Awaiting as u8",
+              "RetainedVersionOriginV1::Recovered => RetainedVersionFinalUseOutcomeV1::Published as u8",
+              "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)"
+            ]
+          }
+        ]
+      },
+      {
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "try_clone(",
+          "permit_all",
+          "forward_recovery",
+          "LearningEvidenceVerifierV1::new",
+          "RootResidentLearningProfileV3::new",
+          "initialize_host_authority(",
+          "DeploymentFinalUseIssuer::issue(",
+          "ROOT_RESIDENT_LEARNING_EXECUTE",
+          "AgentdUnixFinalUseGrantProvider::from_stream(",
+          "pub async fn publish_original_final_use("
+        ],
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+        "required": [
+          "pub(super) async fn publish_original_final_use("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn prepare_original(",
+            "sequence": [
+              "self.read_original(state)",
+              "PublicationAccess::NewWork",
+              "self.prepared.notify_waiters()",
+              "Ok(actual)"
+            ]
+          },
+          {
+            "function": "fn publish_original_final_use(",
+            "sequence": [
+              "self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Requested",
+              "state.final_use_issuer.is_some()",
+              "signed.grant.binding != original.final_use_binding()",
+              "self.publication_requested.swap(true, Ordering::AcqRel)",
+              "self.read_original(&state)?",
+              "publish_and_retain_original_trainer(",
+              "task.install_original(published, cut, intent)",
+              "self.read_original(&state)",
+              "PublicationAccess::NewWork",
+              "self.final_use_outcome.store(RetainedVersionFinalUseOutcomeV1::Published as u8, Ordering::Release)",
+              "self.installed.notify_waiters()"
+            ]
+          },
+          {
+            "function": "fn run_original_c(",
+            "sequence": [
+              "owner.read_original(&state)?",
+              "owner.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Published",
+              "PublicationAccess::NewWork",
+              "config.take()",
+              "crate::run(config, arg0_paths).await"
+            ]
+          }
+        ]
+      },
+      {
+        "forbidden": [
+          "SigningKey",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "try_clone(",
+          "permit_all",
+          "forward_recovery",
+          "LearningEvidenceVerifierV1::new",
+          "RootResidentLearningProfileV3::new",
+          "initialize_host_authority(",
+          "DeploymentFinalUseIssuer::issue(",
+          "ROOT_RESIDENT_LEARNING_EXECUTE",
+          "AgentdUnixFinalUseGrantProvider::from_stream("
+        ],
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn serve_original_ordinary(",
+            "sequence": [
+              "tokio::try_join!",
+              "serve_commands(",
+              "OriginalCircuitRetainedVersionHostV1::run_original_c(",
+              "OriginalCircuitRetainedVersionHostV1::serve_original_final_use("
+            ]
+          },
+          {
+            "function": "fn command_response(",
+            "sequence": [
+              "self.read_original(&state)",
+              "PublicationAccess::Readback",
+              "self.original_final_use_outcome()",
+              "RetainedVersionFinalUseOutcomeV1::Denied",
+              "wire::OriginalResult::FinalUseDenied",
+              "RetainedVersionFinalUseOutcomeV1::Requested",
+              "RetainedVersionFinalUseOutcomeV1::Uncertain",
+              "wire::OriginalResult::Uncertain",
+              "duplicate_response_pin()",
+              "self.encode_response("
+            ]
+          }
+        ]
+      }
+    ],
+    "bytes": 968625,
+    "sha256": "900e493274bc1b5d4b06de74b349f25ca1758fce41b18035f7716a298374338a",
+    "blob": "9ca4a6729a947961e9762f99d01ceff56cb76b3a",
+    "parent_whitespace_preserved": true
+  },
+  "workflow": {
+    "root_names": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once"
+    ],
+    "added_issuer_names": [
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once"
+    ],
+    "only_parents_list_changed_from_left": true,
+    "bytes": 26237,
+    "sha256": "e7b00653ece0e69d0af465d4ab4d93516372bd62abc201028474866e842120af",
+    "blob": "e9a019829fdf15ca11a6a2321dd73491efe7fc08"
+  },
+  "root_inventory_qa": {
+    "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+    "new_constant": [
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once"
+    ],
+    "changed_function": "ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof",
+    "all_original_function_bodies_otherwise_preserved": true,
+    "bytes": 25069,
+    "sha256": "e05a641268255871d1833eb95b425fc67d7955f0aab61ba7af11270cbc9bab21",
+    "blob": "8017dfebdf1485f460b2c06cafdaf9c977ef1ce2"
+  },
+  "tree": "391251e4c87da74dfd5473da03cc46512dbd77c7",
+  "changed_paths": [
+    ".github/workflows/hepta-daemon-learning-native.yml",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_learning_retained_publication_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_metadata_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_material_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_task_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+    "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_update_initial_test_support.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+    "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+    "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py",
+    "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+  ],
+  "entries": [
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "mode": "100644",
+      "blob": "e9a019829fdf15ca11a6a2321dd73491efe7fc08",
+      "bytes": 26237,
+      "sha256": "e7b00653ece0e69d0af465d4ab4d93516372bd62abc201028474866e842120af"
+    },
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "blob": "9ca4a6729a947961e9762f99d01ceff56cb76b3a",
+      "bytes": 968625,
+      "sha256": "900e493274bc1b5d4b06de74b349f25ca1758fce41b18035f7716a298374338a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+      "mode": "100644",
+      "blob": "9c2b737ca88b27c8c7f8b74212be91b6919b2ce6",
+      "bytes": 15121,
+      "sha256": "e2038d3c8dbf6aaa2ab3ccceedbcb7bda754ef70835427e52bd3fd2f8564e366"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+      "mode": "100644",
+      "blob": "b61dc81c7a14eca197fdec9e55c397743b69eac6",
+      "bytes": 13528,
+      "sha256": "a1e0a7120c9666dfc42272b8ed1b52e895db99cf457dd5d5b17152c4ca0eb66b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "mode": "100644",
+      "blob": "31a2bf7cb02810578152c4a5923f65894ff9574a",
+      "bytes": 13492,
+      "sha256": "7fd62df58a101884375dc97a5748c4389fdafbf999948a4f365f08f8e7e4b88e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication_support_tests.rs",
+      "mode": "100644",
+      "blob": "7b1f438186dda4a0c2166906763ca6e8baa39914",
+      "bytes": 12182,
+      "sha256": "8f69d594ef66d026bbe5e91dfe91d9f045b2f3ebc41b333116aed2c8103c037b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "mode": "100644",
+      "blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "bytes": 15839,
+      "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "mode": "100644",
+      "blob": "138e41dca8d3dbdc656bcd20c21abbecca755e57",
+      "bytes": 5328,
+      "sha256": "7539b5b9551051fa6de6a0372ace86837d233a748c3538f818799a072e85a4c6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "mode": "100644",
+      "blob": "1a85644583dba5ff3fd149dff14fc0919e6fe510",
+      "bytes": 8921,
+      "sha256": "0d3d42a752d3fae651ea506795bcf74f6832f05d67a0411dd099d9a8c1c61a65"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "mode": "100644",
+      "blob": "117f5363df89f26027746d2ceaed4c3bbbefe1c2",
+      "bytes": 10938,
+      "sha256": "e6a27d49234c538d1c49b80eb9862fcab2d366c8adfb19f63a87919c486fff8e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "mode": "100644",
+      "blob": "ae857bfc2920d12d95330bdbb32bf8911e173ad4",
+      "bytes": 11888,
+      "sha256": "7a6e178c14907abe851c6b6157d79dd9556c4f48e09c0454c6b3736d056d2016"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+      "mode": "100644",
+      "blob": "60b04af4e1d903c0c33ee945731af6b62348348d",
+      "bytes": 7281,
+      "sha256": "fe1e1933d0c21a4b80e223e3022f67551d8d978dc6fefbf44a9f8929320805bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "mode": "100644",
+      "blob": "a2044cd6333daa5d6e481a9ebb8641110eaa2aba",
+      "bytes": 1794,
+      "sha256": "9b0e0c7ad7c6cd0897da697d7012764e07b977f2cd90d393935069f962ac053d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_metadata_tests.rs",
+      "mode": "100644",
+      "blob": "2740f1ff1552222a1000673db1bd8d17eb5eec9d",
+      "bytes": 5473,
+      "sha256": "40cc3cc262f5e2473fbcd24ee9d99a87e272a9bfa6d545003423c6c135a83ee8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs",
+      "mode": "100644",
+      "blob": "72e17c94891294e047b6ac99dca3ed10fe2dcb81",
+      "bytes": 7078,
+      "sha256": "86ba816f47ef362b5211740838f23f3fabc5131da5388be618f26934cf2f6ac5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "mode": "100644",
+      "blob": "73581b24e5356339b9d349c57ea260f0d8b6c0a1",
+      "bytes": 10069,
+      "sha256": "7c3545cdbfde40f5993306e580a6dc0b1758fc9fd77230cce2e5acfcb876434c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_material_support_tests.rs",
+      "mode": "100644",
+      "blob": "c39588efb08a6d5d6c04939656640d487e350a45",
+      "bytes": 3081,
+      "sha256": "1080a31ce36f8438e4eb4dc7428ec757bfcc8781f4be191618a0e0f4706b3a45"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "mode": "100644",
+      "blob": "d479dbd7f1046b7a86c637ce529f149bc31e1069",
+      "bytes": 10478,
+      "sha256": "49f9cc20c944d47812979de58c82f12356d7b04d3d4cef6e0496bad8b94a05b8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_task_support_tests.rs",
+      "mode": "100644",
+      "blob": "b7054f2e261608b968f8136e5c010ca9e8af92aa",
+      "bytes": 3003,
+      "sha256": "4301e8d2b18961ff5c1c2e22931a03de57b117df721950100677c45b02688999"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "mode": "100644",
+      "blob": "c6ed4a3dd9a8d7772af1c64477e0bd3eaa6433cf",
+      "bytes": 5416,
+      "sha256": "74dee92c4da1e168519e4c5c2716aa26b7ed1f64014d9c57c37a406535adfaaf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "mode": "100644",
+      "blob": "b3fd73949428aa6da4d3d519ce461ac7b03a1062",
+      "bytes": 10857,
+      "sha256": "4ae462662625cbaeecae4bf3449252119fa8255f1e72246e9b2dfa819bd960ce"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "mode": "100644",
+      "blob": "222624c7b07483f3825043357411d16517849f30",
+      "bytes": 12681,
+      "sha256": "3697ba7db395d8eeebe6345010a8a39f86a727855dbaf9a1d48c9ffb59724669"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "blob": "eecec1c5de22298f23067ea3df221af8582318c3",
+      "bytes": 66809,
+      "sha256": "99a10fde434fc77f9c7f8b950e898d36d199356f1297bcb9776adb7a0e5dbd21"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_initial_test_support.rs",
+      "mode": "100644",
+      "blob": "f18894fa932671195640f6858908ab83ba1537a3",
+      "bytes": 2272,
+      "sha256": "e6930eff1f0387ce6d971adc1442d2f4cdf4857726f89dbe6b2b8b1d3999e603"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "mode": "100644",
+      "blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+      "bytes": 24067,
+      "sha256": "328455e9cfe08fca6a2e1e1fe05d6a36246b66f456c76d4371ee455b5cbaca68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "mode": "100644",
+      "blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+      "bytes": 21368,
+      "sha256": "eeba761266a1b733f7ad2182c5b237a95f03f1abaa88b0912045b2ffc22fcd19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_issuer_client.rs",
+      "mode": "100644",
+      "blob": "0d811caa2cb421f0bf3e9f21cf1d7dfe6ba1de7d",
+      "bytes": 8477,
+      "sha256": "1fbf08aea3cca3d46b46eb069b113b6edb16458d622b9780aafd18a8ec2b2887"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+      "mode": "100644",
+      "blob": "ea6fee3d113f489f8cf9f3e93e212c5467eb27f8",
+      "bytes": 2838,
+      "sha256": "7ff24a407bd9a6049bfd075a12887ad9b7052f9559fa59fe76155f060b714ddd"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "mode": "100644",
+      "blob": "8017dfebdf1485f460b2c06cafdaf9c977ef1ce2",
+      "bytes": 25069,
+      "sha256": "e05a641268255871d1833eb95b425fc67d7955f0aab61ba7af11270cbc9bab21"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+      "mode": "100644",
+      "blob": "40ccf4619fa0c19cfa15bfe03857f186b6f57d80",
+      "bytes": 10956,
+      "sha256": "be44200a2746561d78a3fb6c4c985490d5be5d1b1683911c3f819b2fbc967490"
+    }
+  ],
+  "source_modules_inventory": 45,
+  "source_methods_inventory": 319,
+  "previous_equivalent_tree": "410481cedd47f2019bc5311e35797525daa8800b"
+}

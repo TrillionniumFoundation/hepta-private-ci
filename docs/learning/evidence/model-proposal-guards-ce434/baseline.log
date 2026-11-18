@@ -1,0 +1,926 @@
+test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires (model_guard_baseline_0.ResidentRootSourceClosureTests.test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires) ... ok
+test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) ... 
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn compose(', marker='ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn run(', marker='self.admission_requested = true') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn run(', marker='if result.is_err()') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn admit(', marker='ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn admit(', marker='slot.take().ok_or(Error::CommitUncertain)?') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn admit(', marker='ResidentOriginalStageOwnersV3::install_fresh_resident_gate(') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='gate.begin(&predecessor, stage).await?') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='watchdog.tick()') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='authentication::original_attestations(') ... ERROR
+  test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?') ... ERROR
+test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) ... ERROR
+test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) ... 
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='stages.validate_recovery(snapshot).await?') ... ERROR
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?') ... ERROR
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='let (_, fresh) = owner.read(cancellation).await?') ... ERROR
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='signatures.len() != snapshot.receipts.len()') ... ERROR
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='verifier\n            .verify(role, signature, &payload, now)') ... ERROR
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='snapshot.training_no_update_v2().is_none()') ... ERROR
+  test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='verify_signed_actor_separation(&previous.1, current, now)') ... ERROR
+test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) ... ERROR
+test_exact_new_callers_and_external_registration_stay_closed (model_guard_baseline_0.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) ... 
+  test_exact_new_callers_and_external_registration_stay_closed (model_guard_baseline_0.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_gate_effect_current') ... FAIL
+  test_exact_new_callers_and_external_registration_stay_closed (model_guard_baseline_0.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_gate_training_cancel') ... FAIL
+test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof (model_guard_baseline_0.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof) ... FAIL
+test_only_actual_strict_cas_can_mint_the_nonrecoverable_token (model_guard_baseline_0.ResidentRootSourceClosureTests.test_only_actual_strict_cas_can_mint_the_nonrecoverable_token) ... ok
+test_original_grant_registry_revocation_and_local_only_fence_are_mandatory (model_guard_baseline_0.ResidentRootSourceClosureTests.test_original_grant_registry_revocation_and_local_only_fence_are_mandatory) ... ok
+test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding (model_guard_baseline_0.ResidentRootSourceClosureTests.test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding) ... ok
+test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) ... 
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='.take()\n            .ok_or(Error::Unavailable)?') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='let cancelled = ResidentExchangeDropV3(') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='Arc::clone(&cancelled.0)') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='if send_cancelled.load(Ordering::Acquire)') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='channel\n                .peer\n                .request(&bytes)') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='response.authorization != authorization.to_string()') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='response.action != action') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='channel\n                .peer\n                .check_peer_lifetime()') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='fresh < observed_at') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='wire::require_original_prefix(') ... ERROR
+  test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='authentication::verify_attestations(') ... ERROR
+test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) ... ERROR
+test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect (model_guard_baseline_0.ResidentRootSourceClosureTests.test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect) ... ok
+test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied) ... ERROR
+test_both_factories_consume_original_values_under_the_same_root_registration (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_both_factories_consume_original_values_under_the_same_root_registration) ... ERROR
+test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape) ... ERROR
+test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle) ... 
+  test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle) (boundary='root_resident_concrete_stages_initial') ... FAIL
+test_actual_candidate_and_shared_original_edges_remain_exact (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) ... 
+  test_actual_candidate_and_shared_original_edges_remain_exact (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='learning_original_material_initial_context_check') ... FAIL
+  test_actual_candidate_and_shared_original_edges_remain_exact (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='root_resident_gate_effect_current') ... FAIL
+test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material) ... ok
+test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time) ... ok
+test_last_root_and_source_io_precede_fresh_full_original_signature_checks (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_last_root_and_source_io_precede_fresh_full_original_signature_checks) ... ok
+test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority) ... ok
+test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success) ... ok
+test_full_evaluator_role_payload_and_original_generator_separation_remain_required (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_full_evaluator_role_payload_and_original_generator_separation_remain_required) ... ERROR
+test_initial_original_connection_cannot_renew_or_promote_recovery (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_initial_original_connection_cannot_renew_or_promote_recovery) ... ok
+test_only_actual_concrete_consumers_and_readback_edges_are_admitted (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_only_actual_concrete_consumers_and_readback_edges_are_admitted) ... ok
+test_original_brand_and_all_current_reads_precede_final_full_authentication (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_original_brand_and_all_current_reads_precede_final_full_authentication) ... ok
+test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_readonly_and_future_cut_do_not_turn_into_fresh_dispatch) ... ok
+test_wrong_context_queued_cancellation_and_completed_regression_never_rearm (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_wrong_context_queued_cancellation_and_completed_regression_never_rearm) ... ok
+test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added) ... ok
+test_initial_fixed_context_and_original_deadlines_precede_all_late_binding (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_initial_fixed_context_and_original_deadlines_precede_all_late_binding) ... ok
+test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors) ... ok
+test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) ... 
+  test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_owner_command_channel') ... FAIL
+  test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_material_initial_context_check') ... FAIL
+  test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_material_dataset_context_check') ... FAIL
+test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity) ... ok
+test_readiness_only_original_unresolved_publication_remains_pending (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_readiness_only_original_unresolved_publication_remains_pending) ... ok
+test_recovery_and_attestation_use_real_owner_reads_and_final_clock (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_recovery_and_attestation_use_real_owner_reads_and_final_clock) ... ok
+test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges) ... ok
+test_commit_cannot_skip_durable_claim_completion_or_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness) ... 
+  test_commit_cannot_skip_durable_claim_completion_or_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness) (marker='self.journal.claim(&key)') ... FAIL
+  test_commit_cannot_skip_durable_claim_completion_or_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness) (marker='self.journal.complete(&key, &payload)') ... FAIL
+test_complete_generator_identity_and_signature_checks_cannot_be_removed (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_complete_generator_identity_and_signature_checks_cannot_be_removed) ... ok
+test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) ... 
+  test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='let before = self.witness.current()?') ... ERROR
+  test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='self.journal.read_current_anchor()?') ... ERROR
+  test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='let after = self.witness.current()?') ... ERROR
+  test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='self.fenced = true') ... ERROR
+test_final_readback_cannot_skip_current_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_final_readback_cannot_skip_current_witness) ... ERROR
+test_model_borrows_original_lane_and_host_entrypoints_remain_closed (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_model_borrows_original_lane_and_host_entrypoints_remain_closed) ... ok
+test_original_manifests_and_qualified_evaluation_are_required (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_original_manifests_and_qualified_evaluation_are_required) ... ok
+test_original_training_header_and_receipt_bindings_cannot_be_removed (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_original_training_header_and_receipt_bindings_cannot_be_removed) ... ok
+test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) ... 
+  test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) (function='fn commit_or_readback<') ... ERROR
+  test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) (function='fn readback<') ... ERROR
+  test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) (function='fn now(') ... ERROR
+test_owner_creation_cannot_skip_original_trainer (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_creation_cannot_skip_original_trainer) ... ERROR
+test_readback_preserves_original_bytes_and_timestamp (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_readback_preserves_original_bytes_and_timestamp) ... ok
+test_shared_lane_cannot_skip_original_completion_or_exact_attestation (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_shared_lane_cannot_skip_original_completion_or_exact_attestation) ... ok
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn compose(', marker='ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn run(', marker='self.admission_requested = true')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn run(', marker='if result.is_err()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn admit(', marker='ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn admit(', marker='slot.take().ok_or(Error::CommitUncertain)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn admit(', marker='ResidentOriginalStageOwnersV3::install_fresh_resident_gate(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='gate.begin(&predecessor, stage).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='watchdog.tick()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='authentication::original_attestations(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) (function='fn continue_original(', marker='gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 263, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (model_guard_baseline_0.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 264, in test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate
+    self.rejects(filename, "fn readback(", "current.dispatch_pending != original.dispatch_pending")
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='stages.validate_recovery(snapshot).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn original_attestations(: required code order missing: ['profile.scope.validate_snapshot(snapshot)?', 'stages.validate_recovery(snapshot).await?', 'for receipt in &snapshot.receipts', 'owner.read(cancellation).await?', 'stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?', 'let (_, fresh) = owner.read(cancellation).await?', 'verify_attestations(', 'fresh / 1_000', 'Ok(signatures)']
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn original_attestations(: required code order missing: ['profile.scope.validate_snapshot(snapshot)?', 'stages.validate_recovery(snapshot).await?', 'for receipt in &snapshot.receipts', 'owner.read(cancellation).await?', 'stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?', 'let (_, fresh) = owner.read(cancellation).await?', 'verify_attestations(', 'fresh / 1_000', 'Ok(signatures)']
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn original_attestations(', marker='let (_, fresh) = owner.read(cancellation).await?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn original_attestations(: required code order missing: ['profile.scope.validate_snapshot(snapshot)?', 'stages.validate_recovery(snapshot).await?', 'for receipt in &snapshot.receipts', 'owner.read(cancellation).await?', 'stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?', 'let (_, fresh) = owner.read(cancellation).await?', 'verify_attestations(', 'fresh / 1_000', 'Ok(signatures)']
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='signatures.len() != snapshot.receipts.len()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='verifier\n            .verify(role, signature, &payload, now)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='snapshot.training_no_update_v2().is_none()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) (function='fn verify_attestations(', marker='verify_signed_actor_separation(&previous.1, current, now)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 363, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects(filename, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (model_guard_baseline_0.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 364, in test_every_original_signature_is_revalidated_after_actual_role_and_root_reads
+    self.rejects("authority_host_learning_resident_wire.rs", "fn require_original_prefix(",
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='.take()\n            .ok_or(Error::Unavailable)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='let cancelled = ResidentExchangeDropV3(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='Arc::clone(&cancelled.0)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='if send_cancelled.load(Ordering::Acquire)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='channel\n                .peer\n                .request(&bytes)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='response.authorization != authorization.to_string()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='response.action != action')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='channel\n                .peer\n                .check_peer_lifetime()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='fresh < observed_at')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='wire::require_original_prefix(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) (marker='authentication::verify_attestations(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 282, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn exchange(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 121, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (model_guard_baseline_0.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 283, in test_queued_cancel_and_bound_refusal_never_restore_fresh_admission
+    self.rejects(filename, "fn drop(", "self.0.store(true, Ordering::Release)")
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 129, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_root_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime']
+
+======================================================================
+ERROR: test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 142, in test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied
+    self.rejects(RUNTIME, "fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?")
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 65, in rejects
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_both_factories_consume_original_values_under_the_same_root_registration (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_both_factories_consume_original_values_under_the_same_root_registration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 104, in test_both_factories_consume_original_values_under_the_same_root_registration
+    self.rejects(STAGES, "fn require_initial(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 66, in rejects
+    self.verifies(path, source)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 57, in verifies
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage(: required code order missing: ['fn require_stage(', 'match stage', 'Stage::Proposal => Err(Error::OwnerUnavailable(', 'Stage::Evaluation => match self', 'Self::NoUpdate(_) => Err(Error::OwnerUnavailable(', 'Self::Candidate(_) => Ok(())', 'Stage::Experience\n            | Stage::Dataset\n            | Stage::Training', 'Stage::Selection\n            | Stage::NextUse => Ok(())']
+
+======================================================================
+ERROR: test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 123, in test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape
+    self.rejects(RUNTIME, "fn admit(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 66, in rejects
+    self.verifies(path, source)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 57, in verifies
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 713, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 685, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+resident_candidate_stage_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(: required code order missing: ['self.owner.authority.profile.initial.clone()', 'ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?', 'self.readback(cancellation).await?', 'ResidentStagesV3::Uninstalled(slot)', 'slot.take().ok_or(Error::CommitUncertain)?', 'ResidentOriginalStageOwnersV3::install_fresh_resident_gate(', '&mut stages,\n            Arc::clone(&continuation.gate)', 'let stages = Arc::new(stages)', 'self.stages = ResidentStagesV3::Installed(Arc::clone(&stages))', 'snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false', 'Box::pin(continue_original(owner, stages, verifier, continuation))']
+
+======================================================================
+ERROR: test_full_evaluator_role_payload_and_original_generator_separation_remain_required (model_guard_baseline_3.OriginalEvaluationHostClosureTests.test_full_evaluator_role_payload_and_original_generator_separation_remain_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 249, in test_full_evaluator_role_payload_and_original_generator_separation_remain_required
+    self.rejects(AUTH, "fn verify_attestations(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 75, in rejects
+    selected = source.index(marker, offset, end + 1)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='let before = self.witness.current()?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 176, in test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence
+    self.rejects(path, "fn require_current(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='self.journal.read_current_anchor()?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 176, in test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence
+    self.rejects(path, "fn require_current(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='let after = self.witness.current()?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 176, in test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence
+    self.rejects(path, "fn require_current(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs', marker='self.fenced = true')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 176, in test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence
+    self.rejects(path, "fn require_current(", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_final_readback_cannot_skip_current_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_final_readback_cannot_skip_current_witness)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 115, in test_final_readback_cannot_skip_current_witness
+    self.rejects(OWNER, "fn decode_current(", "self.require_current()?")
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) (function='fn commit_or_readback<')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 145, in test_owner_clock_cannot_be_replaced_by_request_time
+    self.rejects(OWNER, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) (function='fn readback<')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 145, in test_owner_clock_cannot_be_replaced_by_request_time
+    self.rejects(OWNER, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_owner_clock_cannot_be_replaced_by_request_time (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_clock_cannot_be_replaced_by_request_time) (function='fn now(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 145, in test_owner_clock_cannot_be_replaced_by_request_time
+    self.rejects(OWNER, function, marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+ERROR: test_owner_creation_cannot_skip_original_trainer (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_owner_creation_cannot_skip_original_trainer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 126, in test_owner_creation_cannot_skip_original_trainer
+    self.rejects(
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 67, in rejects
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 712, in _verify_protected_files
+    _verify_required_order(row, code, relative)
+  File "/workspace/scratch/learn-proposal-ce434-v2/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+q24_model_proposal_caller_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs: required code order missing: ['fn commit_or_readback<', 'let now = self.now()?', 'self.admit(trainer, inputs, now)?', 'self.journal.readback(&key)', 'admission.encode(now)?', 'self.require_current()?', 'self.journal.claim(&key)', 'self.journal.complete(&key, &payload)', 'self.anchor_append(before)?', 'self.decode_current(&admission, state)']
+
+======================================================================
+FAIL: test_exact_new_callers_and_external_registration_stay_closed (model_guard_baseline_0.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_gate_effect_current')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 144, in test_exact_new_callers_and_external_registration_stay_closed
+    self.assertEqual(row.product_callers, tuple(expected))
+AssertionError: Tuples differ: ('cod[261 chars]n.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[18 chars].rs') != ('cod[261 chars]n.rs')
+
+First tuple contains 1 additional elements.
+First extra element 4:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs'
+
+  ('codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs',
+   'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs',
+   'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs',
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs',
+?                                                                    ^
+
++  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs')
+?                                                                    ^
+
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs')
+
+======================================================================
+FAIL: test_exact_new_callers_and_external_registration_stay_closed (model_guard_baseline_0.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_gate_training_cancel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 144, in test_exact_new_callers_and_external_registration_stay_closed
+    self.assertEqual(row.product_callers, tuple(expected))
+AssertionError: Tuples differ: ('cod[55 chars].rs', 'codex-rs/hepta-agentd/src/cell_q24_cand[17 chars].rs') != ('cod[55 chars].rs',)
+
+First tuple contains 1 additional elements.
+First extra element 1:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs'
+
+- ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs',
++ ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs',)
+?                                                                  +
+
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs')
+
+======================================================================
+FAIL: test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof (model_guard_baseline_0.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_root_source_closure.py", line 374, in test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof
+    self.assertEqual(len(parents), 7 + len(ROOT_CASES))
+AssertionError: 22 != 16
+
+======================================================================
+FAIL: test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle (model_guard_baseline_1.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle) (boundary='root_resident_concrete_stages_initial')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 81, in test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[63 chars].rs', 'codex-rs/hepta-agentd/src/authority_hos[24 chars].rs') != ('cod[63 chars].rs',)
+
+First tuple contains 1 additional elements.
+First extra element 1:
+'codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs'
+
+- ('codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs',
++ ('codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs',)
+?                                                                          +
+
+-  'codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs')
+
+======================================================================
+FAIL: test_actual_candidate_and_shared_original_edges_remain_exact (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='learning_original_material_initial_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py", line 92, in test_actual_candidate_and_shared_original_edges_remain_exact
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[440 chars]e.rs', 'codex-rs/hepta-agentd/src/cell_q24_mod[144 chars].rs') != ('cod[440 chars]e.rs')
+
+First tuple contains 3 additional elements.
+First extra element 7:
+'codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs'
+
+Diff is 876 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_actual_candidate_and_shared_original_edges_remain_exact (model_guard_baseline_2.OriginalCandidateStageClosureTests.test_actual_candidate_and_shared_original_edges_remain_exact) (boundary='root_resident_gate_effect_current')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py", line 92, in test_actual_candidate_and_shared_original_edges_remain_exact
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[261 chars]n.rs', 'codex-rs/hepta-agentd/src/cell_q24_can[18 chars].rs') != ('cod[261 chars]n.rs')
+
+First tuple contains 1 additional elements.
+First extra element 4:
+'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs'
+
+  ('codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs',
+   'codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs',
+   'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs',
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs',
+?                                                                    ^
+
++  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs')
+?                                                                    ^
+
+-  'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs')
+
+======================================================================
+FAIL: test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_owner_command_channel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 111, in test_only_concrete_original_edges_and_resident_installation_are_registered
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[1303 chars]e.rs', 'codex-rs/hepta-agentd/src/cell_q24_mod[243 chars].rs') != ('cod[1303 chars]e.rs')
+
+First tuple contains 4 additional elements.
+First extra element 20:
+'codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs'
+
+Diff is 1880 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_material_initial_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 111, in test_only_concrete_original_edges_and_resident_installation_are_registered
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[440 chars]e.rs', 'codex-rs/hepta-agentd/src/cell_q24_mod[144 chars].rs') != ('cod[440 chars]e.rs')
+
+First tuple contains 3 additional elements.
+First extra element 7:
+'codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs'
+
+Diff is 876 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_only_concrete_original_edges_and_resident_installation_are_registered (model_guard_baseline_4.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='learning_original_material_dataset_context_check')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py", line 111, in test_only_concrete_original_edges_and_resident_installation_are_registered
+    self.assertEqual(row.product_callers, expected)
+AssertionError: Tuples differ: ('cod[468 chars]t.rs', 'codex-rs/hepta-agentd/src/cell_q24_mod[18 chars].rs') != ('cod[468 chars]t.rs')
+
+First tuple contains 1 additional elements.
+First extra element 7:
+'codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs'
+
+Diff is 772 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_commit_cannot_skip_durable_claim_completion_or_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness) (marker='self.journal.claim(&key)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 123, in test_commit_cannot_skip_durable_claim_completion_or_witness
+    self.rejects(OWNER, "fn commit_or_readback<", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 56, in rejects
+    self.assertEqual(body.count(marker), 1, marker)
+AssertionError: 0 != 1 : self.journal.claim(&key)
+
+======================================================================
+FAIL: test_commit_cannot_skip_durable_claim_completion_or_witness (model_guard_baseline_5.Q24ModelProposalSourceClosureTests.test_commit_cannot_skip_durable_claim_completion_or_witness) (marker='self.journal.complete(&key, &payload)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 123, in test_commit_cannot_skip_durable_claim_completion_or_witness
+    self.rejects(OWNER, "fn commit_or_readback<", marker)
+  File "/workspace/scratch/learn-proposal-ce434-v2/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 56, in rejects
+    self.assertEqual(body.count(marker), 1, marker)
+AssertionError: 0 != 1 : self.journal.complete(&key, &payload)
+
+----------------------------------------------------------------------
+Ran 45 tests in 10.326s
+
+FAILED (failures=11, errors=45)

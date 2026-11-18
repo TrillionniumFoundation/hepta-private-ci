@@ -1,0 +1,51 @@
+{
+  "boundaries": 462,
+  "protected": 360,
+  "modified_qa": [
+    "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+    "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+    "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+    "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+    "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+    "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+    "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+    "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+    "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+    "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py"
+  ],
+  "updated_boundary_ids": [
+    "circuit_feature_original_selection_observation",
+    "learning_original_owner_command_channel",
+    "learning_original_source_input_current",
+    "learning_original_dataset_readback_current",
+    "learning_original_dataset_readback_context",
+    "learning_original_dataset_readback_cut",
+    "learning_original_training_initial_connection_dataset",
+    "learning_original_training_command_client_readback",
+    "learning_original_material_initial_context_check",
+    "learning_original_material_dataset_context_check",
+    "learning_retained_publication_context",
+    "learning_retained_publication_prepare",
+    "learning_artifact_original_publication_service_readback",
+    "learning_original_published_read_owner_create",
+    "learning_original_owner_snapshot_encode"
+  ],
+  "new_boundary_ids": [
+    "learning_retained_version_client_bind",
+    "learning_retained_version_client_recover",
+    "learning_retained_version_client_prepare",
+    "learning_retained_version_client_readback",
+    "learning_retained_version_host_create",
+    "learning_retained_version_host_recover",
+    "learning_retained_version_host_serve",
+    "learning_retained_version_ordinary_serve",
+    "learning_retained_version_selection_readback",
+    "learning_retained_version_final_use_binding",
+    "learning_retained_version_original_final_use",
+    "learning_retained_version_original_c_runtime",
+    "learning_retained_version_preserve_trainer",
+    "learning_retained_version_original_selection_channel"
+  ]
+}
