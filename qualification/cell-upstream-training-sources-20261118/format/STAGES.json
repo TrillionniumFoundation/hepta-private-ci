@@ -1,0 +1,101 @@
+[
+  {
+    "label": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "db5770c811f210b357f836d27805922133c940b8",
+      "80cb4dc2da01e100d8f68384cd12a9d6bb752eed"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 5.980410576972645
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/home/qian-qi/work/hepta-e5-format-20261118-2e9b/source",
+      "db5770c811f210b357f836d27805922133c940b8"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.0166412609978579
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.004580707987770438
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 3.4739476200193167
+  },
+  {
+    "label": "just-fmt",
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "80cb4dc2da01e100d8f68384cd12a9d6bb752eed"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.21513878897530958
+  },
+  {
+    "label": "qualification-check",
+    "command": [
+      "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "/home/qian-qi/work/hepta-e5-format-20261118-2e9b/source/scripts",
+      "ruff",
+      "format",
+      "--check",
+      "qualification/cell-upstream-training-sources-20261118/acquire.py",
+      "qualification/cell-upstream-training-sources-20261118/collect_complete.py",
+      "qualification/cell-upstream-training-sources-20261118/replay_upstream.py",
+      "qualification/cell-upstream-training-sources-20261118/source_materials.py"
+    ],
+    "exit_code": 1,
+    "wall_seconds": 0.0648616700200364
+  },
+  {
+    "label": "qualification-format",
+    "command": [
+      "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "/home/qian-qi/work/hepta-e5-format-20261118-2e9b/source/scripts",
+      "ruff",
+      "format",
+      "qualification/cell-upstream-training-sources-20261118/acquire.py",
+      "qualification/cell-upstream-training-sources-20261118/collect_complete.py",
+      "qualification/cell-upstream-training-sources-20261118/replay_upstream.py",
+      "qualification/cell-upstream-training-sources-20261118/source_materials.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.0648148330510594
+  }
+]
