@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.evidence-operation-format.v1",
+  "formatter_base_commit": "eb56c51e4e73b0d466795b257a547ab93a0baa63",
+  "command": "env PATH=/opt/homebrew/bin:$PATH /opt/homebrew/bin/just fmt",
+  "cwd": "/Users/qianqi/work/e123-format-20261118-392934/codex-rs",
+  "scope": "Original scripts formatter and frozen Ruff configuration; model sources unchanged",
+  "operations": [
+    {
+      "file": "read_round03_recovery_392934_b_v2.py",
+      "before_sha256": "32920671d79e53f45157950f374b3e52f4de25c0e60071920b6c89086ad2336c",
+      "after_sha256": "ec4b659d930aa92ecf265f3ebc2ceda78143bb451ca41166510979459a3a3c90",
+      "ast_sha256": "5ae41b6ddcf34c8ee5e71a058823c470b5b2e81416e702b125d4dc4f76c09ca4",
+      "ast_equal": true,
+      "session_id": "dpty-bab56f237f6887f5c91071cd5a83a893ccde74524a0b74d4f1c9bc04ab02a3f8",
+      "exit_code": 0
+    },
+    {
+      "file": "export_round03_evidence_392934_v2.py",
+      "before_sha256": "fde2e097826cac0b593bb53a80692b616c2e2c01b7577687b47f0e95a98f6412",
+      "after_sha256": "fde2e097826cac0b593bb53a80692b616c2e2c01b7577687b47f0e95a98f6412",
+      "ast_sha256": "9b29eec9cef9f2e1230266d7bc1bc86833c30e3f49e045a654bddde02d2463ae",
+      "ast_equal": true,
+      "session_id": "dpty-f55361b0da355ea42c71b122b891a73d7e40aaead1221d7e4dad181980b8eedc",
+      "exit_code": 0
+    }
+  ]
+}

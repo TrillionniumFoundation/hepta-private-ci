@@ -1,0 +1,35 @@
+{
+  "archive_sha256": "42ea473db654bae43fae4587533e97c2501083afa41b5375c6d89d9e500b55a0",
+  "exit_code": 0,
+  "model_imports_subprocess_execution_network_denied": true,
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "only_source_changes": [
+    "ROOT relocated to extracted workspace",
+    "output directory changed to recovery-readout-replayed"
+  ],
+  "original_builder_sha256": "ec4b659d930aa92ecf265f3ebc2ceda78143bb451ca41166510979459a3a3c90",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "relocated_builder_sha256": "10a262794176ddf78065f925b466ac0c7223962c073386793c85f075a0578338",
+  "reports": [
+    {
+      "byte_identical": true,
+      "bytes": 30624,
+      "mode": "teacher",
+      "sha256": "d4399842b8137abbef335e5a4ded18502d775c99788059addb2fbbf203ec99d2"
+    },
+    {
+      "byte_identical": true,
+      "bytes": 36985,
+      "mode": "shadow",
+      "sha256": "9830167fa0c234d08e5dcdc71d8b4045a8236b9079d6d6377003bc8cfec1a808"
+    },
+    {
+      "byte_identical": true,
+      "bytes": 36975,
+      "mode": "controlled",
+      "sha256": "41ff281e6e6e7e76f7952976af399b98ab4479cb86e4b4252bdb595bd671c3c5"
+    }
+  ],
+  "schema": "hepta.round03.offline-readout-replay.v1"
+}
