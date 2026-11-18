@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.actual-published-source-policy.v1",
+  "expected_head": "c1467e70b9379aa0094125fcf185d392db98d3a0",
+  "model_calls": 0,
+  "training_steps": 0,
+  "source_branch_modified": false,
+  "limit_bytes": 512000,
+  "actual_pull_request": {
+    "base_ref": "research/e5-upstream-fixes-20261118-2e9b",
+    "base_sha": "ee16fd728405c9f40b94977e5abcdf38f297cf03",
+    "head_ref": "research/upstream-current-student-20261118-2e9b",
+    "head_sha": "c1467e70b9379aa0094125fcf185d392db98d3a0"
+  },
+  "source_tree": "a89777481f64904e930f0011cebfc5c2518828b2",
+  "qualification_python_before": {
+    "qualification/cell-upstream-current-student-20261118/collect_complete.py": "cd295ab6f39dcfadb6d642de2ca95cc9aeb66513bc6f34e08b4d26c1d26abf85",
+    "qualification/cell-upstream-current-student-20261118/native_sandbox.py": "15b7babbe86dea6ff732dbbac3d8130e2bcda020bce1db8a17cb9351ffea44e6",
+    "qualification/cell-upstream-current-student-20261118/owner.py": "91f68fb0e886c8728f57ed9d2d29793d83452f84724ffabb742325618f6deae1",
+    "qualification/cell-upstream-current-student-20261118/prepare.py": "9faf83c667e8bda11226b926c9e82bd1db92660532c1439fe9dc1aaac6f00623",
+    "qualification/cell-upstream-current-student-20261118/run_students.py": "a5dbb4b72f5f29948386332024ceb6a7b11188ac39b8f733fb68875a8427d375",
+    "qualification/cell-upstream-current-student-20261118/run_teacher.py": "34dd86b060622528a14671181f1d659817adf676506dc95d68b97b3d26163bec",
+    "qualification/cell-upstream-current-student-20261118/teacher_bridge.py": "6489d112fce1190a8b49308e2bc5c50883acec1e3e5b91781e7c37eb836a33f7",
+    "qualification/cell-upstream-current-student-20261118/teacher_connection.py": "5e372f0e8c61a06330965e1186f08e26cadde0e524658e28842c03da853745cb"
+  },
+  "dirty_after": "",
+  "qualification_python_after": {
+    "qualification/cell-upstream-current-student-20261118/collect_complete.py": "cd295ab6f39dcfadb6d642de2ca95cc9aeb66513bc6f34e08b4d26c1d26abf85",
+    "qualification/cell-upstream-current-student-20261118/native_sandbox.py": "15b7babbe86dea6ff732dbbac3d8130e2bcda020bce1db8a17cb9351ffea44e6",
+    "qualification/cell-upstream-current-student-20261118/owner.py": "91f68fb0e886c8728f57ed9d2d29793d83452f84724ffabb742325618f6deae1",
+    "qualification/cell-upstream-current-student-20261118/prepare.py": "9faf83c667e8bda11226b926c9e82bd1db92660532c1439fe9dc1aaac6f00623",
+    "qualification/cell-upstream-current-student-20261118/run_students.py": "a5dbb4b72f5f29948386332024ceb6a7b11188ac39b8f733fb68875a8427d375",
+    "qualification/cell-upstream-current-student-20261118/run_teacher.py": "34dd86b060622528a14671181f1d659817adf676506dc95d68b97b3d26163bec",
+    "qualification/cell-upstream-current-student-20261118/teacher_bridge.py": "6489d112fce1190a8b49308e2bc5c50883acec1e3e5b91781e7c37eb836a33f7",
+    "qualification/cell-upstream-current-student-20261118/teacher_connection.py": "5e372f0e8c61a06330965e1186f08e26cadde0e524658e28842c03da853745cb"
+  },
+  "qualification_python_unchanged": true,
+  "seven_original_policy_tests": true,
+  "passed": true,
+  "status": "passed"
+}
