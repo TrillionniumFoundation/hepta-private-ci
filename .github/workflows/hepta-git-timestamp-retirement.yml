@@ -1,0 +1,126 @@
+name: Hepta Git Unix timestamp retirement qualification
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-git-timestamp-retirement.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-git-timestamp-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: git-timestamp-retirement
+      - name: Generate constrained Cargo and Bazel postimages
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/hepta-git-timestamp"
+          mkdir -p "$evidence"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/metadata.json"
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > /dev/null
+          just bazel-lock-update 2>&1 | tee "$evidence/lock-update.log"
+          just bazel-lock-check 2>&1 | tee "$evidence/lock-check.log"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          git diff --binary > "$evidence/locks.patch"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, tomllib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-git-timestamp"
+          before = tomllib.loads(subprocess.check_output(["git","show","HEAD:codex-rs/Cargo.lock"],text=True))
+          after = tomllib.loads(pathlib.Path("codex-rs/Cargo.lock").read_text())
+          old = next(p for p in before["package"] if p["name"] == "codex-git-utils")
+          if "chrono" in old["dependencies"]:
+              old["dependencies"].remove("chrono")
+          assert before == after, "unrelated Cargo graph drift"
+          changed = subprocess.check_output(["git","diff","--name-only"],text=True).splitlines()
+          assert set(changed) <= {"codex-rs/Cargo.lock","MODULE.bazel.lock"}, changed
+          manifest = tomllib.loads(pathlib.Path("codex-rs/git-utils/Cargo.toml").read_text())
+          assert "chrono" not in manifest["dependencies"]
+          assert any(p["name"] == "chrono" for p in after["package"]), "unexpected whole-graph removal"
+          (root/"record.json").write_text(json.dumps({
+              "head":os.environ["EXPECTED_HEAD"],"changed":changed,
+              "locks":{n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in ["Cargo.lock","MODULE.bazel.lock"]},
+              "scope":"one direct git-utils edge; chrono remains; generated locks pending review"
+          },indent=2)+"\n")
+          PY
+      - name: Check original calendar boundary with pinned external oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          oracle="$RUNNER_TEMP/hepta-git-timestamp/oracle"
+          mkdir -p "$oracle/src"
+          cat > "$oracle/Cargo.toml" <<'EOF'
+          [package]
+          name = "hepta-chrono-boundary-oracle"
+          version = "0.0.0"
+          edition = "2024"
+          [workspace]
+          [dependencies]
+          chrono = { version = "=0.4.43", default-features = false, features = ["std"] }
+          EOF
+          cat > "$oracle/src/main.rs" <<'RS'
+          fn main() {
+              assert_eq!(chrono::DateTime::<chrono::Utc>::MIN_UTC.timestamp(), -8_334_601_228_800);
+              assert_eq!(chrono::DateTime::<chrono::Utc>::MAX_UTC.timestamp(), 8_210_266_876_799);
+              let cases = [0_u64, 1, 2_147_483_648, 8_210_266_876_799, 8_210_266_876_800, u64::MAX];
+              for seconds in cases {
+                  for nanos in [0_u32, 1, 999_999_999] {
+                      let old = chrono::DateTime::from_timestamp(seconds as i64, nanos).map(|t| t.timestamp());
+                      let candidate = (-8_334_601_228_800..=8_210_266_876_799).contains(&(seconds as i64)).then_some(seconds as i64);
+                      assert_eq!(old, candidate);
+                  }
+              }
+              println!("18 old-constructor timestamp/range comparisons passed; native production tests separate");
+          }
+          RS
+          cargo run --manifest-path "$oracle/Cargo.toml" 2>&1 | tee "$RUNNER_TEMP/hepta-git-timestamp/oracle.log"
+      - name: Run original Git package and new clock boundary tests
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
+            test --test_output=all --nocache_test_results --flaky_test_attempts=1 -- \
+            //codex-rs/git-utils/... \
+            2>&1 | tee "$RUNNER_TEMP/hepta-git-timestamp/tests.log"
+      - name: Compile real Cargo and strict Bazel consumers
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-git-utils --all-targets 2>&1 | tee "$RUNNER_TEMP/hepta-git-timestamp/cargo-check.log"
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy -- //codex-rs/git-utils:git-utils \
+            2>&1 | tee "$RUNNER_TEMP/hepta-git-timestamp/clippy.log"
+      - name: Preserve source-bound originals
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-git-timestamp-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-git-timestamp
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
