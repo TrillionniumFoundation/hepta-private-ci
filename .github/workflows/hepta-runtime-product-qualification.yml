@@ -1,0 +1,79 @@
+name: Hepta runtime product identity qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-runtime-product-qualification.yml"
+      - "codex-rs/hepta-agentd/BUILD.bazel"
+      - "codex-rs/hepta-infer-worker-host/BUILD.bazel"
+      - "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-runtime-product-qualification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: Exact-head Linux runtime product compilation and test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout exact candidate without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify source identity
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - name: Prepare existing Linux Bazel toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-test
+      - name: Compile and clippy the original integration and ordinary product library
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-runtime-product"
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy --build_metadata=COMMIT_SHA="$EXPECTED_HEAD" -- \
+            //codex-rs/hepta-agentd:hepta-agentd-runtime_codex_product_e2e-test \
+            //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host \
+            2>&1 | tee "$RUNNER_TEMP/hepta-runtime-product/compile.log"
+      - name: Run the unchanged local-mock authorization integration
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
+            test --test_output=all --nocache_test_results --build_metadata=COMMIT_SHA="$EXPECTED_HEAD" -- \
+            //codex-rs/hepta-agentd:hepta-agentd-runtime_codex_product_e2e-test \
+            2>&1 | tee "$RUNNER_TEMP/hepta-runtime-product/test-output.log"
+      - name: Verify unchanged tracked source
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+      - name: Preserve compilation and test evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-runtime-product-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-runtime-product
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: warn
