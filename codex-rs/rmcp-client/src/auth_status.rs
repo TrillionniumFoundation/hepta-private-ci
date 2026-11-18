@@ -396,8 +396,9 @@ mod tests {
         assert!(
             matches!(
                 error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("expected discovery request failure")
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == "http://example.com/mcp"
+                        && source.to_string().contains("expected discovery request failure")
             ),
             "OAuth discovery must preserve the executor transport failure: {error:#}"
         );
@@ -612,9 +613,10 @@ mod tests {
         assert!(
             matches!(
                 error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                        && reason.contains(&redirect_url)
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == format!("{}/mcp", resource_server.uri())
+                        && source.to_string().contains("OAuth discovery redirect to non-same-origin URL rejected")
+                        && source.to_string().contains(&redirect_url)
             ),
             "OAuth discovery must preserve the cross-origin redirect rejection: {error:#}"
         );
@@ -655,7 +657,9 @@ mod tests {
             assert!(
                 matches!(
                     error.downcast_ref::<AuthError>(),
-                    Some(AuthError::MetadataError(reason)) if reason.contains(status.as_str())
+                    Some(AuthError::DiscoveryRequestFailed { url, source })
+                        if url.as_str() == format!("{}/mcp", server.uri())
+                            && source.to_string().contains(status.as_str())
                 ),
                 "auth-status discovery must preserve HTTP {status}: {error:#}"
             );
