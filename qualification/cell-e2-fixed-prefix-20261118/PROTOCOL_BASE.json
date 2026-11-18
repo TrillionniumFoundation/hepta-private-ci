@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.current-policy-fixed-prefix-protocol.v1",
+  "objective": "Measure recovery and success preservation on identical observed A histories after the completed 108-call experiment; no training or B/B2 evaluation.",
+  "source_evidence_commit": "e11c75e1d6c3902a7118d76794804e8aaf1f7d7f",
+  "source_archive_sha256": "95beda262721a747aeb3180b7d7f37a245735870b3ee0c8c58e80e45857b9bb6",
+  "source_index_sha256": "a97062044b5252b98ea983f7e1107741ba49697aff2055c27d21c703e903c099",
+  "source_parent_model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+  "source_panels": "Only retained/evaluation/NoUpdate/A_retention; never B or B2.",
+  "selection_rule": "For each of the six A tasks, keep the earliest actual failed attempt, and independently the earliest actual successful attempt if present. Preserve the entire observed preceding conversation, append that actual answer and its original verifier feedback. Six failure prefixes and five success prefixes are mandatory; no fabricated success for colon repair.",
+  "modes": [
+    "NoUpdate",
+    "all_observed",
+    "verified_credit"
+  ],
+  "model_digests": {
+    "NoUpdate": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+    "all_observed": "0585075a5277f7e8e5a7b7ad3f42bc718f17253f1dbf6c2b03e8248cfc1c1562",
+    "verified_credit": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1"
+  },
+  "manifest_sha256": {
+    "NoUpdate": "4a9c82ab237a5d902db378d1987170c1608bdef40c5603731718f4202fff6c5d",
+    "all_observed": "01a5dece93e07144c7f853f8e33e15f338b7a410f3540389b991783f00809c7f",
+    "verified_credit": "88f93eaca8b88eeec3ff426eb26d2ee472de7d1cd2c9e3388dea6750c1391005"
+  },
+  "calls_per_model_case": 1,
+  "planned_model_calls": 33,
+  "planned_verifier_calls": 33,
+  "maximum_input_tokens": 4096,
+  "maximum_new_tokens": 384,
+  "decoding": "same pinned native_chat_v2, greedy parent generation configuration",
+  "primary_metrics": {
+    "recovery": "strict business success after each of six identical failed prefixes",
+    "preservation": "strict business success after each of five identical successful prefixes"
+  },
+  "pairing": "All three models receive identical exact prefix tokens per case. Historical actions are conditioning data, never counted as new student executions.",
+  "analysis": "Report all 11 paired cases, fixed-denominator recovery /6 and preservation /5, format/business failures, all costs. Also report semantic-output identity when it is exactly observed. Descriptive mechanism diagnostic; no new advancement gate, no model selection.",
+  "previous_decision": "Completed 108-call original absolute-recovery gate remains false and research NoUpdate is retained. This diagnostic cannot revise it.",
+  "qualification": {
+    "exposed_A_training_contexts": true,
+    "new_independent_tasks": 0,
+    "independent_users": 0,
+    "new_training_updates": 0,
+    "scientific_confirmation_qualified": false,
+    "native_adoption": false,
+    "full_system_cost_known": false
+  }
+}
