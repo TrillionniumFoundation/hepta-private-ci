@@ -36,9 +36,6 @@ impl Observation {
     pub(super) fn new(timeout: Duration) -> (Self, ControlTestSnapshot) {
         let (requests, receiver) = mpsc::sync_channel(1);
         (
-            Self {
-                requests: receiver,
-            },
             ControlTestSnapshot { requests, timeout },
         )
     }
