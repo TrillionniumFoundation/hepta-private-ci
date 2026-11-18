@@ -9,6 +9,8 @@ import time
 
 import numpy as np
 
+from .maintenance_semantics import contract, evaluate
+
 try:
     import resource
 except ImportError:
@@ -76,7 +78,7 @@ def child_cpu_seconds():
     return usage.ru_utime + usage.ru_stime
 
 
-def fixtures():
+def fixtures(*, semantic=False):
     panels = {}
     for phase, offset in (("A", 0), ("B", 100), ("C", 200)):
         rows = []
@@ -88,9 +90,27 @@ def fixtures():
                 f'def {name}(x):\n    return "tag_{number}\n',
                 f"def {name}(x):\nreturn x + {number}\n",
             )
-            rows.append({"id": name, "source": programs[i % 4]})
+            task = {"id": name, "source": programs[i % 4]}
+            if semantic:
+                task.update(
+                    entry=name,
+                    checks=[dict(args=[x], expected=f"tag_{number}" if i % 4 == 2 else x + number)
+                            for x in (-7, 0, 11)],
+                    provenance=dict(origin="controlled-generated-template", family=TOKENS[i % 4], split=phase),
+                )
+            rows.append(task)
         panels[phase] = rows
     return panels
+
+
+def cold_task():
+    """A new source and input contract executed only after the serving owner closes."""
+    return dict(
+        id="fixture_D_cold", entry="fixture_D_cold",
+        source="def fixture_D_cold(x)\n    return x + 409\n",
+        checks=[dict(args=[x], expected=x + 409) for x in (-13, 2, 23)],
+        provenance=dict(origin="controlled-generated-template", family=TOKENS[0], split="D-cold"),
+    )
 
 
 def repair(source, action):
@@ -107,8 +127,9 @@ def repair(source, action):
 
 
 class Compiler:
-    def __init__(self, root, started):
-        self.path, self.started, self.calls = root / "compile.jsonl", started, 0
+    def __init__(self, root, started, *, semantic=False, filename="compile.jsonl"):
+        self.path, self.started, self.calls = root / filename, started, 0
+        self.semantic, self.semantic_calls = semantic, 0
         self.path.touch(exist_ok=False)
 
     def check(self, task, source, phase, arm):
@@ -120,6 +141,16 @@ class Compiler:
             compile(source, task["id"] + ".py", "exec", dont_inherit=True)
         except SyntaxError as error:
             success, message, line = False, error.msg, error.lineno
+        compile_success = success
+        semantic_result = None
+        if self.semantic:
+            binding = contract(task)
+            if compile_success:
+                semantic_result = evaluate(task, source)
+                self.semantic_calls += 1
+                success = semantic_result["success"]
+            else:
+                semantic_result = dict(**binding, status="not_run_compile_error", success=False)
         result = dict(
             task=task["id"],
             phase=phase,
@@ -132,6 +163,8 @@ class Compiler:
             wall_ns=time.perf_counter_ns() - wall,
             cpu_ns=time.process_time_ns() - cpu,
         )
+        if self.semantic:
+            result.update(compile_success=compile_success, semantic=semantic_result)
         with self.path.open("a") as stream:
             stream.write(json.dumps(result, sort_keys=True) + "\n")
             stream.flush()
@@ -158,6 +191,6 @@ def observations(task, original):
         0,
     ]
     second = (
-        [0.0] * 6 + [float(token in original["error"]) for token in TOKENS] + [0, 1, 0]
+        [0.0] * 6 + [float(token in (original["error"] or "")) for token in TOKENS] + [0, 1, 0]
     )
     return np.asarray([first, second, [0.0] * 12 + [1.0]], dtype=np.float64)
