@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.e5-current-source-readout.20261118",
+  "old_training_records": 6,
+  "old_training_projects": [
+    "TrillionniumFoundation/hepta-private-ci"
+  ],
+  "old_training_file_sources": 6,
+  "old_training_origin_kinds": {
+    "curated_development": 6
+  },
+  "authenticated_user_count": 0,
+  "new_upstream_records": 6,
+  "new_upstream_repositories": [
+    "pallets/click",
+    "pallets/werkzeug",
+    "psf/requests"
+  ],
+  "new_upstream_train_allowed": 0,
+  "new_upstream_origin_kinds": {
+    "curated_development": 6
+  },
+  "source_growth_training_executed_this_readout": false,
+  "fixed_total_compute_curve": "BLOCKED_AUTHENTICATED_TRAINING_SOURCES",
+  "fixed_per_source_compute_curve": "BLOCKED_AUTHENTICATED_TRAINING_SOURCES",
+  "source_files": {
+    "qualification/cell-experiments-v3-20261116/development-old-open.records.jsonl": "5558ecca412b3a23477a2f5d56d44006be4393207769bdf88f783f1297e54519",
+    "qualification/cell-upstream-panel-20261118/prepared/records.jsonl": "1ad685bb99ffafdbb9ed0cfa1dbdea3ea2e279fedc326f865da76a173519f8cb"
+  },
+  "note": "Six curated training tasks in one project and six evaluation-only public upstream tasks do not form authenticated usage trajectories; evaluation targets are excluded from growth training."
+}
