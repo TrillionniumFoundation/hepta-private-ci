@@ -1,0 +1,13 @@
+{
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6693",
+  "number": 6693,
+  "head_sha": "a6c32fa20295a0fe38aa69f72d9c5f94712caaf1",
+  "state": "open",
+  "draft": true,
+  "merged": false,
+  "title": "E4: preserve complete negative Circuit evidence and exact offline replay",
+  "body": "## Result\n\nThe corrected frozen E4 candidate completed **162 graph executions / 306 real model calls** with all original receipts present. **There is no observed Circuit advantage over FF:** learned and FF both select 5/6 old A answers, while all arms score 0/3 on old B. First/last reporting exposes five A regressions in both learned and FF instead of allowing earliest-success selection to hide them.\n\n## Evidence delivered\n\n- Full original archive: 3,035 regular files, 2,576,143 bytes, SHA256 `7e0a67d8c4cdfadbebf195591bbe30cce2e6ed9b524c46c6011b0cadcb8f3a32`.\n- Final reader and actual process/readout originals: 19 files, 208,335 bytes. Reader `a37bcd22…` from #6691 reports COMPLETE with no issues, all eight call-artifact families mapped one-to-one, and full candidate/selection checks.\n- Pure-stdlib offline replay exactly reproduces the 1,054,217-byte raw READOUT, SHA256 `8599d61793f97da236afb53aab382eba9b0a072752705c053aca8264977c3a94`.\n- Full control/ablation and actual token summaries, owner wait/inner-worker scopes, prior failed attempt and numerical-diagnosis costs, and a paired answer-input audit. The latter confirms that on five effective A pairs only the answer relay field differs; four final attempts improve when it is removed. The sixth pair is a preserved no-op.\n\n## Scope and interpretation\n\nFresh interactions use the nine retained exposed development tasks and old Run02 F/T/C adapters. New independent tasks/sources/teachers/users remain zero. No generalization, Circuit necessity, native execution, adoption or settlement claim is made. Every main control has two calls/two verifier opportunities and equal caps; realized token costs differ and router fitting additionally costs 72 calls. Retrieval opportunities are zero. Full monetary/energy/GPU-active cost remains unknown.\n\nThis is an evidence-only addition on #6684, with no changes to frozen inference, models, predecessor B source or final reader. The original failed pool candidate remains intact. The actual owner and child both exited 0; GPU ownership was released before readout. No further model or verifier calls were made during archival, input audit or offline replay.\n",
+  "comment_urls": [
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6693#issuecomment-6980189231"
+  ]
+}

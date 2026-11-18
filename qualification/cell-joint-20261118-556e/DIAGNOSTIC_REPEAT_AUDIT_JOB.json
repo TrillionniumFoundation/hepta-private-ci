@@ -1,0 +1,65 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1795008606509,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1eed9b12d-ffbe-337",
+    "idempotency_key": "e1-e5-repeat60-readonly-20261118-final-audit-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1eed9b12d-ffbe-337",
+    "request_digest": "b6ae68dbd70750818b97059e3e8cc7605a8e5e3bb0262bce8d6a3c0fdd87660b",
+    "request_fingerprint": 13163574054265246000,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1eed9b12d-ffbe-337"
+  },
+  "launch": null,
+  "retried_launch": false,
+  "reused": true,
+  "status": {
+    "at_unix_ms": 1795008613847,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1eed9b12d-ffbe-337",
+    "launch_nonce": "2375adad5abd4a9fe9e9ae965bea3efa",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 41819,
+        "stored": 41819
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}
