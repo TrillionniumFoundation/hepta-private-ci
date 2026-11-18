@@ -1,0 +1,222 @@
+{
+  "schema": 1,
+  "source_head": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+  "source_tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+  "source_unchanged": true,
+  "status": "completed",
+  "all_attempted_stages_passed": false,
+  "checks": {
+    "helper-build": {
+      "started": "2026-11-18T16:13:28.462111+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:14:00.797696+00:00",
+      "elapsed_seconds": 32.32437120215036
+    },
+    "helper-verify-and-load": {
+      "started": "2026-11-18T16:14:00.798284+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:14:01.132263+00:00",
+      "elapsed_seconds": 0.3339489509817213
+    },
+    "product-build-and-pin": {
+      "started": "2026-11-18T16:14:01.132726+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:14:10.879583+00:00",
+      "elapsed_seconds": 9.746775032952428
+    },
+    "library-binaries-build-uid1000": {
+      "started": "2026-11-18T16:14:10.879952+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:15:44.464684+00:00",
+      "elapsed_seconds": 93.58439461397938
+    },
+    "task-capacity-regressions": {
+      "started": "2026-11-18T16:15:45.795621+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:15:47.695820+00:00",
+      "elapsed_seconds": 1.899988240096718
+    },
+    "root-mount-setup": {
+      "started": "2026-11-18T16:15:47.695987+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-18T16:15:47.719388+00:00",
+      "elapsed_seconds": 0.02329321694560349
+    },
+    "ordinary-whole-cold-no-update": {
+      "started": "2026-11-18T16:15:47.719550+00:00",
+      "status": "failed",
+      "passed": false,
+      "finished": "2026-11-18T16:16:53.174111+00:00",
+      "elapsed_seconds": 65.45450520492159
+    }
+  },
+  "task_reply_measurements": [
+    {
+      "bytes": 19114,
+      "bound": 28933,
+      "origin": "/tmp/ordinary-q24-original-process-oiFFyt/stderr.log"
+    }
+  ],
+  "task_capacity_regressions": {
+    "command_exit_code": 0,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=root_generation_current_client::stream::initial_deadline_tests::initial_frame_expired_queue_end_sends_no_bytes) | test(=root_generation_current_client::stream::initial_deadline_tests::initial_frame_late_reply_cannot_renew_the_supplied_queue_deadline) | test(=root_generation_current_client::stream::initial_deadline_tests::initial_frame_task_capacity_transfers_complete_large_response) | test(=root_generation_current_client::stream::initial_deadline_tests::initial_frame_default_and_task_caps_reject_prefix_before_body) | test(=root_generation_current_client::stream::initial_deadline_tests::initial_frame_task_capacity_preserves_request_deadline_and_policy_caps) | test(=root_historical_task_read_protocol::tests::complete_historical_reply_binds_original_purpose_profile_and_sequence) | test(=root_historical_task_read_protocol::tests::complete_historical_wire_refuses_peer_selected_sources_and_raw_authority) | test(=root_historical_task_read_protocol::tests::complete_task_accepts_large_original_data_and_retains_refusal_bounds) | test(=root_historical_task_read_protocol::tests::task_envelope_matches_actual_serializer_and_other_operations_keep_original_bound)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "task-capacity-regressions.json",
+      "execution_sha256": "40f219c93e928da6ebf3fd1d6e3d0d050fa453d40a3e43dffda7d1ae65926668",
+      "failures": 0,
+      "job": null,
+      "junit_bytes": 2445,
+      "junit_mtime_ns": 1795018547384341138,
+      "junit_sha256": "110a3d8ef9ccd9d19b6059d88f7fbf128bbfb419dfa8c8606dee1579ee2dc65f",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+      "source_tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+      "status": "passed",
+      "total_testcases": 9,
+      "collector_exit_code": 0
+    },
+    "source_after": {
+      "head": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+      "tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+      "status": "",
+      "tracked_files": 15544,
+      "tracked_sha256": "cab7d1249ad5385c2a3672da24bf1457d69232a2ca14995b11bf2b3483791663"
+    },
+    "source_unchanged": true
+  },
+  "original_no_update": {
+    "command_exit_code": 100,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "ordinary-whole-cold-no-update.json",
+      "execution_sha256": "e453611001dc25e26d6d5fa007a6ff88acb97045161c559bfe0a05386f7ca1c2",
+      "failures": 1,
+      "job": null,
+      "junit_bytes": 5313,
+      "junit_mtime_ns": 1795018612813721692,
+      "junit_sha256": "6e44a89bb42abf3e39aabc61bc8fc199b5f2cceb43f9adf5085ca327974718c3",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+      "source_tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+      "status": "retained-failed",
+      "total_testcases": 1,
+      "collector_exit_code": 1,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+      "tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+      "status": "",
+      "tracked_files": 15544,
+      "tracked_sha256": "cab7d1249ad5385c2a3672da24bf1457d69232a2ca14995b11bf2b3483791663"
+    },
+    "source_unchanged": true
+  },
+  "original_adopt": null,
+  "observed_static_stages": [
+    "root_stage=cli.serve",
+    "root_stage=post_a.worker"
+  ],
+  "cost": {
+    "observed_wall_seconds": 205.24185984698124,
+    "cpu_seconds": null,
+    "gpu_seconds": null,
+    "energy_kwh": null,
+    "api_cost": null,
+    "monetary_cost": null,
+    "qualification": "incomplete; null means unmeasured, not zero; nested command and check elapsed times overlap"
+  },
+  "scope": "Task-only response-capacity candidate, related actual framing/codec regressions and single original evaluated-NoUpdate cold-profile attempt; Adopt cold runs only after NoUpdate passes; no inherited earlier-source pass. Both products are paired, old v1 readers still reject replies over16KiB; original request/bootstrap/other-operation and component limits remain. Existing cold profile checks retained C, not fresh D. Independent-controller certification/FinalUse/settlement/full-cost remain unestablished.",
+  "native_failure_projection": {
+    "records": [
+      {
+        "role": "post-A daemon",
+        "archive_member": "native-owner-v11/child-logs/ordinary-q24-original-process-t0eB9Z/stderr.log",
+        "sha256": "4ff567607d654da8ce2323277b0c35a20dc4514b082f9e4d69a48766e989f1b0",
+        "stderr": "Error: agentd generation fenced: original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable\n"
+      },
+      {
+        "role": "post-A Root",
+        "archive_member": "native-owner-v11/child-logs/ordinary-q24-original-process-oiFFyt/stderr.log",
+        "sha256": "a0d765b6558b0792587fa8613dc5166108c85802c6dde40e29c37acf7f63d2db",
+        "stderr": "root_measure=historical.task_reply bytes=19114 bound=28933\nroot_stage=post_a.worker\nroot_stage=cli.serve\nError: Custom { kind: Other, error: \"owner process exited\" }\n"
+      },
+      {
+        "role": "original B source",
+        "archive_member": "native-owner-v11/child-logs/ordinary-q24-original-process-JZKV0W/stderr.log",
+        "sha256": "b95844c93c2b6023295c70ee9876aada3c81337c19dd769dd314f806b8cf41b8",
+        "stderr": "Error: original B notification ended before its cut\n"
+      }
+    ],
+    "earliest_visible_daemon_boundary": "original historical learning source -> original training material -> original Dataset projection -> original Root historical Dataset -> original complete historical task read unavailable",
+    "client_request_sequence_observed": null,
+    "interpretation": "The original historical client refusal remains unresolved. Root owner-process exit and B notification closure are retained as subsequent observations, not asserted as the daemon's initial cause. These separate stderr files do not supply a total timestamp order.",
+    "measurement_scope": "19114/28933 is v11 actual Task data; v10 exact response length was not measured."
+  },
+  "metadata_projection_source": {
+    "archive_summary_sha256": "b6b877d7a7a02dc8dcf1ecf09badc52aad0d678e470430956b3ceb1cc0212aca",
+    "addition": "Only the error projection above was added from byte-verified whitelisted archived stderr; the archived summary and all tested-source materials remain immutable."
+  }
+}

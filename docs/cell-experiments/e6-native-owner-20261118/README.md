@@ -96,3 +96,29 @@ Both products were rebuilt and pinned at this exact source. The actual authority
 The safe v10 archive is native-owner-v10-public-evidence.tar.xz (130,396 bytes, SHA-256 e89776509879125039ffa26eeb7a4be63f9c0532b48e3f31a668feee2ec83f5a). Every one of its 81 regular members was checked against its manifest before this publication. v10-SUMMARY.json and v10-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
 
 All command timings and cost gaps are retained. CPU/GPU/energy/API/monetary business costs remain unknown when unmeasured; Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
+
+## v11: compose the complete Task response capacity
+
+The exact tested source is e21ca2d9718c9c3506f6301449b29e6471a5cc22, tree 67f260e7df22f5be937d08aa2a961d7eb8807262, direct child of evidence-only 1f4bdb211f0fb80fef89f25aef0f969053998b84. The v10 original Task operation reached reply serialization and then rejected its nonempty complete response at the 16,384-byte outer bound. Its actual byte count was not measured. Both original component validators had run before that branch: the complete Ledger DTO remains capped at 12,288 bytes, and the complete Publication DTO remains capped at 16,384 bytes. The finite canonical seven-field envelope is at most 261 bytes, derived from its fixed JSON keys, purpose, two canonical digest strings and the decimal width of MAX_READS. The Task-only response bound is therefore 28,933 bytes.
+
+The repair applies that derived bound to the Task producer, complete Task decoder, historical server response policy and the actual client frame reader. The client chooses its capacity from the already known operation before reading the peer-controlled length. Requests, bootstrap data, default CURRENT exchanges and all five other historical operations retain their original bounds. Both inner DTO caps, original authentication, pidfd checks, absolute deadlines, MAX_READS, refusal state and fencing remain in force. The existing transport ceiling remains 65,536 bytes.
+
+This is a paired Root/daemon capacity revision with the same v1 JSON shape, purpose and digest domains. Old v1 readers still reject replies above 16 KiB before allocating the body; mixed-version compatibility is not claimed. No canonical task field is removed, and the original ordinary A/business fixture is unchanged.
+
+| Exact selected stage | Actual outcome |
+|---|---|
+| task-capacity-regressions | passed |
+| ordinary-whole-cold-no-update | retained failure |
+| ordinary-whole-cold-adopt | not attempted |
+
+Related codec regressions generate their larger publication through the existing controlled Source/Cell execution, then retain the complete original Ledger/Publication validation. They are data/transport tests, not independent Root authentication or business adoption. Actual socket/pidfd regressions check the larger selected response, the unchanged default response/request limits, oversized-prefix refusal before body allocation, and the original deadlines.
+
+The original daemon stderr is preserved verbatim in the metadata summary alongside the Root and B source stderr: `original historical learning source -> original training material -> original Dataset projection -> original Root historical Dataset -> original complete historical task read unavailable`. Root's later `owner process exited` is not asserted as the initial cause. No historical-client request count or sequence was recorded, and no count is inferred from the separate A control request IDs. The archive's original summary remains immutable; v11-SUMMARY.json adds only this explicit projection from its hash-verified raw stderr. v11-publication-builder.py records the metadata-only transformation.
+
+Observed numeric Task measurements: [{"bound": 28933, "bytes": 19114, "origin": "/tmp/ordinary-q24-original-process-oiFFyt/stderr.log"}]. These record only the original serialized Vec length and selected bound, without reserializing components in the production success path. Observed original Root error stages: root_stage=cli.serve, root_stage=post_a.worker. Original errors and failed outputs remain in the archive; absent narrow labels do not establish that uncovered comparisons passed.
+
+Both production binaries were rebuilt and pinned at this exact source. Each actual ELF was required to differ from v10, and the new numeric Task observation label was verified in the authority ELF before execution. Compiler records, product-manifest.json and component-executable-bindings.json retain their exact provenance. The adapter permits one original NoUpdate case with retries zero; the original Adopt cold case is attempted once only if NoUpdate passes. Earlier-source tests remain attached to their original commits.
+
+The safe v11 archive is native-owner-v11-public-evidence.tar.xz (134,836 bytes, SHA-256 4284ea198b63055aafda2696d7e19ffb829801dfe7b37d1cabae3a3481372dbb). Every one of its 90 regular members was checked against its manifest before publication. v11-SUMMARY.json and v11-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
+
+All command timings and cost gaps are retained. Unmeasured CPU/GPU/energy/API/monetary costs remain unknown. Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.

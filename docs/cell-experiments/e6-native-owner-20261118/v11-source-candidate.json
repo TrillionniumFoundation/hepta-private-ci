@@ -1,0 +1,78 @@
+{
+  "started": "2026-11-18T16:13:06.375152+00:00",
+  "parent": "1f4bdb211f0fb80fef89f25aef0f969053998b84",
+  "patch_sha256": "06d886cfe26999ed5ba27c5c38a0800622245becfa96a981c16308b70e4ae7ca",
+  "stages": [
+    {
+      "name": "task-capacity-v11-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004709447035565972
+    },
+    {
+      "name": "task-capacity-v11-add",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs",
+        "codex-rs/hepta-agentd/src/circuit_task.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_source_data.rs",
+        "codex-rs/hepta-agentd/src/circuit_task_source_data_tests.rs",
+        "codex-rs/hepta-agentd/src/root_generation_initial_frame_tests.rs",
+        "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "codex-rs/hepta-agentd/src/root_historical_ledger_data.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_protocol.rs",
+        "codex-rs/hepta-agentd/src/root_historical_task_read_protocol_tests.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.009312608046457171
+    },
+    {
+      "name": "task-capacity-v11-commit",
+      "command": [
+        "git",
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@openai.com",
+        "commit",
+        "-m",
+        "Compose bounded complete historical Task responses"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.012922222027555108
+    }
+  ],
+  "files": [
+    "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+    "codex-rs/hepta-agentd/src/authority_host_historical_read_runtime.rs",
+    "codex-rs/hepta-agentd/src/circuit_task.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_data.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_data_tests.rs",
+    "codex-rs/hepta-agentd/src/root_generation_initial_frame_tests.rs",
+    "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+    "codex-rs/hepta-agentd/src/root_historical_ledger_data.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_protocol.rs",
+    "codex-rs/hepta-agentd/src/root_historical_task_read_protocol_tests.rs"
+  ],
+  "template_sha256": {
+    "run_native_v11": "fb3c19a7a3ddad583798cb08f8db539121d413450efb5a95ec815f3afb64b529",
+    "archive_native_v11": "e0b8203e9b41fe6ed0cb58446e670dc6388a88e9e78415f6d5d2a010b67c8e56",
+    "prepare_v11_publication": "d8e480813107dd439ebe4a0ab1a0add3ad2cb5572cd75f11970c0d015e7d9244"
+  },
+  "scope": "Paired v1 Task capacity revision. Task limit28933 derives from original12288/16384 DTO caps+canonical261 envelope. Default CURRENT/other operations, request/bootstrap limits, original authentication, refusal and deadlines unchanged. Related tests and original cases have not yet run.",
+  "status": "frozen",
+  "head": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+  "tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+  "source_status": "",
+  "run_adapter_sha256": "d0b9f4161bf7c7dd8fce5660e8262261d918b9eccffd7f07e12e18d8b1e3ad93",
+  "finished": "2026-11-18T16:13:06.427525+00:00"
+}
