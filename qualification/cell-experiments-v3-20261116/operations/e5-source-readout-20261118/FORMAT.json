@@ -1,0 +1,64 @@
+{
+  "source_commit": "eb56c51e4e73b0d466795b257a547ab93a0baa63",
+  "scope": "Original formatter snapshot; no Rust source changes",
+  "runs": [
+    {
+      "ast_after": "27ce2ba0cc91a2deb10bb0ddb620f9e3940eb975a1527bccbefebfabfb514ceb",
+      "ast_before": "27ce2ba0cc91a2deb10bb0ddb620f9e3940eb975a1527bccbefebfabfb514ceb",
+      "ast_unchanged": true,
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/work/e5-format-20261118-392934/codex-rs",
+      "exit_code": 0,
+      "formatted_sha256": "2ef324cf62fb1c011374f91361c68f09556da7f09ea2a767622d2993d504cc82",
+      "log": "No changed files need formatting. Use --all for a full repository check.\n",
+      "output_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "path": "qualification/cell-experiments-v3-20261116/operations/e5-source-readout-20261118/replay_readout.py",
+      "wall_seconds": 0.093217917,
+      "session_id": "dpty-090ccacbdd8aad02c875ea1874ac329cf1646f31a399b92676099f963d880b23"
+    },
+    {
+      "ast_after": "27ce2ba0cc91a2deb10bb0ddb620f9e3940eb975a1527bccbefebfabfb514ceb",
+      "ast_before": "27ce2ba0cc91a2deb10bb0ddb620f9e3940eb975a1527bccbefebfabfb514ceb",
+      "ast_unchanged": true,
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/work/e5-format-20261118-392934/codex-rs",
+      "exit_code": 0,
+      "formatted_sha256": "2ef324cf62fb1c011374f91361c68f09556da7f09ea2a767622d2993d504cc82",
+      "log": "No changed files need formatting. Use --all for a full repository check.\n",
+      "output_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "path": "qualification/cell-experiments-v3-20261116/operations/e5-source-readout-20261118/replay_readout.py",
+      "wall_seconds": 0.089412458,
+      "session_id": "dpty-927be9dbe8e8bb8fe2fb67c34308c71bae89328b2a5f6d94f4859634a7c2a668"
+    },
+    {
+      "ast_after": "27ce2ba0cc91a2deb10bb0ddb620f9e3940eb975a1527bccbefebfabfb514ceb",
+      "ast_before": "27ce2ba0cc91a2deb10bb0ddb620f9e3940eb975a1527bccbefebfabfb514ceb",
+      "ast_unchanged": true,
+      "command": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "qualification/cell-experiments-v3-20261116/operations/e5-source-readout-20261118/replay_readout.py"
+      ],
+      "cwd": "/Users/qianqi/work/e5-format-20261118-392934",
+      "exit_code": 0,
+      "formatted_sha256": "d50756ba0a6beb937fd4988c509c51745af9af2e90f3f12beb92026180a694f3",
+      "log": "Using CPython 3.10.19\nCreating virtual environment at: scripts/.venv\nInstalled 1 package in 3ms\n1 file reformatted\n",
+      "output_sha256": "a5ff9e7fb31c171af18ea8180f854b49dd19e1430c0df10bbc9c5e479a844b1f",
+      "path": "qualification/cell-experiments-v3-20261116/operations/e5-source-readout-20261118/replay_readout.py",
+      "reason": "just fmt was run successfully; its scoped formatter excludes qualification/. Invoke the same frozen Ruff explicitly for this evidence script.",
+      "wall_seconds": 2.501731625,
+      "session_id": "dpty-709637b44d816dd903b6085a234d7690f256cba001ea16de5ccb4dcd2f17029a"
+    }
+  ]
+}
