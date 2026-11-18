@@ -23,6 +23,10 @@ from hepta_cells.bundle import Bundle, REQUIRED, OPTIONAL
 from hepta_cells.component_types import Budget, Partition, PendingExecution, digest
 from hepta_cells.hia_component import HiaCellComponent
 from hepta_cells.lifecycle import CellOwner
+from hepta_cells.owner_hia_controls import (
+    run_native_binding_controls,
+    run_native_damage_controls,
+)
 from hepta_cells.temporal import TemporalConfig, TemporalKernel
 from hepta_cells.temporal_component import TemporalComponent
 
@@ -452,6 +456,16 @@ def run(hia_root, output, *, allow_dirty=False):
         "cell_result_retained"
     ]
     owner.close()
+    wrapper_binding = run_native_binding_controls(
+        fault_db,
+        output / "native-wrapper-binding-controls",
+        partition,
+        inner,
+        native,
+        binding,
+        manifest["native"]["image_sha256"],
+    )
+    checks.append("native-readback-requires-frozen-wrapper-binding")
     native.close()
     request = {
         "request_id": "lost-reply",
@@ -611,6 +625,11 @@ owner.step(p, c, "hard-death", {"operation":"observe", "cursor":0, "observation"
         reject=True,
     )
     checks.append("changed-native-image-binding-refused")
+    retained = run_native_damage_controls(
+        {"completed": fault_db, "pending": crash_db, "unknown": unknown_db},
+        output / "native-retained-bytes-controls",
+    )
+    checks.append("native-retained-state-and-json-damage-refused")
     load_candidate(candidate)[3].close()
     assert sha(candidate) == candidate_hash
     for name, root in (
@@ -627,6 +646,17 @@ owner.step(p, c, "hard-death", {"operation":"observe", "cursor":0, "observation"
         "candidate_sha256": candidate_hash,
         "checks_passed": checks,
         "candidate_sources_unchanged": True,
+        "native_retained_bytes_controls": {
+            "result_sha256": sha(output / "native-retained-bytes-controls/RESULT.json"),
+            "positive_controls": len(retained["positive_controls"]),
+            "damage_controls": len(retained["damage_controls"]),
+        },
+        "native_wrapper_binding_controls": {
+            "result_sha256": sha(
+                output / "native-wrapper-binding-controls/RESULT.json"
+            ),
+            "controls": len(wrapper_binding["controls"]),
+        },
         "scope": "one frozen local-subprocess integration fixture; actual native HIA and real MEM/PRED GRUs",
         "cost": {
             "wall_ns": time.perf_counter_ns() - wall,
