@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-n256-hosted-runtime-snapshot-duplicate-review-v1",
+  "status": "PASS_DUPLICATE_ZERO_EXECUTION_READBACK",
+  "cause_classification": "UNINTENDED_PR_CUMULATIVE_PATH_MATCH",
+  "checks": {
+    "artifact_zip_sha256_matches_github_digest": true,
+    "zip_crc_passed": true,
+    "zip_member_set_exact": true,
+    "extracted_json_matches_zip_member_bytes": true,
+    "run_number_is_three": true,
+    "runtime_identity_matches_attempt002": true,
+    "all_observation_execution_counts_zero": true,
+    "allocation_and_calendar_contracts_null": true,
+    "runtime_and_resource_admission_false": true,
+    "attempt001_red_preserved": true,
+    "attempt002_success_preserved": true
+  },
+  "resource_observation": {
+    "mem_total_kib": 16367524,
+    "mem_available_kib": 15187400,
+    "swap_total_kib": 3145724,
+    "swap_free_kib": 3145724,
+    "ancestor_cgroup_levels": 3,
+    "finite_memory_max_entries": 0,
+    "allocation_contract": null,
+    "calendar_contract": null
+  },
+  "execution_counts": {
+    "n256_input_reads": 0,
+    "n256_serializer_calls": 0,
+    "dynamic_steps": 0,
+    "matrix_exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "scope": {
+    "adds_runtime_qualification_beyond_attempt002": false,
+    "n256_runtime_admitted": false,
+    "n256_resource_admitted": false,
+    "n256_numerical_execution_allowed": false,
+    "production_adoption_allowed": false,
+    "all_closed": false
+  }
+}
