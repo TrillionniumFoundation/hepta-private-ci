@@ -166,6 +166,85 @@ fn root_data_refusal_does_not_retrofit_old_primary_or_split_one_scope() -> anyho
     Ok(())
 }
 
+#[test]
+#[ignore = "actual UID0 and original Root-owned directory custody"]
+fn root_completed_learning_refusal_preserves_bounded_original_identity() -> anyhow::Result<()> {
+    let (directory, root) = root()?;
+    let target = target()?;
+    let initial = codex_hepta_types::Digest32::from_array([11; 32]);
+    let other_initial = codex_hepta_types::Digest32::from_array([12; 32]);
+    let scope = crate::neuron_generation_current::types::scope_digest(target.scope())?;
+    let old_owner = format!("initial-data-refusal/completed-learning/{initial}/{scope}");
+    assert_eq!(old_owner.len(), 169);
+    assert!(matches!(
+        HostAuthorityFrontierStore::initialize(Arc::clone(&root), old_owner, 7_u64),
+        Err(AuthorityTrustError::Invalid)
+    ));
+    assert_eq!(std::fs::read_dir(directory.path())?.count(), 0);
+    for (kind, name) in [
+        (RootDataKind::SourcePin, "source-pin"),
+        (RootDataKind::SourceHandoff, "source-handoff"),
+        (RootDataKind::CellSnapshot, "cell-snapshot"),
+        (RootDataKind::HistoricalLedger, "historical-ledger"),
+        (RootDataKind::RunStart, "run-start"),
+    ] {
+        assert_eq!(
+            binding(kind, &target)?.0,
+            format!("initial-data-refusal/{name}/{scope}")
+        );
+    }
+    let (first, ()) =
+        RootCompletedLearningRefusalV1::retain_fresh(Arc::clone(&root), &target, initial, || {
+            Ok(())
+        })?;
+    assert_eq!(first.0.owner.len(), 104);
+    assert_eq!(
+        first.0.binding.kind,
+        RootDataKind::CompletedLearning {
+            initial: initial.into_array()
+        }
+    );
+    assert_eq!(first.0.binding.target, target);
+    let (second, ()) = RootCompletedLearningRefusalV1::retain_fresh(
+        Arc::clone(&root),
+        &target,
+        other_initial,
+        || Ok(()),
+    )?;
+    assert_ne!(first.0.owner, second.0.owner);
+    RootCompletedLearningRefusalV1::read_original(Arc::clone(&root), &target, initial, || Ok(()))?;
+    let mut changed = serde_json::to_value(&target)?;
+    changed["writer_epoch"] = serde_json::json!(2);
+    let changed: CellGenerationOwnerBindingV1 = serde_json::from_value(changed)?;
+    let kind = RootDataKind::CompletedLearning {
+        initial: initial.into_array(),
+    };
+    assert_eq!(binding(kind, &target)?.0, binding(kind, &changed)?.0);
+    assert!(
+        RootCompletedLearningRefusalV1::read_original(Arc::clone(&root), &changed, initial, || Ok(
+            ()
+        ))
+        .is_err()
+    );
+    let mut retried = false;
+    assert!(
+        RootCompletedLearningRefusalV1::retain_fresh(Arc::clone(&root), &changed, initial, || {
+            retried = true;
+            Ok(())
+        })
+        .is_err()
+    );
+    assert!(!retried);
+    assert!(
+        first
+            .accept_registered::<()>(|| Err(io::Error::other("original completion refused")))
+            .is_err()
+    );
+    drop((first, second));
+    child(directory.path(), "completed_initial_armed")?;
+    Ok(())
+}
+
 fn write_primary(path: &std::path::Path, bytes: &[u8]) -> anyhow::Result<()> {
     let mut file = std::fs::OpenOptions::new()
         .write(true)
@@ -262,6 +341,60 @@ fn root_data_refusal_crash_child() -> anyhow::Result<()> {
             assert!(
                 RootDataRefusalV1::open_existing(root, RootDataKind::SourcePin, &target).is_err()
             );
+        }
+        "completed_initial_armed" => {
+            let initial = codex_hepta_types::Digest32::from_array([11; 32]);
+            let other_initial = codex_hepta_types::Digest32::from_array([12; 32]);
+            assert!(
+                RootCompletedLearningRefusalV1::read_original(
+                    Arc::clone(&root),
+                    &target,
+                    initial,
+                    || Ok(())
+                )
+                .is_err()
+            );
+            RootCompletedLearningRefusalV1::read_original(
+                Arc::clone(&root),
+                &target,
+                other_initial,
+                || Ok(()),
+            )?;
+            let mut retried = false;
+            assert!(
+                RootCompletedLearningRefusalV1::retain_fresh(
+                    Arc::clone(&root),
+                    &target,
+                    initial,
+                    || {
+                        retried = true;
+                        Ok(())
+                    }
+                )
+                .is_err()
+            );
+            assert!(!retried);
+            let mut changed = serde_json::to_value(&target)?;
+            changed["writer_epoch"] = serde_json::json!(2);
+            let changed: CellGenerationOwnerBindingV1 = serde_json::from_value(changed)?;
+            assert!(
+                RootCompletedLearningRefusalV1::read_original(
+                    Arc::clone(&root),
+                    &changed,
+                    initial,
+                    || Ok(())
+                )
+                .is_err()
+            );
+            let mut retried_changed = false;
+            assert!(
+                RootCompletedLearningRefusalV1::retain_fresh(root, &changed, initial, || {
+                    retried_changed = true;
+                    Ok(())
+                })
+                .is_err()
+            );
+            assert!(!retried_changed);
         }
         phase => anyhow::bail!("unexpected refusal child phase: {phase}"),
     }
