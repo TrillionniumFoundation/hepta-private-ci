@@ -1,0 +1,9 @@
+# Actual numerical rejection
+
+The original durable desktop job `1a1f033c440-ffbe-741` completed all four predeclared forward/backward pairs and failed the frozen numerical limits. Recovery used the same original idempotency key; runtime confirmed reused=true, retried_launch=false, failed/exit1/durable/no timeout. No optimizer or generation occurred and B3 remains sealed.
+
+For document/native evidence, maximum logit differences were 6.71875 / 6.4765625, gradient relative L2 errors 0.6104499 / 0.5129197 and gradient cosines 0.8042532 / 0.8676837. Argmax agreement was 113/115 in each layout. Cross-entropy alone would have obscured the document layout's large gradient difference. Both SDPA runs actually used 28 EfficientAttention backward nodes. Parent parameter bytes remained unchanged. These are numerical rejections, not passes; the limits have not been relaxed.
+
+Source inspection confirmed matching causal/padding semantics, scaling, KV repetition, zero dropout and all 28 full-attention layers; no specific implementation defect was identified by that review. Different BF16 intermediate rounding in eager and the fused implementation is a candidate explanation, not an established sufficient root cause. CPU-only analysis of the retained original tensors is included and made no new model calls.
+
+The archive retains every original small source/protocol/preflight/model/owner/RAPL file, including the full 83,432-byte result and all per-parameter data. Four full selected-logit/gradient `.pt` files remain on the desktop at the exact paths/sizes/hashes in INDEX; they are explicitly not embedded in this 40,392-byte archive. Original owner wall time 36.81763075600611 s and observed child CPU 37.273258 s include cold load and persistence. Whole-host RAPL is not model-only energy; GPU energy and complete monetary cost remain unknown. All prior NoUpdate decisions remain unchanged.
