@@ -138,3 +138,14 @@ remains `048014f8634059b65b24f49da7f00d5b1bb85737`. The later collector and evid
 not relabel these executions. A local workspace outage was handled through the
 durable remote originals and direct GitHub publication; no model call was replayed.
 No result grants native adoption, FinalUse or settlement qualification.
+
+## Supplemental original-output review
+
+`MECHANISM_REVIEW.json` binds twenty original outputs/receipts to the unchanged
+archive index. It documents the changed MSE input that rejects the constant
+control, the three removed post-success A corruptions, the remaining colon
+signature/JSON failures, and the offsetting B2 interface and semantic failures.
+No answer is rescored or regenerated. `independent-audit.tar.xz` contains the
+separate auditor's eleven original files, including its initial engineering
+failure and corrected review; SHA256
+`b89a33732d89a593ab98d3b89deff141c27c3b05583cdc8b59f29a8e92129999`.

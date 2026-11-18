@@ -1,0 +1,657 @@
+{
+  "schema": "hepta.current-policy-credit-observed-mechanism.v1",
+  "source_evidence_commit": "e11c75e1d6c3902a7118d76794804e8aaf1f7d7f",
+  "original_index_sha256": "a97062044b5252b98ea983f7e1107741ba49697aff2055c27d21c703e903c099",
+  "scoring_changed": false,
+  "new_model_calls": 0,
+  "new_verifier_calls": 0,
+  "observations": [
+    {
+      "task": "A-mse",
+      "fact": "Parent first patch passes original and rejects wrong-loss/wrong-gradient but not constant-first-mse (2/3 controls). Credit changes arguments to [[1,3]],[[0,2]], predicts loss1/gradient[[1,1]] and rejects all3. F->P becomes P->P, removing one natural recovery opportunity."
+    },
+    {
+      "task": "A-readout-score",
+      "fact": "All-observed adds extra JSON trailing text on the second call; credit retains the valid successful assertion."
+    },
+    {
+      "task": "A-clipped-metrics",
+      "fact": "All-observed appends a false assertion for [[0]],[[1]], expecting raw_mse0 and correct1; original observation is raw_mse1 and correct0. Credit retains the first valid assertion."
+    },
+    {
+      "task": "A-pair-map",
+      "fact": "All-observed appends Python code containing JSON true/null and fails the fixed literal-argument gate. Credit retains the valid original assertion."
+    },
+    {
+      "task": "A-colon-repair",
+      "fact": "Credit still emits a subject call without the required index argument, giving original TypeError, then malformed JSON. Rejecting wrong controls does not compensate for failure on the original."
+    },
+    {
+      "task": "B2 escape-leading-slashes",
+      "fact": "Parent calls the original function name rather than the permitted subject harness and is rejected; credit calls subject with a correct expected escaped result."
+    },
+    {
+      "task": "B2 to-snake",
+      "fact": "Credit's second call appends subject(null), causing the unchanged Python literal gate to reject it."
+    },
+    {
+      "task": "B2 quantify",
+      "fact": "The second call appends range and lambda code outside the fixed literal-argument AST contract. The previously successful task regresses."
+    },
+    {
+      "task": "B2 first-true",
+      "fact": "Credit predicts a list [1] for subject([1,None,2]), which returns the first truthy element1. This is a real semantic error. Parent's first accepted True==1 assertion remains accepted under the original Python-equality verifier; finite controls are not exhaustive type or full-repository coverage."
+    }
+  ],
+  "interpretation": "The credit treatment is consistent with preserving validated actions and suppressing harmful extra assertions on exposed A. It does not supply a unique B2 final-score gain; new semantic errors and format regressions remain.",
+  "recovery_denominators": {
+    "parent_and_control": {
+      "initial_failures": 3,
+      "recovered": 2
+    },
+    "credit": {
+      "initial_failures": 2,
+      "recovered": 1
+    },
+    "common_initially_failed_tasks": [
+      "A-counter",
+      "A-colon-repair"
+    ],
+    "common_task_recoveries_each": 1
+  },
+  "original_absolute_count_gate": "FAILED, unchanged",
+  "followup": "Separate preregistered #6712 uses six actual failed and five actual successful parent prefixes for all three frozen models; no training, no B/B2, no retroactive rescoring.",
+  "evidence": [
+    {
+      "path": "retained/evaluation/NoUpdate/A_retention/1/OUTPUT-0.json",
+      "sha256": "f48a97ec472184f7c63945b5d7bafae72a7624a32c222bf85c7ed15f1514f334",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[2, 4]], [[0, 2]]) == {\\\"loss\\\": 4.0, \\\"gradient\\\": [[2.0, 2.0]]}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/1/OUTPUT-0.json",
+      "sha256": "b729672660cdd6b89fc6e04eeefcf003740e944d1bd864479756d6af577d9444",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[1, 3]], [[0, 2]]) == {\\\"loss\\\": 1.0, \\\"gradient\\\": [[1.0, 1.0]]}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/all_observed/A_retention/2/OUTPUT-1.json",
+      "sha256": "8a17af4cb6b73019b6d3d099586ba398d87d91cbc993f31386b21c11f69e042f",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[0.5, 0.0, 1.0]], [[1, 0, 1]]) == {\\\"mse\\\": 0.08333333333333333, \\\"mse_by_cell\\\": {\\\"upper\\\": 0.25, \\\"middle\\\": 0.0, \\\"lower\\\": 0.0}, \\\"accuracy_at_half\\\": 1.0}\\n\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}\"]"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/2/OUTPUT-1.json",
+      "sha256": "1300d9db7b608bcf380d01cba0a5ce8c1812979693ef4ada17f8add7135b5b11",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[0.5, 0.0, 1.0]], [[1, 0, 1]]) == {\\\"mse\\\": 0.08333333333333333, \\\"mse_by_cell\\\": {\\\"upper\\\": 0.25, \\\"middle\\\": 0.0, \\\"lower\\\": 0.0}, \\\"accuracy_at_half\\\": 1.0}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/all_observed/A_retention/3/OUTPUT-1.json",
+      "sha256": "6b531e2bf5791aaf114e2ef9a44183acebbc7530b3cfbff55230cb156abbae8f",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[-1.0], [2.0]], [[0], [1]]) == {\\\"raw_mse\\\": 1.0, \\\"brier\\\": 0.0, \\\"correct\\\": 2, \\\"source_groups\\\": 2, \\\"positives\\\": 1}\\n    assert subject([[0.0]], [[1]]) == {\\\"raw_mse\\\": 0.0, \\\"brier\\\": 1.0, \\\"correct\\\": 1, \\\"source_groups\\\": 1, \\\"positives\\\": 1}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/3/OUTPUT-1.json",
+      "sha256": "685eeda196d854a73b4d7a7e7dab4f75aa46ac52335faa472df30d340b1ed46b",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[-1.0], [2.0]], [[0], [1]]) == {\\\"raw_mse\\\": 1.0, \\\"brier\\\": 0.0, \\\"correct\\\": 2, \\\"source_groups\\\": 2, \\\"positives\\\": 1}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/all_observed/A_retention/4/OUTPUT-1.json",
+      "sha256": "315d222e9e606c5365e3e441a494658a47b90ddcf7b854a925821cd180873bff",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[\\\"left\\\", 3], [\\\"right\\\", \\\"value\\\"]]) == {\\\"left\\\": 3, \\\"right\\\": \\\"value\\\"}\\n    assert subject([[\\\"key\\\", true], [\\\"another\\\", null]]) == {\\\"key\\\": true, \\\"another\\\": null}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/4/OUTPUT-1.json",
+      "sha256": "38a5f4407da835463b2b3f0c409247d42acc7dddf5ee2dd4126fb230b94d6a17",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([[\\\"left\\\", 3], [\\\"right\\\", \\\"value\\\"]]) == {\\\"left\\\": 3, \\\"right\\\": \\\"value\\\"}\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/5/OUTPUT-0.json",
+      "sha256": "1098077873e0888bf0ec7c3be87509b2f065df04afbe7420d41dfa899afbd3b1",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject('def f(x)\\\\n    return x + 1')\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/5/OUTPUT-1.json",
+      "sha256": "0f8c9413719af0b5eb697747127f04da528cadb188486e512b490a2b245b1f64",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject('def f(x)\\\\n    return x + 1')\\\\n    assert subject('def g()\\\\n    return\")\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/NoUpdate/A_retention/1/VERIFICATION-0.json",
+      "sha256": "f39fea4b2715d4e1cc0d47c6f8612692440111c37208a1ab10513512fd543044",
+      "verification": {
+        "assertions": 1,
+        "controls_rejected": 2,
+        "executed": true,
+        "exit_code": 0,
+        "fixture_sha256": "b5fcd656337af2412114bdb2f452bae8096be48b716f56460ab0b53e597a22e9",
+        "full_repository_integration": false,
+        "independent_user_evidence": false,
+        "planned_subject_calls_per_arm": 1,
+        "reason": "business_tests_failed",
+        "result": {
+          "control_count": 3,
+          "controls_rejected": 2,
+          "observations": [
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        2,
+                        4
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        2,
+                        2
+                      ]
+                    ],
+                    "loss": 4
+                  }
+                }
+              ],
+              "control": "original",
+              "error": null,
+              "passed": true
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        2,
+                        4
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        2,
+                        2
+                      ]
+                    ],
+                    "loss": 5
+                  }
+                }
+              ],
+              "control": "wrong-loss",
+              "error": "AssertionError",
+              "passed": false
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        2,
+                        4
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        3,
+                        2
+                      ]
+                    ],
+                    "loss": 4
+                  }
+                }
+              ],
+              "control": "wrong-gradient",
+              "error": "AssertionError",
+              "passed": false
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        2,
+                        4
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        2,
+                        2
+                      ]
+                    ],
+                    "loss": 4
+                  }
+                }
+              ],
+              "control": "constant-first-mse",
+              "error": null,
+              "passed": true
+            }
+          ],
+          "original_passed": true
+        },
+        "stderr": "",
+        "stdout_sha256": "99bf3deeac91b03ec50f6d4194b58bed236abf9e732fc70ff2ee358d52567e13",
+        "success": false,
+        "test_sha256": "556fb4c826e170ccc43f08a2dd25b087e91157521c74574e89351da3e65d84fd",
+        "wall_ns": 200544506
+      }
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/1/VERIFICATION-0.json",
+      "sha256": "1a8416f12a601f593c71c99b434ce2e5912d33ec46b82123437bc878db55bf77",
+      "verification": {
+        "assertions": 1,
+        "controls_rejected": 3,
+        "executed": true,
+        "exit_code": 0,
+        "fixture_sha256": "b5fcd656337af2412114bdb2f452bae8096be48b716f56460ab0b53e597a22e9",
+        "full_repository_integration": false,
+        "independent_user_evidence": false,
+        "planned_subject_calls_per_arm": 1,
+        "reason": "business_tests_passed",
+        "result": {
+          "control_count": 3,
+          "controls_rejected": 3,
+          "observations": [
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        1,
+                        3
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        1,
+                        1
+                      ]
+                    ],
+                    "loss": 1
+                  }
+                }
+              ],
+              "control": "original",
+              "error": null,
+              "passed": true
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        1,
+                        3
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        1,
+                        1
+                      ]
+                    ],
+                    "loss": 2
+                  }
+                }
+              ],
+              "control": "wrong-loss",
+              "error": "AssertionError",
+              "passed": false
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        1,
+                        3
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        2,
+                        1
+                      ]
+                    ],
+                    "loss": 1
+                  }
+                }
+              ],
+              "control": "wrong-gradient",
+              "error": "AssertionError",
+              "passed": false
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        1,
+                        3
+                      ]
+                    ],
+                    [
+                      [
+                        0,
+                        2
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "gradient": [
+                      [
+                        2,
+                        2
+                      ]
+                    ],
+                    "loss": 4
+                  }
+                }
+              ],
+              "control": "constant-first-mse",
+              "error": "AssertionError",
+              "passed": false
+            }
+          ],
+          "original_passed": true
+        },
+        "stderr": "",
+        "stdout_sha256": "1159da0c2fe3d99b0ba82aff19cedf75c35a71ef3205465dd33361af725a278b",
+        "success": true,
+        "test_sha256": "a81a1b0ab9f46966f62781fd810cecbdd2e49a716158f2bb7f734ece6c79e21d",
+        "wall_ns": 197188701
+      }
+    },
+    {
+      "path": "retained/evaluation/all_observed/A_retention/3/VERIFICATION-1.json",
+      "sha256": "7c6f58831c8392288019389b65bc65b47b8f78465998bade6437f8a602f9f24d",
+      "verification": {
+        "assertions": 2,
+        "controls_rejected": 2,
+        "executed": true,
+        "exit_code": 0,
+        "fixture_sha256": "3de28620142c6166cab52fe9b4b17ba9c30b0f2eef531d89a446255e800bbc76",
+        "full_repository_integration": false,
+        "independent_user_evidence": false,
+        "planned_subject_calls_per_arm": 2,
+        "reason": "business_tests_failed",
+        "result": {
+          "control_count": 2,
+          "controls_rejected": 2,
+          "observations": [
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        -1
+                      ],
+                      [
+                        2
+                      ]
+                    ],
+                    [
+                      [
+                        0
+                      ],
+                      [
+                        1
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "brier": 0,
+                    "correct": 2,
+                    "positives": 1,
+                    "raw_mse": 1,
+                    "source_groups": 2
+                  }
+                },
+                {
+                  "arguments": [
+                    [
+                      [
+                        0
+                      ]
+                    ],
+                    [
+                      [
+                        1
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "brier": 1,
+                    "correct": 0,
+                    "positives": 1,
+                    "raw_mse": 1,
+                    "source_groups": 1
+                  }
+                }
+              ],
+              "control": "original",
+              "error": "AssertionError",
+              "passed": false
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        -1
+                      ],
+                      [
+                        2
+                      ]
+                    ],
+                    [
+                      [
+                        0
+                      ],
+                      [
+                        1
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "brier": 1,
+                    "correct": 2,
+                    "positives": 1,
+                    "raw_mse": 1,
+                    "source_groups": 2
+                  }
+                }
+              ],
+              "control": "raw-clipped-confusion",
+              "error": "AssertionError",
+              "passed": false
+            },
+            {
+              "calls": [
+                {
+                  "arguments": [
+                    [
+                      [
+                        -1
+                      ],
+                      [
+                        2
+                      ]
+                    ],
+                    [
+                      [
+                        0
+                      ],
+                      [
+                        1
+                      ]
+                    ]
+                  ],
+                  "output": {
+                    "brier": 0,
+                    "correct": 2,
+                    "positives": 2,
+                    "raw_mse": 1,
+                    "source_groups": 2
+                  }
+                }
+              ],
+              "control": "wrong-positive-count",
+              "error": "AssertionError",
+              "passed": false
+            }
+          ],
+          "original_passed": false
+        },
+        "stderr": "",
+        "stdout_sha256": "8bd65551a7bc843934dfc79112e7917468b3421acc2739cdc0f880fef88f1f39",
+        "success": false,
+        "test_sha256": "9ee77c99abfe8deecc2d29dbb9c71fb52cd774f3855add04b1759dcc8f92d5cd",
+        "wall_ns": 195687148
+      }
+    },
+    {
+      "path": "retained/evaluation/NoUpdate/B2_blind_future/4/OUTPUT-0.json",
+      "sha256": "1c74aca03a51e6915524185fbce6a073b554d2c43e9e8a1e82c19517205b4b08",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([True, False, True]) == 1\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/B2_blind_future/4/OUTPUT-0.json",
+      "sha256": "77bc14a3c2bc798d6ae538bafcb362a2fc82a31be1af3c2ea3bb6e99ecc878e1",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([1, None, 2]) == [1]\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/B2_blind_future/5/OUTPUT-1.json",
+      "sha256": "82a9dfc382ff1100b9b2deb2703a0be2b7da8db91045b9436c4afb040ec45882",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject([True, False, True]) == 2\\n    assert subject(range(100, 200), pred=lambda x: x<120) == 20\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/B2_blind_future/3/OUTPUT-1.json",
+      "sha256": "94a00426e5c98f8b6e3131f1eb4b06e11df1fe6e1df970375df3c1fa0e14dbe4",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject(\\\"FooBar\\\") == \\\"foo_bar\\\"\\n    assert subject(null) == \\\"null\\\"\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/NoUpdate/B2_blind_future/1/OUTPUT-0.json",
+      "sha256": "4ff9e65a78749913390d69ff3eaef2d7b2ae5fae1dcc21f93d76a64c8e67a63a",
+      "answer": "{\"edits\":[{\"new\":\"    assert escape_leading_slashes('//foo') == \\\"/%2Ffoo\\\"\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/B2_blind_future/1/OUTPUT-0.json",
+      "sha256": "16ecdc47a52dd62054b5bc8fd833ada34aa07412d547a747ae1b55602cd6bea0",
+      "answer": "{\"edits\":[{\"new\":\"    assert subject('//example.com') == \\\"/%2Fexample.com\\\"\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}"
+    },
+    {
+      "path": "retained/evaluation/verified_credit/A_retention/5/VERIFICATION-0.json",
+      "sha256": "c0bb0001f6869fe3c74576e06b8c3e4a3800a829a97a26607f921ebf0118d029",
+      "verification": {
+        "assertions": 1,
+        "controls_rejected": 3,
+        "executed": true,
+        "exit_code": 0,
+        "fixture_sha256": "32ec03abb69b7a24757afbd8b2e8271ddcbdd6d0c50a399e4831db82b4cae89d",
+        "full_repository_integration": false,
+        "independent_user_evidence": false,
+        "planned_subject_calls_per_arm": 1,
+        "reason": "business_tests_failed",
+        "result": {
+          "control_count": 3,
+          "controls_rejected": 3,
+          "observations": [
+            {
+              "calls": [],
+              "control": "original",
+              "error": "TypeError",
+              "passed": false
+            },
+            {
+              "calls": [],
+              "control": "extra-line",
+              "error": "TypeError",
+              "passed": false
+            },
+            {
+              "calls": [],
+              "control": "body-lost",
+              "error": "TypeError",
+              "passed": false
+            },
+            {
+              "calls": [],
+              "control": "repeated-action-extra-line",
+              "error": "TypeError",
+              "passed": false
+            }
+          ],
+          "original_passed": false
+        },
+        "stderr": "",
+        "stdout_sha256": "690ad34e7c8ed3263a47b12a43a402c20ae2d000822274dd8b3b7afb363d4165",
+        "success": false,
+        "test_sha256": "ee585b87d1b7989eefc42455606dafc55c350e83020522a2c7bacb8010639a9e",
+        "wall_ns": 228622978
+      }
+    }
+  ]
+}
