@@ -109,7 +109,16 @@ def execute_d(predictor, spec, selected, replay, api):
     rows = []
     for task in spec["d_tasks"]:
         started = time.time_ns()
-        prediction = api.prediction(predictor, task["record"], selected)
+        from .adoption_costs import predict
+
+        prediction = predict(
+            predictor,
+            task["record"],
+            selected,
+            Path(spec["database"]).parent,
+            "cold_D",
+            api,
+        )
         rows.append(
             dict(
                 task_id=task["task_id"],
@@ -126,6 +135,10 @@ def execute_d(predictor, spec, selected, replay, api):
 
 
 def measured_costs(report):
+    if "inference_attempts" in report:
+        from .adoption_costs import measured_costs as measured_attempts
+
+        return measured_attempts(report["inference_attempts"])
     phases = {
         "hot_C": [r["prediction"] for r in report["C"]],
         "cold_C_replay": [report["cold"]["prediction"]],
