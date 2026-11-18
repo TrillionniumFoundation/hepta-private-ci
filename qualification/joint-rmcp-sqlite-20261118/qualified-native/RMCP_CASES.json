@@ -1,0 +1,2669 @@
+{
+  "cases": [
+    {
+      "line": 331,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::determine_auth_status_uses_bearer_token_when_authorization_header_present",
+      "status": "ok"
+    },
+    {
+      "line": 332,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::determine_auth_status_uses_bearer_token_when_env_authorization_header_present",
+      "status": "ok"
+    },
+    {
+      "line": 333,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::discover_streamable_http_oauth_ignores_empty_scopes",
+      "status": "ok"
+    },
+    {
+      "line": 334,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::discover_streamable_http_oauth_follows_protected_resource_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 335,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::discover_streamable_http_oauth_returns_normalized_scopes",
+      "status": "ok"
+    },
+    {
+      "line": 336,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::oauth_discovery_does_not_follow_cross_origin_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 337,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::routed_agent_plugin_oauth_discovery_stops_with_configured_headers",
+      "status": "ok"
+    },
+    {
+      "line": 338,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::routed_oauth_discovery_caps_local_discovery_timeout",
+      "status": "ok"
+    },
+    {
+      "line": 339,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::routed_oauth_discovery_preserves_requested_timeout",
+      "status": "ok"
+    },
+    {
+      "line": 340,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::determine_auth_status_preserves_transient_http_errors",
+      "status": "ok"
+    },
+    {
+      "line": 341,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::elicitation_response_result_serializes_response_meta",
+      "status": "ok"
+    },
+    {
+      "line": 342,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::legacy_sep1034_elicitation_without_mode_preserves_schema_defaults",
+      "status": "ok"
+    },
+    {
+      "line": 343,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::parses_legacy_custom_elicitation_without_mode",
+      "status": "ok"
+    },
+    {
+      "line": 344,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::parses_openai_form_custom_requests",
+      "status": "ok"
+    },
+    {
+      "line": 345,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::restore_context_meta_adds_elicitation_meta_and_removes_progress_token",
+      "status": "ok"
+    },
+    {
+      "line": 346,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::oauth_metadata_preserves_login_without_probing_anonymous_tools",
+      "status": "ok"
+    },
+    {
+      "line": 347,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::typed_elicitation_result_preserves_response_meta",
+      "status": "ok"
+    },
+    {
+      "line": 348,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::accepts_input_larger_than_limit_when_each_line_is_bounded",
+      "status": "ok"
+    },
+    {
+      "line": 349,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "elicitation_client_service::tests::typed_elicitation_result_rejects_non_object_meta",
+      "status": "ok"
+    },
+    {
+      "line": 350,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::recovers_contiguous_output_after_a_duplicate_replayed_event",
+      "status": "ok"
+    },
+    {
+      "line": 351,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::recovers_contiguous_output_and_accounts_for_terminal_events",
+      "status": "ok"
+    },
+    {
+      "line": 352,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::rejects_lagged_recovery_when_all_missing_output_was_evicted",
+      "status": "ok"
+    },
+    {
+      "line": 353,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::closes_on_an_unsequenced_process_failure_without_inventing_missing_output",
+      "status": "ok"
+    },
+    {
+      "line": 354,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::rejects_lagged_recovery_when_retained_output_skips_a_sequence",
+      "status": "ok"
+    },
+    {
+      "line": 355,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::retains_complete_lines_before_an_oversized_line",
+      "status": "ok"
+    },
+    {
+      "line": 356,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::rejects_oversized_line_without_retaining_its_prefix",
+      "status": "ok"
+    },
+    {
+      "line": 357,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::searches_only_new_bytes_after_partial_line",
+      "status": "ok"
+    },
+    {
+      "line": 358,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::splits_multiple_lines_and_retains_partial_tail",
+      "status": "ok"
+    },
+    {
+      "line": 359,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::takes_unterminated_remaining_bytes_at_eof",
+      "status": "ok"
+    },
+    {
+      "line": 360,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::agent_plugin_configured_headers_stop_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 361,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::an_unterminated_comment_remains_size_limited",
+      "status": "ok"
+    },
+    {
+      "line": 362,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::authorization_redirects_depend_on_mode",
+      "status": "ok"
+    },
+    {
+      "line": 363,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::carriage_return_terminators_reset_the_event_limit",
+      "status": "ok"
+    },
+    {
+      "line": 364,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::comments_do_not_reset_accumulated_event_data",
+      "status": "ok"
+    },
+    {
+      "line": 365,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "executor_process_transport::tests::serializes_concurrent_stdin_writes",
+      "status": "ok"
+    },
+    {
+      "line": 366,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::crlf_terminators_split_across_chunks_reset_the_event_limit",
+      "status": "ok"
+    },
+    {
+      "line": 367,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::event_at_the_exact_size_limit_is_accepted",
+      "status": "ok"
+    },
+    {
+      "line": 368,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::completed_keepalive_comments_do_not_accumulate",
+      "status": "ok"
+    },
+    {
+      "line": 369,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::legacy_configured_headers_follow_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 370,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::legacy_sse_streams_remain_unlimited",
+      "status": "ok"
+    },
+    {
+      "line": 371,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::lf_terminators_reset_the_event_limit",
+      "status": "ok"
+    },
+    {
+      "line": 372,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::multiline_data_counts_parser_inserted_newlines",
+      "status": "ok"
+    },
+    {
+      "line": 373,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::protocol_headers_preserve_utf8_values",
+      "status": "ok"
+    },
+    {
+      "line": 374,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::rejected_events_remain_rejected",
+      "status": "ok"
+    },
+    {
+      "line": 375,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::requests_without_sensitive_headers_follow_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 376,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::split_keepalive_comments_are_discarded_only_when_complete",
+      "status": "ok"
+    },
+    {
+      "line": 377,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::tests::size_accounting_saturates_without_overflow",
+      "status": "ok"
+    },
+    {
+      "line": 378,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::www_authenticate::tests::does_not_treat_other_bearer_errors_as_insufficient_scope",
+      "status": "ok"
+    },
+    {
+      "line": 379,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::www_authenticate::tests::extracts_scope_from_bearer_insufficient_scope_challenges",
+      "status": "ok"
+    },
+    {
+      "line": 380,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::www_authenticate::tests::rejects_invalid_or_ambiguous_scope_parameters",
+      "status": "ok"
+    },
+    {
+      "line": 381,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::www_authenticate::tests::selects_bearer_challenge_from_a_later_www_authenticate_field_value",
+      "status": "ok"
+    },
+    {
+      "line": 382,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_adapter::www_authenticate::tests::ignores_scope_text_outside_a_scope_parameter",
+      "status": "ok"
+    },
+    {
+      "line": 383,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_redirect::tests::https_redirects_preserve_configured_and_helper_proxy_authorization",
+      "status": "ok"
+    },
+    {
+      "line": 384,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "auth_status::tests::supports_oauth_login_does_not_require_scopes_supported",
+      "status": "ok"
+    },
+    {
+      "line": 385,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_redirect::tests::plaintext_hostname_redirects_are_rejected_before_dns_can_rebind",
+      "status": "ok"
+    },
+    {
+      "line": 386,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_redirect::tests::plaintext_helper_redirects_block_mcp_but_preserve_oauth_stop",
+      "status": "ok"
+    },
+    {
+      "line": 387,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_redirect::tests::cross_origin_redirects_never_reach_their_destination",
+      "status": "ok"
+    },
+    {
+      "line": 388,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_headers::tests::connection_headers_are_cached_and_origin_bound",
+      "status": "ok"
+    },
+    {
+      "line": 389,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_redirect::tests::same_origin_redirects_enforce_shared_timeout_and_hop_limit",
+      "status": "ok"
+    },
+    {
+      "line": 390,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_headers::tests::helper_output_errors_do_not_echo_secrets",
+      "status": "ok"
+    },
+    {
+      "line": 391,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_headers::tests::nonzero_helper_exit_is_cached",
+      "status": "ok"
+    },
+    {
+      "line": 392,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "mrtr::tests::cancellation_removes_a_backpressured_prompt_before_it_can_be_published",
+      "status": "ok"
+    },
+    {
+      "line": 393,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "mrtr::tests::concurrent_batches_share_one_budget_and_other_owners_are_independent",
+      "status": "ok"
+    },
+    {
+      "line": 394,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "mrtr::tests::dropping_parent_cancels_and_drops_the_pending_callback",
+      "status": "ok"
+    },
+    {
+      "line": 395,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "mrtr::tests::modern_elicitation_requires_a_live_private_owner_and_legacy_keeps_its_contract",
+      "status": "ok"
+    },
+    {
+      "line": 396,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "mrtr::tests::unknown_expired_and_cancelled_owners_do_not_start_callbacks",
+      "status": "ok"
+    },
+    {
+      "line": 397,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "mrtr::tests::whole_batch_reservation_is_atomic_and_cumulative",
+      "status": "ok"
+    },
+    {
+      "line": 398,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_client_redirect::tests::same_origin_redirects_preserve_method_body_and_headers",
+      "status": "ok"
+    },
+    {
+      "line": 399,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::refresh_lock::tests::acquisition_times_out_without_stealing",
+      "status": "ok"
+    },
+    {
+      "line": 400,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "http_headers::tests::helper_attempt_is_shared_after_cancellation",
+      "status": "ok"
+    },
+    {
+      "line": 401,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::aggregate_store_credential_loads_can_share_an_existing_reader",
+      "status": "ok"
+    },
+    {
+      "line": 402,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::aggregate_store_readers_share_access_while_writers_remain_exclusive",
+      "status": "ok"
+    },
+    {
+      "line": 403,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::auto_load_secrets_lock_failure_does_not_fall_back_to_file",
+      "status": "ok"
+    },
+    {
+      "line": 404,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::auto_save_secrets_lock_failure_does_not_fall_back_to_file",
+      "status": "ok"
+    },
+    {
+      "line": 405,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::file_store_load_and_delete_observe_aggregate_lock",
+      "status": "ok"
+    },
+    {
+      "line": 406,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::file_store_lock_preserves_updates_for_different_servers",
+      "status": "ok"
+    },
+    {
+      "line": 407,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::legacy_rmcp_oauth_keyring_credentials_remain_readable",
+      "status": "ok"
+    },
+    {
+      "line": 408,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::oauth_credential_probes_skip_contended_file_and_secrets_stores",
+      "status": "ok"
+    },
+    {
+      "line": 409,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::secrets_store_load_and_delete_observe_aggregate_lock",
+      "status": "ok"
+    },
+    {
+      "line": 410,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::store_lock_is_released_when_holder_process_exits_child",
+      "status": "ignored, child process for store_lock_is_released_when_holder_process_exits"
+    },
+    {
+      "line": 411,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::secrets_store_lock_preserves_updates_for_different_servers",
+      "status": "ok"
+    },
+    {
+      "line": 414,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::store_lock::tests::store_lock_is_released_when_holder_process_exits",
+      "status": "ok"
+    },
+    {
+      "line": 415,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::delete_oauth_tokens_file_mode_removes_keyring_only_entry",
+      "status": "ok"
+    },
+    {
+      "line": 416,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::delete_oauth_tokens_propagates_keyring_errors",
+      "status": "ok"
+    },
+    {
+      "line": 417,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::delete_oauth_tokens_removes_all_storage",
+      "status": "ok"
+    },
+    {
+      "line": 420,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::fallback_file_is_private_at_creation",
+      "status": "ok"
+    },
+    {
+      "line": 424,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::fallback_file_is_private_at_creation",
+      "status": "ok"
+    },
+    {
+      "line": 425,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::delete_oauth_tokens_with_secrets_backend_removes_secrets_and_file",
+      "status": "ok"
+    },
+    {
+      "line": 426,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::exact_store_operations_do_not_adopt_or_mutate_the_other_store",
+      "status": "ok"
+    },
+    {
+      "line": 427,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::fallback_file_updates_the_existing_file",
+      "status": "ok"
+    },
+    {
+      "line": 428,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::fallback_file_write_does_not_follow_symlinks",
+      "status": "ok"
+    },
+    {
+      "line": 429,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::load_oauth_tokens_falls_back_when_keyring_errors",
+      "status": "ok"
+    },
+    {
+      "line": 430,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::load_oauth_tokens_falls_back_when_missing_in_keyring",
+      "status": "ok"
+    },
+    {
+      "line": 431,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::load_oauth_tokens_with_secrets_backend_ignores_direct_entry",
+      "status": "ok"
+    },
+    {
+      "line": 432,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_not_usable_when_client_id_is_blank",
+      "status": "ok"
+    },
+    {
+      "line": 433,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_not_usable_when_access_token_is_blank",
+      "status": "ok"
+    },
+    {
+      "line": 434,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_not_usable_when_expired_and_unrefreshable",
+      "status": "ok"
+    },
+    {
+      "line": 435,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_not_usable_when_required_refresh_token_is_blank",
+      "status": "ok"
+    },
+    {
+      "line": 436,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_not_usable_when_near_expiry_and_unrefreshable",
+      "status": "ok"
+    },
+    {
+      "line": 437,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_usable_when_expired_but_refreshable",
+      "status": "ok"
+    },
+    {
+      "line": 438,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_usable_when_unexpired_without_refresh_token",
+      "status": "ok"
+    },
+    {
+      "line": 439,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::oauth_tokens_are_usable_when_expiry_is_unknown",
+      "status": "ok"
+    },
+    {
+      "line": 440,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::load_oauth_tokens_with_secrets_backend_reads_encrypted_storage",
+      "status": "ok"
+    },
+    {
+      "line": 441,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::caller_cancellation_does_not_cancel_refresh_persistence",
+      "status": "ok"
+    },
+    {
+      "line": 442,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::changed_issuer_requires_reauthorization_before_refresh",
+      "status": "ok"
+    },
+    {
+      "line": 443,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::concurrent_refreshes_call_provider_once_and_carry_omitted_fields",
+      "status": "ok"
+    },
+    {
+      "line": 444,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::issuerless_newer_credentials_are_not_adopted_before_refresh",
+      "status": "ok"
+    },
+    {
+      "line": 445,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::missing_authoritative_credentials_require_reauthorization",
+      "status": "ok"
+    },
+    {
+      "line": 446,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::missing_issuer_requires_reauthorization_before_refresh",
+      "status": "ok"
+    },
+    {
+      "line": 447,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::provider_timeout_releases_lock_and_preserves_durable_credentials",
+      "status": "ok"
+    },
+    {
+      "line": 448,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::rejected_refresh_token_requires_reauthorization",
+      "status": "ok"
+    },
+    {
+      "line": 449,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::refresh_expires_in_from_timestamp_marks_expired_tokens",
+      "status": "ok"
+    },
+    {
+      "line": 450,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::refresh_expires_in_from_timestamp_restores_future_durations",
+      "status": "ok"
+    },
+    {
+      "line": 451,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::resolved_keyring_read_error_preserves_in_memory_credentials",
+      "status": "ok"
+    },
+    {
+      "line": 452,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::persistor_tests::transient_refresh_failure_does_not_require_reauthorization",
+      "status": "ok"
+    },
+    {
+      "line": 453,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::resolve_oauth_tokens_from_store_policy_uses_keyring_when_available",
+      "status": "ok"
+    },
+    {
+      "line": 454,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::save_oauth_tokens_prefers_keyring_when_available",
+      "status": "ok"
+    },
+    {
+      "line": 455,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::save_oauth_tokens_with_secrets_backend_falls_back_to_file_when_keyring_fails",
+      "status": "ok"
+    },
+    {
+      "line": 456,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::save_oauth_tokens_with_secrets_backend_writes_encrypted_storage",
+      "status": "ok"
+    },
+    {
+      "line": 457,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::save_oauth_tokens_writes_fallback_when_keyring_fails",
+      "status": "ok"
+    },
+    {
+      "line": 458,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::stored_oauth_credentials_ignore_derived_expiration_and_track_token_changes",
+      "status": "ok"
+    },
+    {
+      "line": 459,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_client_registration::tests::legacy_provider_exceptions_require_exact_issuer_and_endpoint_origins",
+      "status": "ok"
+    },
+    {
+      "line": 460,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_client_registration::tests::automatic_cimd_uses_callback_specific_identity",
+      "status": "ok"
+    },
+    {
+      "line": 461,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_client_registration::tests::resource_headers_follow_same_origin_registration_redirect_and_sdk_auth_wins",
+      "status": "ok"
+    },
+    {
+      "line": 462,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_client_registration::tests::verified_issuer_can_delegate_authorization_and_token_to_one_origin",
+      "status": "ok"
+    },
+    {
+      "line": 463,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_client_registration::tests::invalid_cimd_metadata_and_redirects_fail_without_dynamic_registration",
+      "status": "ok"
+    },
+    {
+      "line": 464,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_http_client::security_tests::oauth_registration_redirects_never_forward_resource_only_headers",
+      "status": "ok"
+    },
+    {
+      "line": 465,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_http_client::tests::agent_plugin_oauth_stops_only_for_sensitive_headers",
+      "status": "ok"
+    },
+    {
+      "line": 466,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::append_query_param_adds_resource_to_absolute_url",
+      "status": "ok"
+    },
+    {
+      "line": 467,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::append_query_param_handles_unparseable_url",
+      "status": "ok"
+    },
+    {
+      "line": 468,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::append_query_param_ignores_empty_values",
+      "status": "ok"
+    },
+    {
+      "line": 469,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::callback_id_is_appended_before_redirect_uri_query",
+      "status": "ok"
+    },
+    {
+      "line": 470,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::callback_id_is_appended_to_redirect_uri_path",
+      "status": "ok"
+    },
+    {
+      "line": 471,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::callback_id_is_bound_to_server_url",
+      "status": "ok"
+    },
+    {
+      "line": 472,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::callback_path_comes_from_redirect_uri",
+      "status": "ok"
+    },
+    {
+      "line": 473,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::configured_client_preserves_exact_scopes_and_redirect_without_registration",
+      "status": "ok"
+    },
+    {
+      "line": 474,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::interactive_oauth_login_uses_supplied_http_client",
+      "status": "ok"
+    },
+    {
+      "line": 475,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_client_registration::tests::registration_selection_preserves_dcr_capabilities_and_exact_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 476,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::oauth_login_persists_discovered_issuer",
+      "status": "ok"
+    },
+    {
+      "line": 477,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_accepts_callback_id_path",
+      "status": "ok"
+    },
+    {
+      "line": 478,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_accepts_custom_path",
+      "status": "ok"
+    },
+    {
+      "line": 479,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_accepts_default_path",
+      "status": "ok"
+    },
+    {
+      "line": 480,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_preserves_rfc_9207_issuer",
+      "status": "ok"
+    },
+    {
+      "line": 481,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_rejects_missing_callback_id_path",
+      "status": "ok"
+    },
+    {
+      "line": 482,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_rejects_wrong_path",
+      "status": "ok"
+    },
+    {
+      "line": 483,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::parse_oauth_callback_returns_provider_error",
+      "status": "ok"
+    },
+    {
+      "line": 484,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::silent_oauth_login_uses_supplied_http_client",
+      "status": "ok"
+    },
+    {
+      "line": 485,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "program_resolver::tests::test_resolved_program_executes_successfully",
+      "status": "ok"
+    },
+    {
+      "line": 486,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "program_resolver::tests::test_unix_executes_script_without_extension",
+      "status": "ok"
+    },
+    {
+      "line": 487,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "protocol_mode::tests::legacy_stdio_does_not_interpret_existing_protocol_markers",
+      "status": "ok"
+    },
+    {
+      "line": 488,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "protocol_mode::tests::protocol_modes_select_compatible_sdk_lifecycles",
+      "status": "ok"
+    },
+    {
+      "line": 489,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "protocol_mode::tests::stdio_rejects_unknown_protocol_markers",
+      "status": "ok"
+    },
+    {
+      "line": 490,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "protocol_mode::tests::stdio_requires_both_the_modern_feature_and_a_server_opt_in",
+      "status": "ok"
+    },
+    {
+      "line": 491,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "perform_oauth_login::tests::oauth_callback_validates_rfc_9207_issuer_before_token_exchange",
+      "status": "ok"
+    },
+    {
+      "line": 492,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "retained_tool_session::tests::retained_session_does_not_follow_parent_session_recovery",
+      "status": "ok"
+    },
+    {
+      "line": 493,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth_http_client::security_tests::same_origin_redirects_preserve_timeout_and_response_body_limits",
+      "status": "ok"
+    },
+    {
+      "line": 494,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "retained_tool_session::tests::retained_session_refuses_closed_original_peer",
+      "status": "ok"
+    },
+    {
+      "line": 495,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "retained_tool_session::tests::retained_session_refuses_opaque_transport_and_delegated_auth_before_tool_call",
+      "status": "ok"
+    },
+    {
+      "line": 496,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "rmcp_client::streamable_http_retry::tests::retryable_initialize_error_includes_discovery_and_initialized_notification_context",
+      "status": "ok"
+    },
+    {
+      "line": 497,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "rmcp_client::streamable_http_retry::tests::retryable_streamable_http_error_includes_remote_body_stream_failure",
+      "status": "ok"
+    },
+    {
+      "line": 498,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "rmcp_client::streamable_http_retry::tests::startup_http_authentication_challenges_require_reauthorization",
+      "status": "ok"
+    },
+    {
+      "line": 499,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "rmcp_client::tests::active_time_timeout_pauses_while_elicitation_is_pending",
+      "status": "ok"
+    },
+    {
+      "line": 500,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "rmcp_client::tests::client_operation_timeout_rounds_duration",
+      "status": "ok"
+    },
+    {
+      "line": 501,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "stdio_server_launcher::tests::remote_env_policy_effectively_filters_unrequested_vars",
+      "status": "ok"
+    },
+    {
+      "line": 502,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "stdio_server_launcher::tests::remote_env_policy_includes_remote_source_vars_without_full_env",
+      "status": "ok"
+    },
+    {
+      "line": 503,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "stdio_server_launcher::tests::remote_env_policy_uses_core_env_without_remote_source_vars",
+      "status": "ok"
+    },
+    {
+      "line": 504,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::create_env_honors_overrides",
+      "status": "ok"
+    },
+    {
+      "line": 505,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::create_env_includes_additional_whitelisted_variables",
+      "status": "ok"
+    },
+    {
+      "line": 506,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::create_env_preserves_path_when_it_is_not_utf8",
+      "status": "ok"
+    },
+    {
+      "line": 507,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::create_local_env_rejects_remote_source_variables",
+      "status": "ok"
+    },
+    {
+      "line": 508,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::create_remote_env_overlay_does_not_copy_remote_source_variables",
+      "status": "ok"
+    },
+    {
+      "line": 509,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::create_remote_env_overlay_only_forwards_explicit_variables",
+      "status": "ok"
+    },
+    {
+      "line": 510,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "utils::tests::remote_mcp_env_var_names_returns_remote_source_names",
+      "status": "ok"
+    },
+    {
+      "line": 511,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "retained_tool_session::tests::retained_session_never_recovers_404_or_retries_auth_or_transient_failures",
+      "status": "ok"
+    },
+    {
+      "line": 512,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "retained_tool_session::tests::retained_session_lost_reply_has_hard_deadline_and_no_second_request",
+      "status": "ok"
+    },
+    {
+      "line": 527,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-resources-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-resources-test",
+      "name": "rmcp_client_can_list_and_read_resources",
+      "status": "ok"
+    },
+    {
+      "line": 545,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-foreign_stdio_cwd-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-foreign_stdio_cwd-test",
+      "name": "executor_stdio_forwards_foreign_absolute_cwd_as_path_uri",
+      "status": "ok"
+    },
+    {
+      "line": 554,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test",
+      "name": "plugin_runtime_event_stream_times_out_before_stalled_headers",
+      "status": "ok"
+    },
+    {
+      "line": 555,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test",
+      "name": "plugin_runtime_event_streams_are_isolated_and_cancel_locally",
+      "status": "ok"
+    },
+    {
+      "line": 564,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test",
+      "name": "drop_kills_wrapper_process_group",
+      "status": "ok"
+    },
+    {
+      "line": 565,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test",
+      "name": "shutdown_kills_initialized_stdio_server_with_in_flight_operation",
+      "status": "ok"
+    },
+    {
+      "line": 574,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "name": "local_stdio_inherits_ca_certificate_variables_child",
+      "status": "ignored, child process for local_stdio_inherits_ca_certificate_variables"
+    },
+    {
+      "line": 575,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "name": "modern_local_and_executor_stdio_discover_metadata_identity_and_catalogs",
+      "status": "ok"
+    },
+    {
+      "line": 576,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "name": "legacy_stdio_preserves_existing_protocol_marker_environment",
+      "status": "ok"
+    },
+    {
+      "line": 577,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "name": "local_stdio_inherits_ca_certificate_variables",
+      "status": "ok"
+    },
+    {
+      "line": 587,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "name": "modern_local_stdio_discovers_metadata_only_identity_and_drives_mrtr",
+      "status": "ok"
+    },
+    {
+      "line": 588,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "name": "legacy_stdio_supports_sep1034_defaults_without_the_rollout_flag",
+      "status": "ok"
+    },
+    {
+      "line": 589,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "name": "modern_executor_stdio_discovers_metadata_only_identity_and_drives_mrtr",
+      "status": "ok"
+    },
+    {
+      "line": 590,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "name": "modern_stdio_safely_falls_back_to_legacy_elicitation",
+      "status": "ok"
+    },
+    {
+      "line": 591,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "name": "rollout_flag_alone_preserves_legacy_stdio_and_sep1034_defaults",
+      "status": "ok"
+    },
+    {
+      "line": 600,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "expired_unrefreshable_startup_child",
+      "status": "ignored, spawned by identifies_expired_unrefreshable_token_startup_error"
+    },
+    {
+      "line": 601,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "issuer_startup_child",
+      "status": "ignored, spawned by issuer startup tests"
+    },
+    {
+      "line": 602,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "oauth_startup_child",
+      "status": "ignored, spawned by refreshes_expired_persisted_token_before_initialize"
+    },
+    {
+      "line": 603,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "persisted_credentials_auth_status_child",
+      "status": "ignored, spawned by reports_auth_status_for_persisted_credentials"
+    },
+    {
+      "line": 612,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "issuer_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 616,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "does_not_refresh_against_metadata_from_second_discovery",
+      "status": "ok"
+    },
+    {
+      "line": 619,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "expired_unrefreshable_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 623,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "identifies_expired_unrefreshable_token_startup_error",
+      "status": "ok"
+    },
+    {
+      "line": 624,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "issuer_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 630,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "does_not_refresh_unexpired_token_after_issuer_change_401",
+      "status": "ok"
+    },
+    {
+      "line": 631,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "oauth_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 637,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "refresh_uses_discovered_protected_resource_audience",
+      "status": "ok"
+    },
+    {
+      "line": 640,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "issuer_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 644,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "rejects_refresh_when_authorization_server_issuer_changes_before_startup",
+      "status": "ok"
+    },
+    {
+      "line": 645,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "oauth_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 649,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "oauth_startup_child",
+      "status": "ok"
+    },
+    {
+      "line": 653,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "refreshes_expired_persisted_token_before_initialize",
+      "status": "ok"
+    },
+    {
+      "line": 654,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "refreshes_oauth_with_gateway_headers_helper",
+      "status": "ok"
+    },
+    {
+      "line": 655,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "persisted_credentials_auth_status_child",
+      "status": "ok"
+    },
+    {
+      "line": 659,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "reports_auth_status_for_persisted_credentials",
+      "status": "ok"
+    },
+    {
+      "line": 668,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "name": "modern_sse_discovery_falls_back_for_correlated_method_not_found",
+      "status": "ok"
+    },
+    {
+      "line": 669,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "name": "modern_sse_discovery_accepts_metadata_namespaced_server_identity",
+      "status": "ok"
+    },
+    {
+      "line": 670,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "name": "modern_sse_discovery_rejects_uncorrelated_method_not_found",
+      "status": "ok"
+    },
+    {
+      "line": 679,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "legacy_mcp_requests_follow_same_origin_redirects_with_configured_headers",
+      "status": "ok"
+    },
+    {
+      "line": 680,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_accepts_metadata_namespaced_server_identity",
+      "status": "ok"
+    },
+    {
+      "line": 681,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "legacy_mode_never_probes_server_discovery",
+      "status": "ok"
+    },
+    {
+      "line": 682,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "legacy_fallback_does_not_follow_cross_origin_tool_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 683,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_accepts_metadata_namespaced_server_identity_over_sse",
+      "status": "ok"
+    },
+    {
+      "line": 684,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_accepts_missing_server_identity",
+      "status": "ok"
+    },
+    {
+      "line": 685,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_accepts_native_sse_responses",
+      "status": "ok"
+    },
+    {
+      "line": 686,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_does_not_follow_redirects_with_sensitive_headers",
+      "status": "ok"
+    },
+    {
+      "line": 687,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_rejects_uncorrelated_legacy_version_rejection",
+      "status": "ok"
+    },
+    {
+      "line": 688,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_rejects_uncorrelated_method_not_found_errors",
+      "status": "ok"
+    },
+    {
+      "line": 689,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_rejection_does_not_downgrade_to_legacy",
+      "status": "ok"
+    },
+    {
+      "line": 690,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_never_downgrades_without_valid_legacy_only_version_evidence",
+      "status": "ok"
+    },
+    {
+      "line": 691,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_retries_json_unsupported_protocol_errors",
+      "status": "ok"
+    },
+    {
+      "line": 692,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_rejects_non_legacy_http_prevalidation_errors",
+      "status": "ok"
+    },
+    {
+      "line": 693,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_legacy_fallback_preserves_authentication_required_error",
+      "status": "ok"
+    },
+    {
+      "line": 694,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_rejects_unrecognized_or_modern_null_id_errors",
+      "status": "ok"
+    },
+    {
+      "line": 695,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_falls_back_for_legacy_http_prevalidation_errors",
+      "status": "ok"
+    },
+    {
+      "line": 696,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "legacy_http_keeps_existing_large_json_response_behavior",
+      "status": "ok"
+    },
+    {
+      "line": 697,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_falls_back_for_plain_404_and_405_discovery_responses",
+      "status": "ok"
+    },
+    {
+      "line": 698,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_falls_back_only_for_a_json_rpc_method_not_found",
+      "status": "ok"
+    },
+    {
+      "line": 699,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_discovery_retries_transient_service_unavailable",
+      "status": "ok"
+    },
+    {
+      "line": 700,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_falls_back_when_discovery_only_advertises_legacy_versions",
+      "status": "ok"
+    },
+    {
+      "line": 701,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_uses_sdk_discovery_and_self_contained_request_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 702,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_falls_back_when_legacy_server_explicitly_rejects_modern_version",
+      "status": "ok"
+    },
+    {
+      "line": 703,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "stdio_protocol_marker_rejects_unknown_versions_before_launch",
+      "status": "ok"
+    },
+    {
+      "line": 704,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_sdk_emits_standard_headers_and_rejects_invalid_header_schemas",
+      "status": "ok"
+    },
+    {
+      "line": 705,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_legacy_fallback_retries_transient_initialize_failures",
+      "status": "ok"
+    },
+    {
+      "line": 706,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_mode_negotiates_a_server_selected_legacy_protocol_version",
+      "status": "ok"
+    },
+    {
+      "line": 707,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "name": "modern_http_rejects_oversized_discovery_and_tool_json_responses",
+      "status": "ok"
+    },
+    {
+      "line": 716,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test",
+      "name": "stdio_message_limits_preserve_legacy_local_compatibility",
+      "status": "ok"
+    },
+    {
+      "line": 727,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "name": "streamable_http_remote_client_round_trips_through_exec_server",
+      "status": "ok"
+    },
+    {
+      "line": 728,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "name": "streamable_http_handshake_timeout_unblocks_remote_executor",
+      "status": "ok"
+    },
+    {
+      "line": 729,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "name": "streamable_http_discovery_timeout_unblocks_remote_executor",
+      "status": "ok"
+    },
+    {
+      "line": 738,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "budget_tests::modern_stateless_404_does_not_restart_input_work",
+      "status": "ok"
+    },
+    {
+      "line": 739,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "modern_resource_mrtr_retries_with_opaque_request_state",
+      "status": "ok"
+    },
+    {
+      "line": 740,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "modern_sse_input_required_preserves_response_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 741,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "budget_tests::concurrent_modern_calls_have_independent_input_budgets",
+      "status": "ok"
+    },
+    {
+      "line": 742,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "modern_tool_mrtr_accepts_sse_discovery_and_metadata_bearing_rounds",
+      "status": "ok"
+    },
+    {
+      "line": 743,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "modern_tool_mrtr_drives_form_and_url_elicitation_and_preserves_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 744,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "modern_tool_mrtr_uses_recovered_protocol_after_legacy_session_expiry",
+      "status": "ok"
+    },
+    {
+      "line": 745,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "budget_tests::modern_mrtr_reserves_whole_batches_across_rounds_for_tools_and_resources",
+      "status": "ok"
+    },
+    {
+      "line": 746,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "name": "modern_tool_mrtr_preserves_state_only_rounds_without_elicitation",
+      "status": "ok"
+    },
+    {
+      "line": 758,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_403_finds_bearer_challenge_in_later_header_value",
+      "status": "ok"
+    },
+    {
+      "line": 759,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_401_does_not_trigger_recovery",
+      "status": "ok"
+    },
+    {
+      "line": 762,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_403_scope_challenge_returns_insufficient_scope",
+      "status": "ok"
+    },
+    {
+      "line": 764,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_404_session_expiry_recovers_and_retries_once",
+      "status": "ok"
+    },
+    {
+      "line": 766,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_404_recovery_only_retries_once",
+      "status": "ok"
+    },
+    {
+      "line": 768,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_initialize_retries_json_rpc_transient_status",
+      "status": "ok"
+    },
+    {
+      "line": 770,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_initialize_retries_remote_no_response_error",
+      "status": "ok"
+    },
+    {
+      "line": 772,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_non_session_failure_does_not_trigger_recovery",
+      "status": "ok"
+    },
+    {
+      "line": 774,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_initialize_retries_transient_http_status",
+      "status": "ok"
+    },
+    {
+      "line": 776,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_retries_initialized_notification_status",
+      "status": "ok"
+    },
+    {
+      "line": 778,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_session_recovery_retries_initialize_failure",
+      "status": "ok"
+    },
+    {
+      "line": 779,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_tools_list_retries_json_rpc_transient_status",
+      "status": "ok"
+    },
+    {
+      "line": 780,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "name": "streamable_http_tools_list_retries_transient_http_status",
+      "status": "ok"
+    },
+    {
+      "line": 789,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "legacy_oauth_discovery_follows_same_origin_metadata_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 790,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles",
+      "status": "ok"
+    },
+    {
+      "line": 791,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "legacy_oauth_discovery_rejects_an_explicit_mismatched_issuer",
+      "status": "ok"
+    },
+    {
+      "line": 792,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 793,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "legacy_oauth_discovery_accepts_authorization_metadata_without_an_issuer",
+      "status": "ok"
+    },
+    {
+      "line": 794,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "legacy_oauth_discovery_rejects_cross_origin_resource_metadata_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 795,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "oauth_discovery_does_not_invent_support_for_an_unauthenticated_legacy_server",
+      "status": "ok"
+    },
+    {
+      "line": 796,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "oauth_discovery_uses_get_first_without_starting_a_legacy_mcp_session",
+      "status": "ok"
+    },
+    {
+      "line": 797,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "name": "interactive_oauth_rejects_untrusted_authorization_metadata",
+      "status": "ok"
+    },
+    {
+      "line": 807,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "name": "auto_store_remains_pinned_across_session_recovery_child",
+      "status": "ignored, spawned by auto_store_remains_pinned_across_session_recovery"
+    },
+    {
+      "line": 812,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "name": "transport_provided_bearer_token_avoids_placeholder_headers_and_redirects",
+      "status": "ok"
+    },
+    {
+      "line": 813,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "name": "auto_store_remains_pinned_across_session_recovery_child",
+      "status": "ok"
+    },
+    {
+      "line": 817,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "name": "auto_store_remains_pinned_across_session_recovery",
+      "status": "ok"
+    },
+    {
+      "line": 826,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_user_agent-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_user_agent-test",
+      "name": "streamable_http_requests_preserve_configured_user_agent",
+      "status": "ok"
+    },
+    {
+      "line": 836,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "name": "legacy_http_keeps_existing_large_json_response_behavior",
+      "status": "ok"
+    },
+    {
+      "line": 837,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "name": "modern_local_and_executor_stdio_reject_oversized_lines",
+      "status": "ok"
+    },
+    {
+      "line": 838,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "target": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "name": "modern_http_rejects_oversized_json_error_and_sse_bodies",
+      "status": "ok"
+    }
+  ],
+  "result_sections": [
+    {
+      "line": 187,
+      "target_section": "//codex-rs/rmcp-client:test_mcp_2026_discovery_stdio_server-bin-unit-tests",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 196,
+      "target_section": "//codex-rs/rmcp-client:test_mcp_2026_stdio_server-bin-unit-tests",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 252,
+      "target_section": "//codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 260,
+      "target_section": "//codex-rs/rmcp-client:test_stdio_server-bin-unit-tests",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 293,
+      "target_section": "//codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 422,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 173
+    },
+    {
+      "line": 514,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "passed": 173,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 529,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-resources-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 537,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_test_support-test",
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 547,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-foreign_stdio_cwd-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 557,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 567,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 579,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 593,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 614,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 621,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 626,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 633,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 642,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 647,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 651,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 657,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 11
+    },
+    {
+      "line": 661,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 4,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 672,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 709,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "passed": 29,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 718,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 731,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 748,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 782,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 799,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 815,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 2
+    },
+    {
+      "line": 819,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 828,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_user_agent-test",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "line": 840,
+      "target_section": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  ],
+  "target_results": [
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-foreign_stdio_cwd-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-resources-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_test_support-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_user_agent-test-windows-cross",
+      "status": "SKIPPED",
+      "wall_seconds": null
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-foreign_stdio_cwd-test",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_discovery-test",
+      "status": "PASSED",
+      "wall_seconds": 1.3
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test",
+      "status": "PASSED",
+      "wall_seconds": 1.4
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_mrtr-test",
+      "status": "PASSED",
+      "wall_seconds": 0.4
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_oauth_discovery-test",
+      "status": "PASSED",
+      "wall_seconds": 0.7
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_sse_discovery-test",
+      "status": "PASSED",
+      "wall_seconds": 0.6
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio-test",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_2026_stdio_discovery-test",
+      "status": "PASSED",
+      "wall_seconds": 0.2
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-mcp_events-test",
+      "status": "PASSED",
+      "wall_seconds": 0.2
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-process_group_cleanup-test",
+      "status": "PASSED",
+      "wall_seconds": 0.5
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-resources-test",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-stdio_message_limits-test",
+      "status": "PASSED",
+      "wall_seconds": 1.0
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "status": "PASSED",
+      "wall_seconds": 0.3
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "status": "PASSED",
+      "wall_seconds": 0.5
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_recovery-test",
+      "status": "PASSED",
+      "wall_seconds": 1.4
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_remote-test",
+      "status": "PASSED",
+      "wall_seconds": 0.8
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_test_support-test",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-streamable_http_user_agent-test",
+      "status": "PASSED",
+      "wall_seconds": 0.3
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 29.0
+    },
+    {
+      "name": "//codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:test_mcp_2026_discovery_stdio_server-bin-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:test_mcp_2026_stdio_server-bin-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:test_stdio_server-bin-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    },
+    {
+      "name": "//codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests",
+      "status": "PASSED",
+      "wall_seconds": 0.1
+    }
+  ],
+  "repeated_case_identities": [
+    {
+      "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+      "name": "oauth::tests::fallback_file_is_private_at_creation",
+      "observations": [
+        {
+          "line": 420,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "name": "oauth::tests::fallback_file_is_private_at_creation",
+          "status": "ok"
+        },
+        {
+          "line": 424,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "target": "//codex-rs/rmcp-client:rmcp-client-unit-tests",
+          "name": "oauth::tests::fallback_file_is_private_at_creation",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "expired_unrefreshable_startup_child",
+      "observations": [
+        {
+          "line": 600,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "expired_unrefreshable_startup_child",
+          "status": "ignored, spawned by identifies_expired_unrefreshable_token_startup_error"
+        },
+        {
+          "line": 619,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "expired_unrefreshable_startup_child",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "issuer_startup_child",
+      "observations": [
+        {
+          "line": 601,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "issuer_startup_child",
+          "status": "ignored, spawned by issuer startup tests"
+        },
+        {
+          "line": 612,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "issuer_startup_child",
+          "status": "ok"
+        },
+        {
+          "line": 624,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "issuer_startup_child",
+          "status": "ok"
+        },
+        {
+          "line": 640,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "issuer_startup_child",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "oauth_startup_child",
+      "observations": [
+        {
+          "line": 602,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "oauth_startup_child",
+          "status": "ignored, spawned by refreshes_expired_persisted_token_before_initialize"
+        },
+        {
+          "line": 631,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "oauth_startup_child",
+          "status": "ok"
+        },
+        {
+          "line": 645,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "oauth_startup_child",
+          "status": "ok"
+        },
+        {
+          "line": 649,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "oauth_startup_child",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+      "name": "persisted_credentials_auth_status_child",
+      "observations": [
+        {
+          "line": 603,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "persisted_credentials_auth_status_child",
+          "status": "ignored, spawned by reports_auth_status_for_persisted_credentials"
+        },
+        {
+          "line": 655,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test",
+          "name": "persisted_credentials_auth_status_child",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+      "name": "auto_store_remains_pinned_across_session_recovery_child",
+      "observations": [
+        {
+          "line": 807,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "name": "auto_store_remains_pinned_across_session_recovery_child",
+          "status": "ignored, spawned by auto_store_remains_pinned_across_session_recovery"
+        },
+        {
+          "line": 813,
+          "target_section": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "target": "//codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_store_pinning-test",
+          "name": "auto_store_remains_pinned_across_session_recovery_child",
+          "status": "ok"
+        }
+      ]
+    }
+  ]
+}
