@@ -361,7 +361,7 @@ def verify(project, answer, output):
         write(output / "ADMISSION.json", admission)
         result = run_native(project, output / "native", candidate)
         result.update(stage="native_pytest", answer_sha256=sha(answer.encode()),
-            "verification_wall_seconds": time.perf_counter() - started)
+            verification_wall_seconds=time.perf_counter() - started)
     write(output / "VERIFICATION.json", result)
     return result
 

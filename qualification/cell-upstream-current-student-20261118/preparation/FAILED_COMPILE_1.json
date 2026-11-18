@@ -1,0 +1,23 @@
+{
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1795021819478,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 1,\n  \"job_id\": \"1a1efa34818-ffbe-57d\",\n  \"launch_nonce\": \"d10c6f35d7decffd74abf871d8b44ae4\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 266,\n      \"stored\": 266\n    },\n    \"stdout\": {\n      \"seen\": 0,\n      \"stored\": 0\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"failed\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "logs": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1efa34818-ffbe-57d\",\n  \"stderr\": {\n    \"bytes_hex\": \"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e6520342c20696e203c6d6f64756c653e0a202046696c6520226e61746976655f73616e64626f782e7079222c206c696e65203336340a2020202022766572696669636174696f6e5f77616c6c5f7365636f6e6473223a2074696d652e706572665f636f756e7465722829202d2073746172746564290a202020202020202020202020202020202020202020202020202020202020205e0a53796e7461784572726f723a20706f736974696f6e616c20617267756d656e7420666f6c6c6f7773206b6579776f726420617267756d656e740a\",\n    \"eof\": true,\n    \"next_offset\": 266,\n    \"offset\": 0,\n    \"size\": 266,\n    \"text\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 4, in <module>\\n  File \\\"native_sandbox.py\\\", line 364\\n    \\\"verification_wall_seconds\\\": time.perf_counter() - started)\\n                               ^\\nSyntaxError: positional argument follows keyword argument\\n\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "scope": "Preparation source compile failed before native tests or model requests; original failed job retained."
+}
